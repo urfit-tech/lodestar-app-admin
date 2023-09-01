@@ -126,6 +126,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -147,6 +148,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -168,6 +170,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -189,6 +192,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -209,6 +213,7 @@ const SalesLeadTabs: React.VFC<{
             refetch?.()
             refetchMembers?.()
           }}
+          isLoading={loading}
         />
       </Tabs.TabPane>
 
@@ -229,6 +234,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -250,6 +256,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -272,6 +279,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -293,6 +301,7 @@ const SalesLeadTabs: React.VFC<{
               refetch?.()
               refetchMembers?.()
             }}
+            isLoading={loading}
           />
         }
       </Tabs.TabPane>
@@ -315,6 +324,7 @@ const SalesLeadTabs: React.VFC<{
                 refetch?.()
                 refetchMembers?.()
               }}
+              isLoading={loading}
             />
           }
         </Tabs.TabPane>
