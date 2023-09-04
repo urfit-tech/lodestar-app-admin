@@ -44,7 +44,10 @@ const formMessages = {
     SALES_RECORDS_NORMAL: { id: 'form.PermissionGroup.SALES_RECORDS_NORMAL', defaultMessage: '查看個人銷售紀錄' },
     GROSS_SALES_ADMIN: { id: 'form.PermissionGroup.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
     SALES_RECORDS_DETAILS: { id: 'form.PermissionGroup.SALES_RECORDS_DETAILS', defaultMessage: '查看消費者細項' },
-    MODIFY_MEMBER_ORDER_EQUITY: { id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY', defaultMessage: '調整會員訂單權益功能' },
+    MODIFY_MEMBER_ORDER_EQUITY: {
+      id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY',
+      defaultMessage: '調整會員訂單權益功能',
+    },
 
     // program
     PROGRAM_ADMIN: { id: 'form.PermissionGroup.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },
@@ -286,7 +289,11 @@ const formMessages = {
     ANALYSIS_ADMIN: { id: 'form.PermissionGroup.ANALYSIS_ADMIN', defaultMessage: '所有數據分析功能' },
 
     // sales
-    SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '業績總表' },
+    SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '查看所有業績' },
+    SALES_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
+      id: 'form.PermissionGroup.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN',
+      defaultMessage: '查看同機構業績',
+    },
 
     // sales_lead
     SALES_LEAD_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_ADMIN', defaultMessage: '所有名單撥打功能' },
