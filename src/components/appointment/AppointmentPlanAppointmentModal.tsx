@@ -51,10 +51,10 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledSubTitle = styled.div`
+const StyledSubTitle = styled.div<{ isCenter?: boolean }>`
   color: var(--gray-darker);
   font-weight: bold;
-  text-align: center;
+  text-align: ${props => (props.isCenter ? 'center' : 'left')};
 `
 const StyledPlanTitle = styled.div`
   color: var(--gray-darker);
@@ -357,7 +357,7 @@ const AppointmentPlanAppointmentModal: React.FC<
               </StyledStatusBlock>
               <Divider className="my-3" />
               <div>
-                <StyledSubTitle>{appointmentPlanAdmin.title}</StyledSubTitle>
+                <StyledSubTitle isCenter>{appointmentPlanAdmin.title}</StyledSubTitle>
                 <StyledPeriod>
                   {appointmentValues.period.startedAt &&
                     appointmentValues.period.endedAt &&
