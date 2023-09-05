@@ -1,6 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
