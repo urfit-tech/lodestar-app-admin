@@ -64,6 +64,7 @@ const AppNavModal: React.FC<AppNavModalProps> = ({
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const [upsertAppNav] = useMutation<hasura.UPSERT_APP_NAV, hasura.UPSERT_APP_NAVVariables>(UPSERT_APP_NAV)
+  const [updateParentNav] = useMutation<hasura.UPDATE_PARENT_NAV, hasura.UPDATE_PARENT_NAVVariables>(UPDATE_PARENT_NAV)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     setLoading(true)
@@ -86,9 +87,17 @@ const AppNavModal: React.FC<AppNavModalProps> = ({
           },
         })
           .then(() => {
-            setVisible(false)
-            onRefetch?.()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
+            if (type === 'addSubNav') {
+              updateParentNav({ variables: { parentId: parentId } }).then(() => {
+                setVisible(false)
+                onRefetch?.()
+                message.success(formatMessage(commonMessages.event.successfullySaved))
+              })
+            } else {
+              setVisible(false)
+              onRefetch?.()
+              message.success(formatMessage(commonMessages.event.successfullySaved))
+            }
           })
           .catch(handleError)
       })
@@ -251,6 +260,14 @@ const UPSERT_APP_NAV = gql`
       id
     }
     update_app_nav(where: { parent_id: { _eq: $navId } }, _set: { locale: $locale }) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_PARENT_NAV = gql`
+  mutation UPDATE_PARENT_NAV($parentId: uuid!) {
+    update_app_nav(where: { id: { _eq: $parentId } }, _set: { href: "", external: false }) {
       affected_rows
     }
   }
