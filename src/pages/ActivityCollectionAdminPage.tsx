@@ -39,7 +39,7 @@ const ActivityCollectionAdminPage: React.FC = () => {
             <ProductCreationModal
               categoryClassType="activity"
               creatorAppellation={formatMessage(commonMessages.label.selectOrganizer)}
-              allowedPermissions={['ACTIVITY_NORMAL']}
+              allowedPermissions={['ACTIVITY_NORMAL', 'ACTIVITY_ADMIN']}
               withCreatorSelector={currentUserRole === 'app-owner'}
               onCreate={({ title, creatorId, categoryIds }) =>
                 createActivity({

@@ -90,7 +90,7 @@ const ActivityOrganizerCollectionBlock: React.FC<{
             <ContentCreatorSelector
               value={selectedMemberId || member.id}
               onChange={value => setSelectedMemberId(value)}
-              allowedPermissions={['ACTIVITY_NORMAL']}
+              allowedPermissions={['ACTIVITY_NORMAL', 'ACTIVITY_ADMIN']}
             />
           </Form.Item>
 
