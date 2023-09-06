@@ -1989,6 +1989,8 @@
   "page.salesLeadDeliveryPage.salesLeadDelivery": "名單派發",
   "page.salesLeadDeliveryPage.starRange": "星等",
   "page.salesLeadDeliveryPage.starRangeIsNull": "沒有星等的人",
+  "page.salesLeadDeliveryPage.notCalled":"無撥打紀錄",
+  "page.salesLeadDeliveryPage.notAnswered":"無接通紀錄",
   "pageProgramProgressCollectionAdminPage.exerciseFailed": "Failed",
   "pageProgramProgressCollectionAdminPage.exercisePassed": "Passed",
   "pageProgramProgressCollectionAdminPage.exerciseStatus": "Exam Status",
