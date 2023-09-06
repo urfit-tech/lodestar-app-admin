@@ -186,7 +186,12 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                 ?.filter(nav => nav.block === block && !nav.parentId)
                 ?.map(nav => {
                   return (
-                    <StyledDraggableMainItem handlerClassName="draggable-main-item" dataId={nav.id} key={nav.id}>
+                    <StyledDraggableMainItem
+                      handlerClassName="draggable-main-item"
+                      dataId={nav.id}
+                      key={nav.id}
+                      dragStyle={{ width: '100%' }}
+                    >
                       <StyleMainMenuBlock>
                         <div className="d-flex align-items-center">
                           <span>{nav.label}</span>
@@ -257,6 +262,7 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                 handlerClassName="draggable-sub-item"
                                 dataId={subNav.id}
                                 key={subNav.id}
+                                dragStyle={{ width: '100%' }}
                               >
                                 <StyleSubMenuBlock>
                                   <div className="d-flex align-items-center">
