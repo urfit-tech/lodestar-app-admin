@@ -26,7 +26,7 @@ const StyledBlockTitle = styled.h3`
   color: var(--gray-darker);
 `
 
-const StyledAppNavHref = styled.p`
+const StyledLabel = styled.p`
   font-size: 14px;
   font-weight: 500;
   color: var(--gray-dark);
@@ -63,13 +63,6 @@ const StyledMainMenuActionBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
-
-const StyledDeleteBlock = styled.div`
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  margin-left: 16px;
 `
 
 const blocks = ['header', 'footer', 'social_media'] as const
@@ -195,14 +188,13 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                       <StyleMainMenuBlock>
                         <div className="d-flex align-items-center">
                           <span>{nav.label}</span>
-                          <StyledAppNavHref>
-                            {nav.href} ({nav.locale})
-                          </StyledAppNavHref>
+                          <StyledLabel>{nav.href}</StyledLabel>
                         </div>
                         <StyledMainMenuActionBlock>
+                          <StyledLabel>({nav.locale})</StyledLabel>
                           {block === 'header' ? (
                             <Button
-                              className="p-0"
+                              className="ml-2 p-0"
                               icon={<PlusOutlined />}
                               type="link"
                               onClick={() =>
@@ -220,18 +212,18 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                               {formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)}
                             </Button>
                           ) : null}
-                          <StyledDeleteBlock>
-                            <DeleteOutlined
-                              key="delete"
-                              onClick={() => {
-                                window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
-                                  handleDelete(block, nav.id)
-                              }}
-                            />
-                          </StyledDeleteBlock>
                           <Button
-                            className="p-0"
-                            icon={<EditOutlined />}
+                            className="ml-2 p-0"
+                            type="link"
+                            onClick={() => {
+                              window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
+                                handleDelete(block, nav.id)
+                            }}
+                          >
+                            <DeleteOutlined />
+                          </Button>
+                          <Button
+                            className="ml-2 p-0"
                             type="link"
                             onClick={() =>
                               setAppNavModalProps({
@@ -245,7 +237,9 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                 hasSubMenu: nav.subNavs.length > 0,
                               })
                             }
-                          />
+                          >
+                            <EditOutlined />
+                          </Button>
                         </StyledMainMenuActionBlock>
                       </StyleMainMenuBlock>
                       {block === 'header' ? (
@@ -267,21 +261,21 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                 <StyleSubMenuBlock>
                                   <div className="d-flex align-items-center">
                                     <span>{subNav.label}</span>
-                                    <StyledAppNavHref>{subNav.href}</StyledAppNavHref>
+                                    <StyledLabel>{subNav.href}</StyledLabel>
                                   </div>
                                   <StyledMainMenuActionBlock>
-                                    <StyledDeleteBlock>
-                                      <DeleteOutlined
-                                        key="delete"
-                                        onClick={() => {
-                                          window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
-                                            handleDelete(block, subNav.id)
-                                        }}
-                                      />
-                                    </StyledDeleteBlock>
                                     <Button
-                                      className="p-0"
-                                      icon={<EditOutlined />}
+                                      className="ml-2 p-0"
+                                      type="link"
+                                      onClick={() => {
+                                        window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
+                                          handleDelete(block, subNav.id)
+                                      }}
+                                    >
+                                      <DeleteOutlined />
+                                    </Button>
+                                    <Button
+                                      className="ml-2 p-0"
                                       type="link"
                                       onClick={() =>
                                         setAppNavModalProps({
@@ -299,7 +293,9 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                           },
                                         })
                                       }
-                                    />
+                                    >
+                                      <EditOutlined />
+                                    </Button>
                                   </StyledMainMenuActionBlock>
                                 </StyleSubMenuBlock>
                               </StyledDraggableSubItem>
