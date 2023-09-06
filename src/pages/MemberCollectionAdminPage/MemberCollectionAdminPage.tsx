@@ -3,6 +3,7 @@ import { Button, Checkbox, Input, Popover, Spin, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import axios from 'axios'
+import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -158,6 +159,7 @@ const MemberCollectionBlock: React.VFC<
     email: fieldFilter?.email ? fieldFilter.email : undefined,
     username: fieldFilter?.username ? fieldFilter.username : undefined,
     managerName: fieldFilter?.managerName ? fieldFilter.managerName : undefined,
+    properties: fieldFilter?.properties ? fieldFilter.properties : undefined,
   })
 
   const [currentMembers, setCurrentMembers] = useState<
@@ -386,9 +388,10 @@ const TableBlock: React.VFC<{
 
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
+      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `%${value}%` : undefined })
       onFieldFilterChange?.({
         ...fieldFilter,
-        properties: { ...fieldFilter.properties, [columnId]: value ?? undefined },
+        properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
       })
     } else {
       onFieldFilterChange?.({
@@ -553,7 +556,7 @@ const TableBlock: React.VFC<{
           title: property.name,
           key: property.id,
           render: (text, record, index) => (loadingMemberProperties ? <Spin /> : record?.properties?.[property.id]),
-          // ...getColumnSearchProps(property.id, true),
+          ...getColumnSearchProps(property.id, true),
         }
         return column
       }),
@@ -611,6 +614,9 @@ const TableBlock: React.VFC<{
                     email: fieldFilter?.email ? `%${fieldFilter.email}%` : undefined,
                     username: fieldFilter?.username ? `%${fieldFilter.username}%` : undefined,
                     managerName: fieldFilter?.managerName ? `%${fieldFilter.managerName}%` : undefined,
+                    properties: fieldFilter?.properties
+                      ? Object.keys(fieldFilter?.properties).map(() => fieldFilter.properties)
+                      : undefined,
                   },
                   option: {
                     limit,
