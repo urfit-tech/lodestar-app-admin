@@ -715,11 +715,12 @@ export const useMembers = (
       email: filter?.email ? `%${filter.email}%` : undefined,
       username: filter?.username ? `%${filter.username}%` : undefined,
       managerName: filter?.managerName ? `%${filter.managerName}%` : undefined,
-      properties: filter?.properties ? Object.keys(filter?.properties).map(() => filter.properties) : undefined,
+      properties: filter?.properties
+        ? Object.entries(filter?.properties).map(property => ({ [property[0]]: property[1] }))
+        : undefined,
     }),
     [filter],
   )
-
   useEffect(() => {
     setLoading(true)
     ;(async () => {
