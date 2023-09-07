@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { UserRole } from 'lodestar-app-element/src/types/data'
 import { filter } from 'ramda'
@@ -555,6 +557,11 @@ export const routesProps = {
     pageName: 'ReportPage',
     authenticated: true,
   },
+  deactivate: {
+    path: '/deactivate',
+    pageName: 'DeactivatePage',
+    authenticated: true,
+  },
 
   // xuemi extra router
   // member_contract_collection: {
@@ -612,8 +619,12 @@ export const useRouteKeys = () => {
 export let routesMap = { ...routesProps }
 
 const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps } }> = ({ extraRouteProps }) => {
+  const { options: appOptions } = useApp()
   const { isAuthenticating, permissions } = useAuth()
   routesMap = { ...routesMap, ...extraRouteProps }
+  const hasPassedCloseSiteTime = appOptions?.close_site_at
+    ? dayjs(appOptions.close_site_at).diff(dayjs(), 'day') <= 0
+    : false
 
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
@@ -628,7 +639,9 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
                   key={routeKey}
                   path={routeProps.path}
                   render={props =>
-                    !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
+                    hasPassedCloseSiteTime && routeProps.path !== '/deactivate' ? (
+                      <Redirect to="/deactivate" />
+                    ) : !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
                       <Redirect to="/" />
                     ) : typeof routeProps.pageName === 'string' ? (
                       React.createElement(React.lazy(() => import(`../../pages/${routeProps.pageName}`)))

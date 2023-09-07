@@ -85,12 +85,16 @@ export const usePodcastAlbumCounts = (appId: string) => {
   >(
     gql`
       query GET_PODCAST_ALBUM_COUNTS($appId: String!) {
-        draft: podcast_album_aggregate(where: { app_id: { _eq: $appId }, published_at: { _is_null: true } }) {
+        draft: podcast_album_aggregate(
+          where: { app_id: { _eq: $appId }, published_at: { _is_null: true }, is_deleted: { _eq: false } }
+        ) {
           aggregate {
             count
           }
         }
-        published: podcast_album_aggregate(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
+        published: podcast_album_aggregate(
+          where: { app_id: { _eq: $appId }, published_at: { _is_null: false }, is_deleted: { _eq: false } }
+        ) {
           aggregate {
             count
           }

@@ -2,12 +2,14 @@ import Icon, { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Popover, Spin, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
+import axios from 'axios'
+import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { AppProps, Permission } from 'lodestar-app-element/src/types/app'
 import moment from 'moment'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
@@ -19,11 +21,11 @@ import MemberExportModal from '../../components/member/MemberExportModal'
 import MemberImportModal from '../../components/member/MemberImportModal'
 import OldMemberExportModal from '../../components/member/OldMemberExportModal'
 import OldMemberImportModal from '../../components/member/OldMemberImportModal'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { useMemberCollection, useProperty } from '../../hooks/member'
+import { useMemberCollection, useMembers, useProperty } from '../../hooks/member'
 import { TableIcon } from '../../images/icon'
-import { MemberInfoProps, UserRole } from '../../types/member'
+import { MemberInfoProps, ResponseMembers, UserRole } from '../../types/member'
 import ForbiddenPage from '../ForbiddenPage'
 import DuplicatePhoneBlock from './DuplicatePhoneBlock'
 import PermissionGroupsDropDownSelector from './PermissionGroupsDropDownSelector'
@@ -93,7 +95,7 @@ const StyledTag = styled(Tag)`
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { isAuthenticating, permissions, currentUserRole } = useAuth()
+  const { isAuthenticating, permissions, currentUserRole, authToken } = useAuth()
   const { loading, id: appId, enabledModules, settings } = useApp()
 
   if (!isAuthenticating && !permissions.MEMBER_ADMIN) {
@@ -106,7 +108,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         <UserOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.members)}</span>
       </AdminPageTitle>
-      {loading || isAuthenticating ? (
+      {loading || isAuthenticating || !authToken ? (
         <Spin />
       ) : (
         <MemberCollectionBlock
@@ -115,6 +117,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           enabledModules={enabledModules}
           permissions={permissions}
           settings={settings}
+          authToken={authToken}
         />
       )}
     </AdminLayout>
@@ -126,10 +129,10 @@ const MemberCollectionBlock: React.VFC<
     currentUserRole: string
     appId: string
     permissions: { [key in Permission]?: boolean }
+    authToken: string
   }
-> = ({ currentUserRole, appId, enabledModules, settings, permissions }) => {
+> = ({ currentUserRole, appId, enabledModules, settings, permissions, authToken }) => {
   const { formatMessage } = useIntl()
-  const theme = useAppTheme()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
   const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
@@ -142,34 +145,42 @@ const MemberCollectionBlock: React.VFC<
     loginedAt: null,
     consumption: null,
   })
-  const [loading, setLoading] = useState(false)
-  const searchInputRef = useRef<Input | null>(null)
 
   const { properties } = useProperty()
 
+  const limit = 10
   const {
-    loadingMemberAggregate,
-    loadingMemberCollection,
-    loadingMemberPhones,
-    loadingManagerInfo,
-    loadingMemberOrderProductPrice,
-    loadingMemberTags,
-    loadingMemberProperties,
+    loading: loadingMembers,
     members,
-    refetchMemberAggregate,
-    refetchMemberCollection,
-    refetchMemberOrderProductPrice,
-    refetchMemberCategories,
-    refetchMemberTags,
-    refetchMemberProperties,
-    loadMoreMembers,
-  } = useMemberCollection(appId, {
-    ...fieldFilter,
-    properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
-      id: propertyId,
-      value,
-    })),
+    nextToken,
+  } = useMembers(authToken, limit, {
+    role: fieldFilter?.role ? fieldFilter.role : undefined,
+    name: fieldFilter?.name ? fieldFilter.name : undefined,
+    email: fieldFilter?.email ? fieldFilter.email : undefined,
+    username: fieldFilter?.username ? fieldFilter.username : undefined,
+    managerName: fieldFilter?.managerName ? fieldFilter.managerName : undefined,
+    properties: fieldFilter?.properties ? fieldFilter.properties : undefined,
   })
+
+  const [currentMembers, setCurrentMembers] = useState<
+    {
+      id: string
+      pictureUrl: string | null
+      name: string
+      email: string
+      role: 'general-member' | 'content-creator' | 'app-owner'
+      createdAt: Date
+      username: string
+      loginedAt: Date | null
+      managerId: string | null
+    }[]
+  >(members)
+
+  useEffect(() => {
+    if (!loadingMembers && members) {
+      setCurrentMembers(members)
+    }
+  }, [loadingMembers, members])
 
   const allColumns: ({
     id: string
@@ -192,14 +203,201 @@ const MemberCollectionBlock: React.VFC<
     })),
   ]
 
+  // for OldMemberExportModal
+  const columns: { key: string; title: string }[] = [
+    { key: '#', title: '#' },
+    { key: 'name', title: formatMessage(commonMessages.label.memberName) },
+    { key: 'email', title: 'Email' },
+    { key: 'phone', title: formatMessage(commonMessages.label.phone) },
+    { key: 'username', title: formatMessage(commonMessages.label.account) },
+    { key: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
+    { key: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
+    { key: 'consumption', title: formatMessage(commonMessages.label.consumption) },
+    { key: 'categories', title: formatMessage(commonMessages.label.category) },
+    { key: 'tags', title: formatMessage(commonMessages.label.tags) },
+    { key: 'managerName', title: formatMessage(memberMessages.label.manager) },
+    ...properties
+      .filter(property => visibleColumnIds.includes(property.id))
+      .map(property => ({ key: property.id, title: property.name })),
+  ]
+
+  return (
+    <>
+      <div className="d-flex align-items-center justify-content-between mb-4">
+        <div className="d-flex">
+          <div className="mr-3">
+            <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
+          </div>
+
+          {enabledModules.permission_group && currentUserRole === 'app-owner' ? (
+            <PermissionGroupsDropDownSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
+          ) : null}
+        </div>
+
+        <div className="d-flex">
+          <Popover
+            trigger="click"
+            placement="bottomLeft"
+            content={
+              <StyledOverlay>
+                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                  <FilterWrapper>
+                    {allColumns.map(column =>
+                      column ? (
+                        <Checkbox key={column.id} value={column.id}>
+                          {column.title}
+                        </Checkbox>
+                      ) : null,
+                    )}
+                  </FilterWrapper>
+                </Checkbox.Group>
+              </StyledOverlay>
+            }
+          >
+            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+              {formatMessage(memberMessages.label.field)}
+            </StyledButton>
+          </Popover>
+          <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal />}</div>
+          <div className="mr-2">
+            {exportImportVersionTag ? (
+              <MemberImportModal />
+            ) : (
+              <OldMemberImportModal /> // TODO: remove this after new export import completed
+            )}
+          </div>
+          {enabledModules.member_info_export ? (
+            exportImportVersionTag ? (
+              <MemberExportModal appId={appId} filter={fieldFilter} sortOrder={sortOrder} />
+            ) : (
+              <OldMemberExportModal // TODO: remove this after new export import completed
+                appId={appId}
+                visibleFields={visibleColumnIds}
+                columns={columns}
+                filter={fieldFilter}
+                sortOrder={sortOrder}
+              />
+            )
+          ) : null}
+        </div>
+      </div>
+
+      <DuplicatePhoneBlock />
+
+      <AdminCard className="mb-5">
+        <TableBlock
+          visibleColumnIds={visibleColumnIds}
+          loadingMembers={loadingMembers || !members}
+          currentMembers={currentMembers}
+          limit={limit}
+          nextToken={nextToken}
+          fieldFilter={fieldFilter}
+          authToken={authToken}
+          properties={properties}
+          onFieldFilterChange={(filter: FiledFilter) => setFieldFilter(filter)}
+          onSortOrderChange={(createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) =>
+            setSortOrder({ createdAt, loginedAt, consumption })
+          }
+          onCurrentMembersChange={(
+            value: {
+              id: string
+              pictureUrl: string | null
+              name: string
+              email: string
+              role: 'general-member' | 'content-creator' | 'app-owner'
+              createdAt: Date
+              username: string
+              loginedAt: Date | null
+              managerId: string | null
+            }[],
+          ) => setCurrentMembers(value)}
+        />
+      </AdminCard>
+    </>
+  )
+}
+
+const TableBlock: React.VFC<{
+  visibleColumnIds: string[]
+  loadingMembers: boolean
+  currentMembers: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+    role: 'general-member' | 'content-creator' | 'app-owner'
+    createdAt: Date
+    username: string
+    loginedAt: Date | null
+    managerId: string | null
+  }[]
+  limit: number
+  nextToken: string | null
+  fieldFilter: FiledFilter
+  authToken: string
+  properties: {
+    id: any
+    name: string
+    placeholder: string | undefined
+    isEditable: boolean
+    isRequired: boolean
+  }[]
+  onFieldFilterChange?: (filter: FiledFilter) => void
+  onSortOrderChange?: (createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) => void
+  onCurrentMembersChange?: (
+    value: {
+      id: string
+      pictureUrl: string | null
+      name: string
+      email: string
+      role: 'general-member' | 'content-creator' | 'app-owner'
+      createdAt: Date
+      username: string
+      loginedAt: Date | null
+      managerId: string | null
+    }[],
+  ) => void
+}> = ({
+  visibleColumnIds,
+  loadingMembers,
+  currentMembers,
+  limit,
+  nextToken,
+  fieldFilter,
+  authToken,
+  properties,
+  onFieldFilterChange,
+  onSortOrderChange,
+  onCurrentMembersChange,
+}) => {
+  const theme = useAppTheme()
+  const { formatMessage } = useIntl()
+  const [loading, setLoading] = useState(false)
+  const searchInputRef = useRef<Input | null>(null)
+  const [currentNextToken, setCurrentNextToken] = useState(nextToken)
+
+  const {
+    loadingMemberPhones,
+    loadingManagerInfo,
+    loadingMemberOrderProductPrice,
+    loadingMemberTags,
+    loadingMemberProperties,
+    memberCollection,
+  } = useMemberCollection(currentMembers)
+
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      setFieldFilter(filter => ({ ...filter, properties: { ...filter.properties, [columnId]: value ?? undefined } }))
+      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `%${value}%` : undefined })
+      onFieldFilterChange?.({
+        ...fieldFilter,
+        properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
+      })
     } else {
-      setFieldFilter(filter => ({
-        ...filter,
+      onFieldFilterChange?.({
+        ...fieldFilter,
         [columnId]: value ?? undefined,
-      }))
+      })
     }
   }
 
@@ -286,7 +484,7 @@ const MemberCollectionBlock: React.VFC<
       dataIndex: 'phone',
       key: 'phone',
       render: (text, record, index) => (loadingMemberPhones ? <Spin /> : record.phones.join(', ')),
-      ...getColumnSearchProps('phone'),
+      // ...getColumnSearchProps('phone'),
     },
     {
       title: formatMessage(commonMessages.label.account),
@@ -321,7 +519,7 @@ const MemberCollectionBlock: React.VFC<
       dataIndex: 'categories',
       key: 'categories',
       render: (text, record, index) => record.categories.map(category => category.name).join(', '),
-      ...getColumnSearchProps('category'),
+      // ...getColumnSearchProps('category'),
     },
     {
       title: formatMessage(commonMessages.label.tags),
@@ -339,7 +537,7 @@ const MemberCollectionBlock: React.VFC<
             ))}
           </>
         ),
-      ...getColumnSearchProps('tag'),
+      // ...getColumnSearchProps('tag'),
     },
     {
       title: formatMessage(memberMessages.label.manager),
@@ -364,118 +562,95 @@ const MemberCollectionBlock: React.VFC<
       }),
   ]
 
+  useEffect(() => {
+    if (nextToken) {
+      setCurrentNextToken(nextToken)
+    }
+  }, [nextToken])
+
   return (
     <>
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="d-flex">
-          <div className="mr-3">
-            <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
-          </div>
-
-          {enabledModules.permission_group && currentUserRole === 'app-owner' ? (
-            <PermissionGroupsDropDownSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
-          ) : null}
-        </div>
-
-        <div className="d-flex">
-          <Popover
-            trigger="click"
-            placement="bottomLeft"
-            content={
-              <StyledOverlay>
-                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
-                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
-                  <FilterWrapper>
-                    {allColumns.map(column =>
-                      column ? (
-                        <Checkbox key={column.id} value={column.id}>
-                          {column.title}
-                        </Checkbox>
-                      ) : null,
-                    )}
-                  </FilterWrapper>
-                </Checkbox.Group>
-              </StyledOverlay>
-            }
-          >
-            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
-              {formatMessage(memberMessages.label.field)}
-            </StyledButton>
-          </Popover>
-          <div className="mr-2">
-            {permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMemberCollection} />}
-          </div>
-          <div className="mr-2">
-            {exportImportVersionTag ? (
-              <MemberImportModal onRefetch={refetchMemberCollection} />
-            ) : (
-              <OldMemberImportModal onRefetch={refetchMemberCollection} /> // TODO: remove this after new export import completed
-            )}
-          </div>
-          {enabledModules.member_info_export ? (
-            exportImportVersionTag ? (
-              <MemberExportModal appId={appId} filter={fieldFilter} sortOrder={sortOrder} />
-            ) : (
-              <OldMemberExportModal // TODO: remove this after new export import completed
-                appId={appId}
-                visibleFields={visibleColumnIds}
-                columns={columns}
-                filter={fieldFilter}
-                sortOrder={sortOrder}
-              />
+      <TableWrapper>
+        <Table<MemberInfoProps>
+          columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
+          rowKey="id"
+          loading={loadingMembers}
+          dataSource={memberCollection}
+          pagination={false}
+          rowClassName={() => 'cursor-pointer'}
+          onRow={record => ({
+            onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
+          })}
+          onChange={(pagination, filters, sorter) => {
+            const newSorter = sorter as SorterResult<MemberInfoProps>
+            onSortOrderChange?.(
+              newSorter.field === 'createdAt' ? newSorter?.order || null : null,
+              newSorter.field === 'loginedAt' ? newSorter?.order || null : null,
+              newSorter.field === 'consumption' ? newSorter?.order || null : null,
             )
-          ) : null}
-        </div>
-      </div>
+          }}
+        />
+      </TableWrapper>
 
-      <DuplicatePhoneBlock />
-
-      <AdminCard className="mb-5">
-        <TableWrapper>
-          <Table<MemberInfoProps>
-            columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
-            rowKey="id"
-            loading={loadingMemberCollection}
-            dataSource={members}
-            pagination={false}
-            rowClassName={() => 'cursor-pointer'}
-            onRow={record => ({
-              onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
-            })}
-            onChange={(pagination, filters, sorter) => {
-              const newSorter = sorter as SorterResult<MemberInfoProps>
-              setSortOrder({
-                createdAt: null,
-                loginedAt: null,
-                consumption: null,
-                [newSorter.field as 'createdAt' | 'loginedAt' | 'consumption']: newSorter.order || null,
+      <div className="text-center mt-4">
+        <Button
+          disabled={
+            loadingMemberPhones ||
+            loadingManagerInfo ||
+            loadingMemberOrderProductPrice ||
+            loadingMemberTags ||
+            loadingMemberProperties
+          }
+          loading={loading}
+          onClick={async () => {
+            setLoading(true)
+            await axios
+              .post<ResponseMembers>(
+                `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
+                {
+                  condition: {
+                    role: fieldFilter?.role ? fieldFilter.role : undefined,
+                    name: fieldFilter?.name ? `%${fieldFilter.name}%` : undefined,
+                    email: fieldFilter?.email ? `%${fieldFilter.email}%` : undefined,
+                    username: fieldFilter?.username ? `%${fieldFilter.username}%` : undefined,
+                    managerName: fieldFilter?.managerName ? `%${fieldFilter.managerName}%` : undefined,
+                    properties: fieldFilter?.properties
+                      ? Object.keys(fieldFilter?.properties).map(() => fieldFilter.properties)
+                      : undefined,
+                  },
+                  option: {
+                    limit,
+                    nextToken: currentNextToken,
+                  },
+                },
+                {
+                  headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
+                },
+              )
+              .then(({ data: res }) => {
+                setCurrentNextToken(() => res.cursor.afterCursor)
+                onCurrentMembersChange?.([
+                  ...currentMembers,
+                  ...res.data.map(v => ({
+                    id: v.id,
+                    pictureUrl: v.picture_url,
+                    name: v.name,
+                    email: v.email,
+                    role: v.role,
+                    createdAt: new Date(v.created_at),
+                    username: v.username,
+                    loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+                    managerId: v.manager_id,
+                  })),
+                ])
               })
-            }}
-          />
-        </TableWrapper>
-
-        {!loadingMemberCollection && !loadingMemberAggregate && loadMoreMembers && refetchMemberAggregate && (
-          <div className="text-center mt-4">
-            <Button
-              loading={loading}
-              onClick={() => {
-                setLoading(true)
-                refetchMemberAggregate()
-                  .then(() => loadMoreMembers())
-                  .then(() => {
-                    refetchMemberOrderProductPrice()
-                    refetchMemberCategories()
-                    refetchMemberTags()
-                    refetchMemberProperties()
-                  })
-                  .finally(() => setLoading(false))
-              }}
-            >
-              {formatMessage(commonMessages.ui.showMore)}
-            </Button>
-          </div>
-        )}
-      </AdminCard>
+              .catch(error => handleError(error))
+              .finally(() => setLoading(false))
+          }}
+        >
+          {formatMessage(commonMessages.ui.showMore)}
+        </Button>
+      </div>
     </>
   )
 }

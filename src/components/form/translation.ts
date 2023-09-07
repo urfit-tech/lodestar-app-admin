@@ -44,6 +44,7 @@ const formMessages = {
     SALES_RECORDS_NORMAL: { id: 'form.PermissionGroup.SALES_RECORDS_NORMAL', defaultMessage: '查看個人銷售紀錄' },
     GROSS_SALES_ADMIN: { id: 'form.PermissionGroup.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
     SALES_RECORDS_DETAILS: { id: 'form.PermissionGroup.SALES_RECORDS_DETAILS', defaultMessage: '查看消費者細項' },
+    MODIFY_MEMBER_ORDER_EQUITY: { id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY', defaultMessage: '調整會員訂單權益功能' },
 
     // program
     PROGRAM_ADMIN: { id: 'form.PermissionGroup.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },

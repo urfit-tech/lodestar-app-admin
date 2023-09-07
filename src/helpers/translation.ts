@@ -333,6 +333,10 @@ export const commonMessages = {
       id: 'common.text.exportMember',
       defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。',
     },
+    deleteAppNav: {
+      id: 'common.text.deleteAppNav',
+      defaultMessage: '刪除後會直接移除選單/連結，確定要刪除嗎？',
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -435,6 +439,7 @@ export const commonMessages = {
     podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
     projectCategory: { id: 'common.menu.projectCategory', defaultMessage: 'Project Category' },
     roleManagement: { id: 'common.menu.roleManagement', defaultMessage: 'Role Management' },
+    navSettings: { id: 'common.menu.navSettings', defaultMessage: '選單設定' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
@@ -740,6 +745,7 @@ export const checkoutMessages = {
     radio: defineMessages({
       noDiscount: { id: 'checkout.form.radio.coupon.noDiscount', defaultMessage: '無折扣' },
       useCoupon: { id: 'checkout.form.radio.coupon.use', defaultMessage: '使用折價券' },
+      useCoin: { id: 'checkout.form.radio.coin.use', defaultMessage: '使用代幣' },
       reselectCoupon: { id: 'checkout.form.radio.coupon.reselect', defaultMessage: '重新選擇' },
       chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
     }),

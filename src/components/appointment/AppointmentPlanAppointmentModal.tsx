@@ -1,6 +1,5 @@
-import { Button, Divider, Form, Input, message, Skeleton } from 'antd'
+import { Button, Divider, Form, Input, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import axios from 'axios'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -10,10 +9,9 @@ import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, handleError } from '../../helpers'
-import { appointmentMessages, codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 import { useCheck } from '../../hooks/checkout'
-import { useTask } from '../../hooks/task'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
@@ -53,9 +51,10 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledSubTitle = styled.div`
+const StyledSubTitle = styled.div<{ isCenter?: boolean }>`
   color: var(--gray-darker);
   font-weight: bold;
+  text-align: ${props => (props.isCenter ? 'center' : 'left')};
 `
 const StyledPlanTitle = styled.div`
   color: var(--gray-darker);
@@ -69,6 +68,7 @@ const StyledPeriodTitle = styled.div`
   letter-spacing: 0.2px;
 `
 const StyledPeriod = styled.div<{ variant?: 'editable' }>`
+  text-align: center;
   font-size: 16px;
   font-weight: 500;
   color: ${props => props.theme['@primary-color']};
@@ -82,7 +82,9 @@ const StyledMeta = styled.div`
   font-size: 12px;
 `
 const StyledStatusBlock = styled.div`
-  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 `
 const StyledAppointmentInfo = styled.div`
   display: flex;
@@ -111,7 +113,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { authToken } = useAuth()
-  const { host } = useApp()
+  const { host, settings } = useApp()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
     useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
@@ -141,9 +143,6 @@ const AppointmentPlanAppointmentModal: React.FC<
       [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
     },
   )
-  const [taskType, setTaskType] = useState<'order' | 'payment' | null>(null)
-  const [taskId, setTaskId] = useState<string | null>(null)
-  const { task } = useTask(taskType, taskId)
   const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
 
   const isPaymentAvailable =
@@ -153,8 +152,6 @@ const AppointmentPlanAppointmentModal: React.FC<
 
   const resetModal = () => {
     form.resetFields()
-    setTaskType(null)
-    setTaskId(null)
     setAppointmentStep('period')
     setAppointmentValues({
       period: { startedAt: null, endedAt: null },
@@ -166,44 +163,6 @@ const AppointmentPlanAppointmentModal: React.FC<
   useEffect(() => {
     refetchAppointmentPlanAdmin()
   }, [appointmentPlanId, refetchAppointmentPlanAdmin])
-
-  useEffect(() => {
-    if (task?.failedReason) {
-      message.error(formatMessage(commonMessages.status.orderFailed))
-      setLoading(false)
-      setAppointmentStep('failed')
-      return
-    }
-    if (taskType === 'order' && authToken && task?.finishedOn && task?.returnvalue?.orderId) {
-      axios
-        .post(
-          `${process.env.REACT_APP_API_BASE_ROOT}/tasks/payment/`,
-          { orderId: task.returnvalue.orderId },
-          { headers: { authorization: `Bearer ${authToken}` } },
-        )
-        .then(({ data: { code, result } }) => {
-          if (code === 'SUCCESS') {
-            refetchAppointmentPlanAdmin()
-            setTaskType('payment')
-          } else {
-            setAppointmentStep('failed')
-            setLoading(false)
-            message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-          }
-        })
-        .catch(error => {
-          setAppointmentStep('failed')
-          setLoading(false)
-          handleError(error)
-        })
-    }
-    if (taskType === 'payment' && authToken && task?.finishedOn) {
-      onSuccess?.()
-      setSuccessTimestamp(new Date())
-      setLoading(false)
-      setAppointmentStep('success')
-    }
-  }, [authToken, formatMessage, taskType, task])
 
   const handleMemberSubmit = () => {
     if (!appointmentValues.member || !appointmentValues.member.id) {
@@ -226,14 +185,16 @@ const AppointmentPlanAppointmentModal: React.FC<
       phone: values.phone,
       email: appointmentValues.member?.email || '',
     })
-      .then(taskId => {
-        setTaskType('order')
-        setTaskId(taskId)
+      .then(() => {
+        onSuccess?.()
+        setSuccessTimestamp(new Date())
+        setLoading(false)
+        setAppointmentStep('success')
       })
       .catch(error => {
         setAppointmentStep('failed')
-        handleError(error)
         setLoading(false)
+        handleError(error)
       })
   }
 
@@ -306,7 +267,11 @@ const AppointmentPlanAppointmentModal: React.FC<
               </div>
               <StyledPlanTitle className="d-flex align-items-center justify-content-between">
                 <div>{appointmentPlanAdmin.title}</div>
-                <PriceLabel listPrice={appointmentPlanAdmin.listPrice} />
+                <PriceLabel
+                  listPrice={appointmentPlanAdmin.listPrice}
+                  currencyId={appointmentPlanAdmin.currencyId}
+                  coinUnit={settings['coin_unit']}
+                />
               </StyledPlanTitle>
               <Divider className="my-3" />
               {appointmentStep === 'period' &&
@@ -388,11 +353,11 @@ const AppointmentPlanAppointmentModal: React.FC<
             <div>
               <StyledStatusBlock>
                 <StatusSuccessIcon />
-                <StyledTitle className="mb-1">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
+                <StyledTitle className="my-2">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
               </StyledStatusBlock>
               <Divider className="my-3" />
               <div>
-                <StyledSubTitle>{appointmentPlanAdmin.title}</StyledSubTitle>
+                <StyledSubTitle isCenter>{appointmentPlanAdmin.title}</StyledSubTitle>
                 <StyledPeriod>
                   {appointmentValues.period.startedAt &&
                     appointmentValues.period.endedAt &&
@@ -425,9 +390,7 @@ const AppointmentPlanAppointmentModal: React.FC<
                 </StyledAppointmentInfo>
                 <StyledAppointmentInfo>
                   <div>{formatMessage(commonMessages.label.orderLogPaymentDate)}</div>
-                  <div>
-                    {moment(task?.finishedOn ? task.timestamp : successTimestamp).format('YYYY-MM-DD HH:mm:ss')}
-                  </div>
+                  <div>{moment(successTimestamp).format('YYYY-MM-DD HH:mm:ss')}</div>
                 </StyledAppointmentInfo>
               </div>
               <StyledButton
