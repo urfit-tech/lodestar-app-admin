@@ -615,7 +615,7 @@ const TableBlock: React.VFC<{
                     username: fieldFilter?.username ? `%${fieldFilter.username}%` : undefined,
                     managerName: fieldFilter?.managerName ? `%${fieldFilter.managerName}%` : undefined,
                     properties: fieldFilter?.properties
-                      ? Object.keys(fieldFilter?.properties).map(() => fieldFilter.properties)
+                      ? Object.entries(fieldFilter?.properties).map(property => ({ [property[0]]: property[1] }))
                       : undefined,
                   },
                   option: {
