@@ -51,9 +51,10 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledSubTitle = styled.div`
+const StyledSubTitle = styled.div<{ isCenter?: boolean }>`
   color: var(--gray-darker);
   font-weight: bold;
+  text-align: ${props => (props.isCenter ? 'center' : 'left')};
 `
 const StyledPlanTitle = styled.div`
   color: var(--gray-darker);
@@ -67,6 +68,7 @@ const StyledPeriodTitle = styled.div`
   letter-spacing: 0.2px;
 `
 const StyledPeriod = styled.div<{ variant?: 'editable' }>`
+  text-align: center;
   font-size: 16px;
   font-weight: 500;
   color: ${props => props.theme['@primary-color']};
@@ -80,7 +82,9 @@ const StyledMeta = styled.div`
   font-size: 12px;
 `
 const StyledStatusBlock = styled.div`
-  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 `
 const StyledAppointmentInfo = styled.div`
   display: flex;
@@ -349,11 +353,11 @@ const AppointmentPlanAppointmentModal: React.FC<
             <div>
               <StyledStatusBlock>
                 <StatusSuccessIcon />
-                <StyledTitle className="mb-1">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
+                <StyledTitle className="my-2">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
               </StyledStatusBlock>
               <Divider className="my-3" />
               <div>
-                <StyledSubTitle>{appointmentPlanAdmin.title}</StyledSubTitle>
+                <StyledSubTitle isCenter>{appointmentPlanAdmin.title}</StyledSubTitle>
                 <StyledPeriod>
                   {appointmentValues.period.startedAt &&
                     appointmentValues.period.endedAt &&

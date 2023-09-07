@@ -685,6 +685,9 @@ export const useMembers = (
     username?: string
     managerName?: string
     managerId?: string
+    properties?: {
+      [propertyId: string]: string | undefined
+    }
   },
 ) => {
   const [loading, setLoading] = useState(false)
@@ -712,6 +715,7 @@ export const useMembers = (
       email: filter?.email ? `%${filter.email}%` : undefined,
       username: filter?.username ? `%${filter.username}%` : undefined,
       managerName: filter?.managerName ? `%${filter.managerName}%` : undefined,
+      properties: filter?.properties ? Object.keys(filter?.properties).map(() => filter.properties) : undefined,
     }),
     [filter],
   )
