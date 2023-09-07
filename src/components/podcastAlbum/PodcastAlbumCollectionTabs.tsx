@@ -23,6 +23,7 @@ const PodcastAlbumCollectionTabs: React.VFC = () => {
       tab: formatMessage(commonMessages.status.published),
       condition: {
         published_at: { _is_null: false },
+        is_deleted: { _eq: false },
       },
     },
     {
@@ -30,6 +31,7 @@ const PodcastAlbumCollectionTabs: React.VFC = () => {
       tab: formatMessage(commonMessages.status.draft),
       condition: {
         published_at: { _is_null: true },
+        is_deleted: { _eq: false },
       },
     },
   ]

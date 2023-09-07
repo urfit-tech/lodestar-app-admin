@@ -24,9 +24,9 @@ const AppBasicAdminPage: React.FC = () => {
         <GlobalOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.appBasicAdmin)}</span>
       </AdminPageTitle>
-      <AppBasicAdminCard className="mb-3"></AppBasicAdminCard>
-      <AppHostAdminCard className="mb-3" title="App Hosts"></AppHostAdminCard>
-      <AppNavAdminCard className="mb-3" title="App Navs"></AppNavAdminCard>
+      <AppBasicAdminCard className="mb-3" />
+      <AppHostAdminCard className="mb-3" title="App Hosts" />
+      <AppNavAdminCard className="mb-3" title={formatMessage(commonMessages.menu.navSettings)} />
     </AdminLayout>
   )
 }

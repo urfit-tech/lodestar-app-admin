@@ -198,9 +198,8 @@ const PhoneCollectionInput: React.FC<{
   return (
     <>
       {value?.map((phone, index) => (
-        <div className="mb-3 position-relative">
+        <div className="mb-3 position-relative" key={index}>
           <Input
-            key={index}
             className={'mr-3 mb-0'}
             value={phone}
             onChange={e => {

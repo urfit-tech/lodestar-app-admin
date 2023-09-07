@@ -36,7 +36,7 @@ const DiscountSelectionCard: React.FC<{
       value={discountType || 'None'}
       onChange={e => onChange && onChange(e.target.value)}
     >
-      <StyledRadio value="None">{formatMessage(checkoutMessages.form.radio.noDiscount)}</StyledRadio>
+      <StyledRadio value="None">{formatMessage(checkoutMessages.form.radio.useCoin)}</StyledRadio>
       <StyledRadio value="Coupon">
         <span>{formatMessage(checkoutMessages.form.radio.useCoupon)}</span>
         {discountType === 'Coupon' && (

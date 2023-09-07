@@ -470,6 +470,12 @@ const pageMessages = {
     import: { id: 'page.SalesPage.import', defaultMessage: '匯入資料' },
     export: { id: 'page.SalesPage.export', defaultMessage: '匯出資料' },
   }),
+  MediaLibraryPage: defineMessages({
+    maxVideoDuration: { id: 'page.MediaLibraryPage.maxVideoDuration', defaultMessage: '影片儲存' },
+    maxVideoWatch: { id: 'page.MediaLibraryPage.maxVideoWatch', defaultMessage: '影片流量' },
+    maxVideoDurationUnit: { id: 'page.MediaLibraryPage.maxVideoDurationUnit', defaultMessage: '分鐘' },
+    maxVideoWatchUnit: { id: 'page.MediaLibraryPage.maxVideoWatchUnit', defaultMessage: '分鐘' },
+  }),
 }
 
 export default pageMessages

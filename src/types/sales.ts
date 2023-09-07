@@ -12,7 +12,7 @@ export type LeadStatus =
   | 'FOLLOWED'
   | 'ANSWERED'
   | 'COMPLETED'
-  
+
 export type Manager = {
   id: string
   avatarUrl: string | null
@@ -28,6 +28,7 @@ export type LeadProps = {
   name: string
   email: string
   phones: string[]
+  notes: string
   categoryNames: string[]
   properties: { id: string; name: string; value: string }[]
   star: number

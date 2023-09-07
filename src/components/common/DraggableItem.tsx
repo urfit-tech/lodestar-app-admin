@@ -1,5 +1,5 @@
 import { DragOutlined } from '@ant-design/icons'
-import React, { HTMLAttributes } from 'react'
+import React, { CSSProperties, HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
 const StyledDraggableItem = styled.div`
@@ -13,6 +13,7 @@ const StyledDraggableItem = styled.div`
 const StyledChildren = styled.div`
   padding: 8px;
   padding-left: 0;
+  width: 100%;
 `
 
 const DraggableItem: React.FC<
@@ -20,11 +21,12 @@ const DraggableItem: React.FC<
     dataId: string
     handlerClassName?: string
     actions?: React.ReactNode[]
+    dragStyle?: CSSProperties
   }
-> = ({ dataId, handlerClassName, children, actions, ...divProps }) => {
+> = ({ dataId, handlerClassName, children, actions, dragStyle, ...divProps }) => {
   return (
     <StyledDraggableItem {...divProps} data-id={dataId}>
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center" style={dragStyle ? dragStyle : {}}>
         <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
         <StyledChildren>{children}</StyledChildren>
       </div>

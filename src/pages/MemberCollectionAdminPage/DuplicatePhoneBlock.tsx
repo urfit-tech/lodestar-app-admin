@@ -1,15 +1,15 @@
-import { Button, Skeleton } from 'antd'
+import Icon from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
-import styled from 'styled-components'
-import hasura from '../../hasura'
-import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
-import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import Icon from '@ant-design/icons'
+import { Button, Skeleton } from 'antd'
+import { flatten } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { flatten } from 'ramda'
+import styled from 'styled-components'
+import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
+import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import pageMessages from '../translation'
 
 const StyledAlertText = styled.div`
@@ -118,6 +118,7 @@ const DuplicatePhoneBlock: React.VFC = () => {
                     <StyledDuplicatedNumberMemberList>
                       {members.map(({ id, name, email }) => (
                         <StyledDuplicatedNumberMemberItemButton
+                          key={id}
                           type="link"
                           onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
                         >
