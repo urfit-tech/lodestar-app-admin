@@ -3,6 +3,7 @@ import {
   CheckSquareOutlined,
   CloseOutlined,
   DeleteOutlined,
+  EditOutlined,
   FileAddOutlined,
   SearchOutlined,
   StarOutlined,
@@ -19,14 +20,14 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { uniq } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMutateMemberNote } from '../../hooks/member'
+import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
@@ -54,13 +55,22 @@ const TableWrapper = styled.div`
     }
   }
 `
+const StyledMemberNote = styled.span`
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
 
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed'
   manager: Manager
   leads: LeadProps[]
-  onRefetch?: () => void
-}> = ({ variant, manager, leads, onRefetch }) => {
+  isLoading: boolean
+  onRefetch: () => void
+}> = ({ variant, manager, leads, onRefetch, isLoading }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -68,26 +78,34 @@ const SalesLeadTable: React.VFC<{
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
+  const { updateMemberProperty } = useMutateMemberProperty()
 
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
-    nameAndEmail?: string
+    nickNameAndEmail?: string
+    fullName?: string
     phone?: string
     lastTaskCategoryName?: string
     leadLevel?: string
     categoryName?: string
     materialName?: string
+    memberNote?: string
     status?: string
   }>({})
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
+  const { properties } = useProperty()
   const [taskModalVisible, setTaskModalVisible] = useState(false)
+  const [editFullNameMemberId, setEditFullNameMemberId] = useState<string>()
+  const [fullNameValue, setFullNameValue] = useState<string>()
+  const [refetchLoading, setRefetchLoading] = useState(false)
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
     null,
   )
+
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
   }
@@ -134,27 +152,66 @@ const SalesLeadTable: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
+  const handleEditFullName = (lead: LeadProps) => {
+    setEditFullNameMemberId(lead.id)
+  }
+
+  const handleFullNameSave = (lead: LeadProps) => {
+    const fullNameProperty = properties.find(property => property.name === '本名')
+    if (!fullNameValue) {
+      setEditFullNameMemberId('')
+    } else {
+      setRefetchLoading(true)
+      updateMemberProperty({
+        variables: {
+          memberProperties: [{ member_id: lead.id, property_id: fullNameProperty?.id, value: fullNameValue }],
+        },
+      })
+        .then(() => {
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch()
+        })
+        .catch(handleError)
+    }
+  }
+
+  useEffect(() => {
+    if (!isLoading) {
+      setRefetchLoading(false)
+      setEditFullNameMemberId('')
+      setFullNameValue('')
+    }
+  }, [isLoading])
+
   const dataSource = leads
-    .filter(
-      v =>
-        (!filters.nameAndEmail ||
-          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
-          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
-        (!filters.categoryName ||
-          v.categoryNames.find(categoryName =>
-            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
-          )) &&
-        (!filters.materialName ||
-          v.properties.find(
-            property =>
-              property.name === '廣告素材' &&
-              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
-          )),
-    )
+    .filter(v => {
+      const { nickNameAndEmail, fullName, phone, categoryName, materialName, memberNote } = filters
+      const { name, email, phones, categoryNames, notes, properties } = v
+      const matchesFilter = (filterValue: string | undefined) => (filterData: string) =>
+        !filterValue || filterData.trim().toLowerCase().includes(filterValue.trim().toLowerCase())
+
+      const nameAndEmailMatch = matchesFilter(nickNameAndEmail)(name + email)
+
+      const fullNameMatch = matchesFilter(fullName)(properties.find(property => property.name === '本名')?.value || '')
+
+      const phoneMatch = matchesFilter(phone)(phones.join(''))
+
+      const categoryNameMatch = matchesFilter(categoryName)(categoryNames.join(''))
+
+      const materialNameMatch = matchesFilter(materialName)(
+        properties.find(property => property.name === '廣告素材')?.value || '',
+      )
+
+      const memberNoteMatch = matchesFilter(memberNote)(notes)
+
+      return (
+        nameAndEmailMatch && fullNameMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
+      )
+    })
     .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
+  const hasFullNameProperty = properties.some(p => p.name === '本名')
 
   const columns: ColumnsType<LeadProps> = [
     {
@@ -230,30 +287,64 @@ const SalesLeadTable: React.VFC<{
       ),
     },
     {
-      key: 'nameAndEmail',
-      dataIndex: 'nameAndEmail',
+      key: 'nickNameAndEmail',
+      dataIndex: 'nickNameAndEmail',
       width: 200,
-      title: formatMessage(salesMessages.studentName),
+      title: formatMessage(salesMessages.memberNickName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
-          nameAndEmail: value,
+          nickNameAndEmail: value,
         }),
       ),
-      render: (nameAndEmail, lead) => {
+      render: (nickNameAndEmail, lead) => {
         const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
         const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         return (
-          <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
+          <a href={`/admin/members/${lead?.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
             <span>
               <Tag color={color}>{leadLevel}</Tag>
-              {lead.name}
+              {lead?.name}
             </span>
-            <small>{lead.email}</small>
+            <small>{lead?.email}</small>
           </a>
         )
       },
     },
+    hasFullNameProperty
+      ? {
+          key: 'fullName',
+          dataIndex: 'fullName',
+          width: 200,
+          title: formatMessage(salesMessages.memberFullName),
+          ...getColumnSearchProps((value?: string) =>
+            setFilters({
+              ...filters,
+              fullName: value,
+            }),
+          ),
+          render: (fullName, lead) => {
+            const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
+            return editFullNameMemberId && editFullNameMemberId === lead.id ? (
+              <Input.Group compact>
+                <Input
+                  style={{ width: 'auto' }}
+                  defaultValue={fullNamePropertyValue}
+                  onChange={e => setFullNameValue(e.target.value.trim())}
+                />
+                <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
+                  {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                </Button>
+              </Input.Group>
+            ) : (
+              <div>
+                <span>{fullNamePropertyValue}</span>
+                {!refetchLoading && <EditOutlined onClick={() => handleEditFullName(lead)} />}
+              </div>
+            )
+          },
+        }
+      : {},
     {
       key: 'phones',
       dataIndex: 'phones',
@@ -313,6 +404,23 @@ const SalesLeadTable: React.VFC<{
           .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
+      key: 'memberNote',
+      dataIndex: 'memberNote',
+      width: 300,
+      title: formatMessage(commonMessages.label.memberNote),
+      ...getColumnSearchProps((value?: string) =>
+        setFilters({
+          ...filters,
+          memberNote: value,
+        }),
+      ),
+      render: (memberNote, lead) => (
+        <StyledMemberNote>
+          <span>{lead.notes}</span>
+        </StyledMemberNote>
+      ),
+    },
+    {
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
@@ -335,6 +443,7 @@ const SalesLeadTable: React.VFC<{
         recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
     },
   ]
+
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
   return (
