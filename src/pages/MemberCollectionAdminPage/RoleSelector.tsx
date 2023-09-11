@@ -50,7 +50,7 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
               }
             >
               {formatMessage(item.intlKey)} (
-              {loading || loadingMemberRoleCount || !item.count ? <Spin className="ml-2" /> : item.count})
+              {loading || loadingMemberRoleCount ? <Spin className="ml-2" /> : item.count})
             </StyledMenuItem>
           ))}
         </Menu>
@@ -63,9 +63,7 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
           ) : (
             formatMessage(pageMessages['*'].allMembers)
           )}
-          {loading ||
-          loadingMemberRoleCount ||
-          !menu.filter(item => item.role === (fieldFilter.role || null))[0].count ? (
+          {loading || loadingMemberRoleCount ? (
             <Spin className="ml-2" />
           ) : (
             ` (${menu.filter(item => item.role === (fieldFilter.role || null))[0].count})`

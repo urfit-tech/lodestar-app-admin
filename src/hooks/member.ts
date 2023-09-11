@@ -22,6 +22,7 @@ import {
 import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
+import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -652,17 +653,17 @@ export const useMemberRoleCount = (
     },
     {
       role: 'app-owner',
-      count: data?.member.filter(v => v.role === 'app-owner').length || null,
+      count: data?.member.filter(v => v.role === 'app-owner').length || 0,
       intlKey: commonMessages.label.appOwner,
     },
     {
       role: 'content-creator',
-      count: data?.member.filter(v => v.role === 'content-creator').length || null,
+      count: data?.member.filter(v => v.role === 'content-creator').length || 0,
       intlKey: commonMessages.label.contentCreator,
     },
     {
       role: 'general-member',
-      count: data?.member.filter(v => v.role === 'general-member').length || null,
+      count: data?.member.filter(v => v.role === 'general-member').length || 0,
       intlKey: commonMessages.label.generalMember,
     },
   ]
