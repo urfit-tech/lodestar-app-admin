@@ -21,7 +21,8 @@ import {
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -652,17 +653,17 @@ export const useMemberRoleCount = (
     },
     {
       role: 'app-owner',
-      count: data?.member.filter(v => v.role === 'app-owner').length || null,
+      count: data?.member.filter(v => v.role === 'app-owner').length || 0,
       intlKey: commonMessages.label.appOwner,
     },
     {
       role: 'content-creator',
-      count: data?.member.filter(v => v.role === 'content-creator').length || null,
+      count: data?.member.filter(v => v.role === 'content-creator').length || 0,
       intlKey: commonMessages.label.contentCreator,
     },
     {
       role: 'general-member',
-      count: data?.member.filter(v => v.role === 'general-member').length || null,
+      count: data?.member.filter(v => v.role === 'general-member').length || 0,
       intlKey: commonMessages.label.generalMember,
     },
   ]
@@ -675,21 +676,7 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMembers = (
-  authToken: string,
-  limit: number,
-  filter?: {
-    role?: string
-    name?: string
-    email?: string
-    username?: string
-    managerName?: string
-    managerId?: string
-    properties?: {
-      [propertyId: string]: string | undefined
-    }
-  },
-) => {
+export const useMembers = (authToken: string, limit: number, filter?: FiledFilter) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<any>('')
   const [members, setMembers] = useState<
@@ -708,35 +695,47 @@ export const useMembers = (
   const [prevToken, setPrevToken] = useState<string | null>(null)
   const [nextToken, setNextToken] = useState<string | null>(null)
 
-  const condition = useMemo(
-    () => ({
-      role: filter?.role ? filter.role : undefined,
-      name: filter?.name ? `%${filter.name}%` : undefined,
-      email: filter?.email ? `%${filter.email}%` : undefined,
-      username: filter?.username ? `%${filter.username}%` : undefined,
-      managerName: filter?.managerName ? `%${filter.managerName}%` : undefined,
-      properties: filter?.properties
-        ? Object.entries(filter?.properties).map(property => ({ [property[0]]: property[1] }))
-        : undefined,
-    }),
-    [filter],
-  )
+  const fetchMembers = async (
+    filter: FiledFilter | undefined,
+    option: {
+      limit?: number
+      nextToken?: string | null
+    },
+  ) => {
+    const payload = {
+      condition: {
+        role: filter?.role ? filter.role : undefined,
+        name: filter?.name ? `%${filter.name}%` : undefined,
+        email: filter?.email ? `%${filter.email}%` : undefined,
+        username: filter?.username ? `%${filter.username}%` : undefined,
+        managerName: filter?.managerName ? `%${filter.managerName}%` : undefined,
+        phone: filter?.phone ? `%${filter.phone}%` : undefined,
+        tag: filter?.tag ? `%${filter.tag}%` : undefined,
+        category: filter?.category ? `%${filter.category}%` : undefined,
+        permissionGroup: filter?.permissionGroup ? `${filter.permissionGroup}` : undefined,
+        properties: filter?.properties
+          ? Object.entries(filter?.properties).map(([key, value]) => ({ [key]: value }))
+          : undefined,
+      },
+      option,
+    }
+    const { data: res } = await axios.post<ResponseMembers>(
+      `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
+      },
+    )
+    return res
+  }
+
   useEffect(() => {
     setLoading(true)
     ;(async () => {
       try {
-        const { data: res } = await axios.post<ResponseMembers>(
-          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
-          {
-            condition,
-            option: {
-              limit,
-            },
-          },
-          {
-            headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
-          },
-        )
+        const res = await fetchMembers(filter, {
+          limit,
+        })
         setMembers(() =>
           res.data.map(v => ({
             id: v.id,
@@ -759,12 +758,13 @@ export const useMembers = (
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authToken, limit, JSON.stringify(condition)])
+  }, [authToken, limit, JSON.stringify(filter)])
 
   return {
     loading,
     error,
     members,
+    fetchMembers,
     prevToken,
     nextToken,
   }
