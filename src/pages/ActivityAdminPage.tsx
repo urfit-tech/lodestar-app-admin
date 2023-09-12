@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import ActivityBasicForm from '../components/activity/ActivityBasicForm'
 import ActivityIntroductionForm from '../components/activity/ActivityIntroductionForm'
+import ActivityOrganizerCollectionBlock from '../components/activity/ActivityOrganizerCollectionBlock'
 import ActivityPublishAdminBlock from '../components/activity/ActivityPublishAdminBlock'
 import ActivitySessionsAdminBlock from '../components/activity/ActivitySessionsAdminBlock'
 import ActivityTicketsAdminBlock from '../components/activity/ActivityTicketsAdminBlock'
@@ -28,6 +29,7 @@ const messages = defineMessages({
   activityIntroduction: { id: 'activity.label.activityIntroduction', defaultMessage: '活動介紹' },
   sessionAdmin: { id: 'activity.label.sessionAdmin', defaultMessage: '場次管理' },
   publishSettings: { id: 'activity.label.publishSettings', defaultMessage: '發佈設定' },
+  roleAdmin: { id: 'activity.label.roleAdmin', defaultMessage: '身份管理' },
 })
 
 const ActivityAdminPage: React.FC = () => {
@@ -95,6 +97,16 @@ const ActivityAdminPage: React.FC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(activityMessages.label.ticketPlan)}</AdminPaneTitle>
                 <ActivityTicketsAdminBlock activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
+              </div>
+            </Tabs.TabPane>
+
+            <Tabs.TabPane key="roles" tab={formatMessage(messages.roleAdmin)}>
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+                <AdminBlock>
+                  <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.label.organizer)}</AdminBlockTitle>
+                  <ActivityOrganizerCollectionBlock activity={activityAdmin} onRefetch={refetchActivityAdmin} />
+                </AdminBlock>
               </div>
             </Tabs.TabPane>
 
