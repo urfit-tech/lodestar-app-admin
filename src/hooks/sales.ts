@@ -7,6 +7,7 @@ import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
@@ -151,6 +152,7 @@ export const useSales = (salesId: string) => {
 }
 
 export const useManagerLeads = (manager: Manager) => {
+  const { id: appId } = useApp()
   const [temporarySalesLeadMemberData, setTemporarySalesLeadMemberData] = useState<
     hasura.GET_SALES_LEAD_MEMBER_DATA | undefined
   >(undefined)
@@ -159,8 +161,8 @@ export const useManagerLeads = (manager: Manager) => {
     error: errorMembers,
     loading: loadingMembers,
     refetch: refetchMembers,
-  } = useQuery<hasura.GET_SALES_LEAD_MEMBERS, hasura.GET_SALES_LEAD_MEMBERSVariables>(GET_SALES_LEAD_MEMBERS, {
-    variables: { managerId: manager.id },
+  } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
+    variables: { managerId: manager.id, appId },
   })
 
   const {
@@ -182,7 +184,7 @@ export const useManagerLeads = (manager: Manager) => {
       setTemporarySalesLeadMemberData(salesLeadMemberData)
     }
   }, [salesLeadMemberData])
-  const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS['member'][number] | null): LeadProps | null => {
+  const convertToLead = (v: hasura.GetSalesLeadMembers['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
@@ -223,6 +225,7 @@ export const useManagerLeads = (manager: Manager) => {
       email: v.email,
       createdAt: moment(v.created_at).toDate(),
       phones: v.member_phones.map(_v => _v.phone),
+      notes: v.member_notes.map(_v => _v.description)[0] || '',
       categoryNames:
         temporarySalesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) ||
         [],
@@ -301,9 +304,11 @@ const GET_SALES_LEAD_MEMBER_DATA = gql`
     }
   }
 `
-const GET_SALES_LEAD_MEMBERS = gql`
-  query GET_SALES_LEAD_MEMBERS($managerId: String!) {
-    member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
+const GetSalesLeadMembers = gql`
+  query GetSalesLeadMembers($appId: String!, $managerId: String!) {
+    member(
+      where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }
+    ) {
       id
       name
       email
@@ -320,6 +325,9 @@ const GET_SALES_LEAD_MEMBERS = gql`
       last_member_note_answered
       member_phones {
         phone
+      }
+      member_notes(order_by: { created_at: desc }, where: { type: { _is_null: true } }) {
+        description
       }
     }
   }
