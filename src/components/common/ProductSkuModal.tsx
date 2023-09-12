@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError, notEmpty } from '../../helpers'
+import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProductChannelInfo, useUpdateProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
@@ -149,11 +149,11 @@ const ProductSkuModal: React.FC<
                     {programPlan.program.title} - {programPlan.title}
                   </Link>
                 ),
-                channelSku: `${channel?.app_channel.name}:${channel?.channel_sku}`,
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
-          
+
           productTitleData.program_package_plan.forEach(programPackagePlan => {
             const channel = productChannel.find(v => v.product_id.includes(programPackagePlan.id))
             errors.push({
@@ -168,7 +168,7 @@ const ProductSkuModal: React.FC<
                     {programPackagePlan.program_package.title} - {programPackagePlan.title}
                   </Link>
                 ),
-                channelSku: `${channel?.app_channel.name}:${channel?.channel_sku}`,
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -182,7 +182,7 @@ const ProductSkuModal: React.FC<
                     {projectPlan.project.title} - {projectPlan.title}
                   </Link>
                 ),
-                channelSku: `${channel?.app_channel.name}:${channel?.channel_sku}`,
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -196,7 +196,7 @@ const ProductSkuModal: React.FC<
                     {activityTicket.activity.title} - {activityTicket.title}
                   </Link>
                 ),
-                channelSku: `${channel?.app_channel.name}:${channel?.channel_sku}`,
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -235,7 +235,9 @@ const ProductSkuModal: React.FC<
             refetchProduct()
             refetchProductChannelInfo()
           })
-          .catch(handleError)
+          .catch(() =>
+            message.error(formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated)),
+          )
       })
       .catch(() => {})
       .finally(() => setLoading(false))

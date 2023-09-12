@@ -37,6 +37,10 @@ const commonMessages = {
       id: 'common.ProductSkuModal.productChannelSkuDuplicated',
       defaultMessage: '通路料號 {channelSku} 與「{productName}」重複，請重新設定',
     },
+    productChannelUpdateError: {
+      id: 'common.ProductSkuModal.productChannelUpdateError',
+      defaultMessage: '更新通路料號發生錯誤，請重新設定。',
+    },
   }),
   UnAuthCover: defineMessages({
     unAuth: { id: 'common.UnAuthCover.unAuth', defaultMessage: '無此權限' },
