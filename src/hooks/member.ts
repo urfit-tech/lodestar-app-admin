@@ -714,7 +714,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FiledFilte
         category: filter?.category ? `%${filter.category}%` : undefined,
         permissionGroup: filter?.permissionGroup ? `${filter.permissionGroup}` : undefined,
         properties: filter?.properties
-          ? Object.entries(filter?.properties).map(([key, value]) => ({ [key]: value }))
+          ? Object.entries(filter?.properties).map(([key, value]) => ({ [key]: `%${value}%` }))
           : undefined,
       },
       option,

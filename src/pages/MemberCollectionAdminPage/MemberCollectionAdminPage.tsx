@@ -385,7 +385,7 @@ const TableBlock: React.VFC<{
 
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `%${value}%` : undefined })
+      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `${value}` : undefined })
       onFieldFilterChange?.({
         ...fieldFilter,
         properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
