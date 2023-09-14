@@ -2,18 +2,23 @@ import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import hasura from '../hasura'
-import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../types/appointment'
+import {
+  AppointmentPlanAdminProps,
+  MeetGenerationMethod,
+  ReservationType,
+  AppointmentPeriodCardProps,
+  AppointmentPeriodPlanProps,
+} from '../types/appointment'
 import { PeriodType } from '../types/general'
 
-export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
+export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
-    hasura.GET_APPOINTMENT_PLAN_ADMIN,
-    hasura.GET_APPOINTMENT_PLAN_ADMINVariables
+    hasura.GetAppointmentPlanAdmin,
+    hasura.GetAppointmentPlanAdminVariables
   >(
     gql`
-      query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!, $now: timestamptz) {
+      query GetAppointmentPlanAdmin($appointmentPlanId: uuid!, $now: timestamptz, $targetMemberId: String) {
         appointment_plan_by_pk(id: $appointmentPlanId) {
           id
           title
@@ -37,6 +42,12 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
             interval_type
             excludes
           }
+          appointment_enrollments(where: { member_id: { _eq: $targetMemberId } }) {
+            member_id
+            appointment_plan_id
+            started_at
+            canceled_at
+          }
           appointment_periods(where: { started_at: { _gt: $now } }, order_by: [{ started_at: asc }]) {
             appointment_schedule_id
             started_at
@@ -50,6 +61,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
     {
       variables: {
         appointmentPlanId,
+        targetMemberId,
         now: moment().startOf('minute').toDate(),
       },
     },
@@ -85,6 +97,17 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         endedAt: new Date(period.ended_at),
         isEnrolled: period.booked > 0,
         isExcluded: !period.available,
+        isBookedReachLimit: data?.appointment_plan_by_pk?.capacity
+          ? data.appointment_plan_by_pk.capacity !== -1 && period.booked >= data.appointment_plan_by_pk.capacity
+          : false,
+        booked: period.booked,
+        targetMemberBooked: data.appointment_plan_by_pk?.appointment_enrollments.some(
+          enrollment =>
+            enrollment.member_id === targetMemberId &&
+            enrollment.appointment_plan_id === data.appointment_plan_by_pk?.id &&
+            enrollment.started_at === period.started_at &&
+            !enrollment.canceled_at,
+        ),
       })),
       isPublished: !!data.appointment_plan_by_pk.published_at,
       supportLocales: data?.appointment_plan_by_pk.support_locales || [],
@@ -140,7 +163,7 @@ export const useAppointmentEnrollmentCollection = (
 ) => {
   const limit = 10
 
-  const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] =
+  const condition: hasura.GetAppointmentEnrollmentsVariables['condition'] =
     tabKey === 'scheduled'
       ? {
           appointment_plan: {
@@ -175,7 +198,7 @@ export const useAppointmentEnrollmentCollection = (
         }
       : {}
 
-  const sort: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
+  const sort: hasura.GetAppointmentEnrollmentsVariables['sort'] = [
     tabKey === 'scheduled'
       ? {
           started_at: 'asc' as hasura.order_by,
@@ -190,11 +213,11 @@ export const useAppointmentEnrollmentCollection = (
   ]
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_APPOINTMENT_ENROLLMENTS,
-    hasura.GET_APPOINTMENT_ENROLLMENTSVariables
+    hasura.GetAppointmentEnrollments,
+    hasura.GetAppointmentEnrollmentsVariables
   >(
     gql`
-      query GET_APPOINTMENT_ENROLLMENTS(
+      query GetAppointmentEnrollments(
         $condition: appointment_enrollment_bool_exp
         $sort: [appointment_enrollment_order_by!]
         $limit: Int!
@@ -212,7 +235,10 @@ export const useAppointmentEnrollmentCollection = (
             creator {
               id
               name
+              picture_url
             }
+            reschedule_amount
+            reschedule_type
           }
           member {
             id
@@ -257,20 +283,27 @@ export const useAppointmentEnrollmentCollection = (
   const appointmentEnrollments: AppointmentPeriodCardProps[] =
     data?.appointment_enrollment.map(v => ({
       id: v.id,
-      avatarUrl: v.member?.picture_url || null,
       member: {
         id: v.member?.id || '',
         name: v.member_name || '',
         email: v.member_email || null,
         phone: v.member_phone || null,
+        avatarUrl: v.member?.picture_url || null,
       },
-      appointmentPlanTitle: v.appointment_plan?.title || '',
+      appointmentPlan: {
+        id: v.appointment_plan?.id,
+        title: v.appointment_plan?.title,
+        duration: v.appointment_plan?.duration,
+        rescheduleAmount: v.appointment_plan?.reschedule_amount,
+        rescheduleType: v.appointment_plan?.reschedule_type,
+      } as AppointmentPeriodPlanProps,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),
       canceledAt: v.canceled_at ? new Date(v.canceled_at) : null,
       creator: {
         id: v.appointment_plan?.creator?.id || '',
         name: v.appointment_plan?.creator?.name || '',
+        avatarUrl: v.appointment_plan?.creator?.picture_url || '',
       },
       orderProduct: { id: v.order_product_id, options: v.order_product?.options },
       meetGenerationMethod: (v.appointment_plan?.meet_generation_method as MeetGenerationMethod) || 'auto',
@@ -350,6 +383,48 @@ export const useCancelAppointment = (orderProductId: string) => {
         data: {
           appointmentCanceledAt: new Date(),
           appointmentCanceledReason: reason,
+        },
+      },
+    })
+}
+
+export const useUpdateOrderProductOptions = (orderProductId: string, options: { rescheduleLog: [] }) => {
+  const [updateOrderProductOptions] = useMutation<
+    hasura.UpdateOrderProductOptions,
+    hasura.UpdateOrderProductOptionsVariables
+  >(gql`
+    mutation UpdateOrderProductOptions(
+      $orderProductId: uuid!
+      $startedAt: timestamptz!
+      $endedAt: timestamptz!
+      $data: jsonb
+    ) {
+      update_order_product(
+        where: { id: { _eq: $orderProductId } }
+        _set: { started_at: $startedAt, ended_at: $endedAt, updated_at: "NOW()", options: $data }
+      ) {
+        affected_rows
+      }
+    }
+  `)
+
+  return (startedAt: Date | null, endedAt: Date | null, originStartedAt: Date | null, currentMemberId: string) =>
+    updateOrderProductOptions({
+      variables: {
+        orderProductId,
+        startedAt,
+        endedAt,
+        data: {
+          ...options,
+          rescheduleLog: [
+            ...options.rescheduleLog,
+            {
+              rescheduledAt: new Date(),
+              rescheduleMemberId: currentMemberId,
+              originScheduledDatetime: originStartedAt,
+              targetRescheduleDatetime: startedAt,
+            },
+          ],
         },
       },
     })
