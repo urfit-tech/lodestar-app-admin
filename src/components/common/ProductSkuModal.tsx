@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError, notEmpty } from '../../helpers'
+import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProductChannelInfo, useUpdateProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
@@ -102,50 +102,9 @@ const ProductSkuModal: React.FC<
   const handleSubmit = (callback?: { onSuccess?: () => void }) => {
     form
       .validateFields()
-      .then(() => {
+      .then(async () => {
         setLoading(true)
         const formValues = form.getFieldsValue()
-        const checkChannelSkuDuplicate = () => {
-          const channelSkuMapList: [string, string][] = []
-          Object.entries(formValues).forEach(v => v[0] !== 'sku' && channelSkuMapList.push(v))
-
-          const validationObject: Record<string, Array<string>> = {}
-          for (const channelSkuMap of channelSkuMapList) {
-            const [channelId, channelSku] = channelSkuMap
-            validationObject[channelSku]
-              ? validationObject[channelSku].push(channelId)
-              : (validationObject[channelSku] = [channelId])
-          }
-
-          let duplicatedChannelIds: string[] = []
-          for (const key in validationObject) {
-            const channelIds = validationObject[key]
-            if (channelIds.length > 1) {
-              duplicatedChannelIds = duplicatedChannelIds.concat(channelIds)
-            }
-          }
-
-          return duplicatedChannelIds
-        }
-
-        const duplicatedChannelIds = checkChannelSkuDuplicate()
-        //FIXME: set input border color
-        // duplicatedChannelIds.forEach(channelId => {
-        //   form.getFieldInstance(channelId).style.borderColor = '#ff7d62'
-        // })
-
-        if (duplicatedChannelIds.length > 0) {
-          setSkuErrors([
-            {
-              type: SkuErrorType.MESSAGE,
-              message: formatMessage(componentCommonMessages.ProductSkuModal.channelSkuDuplicated),
-            },
-          ])
-          return Promise.reject(duplicatedChannelIds)
-        }
-        return formValues
-      })
-      .then(async formValues => {
         const { data: channelSkuData } = await client.query<
           hasura.GET_USED_CHANNEL_SKU,
           hasura.GET_USED_CHANNEL_SKUVariables
@@ -158,7 +117,14 @@ const ProductSkuModal: React.FC<
               .filter(notEmpty),
           },
         })
-        const productChannel = channelSkuData.product_channel.filter(v => v.product_id !== productId)
+
+        const productChannel = Object.entries(formValues)
+          .map(([channelId, channelSku]) =>
+            channelSkuData.product_channel.filter(pc => channelId === pc.channel_id && pc.channel_sku === channelSku),
+          )
+          .flat()
+          .filter(v => v.product_id !== productId)
+
         if (productChannel.length > 0) {
           //FIXME: set input border color
           const duplicatedTargets = productChannel.map(v => v.product_id.split('_')[1]).filter(notEmpty)
@@ -183,10 +149,11 @@ const ProductSkuModal: React.FC<
                     {programPlan.program.title} - {programPlan.title}
                   </Link>
                 ),
-                channelSku: channel?.channel_sku || '',
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
+
           productTitleData.program_package_plan.forEach(programPackagePlan => {
             const channel = productChannel.find(v => v.product_id.includes(programPackagePlan.id))
             errors.push({
@@ -201,7 +168,7 @@ const ProductSkuModal: React.FC<
                     {programPackagePlan.program_package.title} - {programPackagePlan.title}
                   </Link>
                 ),
-                channelSku: channel?.channel_sku || '',
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -215,7 +182,7 @@ const ProductSkuModal: React.FC<
                     {projectPlan.project.title} - {projectPlan.title}
                   </Link>
                 ),
-                channelSku: channel?.channel_sku || '',
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -229,7 +196,7 @@ const ProductSkuModal: React.FC<
                     {activityTicket.activity.title} - {activityTicket.title}
                   </Link>
                 ),
-                channelSku: channel?.channel_sku || '',
+                channelSku: ` ${channel?.app_channel.name} - ${channel?.channel_sku}`,
               }),
             })
           })
@@ -268,7 +235,9 @@ const ProductSkuModal: React.FC<
             refetchProduct()
             refetchProductChannelInfo()
           })
-          .catch(handleError)
+          .catch(() =>
+            message.error(formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated)),
+          )
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -425,6 +394,9 @@ const GET_USED_CHANNEL_SKU = gql`
       product_id
       channel_id
       channel_sku
+      app_channel {
+        name
+      }
     }
   }
 `
