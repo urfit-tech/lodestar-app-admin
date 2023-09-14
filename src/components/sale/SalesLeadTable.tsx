@@ -24,7 +24,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { call, handleError } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
@@ -375,36 +375,6 @@ const SalesLeadTable: React.VFC<{
           </div>
         )
       },
-    },
-    {
-      key: 'phones',
-      dataIndex: 'phones',
-      width: 100,
-      title: formatMessage(salesMessages.tel),
-      render: (phones: string[]) =>
-        phones.map((phone, idx) => (
-          <a
-            key={idx}
-            href="#!"
-            className="m-0 mr-1 cursor-pointer"
-            onClick={() => {
-              call({
-                appId,
-                authToken,
-                phone,
-                salesTelephone: manager.telephone,
-              })
-            }}
-          >
-            {phone}
-          </a>
-        )),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          phone: value,
-        }),
-      ),
     },
     {
       key: 'categoryNames',
