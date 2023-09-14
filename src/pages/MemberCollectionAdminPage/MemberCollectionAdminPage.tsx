@@ -2,7 +2,6 @@ import Icon, { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Popover, Spin, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
-import axios from 'axios'
 import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
@@ -149,18 +148,7 @@ const MemberCollectionBlock: React.VFC<
   const { properties } = useProperty()
 
   const limit = 10
-  const {
-    loading: loadingMembers,
-    members,
-    nextToken,
-  } = useMembers(authToken, limit, {
-    role: fieldFilter?.role ? fieldFilter.role : undefined,
-    name: fieldFilter?.name ? fieldFilter.name : undefined,
-    email: fieldFilter?.email ? fieldFilter.email : undefined,
-    username: fieldFilter?.username ? fieldFilter.username : undefined,
-    managerName: fieldFilter?.managerName ? fieldFilter.managerName : undefined,
-    properties: fieldFilter?.properties ? fieldFilter.properties : undefined,
-  })
+  const { loading: loadingMembers, members, fetchMembers, nextToken } = useMembers(authToken, limit, fieldFilter)
 
   const [currentMembers, setCurrentMembers] = useState<
     {
@@ -295,6 +283,7 @@ const MemberCollectionBlock: React.VFC<
           fieldFilter={fieldFilter}
           authToken={authToken}
           properties={properties}
+          fetchMembers={fetchMembers}
           onFieldFilterChange={(filter: FiledFilter) => setFieldFilter(filter)}
           onSortOrderChange={(createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) =>
             setSortOrder({ createdAt, loginedAt, consumption })
@@ -343,6 +332,13 @@ const TableBlock: React.VFC<{
     isEditable: boolean
     isRequired: boolean
   }[]
+  fetchMembers: (
+    filter: FiledFilter | undefined,
+    option: {
+      limit?: number
+      nextToken?: string | null
+    },
+  ) => Promise<ResponseMembers>
   onFieldFilterChange?: (filter: FiledFilter) => void
   onSortOrderChange?: (createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) => void
   onCurrentMembersChange?: (
@@ -367,6 +363,7 @@ const TableBlock: React.VFC<{
   fieldFilter,
   authToken,
   properties,
+  fetchMembers,
   onFieldFilterChange,
   onSortOrderChange,
   onCurrentMembersChange,
@@ -388,7 +385,7 @@ const TableBlock: React.VFC<{
 
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `%${value}%` : undefined })
+      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `${value}` : undefined })
       onFieldFilterChange?.({
         ...fieldFilter,
         properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
@@ -484,7 +481,7 @@ const TableBlock: React.VFC<{
       dataIndex: 'phone',
       key: 'phone',
       render: (text, record, index) => (loadingMemberPhones ? <Spin /> : record.phones.join(', ')),
-      // ...getColumnSearchProps('phone'),
+      ...getColumnSearchProps('phone'),
     },
     {
       title: formatMessage(commonMessages.label.account),
@@ -519,7 +516,7 @@ const TableBlock: React.VFC<{
       dataIndex: 'categories',
       key: 'categories',
       render: (text, record, index) => record.categories.map(category => category.name).join(', '),
-      // ...getColumnSearchProps('category'),
+      ...getColumnSearchProps('category'),
     },
     {
       title: formatMessage(commonMessages.label.tags),
@@ -537,7 +534,7 @@ const TableBlock: React.VFC<{
             ))}
           </>
         ),
-      // ...getColumnSearchProps('tag'),
+      ...getColumnSearchProps('tag'),
     },
     {
       title: formatMessage(memberMessages.label.manager),
@@ -563,9 +560,7 @@ const TableBlock: React.VFC<{
   ]
 
   useEffect(() => {
-    if (nextToken) {
-      setCurrentNextToken(nextToken)
-    }
+    setCurrentNextToken(nextToken)
   }, [nextToken])
 
   return (
@@ -599,35 +594,14 @@ const TableBlock: React.VFC<{
             loadingManagerInfo ||
             loadingMemberOrderProductPrice ||
             loadingMemberTags ||
-            loadingMemberProperties
+            loadingMemberProperties ||
+            !currentNextToken
           }
           loading={loading}
           onClick={async () => {
             setLoading(true)
-            await axios
-              .post<ResponseMembers>(
-                `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
-                {
-                  condition: {
-                    role: fieldFilter?.role ? fieldFilter.role : undefined,
-                    name: fieldFilter?.name ? `%${fieldFilter.name}%` : undefined,
-                    email: fieldFilter?.email ? `%${fieldFilter.email}%` : undefined,
-                    username: fieldFilter?.username ? `%${fieldFilter.username}%` : undefined,
-                    managerName: fieldFilter?.managerName ? `%${fieldFilter.managerName}%` : undefined,
-                    properties: fieldFilter?.properties
-                      ? Object.entries(fieldFilter?.properties).map(property => ({ [property[0]]: property[1] }))
-                      : undefined,
-                  },
-                  option: {
-                    limit,
-                    nextToken: currentNextToken,
-                  },
-                },
-                {
-                  headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
-                },
-              )
-              .then(({ data: res }) => {
+            await fetchMembers(fieldFilter, { limit, nextToken: currentNextToken })
+              .then(res => {
                 setCurrentNextToken(() => res.cursor.afterCursor)
                 onCurrentMembersChange?.([
                   ...currentMembers,

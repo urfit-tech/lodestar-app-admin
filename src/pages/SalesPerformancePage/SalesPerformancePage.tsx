@@ -62,12 +62,19 @@ const SalesPerformancePage: React.VFC = () => {
   const [activeDepartment, setActiveDepartment] = useState<string>()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
   const { currentMemberId, permissions, currentUserRole } = useAuth()
+  const { currentMemberDepartment, currentMemberDepartmentLoading } = useCurrentMemberDepartment(currentMemberId || '')
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
   }, [currentMemberId])
 
-  if (!permissions.SALES_PERFORMANCE_ADMIN && !permissions.SALES_CALL_ADMIN) {
+  useEffect(() => {
+    if (!currentMemberDepartmentLoading) {
+      currentMemberDepartment && setActiveDepartment(currentMemberDepartment)
+    }
+  }, [currentMemberDepartmentLoading])
+
+  if (!permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN && !permissions.SALES_CALL_ADMIN) {
     return <ForbiddenPage />
   }
 
@@ -93,11 +100,14 @@ const SalesPerformancePage: React.VFC = () => {
               optionFilterProp="children"
               onChange={setActiveManagerId}
             >
-              {managers?.map(manager => (
-                <Select.Option key={manager?.id} value={manager?.id}>
-                  {manager?.name}
-                </Select.Option>
-              ))}
+              {managers
+                .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+                .filter(manager => (activeGroupName === undefined ? true : manager.groupName === activeGroupName))
+                .map(manager => (
+                  <Select.Option key={manager?.id} value={manager?.id}>
+                    {manager?.name}
+                  </Select.Option>
+                ))}
             </Select>
           )}
 
@@ -109,16 +119,21 @@ const SalesPerformancePage: React.VFC = () => {
             placeholder="組別"
             value={activeGroupName}
             optionFilterProp="children"
-            onChange={setActiveGroupName}
+            onChange={v => {
+              setActiveGroupName(v)
+              setActiveManagerId(undefined)
+            }}
           >
-            {uniqBy(manager => manager.groupName, managers || []).map(manager => (
-              <Select.Option key={manager.id} value={manager.groupName}>
-                {manager.groupName}
-              </Select.Option>
-            ))}
+            {uniqBy(manager => manager.groupName, managers || [])
+              .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+              .map(manager => (
+                <Select.Option key={manager.id} value={manager.groupName}>
+                  {manager.groupName}
+                </Select.Option>
+              ))}
           </Select>
 
-          {currentUserRole === 'app-owner' && (
+          {(currentUserRole === 'app-owner' || permissions.SALES_PERFORMANCE_ADMIN) && (
             <Select
               className="mr-3"
               style={{ width: 200 }}
@@ -127,7 +142,11 @@ const SalesPerformancePage: React.VFC = () => {
               placeholder="機構"
               value={activeDepartment}
               optionFilterProp="children"
-              onChange={setActiveDepartment}
+              onChange={v => {
+                setActiveDepartment(v)
+                setActiveGroupName(undefined)
+                setActiveManagerId(undefined)
+              }}
             >
               {uniqBy(manager => manager.department, managers || []).map(manager => (
                 <Select.Option key={manager.id} value={manager.department}>
@@ -433,6 +452,31 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
   )
 
   return { loading, memberContracts, managers }
+}
+
+const useCurrentMemberDepartment = (memberId: string) => {
+  const { data, loading } = useQuery<
+    hasura.GET_CURRENT_MEMBER_DEPARTMENT,
+    hasura.GET_CURRENT_MEMBER_DEPARTMENTVariables
+  >(
+    gql`
+      query GET_CURRENT_MEMBER_DEPARTMENT($memberId: String!) {
+        member_property(where: { member_id: { _eq: $memberId }, property: { name: { _eq: "機構" } } }) {
+          id
+          value
+        }
+      }
+    `,
+    {
+      variables: {
+        memberId,
+      },
+    },
+  )
+  return {
+    currentMemberDepartment: data?.member_property[0]?.value,
+    currentMemberDepartmentLoading: loading,
+  }
 }
 
 export default SalesPerformancePage

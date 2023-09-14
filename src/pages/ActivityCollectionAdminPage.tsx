@@ -1,6 +1,5 @@
 import Icon from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -39,6 +38,8 @@ const ActivityCollectionAdminPage: React.FC = () => {
           <div className="mb-5">
             <ProductCreationModal
               categoryClassType="activity"
+              creatorAppellation={formatMessage(commonMessages.label.selectOrganizer)}
+              allowedPermissions={['ACTIVITY_NORMAL', 'ACTIVITY_ADMIN']}
               withCreatorSelector={currentUserRole === 'app-owner'}
               onCreate={({ title, creatorId, categoryIds }) =>
                 createActivity({
