@@ -2,7 +2,7 @@ import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -67,11 +67,7 @@ const AppointmentPlanBasicForm: React.FC<{
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [isReschedule, setIsReschedule] = useState<boolean>(false)
-
-  useEffect(() => {
-    setIsReschedule(appointmentPlanAdmin?.rescheduleAmount !== -1)
-  }, [appointmentPlanAdmin?.rescheduleAmount])
+  const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
   const [updateAppointmentPlan] = useMutation<hasura.UpdateAppointmentPlan, hasura.UpdateAppointmentPlanVariables>(
     UpdateAppointmentPlan,
