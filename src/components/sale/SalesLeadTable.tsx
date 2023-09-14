@@ -55,7 +55,6 @@ const TableWrapper = styled.div`
     }
   }
 `
-
 const StyledMemberNote = styled.span`
   white-space: pre-wrap;
   display: -webkit-box;
@@ -105,6 +104,7 @@ const SalesLeadTable: React.VFC<{
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
     null,
   )
+
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
   }
@@ -210,6 +210,7 @@ const SalesLeadTable: React.VFC<{
     .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
+  const hasFullNameProperty = properties.some(p => p.name === '本名')
 
   const columns: ColumnsType<LeadProps> = [
     {
@@ -309,6 +310,40 @@ const SalesLeadTable: React.VFC<{
         )
       },
     },
+    hasFullNameProperty
+      ? {
+          key: 'fullName',
+          dataIndex: 'fullName',
+          width: 200,
+          title: formatMessage(salesMessages.memberFullName),
+          ...getColumnSearchProps((value?: string) =>
+            setFilters({
+              ...filters,
+              fullName: value,
+            }),
+          ),
+          render: (fullName, lead) => {
+            const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
+            return editFullNameMemberId && editFullNameMemberId === lead.id ? (
+              <Input.Group compact>
+                <Input
+                  style={{ width: 'auto' }}
+                  defaultValue={fullNamePropertyValue}
+                  onChange={e => setFullNameValue(e.target.value.trim())}
+                />
+                <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
+                  {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                </Button>
+              </Input.Group>
+            ) : (
+              <div>
+                <span>{fullNamePropertyValue}</span>
+                {!refetchLoading && <EditOutlined onClick={() => handleEditFullName(lead)} />}
+              </div>
+            )
+          },
+        }
+      : {},
     {
       key: 'fullName',
       dataIndex: 'fullName',
@@ -439,6 +474,7 @@ const SalesLeadTable: React.VFC<{
         recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
     },
   ]
+
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
   return (
