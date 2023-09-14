@@ -345,38 +345,6 @@ const SalesLeadTable: React.VFC<{
         }
       : {},
     {
-      key: 'fullName',
-      dataIndex: 'fullName',
-      width: 200,
-      title: formatMessage(salesMessages.memberFullName),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          fullName: value,
-        }),
-      ),
-      render: (fullName, lead) => {
-        const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
-        return editFullNameMemberId && editFullNameMemberId === lead.id ? (
-          <Input.Group compact>
-            <Input
-              style={{ width: 'auto' }}
-              defaultValue={fullNamePropertyValue}
-              onChange={e => setFullNameValue(e.target.value.trim())}
-            />
-            <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
-              {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
-            </Button>
-          </Input.Group>
-        ) : (
-          <div>
-            <span>{fullNamePropertyValue}</span>
-            {!refetchLoading && <EditOutlined onClick={() => handleEditFullName(lead)} />}
-          </div>
-        )
-      },
-    },
-    {
       key: 'phones',
       dataIndex: 'phones',
       width: 100,
