@@ -58,18 +58,16 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
       <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
       <StyledWrapper>
         {periods.map(period => (
-          <div
+          <AppointmentPeriodItem
             key={period.id}
             onClick={() => {
-              if (period.isEnrolled) {
-                return
+              if (!period.isEnrolled) {
+                setSelectedPeriod(period)
+                setVisible(true)
               }
-              setSelectedPeriod(period)
-              setVisible(true)
             }}
-          >
-            <AppointmentPeriodItem {...period} />
-          </div>
+            {...period}
+          />
         ))}
       </StyledWrapper>
 
