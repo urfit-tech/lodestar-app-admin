@@ -2,6 +2,7 @@ import { PeriodType } from './general'
 
 export type ReservationType = 'hour' | 'day'
 export type MeetGenerationMethod = 'auto' | 'manual'
+export type RescheduleType = 'hour' | 'day'
 
 export type AppointmentPlanAdminProps = {
   id: string
@@ -35,6 +36,9 @@ export type AppointmentPeriodProps = {
   endedAt: Date
   isEnrolled?: boolean
   isExcluded?: boolean
+  onClick?: () => void
+  targetMemberBooked?: boolean
+  isBookedReachLimit?: boolean
 }
 
 export type AppointmentScheduleProps = {
@@ -43,4 +47,55 @@ export type AppointmentScheduleProps = {
   intervalAmount: number | null
   intervalType: PeriodType | null
   excludes: Date[]
+}
+
+export type AppointmentPlanProps = {
+  id: string
+  creator: {
+    id: string
+    avatarUrl: string | null
+    name: string
+    abstract: string | null
+  }
+  title: string
+  duration: number
+  listPrice: number
+  currencyId: string
+  enrollments: number
+  isPublished: boolean
+}
+
+export type AppointmentPeriodPlanProps = {
+  id: string
+  creator?: {
+    id: string | null
+    avatarUrl: string | null
+    name: string | null
+  }
+  title: string
+  duration: number
+  rescheduleAmount: number
+  rescheduleType: RescheduleType
+}
+
+export type AppointmentPeriodCardProps = {
+  id: string
+  member: {
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+    avatarUrl: string | null
+  }
+  appointmentPlan: AppointmentPeriodPlanProps
+  startedAt: Date
+  endedAt: Date
+  canceledAt: Date | null
+  creator: {
+    id: string
+    name: string
+    avatarUrl: string
+  }
+  orderProduct: { id: string; options: any }
+  meetGenerationMethod: MeetGenerationMethod
 }
