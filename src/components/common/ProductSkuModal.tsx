@@ -24,6 +24,7 @@ const StyledIcon = styled(Icon)`
 `
 
 const StyledCheckbox = styled(Checkbox)`
+  width: 100%;
   display: block;
   &&& {
     margin-left: 0px;
