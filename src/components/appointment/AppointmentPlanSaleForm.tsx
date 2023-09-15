@@ -19,6 +19,23 @@ type FieldProps = {
   capacity: number
 }
 
+const UpdateAppointmentPlanSale = gql`
+  mutation UpdateAppointmentPlanSale(
+    $appointmentPlanId: uuid!
+    $duration: numeric
+    $listPrice: numeric
+    $currencyId: String
+    $capacity: Int
+  ) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: { duration: $duration, price: $listPrice, currency_id: $currencyId, capacity: $capacity }
+    ) {
+      affected_rows
+    }
+  }
+`
+
 const AppointmentPlanSaleForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
@@ -26,16 +43,15 @@ const AppointmentPlanSaleForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateAppointmentPlanSale] = useMutation<
-    hasura.UPDATE_APPOINTMENT_PLAN_SALE,
-    hasura.UPDATE_APPOINTMENT_PLAN_SALEVariables
-  >(UPDATE_APPOINTMENT_PLAN_SALE)
+    hasura.UpdateAppointmentPlanSale,
+    hasura.UpdateAppointmentPlanSaleVariables
+  >(UpdateAppointmentPlanSale)
   const [loading, setLoading] = useState(false)
   const [isLimited, setIsLimited] = useState(appointmentPlanAdmin?.capacity !== -1)
 
   useEffect(() => {
     setIsLimited(appointmentPlanAdmin?.capacity !== -1)
   }, [appointmentPlanAdmin?.capacity])
-
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
   }
@@ -151,22 +167,5 @@ const AppointmentPlanSaleForm: React.FC<{
     </Form>
   )
 }
-
-const UPDATE_APPOINTMENT_PLAN_SALE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_SALE(
-    $appointmentPlanId: uuid!
-    $duration: numeric
-    $listPrice: numeric
-    $currencyId: String
-    $capacity: Int
-  ) {
-    update_appointment_plan(
-      where: { id: { _eq: $appointmentPlanId } }
-      _set: { duration: $duration, price: $listPrice, currency_id: $currencyId, capacity: $capacity }
-    ) {
-      affected_rows
-    }
-  }
-`
 
 export default AppointmentPlanSaleForm
