@@ -169,10 +169,6 @@ const AppointmentRescheduleModal: React.VFC<
     })
   }
 
-  const handleConfirm = () => {
-    setConfirm(false)
-  }
-
   return (
     <>
       <AdminModal width={384} centered footer={null} {...props}>
