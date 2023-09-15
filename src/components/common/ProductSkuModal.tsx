@@ -1,8 +1,7 @@
 import Icon from '@ant-design/icons'
-import { useApolloClient, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { ExclamationCircleIcon } from 'lodestar-app-element/src/images'
 import { flatten, mergeAll } from 'ramda'
@@ -24,6 +23,7 @@ const StyledIcon = styled(Icon)`
 `
 
 const StyledCheckbox = styled(Checkbox)`
+  width: 100%;
   display: block;
   &&& {
     margin-left: 0px;

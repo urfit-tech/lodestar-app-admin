@@ -34,6 +34,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           reservation_amount
           reservation_type
           capacity
+          reschedule_amount
+          reschedule_type
           meet_generation_method
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
@@ -82,6 +84,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
       reservationAmount: data.appointment_plan_by_pk.reservation_amount,
       reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
       capacity: data.appointment_plan_by_pk.capacity,
+      rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
+      rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
       meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
       schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
         id: s.id,
