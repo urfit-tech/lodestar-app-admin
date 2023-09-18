@@ -290,7 +290,7 @@ const formMessages = {
 
     // sales
     SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '查看所有業績' },
-    SALES_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
+    SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
       id: 'form.PermissionGroup.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN',
       defaultMessage: '查看同機構業績',
     },
