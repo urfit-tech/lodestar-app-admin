@@ -1,10 +1,10 @@
 import Icon, {
+  AreaChartOutlined,
   BarChartOutlined,
   DatabaseOutlined,
   GlobalOutlined,
   GoldenFilled,
   ShoppingFilled,
-  AreaChartOutlined,
 } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
@@ -471,7 +471,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     {
       permissionIsAllowed: !!enabledModules.report && !!permissions.REPORT_ADMIN,
       key: 'report_collection',
-      icon: () => <AreaChartOutlined style={{ margin: 0 }}/>,
+      icon: () => <AreaChartOutlined style={{ margin: 0 }} />,
       name: formatMessage(adminMessages.AdminMenu.report),
     },
     {
@@ -553,6 +553,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed:
         !!enabledModules.sales &&
         (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
+          Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
           Boolean(permissions.SALES_LEAD_ADMIN) ||
           Boolean(permissions.SALES_LEAD_NORMAL) ||
           Boolean(permissions.SALES_LEAD_DELIVERY_ADMIN)),
@@ -561,7 +562,10 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.salesManagement),
       subMenuItems: [
         {
-          permissionIsAllowed: !!enabledModules.sales && Boolean(permissions.SALES_PERFORMANCE_ADMIN),
+          permissionIsAllowed:
+            !!enabledModules.sales &&
+            (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
+              Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN)),
           key: 'sales_performance',
           name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
