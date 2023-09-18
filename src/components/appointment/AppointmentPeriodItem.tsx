@@ -2,7 +2,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { appointmentMessages } from '../../helpers/translation'
-import { AppointmentPeriodProps } from '../../types/appointment'
+import { AppointmentPeriod } from '../../types/appointment'
 
 const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
   position: relative;
@@ -46,7 +46,9 @@ const StyledItemMeta = styled.div`
   letter-spacing: 0.34px;
 `
 
-const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ startedAt, isEnrolled, isExcluded, onClick }) => {
+const AppointmentPeriodItem: React.FC<
+  Pick<AppointmentPeriod, 'startedAt'> & { isEnrolled?: boolean; isExcluded?: boolean; onClick?: () => void }
+> = ({ startedAt, isEnrolled, isExcluded, onClick }) => {
   const { formatMessage } = useIntl()
 
   return (

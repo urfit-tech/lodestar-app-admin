@@ -3,6 +3,7 @@ import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { groupBy, sum } from 'ramda'
 import React, { useState } from 'react'
@@ -113,6 +114,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { host, settings } = useApp()
+  const { authToken } = useAuth()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
     'period',
@@ -298,9 +300,9 @@ const AppointmentPlanAppointmentModal: React.FC<
                       {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
                     </StyledPeriodTitle>
                     <StyledWrapper>
-                      {periods.map(period => (
+                      {periods.map((period, index) => (
                         <AppointmentPeriodItem
-                          key={period.id}
+                          key={`${period.appointmentPlanId}-${index}`}
                           onClick={() =>
                             !period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null
                           }

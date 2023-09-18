@@ -45,6 +45,7 @@ const UpdateAppointmentPlan = gql`
     $rescheduleAmount: Int
     $rescheduleType: String
     $meetGenerationMethod: String
+    $defaultMeetSystem: String
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
@@ -56,6 +57,7 @@ const UpdateAppointmentPlan = gql`
         reschedule_amount: $rescheduleAmount
         reschedule_type: $rescheduleType
         meet_generation_method: $meetGenerationMethod
+        default_meet_system: $defaultMeetSystem
       }
     ) {
       affected_rows

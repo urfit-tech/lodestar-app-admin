@@ -2,6 +2,7 @@ import { PeriodType } from './general'
 
 export type ReservationType = 'hour' | 'day'
 export type MeetGenerationMethod = 'auto' | 'manual'
+export type RescheduleType = 'hour' | 'day'
 
 export type AppointmentPlan = {
   id: string
@@ -22,6 +23,8 @@ export type AppointmentPlan = {
   capacity: number
   meetGenerationMethod: string
   defaultMeetSystem: string
+  rescheduleAmount: number
+  rescheduleType: RescheduleType
 }
 
 export type AppointmentPeriod = {
@@ -62,10 +65,50 @@ export type AppointmentPlanAdmin = Pick<
   | 'creatorId'
   | 'isPrivate'
   | 'defaultMeetSystem'
+  | 'rescheduleAmount'
+  | 'rescheduleType'
 > & {
   schedules: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'>[]
   periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
-    isEnrolled: boolean
-    isExcluded: boolean
+    isEnrolled?: boolean
+    isExcluded?: boolean
+    onClick?: () => void
+    targetMemberBooked?: boolean
+    isBookedReachLimit?: boolean
   })[]
+}
+
+export type AppointmentPeriodPlanProps = {
+  id: string
+  creator?: {
+    id: string | null
+    avatarUrl: string | null
+    name: string | null
+  }
+  title: string
+  duration: number
+  rescheduleAmount: number
+  rescheduleType: RescheduleType
+}
+
+export type AppointmentPeriodCardProps = {
+  id: string
+  member: {
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+    avatarUrl: string | null
+  }
+  appointmentPlan: AppointmentPeriodPlanProps
+  startedAt: Date
+  endedAt: Date
+  canceledAt: Date | null
+  creator: {
+    id: string
+    name: string
+    avatarUrl: string | null
+  }
+  orderProduct: { id: string; options: any }
+  meetGenerationMethod: MeetGenerationMethod
 }

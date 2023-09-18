@@ -106,19 +106,22 @@ const AppointmentPeriodCard: React.FC<
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
+
   const joinUrl =
     orderProduct.options?.joinUrl ||
     `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
 
   const handleJoin = async () => {
     setLoading(true)
-    if (enabledModules.meet_service && !orderProduct.options?.joinUrl) {
+    // appointment plan id => target
+
+    if (enabledModules.meet_service) {
       const { data } = await apolloClient.query<
-        hasura.GET_APPOINTMENT_PERIOD_MEET_ID,
-        hasura.GET_APPOINTMENT_PERIOD_MEET_IDVariables
+        hasura.GetAppointmentPeriodMeetId,
+        hasura.GetAppointmentPeriodMeetIdVariables
       >({
         query: gql`
-          query GET_APPOINTMENT_PERIOD_MEET_ID($orderProductId: uuid!) {
+          query GetAppointmentPeriodMeetId($orderProductId: uuid!) {
             order_product(where: { id: { _eq: $orderProductId } }) {
               id
               options

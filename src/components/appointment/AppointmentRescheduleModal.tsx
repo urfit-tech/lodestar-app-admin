@@ -107,7 +107,7 @@ const AppointmentRescheduleModal: React.VFC<
   AdminModalProps & {
     orderProductId: string
     onRefetch?: () => void
-    creator: { id: string; name: string; avatarUrl: string }
+    creator: { id: string; name: string; avatarUrl: string | null }
     appointmentPlan: AppointmentPeriodPlanProps
     memberId: string
     onRescheduleModalVisible: (status: boolean) => void
@@ -208,15 +208,12 @@ const AppointmentRescheduleModal: React.VFC<
           </StyledInfo>
         ) : (
           <>
-            {appointmentPlanAdmin?.periods.map(period => (
-              <div key={period.id}>
+            {appointmentPlanAdmin?.periods.map((period, index) => (
+              <div key={`${period.appointmentPlanId}-${index}`}>
                 <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
                 <AppointmentPeriodItem
-                  id={period.id}
-                  scheduleId={period.id}
                   startedAt={period.startedAt}
-                  endedAt={period.endedAt}
-                  isEnrolled={period.targetMemberBooked}
+                  isEnrolled={period.isEnrolled}
                   isExcluded={period.isBookedReachLimit || period.isExcluded}
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {

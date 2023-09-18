@@ -100,6 +100,17 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
             endedAt: new Date(period.ended_at),
             isEnrolled: period.booked > 0,
             isExcluded: !period.available,
+            isBookedReachLimit: data?.appointment_plan_by_pk?.capacity
+              ? data.appointment_plan_by_pk.capacity !== -1 && period.booked >= data.appointment_plan_by_pk.capacity
+              : false,
+            booked: period.booked,
+            targetMemberBooked: data.appointment_plan_by_pk?.appointment_enrollments.some(
+              enrollment =>
+                enrollment.member_id === targetMemberId &&
+                enrollment.appointment_plan_id === data.appointment_plan_by_pk?.id &&
+                enrollment.started_at === period.started_at &&
+                !enrollment.canceled_at,
+            ),
           })),
           publishedAt: data.appointment_plan_by_pk?.published_at
             ? new Date(data.appointment_plan_by_pk.published_at)
@@ -135,12 +146,10 @@ export const useAppointmentEnrollmentCreator = () => {
   )
 
   const appointmentCreators: { id: string; name: string }[] =
-    loading || error || !data
-      ? []
-      : data.member.map(v => ({
-          id: v.id,
-          name: v.name,
-        }))
+    data?.member.map(v => ({
+      id: v.id,
+      name: v.name,
+    })) || []
 
   return {
     loading,
@@ -285,6 +294,8 @@ export const useAppointmentEnrollmentCollection = (
         phone: v.member_phone || null,
         avatarUrl: v.member?.picture_url || null,
       },
+      appointmentPlanId: v.appointment_plan?.id || '',
+      appointmentPlanTitle: v.appointment_plan?.title || '',
       appointmentPlan: {
         id: v.appointment_plan?.id,
         title: v.appointment_plan?.title,
