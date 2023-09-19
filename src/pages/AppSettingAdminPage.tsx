@@ -1,9 +1,8 @@
 import { GlobalOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Select } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { keys, trim } from 'ramda'
@@ -26,11 +25,13 @@ const AppSettingAdminPage: React.FC = () => {
   })
   const settings =
     settingsData?.setting.reduce((accum, v) => {
+      const appSettings = [...v.app_settings]
+
       const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
       if (!accum[namespace]) {
         accum[namespace] = {}
       }
-      const value = v.app_settings.pop()?.value || ''
+      const value = appSettings.pop()?.value || ''
       accum[namespace][v.key] = {
         value,
         type: v.type,

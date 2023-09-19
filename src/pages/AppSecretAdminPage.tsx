@@ -1,9 +1,8 @@
 import { GlobalOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Switch } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { keys, trim } from 'ramda'
@@ -29,11 +28,12 @@ const AppSecretAdminPage: React.FC = () => {
     secretsData?.setting
       .filter(v => v.app_secrets.length)
       .reduce((accum, v) => {
+        const appSecrets = [...v.app_secrets]
         const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
         if (!accum[namespace]) {
           accum[namespace] = {}
         }
-        const value = v.app_secrets.pop()?.value || ''
+        const value = appSecrets.pop()?.value || ''
         accum[namespace][v.key] = {
           value,
           type: v.type,
@@ -44,7 +44,7 @@ const AppSecretAdminPage: React.FC = () => {
         return accum
       }, {} as Record<string, AppSecrets>) || {}
 
-  if (!permissions.APP_SETTING_ADMIN) {
+  if (!permissions.APP_SECRET_ADMIN) {
     return <ForbiddenPage />
   }
 
