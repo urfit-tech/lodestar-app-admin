@@ -146,7 +146,6 @@ const AppointmentPeriodCard: React.FC<
           },
           {
             headers: {
-              'x-api-key': process.env.KOLABLE_SERVER_API_KEY,
               authorization: `Bearer ${authToken}`,
             },
           },
