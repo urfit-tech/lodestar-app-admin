@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Element, SerializedNodes, useEditor, UserComponent } from '@craftjs/core'
 import { Select } from 'antd'
-import { gql } from '@apollo/client'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -104,6 +103,7 @@ const BasicToolbox: React.FC = () => {
       <CraftTool
         as={CraftElement.CraftImage}
         width={400}
+        height={149}
         customStyle={{ backgroundImage: `url("https://static.kolable.com/images/default/craft/image.png")` }}
       />
       <CraftTool
@@ -299,7 +299,7 @@ const useTemplateElement = () => {
           children: node.data.nodes.map(nodeId => {
             const childNode = nodeToElement(nodeId)
             return (
-              <Element is={childNode.type} {...childNode.props} canvas={childNode.children.length > 0}>
+              <Element key={nodeId} is={childNode.type} {...childNode.props} canvas={childNode.children.length > 0}>
                 {childNode.children}
               </Element>
             )
