@@ -9,6 +9,7 @@ import {
   ReservationType,
   AppointmentPeriodCardProps,
   AppointmentPeriodPlanProps,
+  MeetGateway,
 } from '../types/appointment'
 import { PeriodType } from '../types/general'
 
@@ -85,7 +86,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
           rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
           meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
-          defaultMeetSystem: data.appointment_plan_by_pk.default_meet_system,
+          defaultMeetSystem: data.appointment_plan_by_pk.default_meet_system as MeetGateway,
           schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => ({
             id: appointmentSchedule.id,
             startedAt: new Date(appointmentSchedule.started_at),
@@ -236,6 +237,7 @@ export const useAppointmentEnrollmentCollection = (
             title
             duration
             meet_generation_method
+            default_meet_system
             creator {
               id
               name
@@ -302,6 +304,7 @@ export const useAppointmentEnrollmentCollection = (
         duration: v.appointment_plan?.duration,
         rescheduleAmount: v.appointment_plan?.reschedule_amount,
         rescheduleType: v.appointment_plan?.reschedule_type,
+        defaultMeetSystem: v.appointment_plan?.default_meet_system as MeetGateway,
       } as AppointmentPeriodPlanProps,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),

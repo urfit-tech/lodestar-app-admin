@@ -3,6 +3,7 @@ import { PeriodType } from './general'
 export type ReservationType = 'hour' | 'day'
 export type MeetGenerationMethod = 'auto' | 'manual'
 export type RescheduleType = 'hour' | 'day'
+export type MeetGateway = 'jitsi' | 'zoom'
 
 export type AppointmentPlan = {
   id: string
@@ -22,7 +23,7 @@ export type AppointmentPlan = {
   reservationType: string | null
   capacity: number
   meetGenerationMethod: string
-  defaultMeetSystem: string
+  defaultMeetSystem: MeetGateway
   rescheduleAmount: number
   rescheduleType: RescheduleType
 }
@@ -89,6 +90,7 @@ export type AppointmentPeriodPlanProps = {
   duration: number
   rescheduleAmount: number
   rescheduleType: RescheduleType
+  defaultMeetSystem: MeetGateway
 }
 
 export type AppointmentPeriodCardProps = {
@@ -100,7 +102,10 @@ export type AppointmentPeriodCardProps = {
     phone: string | null
     avatarUrl: string | null
   }
-  appointmentPlan: AppointmentPeriodPlanProps
+  appointmentPlan: Pick<
+    AppointmentPlan,
+    'id' | 'title' | 'duration' | 'rescheduleAmount' | 'rescheduleType' | 'defaultMeetSystem'
+  >
   startedAt: Date
   endedAt: Date
   canceledAt: Date | null
