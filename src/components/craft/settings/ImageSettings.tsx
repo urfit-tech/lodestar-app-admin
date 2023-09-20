@@ -128,7 +128,11 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
               const newGcd = width / widthAspect
               const newHeight = isImgAutoHeight
                 ? props?.customStyle?.height
-                : `${heightAspect * newGcd}${extractSizeUnit(props.customStyle.width.toString() || 'px')}`
+                : `${heightAspect * newGcd}${
+                    extractSizeUnit(props.customStyle.width.toString()) === 'vw'
+                      ? 'vh'
+                      : extractSizeUnit(props.customStyle.width.toString())
+                  }`
               onPropsChange?.({
                 ...props,
                 ratio: aspectRatio,
@@ -191,6 +195,18 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
               className="mt-2"
               value={props.className}
               onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].ariaLabel)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.ariaLabel}
+              onChange={e =>
+                onPropsChange?.({
+                  ...props,
+                  ariaLabel: e.target.value.toString(),
+                })
+              }
             />
           </Form.Item>
         </StyledCollapsePanel>
