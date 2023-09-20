@@ -1149,6 +1149,7 @@
   "craft.*.titleStyle": "標題樣式",
   "craft.*.variant": "元件樣式",
   "craft.*.width": "寬度",
+  "craft.*.ariaLabel":"圖片標籤描述",
   "craft.AIBotSettings.addQuestion": "新增問題",
   "craft.AIBotSettings.assistantQuestions": "使用者問答",
   "craft.AIBotSettings.assistantQuestionsPlaceholder": "What do you want to ask?",

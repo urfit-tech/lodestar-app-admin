@@ -32,7 +32,7 @@ const craftMessages = {
     bold: { id: 'craft.*.bold', defaultMessage: '粗' },
     advancedSetting: { id: 'craft.*.advancedSetting', defaultMessage: '進階設定' },
     className: { id: 'craft.*.className', defaultMessage: '類別名稱' },
-    ariaLabel: { id: 'craft.*.ariaLabel', defaultMessage: '圖片替代文字' },
+    ariaLabel: { id: 'craft.*.ariaLabel', defaultMessage: '圖片標籤描述' },
     all: { id: 'craft.*.all', defaultMessage: 'all' },
     collectionType: { id: 'craft.*.collectionType', defaultMessage: 'type' },
   }),

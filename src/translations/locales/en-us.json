@@ -1130,6 +1130,7 @@
   "craft.*.titleStyle": "Title Style",
   "craft.*.variant": "Component Style",
   "craft.*.width": "width",
+  "craft.*.ariaLabel":"Aria Label",
   "craft.AIBotSettings.addQuestion": "新增問題",
   "craft.AIBotSettings.assistantQuestions": "使用者問答",
   "craft.AIBotSettings.assistantQuestionsPlaceholder": "What do you want to ask?",

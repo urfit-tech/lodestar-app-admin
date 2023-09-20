@@ -95,7 +95,6 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
     }
     setImgSrc(props.customStyle?.backgroundImage)
   }
-  console.log(props)
 
   const handleChange = () => {
     form.validateFields()
