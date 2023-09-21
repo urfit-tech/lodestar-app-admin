@@ -476,6 +476,40 @@ const pageMessages = {
     maxVideoDurationUnit: { id: 'page.MediaLibraryPage.maxVideoDurationUnit', defaultMessage: '分鐘' },
     maxVideoWatchUnit: { id: 'page.MediaLibraryPage.maxVideoWatchUnit', defaultMessage: '分鐘' },
   }),
+  AppTmpPasswordPage: defineMessages({
+    temporaryPasswordRequest: {
+      id: 'page.AppTmpPasswordPage.temporaryPasswordRequest',
+      defaultMessage: 'Temporary password request',
+    },
+    requestTemporaryPassword: {
+      id: 'page.AppTmpPasswordPage.requestTemporaryPassword',
+      defaultMessage: 'Request temporary password',
+    },
+    applicant: {
+      id: 'page.AppTmpPasswordPage.applicant',
+      defaultMessage: 'Applicant',
+    },
+    userEmail: {
+      id: 'page.AppTmpPasswordPage.userEmail',
+      defaultMessage: 'User email',
+    },
+    purposeOfApplication: {
+      id: 'page.AppTmpPasswordPage.purposeOfApplication',
+      defaultMessage: 'Purpose of application',
+    },
+    tmpPassword: {
+      id: 'page.AppTmpPasswordPage.tmpPassword',
+      defaultMessage: 'Temporary password',
+    },
+    expirationDate: {
+      id: 'page.AppTmpPasswordPage.expirationDate',
+      defaultMessage: 'Expiration Date',
+    },
+    invalidEmail: {
+      id: 'page.AppTmpPasswordPage.invalidEmail',
+      defaultMessage: 'Invalid email',
+    },
+  }),
 }
 
 export default pageMessages

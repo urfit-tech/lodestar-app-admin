@@ -28,11 +28,12 @@ const AppSecretAdminPage: React.FC = () => {
     secretsData?.setting
       .filter(v => v.app_secrets.length)
       .reduce((accum, v) => {
+        const appSecrets = [...v.app_secrets]
         const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
         if (!accum[namespace]) {
           accum[namespace] = {}
         }
-        const value = v.app_secrets.pop()?.value || ''
+        const value = appSecrets.pop()?.value || ''
         accum[namespace][v.key] = {
           value,
           type: v.type,
@@ -43,7 +44,7 @@ const AppSecretAdminPage: React.FC = () => {
         return accum
       }, {} as Record<string, AppSecrets>) || {}
 
-  if (!permissions.APP_SETTING_ADMIN) {
+  if (!permissions.APP_SECRET_ADMIN) {
     return <ForbiddenPage />
   }
 

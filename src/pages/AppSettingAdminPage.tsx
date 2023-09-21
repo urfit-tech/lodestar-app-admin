@@ -25,11 +25,13 @@ const AppSettingAdminPage: React.FC = () => {
   })
   const settings =
     settingsData?.setting.reduce((accum, v) => {
+      const appSettings = [...v.app_settings]
+
       const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
       if (!accum[namespace]) {
         accum[namespace] = {}
       }
-      const value = v.app_settings.pop()?.value || ''
+      const value = appSettings.pop()?.value || ''
       accum[namespace][v.key] = {
         value,
         type: v.type,

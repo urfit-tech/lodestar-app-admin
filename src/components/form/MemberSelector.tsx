@@ -9,12 +9,12 @@ import { MemberOptionProps } from '../../types/member'
 import { AvatarImage } from '../common/Image'
 import formMessages from './translation'
 
-const StyledText = styled.span`
+export const StyledText = styled.span`
   color: var(--gray-darker);
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledTextSecondary = styled.span`
+export const StyledTextSecondary = styled.span`
   color: var(--gray-dark);
   letter-spacing: 0.2px;
 `

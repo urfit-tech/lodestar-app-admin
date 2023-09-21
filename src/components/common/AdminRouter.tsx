@@ -546,6 +546,11 @@ export const routesProps = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  app_tmpPassword: {
+    path: '/app/tmp-password',
+    pageName: 'AppTmpPasswordPage',
+    authenticated: true,
+  },
 
   report_collection: {
     path: '/report',

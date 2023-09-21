@@ -553,6 +553,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed:
         !!enabledModules.sales &&
         (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
+          Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
           Boolean(permissions.SALES_LEAD_ADMIN) ||
           Boolean(permissions.SALES_LEAD_NORMAL) ||
           Boolean(permissions.SALES_LEAD_DELIVERY_ADMIN)),
@@ -561,7 +562,10 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.salesManagement),
       subMenuItems: [
         {
-          permissionIsAllowed: !!enabledModules.sales && Boolean(permissions.SALES_PERFORMANCE_ADMIN),
+          permissionIsAllowed:
+            !!enabledModules.sales &&
+            (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
+              Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN)),
           key: 'sales_performance',
           name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
@@ -631,13 +635,18 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           : formatMessage(adminMessages.AdminMenu.memberSettings),
     },
     {
-      permissionIsAllowed: Boolean(permissions.APP_SETTING_ADMIN),
+      permissionIsAllowed: Boolean(
+        permissions.APP_SETTING_ADMIN ||
+          permissions.APP_SECRET_ADMIN ||
+          permissions.APP_BASIC_ADMIN ||
+          permissions.APP_TMP_PASSWORD_ADMIN,
+      ),
       key: 'app_admin',
       icon: () => <GlobalOutlined className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.appAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: Boolean(permissions.APP_SETTING_ADMIN),
+          permissionIsAllowed: Boolean(permissions.APP_BASIC_ADMIN),
           key: 'app_basic',
           name: formatMessage(adminMessages.AdminMenu.appBasicAdmin),
         },
@@ -647,9 +656,14 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(adminMessages.AdminMenu.appSettingAdmin),
         },
         {
-          permissionIsAllowed: Boolean(permissions.APP_SETTING_ADMIN),
+          permissionIsAllowed: Boolean(permissions.APP_SECRET_ADMIN),
           key: 'app_secret',
           name: formatMessage(adminMessages.AdminMenu.appSecretAdmin),
+        },
+        {
+          permissionIsAllowed: Boolean(permissions.APP_TMP_PASSWORD_ADMIN),
+          key: 'app_tmpPassword',
+          name: formatMessage(adminMessages.AdminMenu.tmpPassword),
         },
       ],
     },

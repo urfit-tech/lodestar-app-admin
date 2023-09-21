@@ -39,6 +39,8 @@ const CraftToolbox: React.FC = () => {
 }
 const BasicToolbox: React.FC = () => {
   const { enabledModules } = useApp()
+  const img = new Image()
+  img.src = 'https://static.kolable.com/images/default/craft/image.png'
   return (
     <div>
       <CraftTool
@@ -102,8 +104,9 @@ const BasicToolbox: React.FC = () => {
       />
       <CraftTool
         as={CraftElement.CraftImage}
-        width={400}
-        customStyle={{ backgroundImage: `url("https://static.kolable.com/images/default/craft/image.png")` }}
+        width={img.width}
+        height={img.height}
+        customStyle={{ backgroundImage: `url(${img.src})` }}
       />
       <CraftTool
         as={CraftElement.CraftButton}
@@ -298,7 +301,7 @@ const useTemplateElement = () => {
           children: node.data.nodes.map(nodeId => {
             const childNode = nodeToElement(nodeId)
             return (
-              <Element is={childNode.type} {...childNode.props} canvas={childNode.children.length > 0}>
+              <Element key={nodeId} is={childNode.type} {...childNode.props} canvas={childNode.children.length > 0}>
                 {childNode.children}
               </Element>
             )

@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { AdminPageTitle } from '../../components/admin'
+import { StyledText, StyledTextSecondary } from '../../components/form/MemberSelector'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
@@ -55,84 +56,70 @@ const TableWrapper = styled.div`
 `
 
 const SalesPerformancePage: React.VFC = () => {
+  const { currentMemberId, permissions, currentUserRole } = useAuth()
   const { formatMessage } = useIntl()
   const [month, setMonth] = useState(moment().startOf('month'))
   const [activeGroupName, setActiveGroupName] = useState<string>()
-  const [activeManagerId, setActiveManagerId] = useState<string>()
+  const [activeManagerId, setActiveManagerId] = useState<string | undefined>(currentMemberId || undefined)
   const [activeDepartment, setActiveDepartment] = useState<string>()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
-  const { currentMemberId, permissions, currentUserRole } = useAuth()
   const { currentMemberDepartment, currentMemberDepartmentLoading } = useCurrentMemberDepartment(currentMemberId || '')
-
-  useEffect(() => {
-    currentMemberId && setActiveManagerId(currentMemberId)
-  }, [currentMemberId])
 
   useEffect(() => {
     if (!currentMemberDepartmentLoading) {
       currentMemberDepartment && setActiveDepartment(currentMemberDepartment)
     }
-  }, [currentMemberDepartmentLoading])
+  }, [currentMemberDepartment, currentMemberDepartmentLoading])
 
-  if (!permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN && !permissions.SALES_CALL_ADMIN) {
+  if (
+    !permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN &&
+    !permissions.SALES_PERFORMANCE_ADMIN &&
+    !permissions.SALES_CALL_ADMIN
+  ) {
     return <ForbiddenPage />
   }
+
+  const filterMemberContracts = activeManagerId
+    ? activeGroupName
+      ? activeDepartment
+        ? memberContracts.filter(
+            memberContract =>
+              memberContract.executor.id === activeManagerId &&
+              memberContract.executor.groupName === activeGroupName &&
+              memberContract.executor.department === activeDepartment,
+          )
+        : memberContracts.filter(
+            memberContract =>
+              memberContract.executor.id === activeManagerId && memberContract.executor.groupName === activeGroupName,
+          )
+      : activeDepartment
+      ? memberContracts.filter(
+          memberContract =>
+            memberContract.executor.id === activeManagerId && memberContract.executor.department === activeDepartment,
+        )
+      : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+    : activeGroupName
+    ? activeDepartment
+      ? memberContracts.filter(
+          memberContract =>
+            memberContract.executor.groupName === activeGroupName &&
+            memberContract.executor.department === activeDepartment,
+        )
+      : activeDepartment
+      ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
+      : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
+    : activeDepartment
+    ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
+    : memberContracts
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon className="mr-3" component={() => <DollarOutlined />} />
-        <span className="mr-3">{formatMessage(salesMessages.salesPerformance)}</span>
-        <div className="d-flex flex-row-reverse">
-          <DatePicker
-            className="mr-2 mb-10"
-            picker="month"
-            onChange={date => date && setMonth(date.startOf('month'))}
-          />
-          {currentMemberId && (
-            <Select
-              className="mr-3"
-              style={{ width: 200 }}
-              showSearch
-              allowClear
-              placeholder="業務顧問"
-              value={activeManagerId}
-              optionFilterProp="children"
-              onChange={setActiveManagerId}
-            >
-              {managers
-                .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
-                .filter(manager => (activeGroupName === undefined ? true : manager.groupName === activeGroupName))
-                .map(manager => (
-                  <Select.Option key={manager?.id} value={manager?.id}>
-                    {manager?.name}
-                  </Select.Option>
-                ))}
-            </Select>
-          )}
-
-          <Select
-            className="mr-3"
-            style={{ width: 200 }}
-            showSearch
-            allowClear
-            placeholder="組別"
-            value={activeGroupName}
-            optionFilterProp="children"
-            onChange={v => {
-              setActiveGroupName(v)
-              setActiveManagerId(undefined)
-            }}
-          >
-            {uniqBy(manager => manager.groupName, managers || [])
-              .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
-              .map(manager => (
-                <Select.Option key={manager.id} value={manager.groupName}>
-                  {manager.groupName}
-                </Select.Option>
-              ))}
-          </Select>
-
+        <span className="mr-3" style={{ whiteSpace: 'nowrap' }}>
+          {formatMessage(salesMessages.salesPerformance)}
+        </span>
+        <div className="d-flex flex-wrap">
           {(currentUserRole === 'app-owner' || permissions.SALES_PERFORMANCE_ADMIN) && (
             <Select
               className="mr-3"
@@ -155,48 +142,59 @@ const SalesPerformancePage: React.VFC = () => {
               ))}
             </Select>
           )}
+          <Select
+            className="mr-3"
+            style={{ width: 200 }}
+            showSearch
+            allowClear
+            placeholder="組別"
+            value={activeGroupName}
+            optionFilterProp="children"
+            onChange={v => {
+              setActiveGroupName(v)
+              setActiveManagerId(undefined)
+            }}
+          >
+            {uniqBy(manager => manager.groupName, managers || [])
+              .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+              .map(manager => (
+                <Select.Option key={manager.id} value={manager.groupName}>
+                  {manager.groupName}
+                </Select.Option>
+              ))}
+          </Select>
+
+          {currentMemberId && (
+            <Select
+              className="mr-3"
+              style={{ width: 300 }}
+              showSearch
+              allowClear
+              placeholder="業務顧問"
+              value={activeManagerId}
+              optionFilterProp="children"
+              onChange={setActiveManagerId}
+            >
+              {managers
+                .filter(manager => manager.department === activeDepartment || !activeDepartment)
+                .filter(manager => manager.groupName === activeGroupName || !activeGroupName)
+                .map(manager => (
+                  <Select.Option key={manager.id} value={manager.id}>
+                    <StyledText className="mr-2">{manager.name}</StyledText>
+                    <StyledTextSecondary>{manager.email}</StyledTextSecondary>
+                  </Select.Option>
+                ))}
+            </Select>
+          )}
+          <DatePicker
+            className="mr-2 mb-10"
+            picker="month"
+            onChange={date => date && setMonth(date.startOf('month'))}
+          />
         </div>
       </AdminPageTitle>
       {currentMemberId ? (
-        <SalesPerformanceTable
-          loading={loading}
-          memberContracts={
-            activeManagerId
-              ? activeGroupName
-                ? activeDepartment
-                  ? memberContracts.filter(
-                      memberContract =>
-                        memberContract.executor.id === activeManagerId &&
-                        memberContract.executor.groupName === activeGroupName &&
-                        memberContract.executor.department === activeDepartment,
-                    )
-                  : memberContracts.filter(
-                      memberContract =>
-                        memberContract.executor.id === activeManagerId &&
-                        memberContract.executor.groupName === activeGroupName,
-                    )
-                : activeDepartment
-                ? memberContracts.filter(
-                    memberContract =>
-                      memberContract.executor.id === activeManagerId &&
-                      memberContract.executor.department === activeDepartment,
-                  )
-                : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
-              : activeGroupName
-              ? activeDepartment
-                ? memberContracts.filter(
-                    memberContract =>
-                      memberContract.executor.groupName === activeGroupName &&
-                      memberContract.executor.department === activeDepartment,
-                  )
-                : activeDepartment
-                ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
-                : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
-              : activeDepartment
-              ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
-              : memberContracts
-          }
-        />
+        <SalesPerformanceTable loading={loading} memberContracts={filterMemberContracts} />
       ) : (
         <Skeleton active />
       )}
@@ -398,54 +396,44 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
       data?.member_contract
         .map(
           v =>
-            v.values.orderExecutors
-              ?.map((orderExecutor: any) => {
-                const executor = managers.find(v => v.id === orderExecutor.member_id)
-                const isGuaranteed = v.options?.note?.includes('保買') || false
-                const performance = orderExecutor.ratio * v.values.price
-                const recognizePerformance = Math.round(
-                  orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
-                )
-                return {
-                  id: v.id,
-                  author: {
-                    id: v.author?.id,
-                    name: v.author?.name,
-                  },
-                  executor: {
-                    id: executor?.id,
-                    name: executor?.name,
-                    groupName: executor?.groupName,
-                    department: executor?.department,
-                  },
-                  member: {
-                    id: v.member.id,
-                    name: v.member.name,
-                  },
-                  agreedAt: v.agreed_at,
-                  revokedAt: v.revoked_at,
-                  approvedAt: v.options?.approvedAt,
-                  canceledAt: v.options?.loanCanceledAt,
-                  refundAppliedAt: v.options?.refundAppliedAt,
-                  performance: isGuaranteed ? performance * 0.7 : performance,
-                  recognizePerformance,
-                  products: v.values.orderProducts?.map(
-                    (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
-                  ),
-                  paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
-                  paymentNumber: v.values.paymentOptions.paymentNumber,
-                  note: v.options?.note || '',
-                }
-              })
-              .filter((orderExecutor: any) => {
-                if (currentUserRole === 'app-owner') {
-                  return true
-                } else {
-                  const currentExecutor = managers.find(v => v.id === currentMemberId)
-                  if (orderExecutor.executor.department === currentExecutor?.department) return true
-                  return false
-                }
-              }) || [],
+            v.values.orderExecutors?.map((orderExecutor: any) => {
+              const executor = managers.find(v => v.id === orderExecutor.member_id)
+              const isGuaranteed = v.options?.note?.includes('保買') || false
+              const performance = orderExecutor.ratio * v.values.price
+              const recognizePerformance = Math.round(
+                orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
+              )
+              return {
+                id: v.id,
+                author: {
+                  id: v.author?.id,
+                  name: v.author?.name,
+                },
+                executor: {
+                  id: executor?.id,
+                  name: executor?.name,
+                  groupName: executor?.groupName,
+                  department: executor?.department,
+                },
+                member: {
+                  id: v.member.id,
+                  name: v.member.name,
+                },
+                agreedAt: v.agreed_at,
+                revokedAt: v.revoked_at,
+                approvedAt: v.options?.approvedAt,
+                canceledAt: v.options?.loanCanceledAt,
+                refundAppliedAt: v.options?.refundAppliedAt,
+                performance: isGuaranteed ? performance * 0.7 : performance,
+                recognizePerformance,
+                products: v.values.orderProducts?.map(
+                  (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
+                ),
+                paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
+                paymentNumber: v.values.paymentOptions.paymentNumber,
+                note: v.options?.note || '',
+              }
+            }) || [],
         )
         .flat() || [],
     [data?.member_contract],

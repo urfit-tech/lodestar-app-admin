@@ -224,7 +224,10 @@ const formMessages = {
     TASK_CATEGORY_ADMIN: { id: 'form.PermissionGroup.TASK_CATEGORY_ADMIN', defaultMessage: '所有待辦分類功能' },
 
     // app_setting
-    APP_SETTING_ADMIN: { id: 'form.PermissionGroup.APP_SETTING_ADMIN', defaultMessage: '所有網站管理功能' },
+    APP_SETTING_ADMIN: { id: 'form.PermissionGroup.APP_SETTING_ADMIN', defaultMessage: '參數設定' },
+    APP_SECRET_ADMIN: { id: 'form.PermissionGroup.APP_SECRET_ADMIN', defaultMessage: '金鑰設定' },
+    APP_BASIC_ADMIN: { id: 'form.PermissionGroup.APP_BASIC_ADMIN', defaultMessage: '基本設定' },
+    APP_TMP_PASSWORD_ADMIN: { id: 'form.PermissionGroup.APP_TMP_PASSWORD_ADMIN', defaultMessage: '臨時密碼申請' },
 
     // project
     PROJECT_ADMIN: { id: 'form.PermissionGroup.PROJECT_ADMIN', defaultMessage: '所有專案功能' },
@@ -299,7 +302,7 @@ const formMessages = {
 
     // sales
     SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '查看所有業績' },
-    SALES_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
+    SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
       id: 'form.PermissionGroup.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN',
       defaultMessage: '查看同機構業績',
     },
