@@ -62,8 +62,9 @@ const AppointmentPlanPeriodTabContent: React.FC<{
         <AppointmentPeriodCard
           key={v.id}
           id={v.id}
+          avatarUrl={v.avatarUrl}
           member={v.member}
-          appointmentPlan={v.appointmentPlan}
+          appointmentPlanTitle={v.appointmentPlanTitle}
           startedAt={v.startedAt}
           endedAt={v.endedAt}
           canceledAt={v.canceledAt}

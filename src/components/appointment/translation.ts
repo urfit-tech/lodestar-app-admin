@@ -25,42 +25,7 @@ const appointmentMessages = {
       id: 'appointment.AppointmentPeriodCard.appointmentCanceledAt',
       defaultMessage: '已於 {time} 取消預約',
     },
-    periodDurationAtMost: {
-      id: 'appointment.AppointmentPeriodCard.periodDurationAtMost',
-      defaultMessage: '諮詢一次 {duration} 分鐘為限',
-    },
     cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: '取消預約' },
-    rescheduleAppointment: {
-      id: 'appointment.AppointmentPeriodCard.rescheduleAppointment',
-      defaultMessage: '更換時段',
-    },
-    notRescheduleAppointmentPeriod: {
-      id: 'appointment.AppointmentPeriodCard.notRescheduleAppointmentPeriod',
-      defaultMessage: '無可更換的時段',
-    },
-    rescheduleOriginScheduled: {
-      id: 'appointment.AppointmentPeriodCard.rescheduleOriginScheduled',
-      defaultMessage: '原時段',
-    },
-    rescheduled: {
-      id: 'appointment.AppointmentPeriodCard.rescheduled',
-      defaultMessage: '更換為：',
-    },
-    rescheduleSuccess: {
-      id: 'appointment.AppointmentPeriodCard.rescheduleSuccess',
-      defaultMessage: '更換成功',
-    },
-    rescheduleSuccessAppointmentPlanTitle: {
-      id: 'appointment.AppointmentPeriodCard.rescheduleSuccessAppointmentPlanTitle',
-      defaultMessage: '{title} 已更換時段為',
-    },
-    rescheduleAppointmentPlanTitle: {
-      id: 'appointment.AppointmentPeriodCard.rescheduleAppointmentPlanTitle',
-      defaultMessage: '更換時段：{title}',
-    },
-    rescheduleConfirm: { id: 'appointment.AppointmentPeriodCard.rescheduleConfirm', defaultMessage: '確定更換' },
-    rescheduleCancel: { id: 'appointment.AppointmentPeriodCard.rescheduleCancel', defaultMessage: '重選時段' },
-    confirm: { id: 'appointment.AppointmentPeriodCard.confirm', defaultMessage: '好' },
     notYetConfigured: {
       id: 'appointment.AppointmentPeriodCard.notYetConfigured',
       defaultMessage: 'not yet configured',

@@ -35,7 +35,7 @@
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
     "@ant-design/compatible": "^1.0.8",
-    "@ant-design/icons": "^5.2.6",
+    "@ant-design/icons": "^4.6.2",
     "@apollo/client": "^3.7.11",
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
