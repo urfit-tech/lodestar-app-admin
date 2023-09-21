@@ -272,7 +272,7 @@ const AppointmentPeriodCard: React.FC<
               memberId={member.id}
               onCancel={() => setRescheduleModalVisible(false)}
               appointmentPlan={appointmentPlan}
-              onRescheduleModalVisible={status => setRescheduleModalVisible(status)}
+              onRescheduleModalVisible={() => setRescheduleModalVisible(false)}
             />
             <Dropdown
               overlay={
