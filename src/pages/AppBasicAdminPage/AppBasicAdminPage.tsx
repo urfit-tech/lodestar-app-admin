@@ -14,7 +14,7 @@ const AppBasicAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
 
-  if (!permissions.APP_SETTING_ADMIN) {
+  if (!permissions.APP_BASIC_ADMIN) {
     return <ForbiddenPage />
   }
 

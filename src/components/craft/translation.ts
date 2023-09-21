@@ -32,6 +32,7 @@ const craftMessages = {
     bold: { id: 'craft.*.bold', defaultMessage: '粗' },
     advancedSetting: { id: 'craft.*.advancedSetting', defaultMessage: '進階設定' },
     className: { id: 'craft.*.className', defaultMessage: '類別名稱' },
+    ariaLabel: { id: 'craft.*.ariaLabel', defaultMessage: '圖片標籤描述' },
     all: { id: 'craft.*.all', defaultMessage: 'all' },
     collectionType: { id: 'craft.*.collectionType', defaultMessage: 'type' },
   }),
@@ -114,9 +115,15 @@ const craftMessages = {
     setting: { id: 'craft.AIBotSettings.setting', defaultMessage: '基本設定' },
     style: { id: 'craft.AIBotSettings.style', defaultMessage: '樣式' },
     systemPrompt: { id: 'craft.AIBotSettings.systemPrompt', defaultMessage: '系統提示詞' },
-    systemPromptPlaceholder: { id: 'craft.AIBotSettings.systemPromptPlaceholder', defaultMessage: 'You are an expert of...' },
+    systemPromptPlaceholder: {
+      id: 'craft.AIBotSettings.systemPromptPlaceholder',
+      defaultMessage: 'You are an expert of...',
+    },
     assistantQuestions: { id: 'craft.AIBotSettings.assistantQuestions', defaultMessage: '使用者問答' },
-    assistantQuestionsPlaceholder: { id: 'craft.AIBotSettings.assistantQuestionsPlaceholder', defaultMessage: 'What do you want to ask?' },
+    assistantQuestionsPlaceholder: {
+      id: 'craft.AIBotSettings.assistantQuestionsPlaceholder',
+      defaultMessage: 'What do you want to ask?',
+    },
     addQuestion: { id: 'craft.AIBotSettings.addQuestion', defaultMessage: '新增問題' },
   }),
   CarouselSettings: defineMessages({

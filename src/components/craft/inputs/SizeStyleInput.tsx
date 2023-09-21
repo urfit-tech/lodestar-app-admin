@@ -6,7 +6,7 @@ import craftMessages from '../translation'
 export const extractNumber = (string?: string) =>
   string?.match(/\d+/g)?.[0] ? Number(string.match(/\d+/g)?.[0]) : undefined
 
-export const extractSizeUnit = (string?: string) => string?.match(/px|%|rem|em/g)?.[0]
+export const extractSizeUnit = (string?: string) => string?.match(/px|%|rem|em|vw|vh/g)?.[0]
 
 export type SizeStyle = Pick<CSSObject, 'width' | 'height' | 'backgroundImage'>
 type imgProps = {
@@ -64,6 +64,7 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImg
           <Select.Option value="%">%</Select.Option>
           <Select.Option value="rem">rem</Select.Option>
           <Select.Option value="em">em</Select.Option>
+          <Select.Option value="vw">vw</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item label={formatMessage(craftMessages.SizeStyleInput.height)}>
@@ -89,6 +90,7 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImg
           <Select.Option value="%">%</Select.Option>
           <Select.Option value="rem">rem</Select.Option>
           <Select.Option value="em">em</Select.Option>
+          <Select.Option value="vh">vh</Select.Option>
         </Select>
       </Form.Item>
     </>

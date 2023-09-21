@@ -94,7 +94,9 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
               {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.allInstructors)}
             </Select.Option>
             {appointmentCreators.map(v => (
-              <Select.Option value={v.id}>{v.name}</Select.Option>
+              <Select.Option key={v.id} value={v.id}>
+                {v.name}
+              </Select.Option>
             ))}
           </Select>
         )}

@@ -2,6 +2,7 @@ import Icon, { MoreOutlined } from '@ant-design/icons'
 import { gql, useApolloClient } from '@apollo/client'
 import { Button, Divider, Dropdown, Menu } from 'antd'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -13,11 +14,13 @@ import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
+import { AppointmentPeriodCardProps } from '../../types/appointment'
 import { AvatarImage } from '../common/Image'
 import AppointmentCancelModal from './AppointmentCancelModal'
 import AppointmentConfigureMeetingRoomModal from './AppointmentConfigureMeetingRoomModal'
 import AppointMentDetailModal from './AppointMentDetailModal'
 import AppointmentIssueAndResultModal from './AppointmentIssueAndResultModal'
+import AppointmentRescheduleModal from './AppointmentRescheduleModal'
 import appointmentMessages from './translation'
 
 const StyledCard = styled.div`
@@ -29,6 +32,7 @@ const StyledCard = styled.div`
 
   @media (min-width: ${DESKTOP_BREAK_POINT}px) {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
   }
 `
@@ -73,27 +77,6 @@ const StyledDot = styled.div`
   top: 0;
 `
 
-export type AppointmentPeriodCardProps = {
-  id: string
-  avatarUrl: string | null
-  member: {
-    id: string
-    name: string
-    email: string | null
-    phone: string | null
-  }
-  appointmentPlanTitle: string
-  startedAt: Date
-  endedAt: Date
-  canceledAt: Date | null
-  creator: {
-    id: string
-    name: string
-  }
-  orderProduct: { id: string; options: any }
-  meetGenerationMethod: MeetGenerationMethod
-}
-
 export type MeetGenerationMethod = 'auto' | 'manual'
 
 const AppointmentPeriodCard: React.FC<
@@ -102,9 +85,8 @@ const AppointmentPeriodCard: React.FC<
   }
 > = ({
   id,
-  avatarUrl,
   member,
-  appointmentPlanTitle,
+  appointmentPlan,
   startedAt,
   endedAt,
   canceledAt,
@@ -116,6 +98,8 @@ const AppointmentPeriodCard: React.FC<
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
   const { authToken, currentMemberId } = useAuth()
+  const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false)
+  const [cancelModalVisible, setCancelModalVisible] = useState(false)
   const apolloClient = useApolloClient()
   const [loading, setLoading] = useState(false)
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
@@ -173,12 +157,14 @@ const AppointmentPeriodCard: React.FC<
   return (
     <StyledCard>
       <StyledInfo className="d-flex align-items-center" withMask={isCanceled}>
-        <AvatarImage size="48px" src={avatarUrl} className="mr-4" />
+        <div>
+          <AvatarImage size="48px" src={member.avatarUrl} className="mr-4" />
+        </div>
         <div>
           <StyledTitle>
             {formatMessage(appointmentMessages.AppointmentPeriodCard.appointmentText, {
               name: member.name,
-              title: appointmentPlanTitle,
+              title: appointmentPlan.title,
             })}
           </StyledTitle>
           <StyledMeta>
@@ -215,7 +201,7 @@ const AppointmentPeriodCard: React.FC<
           )}
           appointmentEnrollmentId={id}
           member={member}
-          avatarUrl={avatarUrl}
+          avatarUrl={member.avatarUrl}
           startedAt={startedAt}
           endedAt={endedAt}
         />
@@ -248,7 +234,7 @@ const AppointmentPeriodCard: React.FC<
         ) : (
           <>
             <a
-              href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlanTitle}&dates=${startedTime}%2F${endedTime}`}
+              href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlan.title}&dates=${startedTime}%2F${endedTime}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -274,21 +260,41 @@ const AppointmentPeriodCard: React.FC<
             <AppointmentCancelModal
               orderProductId={orderProduct.id}
               onRefetch={onRefetch}
-              renderTrigger={({ setVisible }) => (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item onClick={() => setVisible(true)}>
-                        {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                >
-                  <MoreOutlined className="ml-3" />
-                </Dropdown>
-              )}
+              visible={cancelModalVisible}
+              onCancel={() => setCancelModalVisible(false)}
             />
+
+            <AppointmentRescheduleModal
+              orderProductId={orderProduct.id}
+              onRefetch={onRefetch}
+              visible={rescheduleModalVisible}
+              creator={creator}
+              memberId={member.id}
+              onCancel={() => setRescheduleModalVisible(false)}
+              appointmentPlan={appointmentPlan}
+              onRescheduleModalVisible={status => setRescheduleModalVisible(status)}
+            />
+            <Dropdown
+              overlay={
+                <Menu>
+                  {appointmentPlan.rescheduleAmount !== -1 &&
+                    appointmentPlan.rescheduleType &&
+                    dayjs(startedAt)
+                      .subtract(appointmentPlan.rescheduleAmount, appointmentPlan.rescheduleType)
+                      .isAfter(new Date()) && (
+                      <Menu.Item onClick={() => setRescheduleModalVisible(true)}>
+                        {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleAppointment)}
+                      </Menu.Item>
+                    )}
+                  <Menu.Item onClick={() => setCancelModalVisible(true)}>
+                    {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={['click']}
+            >
+              <MoreOutlined className="ml-3" />
+            </Dropdown>
           </>
         )}
       </div>

@@ -51,7 +51,7 @@ export const useUpdateProductChannel = () => {
         }
         insert_product_channel(
           objects: $productChannelList
-          on_conflict: { constraint: product_channel_product_id_channel_id_key, update_columns: [channel_sku] }
+          on_conflict: { constraint: product_channel_product_id_channel_id_channel_sku_app_id_key, update_columns: [channel_sku] }
         ) {
           affected_rows
         }
