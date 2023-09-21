@@ -22,9 +22,6 @@ export type AppointmentPlanAdminProps = {
   reservationType: ReservationType | null
   // capacity=-1 represents no limit
   capacity: number
-  // rescheduleAmount =-1 represents not reschedule
-  rescheduleAmount: number
-  rescheduleType: ReservationType | null
   meetGenerationMethod: MeetGenerationMethod
 }
 

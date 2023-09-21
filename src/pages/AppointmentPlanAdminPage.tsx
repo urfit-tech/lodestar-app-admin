@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Button, Skeleton, Tabs } from 'antd'
+import { Button, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -38,8 +38,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
   const { permissions, currentMemberId } = useAuth()
-  const { appointmentPlanAdmin, refetchAppointmentPlanAdmin, loadingAppointmentPlanAdmin } =
-    useAppointmentPlanAdmin(appointmentPlanId)
+  const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
   return (
     <>
@@ -89,14 +88,10 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                {loadingAppointmentPlanAdmin ? (
-                  <Skeleton />
-                ) : (
-                  <AppointmentPlanBasicForm
-                    appointmentPlanAdmin={appointmentPlanAdmin}
-                    onRefetch={refetchAppointmentPlanAdmin}
-                  />
-                )}
+                <AppointmentPlanBasicForm
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
