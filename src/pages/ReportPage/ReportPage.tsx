@@ -1,14 +1,14 @@
+import { AreaChartOutlined } from '@ant-design/icons'
+import { gql, useQuery } from '@apollo/client'
+import { Spinner } from '@chakra-ui/spinner'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
-import { AdminBlock, AdminPageTitle } from '../../components/admin'
-import { AreaChartOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
-import { useQuery, gql } from '@apollo/client'
+import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import hasura from '../../hasura'
 import { ReportProps } from '../../types/report'
-import { Spinner } from '@chakra-ui/spinner'
-import dayjs from 'dayjs'
 
 const ReportPage: React.FC = () => {
   const { authToken } = useAuth()
@@ -17,7 +17,7 @@ const ReportPage: React.FC = () => {
   const { report } = useReport(reportId)
   const { signedUrl } = useReportSignedUrlById(reportId, authToken || '')
   const startedAt = dayjs(Date.now()).add(-1, 'month').format('YYYY-MM-DD')
-  const endedAt = dayjs(Date.now()).add(1, 'day').format('YYYY-MM-DD')
+  const endedAt = dayjs(Date.now()).format('YYYY-MM-DD')
   const signedUrlWithFilter = `${signedUrl}?startedAt=${startedAt}&endedAt=${endedAt}#titled=false`
   const handleIframeLoad = () => setIframeLoading(false)
   return (
