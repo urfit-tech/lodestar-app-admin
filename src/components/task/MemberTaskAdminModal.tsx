@@ -491,9 +491,7 @@ const MemberTaskAdminModal: React.FC<
             name="meetingGateway"
             initialValue={memberTask && memberTask?.meetingGateway ? memberTask.meetingGateway : 'jitsi'}
           >
-            <RadioGroup
-            // defaultValue={memberTask && memberTask?.meetingGateway ? memberTask.meetingGateway : 'jitsi'}
-            >
+            <RadioGroup>
               <Stack direction="row">
                 <Radio value="zoom" disabled={invalidGateways.includes('zoom')}>
                   Zoom
