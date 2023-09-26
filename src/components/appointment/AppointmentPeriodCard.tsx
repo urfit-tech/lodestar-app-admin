@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { dateRangeFormatter, handleError } from '../../helpers'
-import { GetMeetByAppointmentPlanAndPeriod } from '../../hooks/meet'
+import { GetMeetByTargetAndPeriod } from '../../hooks/meet'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AppointmentPeriodCardProps } from '../../types/appointment'
@@ -113,10 +113,10 @@ const AppointmentPeriodCard: React.FC<
     let startUrl
     if (!currentMemberId) return
     const { data } = await apolloClient.query<
-      hasura.GetMeetByAppointmentPlanAndPeriod,
-      hasura.GetMeetByAppointmentPlanAndPeriodVariables
+      hasura.GetMeetByTargetAndPeriod,
+      hasura.GetMeetByTargetAndPeriodVariables
     >({
-      query: GetMeetByAppointmentPlanAndPeriod,
+      query: GetMeetByTargetAndPeriod,
       variables: {
         appId,
         target: appointmentPlan.id,
@@ -127,7 +127,7 @@ const AppointmentPeriodCard: React.FC<
     })
     if (data.meet.length !== 0 && data.meet[0].options?.startUrl) {
       startUrl = data.meet[0].options.startUrl
-    } else if (enabledModules.meet_service && appointmentPlan.defaultMeetSystem === 'zoom') {
+    } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
       // create zoom meeting than get startUrl
       try {
         const { data: createMeetData } = await axios.post(

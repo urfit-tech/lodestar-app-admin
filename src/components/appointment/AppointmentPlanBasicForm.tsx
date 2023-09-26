@@ -1,6 +1,6 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Spin, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
@@ -8,6 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { UseService } from '../../hooks/service'
 import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
@@ -32,7 +33,7 @@ type FieldProps = {
   rescheduleAmount: number
   rescheduleType: ReservationType
   meetGenerationMethod: MeetGenerationMethod
-  defaultMeetSystem: string
+  defaultMeetGateway: string
 }
 
 const UpdateAppointmentPlan = gql`
@@ -45,7 +46,7 @@ const UpdateAppointmentPlan = gql`
     $rescheduleAmount: Int
     $rescheduleType: String
     $meetGenerationMethod: String
-    $defaultMeetSystem: String
+    $defaultMeetGateway: String
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
@@ -57,7 +58,7 @@ const UpdateAppointmentPlan = gql`
         reschedule_amount: $rescheduleAmount
         reschedule_type: $rescheduleType
         meet_generation_method: $meetGenerationMethod
-        default_meet_system: $defaultMeetSystem
+        default_meet_gateway: $defaultMeetGateway
       }
     ) {
       affected_rows
@@ -74,6 +75,7 @@ const AppointmentPlanBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
+  const { loading: loadingService, services } = UseService()
   const [updateAppointmentPlan] = useMutation<hasura.UpdateAppointmentPlan, hasura.UpdateAppointmentPlanVariables>(
     UpdateAppointmentPlan,
   )
@@ -95,7 +97,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
         rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
-        defaultMeetSystem: values.defaultMeetSystem,
+        defaultMeetGateway: values.defaultMeetGateway,
       },
     })
       .then(() => {
@@ -122,7 +124,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: appointmentPlanAdmin.rescheduleAmount || 1,
         rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
-        defaultMeetSystem: appointmentPlanAdmin.defaultMeetSystem,
+        defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
       }}
       onFinish={handleSubmit}
     >
@@ -279,8 +281,10 @@ const AppointmentPlanBasicForm: React.FC<{
         </Select>
       </Form.Item>
 
-      {enabledModules.zoom ? (
-        <Form.Item label="預設會議系統" name="defaultMeetSystem">
+      {loadingService ? (
+        <Spin />
+      ) : enabledModules.meet_service && services.filter(service => service.gateway === 'zoom').length !== 0 ? (
+        <Form.Item label="預設會議系統" name="defaultMeetGateway">
           <Select style={{ width: '150px' }} defaultValue="zoom">
             <Select.Option key="zoom" value="zoom">
               Zoom

@@ -23,7 +23,7 @@ export type AppointmentPlan = {
   reservationType: string | null
   capacity: number
   meetGenerationMethod: string
-  defaultMeetSystem: MeetGateway
+  defaultMeetGateway: MeetGateway
   rescheduleAmount: number
   rescheduleType: RescheduleType
 }
@@ -65,7 +65,7 @@ export type AppointmentPlanAdmin = Pick<
   | 'currencyId'
   | 'creatorId'
   | 'isPrivate'
-  | 'defaultMeetSystem'
+  | 'defaultMeetGateway'
   | 'rescheduleAmount'
   | 'rescheduleType'
 > & {
@@ -90,7 +90,7 @@ export type AppointmentPeriodPlanProps = {
   duration: number
   rescheduleAmount: number
   rescheduleType: RescheduleType
-  defaultMeetSystem: MeetGateway
+  defaultMeetGateway: MeetGateway
 }
 
 export type AppointmentPeriodCardProps = {
@@ -104,7 +104,7 @@ export type AppointmentPeriodCardProps = {
   }
   appointmentPlan: Pick<
     AppointmentPlan,
-    'id' | 'title' | 'duration' | 'rescheduleAmount' | 'rescheduleType' | 'defaultMeetSystem'
+    'id' | 'title' | 'duration' | 'rescheduleAmount' | 'rescheduleType' | 'defaultMeetGateway'
   >
   startedAt: Date
   endedAt: Date

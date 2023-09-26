@@ -75,7 +75,6 @@ const appointmentMessages = {
     },
     canceledReason: { id: 'appointmentMessages.AppointmentDetailModal.canceledReason', defaultMessage: '取消原因' },
   }),
-
   AppointmentIssueAndResultModal: defineMessages({
     appointmentIssue: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentIssue',
@@ -94,7 +93,6 @@ const appointmentMessages = {
       defaultMessage: '※此紀錄不會公開給學員看到',
     },
   }),
-
   AppointmentCancelModal: defineMessages({
     confirmCancelAlert: {
       id: 'appointmentMessages.AppointmentCancelModal.confirmCancelAlert',
@@ -113,6 +111,12 @@ const appointmentMessages = {
     meetingLink: {
       id: 'appointmentMessages.AppointmentCancelModal.meetingLink',
       defaultMessage: 'meeting link',
+    },
+  }),
+  AppointmentBasicForm: defineMessages({
+    defaultMeetGateWay: {
+      id: 'appointmentMessages.AppointmentBasicForm.defaultMeetGateWay,',
+      defaultMessage: '預設會議系統',
     },
   }),
 }
