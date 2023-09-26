@@ -7,7 +7,7 @@ import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineUser } from 'react-icons/ai'
 import { useIntl } from 'react-intl'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { handleError } from '../../helpers'
@@ -146,7 +146,13 @@ const LoginSection: React.VFC<{
           </InputGroup>
 
           <ForgetPassword>
-            <Link to="/forgot-password">{formatMessage(authMessages.LoginSection.forgotPassword)}</Link>
+            <div
+              onClick={() => {
+                window.location.href = `https://${window.location.hostname}/forgot-password`
+              }}
+            >
+              {formatMessage(authMessages.LoginSection.forgotPassword)}
+            </div>
           </ForgetPassword>
 
           <Button variant="primary" isFullWidth isLoading={loading} onClick={handleLogin}>
