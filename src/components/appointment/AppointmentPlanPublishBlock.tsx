@@ -53,11 +53,11 @@ const AppointmentPlanPublishBlock: React.FC<{
   const appointmentPlanStatus =
     errors.length > 0
       ? 'notValidated'
-      : appointmentPlanAdmin.publishedAt
-      ? 'unpublished'
-      : appointmentPlanAdmin.isPrivate
+      : appointmentPlanAdmin.isPrivate && appointmentPlanAdmin.publishedAt
       ? 'publishedInPrivate'
-      : 'published'
+      : appointmentPlanAdmin.publishedAt
+      ? 'published'
+      : 'unpublished'
 
   const appointmentPlanStatusMessage: {
     [status in typeof appointmentPlanStatus]: {
