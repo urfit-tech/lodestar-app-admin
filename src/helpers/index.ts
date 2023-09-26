@@ -422,7 +422,7 @@ export const isImageUrlResized = (imageUrl: string) => {
 }
 
 export const isValidEmail = (email: string) => {
-  return /^\w+((-\w+)|(\.\w+))*@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
+  return /^[.\w%+-]+@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
 }
 
 export const deleteMeeting = async (meetId: string, authToken: string | null) => {
