@@ -12,6 +12,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
 import { useAppointmentPlanAdmin, useUpdateOrderProductOptions } from '../../hooks/appointment'
+import { useService } from '../../hooks/service'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { AppointmentPeriodPlanProps } from '../../types/appointment'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -107,16 +108,17 @@ const AppointmentRescheduleModal: React.VFC<
   AdminModalProps & {
     orderProductId: string
     onRefetch?: () => void
-    creator: { id: string; name: string; avatarUrl: string }
+    creator: { id: string; name: string; avatarUrl: string | null }
     appointmentPlan: AppointmentPeriodPlanProps
     memberId: string
     onRescheduleModalVisible: (status: boolean) => void
   }
 > = ({ orderProductId, onRefetch, creator, appointmentPlan, memberId, onRescheduleModalVisible, ...props }) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
   const { authToken, currentMemberId } = useAuth()
+  const [loading, setLoading] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const { services } = useService()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(
     appointmentPlan.id,
     memberId,
@@ -208,16 +210,23 @@ const AppointmentRescheduleModal: React.VFC<
           </StyledInfo>
         ) : (
           <>
-            {appointmentPlanAdmin?.periods.map(period => (
-              <div key={period.id}>
+            {appointmentPlanAdmin?.periods.map((period, index) => (
+              <div key={`${period.appointmentPlanId}-${index}`}>
                 <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
                 <AppointmentPeriodItem
-                  id={period.id}
-                  scheduleId={period.id}
-                  startedAt={period.startedAt}
-                  endedAt={period.endedAt}
+                  creatorId={appointmentPlanAdmin.creatorId}
+                  appointmentPlan={{
+                    id: appointmentPlanAdmin.id,
+                    capacity: appointmentPlanAdmin.capacity,
+                    defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+                  }}
+                  period={{
+                    startedAt: period.startedAt,
+                    endedAt: period.endedAt,
+                  }}
+                  services={services}
+                  isPeriodExcluded={period.isExcluded}
                   isEnrolled={period.targetMemberBooked}
-                  isExcluded={period.isBookedReachLimit || period.isExcluded}
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
                       setRescheduleAppointment({

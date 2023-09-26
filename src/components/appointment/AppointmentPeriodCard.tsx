@@ -1,5 +1,5 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { gql, useApolloClient } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import { Button, Divider, Dropdown, Menu } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -11,7 +11,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter, handleError } from '../../helpers'
+import { GetMeetByTargetAndPeriod } from '../../hooks/meet'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AppointmentPeriodCardProps } from '../../types/appointment'
@@ -106,51 +107,59 @@ const AppointmentPeriodCard: React.FC<
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
-  const joinUrl =
-    orderProduct.options?.joinUrl ||
-    `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
 
   const handleJoin = async () => {
     setLoading(true)
-    if (enabledModules.meet_service && !orderProduct.options?.joinUrl) {
-      const { data } = await apolloClient.query<
-        hasura.GET_APPOINTMENT_PERIOD_MEET_ID,
-        hasura.GET_APPOINTMENT_PERIOD_MEET_IDVariables
-      >({
-        query: gql`
-          query GET_APPOINTMENT_PERIOD_MEET_ID($orderProductId: uuid!) {
-            order_product(where: { id: { _eq: $orderProductId } }) {
-              id
-              options
-            }
-          }
-        `,
-        variables: { orderProductId: orderProduct.id },
-      })
-      const meetId = data.order_product?.[0]?.options?.meetId
-
+    let startUrl
+    if (!currentMemberId) return
+    const { data } = await apolloClient.query<
+      hasura.GetMeetByTargetAndPeriod,
+      hasura.GetMeetByTargetAndPeriodVariables
+    >({
+      query: GetMeetByTargetAndPeriod,
+      variables: {
+        appId,
+        target: appointmentPlan.id,
+        startedAt: startedAt,
+        endedAt: endedAt,
+        memberId: currentMemberId,
+      },
+    })
+    if (data.meet.length !== 0 && data.meet[0].options?.startUrl) {
+      startUrl = data.meet[0].options.startUrl
+    } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
+      // create zoom meeting than get startUrl
       try {
-        await axios
-          .post(
-            `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
-            {
-              role: 'host',
-              name: `${appId}-${currentMemberId}`,
+        const { data: createMeetData } = await axios.post(
+          `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+          {
+            hostMemberId: creator.id,
+            memberId: currentMemberId,
+            type: 'appointmentPlan',
+            target: appointmentPlan.id,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            autoRecording: true,
+            service: 'zoom',
+            nbfAt: startedAt,
+            expAt: endedAt,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${authToken}`,
             },
-            {
-              headers: {
-                authorization: `Bearer ${authToken}`,
-              },
-            },
-          )
-          .then(({ data: { code, message, data } }) => window.open(data.target))
+          },
+        )
+        startUrl = createMeetData.data?.options?.startUrl
       } catch (error) {
-        console.log(`get meets error: ${error}`)
-        window.open(joinUrl)
+        handleError(error)
       }
-    } else {
-      window.open(joinUrl)
     }
+    // default jitsi
+    if (!startUrl) {
+      startUrl = `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
+    }
+    if (startUrl) window.open(startUrl)
     setLoading(false)
   }
 

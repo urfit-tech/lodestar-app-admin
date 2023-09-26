@@ -75,7 +75,6 @@ const appointmentMessages = {
     },
     canceledReason: { id: 'appointmentMessages.AppointmentDetailModal.canceledReason', defaultMessage: '取消原因' },
   }),
-
   AppointmentIssueAndResultModal: defineMessages({
     appointmentIssue: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentIssue',
@@ -94,7 +93,6 @@ const appointmentMessages = {
       defaultMessage: '※此紀錄不會公開給學員看到',
     },
   }),
-
   AppointmentCancelModal: defineMessages({
     confirmCancelAlert: {
       id: 'appointmentMessages.AppointmentCancelModal.confirmCancelAlert',
@@ -114,6 +112,18 @@ const appointmentMessages = {
       id: 'appointmentMessages.AppointmentCancelModal.meetingLink',
       defaultMessage: 'meeting link',
     },
+  }),
+  AppointmentBasicForm: defineMessages({
+    defaultMeetGateWay: {
+      id: 'appointmentMessages.AppointmentBasicForm.defaultMeetGateWay,',
+      defaultMessage: '預設會議系統',
+    },
+  }),
+  AppointmentPeriodItem: defineMessages({
+    booked: { id: 'appointment.AppointmentPeriodItem.booked', defaultMessage: '已預約' },
+    bookable: { id: 'appointment.AppointmentPeriodItem.bookable', defaultMessage: '可預約' },
+    meetingIsFull: { id: 'appointment.AppointmentPeriodItem.meetingIsFull', defaultMessage: '已無會議室' },
+    closed: { id: 'appointment.AppointmentPeriodItem.closed', defaultMessage: '已關閉' },
   }),
 }
 export default appointmentMessages

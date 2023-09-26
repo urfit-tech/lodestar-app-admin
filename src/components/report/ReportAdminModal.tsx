@@ -22,7 +22,7 @@ const ReportAdminModal: React.FC<
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, ...props }) => {
   const [loading, setLoading] = useState(false)
-  const [insertReport] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_REPORT)
+  const [insertReport] = useMutation<hasura.INSERT_REPORT, hasura.INSERT_REPORTVariables>(INSERT_REPORT)
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { formatMessage } = useIntl()

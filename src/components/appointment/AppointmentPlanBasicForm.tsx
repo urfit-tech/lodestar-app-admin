@@ -1,13 +1,15 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Spin, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../../types/appointment'
+import { useService } from '../../hooks/service'
+import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
@@ -31,6 +33,7 @@ type FieldProps = {
   rescheduleAmount: number
   rescheduleType: ReservationType
   meetGenerationMethod: MeetGenerationMethod
+  defaultMeetGateway: string
 }
 
 const UpdateAppointmentPlan = gql`
@@ -43,6 +46,7 @@ const UpdateAppointmentPlan = gql`
     $rescheduleAmount: Int
     $rescheduleType: String
     $meetGenerationMethod: String
+    $defaultMeetGateway: String
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
@@ -54,6 +58,7 @@ const UpdateAppointmentPlan = gql`
         reschedule_amount: $rescheduleAmount
         reschedule_type: $rescheduleType
         meet_generation_method: $meetGenerationMethod
+        default_meet_gateway: $defaultMeetGateway
       }
     ) {
       affected_rows
@@ -62,13 +67,15 @@ const UpdateAppointmentPlan = gql`
 `
 
 const AppointmentPlanBasicForm: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
+  const { loading: loadingService, services } = useService()
   const [updateAppointmentPlan] = useMutation<hasura.UpdateAppointmentPlan, hasura.UpdateAppointmentPlanVariables>(
     UpdateAppointmentPlan,
   )
@@ -90,6 +97,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
         rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
+        defaultMeetGateway: values.defaultMeetGateway,
       },
     })
       .then(() => {
@@ -116,6 +124,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: appointmentPlanAdmin.rescheduleAmount || 1,
         rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
+        defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
       }}
       onFinish={handleSubmit}
     >
@@ -175,7 +184,6 @@ const AppointmentPlanBasicForm: React.FC<{
           </Form.Item>
 
           <Form.Item
-            className="ml-2"
             name="reservationType"
             rules={[
               {
@@ -186,7 +194,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <Select style={{ width: '100px' }}>
+            <Select style={{ width: '150px' }}>
               <Select.Option key="hour" value="hour">
                 {formatMessage(messages.hoursAgo)}
               </Select.Option>
@@ -272,6 +280,21 @@ const AppointmentPlanBasicForm: React.FC<{
           </Select.Option>
         </Select>
       </Form.Item>
+
+      {loadingService ? (
+        <Spin />
+      ) : enabledModules.meet_service && services.filter(service => service.gateway === 'zoom').length !== 0 ? (
+        <Form.Item label="預設會議系統" name="defaultMeetGateway">
+          <Select style={{ width: '150px' }} defaultValue="zoom">
+            <Select.Option key="zoom" value="zoom">
+              Zoom
+            </Select.Option>
+            <Select.Option key="jitsi" value="jitsi">
+              Jitsi
+            </Select.Option>
+          </Select>
+        </Form.Item>
+      ) : null}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">

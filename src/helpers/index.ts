@@ -485,7 +485,6 @@ export const createMeeting = async (
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
       {
-        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
         autoRecording: true,
         service: 'zoom',
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
