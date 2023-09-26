@@ -13,6 +13,7 @@ import { dateRangeFormatter, handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 import { useCheck } from '../../hooks/checkout'
+import { useService } from '../../hooks/service'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
@@ -115,7 +116,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const [form] = useForm<FieldProps>()
   const { host, settings } = useApp()
   const { authToken } = useAuth()
-  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
+
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
     'period',
   )
@@ -132,8 +133,10 @@ const AppointmentPlanAppointmentModal: React.FC<
     member: null,
     discountId: null,
   })
-
   const [loading, setLoading] = useState(false)
+  const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
+
+  const { services } = useService()
   const { orderChecking, check, orderPlacing } = useCheck(
     [`AppointmentPlan_${appointmentPlanId}`],
     appointmentValues.discountId && appointmentValues.discountId.split('_')[1] ? appointmentValues.discountId : 'Coin',
@@ -143,8 +146,10 @@ const AppointmentPlanAppointmentModal: React.FC<
       [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
     },
   )
-
-  const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
+  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin } = useAppointmentPlanAdmin(
+    appointmentPlanId,
+    appointmentValues.member?.id || undefined,
+  )
 
   const isPaymentAvailable =
     !orderChecking &&
@@ -303,10 +308,22 @@ const AppointmentPlanAppointmentModal: React.FC<
                       {periods.map((period, index) => (
                         <AppointmentPeriodItem
                           key={`${period.appointmentPlanId}-${index}`}
+                          creatorId={appointmentPlanAdmin.creatorId}
+                          appointmentPlan={{
+                            id: appointmentPlanAdmin.id,
+                            capacity: appointmentPlanAdmin.capacity,
+                            defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+                          }}
+                          period={{
+                            startedAt: period.startedAt,
+                            endedAt: period.endedAt,
+                          }}
+                          services={services}
+                          isPeriodExcluded={period.isExcluded}
+                          isEnrolled={period.targetMemberBooked}
                           onClick={() =>
                             !period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null
                           }
-                          {...period}
                         />
                       ))}
                     </StyledWrapper>

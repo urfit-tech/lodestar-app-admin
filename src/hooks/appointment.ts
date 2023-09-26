@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { useMemo } from 'react'
 import hasura from '../hasura'
@@ -446,4 +447,63 @@ export const useUpdateOrderProductOptions = (orderProductId: string, options: { 
         },
       },
     })
+}
+
+export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, startedAt: Date, endedAt: Date) => {
+  const { id: appId } = useApp()
+  const { loading, data, error } = useQuery<
+    hasura.GetMeetByAppointmentPlanIdAndPeriod,
+    hasura.GetMeetByAppointmentPlanIdAndPeriodVariables
+  >(
+    gql`
+      query GetMeetByAppointmentPlanIdAndPeriod(
+        $target: uuid!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+        $appId: String!
+      ) {
+        meet(
+          where: {
+            target: { _eq: $target }
+            started_at: { _eq: $startedAt }
+            ended_at: { _eq: $endedAt }
+            app_id: { _eq: $appId }
+            deleted_at: { _is_null: true }
+            meet_members: { deleted_at: { _is_null: true } }
+          }
+        ) {
+          id
+          host_member_id
+          meet_members {
+            id
+            member_id
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        target: appointmentPlanId,
+        startedAt: startedAt.toISOString(),
+        endedAt: endedAt.toISOString(),
+        appId,
+      },
+    },
+  )
+  const meet = data?.meet?.[0]
+    ? {
+        id: data.meet[0].id,
+        hostMemberId: data.meet[0].host_member_id,
+        meetMembers: data.meet[0].meet_members.map(v => ({
+          id: v.id,
+          memberId: v.member_id,
+        })),
+      }
+    : null
+
+  return {
+    loading,
+    meet,
+    error,
+  }
 }

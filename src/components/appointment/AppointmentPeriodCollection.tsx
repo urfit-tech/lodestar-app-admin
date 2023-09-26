@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
+import { useService } from '../../hooks/service'
 import { AppointmentPeriod, AppointmentSchedule } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
@@ -43,7 +44,13 @@ const messages = defineMessages({
 })
 
 type AppointmentPeriodCollectionProps = {
-  periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+  appointmentPlan: {
+    id: string
+    capacity: number
+    defaultMeetGateway: string
+    creatorId: string
+  }
+  periods: (Pick<AppointmentPeriod, 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
     schedule: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'> | null
     isEnrolled?: boolean
     isExcluded?: boolean
@@ -52,8 +59,14 @@ type AppointmentPeriodCollectionProps = {
   onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
 }
 
-const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({ periods, onDelete, onClose }) => {
+const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({
+  appointmentPlan,
+  periods,
+  onDelete,
+  onClose,
+}) => {
   const { formatMessage } = useIntl()
+  const { services } = useService()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
 
@@ -63,7 +76,20 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
       <StyledWrapper>
         {periods.map((period, index) => (
           <AppointmentPeriodItem
-            key={`${period.appointmentPlanId}-${index}`}
+            key={`${appointmentPlan.id}-${index}`}
+            creatorId={appointmentPlan.creatorId}
+            appointmentPlan={{
+              id: appointmentPlan.id,
+              capacity: appointmentPlan.capacity,
+              defaultMeetGateway: appointmentPlan.defaultMeetGateway,
+            }}
+            period={{
+              startedAt: period.startedAt,
+              endedAt: period.endedAt,
+            }}
+            services={services}
+            isPeriodExcluded={period.isExcluded}
+            isEnrolled={period.isEnrolled}
             onClick={() => {
               if (!period.isEnrolled) {
                 setSelectedPeriod(period)

@@ -75,8 +75,13 @@ const AppointmentPlanScheduleBlock: React.FC<{
       {Object.values(periodCollections).map(periods => (
         <AppointmentPeriodCollection
           key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+          appointmentPlan={{
+            id: appointmentPlanAdmin.id,
+            capacity: appointmentPlanAdmin.capacity,
+            defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+            creatorId: appointmentPlanAdmin.creatorId,
+          }}
           periods={periods.map(period => ({
-            appointmentPlanId: period.appointmentPlanId,
             schedule:
               appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
             appointmentScheduleId: period.appointmentScheduleId,

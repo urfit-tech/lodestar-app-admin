@@ -12,7 +12,7 @@ export const GetService = gql`
   }
 `
 
-export const UseService = () => {
+export const useService = () => {
   const { id: appId } = useApp()
   const { loading, data } = useQuery<hasura.GetService, hasura.GetServiceVariables>(GetService, {
     variables: { appId },

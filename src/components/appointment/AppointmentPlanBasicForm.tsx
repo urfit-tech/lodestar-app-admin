@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { UseService } from '../../hooks/service'
+import { useService } from '../../hooks/service'
 import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
@@ -75,7 +75,7 @@ const AppointmentPlanBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
-  const { loading: loadingService, services } = UseService()
+  const { loading: loadingService, services } = useService()
   const [updateAppointmentPlan] = useMutation<hasura.UpdateAppointmentPlan, hasura.UpdateAppointmentPlanVariables>(
     UpdateAppointmentPlan,
   )

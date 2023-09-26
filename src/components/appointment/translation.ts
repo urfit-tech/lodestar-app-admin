@@ -119,5 +119,11 @@ const appointmentMessages = {
       defaultMessage: '預設會議系統',
     },
   }),
+  AppointmentPeriodItem: defineMessages({
+    booked: { id: 'appointment.AppointmentPeriodItem.booked', defaultMessage: '已預約' },
+    bookable: { id: 'appointment.AppointmentPeriodItem.bookable', defaultMessage: '可預約' },
+    meetingIsFull: { id: 'appointment.AppointmentPeriodItem.meetingIsFull', defaultMessage: '已無會議室' },
+    closed: { id: 'appointment.AppointmentPeriodItem.closed', defaultMessage: '已關閉' },
+  }),
 }
 export default appointmentMessages

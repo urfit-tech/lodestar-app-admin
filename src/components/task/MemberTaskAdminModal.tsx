@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { deleteMeeting, handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
-import { GetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { GetOverlapCreatorMeets, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { MemberTaskProps } from '../../types/member'
@@ -123,10 +123,14 @@ const MemberTaskAdminModal: React.FC<
               appId,
             },
           })
-          const { data: meetData } = await apolloClient.query<hasura.GetOverlapMeet, hasura.GetOverlapMeetVariables>({
-            query: GetOverlapMeet,
+          const { data: meetData } = await apolloClient.query<
+            hasura.GetOverlapCreatorMeets,
+            hasura.GetOverlapCreatorMeetsVariables
+          >({
+            query: GetOverlapCreatorMeets,
             variables: {
               appId,
+              target: memberTaskId,
               startedAt: values.dueAt.toDate(),
               endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
             },
@@ -447,10 +451,14 @@ const MemberTaskAdminModal: React.FC<
                   },
                 })
                 const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
-                const { data } = await apolloClient.query<hasura.GetOverlapMeet, hasura.GetOverlapMeetVariables>({
-                  query: GetOverlapMeet,
+                const { data } = await apolloClient.query<
+                  hasura.GetOverlapCreatorMeets,
+                  hasura.GetOverlapCreatorMeetsVariables
+                >({
+                  query: GetOverlapCreatorMeets,
                   variables: {
                     appId,
+                    target: '',
                     startedAt: values.dueAt.toDate(),
                     endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
                   },
