@@ -110,13 +110,12 @@ const AppointmentPeriodCard: React.FC<
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
 
-  const handleJoin = async () => {
+  const handleStartMeet = async () => {
     setLoading(true)
     try {
       let startUrl
       // if (dayjs(startedAt).toDate().getTime() > dayjs().toDate().getTime()) return message.info('會議尚未開始')
       if (!currentMemberId) return
-
       if (meet?.options?.startUrl) {
         startUrl = meet?.options.startUrl
       } else if (meetGenerationMethod === 'manual') {
@@ -127,7 +126,7 @@ const AppointmentPeriodCard: React.FC<
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
           {
             hostMemberId: creator.id,
-            memberId: currentMemberId,
+            memberId: member.id,
             type: 'appointmentPlan',
             target: appointmentPlan.id,
             startedAt: startedAt,
@@ -260,7 +259,7 @@ const AppointmentPeriodCard: React.FC<
                 type="primary"
                 className="ml-2"
                 disabled={!orderProduct.id}
-                onClick={() => handleJoin()}
+                onClick={() => handleStartMeet()}
               >
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
               </StyledButton>
