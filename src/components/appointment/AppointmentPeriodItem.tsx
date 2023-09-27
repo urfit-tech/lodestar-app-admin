@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components'
 import { Skeleton } from '@chakra-ui/react'
 import appointmentMessages from './translation'
 import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
-import { useOverLapCreatorMeets } from '../../hooks/meet'
+import { useOverlapMeets } from '../../hooks/meet'
 
 const StyledItemWrapper = styled.div<{ variant?: 'bookable' | 'closed' | 'booked' | 'meetingFull' }>`
   position: relative;
@@ -74,14 +74,10 @@ const AppointmentPeriodItem: React.FC<{
     period.startedAt,
     period.endedAt,
   )
-  const { loading: loadingAvailableCreatorMeet, overLapCreatorMeets } = useOverLapCreatorMeets(
-    appointmentPlan.id,
-    period.startedAt,
-    period.endedAt,
-    creatorId,
-  )
+  const { loading: loadingAvailableCreatorMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
 
-  const currentUseService = uniq(overLapCreatorMeets.map(overLapCreatorMeet => overLapCreatorMeet.serviceId))
+  const currentUseService = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
+  const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
 
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
 
@@ -89,7 +85,7 @@ const AppointmentPeriodItem: React.FC<{
     variant = 'closed'
   } else if (isEnrolled) {
     variant = 'booked'
-  } else if (overLapCreatorMeets.length > 1) {
+  } else if (overlapCreatorMeets.length > 1) {
     variant = 'meetingFull'
   } else {
     if (appointmentPlan.defaultMeetGateway === 'zoom') {

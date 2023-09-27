@@ -2,25 +2,24 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 
-export const useOverLapCreatorMeets = (target: string, startedAt: Date, endedAt: Date, hostMemberId?: string) => {
+export const useOverlapMeets = (startedAt: Date, endedAt: Date) => {
   const { id: appId } = useApp()
-  const { loading, data } = useQuery<hasura.GetOverlapCreatorMeets, hasura.GetOverlapCreatorMeetsVariables>(
-    GetOverlapCreatorMeets,
-    {
-      variables: { appId, target, startedAt, endedAt, hostMemberId },
-    },
-  )
-  const overLapCreatorMeets: {
+  const { loading, data } = useQuery<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>(GetOverlapMeets, {
+    variables: { appId, startedAt, endedAt },
+  })
+  const overlapMeets: {
     id: string
+    target: string
     hostMemberId: string
     serviceId: string
   }[] =
     data?.meet.map(v => ({
       id: v.id,
+      target: v.target,
       hostMemberId: v.host_member_id,
       serviceId: v.service_id,
     })) || []
-  return { loading, overLapCreatorMeets }
+  return { loading, overlapMeets }
 }
 
 export const useMutateMeet = () => {
@@ -75,25 +74,18 @@ export const useMutateMeetMember = () => {
   }
 }
 
-export const GetOverlapCreatorMeets = gql`
-  query GetOverlapCreatorMeets(
-    $appId: String!
-    $target: uuid
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $hostMemberId: String
-  ) {
+export const GetOverlapMeets = gql`
+  query GetOverlapMeets($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
     meet(
       where: {
         app_id: { _eq: $appId }
-        target: { _neq: $target }
         started_at: { _lte: $endedAt }
         ended_at: { _gte: $startedAt }
-        deleted_at: { _is_null: false }
-        host_member_id: { _eq: $hostMemberId }
+        deleted_at: { _is_null: true }
       }
     ) {
       id
+      target
       host_member_id
       service_id
     }

@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { deleteMeeting, handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
-import { GetOverlapCreatorMeets, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { GetOverlapMeets, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { MemberTaskProps } from '../../types/member'
@@ -123,24 +123,23 @@ const MemberTaskAdminModal: React.FC<
               appId,
             },
           })
-          const { data: meetData } = await apolloClient.query<
-            hasura.GetOverlapCreatorMeets,
-            hasura.GetOverlapCreatorMeetsVariables
+          const { data: overlapMeetsData } = await apolloClient.query<
+            hasura.GetOverlapMeets,
+            hasura.GetOverlapMeetsVariables
           >({
-            query: GetOverlapCreatorMeets,
+            query: GetOverlapMeets,
             variables: {
               appId,
-              target: memberTaskId,
               startedAt: values.dueAt.toDate(),
               endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
             },
           })
 
-          if (enabledModules.zoom) {
-          }
-
           const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
-          const currentUseService = uniq(meetData.meet.map(v => v.service_id))
+          const currentUseService = uniq(overlapMeetsData.meet.map(v => v.service_id))
+          const overlapCreatorMeets = overlapMeetsData.meet.filter(
+            overlapMeetData => overlapMeetData.host_member_id === memberTask?.executor?.id,
+          )
 
           // check zoom service is enough
           if (
@@ -150,7 +149,7 @@ const MemberTaskAdminModal: React.FC<
             return handleError('無可用的 zoom 帳號')
           }
           // check if the meeting schedules overlap
-          if (meetData.meet.filter(v => v.host_member_id === values.executorId).length >= 1) {
+          if (overlapCreatorMeets.length >= 1) {
             return handleError('指派人員此時段不可新增代辦')
           }
         }
@@ -451,14 +450,10 @@ const MemberTaskAdminModal: React.FC<
                   },
                 })
                 const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
-                const { data } = await apolloClient.query<
-                  hasura.GetOverlapCreatorMeets,
-                  hasura.GetOverlapCreatorMeetsVariables
-                >({
-                  query: GetOverlapCreatorMeets,
+                const { data } = await apolloClient.query<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>({
+                  query: GetOverlapMeets,
                   variables: {
                     appId,
-                    target: '',
                     startedAt: values.dueAt.toDate(),
                     endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
                   },
