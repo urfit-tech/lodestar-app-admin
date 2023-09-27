@@ -76,7 +76,7 @@ const AppointmentPeriodItem: React.FC<{
   )
   const { loading: loadingAvailableCreatorMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
 
-  const currentUseService = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
+  const currentUseServices = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
   const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
 
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
@@ -91,25 +91,29 @@ const AppointmentPeriodItem: React.FC<{
     if (appointmentPlan.defaultMeetGateway === 'zoom') {
       if (
         zoomServices.length >= 1 &&
-        zoomServices.filter(zoomService => !currentUseService.includes(zoomService)).length >= 1
+        zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
       ) {
-        if (appointmentPlan.capacity !== -1) {
+        if (appointmentPlan.capacity === -1) {
           variant = 'bookable'
         } else {
-          zoomServices.filter(zoomService => !currentUseService.includes(zoomService)).length > appointmentPlan.capacity
-            ? (variant = 'bookable')
-            : (variant = 'meetingFull')
+          if (meet) {
+            meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+          } else {
+            variant = 'bookable'
+          }
         }
       } else {
         variant = 'meetingFull'
       }
     } else {
-      if (appointmentPlan.capacity !== -1) {
-        meet && meet?.meetMembers.length >= appointmentPlan.capacity
-          ? (variant = 'meetingFull')
-          : (variant = 'bookable')
-      } else {
+      if (appointmentPlan.capacity === -1) {
         variant = 'bookable'
+      } else {
+        if (meet) {
+          meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+        } else {
+          variant = 'bookable'
+        }
       }
     }
   }
