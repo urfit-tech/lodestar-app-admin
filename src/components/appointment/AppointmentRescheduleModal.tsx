@@ -118,7 +118,7 @@ const AppointmentRescheduleModal: React.VFC<
   const { authToken, currentMemberId } = useAuth()
   const [loading, setLoading] = useState(false)
   const [confirm, setConfirm] = useState(false)
-  const { services } = useService()
+  const { loading: loadingServices, services } = useService()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(
     appointmentPlan.id,
     memberId,
@@ -225,6 +225,7 @@ const AppointmentRescheduleModal: React.VFC<
                     endedAt: period.endedAt,
                   }}
                   services={services}
+                  loadingServices={loadingServices}
                   isPeriodExcluded={period.isExcluded}
                   isEnrolled={period.targetMemberBooked}
                   onClick={() => {

@@ -66,7 +66,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
   onClose,
 }) => {
   const { formatMessage } = useIntl()
-  const { services } = useService()
+  const { loading: loadingServices, services } = useService()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
 
@@ -88,6 +88,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
               endedAt: period.endedAt,
             }}
             services={services}
+            loadingServices={loadingServices}
             isPeriodExcluded={period.isExcluded}
             isEnrolled={period.isEnrolled}
             onClick={() => {

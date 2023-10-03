@@ -136,7 +136,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const [loading, setLoading] = useState(false)
   const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
 
-  const { services } = useService()
+  const { loading: loadingServices, services } = useService()
   const { orderChecking, check, orderPlacing } = useCheck(
     [`AppointmentPlan_${appointmentPlanId}`],
     appointmentValues.discountId && appointmentValues.discountId.split('_')[1] ? appointmentValues.discountId : 'Coin',
@@ -319,6 +319,7 @@ const AppointmentPlanAppointmentModal: React.FC<
                             endedAt: period.endedAt,
                           }}
                           services={services}
+                          loadingServices={loadingServices}
                           isPeriodExcluded={period.isExcluded}
                           isEnrolled={period.targetMemberBooked}
                           onClick={() =>
