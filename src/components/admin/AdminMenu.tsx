@@ -44,7 +44,7 @@ export const StyledMenu = styled(Menu)`
   }
 `
 
-const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
+const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { enabledModules, settings } = useApp()
@@ -711,35 +711,37 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           onOpenChange={handleOpenChange}
           onClick={handleClick}
         >
-          {defaultMenuItems
-            .filter(v => v.permissionIsAllowed)
-            .map(v => {
-              if (v.subMenuItems) {
-                return (
-                  <Menu.SubMenu
-                    key={v.key}
-                    title={
-                      <span className="d-flex">
-                        <Icon component={v.icon} className="d-flex align-items-center" />
-                        <span>{v.name}</span>
-                      </span>
-                    }
-                  >
-                    {v.subMenuItems
-                      .filter(w => w.permissionIsAllowed)
-                      .map(w => (
-                        <Menu.Item key={w.key}>{w.name}</Menu.Item>
-                      ))}
-                  </Menu.SubMenu>
-                )
-              }
-              return (
-                <Menu.Item key={v.key} className="d-flex">
-                  <Icon component={v.icon} className="d-flex align-items-center" />
-                  <span>{v.name}</span>
-                </Menu.Item>
-              )
-            })}
+          {opened
+            ? defaultMenuItems
+                .filter(v => v.permissionIsAllowed)
+                .map(v => {
+                  if (v.subMenuItems) {
+                    return (
+                      <Menu.SubMenu
+                        key={v.key}
+                        title={
+                          <span className="d-flex">
+                            <Icon component={v.icon} className="d-flex align-items-center" />
+                            <span>{v.name}</span>
+                          </span>
+                        }
+                      >
+                        {v.subMenuItems
+                          .filter(w => w.permissionIsAllowed)
+                          .map(w => (
+                            <Menu.Item key={w.key}>{w.name}</Menu.Item>
+                          ))}
+                      </Menu.SubMenu>
+                    )
+                  }
+                  return (
+                    <Menu.Item key={v.key} className="d-flex">
+                      <Icon component={v.icon} className="d-flex align-items-center" />
+                      <span>{v.name}</span>
+                    </Menu.Item>
+                  )
+                })
+            : null}
         </StyledMenu>
       )}
     </>
