@@ -181,7 +181,7 @@ const saleMessages = {
     invoiceAddress: { id: 'sale.OrderExportModal.invoiceAddress', defaultMessage: '發票地址' },
     shippingFee: { id: 'sale.OrderExportModal.shippingFee', defaultMessage: 'Shipping fee' },
     referrer: { id: 'sale.OrderExportModal.referrer', defaultMessage: 'recommender' },
-    requestSuccess: { id: 'sale.OrderExportModal.requestSuccess', defaultMessage: 'request success.' },
+    requestSuccess: { id: 'sale.OrderExportModal.requestSuccess', defaultMessage: 'request success, result will send to your mail.' },
   }),
 }
 
