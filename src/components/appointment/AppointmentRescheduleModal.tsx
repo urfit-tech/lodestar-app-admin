@@ -118,7 +118,7 @@ const AppointmentRescheduleModal: React.VFC<
   const { authToken, currentMemberId } = useAuth()
   const [loading, setLoading] = useState(false)
   const [confirm, setConfirm] = useState(false)
-  const { services } = useService()
+  const { loading: loadingServices, services } = useService()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(
     appointmentPlan.id,
     memberId,
@@ -131,6 +131,7 @@ const AppointmentRescheduleModal: React.VFC<
     periodEndedAt: Date | null
     appointmentPlanId: string
   }>()
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
 
   const handleReschedule = async () => {
     setLoading(true)
@@ -212,7 +213,9 @@ const AppointmentRescheduleModal: React.VFC<
           <>
             {appointmentPlanAdmin?.periods.map((period, index) => (
               <div key={`${period.appointmentPlanId}-${index}`}>
-                <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                {overLapPeriods.length !== appointmentPlanAdmin.periods.length ? (
+                  <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                ) : null}
                 <AppointmentPeriodItem
                   creatorId={appointmentPlanAdmin.creatorId}
                   appointmentPlan={{
@@ -225,8 +228,11 @@ const AppointmentRescheduleModal: React.VFC<
                     endedAt: period.endedAt,
                   }}
                   services={services}
+                  loadingServices={loadingServices}
                   isPeriodExcluded={period.isExcluded}
                   isEnrolled={period.targetMemberBooked}
+                  overLapPeriods={overLapPeriods}
+                  onOverlapPeriodsChange={setOverLapPeriods}
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
                       setRescheduleAppointment({
@@ -245,76 +251,80 @@ const AppointmentRescheduleModal: React.VFC<
         )}
       </AdminModal>
 
-      {/* rescheduleConfirm modal  */}
-      <AdminModal
-        width={384}
-        centered
-        footer={null}
-        onCancel={handleCancel}
-        visible={rescheduleAppointment?.rescheduleAppointment}
-        renderFooter={() => (
-          <>
-            <Button className="mr-2" onClick={handleCancel} block>
-              {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleCancel)}
-            </Button>
-            <Button type="primary" loading={loading} onClick={handleReschedule} block className="mt-3">
-              {!loading && formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleConfirm)}
-            </Button>
-          </>
-        )}
-      >
-        <div className="d-flex align-self-start mb-4">
-          <div className="flex-shrink-0">
-            <CustomRatioImage
-              width="5rem"
-              ratio={1}
-              src={creator.avatarUrl || DefaultAvatar}
-              shape="circle"
-              className="mr-3"
-            />
+      {/* rescheduleConfirm modal  
+          功能尚未完成
+      */}
+      {false ?? (
+        <AdminModal
+          width={384}
+          centered
+          footer={null}
+          onCancel={handleCancel}
+          visible={rescheduleAppointment?.rescheduleAppointment}
+          renderFooter={() => (
+            <>
+              <Button className="mr-2" onClick={handleCancel} block>
+                {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleCancel)}
+              </Button>
+              <Button type="primary" loading={loading} onClick={handleReschedule} block className="mt-3">
+                {!loading && formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleConfirm)}
+              </Button>
+            </>
+          )}
+        >
+          <div className="d-flex align-self-start mb-4">
+            <div className="flex-shrink-0">
+              <CustomRatioImage
+                width="5rem"
+                ratio={1}
+                src={creator.avatarUrl || DefaultAvatar}
+                shape="circle"
+                className="mr-3"
+              />
+            </div>
+            <div className="flex-grow-1">
+              <StyledTitle className="mb-1">{creator.name}</StyledTitle>
+              <StyledMeta>
+                {formatMessage(appointmentMessages.AppointmentPeriodCard.periodDurationAtMost, {
+                  duration: appointmentPlan.duration,
+                })}
+              </StyledMeta>
+            </div>
           </div>
-          <div className="flex-grow-1">
-            <StyledTitle className="mb-1">{creator.name}</StyledTitle>
-            <StyledMeta>
-              {formatMessage(appointmentMessages.AppointmentPeriodCard.periodDurationAtMost, {
-                duration: appointmentPlan.duration,
+          {!loadingAppointmentPlanAdmin && (
+            <StyledModalTitle className="mb-4">
+              {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleAppointmentPlanTitle, {
+                title: appointmentPlan.title,
               })}
-            </StyledMeta>
-          </div>
-        </div>
-        {!loadingAppointmentPlanAdmin && (
-          <StyledModalTitle className="mb-4">
-            {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleAppointmentPlanTitle, {
-              title: appointmentPlan.title,
-            })}
-          </StyledModalTitle>
-        )}
-        <Divider margin="24px 0px" />
-        <StyledInfo>{formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleOriginScheduled)}</StyledInfo>
-        <StyledScheduleTitle>
-          {orderProduct.startedAt && orderProduct.endedAt ? (
-            <span>
-              {dateRangeFormatter({
-                startedAt: orderProduct.startedAt,
-                endedAt: orderProduct.endedAt,
-                dateFormat: 'MM/DD(dd)',
-              })}
-            </span>
-          ) : null}
-        </StyledScheduleTitle>
-        <StyledInfo>{formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduled)}</StyledInfo>
-        <StyledScheduleTitle>
-          {rescheduleAppointment?.periodStartedAt && rescheduleAppointment?.periodEndedAt ? (
-            <span>
-              {dateRangeFormatter({
-                startedAt: rescheduleAppointment.periodStartedAt,
-                endedAt: rescheduleAppointment.periodEndedAt,
-                dateFormat: 'MM/DD(dd)',
-              })}
-            </span>
-          ) : null}
-        </StyledScheduleTitle>
-      </AdminModal>
+            </StyledModalTitle>
+          )}
+          <Divider margin="24px 0px" />
+          <StyledInfo>{formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleOriginScheduled)}</StyledInfo>
+          <StyledScheduleTitle>
+            {orderProduct.startedAt && orderProduct.endedAt ? (
+              <span>
+                {dateRangeFormatter({
+                  startedAt: orderProduct.startedAt,
+                  endedAt: orderProduct.endedAt,
+                  dateFormat: 'MM/DD(dd)',
+                })}
+              </span>
+            ) : null}
+          </StyledScheduleTitle>
+          <StyledInfo>{formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduled)}</StyledInfo>
+          <StyledScheduleTitle>
+            {rescheduleAppointment?.periodStartedAt && rescheduleAppointment?.periodEndedAt ? (
+              <span>
+                {dateRangeFormatter({
+                  startedAt: rescheduleAppointment.periodStartedAt,
+                  endedAt: rescheduleAppointment.periodEndedAt,
+                  dateFormat: 'MM/DD(dd)',
+                })}
+              </span>
+            ) : null}
+          </StyledScheduleTitle>
+        </AdminModal>
+      )}
 
       <AdminModal
         width={384}

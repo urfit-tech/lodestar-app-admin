@@ -2,7 +2,7 @@ import { uniq } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
-import { Skeleton } from '@chakra-ui/react'
+import { Spinner } from '@chakra-ui/react'
 import appointmentMessages from './translation'
 import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
 import { useOverlapMeets } from '../../hooks/meet'
@@ -61,10 +61,24 @@ const AppointmentPeriodItem: React.FC<{
     endedAt: Date
   }
   services: { id: string; gateway: string }[]
+  loadingServices: boolean
   isPeriodExcluded?: boolean
   isEnrolled?: boolean
+  overLapPeriods?: string[]
   onClick: () => void
-}> = ({ creatorId, appointmentPlan, period, services, isPeriodExcluded, isEnrolled, onClick }) => {
+  onOverlapPeriodsChange?: (overLapPeriods: string[]) => void
+}> = ({
+  creatorId,
+  appointmentPlan,
+  period,
+  services,
+  loadingServices,
+  isPeriodExcluded,
+  isEnrolled,
+  overLapPeriods,
+  onClick,
+  onOverlapPeriodsChange,
+}) => {
   const { formatMessage } = useIntl()
 
   const zoomServices = services.filter(service => service.gateway === 'zoom').map(service => service.id)
@@ -74,19 +88,24 @@ const AppointmentPeriodItem: React.FC<{
     period.startedAt,
     period.endedAt,
   )
-  const { loading: loadingAvailableCreatorMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
+  const { loading: loadingOverlapMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
 
   const currentUseServices = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
   const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
 
-  let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
+  let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | 'overlap' | undefined
+
+  if (overlapCreatorMeets.length >= 1)
+    overLapPeriods &&
+      !overLapPeriods.some(overLapPeriod => overLapPeriod === appointmentPlan.id) &&
+      onOverlapPeriodsChange?.([...overLapPeriods, appointmentPlan.id])
 
   if (isPeriodExcluded) {
     variant = 'closed'
   } else if (isEnrolled) {
     variant = 'booked'
-  } else if (overlapCreatorMeets.length > 1) {
-    variant = 'meetingFull'
+  } else if (overlapCreatorMeets.length >= 1) {
+    variant = 'overlap'
   } else {
     if (appointmentPlan.defaultMeetGateway === 'zoom') {
       if (
@@ -118,24 +137,31 @@ const AppointmentPeriodItem: React.FC<{
     }
   }
 
-  if (loadingAvailableCreatorMeet || loadingMeetMembers) return <Skeleton active />
-  return (
-    <StyledItemWrapper variant={variant} onClick={onClick}>
-      <StyledItemTitle>
-        {period.startedAt.getHours().toString().padStart(2, '0')}:
-        {period.startedAt.getMinutes().toString().padStart(2, '0')}
-      </StyledItemTitle>
-      <StyledItemMeta>
-        {variant === 'booked'
-          ? formatMessage(appointmentMessages.AppointmentPeriodItem.booked)
-          : variant === 'meetingFull'
-          ? formatMessage(appointmentMessages.AppointmentPeriodItem.meetingIsFull)
-          : variant === 'bookable'
-          ? formatMessage(appointmentMessages.AppointmentPeriodItem.bookable)
-          : formatMessage(appointmentMessages.AppointmentPeriodItem.closed)}
-      </StyledItemMeta>
-    </StyledItemWrapper>
-  )
+  if (variant === 'overlap') {
+    return null
+  } else {
+    return (
+      <StyledItemWrapper variant={variant} onClick={onClick}>
+        <StyledItemTitle>
+          {period.startedAt.getHours().toString().padStart(2, '0')}:
+          {period.startedAt.getMinutes().toString().padStart(2, '0')}
+        </StyledItemTitle>
+        {loadingMeetMembers || loadingOverlapMeet || loadingServices ? (
+          <Spinner />
+        ) : (
+          <StyledItemMeta>
+            {variant === 'booked'
+              ? formatMessage(appointmentMessages.AppointmentPeriodItem.booked)
+              : variant === 'meetingFull'
+              ? formatMessage(appointmentMessages.AppointmentPeriodItem.meetingIsFull)
+              : variant === 'bookable'
+              ? formatMessage(appointmentMessages.AppointmentPeriodItem.bookable)
+              : formatMessage(appointmentMessages.AppointmentPeriodItem.closed)}
+          </StyledItemMeta>
+        )}
+      </StyledItemWrapper>
+    )
+  }
 }
 
 export default AppointmentPeriodItem

@@ -66,13 +66,17 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
   onClose,
 }) => {
   const { formatMessage } = useIntl()
-  const { services } = useService()
+  const { loading: loadingServices, services } = useService()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
 
   return (
     <>
-      <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+      {overLapPeriods.length !== periods.length ? (
+        <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+      ) : null}
+
       <StyledWrapper>
         {periods.map((period, index) => (
           <AppointmentPeriodItem
@@ -88,6 +92,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
               endedAt: period.endedAt,
             }}
             services={services}
+            loadingServices={loadingServices}
             isPeriodExcluded={period.isExcluded}
             isEnrolled={period.isEnrolled}
             onClick={() => {
@@ -96,6 +101,8 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                 setVisible(true)
               }
             }}
+            overLapPeriods={overLapPeriods}
+            onOverlapPeriodsChange={setOverLapPeriods}
             {...period}
           />
         ))}
