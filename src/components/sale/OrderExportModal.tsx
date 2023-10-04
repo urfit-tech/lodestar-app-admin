@@ -87,6 +87,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
 
         switch (specified) {
           case 'ALL':
+            break
           case 'SPECIFY':
             Object.assign(orderExportPayload, { productIds: selectedIds })
             break
