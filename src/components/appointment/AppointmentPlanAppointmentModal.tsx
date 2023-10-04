@@ -17,6 +17,7 @@ import { useService } from '../../hooks/service'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
+import { AppointmentPeriod, AppointmentPlanAdmin } from '../../types/appointment'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DiscountSelectionCard from '../checkout/DiscountSelectionCard'
 import { CustomRatioImage } from '../common/Image'
@@ -97,6 +98,54 @@ const StyledAppointmentInfo = styled.div`
 type FieldProps = {
   phone: string
   memberId: string
+}
+
+const AppointmentPlanPeriodStepBlock: React.VFC<{
+  periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    isEnrolled?: boolean
+    isExcluded?: boolean
+    targetMemberBooked?: boolean
+  })[]
+  appointmentPlanAdmin: AppointmentPlanAdmin
+  services: { id: string; gateway: string }[]
+  loadingServices: boolean
+  handlePeriodSubmit: (startedAt: Date, endedAt: Date) => void
+}> = ({ periods, appointmentPlanAdmin, services, loadingServices, handlePeriodSubmit }) => {
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
+
+  return (
+    <div key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}>
+      {overLapPeriods.length !== periods.length ? (
+        <StyledPeriodTitle>
+          {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+        </StyledPeriodTitle>
+      ) : null}
+      <StyledWrapper>
+        {periods.map((period, index) => (
+          <AppointmentPeriodItem
+            key={`${period.appointmentPlanId}-${index}`}
+            creatorId={appointmentPlanAdmin.creatorId}
+            appointmentPlan={{
+              id: appointmentPlanAdmin.id,
+              capacity: appointmentPlanAdmin.capacity,
+              defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+            }}
+            period={{
+              startedAt: period.startedAt,
+              endedAt: period.endedAt,
+            }}
+            services={services}
+            loadingServices={loadingServices}
+            isPeriodExcluded={period.isExcluded}
+            isEnrolled={period.targetMemberBooked}
+            overLapPeriods={overLapPeriods}
+            onOverlapPeriodsChange={setOverLapPeriods}
+            onClick={() => (!period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
+          />
+        ))}
+      </StyledWrapper>
+    </div>
+  )
 }
 
 const AppointmentPlanAppointmentModal: React.FC<
@@ -300,35 +349,13 @@ const AppointmentPlanAppointmentModal: React.FC<
               <Divider className="my-3" />
               {appointmentStep === 'period' &&
                 Object.values(periodCollections).map(periods => (
-                  <div key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}>
-                    <StyledPeriodTitle>
-                      {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
-                    </StyledPeriodTitle>
-                    <StyledWrapper>
-                      {periods.map((period, index) => (
-                        <AppointmentPeriodItem
-                          key={`${period.appointmentPlanId}-${index}`}
-                          creatorId={appointmentPlanAdmin.creatorId}
-                          appointmentPlan={{
-                            id: appointmentPlanAdmin.id,
-                            capacity: appointmentPlanAdmin.capacity,
-                            defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
-                          }}
-                          period={{
-                            startedAt: period.startedAt,
-                            endedAt: period.endedAt,
-                          }}
-                          services={services}
-                          loadingServices={loadingServices}
-                          isPeriodExcluded={period.isExcluded}
-                          isEnrolled={period.targetMemberBooked}
-                          onClick={() =>
-                            !period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null
-                          }
-                        />
-                      ))}
-                    </StyledWrapper>
-                  </div>
+                  <AppointmentPlanPeriodStepBlock
+                    periods={periods}
+                    appointmentPlanAdmin={appointmentPlanAdmin}
+                    services={services}
+                    loadingServices={loadingServices}
+                    handlePeriodSubmit={handlePeriodSubmit}
+                  />
                 ))}
               {appointmentStep === 'discount' && (
                 <>

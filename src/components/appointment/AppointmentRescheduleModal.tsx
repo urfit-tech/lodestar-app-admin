@@ -131,6 +131,7 @@ const AppointmentRescheduleModal: React.VFC<
     periodEndedAt: Date | null
     appointmentPlanId: string
   }>()
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
 
   const handleReschedule = async () => {
     setLoading(true)
@@ -212,7 +213,9 @@ const AppointmentRescheduleModal: React.VFC<
           <>
             {appointmentPlanAdmin?.periods.map((period, index) => (
               <div key={`${period.appointmentPlanId}-${index}`}>
-                <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                {overLapPeriods.length !== appointmentPlanAdmin.periods.length ? (
+                  <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                ) : null}
                 <AppointmentPeriodItem
                   creatorId={appointmentPlanAdmin.creatorId}
                   appointmentPlan={{
@@ -228,6 +231,8 @@ const AppointmentRescheduleModal: React.VFC<
                   loadingServices={loadingServices}
                   isPeriodExcluded={period.isExcluded}
                   isEnrolled={period.targetMemberBooked}
+                  overLapPeriods={overLapPeriods}
+                  onOverlapPeriodsChange={setOverLapPeriods}
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
                       setRescheduleAppointment({
