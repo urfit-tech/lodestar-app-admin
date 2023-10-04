@@ -2681,7 +2681,7 @@
   "sale.OrderExportModal.recipientName": "收件人",
   "sale.OrderExportModal.recipientPhone": "收件電話",
   "sale.OrderExportModal.referrer": "推薦人",
-  "sale.OrderExportModal.requestSuccess": "請求匯出成功",
+  "sale.OrderExportModal.requestSuccess": "資料已匯出，請至email收信下載資料",
   "sale.OrderExportModal.send": "寄送",
   "sale.OrderExportModal.sharingCode": "推廣網址",
   "sale.OrderExportModal.sharingNote": "推廣備註",

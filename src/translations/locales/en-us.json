@@ -2677,7 +2677,7 @@
   "sale.OrderExportModal.recipientName": "收件人",
   "sale.OrderExportModal.recipientPhone": "收件電話",
   "sale.OrderExportModal.referrer": "referrer",
-  "sale.OrderExportModal.requestSuccess": "request success.",
+  "sale.OrderExportModal.requestSuccess": "request success, result will send to your mail.",
   "sale.OrderExportModal.send": "寄送",
   "sale.OrderExportModal.sharingCode": "Promotion URL",
   "sale.OrderExportModal.sharingNote": "Promotion Note",
