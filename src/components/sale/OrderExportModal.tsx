@@ -34,6 +34,7 @@ type FieldProps = {
   orderStatuses: typeof fieldOrderStatuses[number][]
   orderSpecify: OrderSpecify
   specifiedCategories: { id: string; title: string; children?: any[] }[]
+  exportMime: 'text/csv' | 'xlsx'
 }
 type orderStatus =
   | 'UNPAID'
@@ -81,8 +82,9 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const endedAt = values.timeRange[1].endOf('day').toDate()
         const statuses: orderStatus[] = values.orderStatuses
         const specified = values.orderSpecify as OrderSpecify
+        const exportMime = values.exportMime
 
-        const orderExportPayload: OrderExportPayload = { [selectedField]: { startedAt, endedAt }, statuses }
+        const orderExportPayload: OrderExportPayload = { [selectedField]: { startedAt, endedAt }, statuses, exportMime }
         const selectedIds = selectedProducts.map(each => each.id)
 
         switch (specified) {
