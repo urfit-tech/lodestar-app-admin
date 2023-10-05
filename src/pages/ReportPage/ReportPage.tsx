@@ -17,7 +17,7 @@ const ReportPage: React.FC = () => {
   const { report } = useReport(reportId)
   const { signedUrl } = useReportSignedUrlById(reportId, authToken || '')
   const startedAt = dayjs(Date.now()).add(-1, 'month').format('YYYY-MM-DD')
-  const endedAt = dayjs(Date.now()).add(1, 'day').format('YYYY-MM-DD')
+  const endedAt = dayjs(Date.now()).format('YYYY-MM-DD')
   const signedUrlWithFilter = `${signedUrl}?startedAt=${startedAt}&endedAt=${endedAt}#titled=false`
   const handleIframeLoad = () => setIframeLoading(false)
   return (

@@ -152,7 +152,7 @@ const LoginSection: React.VFC<{
               }}
             >
               {formatMessage(authMessages.LoginSection.forgotPassword)}
-            </div>{' '}
+            </div>
           </ForgetPassword>
 
           <Button variant="primary" isFullWidth isLoading={loading} onClick={handleLogin}>
