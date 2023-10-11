@@ -1,18 +1,14 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
+import { Meet } from '../types/meet'
 
 export const useOverlapMeets = (startedAt: Date, endedAt: Date) => {
   const { id: appId } = useApp()
   const { loading, data } = useQuery<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>(GetOverlapMeets, {
     variables: { appId, startedAt, endedAt },
   })
-  const overlapMeets: {
-    id: string
-    target: string
-    hostMemberId: string
-    serviceId: string
-  }[] =
+  const overlapMeets: Pick<Meet, 'id' | 'target' | 'hostMemberId' | 'serviceId'>[] =
     data?.meet.map(v => ({
       id: v.id,
       target: v.target,
@@ -41,7 +37,7 @@ export const useMutateMeet = () => {
   `)
   const [deleteMeet] = useMutation<hasura.DeleteMeet, hasura.DeleteMeetVariables>(gql`
     mutation DeleteMeet($meetId: uuid!) {
-      delete_meet_by_pk(id: $meetId) {
+      update_meet_by_pk(pk_columns: { id: $meetId }, _set:{deleted_at:"now()"}) {
         id
       }
     }
@@ -63,7 +59,7 @@ export const useMutateMeetMember = () => {
   `)
   const [deleteMeetMember] = useMutation<hasura.DeleteMeetMember, hasura.DeleteMeetMemberVariables>(gql`
     mutation DeleteMeetMember($meetId: uuid!, $memberId: String!) {
-      delete_meet_member(where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } }) {
+      update_meet_member(where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } },_set:{deleted_at:"now()"}) {
         affected_rows
       }
     }
@@ -82,12 +78,19 @@ export const GetOverlapMeets = gql`
         started_at: { _lte: $endedAt }
         ended_at: { _gte: $startedAt }
         deleted_at: { _is_null: true }
+        meet_members:{
+          deleted_at:{_is_null:true}
+        }
       }
     ) {
       id
       target
       host_member_id
       service_id
+      meet_members{
+        id
+        member_id
+      }
     }
   }
 `
