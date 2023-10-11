@@ -3,9 +3,9 @@ import hasura from '../hasura'
 
 export const useMutateMemberTask = () => {
   const [insertMemberTask] = useMutation<hasura.InsertMemberTask, hasura.InsertMemberTaskVariables>(gql`
-    mutation InsertMemberTask($data: [member_task_insert_input!]!) {
-      insert_member_task(
-        objects: $data
+    mutation InsertMemberTask($data: member_task_insert_input!) {
+      insert_member_task_one(
+        object: $data
         on_conflict: {
           constraint: member_task_pkey
           update_columns: [
@@ -24,9 +24,7 @@ export const useMutateMemberTask = () => {
           ]
         }
       ) {
-        returning {
           id
-        }
       }
     }
   `)
