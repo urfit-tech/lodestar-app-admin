@@ -93,7 +93,7 @@ const AppointmentPeriodItem: React.FC<{
   const currentUseServices = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
   const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
 
-  let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | 'overlap' | undefined
+  let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
 
   if (overlapCreatorMeets.length >= 1)
     overLapPeriods &&
@@ -137,31 +137,27 @@ const AppointmentPeriodItem: React.FC<{
     }
   }
 
-  if (variant === 'overlap') {
-    return null
-  } else {
-    return (
-      <StyledItemWrapper variant={variant} onClick={onClick}>
-        <StyledItemTitle>
-          {period.startedAt.getHours().toString().padStart(2, '0')}:
-          {period.startedAt.getMinutes().toString().padStart(2, '0')}
-        </StyledItemTitle>
-        {loadingMeetMembers || loadingOverlapMeet || loadingServices ? (
-          <Spinner />
-        ) : (
-          <StyledItemMeta>
-            {variant === 'booked'
-              ? formatMessage(appointmentMessages.AppointmentPeriodItem.booked)
-              : variant === 'meetingFull'
-              ? formatMessage(appointmentMessages.AppointmentPeriodItem.meetingIsFull)
-              : variant === 'bookable'
-              ? formatMessage(appointmentMessages.AppointmentPeriodItem.bookable)
-              : formatMessage(appointmentMessages.AppointmentPeriodItem.closed)}
-          </StyledItemMeta>
-        )}
-      </StyledItemWrapper>
-    )
-  }
+  return (
+    <StyledItemWrapper variant={variant} onClick={onClick}>
+      <StyledItemTitle>
+        {period.startedAt.getHours().toString().padStart(2, '0')}:
+        {period.startedAt.getMinutes().toString().padStart(2, '0')}
+      </StyledItemTitle>
+      {loadingMeetMembers || loadingOverlapMeet || loadingServices ? (
+        <Spinner />
+      ) : (
+        <StyledItemMeta>
+          {variant === 'booked'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.booked)
+            : variant === 'meetingFull'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.meetingIsFull)
+            : variant === 'bookable'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.bookable)
+            : formatMessage(appointmentMessages.AppointmentPeriodItem.closed)}
+        </StyledItemMeta>
+      )}
+    </StyledItemWrapper>
+  )
 }
 
 export default AppointmentPeriodItem
