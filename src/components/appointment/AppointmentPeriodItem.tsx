@@ -105,7 +105,7 @@ const AppointmentPeriodItem: React.FC<{
   } else if (isEnrolled) {
     variant = 'booked'
   } else if (overlapCreatorMeets.length >= 1) {
-    variant = 'overlap'
+    variant = 'closed'
   } else {
     if (appointmentPlan.defaultMeetGateway === 'zoom') {
       if (
