@@ -230,10 +230,10 @@ export const stableSort = (array: any[], customCompareFunction: (a: any[], b: an
   const compare = !!customCompareFunction
     ? customCompareFunction
     : (a: any, b: any) => {
-        if (a > b) return 1
-        if (a < b) return -1
-        return 0
-      }
+      if (a > b) return 1
+      if (a < b) return -1
+      return 0
+    }
   const stableCompare = (a: any[], b: any[]) => {
     const order = compare(a[0], b[0])
     return order !== 0 ? order : a[1] - b[1]
@@ -434,6 +434,7 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   })
   return response.status
 }
+
 export const updateMeeting = async (
   meetId: string,
   meetingMemberId: string | null,
