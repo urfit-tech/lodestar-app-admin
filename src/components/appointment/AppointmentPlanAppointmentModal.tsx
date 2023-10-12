@@ -2,7 +2,6 @@ import { Button, Divider, Form, Input, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { groupBy, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
@@ -112,7 +111,6 @@ const AppointmentPlanAppointmentModal: React.FC<
 > = ({ appointmentPlanId, creator, onSuccess, setModalVisible, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken } = useAuth()
   const { host, settings } = useApp()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
     useAppointmentPlanAdmin(appointmentPlanId)
@@ -282,17 +280,13 @@ const AppointmentPlanAppointmentModal: React.FC<
                     </StyledPeriodTitle>
                     <StyledWrapper>
                       {periods.map(period => (
-                        <div
+                        <AppointmentPeriodItem
                           key={period.id}
-                          onClick={() => {
-                            if (period.isEnrolled) {
-                              return
-                            }
-                            handlePeriodSubmit(period.startedAt, period.endedAt)
-                          }}
-                        >
-                          <AppointmentPeriodItem {...period} />
-                        </div>
+                          onClick={() =>
+                            !period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null
+                          }
+                          {...period}
+                        />
                       ))}
                     </StyledWrapper>
                   </div>
