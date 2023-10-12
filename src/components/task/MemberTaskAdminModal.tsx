@@ -9,7 +9,6 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
-import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -427,36 +426,6 @@ const MemberTaskAdminModal: React.FC<
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
             style={{ width: '100%' }}
-            onChange={async () => {
-              const values = form.getFieldsValue()
-              if (hasMeeting && values.dueAt) {
-                const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
-                  query: GetService,
-                  variables: {
-                    appId,
-                  },
-                })
-                const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
-                const { data } = await apolloClient.query<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>({
-                  query: GetOverlapMeets,
-                  variables: {
-                    appId,
-                    startedAt: values.dueAt.toDate(),
-                    endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
-                  },
-                })
-                const currentUseService = uniq(data.meet.map(v => v.service_id))
-                if (
-                  zoomServices.length >= 1 &&
-                  zoomServices.filter(zoomService => !currentUseService.includes(zoomService)).length >= 1
-                ) {
-                  setInvalidGateways(prev => [...prev.filter(v => v === 'zoom')])
-                } else {
-                  setInvalidGateways(prev => [...prev, 'zoom'])
-                  handleError({ message: '此時段無zoom會議可用' })
-                }
-              }
-            }}
           />
         </Form.Item>
         <Form.Item
