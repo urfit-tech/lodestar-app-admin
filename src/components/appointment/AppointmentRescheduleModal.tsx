@@ -110,7 +110,7 @@ const AppointmentRescheduleModal: React.VFC<
     creator: { id: string; name: string; avatarUrl: string }
     appointmentPlan: AppointmentPeriodPlanProps
     memberId: string
-    onRescheduleModalVisible: () => void
+    onRescheduleModalVisible: (status: boolean) => void
   }
 > = ({ orderProductId, onRefetch, creator, appointmentPlan, memberId, onRescheduleModalVisible, ...props }) => {
   const { formatMessage } = useIntl()
@@ -142,7 +142,7 @@ const AppointmentRescheduleModal: React.VFC<
         )
         onRefetch && onRefetch()
         await refetchAppointmentPlanAdmin()
-        onRescheduleModalVisible()
+        onRescheduleModalVisible(false)
         handleCancel()
         await refetchOrderProduct()
         setConfirm(true)
@@ -167,6 +167,7 @@ const AppointmentRescheduleModal: React.VFC<
       periodEndedAt: null,
       appointmentPlanId: '',
     })
+    onRescheduleModalVisible(true)
   }
 
   return (
@@ -217,16 +218,17 @@ const AppointmentRescheduleModal: React.VFC<
                   endedAt={period.endedAt}
                   isEnrolled={period.targetMemberBooked}
                   isExcluded={period.isBookedReachLimit || period.isExcluded}
-                  onClick={() =>
-                    !period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded
-                      ? setRescheduleAppointment({
-                          rescheduleAppointment: true,
-                          periodStartedAt: period.startedAt,
-                          periodEndedAt: period.endedAt,
-                          appointmentPlanId: appointmentPlan.id,
-                        })
-                      : null
-                  }
+                  onClick={() => {
+                    if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
+                      setRescheduleAppointment({
+                        rescheduleAppointment: true,
+                        periodStartedAt: period.startedAt,
+                        periodEndedAt: period.endedAt,
+                        appointmentPlanId: appointmentPlan.id,
+                      })
+                      onRescheduleModalVisible(false)
+                    }
+                  }}
                 />
               </div>
             ))}
