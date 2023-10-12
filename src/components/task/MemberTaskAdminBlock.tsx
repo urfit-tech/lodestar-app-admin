@@ -274,7 +274,7 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.meeting),
       render: (text, record, index) => (
         <div>
-          {record.hasMeeting && (
+          {(record.hasMeeting || record.meetingGateway) && (
             <Button
               type="primary"
               size="small"
@@ -287,7 +287,6 @@ const MemberTaskAdminBlock: React.FC<{
                   }
                 })
                 setMeetingMember(() => record.member)
-                console.log(record)
                 getMeetingLink(
                   record.id,
                   record.meet.id,
@@ -295,7 +294,9 @@ const MemberTaskAdminBlock: React.FC<{
                   record.meet.endedAt,
                   record.meet.nbfAt,
                   record.meet.expAt,
-                )
+                ).finally(() => {
+                  setMeetingLoading(null)
+                })
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
