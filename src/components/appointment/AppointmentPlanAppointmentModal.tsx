@@ -247,6 +247,9 @@ const AppointmentPlanAppointmentModal: React.FC<
             email: appointmentValues.member?.email || '',
           },
           memberId: appointmentValues.member?.id,
+          options: {
+            [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
+          },
         },
         {
           headers: { authorization: `Bearer ${authToken}` },
