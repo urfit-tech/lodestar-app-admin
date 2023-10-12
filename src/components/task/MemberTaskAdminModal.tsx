@@ -1,21 +1,28 @@
-import Icon, { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
-import { Text } from '@chakra-ui/react'
-import { Button, DatePicker, Dropdown, Form, Input, Menu, Select, Spin } from 'antd'
+import Icon, { MoreOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/client'
+import { Radio, RadioGroup, Stack, Text } from '@chakra-ui/react'
+import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Select } from 'antd'
 import Checkbox from 'antd/lib/checkbox/Checkbox'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
+import dayjs from 'dayjs'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { deleteMeeting, handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
+import { GetMeetById, GetOverlapMeets, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { useMutateMemberTask } from '../../hooks/memberTask'
+import { GetService } from '../../hooks/service'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
+import { Meet } from '../../types/meet'
 import { MemberTaskProps } from '../../types/member'
+import { Service } from '../../types/service'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
@@ -49,6 +56,8 @@ type FieldProps = {
   dueAt: Moment | null
   description: string | null
   hasMeeting: boolean
+  meetingHours: number
+  meetingGateway: 'jitsi' | 'zoom'
 }
 
 const MemberTaskAdminModal: React.FC<
@@ -59,76 +68,191 @@ const MemberTaskAdminModal: React.FC<
     meetingButtonOnClick?: () => void
     onRefetch?: () => void
   } & AdminModalProps
-> = ({ memberTask, initialMemberId, meetingButtonOnClick, initialExecutorId, onRefetch, onCancel, ...props }) => {
-  const { currentMemberId } = useAuth()
+> = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+  const apolloClient = useApolloClient()
+  const { authToken } = useAuth()
+  const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [insertTask] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_TASK)
-  const [deleteTask] = useMutation<hasura.DELETE_TASK, hasura.DELETE_TASKVariables>(DELETE_TASK)
+  const { insertMemberTask, updateMemberTask, deleteMemberTask } = useMutateMemberTask()
+  const { insertMeet, deleteMeet } = useMutateMeet()
+  const { insertMeetMember, deleteMeetMember } = useMutateMeetMember()
   const [loading, setLoading] = useState(false)
-  const [meetingLoading, setMeetingLoading] = useState(false)
+  const [hasMeeting, setHasMeeting] = useState(!!memberTask?.meetingGateway || memberTask?.hasMeeting || false)
+  const [invalidGateways, setInvalidGateways] = useState<string[]>([])
 
   const handleSubmit = (onSuccess?: () => void) => {
     form
       .validateFields()
-      .then(() => {
+      .then(async () => {
         setLoading(true)
         const values = form.getFieldsValue()
+        if (!values.memberId) return handleError({ message: 'value memberId is necessary' })
+        let memberTaskId = memberTask?.id
+        let meetId = memberTask?.meet?.id || null
+        let existedMeet = null
+        let services: Service[] = []
+        let overlapMeets: Pick<Meet, 'id' | 'target' | 'hostMemberId' | 'serviceId' | 'meetMembers'>[] = []
+        let toBeUsedServiceId: string | null = null
+        let updatedMeetId = memberTask?.meet?.id || null
+
+        if (hasMeeting) {
+          if (!values.dueAt) return handleError({ message: '當新增會議連結時，到期日為必填' })
+          if (!values.executorId) return handleError({ message: '當新增會議連結時，指派人為必填' })
+          if (meetId) {
+            const meetData = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
+              query: GetMeetById,
+              variables: { meetId },
+            })
+            existedMeet = meetData.data.meet_by_pk
+              ? { id: meetData.data.meet_by_pk.id, type: meetData.data.meet_by_pk.type }
+              : null
+            if (existedMeet && memberTask?.meetingGateway !== values.meetingGateway) {
+              return alert('已有建立的會議室, 不能更換預設會議系統')
+            }
+          }
+          const overlapMeetsData = await apolloClient.query<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>({
+            query: GetOverlapMeets,
+            variables: {
+              appId: appId,
+              startedAt: values.dueAt.toDate().toISOString(),
+              endedAt: dayjs(values.dueAt.toDate()).add(values.meetingHours, 'hour').toDate().toISOString(),
+            },
+          })
+          overlapMeets =
+            overlapMeetsData.data?.meet.map(v => ({
+              id: v.id,
+              target: v.target,
+              hostMemberId: v.host_member_id,
+              serviceId: v.service_id,
+              meetMembers: v.meet_members.map(w => ({
+                id: w.id,
+                memberId: w.member_id,
+              })),
+            })) || []
+          if (enabledModules.meet_service && hasMeeting && values.meetingGateway === 'zoom') {
+            const serviceData = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
+              query: GetService,
+              variables: { appId },
+            })
+            services =
+              serviceData.data?.service.map(v => ({
+                id: v.id,
+                gateway: v.gateway,
+              })) || []
+            if (services.filter(service => service.gateway === 'zoom').length < 1) {
+              return handleError({ message: '無zoom帳號' })
+            }
+            const zoomServiceIds = services.filter(service => service.gateway === 'zoom').map(service => service.id)
+            const periodServiceIds = overlapMeets.map(periodService => periodService.serviceId)
+            if (zoomServiceIds.filter(zoomServiceId => !periodServiceIds.includes(zoomServiceId)).length === 0) {
+              return handleError({ message: '此時段無可用zoom帳號' })
+            }
+            toBeUsedServiceId = zoomServiceIds.filter(zoomServiceId => periodServiceIds.includes(zoomServiceId))[0]
+          }
+          if (overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === values.executorId).length >= 1) {
+            return handleError({ message: '此時段不可指派此執行人員' })
+          }
+          if (
+            overlapMeets.filter(
+              overlapMeet => values.memberId && overlapMeet.meetMembers.map(v => v.memberId).includes(values.memberId),
+            ).length >= 1
+          ) {
+            return handleError({ message: '此時段不可指派此學員' })
+          }
+        }
+
         if (memberTask) {
-          insertTask({
-            variables: {
-              data: [
-                {
-                  id: memberTask.id,
-                  title: values.title || '',
-                  category_id: values.categoryId,
-                  member_id: values.memberId,
-                  executor_id: values.executorId,
-                  priority: values.priority,
-                  status: values.status,
-                  due_at: values.dueAt?.toDate(),
-                  description: values.description || '',
-                  has_meeting: values.hasMeeting,
-                  author_id: currentMemberId,
-                },
-              ],
+          if (
+            (meetId && !hasMeeting) ||
+            (meetId &&
+              hasMeeting &&
+              (dayjs(memberTask.dueAt).toDate().getTime() !== dayjs(values.dueAt?.toDate()).toDate().getTime() ||
+                memberTask.executor?.id !== values.executorId ||
+                memberTask.member.id !== values.memberId))
+          ) {
+            await deleteMeetMember({ variables: { meetId, memberId: memberTask.member.id } }).catch(error =>
+              handleError({ message: `delete meet member failed. error:${error}` }),
+            )
+            await deleteMeet({ variables: { meetId } }).catch(error =>
+              handleError({ message: `delete meet failed. error:${error}` }),
+            )
+            await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+          }
+        }
+
+        insertMemberTask({
+          variables: {
+            data: {
+              id: memberTaskId,
+              title: values.title,
+              category_id: values.categoryId,
+              member_id: values.memberId,
+              executor_id: values.executorId,
+              priority: values.priority,
+              status: values.status,
+              due_at: values.dueAt?.toDate(),
+              description: values.description,
+              has_meeting: values.hasMeeting,
+              meet_id: null,
+              meeting_hours: hasMeeting ? values.meetingHours : 0,
+              meeting_gateway: hasMeeting ? values.meetingGateway : null,
             },
-          })
-            .then(() => {
-              onRefetch?.()
-              onSuccess?.()
-            })
-            .catch(handleError)
-            .finally(() => setLoading(false))
-        } else {
-          insertTask({
-            variables: {
-              data: [
-                {
-                  title: values.title || '',
-                  category_id: values.categoryId,
-                  member_id: values.memberId,
-                  executor_id: values.executorId,
-                  priority: values.priority,
-                  status: values.status,
-                  due_at: values.dueAt?.toDate(),
-                  description: values.description || '',
-                  has_meeting: values.hasMeeting,
-                  author_id: currentMemberId,
+          },
+        }).then(async ({ data }) => {
+          if (hasMeeting) {
+            await insertMeet({
+              variables: {
+                meet: {
+                  started_at: values.dueAt?.toDate().toISOString(),
+                  ended_at: dayjs(values.dueAt?.toDate()).add(values.meetingHours, 'hours').toISOString(),
+                  nbf_at: dayjs(values.dueAt?.toDate()).subtract(10, 'minutes').toISOString(),
+                  exp_at: dayjs(values.dueAt?.toDate()).add(values.meetingHours, 'hours').toISOString(),
+                  auto_recording: values.meetingGateway === 'zoom',
+                  target: memberTaskId ?? data?.insert_member_task_one?.id,
+                  type: 'memberTask',
+                  app_id: appId,
+                  host_member_id: values.executorId,
+                  gateway: hasMeeting ? values.meetingGateway : null,
+                  service_id: hasMeeting && values.meetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
+                  options: { memberTaskId: memberTaskId ?? data?.insert_member_task_one?.id },
                 },
-              ],
-            },
-          })
-            .then(() => {
-              onRefetch?.()
-              onSuccess?.()
-              form.resetFields()
+              },
             })
-            .catch(handleError)
-            .finally(() => setLoading(false))
+              .then(async ({ data }) => {
+                updatedMeetId = data?.insert_meet_one?.id
+                await insertMeetMember({
+                  variables: {
+                    meetMember: {
+                      meet_id: data?.insert_meet_one?.id,
+                      member_id: values.memberId,
+                    },
+                  },
+                }).catch(error => handleError({ message: `insert meet member failed. error:${error}` }))
+              })
+              .catch(error => handleError({ message: `insert meet failed. error:${error}` }))
+
+            if (!data?.insert_member_task_one?.id) return handleError({ message: 'can not get member task id' })
+
+            updateMemberTask({
+              variables: {
+                memberTaskId: data?.insert_member_task_one?.id,
+                data: { meet_id: updatedMeetId },
+              },
+            }).catch(error => handleError({ message: `update member task meetId failed. error:${error}` }))
+          }
+        })
+
+        onRefetch?.()
+        onSuccess?.()
+        if (!memberTask) form.resetFields() //reset field when using createTask button
+      })
+      .catch(error => {
+        if (error?.errorFields) {
+          handleError({ message: '代辦清單資料錯誤' })
         }
       })
-      .catch(() => {})
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -155,11 +279,12 @@ const MemberTaskAdminModal: React.FC<
                 <Menu>
                   <Menu.Item
                     className="cursor-pointer"
-                    onClick={() =>
-                      deleteTask({ variables: { taskId: memberTask.id } })
-                        .then(() => onRefetch?.())
-                        .catch(handleError)
-                    }
+                    onClick={async () => {
+                      setLoading(true)
+                      await deleteMemberTask({ variables: { memberTaskId: memberTask.id } }).catch(handleError)
+                      await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+                      onRefetch?.()
+                    }}
                   >
                     {formatMessage(commonMessages.ui.delete)}
                   </Menu.Item>
@@ -188,6 +313,8 @@ const MemberTaskAdminModal: React.FC<
           status: memberTask?.status || 'pending',
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
           hasMeeting: memberTask?.hasMeeting,
+          meetingGateway: memberTask?.meetingGateway || 'jitsi',
+          meetingHours: memberTask?.meetingHours,
           description: memberTask?.description || '',
         }}
       >
@@ -239,7 +366,22 @@ const MemberTaskAdminModal: React.FC<
             </Form.Item>
           </StyledFormItemWrapper>
           <div className="col-6">
-            <Form.Item label={formatMessage(memberMessages.label.assign)} name="executorId">
+            <Form.Item
+              label={formatMessage(memberMessages.label.assign)}
+              name="executorId"
+              rules={[
+                formInstance => ({
+                  message: '若開啟會議，指派人為必填。',
+                  validator(_, value) {
+                    const hasMeeting = formInstance.getFieldValue('hasMeeting')
+                    if (hasMeeting && !value) {
+                      return Promise.reject(new Error())
+                    }
+                    return Promise.resolve()
+                  },
+                }),
+              ]}
+            >
               <AllMemberSelector />
             </Form.Item>
           </div>
@@ -285,38 +427,84 @@ const MemberTaskAdminModal: React.FC<
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
             style={{ width: '100%' }}
+            onChange={async () => {
+              const values = form.getFieldsValue()
+              if (hasMeeting && values.dueAt) {
+                const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
+                  query: GetService,
+                  variables: {
+                    appId,
+                  },
+                })
+                const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
+                const { data } = await apolloClient.query<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>({
+                  query: GetOverlapMeets,
+                  variables: {
+                    appId,
+                    startedAt: values.dueAt.toDate(),
+                    endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
+                  },
+                })
+                const currentUseService = uniq(data.meet.map(v => v.service_id))
+                if (
+                  zoomServices.length >= 1 &&
+                  zoomServices.filter(zoomService => !currentUseService.includes(zoomService)).length >= 1
+                ) {
+                  setInvalidGateways(prev => [...prev.filter(v => v === 'zoom')])
+                } else {
+                  setInvalidGateways(prev => [...prev, 'zoom'])
+                  handleError({ message: '此時段無zoom會議可用' })
+                }
+              }
+            }}
           />
         </Form.Item>
-        <Form.Item label={formatMessage(memberMessages.label.meetingLink)} name="hasMeeting" valuePropName="checked">
-          {memberTask?.hasMeeting ? (
-            <MeetingButton
-              size="large"
-              type="primary"
-              onClick={async () => {
-                if (meetingLoading) return
-                setMeetingLoading(() => true)
-                await meetingButtonOnClick?.()
-                setMeetingLoading(() => false)
-              }}
-            >
-              <div className="d-flex align-items-center">
-                {meetingLoading ? (
-                  <div className="mr-2">
-                    <Spin size="small" className="mb-2" indicator={<LoadingOutlined style={{ color: 'white' }} />} />
-                  </div>
-                ) : (
-                  <MeetingIcon className="mr-2" />
-                )}
-                {formatMessage(memberMessages.label.createMeeting)}
-              </div>
-            </MeetingButton>
-          ) : (
-            <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
-              <Text color="var(--gary-dark)" size="sm">
-                {formatMessage(memberMessages.label.hasMeeting)}
-              </Text>
-            </Checkbox>
-          )}
+        <Form.Item
+          label={formatMessage(memberMessages.label.meetingLink)}
+          name="hasMeeting"
+          valuePropName="checked"
+          noStyle={hasMeeting}
+        >
+          <Checkbox
+            style={{ display: 'flex', alignItems: 'center' }}
+            onChange={e => {
+              setHasMeeting(e.target.checked)
+            }}
+          >
+            <Text color="var(--gary-dark)" size="sm">
+              {formatMessage(memberMessages.label.hasMeeting)}
+            </Text>
+          </Checkbox>
+        </Form.Item>
+        {hasMeeting && enabledModules.meet_service ? (
+          <Form.Item name="meetingGateway">
+            <RadioGroup>
+              <Stack direction="row">
+                <Radio value="zoom" disabled={invalidGateways.includes('zoom')}>
+                  Zoom
+                </Radio>
+                <Radio value="jitsi">Jitsi</Radio>
+              </Stack>
+            </RadioGroup>
+          </Form.Item>
+        ) : null}
+        <Form.Item
+          label={formatMessage(memberMessages.label.meetingHours)}
+          name="meetingHours"
+          rules={[
+            formInstance => ({
+              message: '若要開啟會議，會議時長為必填。',
+              validator(_, value) {
+                const hasMeeting = formInstance.getFieldValue('hasMeeting')
+                if (hasMeeting && !value) {
+                  return Promise.reject(new Error())
+                }
+                return Promise.resolve()
+              },
+            }),
+          ]}
+        >
+          <InputNumber min={0} />
         </Form.Item>
         <Form.Item label={formatMessage(memberMessages.label.taskDescription)} name="description">
           <TextArea />
@@ -325,26 +513,5 @@ const MemberTaskAdminModal: React.FC<
     </AdminModal>
   )
 }
-
-const INSERT_TASK = gql`
-  mutation INSERT_TASK($data: [member_task_insert_input!]!) {
-    insert_member_task(
-      objects: $data
-      on_conflict: {
-        constraint: member_task_pkey
-        update_columns: [title, category_id, member_id, executor_id, priority, status, due_at, description, has_meeting]
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
-const DELETE_TASK = gql`
-  mutation DELETE_TASK($taskId: String!) {
-    delete_member_task(where: { id: { _eq: $taskId } }) {
-      affected_rows
-    }
-  }
-`
 
 export default MemberTaskAdminModal

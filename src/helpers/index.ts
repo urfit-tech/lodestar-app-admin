@@ -455,6 +455,7 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   })
   return response.status
 }
+
 export const updateMeeting = async (
   meetId: string,
   meetingMemberId: string | null,
@@ -506,7 +507,6 @@ export const createMeeting = async (
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
       {
-        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
         autoRecording: true,
         service: 'zoom',
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),

@@ -1,23 +1,26 @@
+import { Spinner } from '@chakra-ui/react'
+import { uniq } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
-import { appointmentMessages } from '../../helpers/translation'
-import { AppointmentPeriodProps } from '../../types/appointment'
+import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
+import { useOverlapMeets } from '../../hooks/meet'
+import appointmentMessages from './translation'
 
-const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
+const StyledItemWrapper = styled.div<{ variant?: 'bookable' | 'closed' | 'booked' | 'meetingFull' }>`
   position: relative;
   margin-bottom: 0.5rem;
   margin-right: 0.5rem;
   padding: 0.75rem;
   width: 6rem;
   overflow: hidden;
-  border: solid 1px ${props => (props.variant === 'disabled' ? 'var(--gray-light)' : 'var(--gray-dark)')};
-  color: ${props => (props.variant === 'disabled' ? 'var(--gray-dark)' : 'var(--gray-darker)')};
+  border: solid 1px ${props => (props.variant === 'booked' ? 'var(--gray-light)' : 'var(--gray-dark)')};
+  color: ${props => (props.variant === 'booked' ? 'var(--gray-dark)' : 'var(--gray-darker)')};
   border-radius: 4px;
-  cursor: ${props => (props.variant === 'disabled' ? 'not-allowed' : 'pointer')};
+  cursor: ${props => (props.variant !== 'bookable' ? 'not-allowed' : 'pointer')};
 
   ${props =>
-    props.variant === 'excluded'
+    props.variant === 'closed'
       ? css`
           ::before {
             display: block;
@@ -46,21 +49,113 @@ const StyledItemMeta = styled.div`
   letter-spacing: 0.34px;
 `
 
-const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt, isEnrolled, isExcluded }) => {
+const AppointmentPeriodItem: React.FC<{
+  creatorId: string
+  appointmentPlan: {
+    id: string
+    capacity: number
+    defaultMeetGateway: string
+  }
+  period: {
+    startedAt: Date
+    endedAt: Date
+  }
+  services: { id: string; gateway: string }[]
+  loadingServices: boolean
+  isPeriodExcluded?: boolean
+  isEnrolled?: boolean
+  overLapPeriods?: string[]
+  onClick: () => void
+  onOverlapPeriodsChange?: (overLapPeriods: string[]) => void
+}> = ({
+  creatorId,
+  appointmentPlan,
+  period,
+  services,
+  loadingServices,
+  isPeriodExcluded,
+  isEnrolled,
+  overLapPeriods,
+  onClick,
+  onOverlapPeriodsChange,
+}) => {
   const { formatMessage } = useIntl()
 
+  const zoomServices = services.filter(service => service.gateway === 'zoom').map(service => service.id)
+
+  const { loading: loadingMeetMembers, meet } = useMeetByAppointmentPlanIdAndPeriod(
+    appointmentPlan.id,
+    period.startedAt,
+    period.endedAt,
+  )
+  const { loading: loadingOverlapMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
+
+  const currentUseServices = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
+  const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
+
+  let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
+
+  if (overlapCreatorMeets.length >= 1)
+    overLapPeriods &&
+      !overLapPeriods.some(overLapPeriod => overLapPeriod === appointmentPlan.id) &&
+      onOverlapPeriodsChange?.([...overLapPeriods, appointmentPlan.id])
+
+  if (isPeriodExcluded) {
+    variant = 'closed'
+  } else if (isEnrolled) {
+    variant = 'booked'
+  } else if (overlapCreatorMeets.length >= 1) {
+    variant = 'closed'
+  } else {
+    if (appointmentPlan.defaultMeetGateway === 'zoom') {
+      if (
+        zoomServices.length >= 1 &&
+        zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
+      ) {
+        if (appointmentPlan.capacity === -1) {
+          variant = 'bookable'
+        } else {
+          if (meet) {
+            meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+          } else {
+            variant = 'bookable'
+          }
+        }
+      } else {
+        variant = 'meetingFull'
+      }
+    } else {
+      if (appointmentPlan.capacity === -1) {
+        variant = 'bookable'
+      } else {
+        if (meet) {
+          meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+        } else {
+          variant = 'bookable'
+        }
+      }
+    }
+  }
+
   return (
-    <StyledItemWrapper variant={isEnrolled ? 'disabled' : isExcluded ? 'excluded' : 'default'}>
+    <StyledItemWrapper variant={variant} onClick={onClick}>
       <StyledItemTitle>
-        {startedAt.getHours().toString().padStart(2, '0')}:{startedAt.getMinutes().toString().padStart(2, '0')}
+        {period.startedAt.getHours().toString().padStart(2, '0')}:
+        {period.startedAt.getMinutes().toString().padStart(2, '0')}
       </StyledItemTitle>
-      <StyledItemMeta>
-        {isEnrolled
-          ? formatMessage(appointmentMessages.status.enrolled)
-          : isExcluded
-          ? formatMessage(appointmentMessages.status.excluded)
-          : formatMessage(appointmentMessages.status.available)}
-      </StyledItemMeta>
+      {loadingMeetMembers || loadingOverlapMeet || loadingServices ? (
+        <Spinner />
+      ) : (
+        <StyledItemMeta>
+          {variant === 'booked'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.booked)
+            : variant === 'meetingFull'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.meetingIsFull)
+            : variant === 'bookable'
+            ? formatMessage(appointmentMessages.AppointmentPeriodItem.bookable)
+            : formatMessage(appointmentMessages.AppointmentPeriodItem.closed)}
+        </StyledItemMeta>
+      )}
     </StyledItemWrapper>
   )
 }

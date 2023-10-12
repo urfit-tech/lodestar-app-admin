@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import { AppointmentPeriodProps, AppointmentScheduleProps } from '../../types/appointment'
+import { useService } from '../../hooks/service'
+import { AppointmentPeriod, AppointmentSchedule } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
 
@@ -43,33 +44,67 @@ const messages = defineMessages({
 })
 
 type AppointmentPeriodCollectionProps = {
-  periods: (AppointmentPeriodProps & { schedule: AppointmentScheduleProps | null })[]
+  appointmentPlan: {
+    id: string
+    capacity: number
+    defaultMeetGateway: string
+    creatorId: string
+  }
+  periods: (Pick<AppointmentPeriod, 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    schedule: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'> | null
+    isEnrolled?: boolean
+    isExcluded?: boolean
+  })[]
   onDelete?: (scheduleId: string) => Promise<any>
   onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
 }
 
-const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({ periods, onDelete, onClose }) => {
+const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({
+  appointmentPlan,
+  periods,
+  onDelete,
+  onClose,
+}) => {
   const { formatMessage } = useIntl()
+  const { loading: loadingServices, services } = useService()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
 
   return (
     <>
-      <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+      {overLapPeriods.length !== periods.length ? (
+        <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+      ) : null}
+
       <StyledWrapper>
-        {periods.map(period => (
-          <div
-            key={period.id}
-            onClick={() => {
-              if (period.isEnrolled) {
-                return
-              }
-              setSelectedPeriod(period)
-              setVisible(true)
+        {periods.map((period, index) => (
+          <AppointmentPeriodItem
+            key={`${appointmentPlan.id}-${index}`}
+            creatorId={appointmentPlan.creatorId}
+            appointmentPlan={{
+              id: appointmentPlan.id,
+              capacity: appointmentPlan.capacity,
+              defaultMeetGateway: appointmentPlan.defaultMeetGateway,
             }}
-          >
-            <AppointmentPeriodItem {...period} />
-          </div>
+            period={{
+              startedAt: period.startedAt,
+              endedAt: period.endedAt,
+            }}
+            services={services}
+            loadingServices={loadingServices}
+            isPeriodExcluded={period.isExcluded}
+            isEnrolled={period.isEnrolled}
+            onClick={() => {
+              if (!period.isEnrolled) {
+                setSelectedPeriod(period)
+                setVisible(true)
+              }
+            }}
+            overLapPeriods={overLapPeriods}
+            onOverlapPeriodsChange={setOverLapPeriods}
+            {...period}
+          />
         ))}
       </StyledWrapper>
 
@@ -86,7 +121,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                   danger
                   block
                   onClick={() =>
-                    onDelete?.(selectedPeriod.scheduleId).then(() => {
+                    onDelete?.(selectedPeriod.appointmentScheduleId).then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })
@@ -105,7 +140,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                   block
                   onClick={() =>
                     onClose &&
-                    onClose(selectedPeriod.scheduleId, selectedPeriod.startedAt)?.then(() => {
+                    onClose(selectedPeriod.appointmentScheduleId, selectedPeriod.startedAt)?.then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })

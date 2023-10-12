@@ -54,13 +54,13 @@ const AppointmentPlanCollectionAdminPage: React.VFC = () => {
         />
       </div>
 
-      {currentMemberId && (
+      {currentMemberId ? (
         <AppointmentPlanCollectionTabs
           creatorId={
             permissions.APPOINTMENT_PLAN_ADMIN ? undefined : permissions.APPOINTMENT_PLAN_NORMAL ? currentMemberId : ''
           }
         />
-      )}
+      ) : null}
     </AdminLayout>
   )
 }
