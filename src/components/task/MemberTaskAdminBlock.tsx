@@ -272,7 +272,7 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.meeting),
       render: (text, record, index) => (
         <div>
-          {record.hasMeeting && (
+          {(record.hasMeeting || record.meetingGateway) && (
             <Button
               type="primary"
               size="small"
