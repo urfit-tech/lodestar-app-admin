@@ -179,6 +179,9 @@ const MemberContractCreationBlock: React.FC<{
           },
           price: totalPrice,
           orderId,
+          orderOptions: {
+            recognizePerformance: totalPrice,
+          },
           orderProducts: [
             ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
@@ -186,6 +189,7 @@ const MemberContractCreationBlock: React.FC<{
               price: v.price * v.amount,
               started_at: startedAt,
               ended_at: endedAt,
+              delivered_at: startedAt,
             })),
           ],
           coupons: [...project(['id', 'member_id', 'coupon_code'], contractCoupons)],

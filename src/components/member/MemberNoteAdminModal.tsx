@@ -91,7 +91,10 @@ const MemberNoteAdminModal: React.FC<
       attachments,
     })
       .then(() => onSuccess())
-      .finally(() => setIsSubmitting(false))
+      .finally(() => {
+        setIsSubmitting(false)
+        form.resetFields()
+      })
   }
 
   return (

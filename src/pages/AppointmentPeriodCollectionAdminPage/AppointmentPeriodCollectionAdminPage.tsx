@@ -1,4 +1,5 @@
 import Icon from '@ant-design/icons'
+import { Spinner } from '@chakra-ui/react'
 import { DatePicker, Input, message, Select, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -7,6 +8,7 @@ import { RangeValue } from 'rc-picker/lib/interface'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
@@ -26,11 +28,16 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { permissions, currentMemberId } = useAuth()
+  const [memberId] = useQueryParam('memberId', StringParam)
   const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
   const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
-  const defaultSelectedCreatorId = permissions.APPOINTMENT_PERIOD_ADMIN ? '' : currentMemberId || ''
+  const defaultSelectedCreatorId = memberId
+    ? memberId
+    : permissions.APPOINTMENT_PERIOD_ADMIN
+    ? ''
+    : currentMemberId || ''
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>(defaultSelectedCreatorId)
-  const { appointmentCreators } = useAppointmentEnrollmentCreator()
+  const { loading: loadingAppointmentCreators, appointmentCreators } = useAppointmentEnrollmentCreator()
 
   const { RangePicker } = DatePicker
 
@@ -93,11 +100,11 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
             <Select.Option value="">
               {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.allInstructors)}
             </Select.Option>
-            {appointmentCreators.map(v => (
-              <Select.Option key={v.id} value={v.id}>
-                {v.name}
-              </Select.Option>
-            ))}
+            {loadingAppointmentCreators ? (
+              <Spinner />
+            ) : (
+              appointmentCreators.map(v => <Select.Option value={v.id}>{v.name}</Select.Option>)
+            )}
           </Select>
         )}
 

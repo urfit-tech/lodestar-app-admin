@@ -230,10 +230,10 @@ export const stableSort = (array: any[], customCompareFunction: (a: any[], b: an
   const compare = !!customCompareFunction
     ? customCompareFunction
     : (a: any, b: any) => {
-        if (a > b) return 1
-        if (a < b) return -1
-        return 0
-      }
+      if (a > b) return 1
+      if (a < b) return -1
+      return 0
+    }
   const stableCompare = (a: any[], b: any[]) => {
     const order = compare(a[0], b[0])
     return order !== 0 ? order : a[1] - b[1]
@@ -434,6 +434,7 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   })
   return response.status
 }
+
 export const updateMeeting = async (
   meetId: string,
   meetingMemberId: string | null,
@@ -485,7 +486,6 @@ export const createMeeting = async (
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
       {
-        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
         autoRecording: true,
         service: 'zoom',
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),

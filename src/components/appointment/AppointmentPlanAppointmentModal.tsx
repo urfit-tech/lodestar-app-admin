@@ -1,19 +1,23 @@
-import { Button, Divider, Form, Input, Skeleton } from 'antd'
+import { Button, Divider, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { groupBy, sum } from 'ramda'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 import { useCheck } from '../../hooks/checkout'
+import { useService } from '../../hooks/service'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
+import { AppointmentPeriod, AppointmentPlanAdmin } from '../../types/appointment'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DiscountSelectionCard from '../checkout/DiscountSelectionCard'
 import { CustomRatioImage } from '../common/Image'
@@ -96,6 +100,54 @@ type FieldProps = {
   memberId: string
 }
 
+const AppointmentPlanPeriodStepBlock: React.VFC<{
+  periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    isEnrolled?: boolean
+    isExcluded?: boolean
+    targetMemberBooked?: boolean
+  })[]
+  appointmentPlanAdmin: AppointmentPlanAdmin
+  services: { id: string; gateway: string }[]
+  loadingServices: boolean
+  handlePeriodSubmit: (startedAt: Date, endedAt: Date) => void
+}> = ({ periods, appointmentPlanAdmin, services, loadingServices, handlePeriodSubmit }) => {
+  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
+
+  return (
+    <div key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}>
+      {overLapPeriods.length !== periods.length ? (
+        <StyledPeriodTitle>
+          {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+        </StyledPeriodTitle>
+      ) : null}
+      <StyledWrapper>
+        {periods.map((period, index) => (
+          <AppointmentPeriodItem
+            key={`${period.appointmentPlanId}-${index}`}
+            creatorId={appointmentPlanAdmin.creatorId}
+            appointmentPlan={{
+              id: appointmentPlanAdmin.id,
+              capacity: appointmentPlanAdmin.capacity,
+              defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+            }}
+            period={{
+              startedAt: period.startedAt,
+              endedAt: period.endedAt,
+            }}
+            services={services}
+            loadingServices={loadingServices}
+            isPeriodExcluded={period.isExcluded}
+            isEnrolled={period.targetMemberBooked}
+            overLapPeriods={overLapPeriods}
+            onOverlapPeriodsChange={setOverLapPeriods}
+            onClick={() => (!period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
+          />
+        ))}
+      </StyledWrapper>
+    </div>
+  )
+}
+
 const AppointmentPlanAppointmentModal: React.FC<
   AdminModalProps & {
     appointmentPlanId: string
@@ -112,8 +164,8 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { host, settings } = useApp()
-  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
-    useAppointmentPlanAdmin(appointmentPlanId)
+  const { authToken } = useAuth()
+
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
     'period',
   )
@@ -130,9 +182,11 @@ const AppointmentPlanAppointmentModal: React.FC<
     member: null,
     discountId: null,
   })
-
   const [loading, setLoading] = useState(false)
-  const { orderChecking, check, placeOrder, orderPlacing } = useCheck(
+  const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
+
+  const { loading: loadingServices, services } = useService()
+  const { orderChecking, check, orderPlacing } = useCheck(
     [`AppointmentPlan_${appointmentPlanId}`],
     appointmentValues.discountId && appointmentValues.discountId.split('_')[1] ? appointmentValues.discountId : 'Coin',
     appointmentValues.member?.id || null,
@@ -141,7 +195,10 @@ const AppointmentPlanAppointmentModal: React.FC<
       [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
     },
   )
-  const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
+  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin } = useAppointmentPlanAdmin(
+    appointmentPlanId,
+    appointmentValues.member?.id || undefined,
+  )
 
   const isPaymentAvailable =
     !orderChecking &&
@@ -157,10 +214,6 @@ const AppointmentPlanAppointmentModal: React.FC<
       discountId: null,
     })
   }
-
-  useEffect(() => {
-    refetchAppointmentPlanAdmin()
-  }, [appointmentPlanId, refetchAppointmentPlanAdmin])
 
   const handleMemberSubmit = () => {
     if (!appointmentValues.member || !appointmentValues.member.id) {
@@ -178,21 +231,43 @@ const AppointmentPlanAppointmentModal: React.FC<
       return
     }
     setLoading(true)
-    placeOrder('perpetual', {
-      name: appointmentValues.member?.name || '',
-      phone: values.phone,
-      email: appointmentValues.member?.email || '',
-    })
-      .then(() => {
-        onSuccess?.()
-        setSuccessTimestamp(new Date())
-        setLoading(false)
-        setAppointmentStep('success')
+    await axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
+        {
+          paymentModel: { type: 'perpetual' },
+          discountId:
+            appointmentValues.discountId && appointmentValues.discountId.split('_')[1]
+              ? appointmentValues.discountId
+              : 'Coin',
+          productIds: [`AppointmentPlan_${appointmentPlanId}`],
+          invoice: {
+            name: appointmentValues.member?.name || '',
+            phone: values.phone,
+            email: appointmentValues.member?.email || '',
+          },
+          memberId: appointmentValues.member?.id,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(res => {
+        if (res.data.code.split('_')[0] === 'E') {
+          message.error('預約失敗')
+        } else {
+          message.success('預約成功')
+          onSuccess?.()
+          setAppointmentStep('success')
+          setSuccessTimestamp(new Date())
+        }
       })
       .catch(error => {
-        setAppointmentStep('failed')
-        setLoading(false)
         handleError(error)
+        setAppointmentStep('failed')
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }
 
@@ -266,7 +341,7 @@ const AppointmentPlanAppointmentModal: React.FC<
               <StyledPlanTitle className="d-flex align-items-center justify-content-between">
                 <div>{appointmentPlanAdmin.title}</div>
                 <PriceLabel
-                  listPrice={appointmentPlanAdmin.listPrice}
+                  listPrice={appointmentPlanAdmin.price}
                   currencyId={appointmentPlanAdmin.currencyId}
                   coinUnit={settings['coin_unit']}
                 />
@@ -274,22 +349,13 @@ const AppointmentPlanAppointmentModal: React.FC<
               <Divider className="my-3" />
               {appointmentStep === 'period' &&
                 Object.values(periodCollections).map(periods => (
-                  <div key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}>
-                    <StyledPeriodTitle>
-                      {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
-                    </StyledPeriodTitle>
-                    <StyledWrapper>
-                      {periods.map(period => (
-                        <AppointmentPeriodItem
-                          key={period.id}
-                          onClick={() =>
-                            !period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null
-                          }
-                          {...period}
-                        />
-                      ))}
-                    </StyledWrapper>
-                  </div>
+                  <AppointmentPlanPeriodStepBlock
+                    periods={periods}
+                    appointmentPlanAdmin={appointmentPlanAdmin}
+                    services={services}
+                    loadingServices={loadingServices}
+                    handlePeriodSubmit={handlePeriodSubmit}
+                  />
                 ))}
               {appointmentStep === 'discount' && (
                 <>
@@ -347,7 +413,7 @@ const AppointmentPlanAppointmentModal: React.FC<
             <div>
               <StyledStatusBlock>
                 <StatusSuccessIcon />
-                <StyledTitle className="my-2">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
+                <StyledTitle className="mb-1">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
               </StyledStatusBlock>
               <Divider className="my-3" />
               <div>

@@ -1,13 +1,12 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import { groupBy } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { EmptyBlock } from '../admin'
 import AppointmentPeriodCollection from './AppointmentPeriodCollection'
 
@@ -16,7 +15,7 @@ const messages = defineMessages({
 })
 
 const AppointmentPlanScheduleBlock: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -75,10 +74,16 @@ const AppointmentPlanScheduleBlock: React.FC<{
       {Object.values(periodCollections).map(periods => (
         <AppointmentPeriodCollection
           key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+          appointmentPlan={{
+            id: appointmentPlanAdmin.id,
+            capacity: appointmentPlanAdmin.capacity,
+            defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+            creatorId: appointmentPlanAdmin.creatorId,
+          }}
           periods={periods.map(period => ({
-            id: period.id,
-            schedule: appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.scheduleId) || null,
-            scheduleId: period.scheduleId,
+            schedule:
+              appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
+            appointmentScheduleId: period.appointmentScheduleId,
             startedAt: period.startedAt,
             endedAt: period.endedAt,
             isEnrolled: period.isEnrolled,

@@ -1,6 +1,5 @@
 import Icon from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -55,13 +54,13 @@ const AppointmentPlanCollectionAdminPage: React.VFC = () => {
         />
       </div>
 
-      {currentMemberId && (
+      {currentMemberId ? (
         <AppointmentPlanCollectionTabs
           creatorId={
             permissions.APPOINTMENT_PLAN_ADMIN ? undefined : permissions.APPOINTMENT_PLAN_NORMAL ? currentMemberId : ''
           }
         />
-      )}
+      ) : null}
     </AdminLayout>
   )
 }

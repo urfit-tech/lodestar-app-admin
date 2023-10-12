@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { INSERT_APPOINTMENT_SCHEDULES } from '../../hooks/appointment'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import { StyledSelect } from '../admin'
 import AdminModal from '../admin/AdminModal'
@@ -35,7 +35,7 @@ type FieldProps = {
 }
 
 const AppointmentPlanScheduleCreationModal: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()

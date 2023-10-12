@@ -1,7 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Select } from 'antd'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -10,7 +9,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { INSERT_APPOINTMENT_SCHEDULES } from '../../hooks/appointment'
-import { AppointmentPlanAdminProps, AppointmentScheduleProps } from '../../types/appointment'
+import { AppointmentPlanAdmin, AppointmentSchedule } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
 
@@ -32,17 +31,24 @@ const StyledSchedule = styled.span<{ isExisted: boolean }>`
   ${props => (props.isExisted ? 'text-decoration: line-through;' : '')}
 `
 
-type AppointmentPlanImportingProps = {
+type OverLappingSchedule = Pick<
+  AppointmentSchedule,
+  'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'
+> & {
+  isExisted: boolean
+}
+
+type AppointmentPlanImporting = {
   id: string
   title: string
   creator: {
     id: string
     name: string
   }
-  schedules: (AppointmentScheduleProps & { isExisted: boolean })[]
+  schedules: OverLappingSchedule[]
 }
 
-const isScheduleOverlapping = (scheduleA: AppointmentScheduleProps, scheduleB: AppointmentScheduleProps) =>
+const isScheduleOverlapping = (scheduleA: OverLappingSchedule, scheduleB: Omit<OverLappingSchedule, 'isExisted'>) =>
   scheduleA.intervalType === scheduleB.intervalType &&
   scheduleA.intervalAmount === scheduleB.intervalAmount &&
   Number.isInteger(
@@ -60,7 +66,7 @@ const isScheduleOverlapping = (scheduleA: AppointmentScheduleProps, scheduleB: A
   )
 
 const AppointmentScheduleImportModal: React.VFC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps
+  appointmentPlanAdmin: AppointmentPlanAdmin
   creatorId?: string | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, creatorId, onRefetch }) => {
@@ -190,7 +196,7 @@ const AppointmentScheduleImportModal: React.VFC<{
   )
 }
 
-const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps, creatorId?: string | null) => {
+const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdmin, creatorId?: string | null) => {
   const [{ now, startedAt }] = useState<{
     now: Date
     startedAt: Date
@@ -246,7 +252,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
     `,
   )
 
-  const appointmentPlans: AppointmentPlanImportingProps[] =
+  const appointmentPlans: AppointmentPlanImporting[] =
     data?.appointment_plan.map(v => ({
       id: v.id,
       title: v.title || '',

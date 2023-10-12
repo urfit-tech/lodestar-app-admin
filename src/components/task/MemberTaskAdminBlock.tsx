@@ -1,5 +1,4 @@
-// organize-imports-ignore
-import { useQuery } from '@apollo/client'
+import { useApolloClient, useQuery } from '@apollo/client'
 import { FileAddOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -14,17 +13,18 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useCategory } from '../../hooks/data'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import hasura from '../../hasura'
-import { MemberTaskProps } from '../../types/member'
+import { MeetingGateway, MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import axios from 'axios'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
 import { handleError } from '../../helpers'
-import { useToast } from '@chakra-ui/toast'
+import { GetMeetById } from '../../hooks/meet'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import dayjs from 'dayjs'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -96,8 +96,10 @@ export const categoryColors: string[] = [
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
+  const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { enabledModules } = useApp()
+  const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
     title?: string
@@ -108,6 +110,15 @@ const MemberTaskAdminBlock: React.FC<{
     status?: string
   }>({})
   const [display, setDisplay] = useState('table')
+  const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
+  const [visible, setVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
+  const [meetingLoading, setMeetingLoading] = useState<{ index: number; loading: boolean } | null>()
+  const [meetingMember, setMeetingMember] = useState<{
+    id: string
+    name: string
+  }>({ id: '', name: '' })
   const { loading: categoriesLoading, categories } = useCategory('task')
   const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
     useMemberTaskCollection({
@@ -115,19 +126,7 @@ const MemberTaskAdminBlock: React.FC<{
       ...filter,
       limit: display === 'table' ? 10 : undefined,
     })
-  const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
-  const [visible, setVisible] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const { authToken, currentMember } = useAuth()
-  const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
-  const [meetingLoading, setMeetingLoading] = useState<{ index: number; loading: boolean } | null>()
-  const [meetingMember, setMeetingMember] = useState<{
-    id: string
-    name: string
-  }>({ id: '', name: '' })
-  const { enabledModules, id: appId } = useApp()
   const { insertMemberNote } = useMutateMemberNote()
-  const toast = useToast()
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -193,48 +192,65 @@ const MemberTaskAdminBlock: React.FC<{
   const onCellClick = (record: MemberTaskProps) => {
     return {
       onClick: () => {
-        setMeetingMember(() => record.member)
         setSelectedMemberTask(() => record)
         setVisible(() => true)
       },
     }
   }
 
-  const meetingButtonOnClick = async (meetingMember: { id: string; name: string }) => {
-    if (!enabledModules.meet_service) {
-      setJitsiModalVisible(true)
-      return
+  const getMeetingLink = async (
+    memberTaskId: string,
+    meetId: string,
+    startedAt: Date,
+    endedAt: Date,
+    nbfAt: Date | null,
+    expAt: Date | null,
+  ) => {
+    // jitsi or zoom
+    const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
+      query: GetMeetById,
+      variables: { meetId },
+    })
+    const isCurrentTimeInMeetingPeriod = moment(new Date()).isBetween(nbfAt, expAt, null, '[)')
+    if (!isCurrentTimeInMeetingPeriod) {
+      return message.error('非會議時間')
     }
-    const currentTime = new Date()
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
-        {
-          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMember.id}`,
-          autoRecording: true,
-          service: 'zoom',
-          nbf: null,
-          exp: null,
-          startedAt: currentTime,
-          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
-        },
-        {
-          headers: {
-            authorization: `Bearer ${authToken}`,
+    let startUrl
+    if (enabledModules.meet_service && data.meet_by_pk?.type === 'zoom') {
+      // create zoom meeting than get startUrl
+      try {
+        const { data: createMeetData } = await axios.post(
+          `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+          {
+            memberId: memberId,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            autoRecording: true,
+            nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
+            expAt: endedAt,
+            service: 'zoom',
+            target: memberTaskId,
+            hostMemberId: currentMemberId,
+            type: 'appointmentPlan',
           },
-        },
-      )
-      window.open(response.data.data.options.startUrl)
-    } catch {
-      toast({
-        title: '已達同時會議上限額度，請升級方案',
-        status: 'error',
-        duration: 3000,
-        position: 'top',
-      })
+          {
+            headers: {
+              authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        startUrl = createMeetData.data?.options?.startUrl
+      } catch (error) {
+        handleError(error)
+      }
+      if (startUrl) {
+        window.open(startUrl, '_blank')
+      } else {
+        setJitsiModalVisible(true)
+      }
+    } else {
+      // module meet_service not enabled, default jitsi
       setJitsiModalVisible(true)
-    } finally {
-      setMeetingLoading(null)
     }
   }
 
@@ -269,7 +285,17 @@ const MemberTaskAdminBlock: React.FC<{
                     loading: true,
                   }
                 })
-                meetingButtonOnClick(record.member)
+                setMeetingMember(() => record.member)
+                getMeetingLink(
+                  record.id,
+                  record.meet.id,
+                  record.meet.startedAt,
+                  record.meet.endedAt,
+                  record.meet.nbfAt,
+                  record.meet.expAt,
+                ).finally(()=>{
+                  setMeetingLoading(null);
+                })
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
@@ -655,7 +681,6 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
-          meetingButtonOnClick={() => meetingButtonOnClick(meetingMember)}
           onCancel={() => setSelectedMemberTask(null)}
         />
       )}
@@ -721,6 +746,15 @@ const useMemberTaskCollection = (options?: {
           due_at
           created_at
           has_meeting
+          meeting_gateway
+          meeting_hours
+          meet {
+            id
+            started_at
+            ended_at
+            exp_at
+            nbf_at
+          }
           category {
             id
             name
@@ -772,42 +806,49 @@ const useMemberTaskCollection = (options?: {
     })) || []
 
   const memberTasks: MemberTaskProps[] =
-    loading || error || !data
-      ? []
-      : data.member_task.map(v => ({
-          id: v.id,
-          title: v.title || '',
-          priority: v.priority as MemberTaskProps['priority'],
-          status: v.status as MemberTaskProps['status'],
-          category: v.category
-            ? {
-                id: v.category.id,
-                name: v.category.name,
-              }
-            : null,
-          dueAt: v.due_at && new Date(v.due_at),
-          createdAt: v.created_at && new Date(v.created_at),
-          hasMeeting: v.has_meeting,
-          description: v.description || '',
-          member: {
-            id: v.member.id,
-            name: v.member.name || v.member.username,
-          },
-          executor: v.executor
-            ? {
-                id: v.executor.id,
-                name: v.executor.name || v.executor.username,
-                avatarUrl: v.executor.picture_url || null,
-              }
-            : null,
-          author: v.author
-            ? {
-                id: v.author.id,
-                name: v.author.name || v.author.username,
-                avatarUrl: v.author.picture_url || null,
-              }
-            : null,
-        }))
+    data?.member_task.map(v => ({
+      id: v.id,
+      title: v.title || '',
+      priority: v.priority as MemberTaskProps['priority'],
+      status: v.status as MemberTaskProps['status'],
+      category: v.category
+        ? {
+            id: v.category.id,
+            name: v.category.name,
+          }
+        : null,
+      dueAt: v.due_at && new Date(v.due_at),
+      createdAt: v.created_at && new Date(v.created_at),
+      hasMeeting: v.has_meeting,
+      meetingGateway: v.meeting_gateway as MeetingGateway,
+      meetingHours: v.meeting_hours,
+      meet: {
+        id: v.meet?.id,
+        startedAt: v.meet?.started_at,
+        endedAt: v.meet?.ended_at,
+        nbfAt: v.meet?.nbf_at,
+        expAt: v.meet?.exp_at,
+      },
+      description: v.description || '',
+      member: {
+        id: v.member.id,
+        name: v.member.name || v.member.username,
+      },
+      executor: v.executor
+        ? {
+            id: v.executor.id,
+            name: v.executor.name || v.executor.username,
+            avatarUrl: v.executor.picture_url || null,
+          }
+        : null,
+      author: v.author
+        ? {
+            id: v.author.id,
+            name: v.author.name || v.author.username,
+            avatarUrl: v.author.picture_url || null,
+          }
+        : null,
+    })) || []
 
   const loadMoreMemberTasks =
     (data?.member_task_aggregate.aggregate?.count || 0) > (options?.limit || 0)

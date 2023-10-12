@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { StyledTips } from '../admin'
 import CurrencyInput from '../form/CurrencyInput'
 import CurrencySelector from '../form/CurrencySelector'
@@ -37,7 +37,7 @@ const UpdateAppointmentPlanSale = gql`
 `
 
 const AppointmentPlanSaleForm: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -82,7 +82,7 @@ const AppointmentPlanSaleForm: React.FC<{
       hideRequiredMark
       initialValues={{
         duration: appointmentPlanAdmin.duration,
-        listPrice: appointmentPlanAdmin.listPrice,
+        listPrice: appointmentPlanAdmin.price,
         currencyId: appointmentPlanAdmin.currencyId,
         capacity: appointmentPlanAdmin.capacity,
       }}

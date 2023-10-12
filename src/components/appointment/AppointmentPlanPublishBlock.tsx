@@ -1,7 +1,6 @@
 import { DownOutlined, RightOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Dropdown, Menu, Modal, Skeleton, Typography } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -13,11 +12,11 @@ import { ReactComponent as StatusAlertIcon } from '../../images/default/status-a
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { AdminBlock } from '../admin'
 
 const AppointmentPlanPublishBlock: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -53,11 +52,11 @@ const AppointmentPlanPublishBlock: React.FC<{
   const appointmentPlanStatus =
     errors.length > 0
       ? 'notValidated'
-      : !appointmentPlanAdmin.isPublished
-      ? 'unpublished'
-      : appointmentPlanAdmin.isPrivate
+      : appointmentPlanAdmin.isPrivate && appointmentPlanAdmin.publishedAt
       ? 'publishedInPrivate'
-      : 'published'
+      : appointmentPlanAdmin.publishedAt
+      ? 'published'
+      : 'unpublished'
 
   const appointmentPlanStatusMessage: {
     [status in typeof appointmentPlanStatus]: {
