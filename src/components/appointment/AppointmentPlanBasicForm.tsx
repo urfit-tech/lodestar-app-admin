@@ -90,7 +90,7 @@ const AppointmentPlanBasicForm: React.FC<{
     updateAppointmentPlan({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
-        title: values.title || '',
+        title: values.title,
         phone: values.phone,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
@@ -124,7 +124,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: appointmentPlanAdmin.rescheduleAmount || 1,
         rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
-        defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+        defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway ?? 'jitsi',
       }}
       onFinish={handleSubmit}
     >
