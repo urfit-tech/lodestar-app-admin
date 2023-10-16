@@ -7,6 +7,7 @@ import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -62,8 +63,9 @@ const MemberTaskAdminModal: React.FC<
     onRefetch?: () => void
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+  const theme = useAppTheme()
   const apolloClient = useApolloClient()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -123,35 +125,51 @@ const MemberTaskAdminModal: React.FC<
                 memberId: w.member_id,
               })),
             })) || []
-          if (enabledModules.meet_service && hasMeeting && values.meetingGateway === 'zoom') {
-            const serviceData = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
-              query: GetService,
-              variables: { appId },
-            })
-            services =
-              serviceData.data?.service.map(v => ({
-                id: v.id,
-                gateway: v.gateway,
-              })) || []
-            if (services.filter(service => service.gateway === 'zoom').length < 1) {
-              return handleError({ message: '無zoom帳號' })
-            }
-            const zoomServiceIds = services.filter(service => service.gateway === 'zoom').map(service => service.id)
-            const periodServiceIds = overlapMeets.map(periodService => periodService.serviceId)
-            if (zoomServiceIds.filter(zoomServiceId => !periodServiceIds.includes(zoomServiceId)).length === 0) {
-              return handleError({ message: '此時段無可用zoom帳號' })
-            }
-            toBeUsedServiceId = zoomServiceIds.filter(zoomServiceId => periodServiceIds.includes(zoomServiceId))[0]
-          }
-          if (overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === values.executorId).length >= 1) {
-            return handleError({ message: '此時段不可指派此執行人員' })
-          }
+
           if (
-            overlapMeets.filter(
-              overlapMeet => values.memberId && overlapMeet.meetMembers.map(v => v.memberId).includes(values.memberId),
-            ).length >= 1
+            hasMeeting &&
+            (!memberTask ||
+              values.memberId !== memberTask?.member.id ||
+              values.executorId !== memberTask.executor?.id ||
+              values.dueAt.toDate().getTime() !== memberTask.dueAt?.getTime() ||
+              (values.dueAt.toDate().getTime() === memberTask.dueAt?.getTime() &&
+                values.meetingHours !== memberTask.meetingHours))
           ) {
-            return handleError({ message: '此時段不可指派此學員' })
+            if (enabledModules.meet_service && values.meetingGateway === 'zoom') {
+              const serviceData = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
+                query: GetService,
+                variables: { appId },
+              })
+              services =
+                serviceData.data?.service.map(v => ({
+                  id: v.id,
+                  gateway: v.gateway,
+                })) || []
+
+              if (services.filter(service => service.gateway === 'zoom').length < 1) {
+                return handleError({ message: '無zoom帳號' })
+              }
+              const zoomServiceIds = services.filter(service => service.gateway === 'zoom').map(service => service.id)
+              const periodServiceIds = overlapMeets.map(periodService => periodService.serviceId)
+
+              if (zoomServiceIds.filter(zoomServiceId => !periodServiceIds.includes(zoomServiceId)).length === 0) {
+                return handleError({ message: '此時段無可用zoom帳號' })
+              }
+              toBeUsedServiceId = zoomServiceIds.filter(zoomServiceId => periodServiceIds.includes(zoomServiceId))[0]
+            }
+
+            if (overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === values.executorId).length >= 1) {
+              return handleError({ message: '此時段不可指派此執行人員' })
+            }
+
+            if (
+              overlapMeets.filter(
+                overlapMeet =>
+                  values.memberId && overlapMeet.meetMembers.map(v => v.memberId).includes(values.memberId),
+              ).length >= 1
+            ) {
+              return handleError({ message: '此時段不可指派此學員' })
+            }
           }
         }
 
@@ -181,6 +199,7 @@ const MemberTaskAdminModal: React.FC<
               title: values.title,
               category_id: values.categoryId,
               member_id: values.memberId,
+              author_id: currentMemberId,
               executor_id: values.executorId,
               priority: values.priority,
               status: values.status,
@@ -238,11 +257,16 @@ const MemberTaskAdminModal: React.FC<
 
         onRefetch?.()
         onSuccess?.()
-        if (!memberTask) form.resetFields() //reset field when using createTask button
+        if (!memberTask) {
+          form.resetFields() //reset field when using createTask button
+          setInvalidGateways([])
+          setHasMeeting(false)
+        }
       })
       .catch(error => {
         if (error?.errorFields) {
-          handleError({ message: '代辦清單資料錯誤' })
+          const errorMessages = error.errorFields.map((v: { errors: any[] }) => v.errors.toString()).join(' ,')
+          handleError({ message: errorMessages })
         }
       })
       .finally(() => setLoading(false))
@@ -257,6 +281,8 @@ const MemberTaskAdminModal: React.FC<
             className="mr-2"
             onClick={e => {
               onCancel?.(e)
+              setInvalidGateways([])
+              setHasMeeting(false)
               setVisible(false)
             }}
           >
@@ -435,6 +461,41 @@ const MemberTaskAdminModal: React.FC<
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
             style={{ width: '100%' }}
+            onChange={async () => {
+              const values = form.getFieldsValue()
+              if (hasMeeting && values.dueAt) {
+                const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
+                  query: GetService,
+                  variables: {
+                    appId,
+                  },
+                })
+                const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
+                const { data: overLapMeetsData } = await apolloClient.query<
+                  hasura.GetOverlapMeets,
+                  hasura.GetOverlapMeetsVariables
+                >({
+                  query: GetOverlapMeets,
+                  variables: {
+                    appId,
+                    startedAt: values.dueAt.toDate(),
+                    endedAt: moment(values.dueAt).add(values.meetingHours, 'hours').toDate(),
+                  },
+                })
+                if (zoomServices.length < 1) {
+                  setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
+                  return handleError({ message: '無zoom帳號' })
+                }
+                const zoomServiceIds = zoomServices.map(zoomService => zoomService.id)
+                const periodServiceIds = overLapMeetsData.meet.map(v => v.service_id)
+                if (zoomServiceIds.filter(zoomServiceId => !periodServiceIds.includes(zoomServiceId)).length === 0) {
+                  setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
+                  return handleError({ message: '此時段無可用zoom帳號' })
+                } else {
+                  setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom')])
+                }
+              }
+            }}
           />
         </Form.Item>
         <Form.Item
@@ -458,10 +519,25 @@ const MemberTaskAdminModal: React.FC<
           <Form.Item name="meetingGateway">
             <RadioGroup>
               <Stack direction="row">
-                <Radio value="zoom" disabled={invalidGateways.includes('zoom')}>
+                <Radio
+                  value="zoom"
+                  disabled={invalidGateways.includes('zoom')}
+                  _checked={{
+                    background: `${theme.colors.primary[500]}`,
+                    borderColor: `${theme.colors.primary[500]}`,
+                  }}
+                >
                   Zoom
                 </Radio>
-                <Radio value="jitsi">Jitsi</Radio>
+                <Radio
+                  value="jitsi"
+                  _checked={{
+                    background: `${theme.colors.primary[500]}`,
+                    borderColor: `${theme.colors.primary[500]}`,
+                  }}
+                >
+                  Jitsi
+                </Radio>
               </Stack>
             </RadioGroup>
           </Form.Item>
