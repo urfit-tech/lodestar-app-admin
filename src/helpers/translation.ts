@@ -1462,7 +1462,7 @@ export const permissionGroupsAdminMessages = {
 
 export const salesMessages = defineMessages({
   answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通' },
-  demoReservation: { id: 'sales.label.demoReservation', defaultMessage: 'Demo預約' },
+  demoReservation: { id: 'sales.label.demoReservation', defaultMessage: '預約Demo' },
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '未接通' },
   signedLead: { id: 'sales.label.signedLead', defaultMessage: '已簽約' },
   totalLead: { id: 'sales.label.totalLead', defaultMessage: '全部' },
