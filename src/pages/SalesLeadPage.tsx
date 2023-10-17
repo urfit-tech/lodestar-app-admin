@@ -1,6 +1,7 @@
-import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
+import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Button, notification, Skeleton, Tabs } from 'antd'
+import { Center } from '@chakra-ui/layout'
+import { Button, Dropdown, Menu, notification, Skeleton, Space, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -61,9 +62,11 @@ const SalesLeadPage: React.VFC = () => {
 const SalesLeadTabs: React.VFC<{
   manager: Manager
   activeKey: string
-  onActiveKeyChanged?: (activeKey: string) => void
+  onActiveKeyChanged: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
   const [refetchLoading, setRefetchLoading] = useState(true)
+  const [demoTabState, setDemoTabState] = useState<'invited' | 'presented'>('invited')
+  const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted'>('contacted')
   const { formatMessage } = useIntl()
   const {
     refetch,
@@ -176,15 +179,37 @@ const SalesLeadTabs: React.VFC<{
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="contacted"
+        key="called"
         tab={
-          <div>
-            {formatMessage(salesMessages.contactedLead)}
-            <span>({contactedLeads.length})</span>
-          </div>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => setContactedTabState('contacted')}>
+                  <Center>
+                    {'contacted' === contactedTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.contactedLead)}
+                    <span>({contactedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+                <Menu.Item onClick={() => setContactedTabState('answered')}>
+                  <Center>
+                    {'answered' === contactedTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.answeredLeads)}
+                    <span>({answeredLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Center>
+              {formatMessage(salesMessages.calledLead)}
+              <span>({contactedLeads.length + answeredLeads.length})</span>
+              <DownOutlined className="mr-0 ml-1" />
+            </Center>
+          </Dropdown>
         }
       >
-        {
+        {'contacted' === contactedTabState && (
           <SalesLeadTable
             manager={manager}
             leads={contactedLeads}
@@ -194,39 +219,52 @@ const SalesLeadTabs: React.VFC<{
             }}
             isLoading={loading}
           />
-        }
+        )}
+        {'answered' === contactedTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={answeredLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+            isLoading={loading}
+          />
+        )}
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="answered"
+        key="demo"
         tab={
-          <div>
-            {formatMessage(salesMessages.answeredLeads)}
-            <span>({answeredLeads.length})</span>
-          </div>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => setDemoTabState('invited')}>
+                  <Center>
+                    {'invited' === demoTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.invitedLead)}
+                    <span>({invitedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+                <Menu.Item onClick={() => setDemoTabState('presented')}>
+                  <Center>
+                    {'presented' === demoTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.presentedLead)}
+                    <span>({presentedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Center>
+              {formatMessage(salesMessages.demoReservation)}
+              <span>({invitedLeads.length + presentedLeads.length})</span>
+              <DownOutlined className="mr-0 ml-1" />
+            </Center>
+          </Dropdown>
         }
       >
-        <SalesLeadTable
-          manager={manager}
-          leads={answeredLeads}
-          onRefetch={() => {
-            refetch?.()
-            refetchMembers?.()
-          }}
-          isLoading={loading}
-        />
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="invited"
-        tab={
-          <div>
-            {formatMessage(salesMessages.invitedLead)}
-            <span>({invitedLeads.length})</span>
-          </div>
-        }
-      >
-        {
+        {'invited' === demoTabState && (
           <SalesLeadTable
             manager={manager}
             leads={invitedLeads}
@@ -236,19 +274,8 @@ const SalesLeadTabs: React.VFC<{
             }}
             isLoading={loading}
           />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="presented"
-        tab={
-          <div>
-            {formatMessage(salesMessages.presentedLead)}
-            <span>({presentedLeads.length})</span>
-          </div>
-        }
-      >
-        {
+        )}
+        {'presented' === demoTabState && (
           <SalesLeadTable
             manager={manager}
             leads={presentedLeads}
@@ -258,7 +285,7 @@ const SalesLeadTabs: React.VFC<{
             }}
             isLoading={loading}
           />
-        }
+        )}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -272,7 +299,6 @@ const SalesLeadTabs: React.VFC<{
       >
         {
           <SalesLeadTable
-            variant="completed"
             manager={manager}
             leads={completedLeads}
             onRefetch={() => {
