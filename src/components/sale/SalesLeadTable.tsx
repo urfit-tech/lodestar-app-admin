@@ -105,7 +105,6 @@ const SalesLeadTable: React.VFC<{
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
     null,
   )
-  const [step, setStep] = useState()
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -472,6 +471,7 @@ const SalesLeadTable: React.VFC<{
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
+            onRefetch()
             setTaskModalVisible(false)
           }}
         />

@@ -1,7 +1,7 @@
 import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Button, Dropdown, Menu, notification, Skeleton, Space, Tabs } from 'antd'
+import { Button, Dropdown, Menu, notification, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -65,8 +65,8 @@ const SalesLeadTabs: React.VFC<{
   onActiveKeyChanged: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
   const [refetchLoading, setRefetchLoading] = useState(true)
-  const [demoTabState, setDemoTabState] = useState<'invited' | 'presented'>('invited')
-  const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted'>('contacted')
+  const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
+  const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
   const { formatMessage } = useIntl()
   const {
     refetch,
@@ -201,7 +201,7 @@ const SalesLeadTabs: React.VFC<{
               </Menu>
             }
           >
-            <Center>
+            <Center onClick={() => setContactedTabState(null)}>
               {formatMessage(salesMessages.calledLead)}
               <span>({contactedLeads.length + answeredLeads.length})</span>
               <DownOutlined className="mr-0 ml-1" />
@@ -209,6 +209,17 @@ const SalesLeadTabs: React.VFC<{
           </Dropdown>
         }
       >
+        {null === contactedTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={[...contactedLeads, ...answeredLeads]}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+            isLoading={loading}
+          />
+        )}
         {'contacted' === contactedTabState && (
           <SalesLeadTable
             manager={manager}
@@ -256,7 +267,7 @@ const SalesLeadTabs: React.VFC<{
               </Menu>
             }
           >
-            <Center>
+            <Center onClick={() => setDemoTabState(null)}>
               {formatMessage(salesMessages.demoReservation)}
               <span>({invitedLeads.length + presentedLeads.length})</span>
               <DownOutlined className="mr-0 ml-1" />
@@ -264,6 +275,17 @@ const SalesLeadTabs: React.VFC<{
           </Dropdown>
         }
       >
+        {null === demoTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={[...invitedLeads, ...presentedLeads]}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+            isLoading={loading}
+          />
+        )}
         {'invited' === demoTabState && (
           <SalesLeadTable
             manager={manager}
