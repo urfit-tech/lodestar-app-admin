@@ -8,6 +8,8 @@ import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useProperty } from './member'
+import { useCategory } from './data'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
@@ -153,6 +155,8 @@ export const useSales = (salesId: string) => {
 
 export const useManagerLeads = (manager: Manager) => {
   const { id: appId } = useApp()
+  const { properties } = useProperty()
+  const { categories } = useCategory('member')
   const {
     data: salesLeadMemberPhoneData,
     error: errorMembers,
@@ -170,6 +174,8 @@ export const useManagerLeads = (manager: Manager) => {
   } = useQuery<hasura.GetSalesLeadMemberData, hasura.GetSalesLeadMemberDataVariables>(GetSalesLeadMemberData, {
     variables: {
       memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
+      propertyIds: properties.map(v => v.id),
+      categoryIds: categories.map(v => v.id),
     },
     notifyOnNetworkStatusChange: true,
   })
@@ -178,7 +184,6 @@ export const useManagerLeads = (manager: Manager) => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
-
     const signed = Number(salesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
     const status: LeadStatus = v.followed_at
       ? 'FOLLOWED'
@@ -190,17 +195,9 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'COMPLETED'
       : signed
       ? 'SIGNED'
-      : salesLeadMemberData?.member_task
-          .filter(mt => mt.member_id === v.id)
-          .filter(u => u.status === 'done')
-          .map(u => u.member_id)
-          .includes(v.id)
+      : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id)?.status === 'done'
       ? 'PRESENTED'
-      : salesLeadMemberData?.member_task
-          .filter(mt => mt.member_id === v.id)
-          .filter(u => u.status !== 'done')
-          .map(u => u.member_id)
-          .includes(v.id)
+      : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id) //member has member_task => INVITED demo
       ? 'INVITED'
       : v.last_member_note_answered
       ? 'ANSWERED'
@@ -216,13 +213,15 @@ export const useManagerLeads = (manager: Manager) => {
       phones: v.member_phones.map(_v => _v.phone),
       notes: salesLeadMemberData?.member_note.filter(mn => mn.member_id === v.id)[0]?.description || '',
       categoryNames:
-        salesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) || [],
+        salesLeadMemberData?.member_category
+          .filter(mc => mc.member_id === v.id)
+          .map(_v => categories.find(c => c.id === _v.category_id)?.name || '') || [],
       properties:
         salesLeadMemberData?.member_property
           .filter(mp => mp.member_id === v.id)
           .map(v => ({
-            id: v.property.id,
-            name: v.property.name,
+            id: properties.find(p => (p.id = v.property_id))?.id || '',
+            name: properties.find(p => (p.id = v.property_id))?.name || '',
             value: v.value,
           })) || [],
       status,
@@ -262,17 +261,14 @@ export const useManagerLeads = (manager: Manager) => {
 }
 
 const GetSalesLeadMemberData = gql`
-  query GetSalesLeadMemberData($memberIds: [String!]!) {
-    member_task(where: { member_id: { _in: $memberIds } }, distinct_on: [member_id]) {
+  query GetSalesLeadMemberData($memberIds: [String!]!, $propertyIds: [uuid!]!, $categoryIds: [String!]!) {
+    member_task(where: { member_id: { _in: $memberIds } }, order_by: { created_at: desc }) {
       member_id
       status
     }
-    member_property(where: { member_id: { _in: $memberIds } }) {
+    member_property(where: { _and: [{ member_id: { _in: $memberIds } }, { property_id: { _in: $propertyIds } }] }) {
       member_id
-      property {
-        id
-        name
-      }
+      property_id
       value
     }
     member_phone(where: { member_id: { _in: $memberIds } }) {
@@ -283,11 +279,9 @@ const GetSalesLeadMemberData = gql`
       member_id
       description
     }
-    member_category(where: { member_id: { _in: $memberIds } }) {
+    member_category(where: { _and: [{ member_id: { _in: $memberIds } }, { category_id: { _in: $categoryIds } }] }) {
       member_id
-      category {
-        name
-      }
+      category_id
     }
     active_member_contract: member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
       member_id
