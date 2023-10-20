@@ -1,18 +1,17 @@
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons'
-import { gql } from '@apollo/client'
+import { useToast } from '@chakra-ui/toast'
 import { Button, DatePicker, Dropdown, Form, Menu, Radio, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import { last } from 'lodash'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useToast } from '@chakra-ui/toast'
+import { handleError } from '../../helpers'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
 import saleMessages from './translation'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { handleError } from '../../helpers'
 
 const fieldOrderStatuses = [
   'UNPAID',
@@ -60,6 +59,7 @@ type OrderExportPayload = {
   couponPlanIds?: Array<string>
   voucherPlanIds?: Array<string>
   exportMime?: string
+  timezone?: string
 }
 
 const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
@@ -83,8 +83,13 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const statuses: orderStatus[] = values.orderStatuses
         const specified = values.orderSpecify as OrderSpecify
         const exportMime = values.exportMime
-
-        const orderExportPayload: OrderExportPayload = { [selectedField]: { startedAt, endedAt }, statuses, exportMime }
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+        const orderExportPayload: OrderExportPayload = {
+          [selectedField]: { startedAt, endedAt },
+          statuses,
+          exportMime,
+          timezone,
+        }
         const selectedIds = selectedProducts.map(each => each.id)
 
         switch (specified) {
