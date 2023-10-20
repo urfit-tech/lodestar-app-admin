@@ -69,7 +69,7 @@ const SalesLeadTable: React.VFC<{
   manager: Manager
   leads: LeadProps[]
   isLoading: boolean
-  onRefetch: () => void
+  onRefetch: () => Promise<void>
 }> = ({ variant, manager, leads, onRefetch, isLoading }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
@@ -471,8 +471,10 @@ const SalesLeadTable: React.VFC<{
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
-            onRefetch()
-            setTaskModalVisible(false)
+            onRefetch().then(() => setTaskModalVisible(false))
+          }}
+          afterClose={() => {
+            setSelectedMember(null)
           }}
         />
       )}
@@ -480,9 +482,12 @@ const SalesLeadTable: React.VFC<{
         <MemberNoteAdminModal
           visible={memberNoteModalVisible}
           onCancel={() => setMemberNoteModalVisible(false)}
+          afterClose={() => {
+            setSelectedMember(null)
+          }}
           title={formatMessage(memberMessages.label.createMemberNote)}
-          onSubmit={({ type, status, duration, description, attachments }) =>
-            insertMemberNote({
+          onSubmit={async ({ type, status, duration, description, attachments }) =>
+            await insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
                 authorId: manager.id,
@@ -495,11 +500,11 @@ const SalesLeadTable: React.VFC<{
               .then(async ({ data }) => {
                 if (type === 'outbound') {
                   if (status !== 'answered') {
-                    updateLastMemberNoteCalled({
+                    await updateLastMemberNoteCalled({
                       variables: { memberId: selectedMember.id, lastMemberNoteCalled: new Date() },
                     }).catch(handleError)
                   } else if (status === 'answered') {
-                    updateLastMemberNoteAnswered({
+                    await updateLastMemberNoteAnswered({
                       variables: { memberId: selectedMember.id, lastMemberNoteAnswered: new Date() },
                     }).catch(handleError)
                   }
@@ -509,10 +514,9 @@ const SalesLeadTable: React.VFC<{
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
                 }
                 message.success(formatMessage(commonMessages.event.successfullyCreated))
-                onRefetch()
               })
               .catch(handleError)
-              .finally(() => setMemberNoteModalVisible(false))
+              .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
           }
         />
       )}
@@ -829,6 +833,7 @@ const SalesLeadTable: React.VFC<{
             selectedRowKeys,
             onChange: onSelectChange,
           }}
+          loading={isLoading}
           rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}

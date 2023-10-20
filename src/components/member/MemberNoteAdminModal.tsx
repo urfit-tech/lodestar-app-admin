@@ -49,7 +49,7 @@ const MemberNoteAdminModal: React.FC<
       >
       onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
     }
-> = ({ note, onSubmit, ...props }) => {
+> = ({ note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole } = useAuth()
@@ -100,11 +100,13 @@ const MemberNoteAdminModal: React.FC<
   return (
     <AdminModal
       footer={null}
+      onCancel={e => onCancel?.(e)}
       renderFooter={({ setVisible }) => (
         <>
           <Button
             className="mr-2"
-            onClick={() => {
+            onClick={e => {
+              onCancel?.(e)
               setVisible(false)
               resetModal()
             }}
