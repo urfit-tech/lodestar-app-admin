@@ -1,10 +1,10 @@
 import Icon from '@ant-design/icons'
 import { Button, Popover, Tree } from 'antd'
 import { DataNode } from 'antd/lib/tree'
-import { memberMessages } from '../../helpers/translation'
-import { ReactComponent as TableIcon } from '../../images/icon/table.svg'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { memberMessages } from '../../helpers/translation'
+import { ReactComponent as TableIcon } from '../../images/icon/table.svg'
 
 const StyledButton = styled(Button)`
   && {
@@ -49,6 +49,7 @@ const MemberContractFieldSelector: React.FC<{
         { title: '合約編號', key: 'contractId' },
         { title: '服務開始', key: 'startedAt' },
         { title: '合約建立者', key: 'authorName' },
+        { title: '經銷單位', key: 'dealer' },
         { title: '訂單金額', key: 'price' },
         { title: '績效金額', key: 'recognizePerformance' },
         { title: '產品', key: 'projectPlanName' },

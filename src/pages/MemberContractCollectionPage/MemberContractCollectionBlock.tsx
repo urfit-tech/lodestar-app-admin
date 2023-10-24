@@ -2,18 +2,17 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Spin, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
-import AdminCard from '../../components/admin/AdminCard'
-import { AvatarImage } from '../../components/common/Image'
-import { currencyFormatter } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { map, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminCard from '../../components/admin/AdminCard'
+import { AvatarImage } from '../../components/common/Image'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
-import { memberContractMessages } from '../../helpers/translation'
+import { currencyFormatter } from '../../helpers'
+import { commonMessages, memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection, useMemberContractPriceAmount } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 import ExportContractCollectionButton from './ExportContractCollectionButton'
@@ -380,6 +379,12 @@ export const MemberContractCollectionBlock: React.FC<{
       }),
     },
     {
+      title: '經銷單位',
+      dataIndex: 'dealer',
+      key: 'dealer',
+      render: (_, record, text) => record.dealer,
+    },
+    {
       title: formatMessage(memberContractMessages.label.price),
       dataIndex: 'price',
       key: 'price',
@@ -526,6 +531,7 @@ export const MemberContractCollectionBlock: React.FC<{
             endedAt: activeMemberContract?.endedAt,
           }}
           rebateGift={activeMemberContract?.rebateGift}
+          dealer={activeMemberContract?.dealer}
           status={{
             approvedAt: activeMemberContract?.approvedAt,
             loanCanceledAt: activeMemberContract?.loanCanceledAt,

@@ -69,8 +69,8 @@ const MemberContractCreationBlock: React.FC<{
   totalBonusExtendedServiceCoupons,
 }) => {
   const appCustom = useAppCustom()
-  const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
-    ADD_MEMBER_CONTRACT,
+  const [addMemberContract] = useMutation<hasura.AddMemberContract, hasura.AddMemberContractVariables>(
+    AddMemberContract,
   )
   const { id: appId, host } = useApp()
   const { currentMemberId } = useAuth()
@@ -416,6 +416,7 @@ const MemberContractCreationBlock: React.FC<{
           serviceStartedAt: serviceStartedAt.toISOString(),
           serviceEndedAt: serviceEndedAt.toISOString(),
         },
+        dealer: fieldValue.dealer,
       },
     })
       .then(({ data }) => {
@@ -476,8 +477,8 @@ const MemberContractCreationBlock: React.FC<{
   )
 }
 
-const ADD_MEMBER_CONTRACT = gql`
-  mutation ADD_MEMBER_CONTRACT(
+const AddMemberContract = gql`
+  mutation AddMemberContract(
     $memberId: String!
     $authorId: String!
     $contractId: uuid!
@@ -485,6 +486,7 @@ const ADD_MEMBER_CONTRACT = gql`
     $endedAt: timestamptz!
     $values: jsonb!
     $options: jsonb
+    $dealer: String
   ) {
     insert_member_contract_one(
       object: {
@@ -495,6 +497,7 @@ const ADD_MEMBER_CONTRACT = gql`
         ended_at: $endedAt
         values: $values
         options: $options
+        dealer: $dealer
       }
     ) {
       id

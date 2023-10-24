@@ -101,6 +101,7 @@ type MemberContractModalProps = {
   studentAttachments?: { id: string; data: any; options: any }[] | null
   studentCertification?: string | null
   rebateGift?: string | null
+  dealer?: string | null
   onSuccess?: () => void
 } & AdminModalProps
 
@@ -118,13 +119,14 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   studentCertification,
   studentAttachments,
   rebateGift,
+  dealer,
   onSuccess,
   ...props
 }) => {
   const appCustom = useAppCustom()
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
   const [form] = Form.useForm<{
     approvedAt: Moment | null
     loanCanceledAt: Moment | null
@@ -134,6 +136,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     paymentNumber: number
     installmentPlan: typeof installmentPlans[number]
     note: string
+    dealer?: string | null
     orderExecutors: {
       memberId: string
       ratio: number
@@ -148,6 +151,8 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     loanCanceledAt: false,
     refundAppliedAt: false,
   })
+  const contractDealerOptions: string[] =
+    (settings['contract.dealer.options'] && JSON.parse(settings['contract.dealer.options'])) || []
 
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
@@ -221,6 +226,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           paymentMethod,
           paymentNumber,
           installmentPlan,
+          dealer,
           note,
           orderExecutors,
         } = form.getFieldsValue()
@@ -253,6 +259,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               note,
               studentCertification: certification[0]?.name || studentCertification,
             },
+            dealer,
           },
         })
       })
@@ -456,6 +463,20 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 <Input disabled={!permissions.CONTRACT_PAYMENT_NUMBER_EDIT} />
               </Form.Item>
             </Col>
+            {contractDealerOptions.length > 0 && (
+              <Col>
+                <span>經銷單位</span>
+                <Form.Item name="dealer" initialValue={dealer || null}>
+                  <StyledSelect>
+                    {contractDealerOptions.map((v, index) => (
+                      <Select.Option key={index} value={v}>
+                        {v}
+                      </Select.Option>
+                    ))}
+                  </StyledSelect>
+                </Form.Item>
+              </Col>
+            )}
           </StyledRow>
           <StyledAreaTitle>{formatMessage(memberContractMessages.label.note)}</StyledAreaTitle>
           <StyledRow className="mb-3">
