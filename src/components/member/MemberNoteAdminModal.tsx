@@ -48,8 +48,13 @@ const MemberNoteAdminModal: React.FC<
         | 'attachments'
       >
       onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
+      info?: {
+        email: string
+        name: string
+        pictureUrl: string
+      }
     }
-> = ({ note, onSubmit, onCancel, ...props }) => {
+> = ({ info, note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole } = useAuth()
@@ -123,15 +128,15 @@ const MemberNoteAdminModal: React.FC<
     >
       <div className="d-flex align-items-center mb-4">
         <CustomRatioImage
-          src={note?.member?.pictureUrl || DefaultAvatar}
+          src={note?.member?.pictureUrl || info?.pictureUrl || DefaultAvatar}
           shape="circle"
           width="36px"
           ratio={1}
           className="mr-2"
         />
         <div className="flex-grow-1">
-          <StyledMemberName>{note?.member?.name}</StyledMemberName>
-          <StyledMemberEmail>{note?.member?.email}</StyledMemberEmail>
+          <StyledMemberName>{note?.member?.name || info?.name}</StyledMemberName>
+          <StyledMemberEmail>{note?.member?.email || info?.email}</StyledMemberEmail>
         </div>
       </div>
 

@@ -102,9 +102,13 @@ const SalesLeadTable: React.VFC<{
   const [fullNameValue, setFullNameValue] = useState<string>()
   const [refetchLoading, setRefetchLoading] = useState(false)
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
-    null,
-  )
+  const [selectedMember, setSelectedMember] = useState<{
+    id: string
+    name: string
+    categoryNames: string[]
+    email: string
+    pictureUrl: string
+  } | null>(null)
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -264,6 +268,8 @@ const SalesLeadTable: React.VFC<{
                   id: record.id,
                   name: record.name,
                   categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
                 })
                 setTaskModalVisible(true)
               }}
@@ -278,6 +284,8 @@ const SalesLeadTable: React.VFC<{
                   id: record.id,
                   name: record.name,
                   categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
                 })
                 setMemberNoteModalVisible(true)
               }}
@@ -480,6 +488,7 @@ const SalesLeadTable: React.VFC<{
       )}
       {selectedMember && (
         <MemberNoteAdminModal
+          info={{ email: selectedMember.email, name: selectedMember.name, pictureUrl: selectedMember.pictureUrl }}
           visible={memberNoteModalVisible}
           onCancel={() => setMemberNoteModalVisible(false)}
           afterClose={() => {

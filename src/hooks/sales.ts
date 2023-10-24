@@ -209,6 +209,7 @@ export const useManagerLeads = (manager: Manager) => {
       star: v.star,
       name: v.name,
       email: v.email,
+      pictureUrl: v.picture_url || '',
       createdAt: moment(v.created_at).toDate(),
       phones: v.member_phones.map(_v => _v.phone),
       notes: salesLeadMemberData?.member_note.filter(mn => mn.member_id === v.id)[0]?.description || '',
@@ -299,6 +300,7 @@ const GetSalesLeadMembers = gql`
       id
       name
       email
+      picture_url
       star
       created_at
       assigned_at
