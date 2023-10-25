@@ -54,6 +54,7 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
       first_fill_in_date
       last_fill_in_date
       source_url
+      dealer
     }
     xuemi_member_private_teach_contract_aggregate(where: $condition) {
       aggregate {
@@ -206,6 +207,7 @@ export const useMemberContractCollection = ({
         lastFilledAt: v.last_fill_in_date || null,
         sourceUrl: v.source_url,
         rebateGift: rebateGift,
+        dealer: v.dealer,
       }
     }) || []
 
@@ -303,10 +305,11 @@ export const useMemberContractPriceAmount = ({
 
 export const useMutateMemberContract = () => {
   const [updateMemberContract] = useMutation(gql`
-    mutation UPDATE_MEMBER_CONTRACT($memberContractId: uuid!, $options: jsonb!, $values: jsonb!) {
+    mutation UPDATE_MEMBER_CONTRACT($memberContractId: uuid!, $options: jsonb!, $values: jsonb!, $dealer: String) {
       update_member_contract_by_pk(
         pk_columns: { id: $memberContractId }
         _append: { options: $options, values: $values }
+        _set: { dealer: $dealer }
       ) {
         id
       }
@@ -380,8 +383,8 @@ type CustomSettingCondition = {
   bonusExtendedServiceCoupon: {
     title: string
   }
-  coachCoursePlanStarList: {[key: string]: any}
-  bonusExtendedServiceCoupons: {[key: string]: number}
+  coachCoursePlanStarList: { [key: string]: any }
+  bonusExtendedServiceCoupons: { [key: string]: number }
   contractCard: { id: string; title: string } | null
 }
 export const useAppCustom = () => {

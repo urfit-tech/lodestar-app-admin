@@ -59,10 +59,12 @@ const MemberContractCreationForm: React.FC<
     form,
     ...formProps
   }) => {
-    const { id: appId } = useApp()
+    const { id: appId, settings } = useApp()
     const appCustom = useAppCustom()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
+    const contractDealerOptions: string[] =
+      (settings['contract.dealer.options'] && JSON.parse(settings['contract.dealer.options'])) || []
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
@@ -142,6 +144,21 @@ const MemberContractCreationForm: React.FC<
                 </Select>
               </Form.Item>
             </Descriptions.Item>
+
+            {contractDealerOptions.length > 0 && (
+              <Descriptions.Item label="經銷單位">
+                <Form.Item className="mb-0" name="dealer">
+                  <Select<string>>
+                    {contractDealerOptions.map((v, index) => (
+                      <Select.Option key={index} value={v}>
+                        {v}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+            )}
+
             <Descriptions.Item label="合約期間">
               {moment(startedAt).format('YYYY-MM-DD')}
               <span className="mx-1">~</span>
@@ -182,7 +199,7 @@ const MemberContractCreationForm: React.FC<
                   </Radio.Group>
                 </Form.Item>
 
-                <Form.Item name="certification" noStyle>
+                <Form.Item noStyle>
                   {identity === 'student' && (
                     <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
                   )}
