@@ -209,7 +209,7 @@ const MemberTaskAdminModal: React.FC<
               has_meeting: values.hasMeeting,
               meet_id: null,
               meeting_hours: hasMeeting ? values.meetingHours : 0,
-              meeting_gateway: hasMeeting ? values.meetingGateway : null,
+              meeting_gateway: hasMeeting ? values.meetingGateway ?? 'jitsi' : null,
             },
           },
         }).then(async ({ data }) => {
@@ -226,9 +226,9 @@ const MemberTaskAdminModal: React.FC<
                   type: 'memberTask',
                   app_id: appId,
                   host_member_id: values.executorId,
-                  gateway: hasMeeting ? values.meetingGateway : 'jitsi',
-                  service_id: hasMeeting && values.meetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
-                  options: { memberTaskId: memberTaskId ?? data?.insert_member_task_one?.id },
+                  gateway: values.meetingGateway ?? 'jitsi',
+                  service_id: values.meetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
+                  options: {},
                 },
               },
             })
@@ -247,7 +247,7 @@ const MemberTaskAdminModal: React.FC<
 
             if (!data?.insert_member_task_one?.id) return handleError({ message: 'can not get member task id' })
 
-            updateMemberTask({
+            await updateMemberTask({
               variables: {
                 memberTaskId: data?.insert_member_task_one?.id,
                 data: { meet_id: updatedMeetId },
