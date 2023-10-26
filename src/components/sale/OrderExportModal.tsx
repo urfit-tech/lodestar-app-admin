@@ -59,6 +59,7 @@ type OrderExportPayload = {
   couponPlanIds?: Array<string>
   voucherPlanIds?: Array<string>
   exportMime?: string
+  timezone?: string
 }
 
 const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
@@ -82,8 +83,13 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const statuses: orderStatus[] = values.orderStatuses
         const specified = values.orderSpecify as OrderSpecify
         const exportMime = values.exportMime
-
-        const orderExportPayload: OrderExportPayload = { [selectedField]: { startedAt, endedAt }, statuses, exportMime }
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+        const orderExportPayload: OrderExportPayload = {
+          [selectedField]: { startedAt, endedAt },
+          statuses,
+          exportMime,
+          timezone,
+        }
         const selectedIds = selectedProducts.map(each => each.id)
 
         switch (specified) {

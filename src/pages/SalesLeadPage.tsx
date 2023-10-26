@@ -1,6 +1,7 @@
-import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
+import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Button, notification, Skeleton, Tabs } from 'antd'
+import { Center } from '@chakra-ui/layout'
+import { Button, Dropdown, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -53,7 +54,11 @@ const SalesLeadPage: React.VFC = () => {
           <div>承辦編號：{currentMember.id}</div>
         ) : null}
       </div>
-      {manager && <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />}
+      {manager ? (
+        <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />
+      ) : (
+        <Skeleton active />
+      )}
     </AdminLayout>
   )
 }
@@ -61,9 +66,11 @@ const SalesLeadPage: React.VFC = () => {
 const SalesLeadTabs: React.VFC<{
   manager: Manager
   activeKey: string
-  onActiveKeyChanged?: (activeKey: string) => void
+  onActiveKeyChanged: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
   const [refetchLoading, setRefetchLoading] = useState(true)
+  const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
+  const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
   const { formatMessage } = useIntl()
   const {
     refetch,
@@ -85,12 +92,10 @@ const SalesLeadTabs: React.VFC<{
   useEffect(() => {
     if (!loading && !loadingMembers) {
       setRefetchLoading(false)
+    } else {
+      setRefetchLoading(true)
     }
   }, [loading, loadingMembers])
-
-  if (refetchLoading) {
-    return <Skeleton active />
-  }
 
   return (
     <Tabs
@@ -98,10 +103,9 @@ const SalesLeadTabs: React.VFC<{
       onChange={onActiveKeyChanged}
       tabBarExtraContent={
         <Button
-          onClick={() => {
-            refetch?.()
-            refetchMembers?.()
-            setRefetchLoading(true)
+          onClick={async () => {
+            await refetchMembers?.()
+            await refetch?.()
           }}
         >
           <RedoOutlined />
@@ -113,7 +117,7 @@ const SalesLeadTabs: React.VFC<{
         tab={
           <div>
             {formatMessage(salesMessages.followedLead)}
-            <span>({followedLeads.length})</span>
+            <span>({refetchLoading ? <Spin size="small" /> : followedLeads.length})</span>
           </div>
         }
       >
@@ -122,11 +126,11 @@ const SalesLeadTabs: React.VFC<{
             variant="followed"
             manager={manager}
             leads={followedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
         }
       </Tabs.TabPane>
@@ -136,7 +140,7 @@ const SalesLeadTabs: React.VFC<{
         tab={
           <div>
             {formatMessage(salesMessages.totalLead)}
-            <span>({totalLeads.length})</span>
+            <span>({refetchLoading ? <Spin size="small" /> : totalLeads.length})</span>
           </div>
         }
       >
@@ -144,11 +148,11 @@ const SalesLeadTabs: React.VFC<{
           <SalesLeadTable
             manager={manager}
             leads={totalLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
         }
       </Tabs.TabPane>
@@ -158,7 +162,7 @@ const SalesLeadTabs: React.VFC<{
         tab={
           <div>
             {formatMessage(salesMessages.idledLead)}
-            <span>({idledLeads.length})</span>
+            <span>({refetchLoading ? <Spin size="small" /> : idledLeads.length})</span>
           </div>
         }
       >
@@ -166,99 +170,145 @@ const SalesLeadTabs: React.VFC<{
           <SalesLeadTable
             manager={manager}
             leads={idledLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
         }
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="contacted"
+        key="called"
         tab={
-          <div>
-            {formatMessage(salesMessages.contactedLead)}
-            <span>({contactedLeads.length})</span>
-          </div>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => setContactedTabState('contacted')}>
+                  <Center>
+                    {'contacted' === contactedTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.contactedLead)}
+                    <span>({contactedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+                <Menu.Item onClick={() => setContactedTabState('answered')}>
+                  <Center>
+                    {'answered' === contactedTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.answeredLeads)}
+                    <span>({answeredLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Center onClick={() => setContactedTabState(null)}>
+              {formatMessage(salesMessages.calledLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : contactedLeads.length + answeredLeads.length})</span>
+              <DownOutlined className="mr-0 ml-1" />
+            </Center>
+          </Dropdown>
         }
       >
-        {
+        {null === contactedTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={[...contactedLeads, ...answeredLeads]}
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
+            }}
+            isLoading={refetchLoading}
+          />
+        )}
+        {'contacted' === contactedTabState && (
           <SalesLeadTable
             manager={manager}
             leads={contactedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
-        }
+        )}
+        {'answered' === contactedTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={answeredLeads}
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
+            }}
+            isLoading={refetchLoading}
+          />
+        )}
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="answered"
+        key="demo"
         tab={
-          <div>
-            {formatMessage(salesMessages.answeredLeads)}
-            <span>({answeredLeads.length})</span>
-          </div>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => setDemoTabState('invited')}>
+                  <Center>
+                    {'invited' === demoTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.invitedLead)}
+                    <span>({invitedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+                <Menu.Item onClick={() => setDemoTabState('presented')}>
+                  <Center>
+                    {'presented' === demoTabState && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.presentedLead)}
+                    <span>({presentedLeads.length})</span>
+                  </Center>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Center onClick={() => setDemoTabState(null)}>
+              {formatMessage(salesMessages.demoReservation)}
+              <span>({refetchLoading ? <Spin size="small" /> : invitedLeads.length + presentedLeads.length})</span>
+              <DownOutlined className="mr-0 ml-1" />
+            </Center>
+          </Dropdown>
         }
       >
-        <SalesLeadTable
-          manager={manager}
-          leads={answeredLeads}
-          onRefetch={() => {
-            refetch?.()
-            refetchMembers?.()
-          }}
-          isLoading={loading}
-        />
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="invited"
-        tab={
-          <div>
-            {formatMessage(salesMessages.invitedLead)}
-            <span>({invitedLeads.length})</span>
-          </div>
-        }
-      >
-        {
+        {null === demoTabState && (
+          <SalesLeadTable
+            manager={manager}
+            leads={[...invitedLeads, ...presentedLeads]}
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
+            }}
+            isLoading={refetchLoading}
+          />
+        )}
+        {'invited' === demoTabState && (
           <SalesLeadTable
             manager={manager}
             leads={invitedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="presented"
-        tab={
-          <div>
-            {formatMessage(salesMessages.presentedLead)}
-            <span>({presentedLeads.length})</span>
-          </div>
-        }
-      >
-        {
+        )}
+        {'presented' === demoTabState && (
           <SalesLeadTable
             manager={manager}
             leads={presentedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
-        }
+        )}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -266,20 +316,19 @@ const SalesLeadTabs: React.VFC<{
         tab={
           <div>
             {formatMessage(salesMessages.completedLead)}
-            <span>({completedLeads.length})</span>
+            <span>({refetchLoading ? <Spin size="small" /> : completedLeads.length})</span>
           </div>
         }
       >
         {
           <SalesLeadTable
-            variant="completed"
             manager={manager}
             leads={completedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
         }
       </Tabs.TabPane>
@@ -289,7 +338,7 @@ const SalesLeadTabs: React.VFC<{
         tab={
           <div>
             {formatMessage(salesMessages.signedLead)}
-            <span>({signedLeads.length})</span>
+            <span>({refetchLoading ? <Spin size="small" /> : signedLeads.length})</span>
           </div>
         }
       >
@@ -297,11 +346,11 @@ const SalesLeadTabs: React.VFC<{
           <SalesLeadTable
             manager={manager}
             leads={signedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
+            onRefetch={async () => {
+              await refetchMembers?.()
+              await refetch?.()
             }}
-            isLoading={loading}
+            isLoading={refetchLoading}
           />
         }
       </Tabs.TabPane>
@@ -312,7 +361,7 @@ const SalesLeadTabs: React.VFC<{
           tab={
             <div>
               {formatMessage(salesMessages.closedLead)}
-              <span>({closedLeads.length})</span>
+              <span>({refetchLoading ? <Spin size="small" /> : closedLeads.length})</span>
             </div>
           }
         >
@@ -320,11 +369,11 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={closedLeads}
-              onRefetch={() => {
-                refetch?.()
-                refetchMembers?.()
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
               }}
-              isLoading={loading}
+              isLoading={refetchLoading}
             />
           }
         </Tabs.TabPane>

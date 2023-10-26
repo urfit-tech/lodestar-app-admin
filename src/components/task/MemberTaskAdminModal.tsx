@@ -67,8 +67,9 @@ const MemberTaskAdminModal: React.FC<
     initialExecutorId?: string
     meetingButtonOnClick?: () => void
     onRefetch?: () => void
+    afterClose?: () => void
   } & AdminModalProps
-> = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+> = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, afterClose, ...props }) => {
   const theme = useAppTheme()
   const apolloClient = useApolloClient()
   const { authToken, currentMemberId } = useAuth()
@@ -198,7 +199,7 @@ const MemberTaskAdminModal: React.FC<
           }
         }
 
-        insertMemberTask({
+        await insertMemberTask({
           variables: {
             data: {
               id: memberTaskId,
@@ -322,6 +323,7 @@ const MemberTaskAdminModal: React.FC<
         </>
       )}
       onCancel={onCancel}
+      afterClose={afterClose}
       {...props}
     >
       <Form
