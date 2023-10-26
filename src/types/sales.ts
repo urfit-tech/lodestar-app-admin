@@ -28,6 +28,7 @@ export type LeadProps = {
   name: string
   email: string
   phones: string[]
+  pictureUrl: string
   notes: string
   categoryNames: string[]
   properties: { id: string; name: string; value: string }[]
