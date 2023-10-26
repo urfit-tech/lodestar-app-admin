@@ -226,7 +226,7 @@ const MemberTaskAdminModal: React.FC<
                   type: 'memberTask',
                   app_id: appId,
                   host_member_id: values.executorId,
-                  gateway: hasMeeting ? values.meetingGateway : null,
+                  gateway: hasMeeting ? values.meetingGateway : 'jitsi',
                   service_id: hasMeeting && values.meetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
                   options: { memberTaskId: memberTaskId ?? data?.insert_member_task_one?.id },
                 },
