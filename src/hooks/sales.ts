@@ -187,14 +187,14 @@ export const useManagerLeads = (manager: Manager) => {
     const signed = Number(salesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
     const status: LeadStatus = v.followed_at
       ? 'FOLLOWED'
+      : signed
+      ? 'SIGNED'
       : v.excluded_at
       ? 'DEAD'
       : v.closed_at
       ? 'CLOSED'
       : v.completed_at
       ? 'COMPLETED'
-      : signed
-      ? 'SIGNED'
       : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id)?.status === 'done'
       ? 'PRESENTED'
       : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id) //member has member_task => INVITED demo
@@ -221,8 +221,8 @@ export const useManagerLeads = (manager: Manager) => {
         salesLeadMemberData?.member_property
           .filter(mp => mp.member_id === v.id)
           .map(v => ({
-            id: properties.find(p => (p.id = v.property_id))?.id || '',
-            name: properties.find(p => (p.id = v.property_id))?.name || '',
+            id: properties.find(p => (p.id === v.property_id))?.id || '',
+            name: properties.find(p => (p.id === v.property_id))?.name || '',
             value: v.value,
           })) || [],
       status,
@@ -241,6 +241,7 @@ export const useManagerLeads = (manager: Manager) => {
   const totalLeads: LeadProps[] = sortBy(prop('id'))(
     salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [],
   )
+
   return {
     loading,
     error,
