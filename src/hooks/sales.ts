@@ -221,8 +221,8 @@ export const useManagerLeads = (manager: Manager) => {
         salesLeadMemberData?.member_property
           .filter(mp => mp.member_id === v.id)
           .map(v => ({
-            id: properties.find(p => (p.id = v.property_id))?.id || '',
-            name: properties.find(p => (p.id = v.property_id))?.name || '',
+            id: properties.find(p => (p.id === v.property_id))?.id || '',
+            name: properties.find(p => (p.id === v.property_id))?.name || '',
             value: v.value,
           })) || [],
       status,
