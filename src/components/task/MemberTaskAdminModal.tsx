@@ -109,7 +109,7 @@ const MemberTaskAdminModal: React.FC<
             existedMeet = meetData.data.meet_by_pk
               ? { id: meetData.data.meet_by_pk.id, type: meetData.data.meet_by_pk.type }
               : null
-            if (existedMeet && memberTask?.meetingGateway !== values.meetingGateway) {
+            if (existedMeet && memberTask?.meetingGateway !== (values.meetingGateway ?? 'jitsi')) {
               return alert('已有建立的會議室, 不能更換預設會議系統')
             }
           }
@@ -165,6 +165,8 @@ const MemberTaskAdminModal: React.FC<
               toBeUsedServiceId = zoomServiceIds.filter(zoomServiceId => periodServiceIds.includes(zoomServiceId))[0]
             }
 
+            console.log(overlapMeets)
+            console.log(values.executorId)
             if (overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === values.executorId).length >= 1) {
               return handleError({ message: '此時段不可指派此執行人員' })
             }
@@ -195,7 +197,9 @@ const MemberTaskAdminModal: React.FC<
             await deleteMeet({ variables: { meetId } }).catch(error =>
               handleError({ message: `delete meet failed. error:${error}` }),
             )
-            await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+            if (memberTask.meetingGateway === 'zoom') {
+              await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+            }
           }
         }
 
@@ -233,7 +237,7 @@ const MemberTaskAdminModal: React.FC<
                   app_id: appId,
                   host_member_id: values.executorId,
                   gateway: values.meetingGateway ?? 'jitsi',
-                  service_id: values.meetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
+                  service_id: values.meetingGateway === 'zoom' ? toBeUsedServiceId : null,
                   options: {},
                 },
               },
@@ -456,7 +460,7 @@ const MemberTaskAdminModal: React.FC<
             style={{ width: '100%' }}
             onChange={async () => {
               const values = form.getFieldsValue()
-              if (hasMeeting && values.dueAt) {
+              if (hasMeeting && values.dueAt && enabledModules.meet_service) {
                 const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
                   query: GetService,
                   variables: {
