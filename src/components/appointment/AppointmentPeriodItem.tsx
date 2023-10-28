@@ -82,32 +82,18 @@ const AppointmentPeriodItem: React.FC<{
 
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
 
-  if (overlapCreatorMeets.length >= 1)
-    if (isPeriodExcluded) {
-      variant = 'closed'
-    } else if (isEnrolled) {
-      variant = 'booked'
-    } else if (overlapCreatorMeets.length >= 1) {
-      variant = 'closed'
-    } else {
-      if (appointmentPlan.defaultMeetGateway === 'zoom') {
-        if (
-          zoomServices.length >= 1 &&
-          zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
-        ) {
-          if (appointmentPlan.capacity === -1) {
-            variant = 'bookable'
-          } else {
-            if (meet) {
-              meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
-            } else {
-              variant = 'bookable'
-            }
-          }
-        } else {
-          variant = 'meetingFull'
-        }
-      } else {
+  if (isPeriodExcluded) {
+    variant = 'closed'
+  } else if (isEnrolled) {
+    variant = 'booked'
+  } else if (overlapCreatorMeets.length >= 1) {
+    variant = 'closed'
+  } else {
+    if (appointmentPlan.defaultMeetGateway === 'zoom') {
+      if (
+        zoomServices.length >= 1 &&
+        zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
+      ) {
         if (appointmentPlan.capacity === -1) {
           variant = 'bookable'
         } else {
@@ -117,8 +103,21 @@ const AppointmentPeriodItem: React.FC<{
             variant = 'bookable'
           }
         }
+      } else {
+        variant = 'meetingFull'
+      }
+    } else {
+      if (appointmentPlan.capacity === -1) {
+        variant = 'bookable'
+      } else {
+        if (meet) {
+          meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+        } else {
+          variant = 'bookable'
+        }
       }
     }
+  }
 
   return (
     <StyledItemWrapper variant={variant} onClick={variant === 'bookable' ? onClick : undefined}>
