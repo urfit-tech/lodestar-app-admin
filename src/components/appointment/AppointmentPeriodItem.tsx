@@ -121,7 +121,7 @@ const AppointmentPeriodItem: React.FC<{
     }
 
   return (
-    <StyledItemWrapper variant={variant} onClick={onClick}>
+    <StyledItemWrapper variant={variant} onClick={variant === 'bookable' ? onClick : undefined}>
       <StyledItemTitle>
         {period.startedAt.getHours().toString().padStart(2, '0')}:
         {period.startedAt.getMinutes().toString().padStart(2, '0')}
