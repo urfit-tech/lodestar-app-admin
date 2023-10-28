@@ -64,21 +64,8 @@ const AppointmentPeriodItem: React.FC<{
   loadingServices: boolean
   isPeriodExcluded?: boolean
   isEnrolled?: boolean
-  overLapPeriods?: string[]
   onClick: () => void
-  onOverlapPeriodsChange?: (overLapPeriods: string[]) => void
-}> = ({
-  creatorId,
-  appointmentPlan,
-  period,
-  services,
-  loadingServices,
-  isPeriodExcluded,
-  isEnrolled,
-  overLapPeriods,
-  onClick,
-  onOverlapPeriodsChange,
-}) => {
+}> = ({ creatorId, appointmentPlan, period, services, loadingServices, isPeriodExcluded, isEnrolled, onClick }) => {
   const { formatMessage } = useIntl()
 
   const zoomServices = services.filter(service => service.gateway === 'zoom').map(service => service.id)
@@ -96,22 +83,31 @@ const AppointmentPeriodItem: React.FC<{
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
 
   if (overlapCreatorMeets.length >= 1)
-    overLapPeriods &&
-      !overLapPeriods.some(overLapPeriod => overLapPeriod === appointmentPlan.id) &&
-      onOverlapPeriodsChange?.([...overLapPeriods, appointmentPlan.id])
-
-  if (isPeriodExcluded) {
-    variant = 'closed'
-  } else if (isEnrolled) {
-    variant = 'booked'
-  } else if (overlapCreatorMeets.length >= 1) {
-    variant = 'closed'
-  } else {
-    if (appointmentPlan.defaultMeetGateway === 'zoom') {
-      if (
-        zoomServices.length >= 1 &&
-        zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
-      ) {
+    if (isPeriodExcluded) {
+      variant = 'closed'
+    } else if (isEnrolled) {
+      variant = 'booked'
+    } else if (overlapCreatorMeets.length >= 1) {
+      variant = 'closed'
+    } else {
+      if (appointmentPlan.defaultMeetGateway === 'zoom') {
+        if (
+          zoomServices.length >= 1 &&
+          zoomServices.filter(zoomService => !currentUseServices.includes(zoomService)).length >= 1
+        ) {
+          if (appointmentPlan.capacity === -1) {
+            variant = 'bookable'
+          } else {
+            if (meet) {
+              meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
+            } else {
+              variant = 'bookable'
+            }
+          }
+        } else {
+          variant = 'meetingFull'
+        }
+      } else {
         if (appointmentPlan.capacity === -1) {
           variant = 'bookable'
         } else {
@@ -121,21 +117,8 @@ const AppointmentPeriodItem: React.FC<{
             variant = 'bookable'
           }
         }
-      } else {
-        variant = 'meetingFull'
-      }
-    } else {
-      if (appointmentPlan.capacity === -1) {
-        variant = 'bookable'
-      } else {
-        if (meet) {
-          meet.meetMembers.length >= appointmentPlan.capacity ? (variant = 'meetingFull') : (variant = 'bookable')
-        } else {
-          variant = 'bookable'
-        }
       }
     }
-  }
 
   return (
     <StyledItemWrapper variant={variant} onClick={onClick}>
