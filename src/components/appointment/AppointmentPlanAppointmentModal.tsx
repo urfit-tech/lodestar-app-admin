@@ -138,8 +138,6 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
             loadingServices={loadingServices}
             isPeriodExcluded={period.isExcluded}
             isEnrolled={period.targetMemberBooked}
-            overLapPeriods={overLapPeriods}
-            onOverlapPeriodsChange={setOverLapPeriods}
             onClick={() => (!period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
           />
         ))}
