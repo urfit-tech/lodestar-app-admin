@@ -398,57 +398,6 @@ export const useCancelAppointment = (orderProductId: string) => {
     })
 }
 
-export const useUpdateOrderProductOptions = (orderProductId: string, options: { rescheduleLog: [] }) => {
-  const [updateOrderProductOptions] = useMutation<
-    hasura.UpdateOrderProductOptions,
-    hasura.UpdateOrderProductOptionsVariables
-  >(gql`
-    mutation UpdateOrderProductOptions(
-      $orderProductId: uuid!
-      $startedAt: timestamptz!
-      $endedAt: timestamptz!
-      $data: jsonb
-    ) {
-      update_order_product(
-        where: { id: { _eq: $orderProductId } }
-        _set: { started_at: $startedAt, ended_at: $endedAt, updated_at: "NOW()", options: $data }
-      ) {
-        affected_rows
-      }
-    }
-  `)
-
-  return (startedAt: Date | null, endedAt: Date | null, originStartedAt: Date | null, currentMemberId: string) =>
-    updateOrderProductOptions({
-      variables: {
-        orderProductId,
-        startedAt,
-        endedAt,
-        data: {
-          ...options,
-          rescheduleLog: options?.rescheduleLog
-            ? [
-                ...options.rescheduleLog,
-                {
-                  rescheduledAt: new Date(),
-                  rescheduleMemberId: currentMemberId,
-                  originScheduledDatetime: originStartedAt,
-                  targetRescheduleDatetime: startedAt,
-                },
-              ]
-            : [
-                {
-                  rescheduledAt: new Date(),
-                  rescheduleMemberId: currentMemberId,
-                  originScheduledDatetime: originStartedAt,
-                  targetRescheduleDatetime: startedAt,
-                },
-              ],
-        },
-      },
-    })
-}
-
 export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, startedAt: Date, endedAt: Date) => {
   const { id: appId } = useApp()
   const { loading, data, error } = useQuery<
