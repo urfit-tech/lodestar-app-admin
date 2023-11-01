@@ -182,7 +182,7 @@ const MemberTaskAdminBlock: React.FC<{
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  if (categoriesLoading || !categories) {
+  if (categoriesLoading || !categories || !currentMember) {
     return <Skeleton active />
   }
 
@@ -206,14 +206,12 @@ const MemberTaskAdminBlock: React.FC<{
     endedAt: Date,
     nbfAt: Date | null,
     expAt: Date | null,
-    member: {
-      id: string
-      name: string
-    },
+    memberId: string,
+    hostMemberName: string,
   ) => {
     const jitsiUrl = 'https://meet.jit.si/ROOM_NAME#config.startWithVideoMuted=true&userInfo.displayName="MEMBER_NAME"'
-      .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`)
-      .replace('MEMBER_NAME', member.name)
+      .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
+      .replace('MEMBER_NAME', hostMemberName)
 
     // jitsi or zoom
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
@@ -304,7 +302,8 @@ const MemberTaskAdminBlock: React.FC<{
                   record.meet.endedAt,
                   record.meet.nbfAt,
                   record.meet.expAt,
-                  record.member,
+                  record.member.name,
+                  currentMember.name,
                 ).finally(() => {
                   setMeetingLoading(null)
                 })
