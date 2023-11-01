@@ -112,29 +112,33 @@ const AppointmentRescheduleModal: React.VFC<
     onRescheduleModalVisible: (status: boolean) => void
     onRefetch?: () => void
   }
-> = ({ orderProductId, onRefetch, creator, appointmentPlanId, memberId, onRescheduleModalVisible, ...props }) => {
+> = ({
+  orderProductId,
+  onRefetch,
+  creator,
+  appointmentPlanId,
+  memberId,
+  onRescheduleModalVisible,
+  visible: rescheduleModalVisible,
+}) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [confirm, setConfirm] = useState(false)
   const { loading: loadingServices, services } = useService()
-
   const {
     loadingAppointmentPlanAdmin: loadingAppointmentPlan,
     appointmentPlanAdmin: appointmentPlan,
     refetchAppointmentPlanAdmin: refetchAppointmentPlan,
   } = useAppointmentPlanAdmin(appointmentPlanId, memberId)
   const { orderProduct, refetchOrderProduct } = useOrderProduct(orderProductId)
+  const [loading, setLoading] = useState(false)
   const [rescheduleAppointment, setRescheduleAppointment] = useState<{
-    modalVisible: boolean
+    status: 'period' | 'confirm' | 'result'
     periodStartedAt: Date | null
     periodEndedAt: Date | null
-    appointmentPlanId: string
   }>({
-    modalVisible: false,
+    status: 'period',
     periodStartedAt: null,
     periodEndedAt: null,
-    appointmentPlanId: appointmentPlanId,
   })
 
   const handleReschedule = async () => {
@@ -146,7 +150,7 @@ const AppointmentRescheduleModal: React.VFC<
         {
           meetId: orderProduct.options?.['meetId'],
           memberId,
-          appointmentPlanId: appointmentPlanId,
+          appointmentPlanId,
           startedAt: rescheduleAppointment.periodStartedAt,
           endedAt: rescheduleAppointment.periodEndedAt,
         },
@@ -155,12 +159,14 @@ const AppointmentRescheduleModal: React.VFC<
         },
       )
       .then(() => {
+        setRescheduleAppointment({
+          status: 'result',
+          periodStartedAt: null,
+          periodEndedAt: null,
+        })
         onRefetch?.()
         refetchAppointmentPlan()
         refetchOrderProduct()
-        onRescheduleModalVisible(false)
-        handleCancel()
-        setConfirm(true)
       })
       .catch(error => {
         message.error(`更換時段失敗 ,${error}`)
@@ -172,17 +178,21 @@ const AppointmentRescheduleModal: React.VFC<
 
   const handleCancel = () => {
     setRescheduleAppointment({
-      modalVisible: false,
+      status: 'period',
       periodStartedAt: null,
       periodEndedAt: null,
-      appointmentPlanId: '',
     })
-    onRescheduleModalVisible(true)
+    onRescheduleModalVisible(false)
   }
 
   return (
     <>
-      <AdminModal width={384} centered footer={null} {...props}>
+      <AdminModal
+        width={384}
+        centered
+        footer={null}
+        visible={rescheduleModalVisible && rescheduleAppointment.status === 'period'}
+      >
         <div className="d-flex align-self-start mb-4">
           <div className="flex-shrink-0">
             <CustomRatioImage
@@ -242,12 +252,10 @@ const AppointmentRescheduleModal: React.VFC<
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
                       setRescheduleAppointment({
-                        modalVisible: true,
+                        status: 'confirm',
                         periodStartedAt: period.startedAt,
                         periodEndedAt: period.endedAt,
-                        appointmentPlanId: appointmentPlanId,
                       })
-                      onRescheduleModalVisible(false)
                     }
                   }}
                 />
@@ -262,10 +270,20 @@ const AppointmentRescheduleModal: React.VFC<
         centered
         footer={null}
         onCancel={handleCancel}
-        visible={rescheduleAppointment?.modalVisible}
+        visible={rescheduleModalVisible && rescheduleAppointment.status === 'confirm'}
         renderFooter={() => (
           <>
-            <Button className="mr-2" onClick={handleCancel} block>
+            <Button
+              className="mr-2"
+              block
+              onClick={() =>
+                setRescheduleAppointment({
+                  status: 'period',
+                  periodEndedAt: null,
+                  periodStartedAt: null,
+                })
+              }
+            >
               {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleCancel)}
             </Button>
             <Button type="primary" loading={loading} onClick={handleReschedule} block className="mt-3">
@@ -332,18 +350,29 @@ const AppointmentRescheduleModal: React.VFC<
       <AdminModal
         width={384}
         centered
-        visible={confirm}
+        visible={rescheduleModalVisible && rescheduleAppointment.status === 'result'}
         bodyStyle={{ textAlign: 'center' }}
         footer={null}
         renderFooter={() => (
           <>
-            <Button type="primary" onClick={() => setConfirm(false)} block>
+            <Button
+              type="primary"
+              onClick={() => {
+                setRescheduleAppointment({
+                  status: 'period',
+                  periodStartedAt: null,
+                  periodEndedAt: null,
+                })
+                onRescheduleModalVisible(false)
+              }}
+              block
+            >
               {formatMessage(appointmentMessages.AppointmentPeriodCard.confirm)}
             </Button>
           </>
         )}
         cancelButtonProps={{ style: { display: 'none' } }}
-        onCancel={() => setConfirm(false)}
+        onCancel={handleCancel}
       >
         <CheckCircleTwoTone className="mb-5" twoToneColor="#4ed1b3" style={{ fontSize: '4rem' }} />
         <StyledModalTitle className="mb-4">
