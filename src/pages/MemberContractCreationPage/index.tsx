@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
-import { sum, uniqBy } from 'ramda'
+import { flatten, sum, uniqBy } from 'ramda'
 import React, { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
@@ -85,6 +85,8 @@ type ContractInfo = {
       productId: string
       title: string
       price?: number
+      periodAmount?: number
+      periodType?: 'y' | 'M' | 'd'
     }[]
     coins: number
     periodAmount: number
@@ -130,6 +132,22 @@ const MemberContractCreationPage: React.VFC = () => {
     coinExchangeRage,
     ...contractInfoStatus
   } = usePrivateTeachContractInfo(appId, memberId, appCustom.contractProjectPlan)
+
+  const productPreviewsProductIds = useMemo(() => {
+    return uniqBy(v => v.productId, flatten(products.map(p => p.previews))).map(p => p.productId)
+  }, [products])
+
+  const { previewsPeriodInfo } = useProjectPlanPreviewsPeriodInfo(productPreviewsProductIds)
+
+  const productsWithPreviewPeriodInfo = useMemo(() => {
+    return products.map(p => ({
+      ...p,
+      previews: p.previews.map(preview => ({
+        ...preview,
+        ...previewsPeriodInfo?.filter(period => period.productId === preview.productId)[0],
+      })),
+    }))
+  }, [products, previewsPeriodInfo])
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -368,7 +386,7 @@ const MemberContractCreationPage: React.VFC = () => {
             serviceEndedAt={serviceEndedAt}
             contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
-            products={products}
+            products={productsWithPreviewPeriodInfo}
             contracts={contracts}
             projectPlans={projectPlans}
             managers={managers}
@@ -380,7 +398,7 @@ const MemberContractCreationPage: React.VFC = () => {
           <MemberContractCreationBlock
             form={form}
             member={member}
-            products={products}
+            products={productsWithPreviewPeriodInfo}
             selectedProjectPlan={selectedProjectPlan}
             startedAt={startedAt}
             endedAt={endedAt}
@@ -559,6 +577,46 @@ const usePrivateTeachContractInfo = (
     error,
     ...memorizedInfo,
   }
+}
+
+const useProjectPlanPreviewsPeriodInfo = (productIds: string[]) => {
+  const programPlanIds = productIds.filter(id => id.includes('ProgramPlan_')).map(id => id.replace(/ProgramPlan_/g, ''))
+  const programPackagePlanIds = productIds
+    .filter(id => id.includes('ProgramPackagePlan_'))
+    .map(id => id.replace(/ProgramPackagePlan_/g, ''))
+
+  const { data } = useQuery<hasura.getProjectPlanPreviewsPeriodInfo, hasura.getProjectPlanPreviewsPeriodInfoVariables>(
+    gql`
+      query getProjectPlanPreviewsPeriodInfo($programPlanIds: [uuid!]!, $programPackagePlanIds: [uuid!]!) {
+        program_plan(where: { id: { _in: $programPlanIds } }) {
+          id
+          period_amount
+          period_type
+        }
+        program_package_plan(where: { id: { _in: $programPackagePlanIds } }) {
+          id
+          period_amount
+          period_type
+        }
+      }
+    `,
+    { variables: { programPlanIds, programPackagePlanIds }, skip: productIds.length === 0 },
+  )
+
+  const previewsPeriodInfo = data?.program_plan
+    .map(p => ({
+      productId: `ProgramPlan_${p.id}`,
+      periodAmount: p.period_amount,
+      periodType: p.period_type as 'y' | 'M' | 'd',
+    }))
+    .concat(
+      data?.program_package_plan.map(p => ({
+        productId: `ProgramPackagePlan_${p.id}`,
+        periodAmount: p.period_amount,
+        periodType: p.period_type as 'y' | 'M' | 'd',
+      })),
+    )
+  return { previewsPeriodInfo }
 }
 
 export type { ContractInfo, ContractItem, FieldProps }

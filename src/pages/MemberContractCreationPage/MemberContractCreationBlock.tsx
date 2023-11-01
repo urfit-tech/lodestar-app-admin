@@ -149,11 +149,7 @@ const MemberContractCreationBlock: React.FC<{
               price: 0,
               started_at: serviceStartedAt,
               ended_at: serviceStartedAt
-                ? moment(serviceStartedAt)
-                    .add(customContractProduct?.periodAmount, customContractProduct?.periodType)
-                    .endOf('day')
-                    .toDate()
-                    .toISOString()
+                ? moment(serviceStartedAt).add(v?.periodAmount, v?.periodType).endOf('day').toDate().toISOString()
                 : null,
               delivered_at: new Date(),
             }))
