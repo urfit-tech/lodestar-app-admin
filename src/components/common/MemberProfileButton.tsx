@@ -79,7 +79,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
 
         <Responsive.Default>
           <BorderedItem className="shift-left">
-            <AdminMenu />
+            <AdminMenu opened={true} />
           </BorderedItem>
         </Responsive.Default>
 
