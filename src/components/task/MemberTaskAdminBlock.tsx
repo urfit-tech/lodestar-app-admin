@@ -98,7 +98,7 @@ const MemberTaskAdminBlock: React.FC<{
 }> = ({ memberId }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
@@ -181,7 +181,7 @@ const MemberTaskAdminBlock: React.FC<{
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  if (categoriesLoading || !categories) {
+  if (categoriesLoading || !categories || !currentMember) {
     return <Skeleton active />
   }
 
@@ -205,7 +205,13 @@ const MemberTaskAdminBlock: React.FC<{
     endedAt: Date,
     nbfAt: Date | null,
     expAt: Date | null,
+    memberId: string,
+    hostMemberName: string,
   ) => {
+    const jitsiUrl = 'https://meet.jit.si/ROOM_NAME#config.startWithVideoMuted=true&userInfo.displayName="MEMBER_NAME"'
+      .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
+      .replace('MEMBER_NAME', hostMemberName)
+
     // jitsi or zoom
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
       query: GetMeetById,
@@ -246,11 +252,13 @@ const MemberTaskAdminBlock: React.FC<{
       if (startUrl) {
         window.open(startUrl, '_blank')
       } else {
-        setJitsiModalVisible(true)
+        window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
+        // setJitsiModalVisible(true)
       }
     } else {
       // module meet_service not enabled, default jitsi
-      setJitsiModalVisible(true)
+      window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
+      // setJitsiModalVisible(true)
     }
   }
 
@@ -293,6 +301,8 @@ const MemberTaskAdminBlock: React.FC<{
                   record.meet.endedAt,
                   record.meet.nbfAt,
                   record.meet.expAt,
+                  record.member.name,
+                  currentMember.name,
                 ).finally(() => {
                   setMeetingLoading(null)
                 })

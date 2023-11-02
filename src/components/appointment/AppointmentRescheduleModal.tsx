@@ -231,8 +231,6 @@ const AppointmentRescheduleModal: React.VFC<
                   loadingServices={loadingServices}
                   isPeriodExcluded={period.isExcluded}
                   isEnrolled={period.targetMemberBooked}
-                  overLapPeriods={overLapPeriods}
-                  onOverlapPeriodsChange={setOverLapPeriods}
                   onClick={() => {
                     if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
                       setRescheduleAppointment({
