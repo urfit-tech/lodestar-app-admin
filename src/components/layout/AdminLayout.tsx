@@ -19,6 +19,13 @@ const SettingBlockToggleButton = styled(Button)<{ variant?: 'opened' | 'unopened
   border-left: none;
 `
 
+const NavbarBackStageButton = styled(Button)`
+  @media screen and (max-width: 480px) {
+    font-size: 15px;
+    padding: 5px 5px;
+  }
+`
+
 const AdminLayout: React.FC = ({ children }) => {
   const { formatMessage } = useIntl()
   const defaultSelectedKeys = useRouteKeys()
@@ -28,7 +35,9 @@ const AdminLayout: React.FC = ({ children }) => {
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          <Button type="link">{formatMessage(commonMessages.ui.backstage)}</Button>
+          {/* TODO */}
+
+          <NavbarBackStageButton type="link">{formatMessage(commonMessages.ui.backstage)}</NavbarBackStageButton>
         </Link>
       )}
     >

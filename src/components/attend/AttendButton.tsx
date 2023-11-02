@@ -1,15 +1,24 @@
 import { Button, message } from 'antd'
 import moment from 'moment'
 import React from 'react'
+import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { useAttend, useGetAttend } from '../../hooks/attend'
+
+const NavbarClockButton = styled(Button)`
+  @media screen and (max-width: 480px) {
+    padding: 5px 10px;
+    margin: 0px 0px;
+    font-size: 15px;
+  }
+`
 
 const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { attend, refetchAttend } = useGetAttend(memberId)
   const { insertAttend, updateAttend } = useAttend()
 
   return (
-    <Button
+    <NavbarClockButton
       className="mr-3"
       type="primary"
       onClick={
@@ -41,7 +50,7 @@ const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
       }}
     >
       {attend.length !== 0 ? '下班打卡' : '上班打卡'}
-    </Button>
+    </NavbarClockButton>
   )
 }
 export default AttendButton

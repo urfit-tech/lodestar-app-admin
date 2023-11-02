@@ -1,7 +1,6 @@
 import { BellOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Badge, Button, List, Popover } from 'antd'
-import { gql } from '@apollo/client'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -33,6 +32,11 @@ const StyledBadgeWrapper = styled.div`
     top: 8px;
     right: 4px;
   }
+
+  @media screen and (max-width: 480px) {
+    width: 29.85px;
+    font-size: 50%;
+  }
 `
 const StyledButton = styled(Button)`
   font-size: 20px;
@@ -41,6 +45,10 @@ const StyledButton = styled(Button)`
   &&:active,
   &&:focus {
     color: var(--gray-darker);
+  }
+
+  @media screen and (max-width: 480px) {
+    width: 29.85px;
   }
 `
 const StyledReadAllButton = styled(Button)`
