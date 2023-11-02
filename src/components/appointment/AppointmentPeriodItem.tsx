@@ -64,21 +64,8 @@ const AppointmentPeriodItem: React.FC<{
   loadingServices: boolean
   isPeriodExcluded?: boolean
   isEnrolled?: boolean
-  overLapPeriods?: string[]
   onClick: () => void
-  onOverlapPeriodsChange?: (overLapPeriods: string[]) => void
-}> = ({
-  creatorId,
-  appointmentPlan,
-  period,
-  services,
-  loadingServices,
-  isPeriodExcluded,
-  isEnrolled,
-  overLapPeriods,
-  onClick,
-  onOverlapPeriodsChange,
-}) => {
+}> = ({ creatorId, appointmentPlan, period, services, loadingServices, isPeriodExcluded, isEnrolled, onClick }) => {
   const { formatMessage } = useIntl()
 
   const zoomServices = services.filter(service => service.gateway === 'zoom').map(service => service.id)
@@ -94,11 +81,6 @@ const AppointmentPeriodItem: React.FC<{
   const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
 
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
-
-  if (overlapCreatorMeets.length >= 1)
-    overLapPeriods &&
-      !overLapPeriods.some(overLapPeriod => overLapPeriod === appointmentPlan.id) &&
-      onOverlapPeriodsChange?.([...overLapPeriods, appointmentPlan.id])
 
   if (isPeriodExcluded) {
     variant = 'closed'
@@ -138,7 +120,7 @@ const AppointmentPeriodItem: React.FC<{
   }
 
   return (
-    <StyledItemWrapper variant={variant} onClick={onClick}>
+    <StyledItemWrapper variant={variant} onClick={variant === 'bookable' ? onClick : undefined}>
       <StyledItemTitle>
         {period.startedAt.getHours().toString().padStart(2, '0')}:
         {period.startedAt.getMinutes().toString().padStart(2, '0')}

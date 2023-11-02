@@ -84,7 +84,7 @@ const MemberContractAdminBlock: React.FC<{
               coinLogIds: values?.coinLogs?.map((v: { id: string }) => v.id) || [],
               couponPlanId:
                 values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan)?.coupon_code?.data
-                  ?.coupon_plan?.data?.id || undefined,
+                  ?.coupon_plan?.data?.id || null,
               // delete contract coupon
               contractCouponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
               contractCouponCodes:
