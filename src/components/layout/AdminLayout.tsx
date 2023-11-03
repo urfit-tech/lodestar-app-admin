@@ -8,19 +8,14 @@ import { StyledContent } from '.'
 import { commonMessages } from '../../helpers/translation'
 import AdminMenu from '../admin/AdminMenu'
 import { useRouteKeys } from '../common/AdminRouter'
-import Responsive, { BREAK_POINT } from '../common/Responsive'
+import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
 const SettingBlockToggleButton = styled(Button)<{ variant?: 'opened' | 'unopened' }>`
-  position: absolute;
+  position: relative;
   bottom: 0%;
-  left: ${props => (props.variant === 'unopened' ? '0px' : '240px')};
   border: 1px solid var(--gray);
   border-left: none;
-
-  @media (max-width: ${BREAK_POINT}px) {
-    display: none;
-  }
 `
 
 const NavbarBackStageButton = styled(Button)`
@@ -43,14 +38,17 @@ const AdminLayout: React.FC = ({ children }) => {
         </Link>
       )}
     >
-      <SettingBlockToggleButton onClick={() => setOpen(!open)} variant={open ? 'opened' : 'unopened'}>
-        {open ? <LeftOutlined /> : <RightOutlined />}
-      </SettingBlockToggleButton>
       <div className="d-flex">
         <Responsive.Desktop>
-          <StyledContent noFooter white variant={open ? 'opened' : 'unopened'}>
-            <AdminMenu defaultSelectedKeys={defaultSelectedKeys} opened={open} />
-          </StyledContent>
+          <div className="d-flex align-items-end">
+            <StyledContent noFooter white variant={open ? 'opened' : 'unopened'}>
+              <AdminMenu defaultSelectedKeys={defaultSelectedKeys} opened={open} />
+            </StyledContent>
+
+            <SettingBlockToggleButton onClick={() => setOpen(!open)}>
+              {open ? <LeftOutlined /> : <RightOutlined />}
+            </SettingBlockToggleButton>
+          </div>
         </Responsive.Desktop>
 
         <StyledContent className="flex-grow-1 p-3 p-sm-5" noFooter>
