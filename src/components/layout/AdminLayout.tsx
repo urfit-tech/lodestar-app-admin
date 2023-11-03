@@ -8,7 +8,7 @@ import { StyledContent } from '.'
 import { commonMessages } from '../../helpers/translation'
 import AdminMenu from '../admin/AdminMenu'
 import { useRouteKeys } from '../common/AdminRouter'
-import Responsive from '../common/Responsive'
+import Responsive, { BREAK_POINT } from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
 const SettingBlockToggleButton = styled(Button)<{ variant?: 'opened' | 'unopened' }>`
@@ -17,6 +17,10 @@ const SettingBlockToggleButton = styled(Button)<{ variant?: 'opened' | 'unopened
   left: ${props => (props.variant === 'unopened' ? '0px' : '240px')};
   border: 1px solid var(--gray);
   border-left: none;
+
+  @media (max-width: ${BREAK_POINT}px) {
+    display: none;
+  }
 `
 
 const NavbarBackStageButton = styled(Button)`
