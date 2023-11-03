@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { ContractInfo, ContractItem, FieldProps } from '.'
 import hasura from '../../hasura'
-import { currencyFormatter, notEmpty } from '../../helpers'
+import { currencyFormatter, notEmpty, periodTypeConverter } from '../../helpers'
 import { useAppCustom } from '../../hooks'
 
 const StyledOrder = styled.div`
@@ -148,9 +148,14 @@ const MemberContractCreationBlock: React.FC<{
               name: v.title,
               price: 0,
               started_at: serviceStartedAt,
-              ended_at: serviceStartedAt
-                ? moment(serviceStartedAt).add(v?.periodAmount, v?.periodType).endOf('day').toDate().toISOString()
-                : null,
+              ended_at:
+                serviceStartedAt && v?.periodAmount && v?.periodType
+                  ? moment(serviceStartedAt)
+                      .add(v.periodAmount, periodTypeConverter(v.periodType))
+                      .endOf('day')
+                      .toDate()
+                      .toISOString()
+                  : null,
               delivered_at: new Date(),
             }))
           })

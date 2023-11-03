@@ -86,7 +86,7 @@ type ContractInfo = {
       title: string
       price?: number
       periodAmount?: number
-      periodType?: 'y' | 'M' | 'd'
+      periodType?: PeriodType
     }[]
     coins: number
     periodAmount: number
@@ -607,13 +607,13 @@ const useProjectPlanPreviewsPeriodInfo = (productIds: string[]) => {
     .map(p => ({
       productId: `ProgramPlan_${p.id}`,
       periodAmount: p.period_amount,
-      periodType: p.period_type as 'y' | 'M' | 'd',
+      periodType: p.period_type as PeriodType,
     }))
     .concat(
       data?.program_package_plan.map(p => ({
         productId: `ProgramPackagePlan_${p.id}`,
         periodAmount: p.period_amount,
-        periodType: p.period_type as 'y' | 'M' | 'd',
+        periodType: p.period_type as PeriodType,
       })),
     )
   return { previewsPeriodInfo }
