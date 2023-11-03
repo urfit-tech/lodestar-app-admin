@@ -39,8 +39,6 @@ const AdminLayout: React.FC = ({ children }) => {
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          {/* TODO */}
-
           <NavbarBackStageButton type="link">{formatMessage(commonMessages.ui.backstage)}</NavbarBackStageButton>
         </Link>
       )}
