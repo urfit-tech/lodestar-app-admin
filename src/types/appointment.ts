@@ -20,7 +20,7 @@ export type AppointmentPlan = {
   currencyId: string
   isPrivate: boolean
   reservationAmount: number
-  reservationType: string | null
+  reservationType: 'hour' | 'day' | null
   capacity: number
   meetGenerationMethod: string
   defaultMeetGateway: MeetGateway
