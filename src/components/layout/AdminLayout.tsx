@@ -12,11 +12,17 @@ import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
 const SettingBlockToggleButton = styled(Button)<{ variant?: 'opened' | 'unopened' }>`
-  position: absolute;
+  position: relative;
   bottom: 0%;
-  left: ${props => (props.variant === 'unopened' ? '0px' : '240px')};
   border: 1px solid var(--gray);
   border-left: none;
+`
+
+const NavbarBackStageButton = styled(Button)`
+  @media screen and (max-width: 480px) {
+    font-size: 15px;
+    padding: 5px 5px;
+  }
 `
 
 const AdminLayout: React.FC = ({ children }) => {
@@ -28,18 +34,21 @@ const AdminLayout: React.FC = ({ children }) => {
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          <Button type="link">{formatMessage(commonMessages.ui.backstage)}</Button>
+          <NavbarBackStageButton type="link">{formatMessage(commonMessages.ui.backstage)}</NavbarBackStageButton>
         </Link>
       )}
     >
-      <SettingBlockToggleButton onClick={() => setOpen(!open)} variant={open ? 'opened' : 'unopened'}>
-        {open ? <LeftOutlined /> : <RightOutlined />}
-      </SettingBlockToggleButton>
       <div className="d-flex">
         <Responsive.Desktop>
-          <StyledContent noFooter white variant={open ? 'opened' : 'unopened'}>
-            <AdminMenu defaultSelectedKeys={defaultSelectedKeys} opened={open} />
-          </StyledContent>
+          <div className="d-flex align-items-end">
+            <StyledContent noFooter white variant={open ? 'opened' : 'unopened'}>
+              <AdminMenu defaultSelectedKeys={defaultSelectedKeys} opened={open} />
+            </StyledContent>
+
+            <SettingBlockToggleButton onClick={() => setOpen(!open)}>
+              {open ? <LeftOutlined /> : <RightOutlined />}
+            </SettingBlockToggleButton>
+          </div>
         </Responsive.Desktop>
 
         <StyledContent className="flex-grow-1 p-3 p-sm-5" noFooter>

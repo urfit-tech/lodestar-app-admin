@@ -174,12 +174,13 @@ const SalesPerformancePage: React.VFC = () => {
               value={activeManagerId}
               optionFilterProp="children"
               onChange={setActiveManagerId}
+              filterOption={(input, option) => option?.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {managers
                 .filter(manager => manager.department === activeDepartment || !activeDepartment)
                 .filter(manager => manager.groupName === activeGroupName || !activeGroupName)
                 .map(manager => (
-                  <Select.Option key={manager.id} value={manager.id}>
+                  <Select.Option key={manager.id} value={manager.name}>
                     <StyledText className="mr-2">{manager.name}</StyledText>
                     <StyledTextSecondary>{manager.email}</StyledTextSecondary>
                   </Select.Option>
@@ -327,7 +328,6 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
-  const { currentMemberId, currentUserRole } = useAuth()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
       query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {
@@ -341,6 +341,9 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
               value
             }
             departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
+              value
+            }
+            telephoneExtension: member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
               value
             }
           }
@@ -379,15 +382,19 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
   )
   const managers = useMemo(
     () =>
-      data?.order_executor.filter(notEmpty).map(v => {
-        return {
-          id: v.member?.id || v4(),
-          name: v.member?.name || 'unknown',
-          email: v.member?.email || 'unknown',
-          groupName: v.member?.groupNames[0]?.value || 'unknown',
-          department: v.member?.departments[0]?.value || 'unknown',
-        }
-      }) || [],
+      data?.order_executor
+        .filter(notEmpty)
+        // for SalePerformancePage => filter manager who don't have telephoneExtension
+        .filter(v => v.member.telephoneExtension[0]?.value)
+        .map(v => {
+          return {
+            id: v.member?.id || v4(),
+            name: v.member?.name || 'unknown',
+            email: v.member?.email || 'unknown',
+            groupName: v.member?.groupNames[0]?.value || 'unknown',
+            department: v.member?.departments[0]?.value || 'unknown',
+          }
+        }) || [],
     [data?.order_executor],
   )
 
