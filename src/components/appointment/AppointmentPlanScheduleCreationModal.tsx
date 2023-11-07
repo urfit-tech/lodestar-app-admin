@@ -2,8 +2,10 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/client'
 import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import moment, { Moment } from 'moment'
-import momentTz from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -15,6 +17,9 @@ import { AppointmentPlanAdmin } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import { StyledSelect } from '../admin'
 import AdminModal from '../admin/AdminModal'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const StyledTimeStandardBlock = styled.div`
   border-radius: 4px;
@@ -93,8 +98,8 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           </Button>
           <StyledTimeStandardBlock>
             {formatMessage(appointmentMessages.text.timezone, {
-              city: momentTz.tz.guess().split('/')[1],
-              timezone: moment().zone(momentTz.tz.guess()).format('Z'),
+              city: dayjs.tz.guess().split('/')[1],
+              timezone: dayjs().format('Z'),
             })}
           </StyledTimeStandardBlock>
         </div>
@@ -105,8 +110,8 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           <div className="mb-3">{formatMessage(appointmentMessages.ui.createPeriod)}</div>
           <StyledTimeZoneBlock>
             {formatMessage(appointmentMessages.text.timezone, {
-              city: momentTz.tz.guess().split('/')[1],
-              timezone: moment().zone(momentTz.tz.guess()).format('Z'),
+              city: dayjs.tz.guess().split('/')[1],
+              timezone: dayjs().format('Z'),
             })}
           </StyledTimeZoneBlock>
         </>
