@@ -3,6 +3,7 @@ import { gql, useQuery } from '@apollo/client'
 import { Box } from '@chakra-ui/layout'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
 import { sum, uniqBy } from 'ramda'
@@ -328,10 +329,11 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
+  const { id: appId } = useApp()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
-      query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {
-        member {
+      query GET_MEMBER_CONTRACT_LIST($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+        member(where: { app_id: { _eq: $appId } }) {
           id
           name
           email
@@ -373,6 +375,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
     `,
     {
       variables: {
+        appId,
         startedAt,
         endedAt,
       },
