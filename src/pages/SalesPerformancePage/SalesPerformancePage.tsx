@@ -1,5 +1,6 @@
 import Icon, { DollarOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
+import { Box } from '@chakra-ui/layout'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -119,81 +120,80 @@ const SalesPerformancePage: React.VFC = () => {
         <span className="mr-3" style={{ whiteSpace: 'nowrap' }}>
           {formatMessage(salesMessages.salesPerformance)}
         </span>
-        <div className="d-flex flex-wrap">
-          {(currentUserRole === 'app-owner' || permissions.SALES_PERFORMANCE_ADMIN) && (
-            <Select
-              className="mr-3"
-              style={{ width: 200 }}
-              showSearch
-              allowClear
-              placeholder="機構"
-              value={activeDepartment}
-              optionFilterProp="children"
-              onChange={v => {
-                setActiveDepartment(v)
-                setActiveGroupName(undefined)
-                setActiveManagerId(undefined)
-              }}
-            >
-              {uniqBy(manager => manager.department, managers || []).map(manager => (
-                <Select.Option key={manager.id} value={manager.department}>
-                  {manager.department}
-                </Select.Option>
-              ))}
-            </Select>
-          )}
+      </AdminPageTitle>
+      <Box className="d-flex flex-wrap mb-4">
+        {(currentUserRole === 'app-owner' || permissions.SALES_PERFORMANCE_ADMIN) && (
           <Select
             className="mr-3"
             style={{ width: 200 }}
             showSearch
             allowClear
-            placeholder="組別"
-            value={activeGroupName}
+            placeholder="機構"
+            value={activeDepartment}
             optionFilterProp="children"
             onChange={v => {
-              setActiveGroupName(v)
+              setActiveDepartment(v)
+              setActiveGroupName(undefined)
               setActiveManagerId(undefined)
             }}
           >
-            {uniqBy(manager => manager.groupName, managers || [])
-              .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+            {uniqBy(manager => manager.department, managers || []).map(manager => (
+              <Select.Option key={manager.id} value={manager.department}>
+                {manager.department}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+        <Select
+          className="mr-3"
+          style={{ width: 200 }}
+          showSearch
+          allowClear
+          placeholder="組別"
+          value={activeGroupName}
+          optionFilterProp="children"
+          onChange={v => {
+            setActiveGroupName(v)
+            setActiveManagerId(undefined)
+          }}
+        >
+          {uniqBy(manager => manager.groupName, managers || [])
+            .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+            .map(manager => (
+              <Select.Option key={manager.id} value={manager.groupName}>
+                {manager.groupName}
+              </Select.Option>
+            ))}
+        </Select>
+
+        {currentMemberId && (
+          <Select
+            className="mr-3"
+            style={{ width: 300 }}
+            allowClear
+            showSearch
+            placeholder="業務顧問"
+            value={activeManagerId}
+            optionFilterProp="children"
+            onChange={id => setActiveManagerId(id)}
+            filterOption={(input, option) => (option?.label as string).toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
+            {managers
+              .filter(manager => manager.department === activeDepartment || !activeDepartment)
+              .filter(manager => manager.groupName === activeGroupName || !activeGroupName)
+              // for SalePerformancePage => filter manager who don't have telephoneExtension
+              .filter(manager => manager.telephoneExtension !== 'unknown')
               .map(manager => (
-                <Select.Option key={manager.id} value={manager.groupName}>
-                  {manager.groupName}
+                <Select.Option key={manager.id} value={manager.id} label={manager.name}>
+                  <StyledText className="mr-2">{manager.name}</StyledText>
+                  <StyledTextSecondary>{manager.email}</StyledTextSecondary>
                 </Select.Option>
               ))}
           </Select>
+        )}
+        <DatePicker className="mr-2 mb-10" picker="month" onChange={date => date && setMonth(date.startOf('month'))} />
+      </Box>
 
-          {currentMemberId && (
-            <Select
-              className="mr-3"
-              style={{ width: 300 }}
-              showSearch
-              allowClear
-              placeholder="業務顧問"
-              value={activeManagerId}
-              optionFilterProp="children"
-              onChange={setActiveManagerId}
-              filterOption={(input, option) => option?.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {managers
-                .filter(manager => manager.department === activeDepartment || !activeDepartment)
-                .filter(manager => manager.groupName === activeGroupName || !activeGroupName)
-                .map(manager => (
-                  <Select.Option key={manager.id} value={manager.name}>
-                    <StyledText className="mr-2">{manager.name}</StyledText>
-                    <StyledTextSecondary>{manager.email}</StyledTextSecondary>
-                  </Select.Option>
-                ))}
-            </Select>
-          )}
-          <DatePicker
-            className="mr-2 mb-10"
-            picker="month"
-            onChange={date => date && setMonth(date.startOf('month'))}
-          />
-        </div>
-      </AdminPageTitle>
       {currentMemberId ? (
         <SalesPerformanceTable loading={loading} memberContracts={filterMemberContracts} />
       ) : (
@@ -331,21 +331,19 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
       query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {
-        order_executor(distinct_on: member_id) {
-          member {
-            id
-            name
-            email
-            app_id
-            groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
-              value
-            }
-            departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
-              value
-            }
-            telephoneExtension: member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
-              value
-            }
+        member {
+          id
+          name
+          email
+          app_id
+          groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
+            value
+          }
+          departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
+            value
+          }
+          telephoneExtension: member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            value
           }
         }
         member_contract(
@@ -382,20 +380,17 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
   )
   const managers = useMemo(
     () =>
-      data?.order_executor
-        .filter(notEmpty)
-        // for SalePerformancePage => filter manager who don't have telephoneExtension
-        .filter(v => v.member.telephoneExtension[0]?.value)
-        .map(v => {
-          return {
-            id: v.member?.id || v4(),
-            name: v.member?.name || 'unknown',
-            email: v.member?.email || 'unknown',
-            groupName: v.member?.groupNames[0]?.value || 'unknown',
-            department: v.member?.departments[0]?.value || 'unknown',
-          }
-        }) || [],
-    [data?.order_executor],
+      data?.member.filter(notEmpty).map(v => {
+        return {
+          id: v?.id || v4(),
+          name: v?.name || 'unknown',
+          email: v?.email || 'unknown',
+          groupName: v?.groupNames[0]?.value || 'unknown',
+          department: v?.departments[0]?.value || 'unknown',
+          telephoneExtension: v?.telephoneExtension[0]?.value || 'unknown',
+        }
+      }) || [],
+    [data?.member],
   )
 
   const memberContracts: MemberContract[] = useMemo(
