@@ -604,13 +604,8 @@ export const activityMessages = {
 }
 
 export const appointmentMessages = {
-  ui: defineMessages({
-    createPeriod: { id: 'appointment.ui.createPeriod', defaultMessage: '建立時段' },
-    importPeriod: { id: 'appointment.ui.importPeriod', defaultMessage: '匯入時段' },
-  }),
   label: defineMessages({
     duration: { id: 'appointment.label.duration', defaultMessage: '時間長度(分鐘)' },
-    selectPlan: { id: 'appointment.label.selectPlan', defaultMessage: '選擇方案' },
     period: { id: 'appointment.label.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.label.planTitle', defaultMessage: '方案名稱' },
     contactPhone: { id: 'appointment.label.contactPhone', defaultMessage: '聯絡手機' },
@@ -646,8 +641,7 @@ export const appointmentMessages = {
   }),
   text: defineMessages({
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
-    selectStartedAt: { id: 'appointment.text.selectStartedAt', defaultMessage: '選擇起始時間' },
-    timezone: { id: 'appointment.text.timezone', defaultMessage: '時間以 {city} (GMT{timezone}) 顯示' },
+
     noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
     noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
     noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },
@@ -667,14 +661,6 @@ export const appointmentMessages = {
     isPrivatePublishedNotation: {
       id: 'appointment.text.isPrivatePublishedNotation',
       defaultMessage: '你的預約方案已經私密發佈，學生將能購買預約並由預覽網址關注這個方案。',
-    },
-    scheduleImportNotation: {
-      id: 'appointment.text.scheduleImportNotation',
-      defaultMessage: '將你在其他方案設定的時段複製更新到此方案',
-    },
-    selectImportedSchedule: {
-      id: 'appointment.text.selectedImportedSchedule',
-      defaultMessage: '選擇欲匯入的預約方案時段',
     },
   }),
 }
