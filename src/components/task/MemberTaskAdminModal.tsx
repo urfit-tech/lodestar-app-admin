@@ -312,7 +312,9 @@ const MemberTaskAdminModal: React.FC<
                     onClick={async () => {
                       setLoading(true)
                       await deleteMemberTask({ variables: { memberTaskId: memberTask.id } }).catch(handleError)
-                      await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+                      if (memberTask.meetingGateway === 'zoom') {
+                        await deleteMeeting(memberTask.meet.id, authToken).catch(handleError) // delete zoom meeting
+                      }
                       onRefetch?.()
                     }}
                   >

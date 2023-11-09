@@ -41,6 +41,13 @@ const BorderedItem = styled(List.Item)`
   }
 `
 
+const MenuButtonStyle = styled(Button)`
+  @media screen and (max-width: 480px) {
+    padding: 18px 5px;
+    width: 24px;
+  }
+`
+
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -72,7 +79,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
 
         <Responsive.Default>
           <BorderedItem className="shift-left">
-            <AdminMenu />
+            <AdminMenu opened={true} />
           </BorderedItem>
         </Responsive.Default>
 
@@ -88,7 +95,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
     <>
       <Responsive.Default>
         <Popover placement="bottomRight" trigger="click" content={content} className="ml-2">
-          <Button type="link" icon={<MenuOutlined />} />
+          <MenuButtonStyle type="link" icon={<MenuOutlined />} />
         </Popover>
       </Responsive.Default>
       <Responsive.Desktop>
@@ -114,7 +121,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             </Wrapper>
           }
         >
-          <Button type="link" icon={<MenuOutlined />} />
+          <MenuButtonStyle type="link" icon={<MenuOutlined />} />
         </Popover>
       </Responsive.Default>
 

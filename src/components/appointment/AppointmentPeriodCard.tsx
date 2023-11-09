@@ -273,13 +273,13 @@ const AppointmentPeriodCard: React.FC<
 
             <AppointmentRescheduleModal
               orderProductId={orderProduct.id}
-              onRefetch={onRefetch}
-              visible={rescheduleModalVisible}
+              appointmentPlanId={appointmentPlan.id}
               creator={creator}
               memberId={member.id}
-              onCancel={() => setRescheduleModalVisible(false)}
-              appointmentPlan={appointmentPlan}
+              visible={rescheduleModalVisible}
+              onRefetch={onRefetch}
               onRescheduleModalVisible={status => setRescheduleModalVisible(status)}
+              onCancel={() => setRescheduleModalVisible(false)}
             />
             <Dropdown
               overlay={
