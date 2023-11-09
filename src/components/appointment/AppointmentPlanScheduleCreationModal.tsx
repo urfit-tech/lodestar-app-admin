@@ -45,6 +45,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const apolloClient = useApolloClient()
   const [insertAppointmentSchedules] = useMutation<
     hasura.INSERT_APPOINTMENT_SCHEDULES,
     hasura.INSERT_APPOINTMENT_SCHEDULESVariables
@@ -63,9 +64,25 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
-      .then(() => {
+      .then(async () => {
         setLoading(true)
         const values = form.getFieldsValue()
+        const { data: appointmentPeriodData } = await apolloClient.query<
+          hasura.GET_APPOINTMENT_PERIOD,
+          hasura.GET_APPOINTMENT_PERIODVariables
+        >({
+          query: GET_APPOINTMENT_PERIOD,
+          variables: {
+            appointmentPlanId: appointmentPlanAdmin.id,
+            startedAt: values.startedAt.toDate(),
+            endedAt: values.startedAt.add(appointmentPlanAdmin.duration, 'minutes').toDate(),
+          },
+        })
+        if (appointmentPeriodData.appointment_period.length > 0) {
+          message.error('已有重複的時段')
+          setLoading(false)
+          return
+        }
         insertAppointmentSchedules({
           variables: {
             data: [
@@ -84,11 +101,9 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
             onRefetch?.()
           })
           .catch(handleError)
-          .finally(() => setLoading(false))
       })
-      .catch(() => {})
+      .catch(() => setLoading(false))
   }
-
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
