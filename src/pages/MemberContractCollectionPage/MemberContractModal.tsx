@@ -464,7 +464,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               </Form.Item>
             </Col>
             {contractDealerOptions.length > 0 && (
-              <Col>
+              <Col span={12}>
                 <span>經銷單位</span>
                 <Form.Item name="dealer" initialValue={dealer || null}>
                   <StyledSelect>
