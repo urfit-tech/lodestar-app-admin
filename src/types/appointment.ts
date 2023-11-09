@@ -29,6 +29,7 @@ export type AppointmentPlan = {
 }
 
 export type AppointmentPeriod = {
+  id: string
   appointmentPlanId: string
   appointmentScheduleId: string
   startedAt: Date
