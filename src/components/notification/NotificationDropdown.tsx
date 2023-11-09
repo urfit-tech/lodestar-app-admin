@@ -32,6 +32,11 @@ const StyledBadgeWrapper = styled.div`
     top: 8px;
     right: 4px;
   }
+
+  @media screen and (max-width: 480px) {
+    width: 29.85px;
+    font-size: 50%;
+  }
 `
 const StyledButton = styled(Button)`
   font-size: 20px;
@@ -40,6 +45,10 @@ const StyledButton = styled(Button)`
   &&:active,
   &&:focus {
     color: var(--gray-darker);
+  }
+
+  @media screen and (max-width: 480px) {
+    width: 29.85px;
   }
 `
 const StyledReadAllButton = styled(Button)`
