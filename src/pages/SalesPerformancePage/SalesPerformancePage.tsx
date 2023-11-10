@@ -3,7 +3,6 @@ import { gql, useQuery } from '@apollo/client'
 import { Box } from '@chakra-ui/layout'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
 import { sum, uniqBy } from 'ramda'
@@ -18,6 +17,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
+import { useProperty } from '../../hooks/member'
 import ForbiddenPage from '../ForbiddenPage'
 
 export type MemberContract = {
@@ -329,23 +329,27 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
-  const { id: appId } = useApp()
+  const { properties } = useProperty()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
-      query GET_MEMBER_CONTRACT_LIST($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
-        member(where: { app_id: { _eq: $appId } }) {
-          id
-          name
-          email
-          app_id
-          groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
-            value
-          }
-          departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
-            value
-          }
-          telephoneExtension: member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
-            value
+      query GET_MEMBER_CONTRACT_LIST(
+        $telephoneExtensionPropertyId: uuid!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+      ) {
+        member_property(where: { property_id: { _eq: $telephoneExtensionPropertyId } }) {
+          telephoneExtension: value
+          member {
+            id
+            name
+            email
+            app_id
+            groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
+              value
+            }
+            departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
+              value
+            }
           }
         }
         member_contract(
@@ -375,25 +379,25 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
     `,
     {
       variables: {
-        appId,
         startedAt,
         endedAt,
+        telephoneExtensionPropertyId: properties.find(p => p.name === '分機號碼')?.id,
       },
     },
   )
   const managers = useMemo(
     () =>
-      data?.member.filter(notEmpty).map(v => {
+      data?.member_property?.filter(notEmpty).map(v => {
         return {
-          id: v?.id || v4(),
-          name: v?.name || 'unknown',
-          email: v?.email || 'unknown',
-          groupName: v?.groupNames[0]?.value || 'unknown',
-          department: v?.departments[0]?.value || 'unknown',
-          telephoneExtension: v?.telephoneExtension[0]?.value || 'unknown',
+          id: v?.member?.id || v4(),
+          name: v?.member?.name || 'unknown',
+          email: v?.member?.email || 'unknown',
+          groupName: v?.member?.groupNames[0]?.value || 'unknown',
+          department: v?.member?.departments[0]?.value || 'unknown',
+          telephoneExtension: v?.telephoneExtension || 'unknown',
         }
       }) || [],
-    [data?.member],
+    [data?.member_property],
   )
 
   const memberContracts: MemberContract[] = useMemo(
@@ -441,7 +445,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
             }) || [],
         )
         .flat() || [],
-    [data?.member_contract],
+    [data?.member_contract, managers],
   )
 
   return { loading, memberContracts, managers }
