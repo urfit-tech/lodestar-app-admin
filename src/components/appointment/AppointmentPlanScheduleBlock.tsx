@@ -95,6 +95,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
               schedule:
                 appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
               appointmentScheduleId: period.appointmentScheduleId,
+              appointmentScheduleCreatedAt: period.appointmentScheduleCreatedAt,
               startedAt: period.startedAt,
               endedAt: period.endedAt,
               isEnrolled: period.isEnrolled,

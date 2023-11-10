@@ -72,6 +72,7 @@ export type AppointmentPlanAdmin = Pick<
 > & {
   schedules: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'>[]
   periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    appointmentScheduleCreatedAt: Date
     isEnrolled?: boolean
     isExcluded?: boolean
     onClick?: () => void
