@@ -65,7 +65,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
   }
 
   const periodCollections = groupBy(
-    period => dayjs(period.startedAt).format('YYYY-MM-DD(dd)'),
+    period => dayjs(period.startedAt).format('YYYYMMDD'),
     appointmentPlanAdmin.periods.filter(v =>
       appointmentPlanAdmin.reservationType &&
       appointmentPlanAdmin.reservationAmount &&
