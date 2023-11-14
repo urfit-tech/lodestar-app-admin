@@ -67,6 +67,9 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
       .then(async () => {
         setLoading(true)
         const values = form.getFieldsValue()
+        // moment is mutable
+        const startedAt = values.startedAt.clone()
+        const endedAt = values.startedAt.clone().add(appointmentPlanAdmin.duration, 'minutes')
         const { data: appointmentPeriodData } = await apolloClient.query<
           hasura.GET_APPOINTMENT_PERIOD,
           hasura.GET_APPOINTMENT_PERIODVariables
@@ -74,8 +77,8 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           query: GET_APPOINTMENT_PERIOD,
           variables: {
             appointmentPlanId: appointmentPlanAdmin.id,
-            startedAt: values.startedAt.toDate(),
-            endedAt: values.startedAt.add(appointmentPlanAdmin.duration, 'minutes').toDate(),
+            startedAt: startedAt.toDate(),
+            endedAt: endedAt.toDate(),
           },
         })
         if (appointmentPeriodData.appointment_period.length > 0) {
@@ -88,7 +91,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
             data: [
               {
                 appointment_plan_id: appointmentPlanAdmin.id,
-                started_at: values.startedAt.toDate(),
+                started_at: startedAt.toDate(),
                 interval_amount: withRepeat ? 1 : null,
                 interval_type: withRepeat ? values.periodType : null,
               },
@@ -101,8 +104,11 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
             onRefetch?.()
           })
           .catch(handleError)
+          .finally(() => {
+            setLoading(false)
+          })
       })
-      .catch(() => setLoading(false))
+      .catch(error => handleError(error))
   }
   return (
     <AdminModal
