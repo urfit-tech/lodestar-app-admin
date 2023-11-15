@@ -78,7 +78,9 @@ const AppointmentPeriodItem: React.FC<{
   const { loading: loadingOverlapMeet, overlapMeets } = useOverlapMeets(period.startedAt, period.endedAt)
 
   const currentUseServices = uniq(overlapMeets.map(overlapMeet => overlapMeet.serviceId))
-  const overlapCreatorMeets = overlapMeets.filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
+  const overlapCreatorMeets = overlapMeets
+    .filter(overlapMeet => overlapMeet.hostMemberId === creatorId)
+    .filter(overlapMeet => overlapMeet.target !== appointmentPlan.id)
 
   let variant: 'bookable' | 'closed' | 'booked' | 'meetingFull' | undefined
 
