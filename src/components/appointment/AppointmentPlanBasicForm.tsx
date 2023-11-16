@@ -83,6 +83,7 @@ const AppointmentPlanBasicForm: React.FC<{
   const [meetGenerationMethod, setMeetGenerationMethod] = useState<'manual' | 'auto'>(
     appointmentPlanAdmin?.meetGenerationMethod as 'auto' | 'manual',
   )
+  const [reservationType, setReservationType] = useState(appointmentPlanAdmin?.reservationType as ReservationType)
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
@@ -183,7 +184,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={1} max={reservationType === 'hour' ? 23 : undefined} />
           </Form.Item>
 
           <Form.Item
@@ -197,7 +198,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <Select style={{ width: '150px' }}>
+            <Select style={{ width: '150px' }} onChange={v => setReservationType(v as 'hour' | 'day')}>
               <Select.Option key="hour" value="hour">
                 {formatMessage(messages.hoursAgo)}
               </Select.Option>
