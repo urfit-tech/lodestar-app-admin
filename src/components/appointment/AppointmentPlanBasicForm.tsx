@@ -80,6 +80,10 @@ const AppointmentPlanBasicForm: React.FC<{
     UpdateAppointmentPlan,
   )
   const [loading, setLoading] = useState(false)
+  const [meetGenerationMethod, setMeetGenerationMethod] = useState<'manual' | 'auto'>(
+    appointmentPlanAdmin?.meetGenerationMethod as 'auto' | 'manual',
+  )
+  const [reservationType, setReservationType] = useState(appointmentPlanAdmin?.reservationType as ReservationType)
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
@@ -97,7 +101,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
         rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
-        defaultMeetGateway: values.defaultMeetGateway ?? 'jitsi',
+        defaultMeetGateway: meetGenerationMethod === 'auto' ? 'jitsi' : values.defaultMeetGateway ?? 'jitsi',
       },
     })
       .then(() => {
@@ -180,7 +184,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={1} max={reservationType === 'hour' ? 23 : undefined} />
           </Form.Item>
 
           <Form.Item
@@ -194,7 +198,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <Select style={{ width: '150px' }}>
+            <Select style={{ width: '150px' }} onChange={v => setReservationType(v as 'hour' | 'day')}>
               <Select.Option key="hour" value="hour">
                 {formatMessage(messages.hoursAgo)}
               </Select.Option>
@@ -271,7 +275,7 @@ const AppointmentPlanBasicForm: React.FC<{
       </Form.Item>
 
       <Form.Item label={formatMessage(appointmentMessages.label.meetingLink)} name="meetGenerationMethod">
-        <Select style={{ width: '150px' }}>
+        <Select style={{ width: '150px' }} onChange={value => setMeetGenerationMethod(value as 'auto' | 'manual')}>
           <Select.Option key="auto" value="auto">
             {formatMessage(appointmentMessages.label.automaticallyGenerated)}
           </Select.Option>
@@ -283,7 +287,9 @@ const AppointmentPlanBasicForm: React.FC<{
 
       {loadingService ? (
         <Spin />
-      ) : enabledModules.meet_service && services.filter(service => service.gateway === 'zoom').length !== 0 ? (
+      ) : enabledModules.meet_service &&
+        services.filter(service => service.gateway === 'zoom').length !== 0 &&
+        meetGenerationMethod === 'auto' ? (
         <Form.Item label="預設會議系統" name="defaultMeetGateway">
           <Select style={{ width: '150px' }} defaultValue="zoom">
             <Select.Option key="zoom" value="zoom">
