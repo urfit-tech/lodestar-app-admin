@@ -1,8 +1,8 @@
+import dayjs from 'dayjs'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useApolloClient, useMutation } from '@apollo/client'
 import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import moment, { Moment } from 'moment'
@@ -110,6 +110,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
       })
       .catch(error => handleError(error))
   }
+
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
@@ -160,11 +161,14 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
         initialValues={{
           startedAt:
             appointmentPlanAdmin.reservationAmount && appointmentPlanAdmin.reservationType
-              ? moment()
-                  .add(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
-                  .add(1, 'hour')
-                  .startOf('hour')
-              : moment().add(1, 'hour').startOf('hour'),
+              ? appointmentPlanAdmin.reservationType === 'day'
+                ? moment()
+                    .add(appointmentPlanAdmin.reservationAmount * 24, 'hour')
+                    .add(1, 'minute')
+                : appointmentPlanAdmin.reservationType === 'hour'
+                ? moment().add(appointmentPlanAdmin.reservationAmount, 'hour').add(1, 'minute')
+                : undefined
+              : moment().add(1, 'h').startOf('hour'),
           periodType: 'D',
         }}
       >
@@ -182,25 +186,70 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
             format="YYYY-MM-DD HH:mm"
             showTime={{
               format: 'HH:mm',
-              defaultValue:
-                appointmentPlanAdmin.reservationAmount && appointmentPlanAdmin.reservationType
-                  ? moment()
-                      .add(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
-                      .add(1, 'hour')
-                      .startOf('hour')
-                  : moment().add(1, 'hour').startOf('hour'),
+              defaultValue: moment('00:00:00', 'HH:mm:ss'),
             }}
             disabledDate={currentTime =>
-              currentTime
-                ? appointmentPlanAdmin.reservationAmount && appointmentPlanAdmin.reservationType
-                  ? currentTime.toDate().getTime() <
-                    dayjs()
-                      .add(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
-                      .toDate()
-                      .getTime()
-                  : currentTime < moment().startOf('day')
+              appointmentPlanAdmin.reservationAmount && appointmentPlanAdmin.reservationType
+                ? appointmentPlanAdmin.reservationType === 'day'
+                  ? Number(currentTime.format('YYYYMMDD')) <
+                    Number(dayjs().add(appointmentPlanAdmin.reservationAmount, 'day').format('YYYYMMDD'))
+                  : appointmentPlanAdmin.reservationType === 'hour'
+                  ? Number(currentTime.format('YYYYMMDD')) <
+                    Number(dayjs().add(appointmentPlanAdmin.reservationAmount, 'hour').format('YYYYMMDD'))
+                  : false
                 : false
             }
+            disabledTime={current => {
+              const currentHour = dayjs().hour()
+              const currentMinute = dayjs().minute()
+              return {
+                disabledHours: () => {
+                  return current
+                    ? appointmentPlanAdmin.reservationType === 'day'
+                      ? Number(current?.format('YYYYMMDD')) ===
+                        Number(dayjs().add(appointmentPlanAdmin.reservationAmount, 'day').format('YYYYMMDD'))
+                        ? Array.from({ length: currentHour }, (_, index) => index)
+                        : []
+                      : appointmentPlanAdmin.reservationType === 'hour'
+                      ? Number(current?.format('YYYYMMDD')) ===
+                        Number(dayjs().add(appointmentPlanAdmin.reservationAmount, 'hour').format('YYYYMMDD'))
+                        ? Array.from(
+                            {
+                              length:
+                                currentHour + appointmentPlanAdmin.reservationAmount > 24
+                                  ? currentHour + appointmentPlanAdmin.reservationAmount - 24
+                                  : currentHour + appointmentPlanAdmin.reservationAmount,
+                            },
+                            (_, index) => index,
+                          )
+                        : []
+                      : []
+                    : []
+                },
+                disabledMinutes: () => {
+                  return current && appointmentPlanAdmin.reservationType
+                    ? Number(current?.format('YYYYMMDDHH')) ===
+                      Number(
+                        dayjs()
+                          .add(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
+                          .format('YYYYMMDDHH'),
+                      )
+                      ? Array.from(
+                          { length: currentMinute < 59 ? currentMinute + 1 : currentMinute },
+                          (_, index) => index,
+                        )
+                      : Number(current?.format('YYYYMMDDHH')) <
+                        Number(
+                          dayjs()
+                            .add(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
+                            .format('YYYYMMDDHH'),
+                        )
+                      ? Array.from({ length: 60 }, (_, index) => index)
+                      : []
+                    : []
+                },
+              }
+            }}
             showToday={false}
             placeholder={formatMessage(appointmentMessages.AppointmentPlanScheduleCreationModal.selectStartedAt)}
           />
