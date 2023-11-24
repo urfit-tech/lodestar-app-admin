@@ -5,6 +5,7 @@ import moment, { Moment } from 'moment'
 import { flatten, sum, uniqBy } from 'ramda'
 import React, { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { DeepPick } from 'ts-deep-pick'
 import { AdminBlock } from '../../components/admin'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { installmentPlans } from '../../constants'
@@ -87,6 +88,16 @@ type ContractInfo = {
       price?: number
       periodAmount?: number
       periodType?: PeriodType
+    }[]
+    customCoupons: {
+      number: number
+      startedAt?: Date | null
+      endedAt?: Date | null
+      title: string
+      type: 'percent' | 'cash'
+      amount: number
+      constraint: number
+      scope: any
     }[]
     coins: number
     periodAmount: number
@@ -555,6 +566,28 @@ const usePrivateTeachContractInfo = (
         periodAmount: v.period_amount || 0,
         periodType: v.period_type as PeriodType | null,
         previews: v.options?.previews || [],
+        customCoupons:
+          v.options?.coupons?.map(
+            (customCoupon: {
+              number: number
+              startedAt?: Date | null
+              endedAt?: Date | null
+              title: string
+              type: 'percent' | 'cash'
+              amount: number
+              constraint: number
+              scope: any
+            }) => ({
+              number: customCoupon.number || 1,
+              startedAt: customCoupon.startedAt,
+              endedAt: customCoupon.endedAt,
+              title: customCoupon.title || '',
+              type: customCoupon.type || 'percent',
+              amount: customCoupon.type === 'percent' && customCoupon.amount > 100 ? 100 : customCoupon.amount || 0,
+              constraint: customCoupon.constraint || 0,
+              scope: customCoupon.scope || [],
+            }),
+          ) || [],
       }))
       info.appointmentPlanCreators = data.appointment_plan
         .map(v =>
