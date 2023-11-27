@@ -46,6 +46,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
             interval_amount
             interval_type
             excludes
+            created_at
           }
           appointment_enrollments(where: { member_id: { _eq: $targetMemberId } }) {
             member_id
@@ -96,8 +97,14 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
             excludes: appointmentSchedule.excludes.map((e: string) => new Date(e)),
           })),
           periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
-            appointmentPlanId: `${period.appointment_schedule_id || ''}-${period.started_at}`,
+            id: `${period.appointment_schedule_id || ''}-${period.started_at}`,
+            appointmentPlanId,
             appointmentScheduleId: period.appointment_schedule_id,
+            appointmentScheduleCreatedAt: new Date(
+              data.appointment_plan_by_pk?.appointment_schedules.filter(
+                v => v.id === period.appointment_schedule_id,
+              )[0]?.created_at,
+            ),
             startedAt: new Date(period.started_at),
             endedAt: new Date(period.ended_at),
             isEnrolled: period.booked > 0,
@@ -463,3 +470,17 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
     error,
   }
 }
+
+export const GET_APPOINTMENT_PERIOD = gql`
+  query GET_APPOINTMENT_PERIOD($appointmentPlanId: uuid!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+    appointment_period(
+      where: {
+        appointment_plan_id: { _eq: $appointmentPlanId }
+        started_at: { _eq: $startedAt }
+        ended_at: { _eq: $endedAt }
+      }
+    ) {
+      appointment_plan_id
+    }
+  }
+`

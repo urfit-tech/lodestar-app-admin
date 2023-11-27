@@ -8,6 +8,7 @@ import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
 import { useOverlapMeets } from '../../hooks/meet'
 
 const StyledItemWrapper = styled.div<{ variant?: 'bookable' | 'closed' | 'booked' | 'meetingFull' }>`
+  user-select: none;
   position: relative;
   margin-bottom: 0.5rem;
   margin-right: 0.5rem;
