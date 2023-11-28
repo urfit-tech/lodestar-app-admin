@@ -76,6 +76,7 @@ const MemberPhoneModal: React.FC<{
 
   const handleCancel = () => {
     onCancel()
+    setUpdatePhoneNumber([])
     form.resetFields()
   }
   const handleSubmit = async () => {
