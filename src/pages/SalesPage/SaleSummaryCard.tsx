@@ -4,9 +4,9 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
 import AdminCard from '../../components/admin/AdminCard'
 import UnAuthCover from '../../components/common/UnAuthCover'
+import hasura from '../../hasura'
 import pageMessages from '../translation'
 
 const SaleSummaryCard: React.VFC = () => {
@@ -99,16 +99,14 @@ const useSelfOrderAmount = (memberId: string, appId: string) => {
 
 const GetTotalOrderAmount = gql`
   query GetTotalOrderAmount($appId: String!) {
-    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, member: { app_id: { _eq: $appId } } } }) {
+    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, app_id: { _eq: $appId } } }) {
       aggregate {
         sum {
           price
         }
       }
     }
-    order_discount_aggregate(
-      where: { order_log: { status: { _eq: "SUCCESS" }, member: { app_id: { _eq: $appId } } } }
-    ) {
+    order_discount_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, app_id: { _eq: $appId } } }) {
       aggregate {
         sum {
           price
