@@ -26,6 +26,7 @@ import { handleError } from '../../helpers'
 import { GetMeetById } from '../../hooks/meet'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import dayjs from 'dayjs'
+import { SorterResult } from 'antd/lib/table/interface'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -120,11 +121,15 @@ const MemberTaskAdminBlock: React.FC<{
     id: string
     name: string
   }>({ id: '', name: '' })
+  const [orderBy, setOrderBy] = useState<hasura.member_task_order_by>({
+    created_at: 'desc' as hasura.order_by,
+  })
   const { loading: categoriesLoading, categories } = useCategory('task')
   const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
     useMemberTaskCollection({
       memberId,
       ...filter,
+      orderBy,
       limit: display === 'table' ? 10 : undefined,
     })
   const { insertMemberNote } = useMutateMemberNote()
@@ -665,6 +670,14 @@ const MemberTaskAdminBlock: React.FC<{
             showSorterTooltip={false}
             rowClassName="cursor-pointer"
             pagination={false}
+            onChange={(pagination, filters, sorter) => {
+              const newSorter = sorter as SorterResult<MemberTaskProps>
+              console.log(newSorter)
+              setOrderBy({
+                [newSorter.columnKey === 'due_at' ? 'due_at' : 'created_at']:
+                  newSorter.order === 'ascend' ? 'asc' : 'desc',
+              })
+            }}
           />
         ) : null}
 
@@ -708,6 +721,7 @@ const useMemberTaskCollection = (options?: {
   dueAt?: Date[]
   status?: string
   limit?: number
+  orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
 }) => {
   const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member_id: { _eq: options?.memberId },
@@ -728,7 +742,7 @@ const useMemberTaskCollection = (options?: {
     hasura.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
-      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int) {
+      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int, $orderBy: member_task_order_by!) {
         executors: member_task(where: { executor_id: { _is_null: false } }, distinct_on: [executor_id]) {
           id
           executor {
@@ -748,7 +762,7 @@ const useMemberTaskCollection = (options?: {
             count
           }
         }
-        member_task(where: $condition, limit: $limit, order_by: { created_at: desc }) {
+        member_task(where: $condition, limit: $limit, order_by: [$orderBy]) {
           id
           title
           description
@@ -793,6 +807,7 @@ const useMemberTaskCollection = (options?: {
     {
       variables: {
         condition,
+        orderBy: options?.orderBy,
         limit: options?.limit,
       },
     },
