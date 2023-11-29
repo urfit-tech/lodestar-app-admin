@@ -91,7 +91,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
             data: [
               {
                 appointment_plan_id: appointmentPlanAdmin.id,
-                started_at: startedAt.toDate(),
+                started_at: startedAt.format('YYYY-MM-DDTHH:mm:00Z'),
                 interval_amount: withRepeat ? 1 : null,
                 interval_type: withRepeat ? values.periodType : null,
               },
