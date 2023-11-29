@@ -208,7 +208,7 @@ const MemberTaskAdminModal: React.FC<
               executor_id: values.executorId,
               priority: values.priority,
               status: values.status,
-              due_at: values.dueAt?.toDate(),
+              due_at: values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'),
               description: values.description,
               has_meeting: values.hasMeeting,
               meet_id: null,
@@ -222,13 +222,9 @@ const MemberTaskAdminModal: React.FC<
               variables: {
                 meet: {
                   started_at: values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'),
-                  ended_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'))
-                    .add(values.meetingHours, 'hours')
-                    .toISOString(),
-                  nbf_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z')).subtract(10, 'minutes').toISOString(),
-                  exp_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'))
-                    .add(values.meetingHours, 'hours')
-                    .toISOString(),
+                  ended_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z')).add(values.meetingHours, 'hours'),
+                  nbf_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z')).subtract(10, 'minutes'),
+                  exp_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z')).add(values.meetingHours, 'hours'),
                   auto_recording: values.meetingGateway === 'zoom',
                   target: memberTaskId ?? data?.insert_member_task_one?.id,
                   type: 'memberTask',
