@@ -77,8 +77,8 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           query: GET_APPOINTMENT_PERIOD,
           variables: {
             appointmentPlanId: appointmentPlanAdmin.id,
-            startedAt: startedAt.toDate(),
-            endedAt: endedAt.toDate(),
+            startedAt: startedAt.format('YYYY-MM-DDTHH:mm:00Z'),
+            endedAt: endedAt.format('YYYY-MM-DDTHH:mm:00Z'),
           },
         })
         if (appointmentPeriodData.appointment_period.length > 0) {
