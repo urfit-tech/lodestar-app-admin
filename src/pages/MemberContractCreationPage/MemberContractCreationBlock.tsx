@@ -77,6 +77,15 @@ const MemberContractCreationBlock: React.FC<{
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const fieldValue = form.getFieldsValue()
 
+  const selectedCustomCoupons = uniqBy(
+    v => v.title,
+    flatten(
+      products
+        .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
+        .map(product => product.customCoupons),
+    ),
+  )
+
   const handleMemberContractCreate = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
 
@@ -280,14 +289,7 @@ const MemberContractCreationBlock: React.FC<{
         }
       }
     }[] = []
-    uniqBy(
-      v => v.title,
-      flatten(
-        products
-          .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
-          .map(product => product.customCoupons),
-      ),
-    ).forEach((coupon, index) => {
+    selectedCustomCoupons.forEach((coupon, index) => {
       const couponPlanId = v4()
       const code = `${moment().format('x')}${index}`
       range(0, coupon.number).forEach((v, index) => {
@@ -537,7 +539,15 @@ const MemberContractCreationBlock: React.FC<{
                   minimumFractionDigits: 0,
                 })} / 共 ${fieldValue.installmentPlan} 期)`}
             </StyledInstallment>
-            <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
+            <StyledTotal>
+              {totalAppointments +
+                sum(
+                  selectedCustomCoupons
+                    .filter(v => v.scope.find((item: string) => item.includes('AppointmentPlan')))
+                    .map(w => w.number),
+                )}
+              次諮詢
+            </StyledTotal>
             <StyledTotal>{totalCoins} XP</StyledTotal>
           </div>
         </div>
