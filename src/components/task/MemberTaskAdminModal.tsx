@@ -221,10 +221,14 @@ const MemberTaskAdminModal: React.FC<
             await insertMeet({
               variables: {
                 meet: {
-                  started_at: values.dueAt?.toDate().toISOString(),
-                  ended_at: dayjs(values.dueAt?.toDate()).add(values.meetingHours, 'hours').toISOString(),
-                  nbf_at: dayjs(values.dueAt?.toDate()).subtract(10, 'minutes').toISOString(),
-                  exp_at: dayjs(values.dueAt?.toDate()).add(values.meetingHours, 'hours').toISOString(),
+                  started_at: values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'),
+                  ended_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'))
+                    .add(values.meetingHours, 'hours')
+                    .toISOString(),
+                  nbf_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z')).subtract(10, 'minutes').toISOString(),
+                  exp_at: dayjs(values.dueAt?.format('YYYY-MM-DDTHH:mm:00Z'))
+                    .add(values.meetingHours, 'hours')
+                    .toISOString(),
                   auto_recording: values.meetingGateway === 'zoom',
                   target: memberTaskId ?? data?.insert_member_task_one?.id,
                   type: 'memberTask',
