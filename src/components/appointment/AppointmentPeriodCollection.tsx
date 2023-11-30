@@ -1,5 +1,7 @@
 import { Button } from 'antd'
+import dayjs from 'dayjs'
 import moment from 'moment'
+import { groupBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -54,6 +56,7 @@ type AppointmentPeriodCollectionProps = {
     schedule: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'> | null
     isEnrolled?: boolean
     isExcluded?: boolean
+    appointmentScheduleCreatedAt: Date
   })[]
   onDelete?: (scheduleId: string) => Promise<any>
   onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
@@ -75,31 +78,36 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
       <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
 
       <StyledWrapper>
-        {periods.map((period, index) => (
-          <AppointmentPeriodItem
-            key={`${appointmentPlan.id}-${index}`}
-            creatorId={appointmentPlan.creatorId}
-            appointmentPlan={{
-              id: appointmentPlan.id,
-              capacity: appointmentPlan.capacity,
-              defaultMeetGateway: appointmentPlan.defaultMeetGateway,
-            }}
-            period={{
-              startedAt: period.startedAt,
-              endedAt: period.endedAt,
-            }}
-            services={services}
-            loadingServices={loadingServices}
-            isPeriodExcluded={period.isExcluded}
-            isEnrolled={period.isEnrolled}
-            onClick={() => {
-              if (!period.isEnrolled) {
-                setSelectedPeriod(period)
-                setVisible(true)
-              }
-            }}
-          />
-        ))}
+        {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
+          .map(periods =>
+            periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
+          )
+          .map(periods => periods[0])
+          .map((period, index) => (
+            <AppointmentPeriodItem
+              key={`${appointmentPlan.id}-${index}`}
+              creatorId={appointmentPlan.creatorId}
+              appointmentPlan={{
+                id: appointmentPlan.id,
+                capacity: appointmentPlan.capacity,
+                defaultMeetGateway: appointmentPlan.defaultMeetGateway,
+              }}
+              period={{
+                startedAt: period.startedAt,
+                endedAt: period.endedAt,
+              }}
+              services={services}
+              loadingServices={loadingServices}
+              isPeriodExcluded={period.isExcluded}
+              isEnrolled={period.isEnrolled}
+              onClick={() => {
+                if (!period.isEnrolled) {
+                  setSelectedPeriod(period)
+                  setVisible(true)
+                }
+              }}
+            />
+          ))}
       </StyledWrapper>
 
       <AdminModal
