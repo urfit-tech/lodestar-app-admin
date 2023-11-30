@@ -101,7 +101,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
         rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
-        defaultMeetGateway: meetGenerationMethod === 'auto' ? 'jitsi' : values.defaultMeetGateway ?? 'jitsi',
+        defaultMeetGateway: meetGenerationMethod === 'auto' ? values.defaultMeetGateway : 'jitsi',
       },
     })
       .then(() => {
