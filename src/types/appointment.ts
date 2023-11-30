@@ -20,7 +20,7 @@ export type AppointmentPlan = {
   currencyId: string
   isPrivate: boolean
   reservationAmount: number
-  reservationType: string | null
+  reservationType: 'hour' | 'day' | null
   capacity: number
   meetGenerationMethod: string
   defaultMeetGateway: MeetGateway
@@ -29,6 +29,7 @@ export type AppointmentPlan = {
 }
 
 export type AppointmentPeriod = {
+  id: string
   appointmentPlanId: string
   appointmentScheduleId: string
   startedAt: Date
@@ -71,6 +72,7 @@ export type AppointmentPlanAdmin = Pick<
 > & {
   schedules: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'>[]
   periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    appointmentScheduleCreatedAt: Date
     isEnrolled?: boolean
     isExcluded?: boolean
     onClick?: () => void

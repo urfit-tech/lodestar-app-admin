@@ -1,7 +1,6 @@
 import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
