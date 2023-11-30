@@ -40,14 +40,14 @@ export const useOrderLogPreviewCollection = (
   const limit = 20
   const condition: hasura.GetOrderLogPreviewCollectionVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
+    app_id: appId ? { _eq: appId } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
     member:
       authStatus !== 'None'
         ? filters?.memberId
-          ? { id: { _eq: filters.memberId }, app_id: { _eq: appId } }
+          ? { id: { _eq: filters.memberId } }
           : filters?.memberNameAndEmail
           ? {
-              app_id: { _eq: appId },
               _or: filters?.memberNameAndEmail
                 ? [
                     { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
