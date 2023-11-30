@@ -17,7 +17,7 @@ import { AppointmentPeriodCardProps } from '../../types/appointment'
 import { AvatarImage } from '../common/Image'
 import AppointmentCancelModal from './AppointmentCancelModal'
 import AppointmentConfigureMeetingRoomModal from './AppointmentConfigureMeetingRoomModal'
-import AppointMentDetailModal from './AppointMentDetailModal'
+import AppointmentDetailModal from './AppointmentDetailModal'
 import AppointmentIssueAndResultModal from './AppointmentIssueAndResultModal'
 import AppointmentRescheduleModal from './AppointmentRescheduleModal'
 import appointmentMessages from './translation'
@@ -194,7 +194,7 @@ const AppointmentPeriodCard: React.FC<
           onRefetch={onRefetch}
         />
         <Divider type="vertical" />
-        <AppointMentDetailModal
+        <AppointmentDetailModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" size="small" onClick={() => setVisible(true)}>
               {formatMessage(appointmentMessages['*'].detail)}

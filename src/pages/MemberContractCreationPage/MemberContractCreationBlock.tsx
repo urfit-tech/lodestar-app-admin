@@ -77,6 +77,15 @@ const MemberContractCreationBlock: React.FC<{
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const fieldValue = form.getFieldsValue()
 
+  const selectedCustomCoupons = uniqBy(
+    v => v.title,
+    flatten(
+      products
+        .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
+        .map(product => product.customCoupons),
+    ),
+  )
+
   const handleMemberContractCreate = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
 
@@ -251,6 +260,74 @@ const MemberContractCreationBlock: React.FC<{
       },
     }))
 
+    // project plan options coupons
+    let customCoupons: {
+      member_id: string
+      coupon_code: {
+        data: {
+          code: string
+          count: number
+          remaining: number
+          app_id: string
+          coupon_plan_id: string | undefined
+          coupon_plan:
+            | {
+                on_conflict: { constraint: string; update_columns: string[] }
+                data: {
+                  id: string
+                  type: number
+                  amount: number
+                  title: string
+                  description: string
+                  started_at: string | Date
+                  ended_at: string | Date
+                  scope: any
+                  constraint: number | null
+                }
+              }
+            | undefined
+        }
+      }
+    }[] = []
+    selectedCustomCoupons.forEach((coupon, index) => {
+      const couponPlanId = v4()
+      const code = `${moment().format('x')}${index}`
+      range(0, coupon.number).forEach((v, index) => {
+        customCoupons.push({
+          member_id: member.id,
+          coupon_code: {
+            data: {
+              code: `${code}-${v}`,
+              count: 1,
+              remaining: 0,
+              app_id: appId,
+              coupon_plan_id: index !== 0 ? couponPlanId : undefined,
+              coupon_plan:
+                index === 0
+                  ? {
+                      on_conflict: {
+                        constraint: 'coupon_plan_pkey',
+                        update_columns: ['title'],
+                      },
+                      data: {
+                        id: couponPlanId,
+                        type: coupon.type === 'cash' ? 1 : 2,
+                        amount: coupon.amount,
+                        title: coupon.title,
+                        description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
+                        started_at: coupon.startedAt ?? serviceStartedAt.toISOString(),
+                        ended_at: coupon.endedAt ?? serviceEndedAt?.toISOString(),
+                        scope: coupon.scope,
+                        constraint: coupon.constraint,
+                      },
+                    }
+                  : undefined,
+            },
+          },
+        })
+      })
+    })
+
     addMemberContract({
       variables: {
         memberId: member.id,
@@ -288,6 +365,7 @@ const MemberContractCreationBlock: React.FC<{
             })),
             ...appointmentCoupons,
             ...bonusExtendedServiceCoupons,
+            ...customCoupons,
           ],
           orderId: `${moment().format('YYYYMMDDHHmmssSSS')}00`,
           orderOptions: {
@@ -461,7 +539,15 @@ const MemberContractCreationBlock: React.FC<{
                   minimumFractionDigits: 0,
                 })} / 共 ${fieldValue.installmentPlan} 期)`}
             </StyledInstallment>
-            <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
+            <StyledTotal>
+              {totalAppointments +
+                sum(
+                  selectedCustomCoupons
+                    .filter(v => v.scope.find((item: string) => item.includes('AppointmentPlan')))
+                    .map(w => w.number),
+                )}
+              次諮詢
+            </StyledTotal>
             <StyledTotal>{totalCoins} XP</StyledTotal>
           </div>
         </div>

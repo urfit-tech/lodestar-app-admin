@@ -8,6 +8,7 @@ import { useOverlapMeets } from '../../hooks/meet'
 import appointmentMessages from './translation'
 
 const StyledItemWrapper = styled.div<{ variant?: 'bookable' | 'closed' | 'booked' | 'meetingFull' }>`
+  user-select: none;
   position: relative;
   margin-bottom: 0.5rem;
   margin-right: 0.5rem;
