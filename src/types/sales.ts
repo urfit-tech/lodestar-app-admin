@@ -2,7 +2,10 @@ export type LeadProps = {
   id: string
   name: string
   email: string
-  phones: string[]
+  phones: {
+    phoneNumber: string
+    isValid: boolean
+  }[]
   pictureUrl: string
   notes: string
   categoryNames: string[]
