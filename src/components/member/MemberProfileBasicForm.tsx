@@ -78,9 +78,9 @@ const MemberProfileBasicForm: React.FC<{
                   member_id: memberAdmin.id,
                   phone,
                 }))
-            : memberAdmin.phones.map((phone: string) => ({
+            : memberAdmin.phones.map(phone => ({
                 member_id: memberAdmin.id,
-                phone,
+                phone: phone.phoneNumber,
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
@@ -131,7 +131,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
+        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -205,7 +205,7 @@ const PhoneCollectionInput: React.FC<{
             value={phone}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, e.target.value)
+              newValue.splice(index, 1, e.target.value.trim())
               onChange && onChange(newValue)
             }}
           />
