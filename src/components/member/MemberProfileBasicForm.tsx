@@ -205,7 +205,7 @@ const PhoneCollectionInput: React.FC<{
             value={phone}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, e.target.value)
+              newValue.splice(index, 1, e.target.value.trim())
               onChange && onChange(newValue)
             }}
           />

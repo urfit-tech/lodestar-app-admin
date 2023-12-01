@@ -67,8 +67,8 @@ const MemberPhoneModal: React.FC<{
     }
   `)
   const [updateMemberMangerId] = useMutation(gql`
-    mutation UpdateMemberMangerId($memberId: String!) {
-      update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: null }) {
+    mutation UpdateMemberMangerId($memberId: String!, $mangerId: String!) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: $mangerId }) {
         affected_rows
       }
     }
@@ -113,7 +113,7 @@ const MemberPhoneModal: React.FC<{
         try {
           if (validPhonesLength - inValidUpdatePhoneNumberLength <= 0 && inValidNewPhone) {
             await updateMemberMangerId({
-              variables: { memberId },
+              variables: { memberId, mangerId: null },
             })
           }
           await updateMemberPhone({
