@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { useActivityCollection, useCategoryCollection } from '../../hooks/activity'
+import { useCategoryCollection } from '../../hooks/activity'
+import useActivityCollection from '../../hooks/activity/useActivityCollection'
 import Activity from './Activity'
 
 const StyledButton = styled(Button)`
@@ -145,8 +146,8 @@ const ActivityCollectionTabs: React.FC<{
                 <Button
                   loading={loading}
                   onClick={() => {
-                    setLoading(true)
-                    loadMoreActivities().then(() => setLoading(false))
+                    // setLoading(true)
+                    loadMoreActivities()
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
