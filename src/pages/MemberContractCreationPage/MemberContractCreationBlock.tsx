@@ -173,6 +173,7 @@ const MemberContractCreationBlock: React.FC<{
     const appointmentCouponPlanId = v4()
     const appointmentCoupons = range(0, totalAppointments).map((v, index) => {
       return {
+        id: v4(),
         member_id: member.id,
         coupon_code: {
           data: {
@@ -209,6 +210,7 @@ const MemberContractCreationBlock: React.FC<{
     const bonusExtendedServiceCouponPlanId = v4()
     const bonusExtendedServiceCoupons = range(0, totalBonusExtendedServiceCoupons).map((v, index) => {
       return {
+        id: v4(),
         member_id: member.id,
         coupon_code: {
           data: {
@@ -259,6 +261,7 @@ const MemberContractCreationBlock: React.FC<{
 
     // project plan options coupons
     let customCoupons: {
+      id: string
       member_id: string
       coupon_code: {
         data: {
@@ -291,6 +294,7 @@ const MemberContractCreationBlock: React.FC<{
       const code = `${moment().format('x')}${index}`
       range(0, coupon.number).forEach((v, index) => {
         customCoupons.push({
+          id: v4(),
           member_id: member.id,
           coupon_code: {
             data: {
