@@ -1,11 +1,13 @@
 import { CheckCircleTwoTone } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Divider, SkeletonText } from '@chakra-ui/react'
+import { Divider, Flex, SkeletonText } from '@chakra-ui/react'
 import { Button, message } from 'antd'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { CommonTitleMixin, MultiLineTruncationMixin } from 'lodestar-app-element/src/components/common'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { groupBy } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -185,6 +187,21 @@ const AppointmentRescheduleModal: React.VFC<
     onRescheduleModalVisible(false)
   }
 
+  const periodCollections = appointmentPlan
+    ? groupBy(
+        period => dayjs(period.startedAt).format('YYYYMMDD'),
+        appointmentPlan?.periods.filter(v =>
+          appointmentPlan?.reservationType &&
+          appointmentPlan?.reservationAmount &&
+          appointmentPlan?.reservationAmount !== 0
+            ? dayjs(v.startedAt)
+                .subtract(appointmentPlan?.reservationAmount, appointmentPlan?.reservationType)
+                .toDate() > dayjs().toDate()
+            : v,
+        ),
+      )
+    : []
+
   return (
     <>
       <AdminModal
@@ -222,45 +239,59 @@ const AppointmentRescheduleModal: React.VFC<
           </StyledModalTitle>
         ) : null}
         <Divider margin="24px 0px" />
-        {loadingAppointmentPlan && appointmentPlan ? (
+        {loadingAppointmentPlan && !appointmentPlan ? (
           <SkeletonText noOfLines={1} spacing="4" w="90px" />
-        ) : appointmentPlan?.periods.length === 0 ? (
+        ) : !appointmentPlan || periodCollections.length === 0 ? (
           <StyledInfo>
             {formatMessage(appointmentMessages.AppointmentPeriodCard.notRescheduleAppointmentPeriod)}
           </StyledInfo>
         ) : (
           <>
-            {appointmentPlan?.periods.map((period, index) => (
-              <div key={`${period.appointmentPlanId}-${index}`}>
-                <StyledScheduleTitle>{moment(period.startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
-
-                <AppointmentPeriodItem
-                  creatorId={appointmentPlan.creatorId}
-                  appointmentPlan={{
-                    id: appointmentPlan.id,
-                    capacity: appointmentPlan.capacity,
-                    defaultMeetGateway: appointmentPlan.defaultMeetGateway,
-                  }}
-                  period={{
-                    startedAt: period.startedAt,
-                    endedAt: period.endedAt,
-                  }}
-                  services={services}
-                  loadingServices={loadingServices}
-                  isPeriodExcluded={period.isExcluded}
-                  isEnrolled={period.targetMemberBooked}
-                  onClick={() => {
-                    if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
-                      setRescheduleAppointment({
-                        status: 'confirm',
-                        periodStartedAt: period.startedAt,
-                        periodEndedAt: period.endedAt,
-                      })
-                    }
-                  }}
-                />
-              </div>
-            ))}
+            {Object.values(periodCollections).map(periods => {
+              return (
+                <>
+                  <StyledScheduleTitle>{moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                  <Flex alignItems="center" justifyContent="flex-start" flexWrap="wrap" mb="2rem">
+                    {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
+                      .map(periods =>
+                        periods.sort(
+                          (a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime(),
+                        ),
+                      )
+                      .map(periods => periods[0])
+                      .map((period, index) => (
+                        <div key={`${period.appointmentPlanId}-${index}`}>
+                          <AppointmentPeriodItem
+                            creatorId={appointmentPlan.creatorId}
+                            appointmentPlan={{
+                              id: appointmentPlan.id,
+                              capacity: appointmentPlan.capacity,
+                              defaultMeetGateway: appointmentPlan.defaultMeetGateway,
+                            }}
+                            period={{
+                              startedAt: period.startedAt,
+                              endedAt: period.endedAt,
+                            }}
+                            services={services}
+                            loadingServices={loadingServices}
+                            isPeriodExcluded={period.isExcluded}
+                            isEnrolled={period.targetMemberBooked}
+                            onClick={() => {
+                              if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
+                                setRescheduleAppointment({
+                                  status: 'confirm',
+                                  periodStartedAt: period.startedAt,
+                                  periodEndedAt: period.endedAt,
+                                })
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                  </Flex>
+                </>
+              )
+            })}
           </>
         )}
       </AdminModal>

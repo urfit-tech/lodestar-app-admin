@@ -184,7 +184,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <InputNumber min={1} max={reservationType === 'hour' ? 23 : undefined} />
+            <InputNumber min={0} max={reservationType === 'hour' ? 23 : undefined} />
           </Form.Item>
 
           <Form.Item
