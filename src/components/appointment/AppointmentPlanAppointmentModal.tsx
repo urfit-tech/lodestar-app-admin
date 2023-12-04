@@ -5,6 +5,7 @@ import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import dayjs from 'dayjs'
 import { groupBy, sum } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -105,42 +106,44 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
     isEnrolled?: boolean
     isExcluded?: boolean
     targetMemberBooked?: boolean
+    appointmentScheduleCreatedAt: Date
   })[]
   appointmentPlanAdmin: AppointmentPlanAdmin
   services: { id: string; gateway: string }[]
   loadingServices: boolean
   handlePeriodSubmit: (startedAt: Date, endedAt: Date) => void
 }> = ({ periods, appointmentPlanAdmin, services, loadingServices, handlePeriodSubmit }) => {
-  const [overLapPeriods, setOverLapPeriods] = useState<string[]>([])
-
   return (
     <div key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}>
-      {overLapPeriods.length !== periods.length ? (
-        <StyledPeriodTitle>
-          {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
-        </StyledPeriodTitle>
-      ) : null}
+      <StyledPeriodTitle>
+        {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+      </StyledPeriodTitle>
       <StyledWrapper>
-        {periods.map((period, index) => (
-          <AppointmentPeriodItem
-            key={`${period.appointmentPlanId}-${index}`}
-            creatorId={appointmentPlanAdmin.creatorId}
-            appointmentPlan={{
-              id: appointmentPlanAdmin.id,
-              capacity: appointmentPlanAdmin.capacity,
-              defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
-            }}
-            period={{
-              startedAt: period.startedAt,
-              endedAt: period.endedAt,
-            }}
-            services={services}
-            loadingServices={loadingServices}
-            isPeriodExcluded={period.isExcluded}
-            isEnrolled={period.targetMemberBooked}
-            onClick={() => (!period.isEnrolled ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
-          />
-        ))}
+        {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
+          .map(periods =>
+            periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
+          )
+          .map(periods => periods[0])
+          .map((period, index) => (
+            <AppointmentPeriodItem
+              key={`${period.appointmentPlanId}-${index}`}
+              creatorId={appointmentPlanAdmin.creatorId}
+              appointmentPlan={{
+                id: appointmentPlanAdmin.id,
+                capacity: appointmentPlanAdmin.capacity,
+                defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+              }}
+              period={{
+                startedAt: period.startedAt,
+                endedAt: period.endedAt,
+              }}
+              services={services}
+              loadingServices={loadingServices}
+              isPeriodExcluded={period.isExcluded}
+              isEnrolled={period.targetMemberBooked}
+              onClick={() => (!period.targetMemberBooked ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
+            />
+          ))}
       </StyledWrapper>
     </div>
   )
