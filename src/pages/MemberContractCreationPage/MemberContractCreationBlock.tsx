@@ -77,13 +77,10 @@ const MemberContractCreationBlock: React.FC<{
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const fieldValue = form.getFieldsValue()
 
-  const selectedCustomCoupons = uniqBy(
-    v => v.title,
-    flatten(
-      products
-        .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
-        .map(product => product.customCoupons),
-    ),
+  const selectedCustomCoupons = flatten(
+    products
+      .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
+      .map(product => product.customCoupons),
   )
 
   const handleMemberContractCreate = async () => {
