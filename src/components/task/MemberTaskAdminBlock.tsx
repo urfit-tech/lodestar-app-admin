@@ -137,6 +137,10 @@ const MemberTaskAdminBlock: React.FC<{
     })
   const { insertMemberNote } = useMutateMemberNote()
 
+  useEffect(() => {
+    setExcludedIds([])
+  }, [orderBy])
+
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
@@ -683,9 +687,9 @@ const MemberTaskAdminBlock: React.FC<{
             pagination={false}
             onChange={(pagination, filters, sorter) => {
               const newSorter = sorter as SorterResult<MemberTaskProps>
-              setExcludedIds([])
               setOrderBy({
-                [newSorter.field === 'dueAt' ? 'due_at' : 'created_at']: newSorter.order === 'ascend' ? 'asc' : 'desc',
+                [newSorter.field === 'dueAt' ? 'due_at' : newSorter.field === 'priority' ? 'priority' : 'created_at']:
+                  newSorter.order === 'ascend' ? 'asc' : 'desc',
               })
             }}
           />
@@ -825,6 +829,8 @@ const useMemberTaskCollection = (options?: {
         orderBy,
         limit: options?.limit,
       },
+      // Use 'network-only' fetchPolicy to ensure Apollo Client doesn't use cache for the same query, and always fetches fresh data from the db.
+      fetchPolicy: 'network-only',
     },
   )
 
