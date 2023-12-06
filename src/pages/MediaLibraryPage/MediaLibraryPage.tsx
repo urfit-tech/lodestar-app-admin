@@ -142,7 +142,11 @@ const MediaLibraryPage: React.FC = () => {
             <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
             <DeleteButton
               videoId={attachment.id}
-              isExternalLink={!!attachment.data?.source}
+              isExternalLink={
+                !!attachment.data?.source ||
+                !!attachment.options?.cloudfront?.playPaths ||
+                !!attachment.options?.cloudfront?.path
+              }
               onDelete={() => refetchAttachments?.()}
             />
           </div>

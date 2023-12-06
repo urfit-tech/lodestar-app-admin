@@ -113,7 +113,6 @@ export const DeleteButton: React.VFC<
       <Button
         title={formatMessage(messages.delete)}
         size="small"
-        disabled={true} //TODO: fix caption upload to aws
         loading={deleting}
         danger
         onClick={handleClick}
