@@ -74,10 +74,14 @@ const MemberProfileBasicForm: React.FC<{
           phones: permissions['MEMBER_PHONE_ADMIN']
             ? values.phones
                 .filter((phone: string) => !!phone)
-                .map((phone: string) => ({
-                  member_id: memberAdmin.id,
-                  phone,
-                }))
+                .map((phone: string) => {
+                  const findPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
+                  return {
+                    member_id: memberAdmin.id,
+                    phone,
+                    is_valid: findPhone?.isValid,
+                  }
+                })
             : memberAdmin.phones.map(phone => ({
                 member_id: memberAdmin.id,
                 phone: phone.phoneNumber,
