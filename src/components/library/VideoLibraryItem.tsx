@@ -5,7 +5,6 @@ import Tus from '@uppy/tus'
 import { Button, List, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
-import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
@@ -72,40 +71,24 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-export const DeleteButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
+export const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
+  videoId,
+  onDelete,
+  ...buttonProps
+}) => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
   const { deleteAttachments } = useMutateAttachment()
 
   const handleClick = () => {
     if (window.confirm('This action cannot be reverted.')) {
       setDeleting(true)
-      if (isExternalLink) {
-        deleteAttachments({ variables: { attachmentIds: [videoId] } })
-          .then(() => {
-            onDelete?.()
-          })
-          .catch(handleError)
-          .finally(() => setDeleting(false))
-      } else {
-        axios
-          .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
-            headers: {
-              Authorization: `bearer ${authToken}`,
-            },
-          })
-          .then(({ data: { code, error } }) => {
-            if (code === 'SUCCESS') {
-              onDelete?.()
-            } else {
-              alert(error)
-            }
-          })
-          .finally(() => setDeleting(false))
-      }
+      deleteAttachments({ variables: { attachmentIds: [videoId] } })
+        .then(() => {
+          onDelete?.()
+        })
+        .catch(handleError)
+        .finally(() => setDeleting(false))
     }
   }
   return (
