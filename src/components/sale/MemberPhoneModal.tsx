@@ -45,8 +45,9 @@ const MemberPhoneModal: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [updatePhoneNumber, setUpdatePhoneNumber] = useState<{ phoneNumber: string; isValid: boolean }[]>([])
-
+  const [isDisabled, setIsDisabled] = useState(true)
+  const [phoneNumbersToUpdate, setPhoneNumbersToUpdate] = useState<{ phoneNumber: string; isValid: boolean }[]>([])
+  const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
   const [insertMemberPhone] = useMutation(
     gql`
       mutation InsertMemberPhone($phones: [member_phone_insert_input!]!) {
@@ -76,17 +77,18 @@ const MemberPhoneModal: React.FC<{
 
   const handleCancel = () => {
     onCancel()
-    setUpdatePhoneNumber([])
+    setPhoneNumbersToUpdate([])
+    setIsDisabled(true)
     form.resetFields()
   }
+
   const handleSubmit = async () => {
-    const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
-    const inValidNewPhone =
-      newPhones.filter(phone => !!phone && phone?.phoneNumber.trim()).length === 0 || newPhones.length === 0
-    if (inValidNewPhone && updateMemberPhone.length === 0) {
+    await form.validateFields()
+    const isValidNewPhone = newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
+    if (!isValidNewPhone && phoneNumbersToUpdate.length === 0) {
       return
     }
-    if (!inValidNewPhone) {
+    if (isValidNewPhone) {
       setIsSubmitting(true)
       try {
         await insertMemberPhone({
@@ -104,14 +106,13 @@ const MemberPhoneModal: React.FC<{
         console.log(err)
       }
     }
-
-    if (updatePhoneNumber.length > 0) {
+    if (phoneNumbersToUpdate.length > 0) {
       setIsSubmitting(true)
       const validPhonesLength = phones.filter(p => p.isValid).length
-      const inValidUpdatePhoneNumberLength = updatePhoneNumber.filter(p => !p.isValid).length
-      updatePhoneNumber.map(async phone => {
+      const inValidUpdatePhoneNumberLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
+      phoneNumbersToUpdate.map(async phone => {
         try {
-          if (validPhonesLength - inValidUpdatePhoneNumberLength <= 0 && inValidNewPhone) {
+          if (validPhonesLength - inValidUpdatePhoneNumberLength <= 0 && !isValidNewPhone) {
             await updateMemberMangerId({
               variables: { memberId, mangerId: null },
             })
@@ -122,7 +123,7 @@ const MemberPhoneModal: React.FC<{
           onLeadRefetch()
           handleCancel()
           setIsSubmitting(false)
-          setUpdatePhoneNumber([])
+          setPhoneNumbersToUpdate([])
         } catch (err) {
           console.log(err)
         }
@@ -148,7 +149,7 @@ const MemberPhoneModal: React.FC<{
           >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button loading={isSubmitting} type="primary" onClick={handleSubmit}>
+          <Button loading={isSubmitting} disabled={isDisabled} type="primary" onClick={handleSubmit}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
@@ -159,7 +160,7 @@ const MemberPhoneModal: React.FC<{
         style={{ borderBottom: '1px solid #f0f0f0' }}
         dataSource={phones}
         renderItem={phone => {
-          const updatePhone = updatePhoneNumber.find(v => v.phoneNumber === phone.phoneNumber)
+          const updatePhone = phoneNumbersToUpdate.find(v => v.phoneNumber === phone.phoneNumber)
           const updatePhoneIsValid = updatePhone ? updatePhone.isValid : undefined
           const isValid = updatePhoneIsValid !== undefined ? updatePhoneIsValid : phone.isValid
           return (
@@ -174,8 +175,8 @@ const MemberPhoneModal: React.FC<{
               <Button
                 style={{ borderRadius: '4px' }}
                 icon={!isValid ? <CheckOutlined /> : <StopOutlined style={{ color: 'red' }} />}
-                onClick={() =>
-                  setUpdatePhoneNumber(prev => {
+                onClick={() => {
+                  setPhoneNumbersToUpdate(prev => {
                     const existingIndex = prev.findIndex(v => v.phoneNumber === phone.phoneNumber)
 
                     if (existingIndex !== -1) {
@@ -189,7 +190,8 @@ const MemberPhoneModal: React.FC<{
                       return [...prev, { phoneNumber: phone.phoneNumber, isValid: !phone.isValid }]
                     }
                   })
-                }
+                  setIsDisabled(false)
+                }}
               >
                 {!isValid ? (
                   <span>{formatMessage(salesMessages.valid)}</span>
@@ -206,11 +208,38 @@ const MemberPhoneModal: React.FC<{
           {(fields, { add, remove }) => (
             <>
               {fields.map((field, index) => (
-                <Form.Item required={false} key={field.key} name={[field.name, 'phoneNumber']}>
+                <Form.Item
+                  required={false}
+                  key={field.key}
+                  name={[field.name, 'phoneNumber']}
+                  rules={[
+                    () => ({
+                      validator(_, value) {
+                        const existPhone = phones.some(phone => value.trim() === phone.phoneNumber)
+                        if (value.trim() && !existPhone) {
+                          setIsDisabled(false)
+                          return Promise.resolve()
+                        }
+                        if (existPhone) {
+                          setIsDisabled(true)
+                          return Promise.reject(new Error('手機號碼不能重複'))
+                        }
+                      },
+                    }),
+                  ]}
+                >
                   <StyledNewPhoneInput>
                     <Input
                       placeholder={`${formatMessage(salesMessages.addPhoneNumber)}`}
                       style={{ borderRadius: '4px' }}
+                      onChange={e => {
+                        const phoneNumber = e.target.value
+                        if (!phoneNumber.trim()) {
+                          setIsDisabled(true)
+                        } else {
+                          setIsDisabled(false)
+                        }
+                      }}
                     />
                     <CloseOutlined onClick={() => remove(index)} />
                   </StyledNewPhoneInput>
