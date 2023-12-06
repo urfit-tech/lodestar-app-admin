@@ -127,10 +127,14 @@ const MediaLibraryPage: React.FC = () => {
           <div className="d-flex mb-1">
             <PreviewButton
               className="mr-1"
-              videoId={attachment.id}
               title={attachment.name}
               isExternalLink={!!attachment.data?.source}
-              videoUrl={attachment?.data?.url}
+              videoUrl={
+                attachment?.data?.url ||
+                attachment.options?.cloudfront?.playPaths?.hls ||
+                attachment.options?.cloudfront?.path
+              }
+              videoId={attachment.id}
             />
             <ReUploadButton
               videoId={attachment.id}
