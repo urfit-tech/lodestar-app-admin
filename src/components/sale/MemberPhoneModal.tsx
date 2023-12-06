@@ -47,7 +47,6 @@ const MemberPhoneModal: React.FC<{
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDisabled, setIsDisabled] = useState(true)
   const [phoneNumbersToUpdate, setPhoneNumbersToUpdate] = useState<{ phoneNumber: string; isValid: boolean }[]>([])
-  const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
   const [insertMemberPhone] = useMutation(
     gql`
       mutation InsertMemberPhone($phones: [member_phone_insert_input!]!) {
@@ -84,6 +83,7 @@ const MemberPhoneModal: React.FC<{
 
   const handleSubmit = async () => {
     await form.validateFields()
+    const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
     const isValidNewPhone = newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
     if (!isValidNewPhone && phoneNumbersToUpdate.length === 0) {
       return
@@ -109,10 +109,15 @@ const MemberPhoneModal: React.FC<{
     if (phoneNumbersToUpdate.length > 0) {
       setIsSubmitting(true)
       const validPhonesLength = phones.filter(p => p.isValid).length
-      const inValidUpdatePhoneNumberLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
+      const inValidPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
+      const validPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => p.isValid).length
       phoneNumbersToUpdate.map(async phone => {
         try {
-          if (validPhonesLength - inValidUpdatePhoneNumberLength <= 0 && !isValidNewPhone) {
+          if (
+            validPhoneNumbersToUpdateLength === 0 &&
+            validPhonesLength - inValidPhoneNumbersToUpdateLength <= 0 &&
+            !isValidNewPhone
+          ) {
             await updateMemberMangerId({
               variables: { memberId, mangerId: null },
             })
@@ -120,12 +125,13 @@ const MemberPhoneModal: React.FC<{
           await updateMemberPhone({
             variables: { memberId, phoneNumber: phone.phoneNumber, isValid: phone.isValid },
           })
+        } catch (err) {
+          console.log(err)
+        } finally {
           onLeadRefetch()
           handleCancel()
           setIsSubmitting(false)
           setPhoneNumbersToUpdate([])
-        } catch (err) {
-          console.log(err)
         }
       })
     }
