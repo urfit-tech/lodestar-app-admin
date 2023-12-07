@@ -1504,6 +1504,11 @@ export const salesMessages = defineMessages({
   lastTask: { id: 'sales.label.lastTask', defaultMessage: '最近待辦' },
   serviceEndedAt: { id: 'sales.label.serviceEndedAt', defaultMessage: '服務截止時間' },
   productItem: { id: 'sales.label.productItem', defaultMessage: '產品項目' },
+  phoneNumberSetting: { id: 'sales.label.phoneNumberSetting', defaultMessage: '手機設定' },
+  invalid: { id: 'sales.label.invalid', defaultMessage: '無效' },
+  valid: { id: 'sales.label.valid', defaultMessage: '恢復' },
+  addNewPhone: { id: 'sales.label.addNewPhone', defaultMessage: '新增手機' },
+  addPhoneNumber: { id: 'sales.label.addPhoneNumber', defaultMessage: '新增號碼' },
 })
 
 export const codeMessages = defineMessages({

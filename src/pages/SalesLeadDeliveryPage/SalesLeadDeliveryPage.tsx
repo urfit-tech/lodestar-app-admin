@@ -381,7 +381,7 @@ const ConfirmSection: React.FC<{
   const { properties } = useProperty()
 
   const leadCandidatesCondition = {
-    member_phones: { phone: { _neq: '' } },
+    member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
     manager_id: {
       _is_null: !filter.managerId,
       _eq: filter.managerId || undefined,
