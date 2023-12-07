@@ -7,13 +7,13 @@ import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Too
 import { ColumnProps } from 'antd/lib/table'
 import { gql } from '@apollo/client'
 import moment from 'moment'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useCategory } from '../../hooks/data'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import hasura from '../../hasura'
+import hasura, { InputMaybe, order_by } from '../../hasura'
 import { MeetingGateway, MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
@@ -26,6 +26,7 @@ import { handleError } from '../../helpers'
 import { GetMeetById } from '../../hooks/meet'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import dayjs from 'dayjs'
+import { SorterResult } from 'antd/lib/table/interface'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -120,14 +121,25 @@ const MemberTaskAdminBlock: React.FC<{
     id: string
     name: string
   }>({ id: '', name: '' })
+  const [orderBy, setOrderBy] = useState<hasura.member_task_order_by>({
+    created_at: 'desc' as hasura.order_by,
+  })
   const { loading: categoriesLoading, categories } = useCategory('task')
+  const [excludedIds, setExcludedIds] = useState<string[]>([])
   const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
     useMemberTaskCollection({
       memberId,
+      excludedIds,
+      setExcludedIds,
       ...filter,
+      orderBy,
       limit: display === 'table' ? 10 : undefined,
     })
   const { insertMemberNote } = useMutateMemberNote()
+
+  useEffect(() => {
+    setExcludedIds([])
+  }, [orderBy])
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -413,7 +425,15 @@ const MemberTaskAdminBlock: React.FC<{
       dataIndex: 'dueAt',
       title: formatMessage(memberMessages.label.dueDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
-      sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
+      sorter: (a, b) => {
+        // In descending order:
+        // - If 'a.dueAt' is null, return 1 to prioritize 'a' before 'b'.
+        // - If 'b.dueAt' is null, return -1 to prioritize non-null 'b' before 'a'.
+        // - Otherwise, compare the time values of 'dueAt'.
+        if (a.dueAt === null) return 1
+        if (b.dueAt === null) return -1
+        return a.dueAt.getTime() - b.dueAt.getTime()
+      },
       onCell: onCellClick,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
@@ -665,6 +685,13 @@ const MemberTaskAdminBlock: React.FC<{
             showSorterTooltip={false}
             rowClassName="cursor-pointer"
             pagination={false}
+            onChange={(pagination, filters, sorter) => {
+              const newSorter = sorter as SorterResult<MemberTaskProps>
+              setOrderBy({
+                [newSorter.field === 'dueAt' ? 'due_at' : newSorter.field === 'priority' ? 'priority' : 'created_at']:
+                  newSorter.order === 'ascend' ? 'asc' : 'desc',
+              })
+            }}
           />
         ) : null}
 
@@ -701,6 +728,8 @@ const MemberTaskAdminBlock: React.FC<{
 
 const useMemberTaskCollection = (options?: {
   memberId?: string
+  excludedIds: string[]
+  setExcludedIds: React.Dispatch<React.SetStateAction<string[]>>
   title?: string
   categoryIds?: string[]
   executor?: string
@@ -708,7 +737,11 @@ const useMemberTaskCollection = (options?: {
   dueAt?: Date[]
   status?: string
   limit?: number
+  orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
 }) => {
+  const defaultOrderBy: hasura.member_task_order_by = { created_at: 'desc' as InputMaybe<order_by> }
+
+  const { orderBy = defaultOrderBy } = options || {}
   const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member_id: { _eq: options?.memberId },
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
@@ -728,7 +761,7 @@ const useMemberTaskCollection = (options?: {
     hasura.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
-      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int) {
+      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int, $orderBy: member_task_order_by!) {
         executors: member_task(where: { executor_id: { _is_null: false } }, distinct_on: [executor_id]) {
           id
           executor {
@@ -748,7 +781,7 @@ const useMemberTaskCollection = (options?: {
             count
           }
         }
-        member_task(where: $condition, limit: $limit, order_by: { created_at: desc }) {
+        member_task(where: $condition, limit: $limit, order_by: [$orderBy]) {
           id
           title
           description
@@ -793,8 +826,11 @@ const useMemberTaskCollection = (options?: {
     {
       variables: {
         condition,
+        orderBy,
         limit: options?.limit,
       },
+      // Use 'network-only' fetchPolicy to ensure Apollo Client doesn't use cache for the same query, and always fetches fresh data from the db.
+      fetchPolicy: 'network-only',
     },
   )
 
@@ -861,14 +897,28 @@ const useMemberTaskCollection = (options?: {
         : null,
     })) || []
 
+  useEffect(() => {
+    if (data && data.member_task) {
+      const ids = data.member_task.map(task => task.id)
+      options?.setExcludedIds(ids)
+    }
+  }, [data?.member_task])
+
   const loadMoreMemberTasks =
     (data?.member_task_aggregate.aggregate?.count || 0) > (options?.limit || 0)
       ? () =>
           fetchMore({
             variables: {
+              orderBy,
               condition: {
                 ...condition,
-                created_at: { _lt: data?.member_task.slice(-1)[0]?.created_at },
+                id: { _nin: options?.excludedIds },
+                created_at: orderBy.created_at
+                  ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_task.slice(-1)[0]?.created_at }
+                  : undefined,
+                due_at: orderBy.due_at
+                  ? { [orderBy.due_at === 'desc' ? '_lt' : '_gt']: data?.member_task.slice(-1)[0]?.due_at }
+                  : undefined,
               },
               limit: options?.limit,
             },
