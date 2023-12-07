@@ -80,7 +80,7 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
           visible
           footer={null}
           onCancel={() => {
-            uppy.resetProgress()
+            uppy.reset()
             setBodies([])
             setIsVisible(false)
           }}

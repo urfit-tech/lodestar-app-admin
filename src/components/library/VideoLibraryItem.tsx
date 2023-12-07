@@ -113,7 +113,6 @@ export const DeleteButton: React.VFC<
       <Button
         title={formatMessage(messages.delete)}
         size="small"
-        disabled={true} //TODO: fix caption upload to aws
         loading={deleting}
         danger
         onClick={handleClick}
@@ -142,7 +141,6 @@ export const PreviewButton: React.VFC<
         size="small"
         title={formatMessage(commonMessages.ui.preview)}
         type="primary"
-        disabled={true} //TODO: fix caption upload to aws
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
         icon={<EyeOutlined />}
@@ -163,7 +161,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
     <>
       <Button
         size="small"
-        disabled={true || isExternalLink} //TODO: fix caption upload to aws
+        disabled={isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
@@ -223,7 +221,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
           onChange={e => {
             const files = Array.from(e.target.files || [])
             if (files.length > 0) {
-              uppy.resetProgress()
+              uppy.reset()
             }
             files.forEach(file => {
               try {
@@ -272,7 +270,7 @@ export const ReUploadButton: React.VFC<
         removeFingerprintOnSuccess: true,
         chunkSize: 10 * 1024 * 1024, // 10MB
         endpoint: tusEndpoint,
-        onBeforeRequest: async req => {
+        onBeforeRequest: req => {
           if (req.getURL() === tusEndpoint) {
             req.setHeader('Authorization', `bearer ${authToken}`)
           }
@@ -288,7 +286,7 @@ export const ReUploadButton: React.VFC<
     <>
       <Button
         size="small"
-        disabled={true || uploadState === 'uploading' || isExternalLink} //TODO: should update  to aws
+        disabled={uploadState === 'uploading' || isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}
@@ -302,7 +300,7 @@ export const ReUploadButton: React.VFC<
         onChange={e => {
           const files = Array.from(e.target.files || [])
           if (files.length > 0) {
-            uppy.resetProgress()
+            uppy.reset()
           }
           files.forEach(file => {
             try {
