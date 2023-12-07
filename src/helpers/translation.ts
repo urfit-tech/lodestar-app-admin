@@ -15,7 +15,6 @@ export const commonMessages = {
     confirm: { id: 'common.ui.confirm', defaultMessage: '確定' },
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
-    delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
     duplicate: { id: 'common.ui.duplicate', defaultMessage: '複製' },
     rename: { id: 'common.ui.rename', defaultMessage: '重新命名' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
@@ -743,18 +742,6 @@ export const checkoutMessages = {
       chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
     }),
   },
-}
-
-export const reportMessages = {
-  '*': defineMessages({
-    pageTitle: { id: 'report.*.pageTitle', defaultMessage: '報表分析' },
-    addReport: { id: 'report.*.addReport', defaultMessage: '新增報表' },
-  }),
-  label: defineMessages({
-    title: { id: 'report.label.title', defaultMessage: '報表名稱' },
-    type: { id: 'report.label.type', defaultMessage: '種類' },
-    options: { id: 'report.label.options', defaultMessage: '報表設定' },
-  }),
 }
 
 export const programMessages = {

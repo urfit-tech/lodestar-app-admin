@@ -1,18 +1,17 @@
+import { AreaChartOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { MoreOutlined } from '@ant-design/icons'
-import React from 'react'
-import AdminLayout from '../../components/layout/AdminLayout'
-import { AdminBlock, AdminPageTitle } from '../../components/admin'
-import { AreaChartOutlined, FileAddOutlined } from '@ant-design/icons'
-import { Table, Button, Dropdown, Menu } from 'antd'
-import { useIntl } from 'react-intl'
-import { ReportProps } from '../../types/report'
-import styled from 'styled-components'
-import ReportAdminModal from '../../components/report/ReportAdminModal'
-import { commonMessages, reportMessages } from '../../helpers/translation'
-import { handleError } from '../../helpers'
+import { Button, Dropdown, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import React from 'react'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { AdminBlock, AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
+import ReportAdminModal from '../../components/report/ReportAdminModal'
 import hasura from '../../hasura'
+import { handleError } from '../../helpers'
+import { ReportProps } from '../../types/report'
+import pageMessages from '../translation'
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -45,7 +44,7 @@ const ReportCollectionPage: React.FC = () => {
     {
       dataIndex: 'title',
       width: '45%',
-      title: `${formatMessage(reportMessages.label.title)}`,
+      title: `${formatMessage(pageMessages.ReportCollectionPage.title)}`,
       render: (text, record, index) => (
         <div>
           <StyledTitle className="mr-2">{record.title}</StyledTitle>
@@ -56,7 +55,7 @@ const ReportCollectionPage: React.FC = () => {
     {
       dataIndex: 'type',
       width: '5%',
-      title: `${formatMessage(reportMessages.label.type)}`,
+      title: `${formatMessage(pageMessages.ReportCollectionPage.type)}`,
       render: (text, record, index) => (
         <div>
           <StyledTitle className="mr-2"> {record.type}</StyledTitle>
@@ -67,7 +66,7 @@ const ReportCollectionPage: React.FC = () => {
     {
       dataIndex: 'options',
       width: '45%',
-      title: `${formatMessage(reportMessages.label.options)}`,
+      title: `${formatMessage(pageMessages.ReportCollectionPage.options)}`,
       render: (text, record, index) => (
         <div>
           <StyledTitle className="mr-2">{getReportOptions(record)}</StyledTitle>
@@ -90,7 +89,7 @@ const ReportCollectionPage: React.FC = () => {
                     refetchReports?.()
                   }}
                 >
-                  {formatMessage(commonMessages.ui.delete)}
+                  {formatMessage(pageMessages['*'].delete)}
                 </Menu.Item>
               </Menu>
             }
@@ -105,14 +104,14 @@ const ReportCollectionPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <AreaChartOutlined className="mr-3" />
-        <span>{formatMessage(reportMessages['*'].pageTitle)}</span>
+        <span>{formatMessage(pageMessages.ReportCollectionPage.pageTitle)}</span>
       </AdminPageTitle>
       <div className="d-flex align-item-center justify-content-between mb-4">
         <ReportAdminModal
           onRefetch={refetchReports}
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(reportMessages['*'].addReport)}
+              {formatMessage(pageMessages.ReportCollectionPage.addReport)}
             </Button>
           )}
         />
