@@ -89,7 +89,10 @@ export type MemberAdminProps = {
   manager: MemberBriefProps | null
   tags: string[]
   specialities: string[]
-  phones: string[]
+  phones: {
+    isValid: boolean
+    phoneNumber: string
+  }[]
   categories: Category[]
   permissionIds: string[]
   lastRejectedNote: {
