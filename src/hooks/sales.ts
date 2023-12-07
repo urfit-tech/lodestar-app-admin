@@ -211,7 +211,7 @@ export const useManagerLeads = (manager: Manager) => {
       email: v.email,
       pictureUrl: v.picture_url || '',
       createdAt: moment(v.created_at).toDate(),
-      phones: v.member_phones.map(_v => _v.phone),
+      phones: v.member_phones.map(_v => ({ phoneNumber: _v.phone, isValid: _v.is_valid })),
       notes: salesLeadMemberData?.member_note.filter(mn => mn.member_id === v.id)[0]?.description || '',
       categoryNames:
         salesLeadMemberData?.member_category
@@ -221,8 +221,8 @@ export const useManagerLeads = (manager: Manager) => {
         salesLeadMemberData?.member_property
           .filter(mp => mp.member_id === v.id)
           .map(v => ({
-            id: properties.find(p => (p.id === v.property_id))?.id || '',
-            name: properties.find(p => (p.id === v.property_id))?.name || '',
+            id: properties.find(p => p.id === v.property_id)?.id || '',
+            name: properties.find(p => p.id === v.property_id)?.name || '',
             value: v.value,
           })) || [],
       status,
@@ -315,6 +315,7 @@ const GetSalesLeadMembers = gql`
       last_member_note_answered
       member_phones {
         phone
+        is_valid
       }
     }
   }

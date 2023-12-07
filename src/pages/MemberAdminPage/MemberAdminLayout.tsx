@@ -1,7 +1,6 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
 import { Button, Divider, Layout, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -50,6 +49,13 @@ const StyledDescription = styled.div`
   color: var(--gray-darker);
   display: flex;
   align-items: center;
+`
+const StyledSpan = styled.span`
+  width: 100%;
+  text-align: left;
+`
+const StyledDelPhone = styled.span`
+  color: var(--gray);
 `
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);
@@ -214,15 +220,25 @@ const MemberAdminLayout: React.FC<{
           <StyledSiderContent className="pt-0">
             <StyledDescription>
               <Icon className="mr-2" component={() => <EmailIcon />} />
-              <span>{member?.email}</span>
+              <StyledSpan>{member?.email}</StyledSpan>
             </StyledDescription>
             {permissions['MEMBER_PHONE_ADMIN'] &&
-              member?.phones.map(phone => (
-                <StyledDescription key={phone}>
+              member?.phones.map((phone, index) => (
+                <StyledDescription key={index}>
                   <Icon className="mr-2" component={() => <PhoneIcon />} />
-                  <span className="mr-2">{phone}</span>
+                  {!phone.isValid ? (
+                    <StyledDelPhone className="mr-2">
+                      <del> {phone.phoneNumber} </del>
+                    </StyledDelPhone>
+                  ) : (
+                    <span className="mr-2">{phone.phoneNumber}</span>
+                  )}
                   {enabledModules.sms && (
-                    <MemberSmsModel memberId={member.id} phone={phone} name={member.name || member.username} />
+                    <MemberSmsModel
+                      memberId={member.id}
+                      phone={phone.phoneNumber}
+                      name={member.name || member.username}
+                    />
                   )}
                 </StyledDescription>
               ))}

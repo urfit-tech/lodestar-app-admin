@@ -33,6 +33,7 @@ import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
+import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
 
 dayjs.extend(utc)
@@ -62,6 +63,16 @@ const StyledMemberNote = styled.span`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const StyledPhones = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+const StyledDelPhone = styled.p`
+  color: var(--gray);
 `
 
 const SalesLeadTable: React.VFC<{
@@ -102,12 +113,17 @@ const SalesLeadTable: React.VFC<{
   const [fullNameValue, setFullNameValue] = useState<string>()
   const [refetchLoading, setRefetchLoading] = useState(false)
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
+  const [memberPhoneModalVisible, setMemberPhoneModalVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{
     id: string
     name: string
     categoryNames: string[]
     email: string
     pictureUrl: string
+    phones?: {
+      phoneNumber: string
+      isValid: boolean
+    }[]
   } | null>(null)
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -349,24 +365,50 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'phones',
       width: 100,
       title: formatMessage(salesMessages.tel),
-      render: (phones: string[]) =>
-        phones.map((phone, idx) => (
-          <a
-            key={idx}
-            href="#!"
-            className="m-0 mr-1 cursor-pointer d-flex"
-            onClick={() => {
-              call({
-                appId,
-                authToken,
-                phone,
-                salesTelephone: manager.telephone,
-              })
-            }}
-          >
-            {phone}
-          </a>
-        )),
+      render: (phones: { phoneNumber: string; isValid: boolean }[], record) => (
+        <StyledPhones>
+          <div>
+            {phones.map((phone, idx) =>
+              !phone.isValid ? (
+                <StyledDelPhone key={idx}>
+                  <del>{phone.phoneNumber}</del>
+                </StyledDelPhone>
+              ) : (
+                <a
+                  key={idx}
+                  href="#!"
+                  className="m-0 mr-1 cursor-pointer d-flex"
+                  onClick={() => {
+                    call({
+                      appId,
+                      authToken,
+                      phone: phone.phoneNumber,
+                      salesTelephone: manager.telephone,
+                    })
+                  }}
+                >
+                  {phone.phoneNumber}
+                </a>
+              ),
+            )}
+          </div>
+          {!refetchLoading && (
+            <EditOutlined
+              onClick={() => {
+                setSelectedMember({
+                  id: record.id,
+                  name: record.name,
+                  phones: record.phones,
+                  categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
+                })
+                setMemberPhoneModalVisible(true)
+              }}
+            />
+          )}
+        </StyledPhones>
+      ),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -527,6 +569,15 @@ const SalesLeadTable: React.VFC<{
               .catch(handleError)
               .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
           }
+        />
+      )}
+      {selectedMember && (
+        <MemberPhoneModal
+          visible={memberPhoneModalVisible}
+          onCancel={() => setMemberPhoneModalVisible(false)}
+          onLeadRefetch={onRefetch}
+          phones={selectedMember.phones || []}
+          memberId={selectedMember.id}
         />
       )}
       <TableWrapper>

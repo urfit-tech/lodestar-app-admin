@@ -1,15 +1,17 @@
 import { DatabaseOutlined, RedoOutlined } from '@ant-design/icons'
+import AwsS3Multipart from '@uppy/aws-s3-multipart'
 import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
-import Tus from '@uppy/tus'
 import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { v4 as uuid } from 'uuid'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import {
@@ -24,25 +26,16 @@ import ForbiddenPage from '../ForbiddenPage'
 import MediaLibraryUsageCard from './MediaLibraryUsageCard'
 
 const MediaLibraryPage: React.FC = () => {
-  const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
   const [searchText, setSearchText] = useState('')
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
-  const { authToken, permissions } = useAuth()
-  const {
-    totalDuration,
-    totalSize,
-    maxDuration,
-    maxSize,
-    attachments,
-    loading: loadingAttachments,
-    refetch: refetchAttachments,
-  } = useAttachments()
+  const { authToken, permissions, currentMemberId } = useAuth()
+  const { id: appId } = useApp()
+  const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
 
   const handleVideoAdd = useCallback(() => {
-    const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
     setUppy(
       new Uppy({
         restrictions: {
@@ -50,22 +43,72 @@ const MediaLibraryPage: React.FC = () => {
           maxTotalFileSize: 10 * 1024 * 1024 * 1024, // limited 10GB at once
         },
       })
-        .use(Tus, {
+        .use(AwsS3Multipart, {
           retryDelays: undefined, // do not retry
-          removeFingerprintOnSuccess: true,
-          chunkSize: 10 * 1024 * 1024, // 10MB
-          endpoint: tusEndpoint,
-          onBeforeRequest: req => {
-            if (req.getURL() === tusEndpoint) {
-              req.setHeader('Authorization', `bearer ${authToken}`)
-            }
+          companionHeaders: { Authorization: `bearer ${authToken}` },
+          companionUrl: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage`,
+          createMultipartUpload: async file => {
+            const id = uuid()
+            const key = `vod/${appId}/${id.substring(0, 2)}/${id}/video/${file.name}`
+            const createResponse = await axios.post(
+              `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/create`,
+              {
+                params: { Key: key, ContentType: file.type },
+              },
+              {
+                headers: { authorization: `Bearer ${authToken}` },
+              },
+            )
+            const { uploadId } = createResponse.data
+            return { uploadId, key }
           },
+
+          signPart: async (file, opts) => {
+            const presignResponse = await axios.post(
+              `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/sign-url`,
+              {
+                params: { Key: opts.key, UploadId: opts.uploadId, PartNumber: opts.partNumber },
+              },
+              {
+                headers: { authorization: `Bearer ${authToken}` },
+              },
+            )
+            const { presignedUrl } = presignResponse.data
+
+            return { url: presignedUrl }
+          },
+          completeMultipartUpload: async (file, opts) => {
+            const attachmentId = opts.key.split('/')[3]
+            const completedUploadResponse = await axios.post(
+              `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/complete`,
+              {
+                params: { Key: opts.key, UploadId: opts.uploadId, MultipartUpload: { Parts: opts.parts } },
+                file: { name: file.name, type: file.type, size: file.size },
+                appId: appId,
+                attachmentId,
+                authorId: currentMemberId,
+              },
+              {
+                headers: { authorization: `Bearer ${authToken}` },
+              },
+            )
+            return { location: completedUploadResponse.data }
+          },
+
+          // removeFingerprintOnSuccess: true,
+          // chunkSize: 10 * 1024 * 1024, // 10MB
+          // endpoint: tusEndpoint,
+          // onBeforeRequest: async req => {
+          //   if (req.getURL() === tusEndpoint) {
+          //     req.setHeader('Authorization', `bearer ${authToken}`)
+          //   }
+          // },
         })
         .on('complete', () => {
           refetchAttachments?.()
         }),
     )
-  }, [authToken, refetchAttachments])
+  }, [authToken, refetchAttachments, appId])
 
   useEffect(() => {
     defaultVisibleModal === 'video' && handleVideoAdd()
@@ -84,10 +127,14 @@ const MediaLibraryPage: React.FC = () => {
           <div className="d-flex mb-1">
             <PreviewButton
               className="mr-1"
-              videoId={attachment.id}
               title={attachment.name}
               isExternalLink={!!attachment.data?.source}
-              videoUrl={attachment?.data?.url}
+              videoUrl={
+                attachment?.data?.url ||
+                attachment.options?.cloudfront?.playPaths?.hls ||
+                attachment.options?.cloudfront?.path
+              }
+              videoId={attachment.id}
             />
             <ReUploadButton
               videoId={attachment.id}
@@ -97,11 +144,7 @@ const MediaLibraryPage: React.FC = () => {
           </div>
           <div className="d-flex">
             <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
-            <DeleteButton
-              videoId={attachment.id}
-              isExternalLink={!!attachment.data?.source}
-              onDelete={() => refetchAttachments?.()}
-            />
+            <DeleteButton videoId={attachment.id} onDelete={() => refetchAttachments?.()} />
           </div>
         </div>
       ),
