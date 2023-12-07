@@ -159,6 +159,7 @@ export const PreviewButton: React.VFC<
         visible={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false)
+          setLoading(true)
         }}
       >
         {!loading &&
