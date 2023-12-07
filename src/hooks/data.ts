@@ -990,20 +990,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
       })) || [],
     [data],
   )
-  const refetchAttachments = useCallback(async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync`,
-        {},
-        {
-          headers: {
-            Authorization: `bearer ${authToken}`,
-          },
-        },
-      )
-      .catch(handleError)
-      .finally(() => refetch?.())
-  }, [authToken, refetch])
+
   return {
     maxSize: data?.attachment_aggregate.aggregate?.max?.size || 0,
     maxDuration: data?.attachment_aggregate.aggregate?.max?.duration || 0,
@@ -1011,7 +998,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
     totalDuration: data?.attachment_aggregate.aggregate?.sum?.duration || 0,
     attachments,
     loading,
-    refetch: refetchAttachments,
+    refetch,
   }
 }
 

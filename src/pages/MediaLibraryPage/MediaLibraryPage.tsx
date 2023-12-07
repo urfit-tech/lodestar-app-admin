@@ -5,6 +5,7 @@ import { DashboardModal } from '@uppy/react'
 import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -59,9 +60,8 @@ export const configAwsS3MultipartUppy = ({
       companionUrl: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage`,
       createMultipartUpload: async file => {
         const id = origin?.id || uuid()
-        const fileName = origin?.name || file.name
+        const fileName = origin?.name ? dayjs().format('YYYYMMDDHHmmss') + '_' + origin?.name : file.name
         const key = `vod/${appId}/${id.substring(0, 2)}/${id}/video/${fileName}`
-        console.log(key)
 
         const createResponse = await axios.post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/create`,
@@ -160,6 +160,7 @@ const MediaLibraryPage: React.FC = () => {
         <div>
           <div className="d-flex mb-1">
             <PreviewButton
+              key={`preview_${attachment.id}`}
               className="mr-1"
               title={attachment.name}
               isExternalLink={!!attachment.data?.source}
@@ -172,6 +173,7 @@ const MediaLibraryPage: React.FC = () => {
               disabled={attachment.status !== 'READY'}
             />
             <ReUploadButton
+              key={`re_upload_${attachment.id}`}
               videoId={attachment.id}
               videoName={attachment.name}
               isExternalLink={!!attachment.data?.source}
@@ -179,8 +181,17 @@ const MediaLibraryPage: React.FC = () => {
             />
           </div>
           <div className="d-flex">
-            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
-            <DeleteButton videoId={attachment.id} onDelete={() => refetchAttachments?.()} />
+            <CaptionUploadButton
+              key={`caption_upload_${attachment.id}`}
+              className="mr-1"
+              videoId={attachment.id}
+              isExternalLink={!!attachment.data?.source}
+            />
+            <DeleteButton
+              key={`delete_${attachment.id}`}
+              videoId={attachment.id}
+              onDelete={() => refetchAttachments?.()}
+            />
           </div>
         </div>
       ),
