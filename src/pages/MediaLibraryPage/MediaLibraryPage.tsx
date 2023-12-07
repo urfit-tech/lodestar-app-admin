@@ -60,7 +60,7 @@ export const configAwsS3MultipartUppy = ({
       companionUrl: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage`,
       createMultipartUpload: async file => {
         const id = origin?.id || uuid()
-        const fileName = origin?.name ? dayjs().format('YYYYMMDDHHmmss') + '_' + origin?.name : file.name
+        const fileName = dayjs().format('YYYYMMDDHHmmss') + '_' + (origin?.name || file.name)
         const key = `vod/${appId}/${id.substring(0, 2)}/${id}/video/${fileName}`
 
         const createResponse = await axios.post(
