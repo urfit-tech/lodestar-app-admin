@@ -1,11 +1,10 @@
 import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
-import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
-import Tus from '@uppy/tus'
 import { Button, List, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useEffect, useRef, useState } from 'react'
@@ -14,6 +13,7 @@ import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
+import { configAwsS3MultipartUppy } from '../../pages/MediaLibraryPage/MediaLibraryPage'
 import { Attachment, UploadState } from '../../types/general'
 import CloudflareVideoPlayer from './CloudflareVideoPlayer'
 import VideoPlayer from './VidoePlayer'
@@ -287,39 +287,33 @@ export const ReUploadButton: React.VFC<
 > = ({ videoId, isExternalLink, onFinish, ...buttonProps }) => {
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
+  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
   const uppy = useUppy(() => {
-    const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/stream`
-    return new Uppy({
-      autoProceed: true,
-      restrictions: {
-        maxNumberOfFiles: 1,
-        allowedFileTypes: ['video/*'],
-        maxTotalFileSize: 10 * 1024 * 1024 * 1024, // limited 10GB at once
-      },
-    })
-      .use(Tus, {
-        removeFingerprintOnSuccess: true,
-        chunkSize: 10 * 1024 * 1024, // 10MB
-        endpoint: tusEndpoint,
-        onBeforeRequest: async req => {
-          if (req.getURL() === tusEndpoint) {
-            req.setHeader('Authorization', `bearer ${authToken}`)
-          }
-        },
-      })
-      .on('upload', () => setUploadState('uploading'))
-      .on('complete', () => {
+    return configAwsS3MultipartUppy({
+      authToken: authToken || '',
+      appId,
+      currentMemberId: currentMemberId || '',
+      onCompleted: () => {
+        console.log('completed')
+
         onFinish?.()
         setUploadState('upload-success')
-      })
+      },
+      onUpload: () => {
+        console.log('upload')
+        setUploadState('uploading')
+      },
+      autoProceed: true,
+      maxNumberOfFiles: 1,
+    })
   })
   return (
     <>
       <Button
         size="small"
-        disabled={true || uploadState === 'uploading' || isExternalLink} //TODO: should update  to aws
+        disabled={uploadState === 'uploading' || isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}
