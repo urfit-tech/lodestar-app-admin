@@ -283,8 +283,8 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
 }
 
 export const ReUploadButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onFinish?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onFinish, ...buttonProps }) => {
+  { videoId: string; videoName: string; isExternalLink: boolean; onFinish?: () => void } & ButtonProps
+> = ({ videoId, videoName, isExternalLink, onFinish, ...buttonProps }) => {
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
   const { authToken, currentMemberId } = useAuth()
@@ -296,17 +296,15 @@ export const ReUploadButton: React.VFC<
       appId,
       currentMemberId: currentMemberId || '',
       onCompleted: () => {
-        console.log('completed')
-
         onFinish?.()
         setUploadState('upload-success')
       },
       onUpload: () => {
-        console.log('upload')
         setUploadState('uploading')
       },
       autoProceed: true,
       maxNumberOfFiles: 1,
+      origin: { id: videoId, name: videoName },
     })
   })
   return (

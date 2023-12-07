@@ -34,6 +34,7 @@ export const configAwsS3MultipartUppy = ({
   maxNumberOfFiles,
   onCompleted,
   onUpload,
+  origin,
 }: {
   authToken: string
   appId: string
@@ -42,6 +43,7 @@ export const configAwsS3MultipartUppy = ({
   maxNumberOfFiles?: number
   onCompleted?: () => void
   onUpload?: () => void
+  origin?: { id: string; name: string }
 }) =>
   new Uppy({
     autoProceed,
@@ -56,10 +58,11 @@ export const configAwsS3MultipartUppy = ({
       companionHeaders: { Authorization: `bearer ${authToken}` },
       companionUrl: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage`,
       createMultipartUpload: async file => {
-        console.log('createMultipartUpload')
+        const id = origin?.id || uuid()
+        const fileName = origin?.name || file.name
+        const key = `vod/${appId}/${id.substring(0, 2)}/${id}/video/${fileName}`
+        console.log(key)
 
-        const id = uuid()
-        const key = `vod/${appId}/${id.substring(0, 2)}/${id}/video/${file.name}`
         const createResponse = await axios.post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/create`,
           {
@@ -89,13 +92,14 @@ export const configAwsS3MultipartUppy = ({
       },
       completeMultipartUpload: async (file, opts) => {
         const duration = await getVideoDuration(file.data as File)
+        const fileName = origin?.name || file.name
 
-        const attachmentId = opts.key.split('/')[3]
+        const attachmentId = origin?.id || opts.key.split('/')[3]
         const completedUploadResponse = await axios.post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/complete`,
           {
             params: { Key: opts.key, UploadId: opts.uploadId, MultipartUpload: { Parts: opts.parts } },
-            file: { name: file.name, type: file.type, size: file.size },
+            file: { name: fileName, type: file.type, size: file.size },
             appId: appId,
             attachmentId,
             authorId: currentMemberId,
@@ -165,9 +169,11 @@ const MediaLibraryPage: React.FC = () => {
                 attachment.options?.cloudfront?.path
               }
               videoId={attachment.id}
+              disabled={attachment.status !== 'READY'}
             />
             <ReUploadButton
               videoId={attachment.id}
+              videoName={attachment.name}
               isExternalLink={!!attachment.data?.source}
               onFinish={() => refetchAttachments?.()}
             />
