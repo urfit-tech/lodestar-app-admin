@@ -6,7 +6,6 @@ import { Button, List, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
-import Cookies from 'js-cookie'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useEffect, useRef, useState } from 'react'
@@ -116,6 +115,7 @@ export const PreviewButton: React.VFC<
   const [loading, setLoading] = useState(true)
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [sources, setSources] = useState<{ src: string; type: string; withCredentials?: boolean }[]>([])
 
   useEffect(() => {
     if (isModalVisible) {
@@ -138,8 +138,14 @@ export const PreviewButton: React.VFC<
           },
         )
         .then(({ data }) => {
-          const url = data.result
-          Cookies.set('cloudfront-signed', new URL(url).search, { expires: 1 / 12 })
+          const search = new URL(data.result).search
+          const pathname = new URL(videoUrl).pathname
+          setSources([
+            {
+              type: 'application/x-mpegURL',
+              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage${pathname}${search}`,
+            },
+          ])
         })
         .catch(error => console.log(error.toString()))
         .finally(() => setLoading(false))
@@ -159,7 +165,7 @@ export const PreviewButton: React.VFC<
           (isExternalLink ? (
             <ReactPlayer url={videoUrl} width="100%" controls />
           ) : videoUrl ? (
-            <VideoPlayer sources={[{ type: 'application/x-mpegURL', src: videoUrl }]} />
+            <VideoPlayer sources={sources} />
           ) : (
             <CloudflareVideoPlayer videoId={videoId} width="100%" />
           ))}
