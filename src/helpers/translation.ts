@@ -15,6 +15,7 @@ export const commonMessages = {
     confirm: { id: 'common.ui.confirm', defaultMessage: '確定' },
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
+    delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
     duplicate: { id: 'common.ui.duplicate', defaultMessage: '複製' },
     rename: { id: 'common.ui.rename', defaultMessage: '重新命名' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
