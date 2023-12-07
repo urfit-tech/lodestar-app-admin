@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import LocaleContext from '../../contexts/LocaleContext'
 import { commonMessages } from '../../helpers/translation'
 
-const CloudflareVideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<StreamProps>> = ({
+const VideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<StreamProps>> = ({
   videoId,
   animated,
   ...streamProps
@@ -49,4 +49,4 @@ const CloudflareVideoPlayer: React.VFC<{ videoId: string; animated?: boolean } &
   ) : null
 }
 
-export default CloudflareVideoPlayer
+export default VideoPlayer

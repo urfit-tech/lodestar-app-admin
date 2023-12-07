@@ -127,14 +127,10 @@ const MediaLibraryPage: React.FC = () => {
           <div className="d-flex mb-1">
             <PreviewButton
               className="mr-1"
+              videoId={attachment.id}
               title={attachment.name}
               isExternalLink={!!attachment.data?.source}
-              videoUrl={
-                attachment?.data?.url ||
-                attachment.options?.cloudfront?.playPaths?.hls ||
-                attachment.options?.cloudfront?.path
-              }
-              videoId={attachment.id}
+              videoUrl={attachment?.data?.url}
             />
             <ReUploadButton
               videoId={attachment.id}
@@ -144,7 +140,11 @@ const MediaLibraryPage: React.FC = () => {
           </div>
           <div className="d-flex">
             <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
-            <DeleteButton videoId={attachment.id} onDelete={() => refetchAttachments?.()} />
+            <DeleteButton
+              videoId={attachment.id}
+              isExternalLink={!!attachment.data?.source}
+              onDelete={() => refetchAttachments?.()}
+            />
           </div>
         </div>
       ),
