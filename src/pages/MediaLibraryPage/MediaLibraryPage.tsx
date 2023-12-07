@@ -20,6 +20,7 @@ import {
   PreviewButton,
   ReUploadButton,
 } from '../../components/library/VideoLibraryItem'
+import { getVideoDuration } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useAttachments } from '../../hooks/data'
 import ForbiddenPage from '../ForbiddenPage'
@@ -78,6 +79,8 @@ const MediaLibraryPage: React.FC = () => {
             return { url: presignedUrl }
           },
           completeMultipartUpload: async (file, opts) => {
+            const duration = await getVideoDuration(file.data as File)
+
             const attachmentId = opts.key.split('/')[3]
             const completedUploadResponse = await axios.post(
               `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/multipart/complete`,
@@ -87,6 +90,7 @@ const MediaLibraryPage: React.FC = () => {
                 appId: appId,
                 attachmentId,
                 authorId: currentMemberId,
+                duration,
               },
               {
                 headers: { authorization: `Bearer ${authToken}` },

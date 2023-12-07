@@ -230,10 +230,10 @@ export const stableSort = (array: any[], customCompareFunction: (a: any[], b: an
   const compare = !!customCompareFunction
     ? customCompareFunction
     : (a: any, b: any) => {
-      if (a > b) return 1
-      if (a < b) return -1
-      return 0
-    }
+        if (a > b) return 1
+        if (a < b) return -1
+        return 0
+      }
   const stableCompare = (a: any[], b: any[]) => {
     const order = compare(a[0], b[0])
     return order !== 0 ? order : a[1] - b[1]
@@ -511,4 +511,19 @@ export const createMeeting = async (
     )
     return { meetId: null, continueInsertTask }
   }
+}
+
+export const getVideoDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+
+    video.onloadedmetadata = function () {
+      window.URL.revokeObjectURL(video.src)
+      const duration = video.duration
+      resolve(duration)
+    }
+
+    video.src = URL.createObjectURL(file)
+  })
 }
