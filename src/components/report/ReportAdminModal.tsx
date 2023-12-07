@@ -6,8 +6,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import hasura from '../../hasura'
-import { commonMessages, reportMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import { reportMessages } from './translations'
 
 type FieldProps = {
   title: string
@@ -83,10 +83,10 @@ const ReportAdminModal: React.FC<
               setVisible(false)
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(reportMessages.ReportAdminModal.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(reportMessages.ReportAdminModal.confirm)}
           </Button>
         </>
       )}
@@ -103,7 +103,7 @@ const ReportAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(reportMessages.label.title)}
+          label={formatMessage(reportMessages.ReportAdminModal.title)}
           name="title"
           rules={[
             {
@@ -114,7 +114,7 @@ const ReportAdminModal: React.FC<
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(reportMessages.label.type)}
+          label={formatMessage(reportMessages.ReportAdminModal.type)}
           name="type"
           rules={[
             {
@@ -129,7 +129,7 @@ const ReportAdminModal: React.FC<
           </Select>
         </Form.Item>
         <Form.Item
-          label={formatMessage(reportMessages.label.options)}
+          label={formatMessage(reportMessages.ReportAdminModal.setting)}
           name="options"
           rules={[
             {
