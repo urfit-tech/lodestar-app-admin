@@ -1,6 +1,6 @@
 import { Button, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
@@ -58,8 +58,39 @@ const ActivityCollectionTabs: React.FC<{
       activity_during_period: { ended_at: { _gt: 'now()' } },
     },
   }
+
+  const adminCondition = {
+    holding: {
+      organizerId: memberId,
+      isPrivate: false,
+      publishedAtNotNull: true,
+      activityEndedAfterNow: true,
+    },
+    finished: {
+      organizerId: memberId,
+      publishedAtNotNull: true,
+      activityEndedBeforeNow: true,
+    },
+    draft: {
+      organizerId: memberId,
+      publishedAtIsNull: true,
+      activityEndedIsNull: true,
+    },
+    privateHolding: {
+      organizerId: memberId,
+      isPrivate: true,
+      activityEndedAfterNow: true,
+    },
+  }
+
+  const basicCondition = useMemo(() => {
+    return {
+      ...adminCondition[currentTab],
+    }
+  }, [currentTab, memberId])
+
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
-    condition[currentTab],
+    basicCondition,
     selectedCategoryId,
   )
   const { categories } = useCategoryCollection(condition[currentTab])
@@ -126,20 +157,23 @@ const ActivityCollectionTabs: React.FC<{
               ))}
             </>
             <div className="row py-5">
-              {loadingActivities && <Skeleton active />}
-              {activities.map(activity => (
-                <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                  <Activity
-                    id={activity.id}
-                    coverUrl={activity.coverUrl}
-                    title={activity.title}
-                    includeSessionTypes={activity.includeSessionTypes}
-                    participantsCount={activity.participantsCount}
-                    startedAt={activity.startedAt}
-                    endedAt={activity.endedAt}
-                  />
-                </div>
-              ))}
+              {loadingActivities ? (
+                <Skeleton active />
+              ) : (
+                activities.map(activity => (
+                  <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
+                    <Activity
+                      id={activity.id}
+                      coverUrl={activity.coverUrl}
+                      title={activity.title}
+                      includeSessionTypes={activity.includeSessionTypes}
+                      participantsCount={activity.participantsCount}
+                      startedAt={activity.startedAt}
+                      endedAt={activity.endedAt}
+                    />
+                  </div>
+                ))
+              )}
             </div>
             {loadMoreActivities && (
               <div className="text-center mt-4">

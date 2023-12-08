@@ -17,39 +17,42 @@ interface ActivityDisplayProps {
   isPrivate: boolean;
 }
 
-interface BasicCondition {
+type FetchActivityDisplayProps = Pick<ActivityDisplayProps, 'id' | 'title' | 'coverUrl' | 'includeSessionTypes' | 'participantsCount' | 'isPrivate'> & {
+  publishedAt: string | null;
+  startedAt: string | null;
+  endedAt: string | null;
 }
 
+type ActivityBasicCondition = {
+  organizerId?: string | null;
+  isPrivate?: boolean;
+  publishedAtNotNull?: boolean;
+  activityEndedAfterNow?: boolean;
+};
+
 interface FetchActivitiesResponse {
-  activities: ActivityAdminProps[];
+  activities: FetchActivityDisplayProps[];
   totalCount: number;
 }
 
-const fetchActivitiesApi = async (
-  basicCondition: BasicCondition,
-  categoryId: string | null,
-  limit: number,
+const fetchActivitiesApi = (
+  basicCondition: ActivityBasicCondition, 
+  categoryId: string | null, 
+  limit: number, 
   offset: number
-): Promise<FetchActivitiesResponse> => {
-  try {
-    const response = await axios.post<FetchActivitiesResponse>('http://localhost:3000/activity_collection', {
-      basicCondition,
-      categoryId,
-      limit,
-      offset,
-    });
-    console.log(response.data)
+) => {
+  return axios.post<FetchActivitiesResponse>('https://175d-143-244-40-17.ngrok-free.app/activity_collection', {
+    basicCondition,
+    categoryId,
+    limit,
+    offset,
+  }).then(response => {
+    response.data.activities = response.data.activities || [];
     return response.data;
-  } catch (error) {
-    console.error('Error fetching activities:', error);
-    throw error;
-  }
+  });
 };
 
-const useActivityCollection = (
-  basicCondition: BasicCondition,
-  categoryId: string | null
-) => {
+const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryId: string | null) => {
   const [activities, setActivities] = useState<ActivityDisplayProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -58,69 +61,51 @@ const useActivityCollection = (
 
   const limit = 20;
 
+  const transformDate = (dateString: string | null): Date | null => 
+  dateString ? new Date(dateString) : null;
+
+  const transformActivity = (activity: FetchActivityDisplayProps): ActivityDisplayProps => ({
+      ...activity,
+      publishedAt: transformDate(activity.publishedAt),
+      startedAt: transformDate(activity.startedAt),
+      endedAt: transformDate(activity.endedAt)
+  })
+
+
   const fetchActivities = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const data = await fetchActivitiesApi(basicCondition, categoryId, limit, offset);
-      const transformedActivities = data.activities.map(activity => {
-        const onlineCount = activity.tickets.reduce((acc, ticket) => acc + (ticket.enrollmentsCount ?? 0), 0);
-        const offlineCount = activity.sessions.reduce((acc, session) => acc + (session.enrollmentsCount.offline ?? 0), 0);
-        const includeSessionTypes = activity.sessions.flatMap(session => 
-          session.location ? ['offline'] : (session.onlineLink ? ['online'] : [])
-        ).filter((v, i, a) => a.indexOf(v) === i);
-      
-        return {
-          id: activity.id,
-          coverUrl: activity.coverUrl || null,
-          title: activity.title || '',
-          publishedAt: activity.publishedAt ? new Date(activity.publishedAt) : null,
-          isPrivate: activity.isPrivate !== undefined ? activity.isPrivate : false, 
-          participantsCount: {
-            online: onlineCount,
-            offline: offlineCount
-          },
-          includeSessionTypes: includeSessionTypes as ('offline' | 'online')[],
-          startedAt: activity.sessions.length > 0 ? new Date(activity.sessions[0].startedAt) : null,
-          endedAt: activity.sessions.length > 0 ? new Date(activity.sessions[0].endedAt) : null,
-        };
-      });
+
+      const tranformActivityData = data.activities.map(transformActivity)
+
       setActivities(prevActivities => {
-        const updatedActivities = [...prevActivities, ...transformedActivities];
+
+        const combinedActivities = [...prevActivities, ...tranformActivityData];
+
+        const uniqueActivities = Array.from(new Set(combinedActivities.map(a => a.id)))
+        .map(id => combinedActivities.find(a => a.id === id))
+        .filter(a => a !== undefined) as ActivityDisplayProps[];
       
-        const activitiesMap = new Map();
-        for (const activity of updatedActivities) {
-          activitiesMap.set(activity.id, activity);
-        }
-      
-        return Array.from(activitiesMap.values());
+        return uniqueActivities;
       });
       setCurrentTabActivityCount(data.totalCount);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err); 
-      } else {
-        setError(new Error('An unknown error occurred'));
-      }
+      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
     } finally {
       setLoading(false);
     }
-  }, [categoryId, offset, limit]);
+  }, [basicCondition, categoryId, offset, limit]);
 
   useEffect(() => {
     fetchActivities();
   }, [fetchActivities]);
 
-  const loadMoreActivities = () => {
+  const loadMoreActivities = useCallback(() => {
     setOffset(prevOffset => prevOffset + limit);
-  };
+  }, [limit]);
 
-  return {
-    loadingActivities: loading,
-    errorActivities: error,
-    activities,
-    currentTabActivityCount,
-    loadMoreActivities,
-  };
+  return { loadingActivities: loading, errorActivities: error, activities, currentTabActivityCount, loadMoreActivities };
 };
 
 export default useActivityCollection;
