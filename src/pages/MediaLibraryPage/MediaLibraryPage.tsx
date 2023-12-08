@@ -185,6 +185,11 @@ const MediaLibraryPage: React.FC = () => {
               key={`caption_upload_${attachment.id}`}
               className="mr-1"
               videoId={attachment.id}
+              videoUrl={
+                attachment?.data?.url ||
+                attachment.options?.cloudfront?.playPaths?.hls ||
+                attachment.options?.cloudfront?.path
+              }
               isExternalLink={!!attachment.data?.source}
             />
             <DeleteButton

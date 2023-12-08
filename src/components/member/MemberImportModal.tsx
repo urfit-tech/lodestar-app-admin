@@ -44,8 +44,8 @@ const MemberImportModal: React.FC<{
             multiple
             name="memberList"
             customRequest={async ({ file, onSuccess, onProgress, onError }) => {
-              const key = `members_import_${dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ[Z]')}`
-              const s3UploadRes = await uploadFileV2(key, file, authToken, appId)
+              const key = `memberImport/members_import_${dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ[Z]')}`
+              const s3UploadRes = await uploadFileV2(key, file, 'import', authToken, appId)
               const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
               await axios
                 .post(
