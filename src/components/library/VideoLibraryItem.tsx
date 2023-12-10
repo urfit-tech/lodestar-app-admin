@@ -116,7 +116,8 @@ export const PreviewButton: React.VFC<
   const [loading, setLoading] = useState(true)
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [sources, setSources] = useState<{ src: string; type: string; withCredentials?: boolean }[]>([])
+  const [sources, setSources] = useState<{ src: string; type: string }[]>([])
+  const [captions, setCaptions] = useState<string[]>([])
 
   useEffect(() => {
     if (isModalVisible) {
@@ -144,11 +145,43 @@ export const PreviewButton: React.VFC<
           setSources([
             {
               type: 'application/x-mpegURL',
-              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage${pathname}${search}`,
+              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${pathname}${search}`,
             },
           ])
         })
         .catch(error => console.log(error.toString()))
+        .finally(() => setLoading(false))
+      // getCaptions
+      const captionsPath = videoUrl.includes('hls')
+        ? url.replace('output', 'captions')
+        : url.replace('manifest', 'text')
+      axios
+        .post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
+          {
+            url: `${captionsPath}*`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        .then(({ data }) => {
+          const search = new URL(data.result).search
+          axios
+            .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/captions`, {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            })
+            .then(response => {
+              const urls = response.data.result
+              const signedUrls = urls.map((key: any) => `${key}${search}`)
+              setCaptions(signedUrls)
+            })
+        })
+        // .catch(error => setError(error.toString()))
         .finally(() => setLoading(false))
     }
   }, [isModalVisible, isExternalLink, videoUrl])
@@ -167,7 +200,7 @@ export const PreviewButton: React.VFC<
           (isExternalLink ? (
             <ReactPlayer url={videoUrl} width="100%" controls />
           ) : videoUrl ? (
-            <VideoPlayer sources={sources} />
+            <VideoPlayer sources={sources} captions={captions} />
           ) : (
             <CloudflareVideoPlayer videoId={videoId} width="100%" />
           ))}
@@ -245,7 +278,7 @@ const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps
         <Upload
           accept=".srt,.vtt"
           customRequest={async ({ file, onSuccess, onError }) => {
-            const url = videoUrl.includes('hls')
+            const url = videoUrl.includes('output')
               ? `${videoUrl.split('output')[0]}captions/${languageCode}.${last(file.name.split('.'))}`
               : `${videoUrl.split('manifest')[0]}text/${languageCode}.${last(file.name.split('.'))}`
             const key = new URL(url).pathname.substring(1)
