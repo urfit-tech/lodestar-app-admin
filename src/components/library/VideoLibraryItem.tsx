@@ -276,7 +276,7 @@ const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps
       </Select>
       {languageCode && (
         <Upload
-          accept=".srt,.vtt"
+          accept=".vtt"
           customRequest={async ({ file, onSuccess, onError }) => {
             const url = videoUrl.includes('output')
               ? `${videoUrl.split('output')[0]}captions/${languageCode}.${last(file.name.split('.'))}`
