@@ -209,7 +209,12 @@ const SalesLeadTable: React.VFC<{
 
       const nameAndEmailMatch = matchesFilter(nameAndEmail)(name + email + fullName)
 
-      const phoneMatch = matchesFilter(phone)(phones.join(''))
+      const phoneMatch = matchesFilter(phone)(
+        phones
+          .filter(phone => phone.isValid)
+          .map(phone => phone.phoneNumber)
+          .join(''),
+      )
 
       const categoryNameMatch = matchesFilter(categoryName)(categoryNames.join(''))
 
