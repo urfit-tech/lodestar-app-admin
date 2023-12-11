@@ -1,6 +1,7 @@
 import { ImportOutlined } from '@ant-design/icons'
 import { Alert, Button, Form, message, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -42,13 +43,23 @@ const MemberImportModal: React.FC<{
           <Upload
             multiple
             name="memberList"
-            customRequest={({ file, onSuccess, onProgress, onError }) => {
-              uploadFileV2(
-                `members_import_${dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ[Z]')}`,
-                file,
-                authToken,
-                appId,
-              )
+            customRequest={async ({ file, onSuccess, onProgress, onError }) => {
+              const key = `memberImport/members_import_${dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ[Z]')}`
+              const s3UploadRes = await uploadFileV2(key, file, 'import', authToken, appId)
+              const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
+              await axios
+                .post(
+                  `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/import`,
+                  {
+                    appId,
+                    fileInfos: [{ key, checksum: eTag }],
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${authToken}`,
+                    },
+                  },
+                )
                 .then(res => onSuccess(res, file))
                 .catch(error => onError(error))
             }}

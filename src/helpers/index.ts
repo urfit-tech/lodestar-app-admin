@@ -58,6 +58,7 @@ export const uploadFile = async (key: string, file: Blob, authToken: string | nu
 export const uploadFileV2 = async (
   key: string,
   file: Blob,
+  prefix: string,
   authToken: string | null,
   appId: string,
   config?: AxiosRequestConfig,
@@ -67,6 +68,7 @@ export const uploadFileV2 = async (
     {
       appId,
       fileName: key,
+      prefix
     },
     {
       headers: { authorization: `Bearer ${authToken}` },
@@ -79,20 +81,8 @@ export const uploadFileV2 = async (
       'Content-Type': file.type,
     },
   })
-  const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
-  const importRes = await axios.post(
-    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/import`,
-    {
-      appId,
-      fileInfos: [{ key, checksum: eTag }],
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    },
-  )
-  return importRes
+
+  return s3UploadRes;
 }
 
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
@@ -532,4 +522,19 @@ export const createMeeting = async (
     )
     return { meetId: null, continueInsertTask }
   }
+}
+
+export const getVideoDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+
+    video.onloadedmetadata = function () {
+      window.URL.revokeObjectURL(video.src)
+      const duration = video.duration
+      resolve(duration)
+    }
+
+    video.src = URL.createObjectURL(file)
+  })
 }
