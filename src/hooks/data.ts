@@ -1088,7 +1088,7 @@ export const useCaptions = (videoAttachmentId: string) => {
               },
             })
             .on('complete', () => {
-              uppy?.reset()
+              uppy?.resetProgress()
               resolve(null)
             })
             .on('error', reject),
