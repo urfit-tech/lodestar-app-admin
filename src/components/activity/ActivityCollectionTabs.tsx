@@ -58,6 +58,7 @@ const ActivityCollectionTabs: React.FC<{
       activity_during_period: { ended_at: { _gt: 'now()' } },
     },
   }
+  const { loading, id: appId, enabledModules, settings } = useApp()
 
   const adminCondition = {
     holding: {
@@ -65,21 +66,25 @@ const ActivityCollectionTabs: React.FC<{
       isPrivate: false,
       publishedAtNotNull: true,
       activityEndedAfterNow: true,
+      appId: appId,
     },
     finished: {
       organizerId: memberId,
       publishedAtNotNull: true,
       activityEndedBeforeNow: true,
+      appId: appId,
     },
     draft: {
       organizerId: memberId,
       publishedAtIsNull: true,
       activityEndedIsNull: true,
+      appId: appId,
     },
     privateHolding: {
       organizerId: memberId,
       isPrivate: true,
       activityEndedAfterNow: true,
+      appId: appId,
     },
   }
 

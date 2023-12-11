@@ -28,6 +28,7 @@ type ActivityBasicCondition = {
   isPrivate?: boolean;
   publishedAtNotNull?: boolean;
   activityEndedAfterNow?: boolean;
+  appId: string;
 };
 
 interface FetchActivitiesResponse {
