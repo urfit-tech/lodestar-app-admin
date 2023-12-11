@@ -9,17 +9,18 @@ import { reportMessages } from './translations'
 import { useMutateReport, useMutateReportPermissionGroup } from '../../hooks/report'
 import PermissionGroupSelector from '../form/PermissionGroupSelector'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { ReportProps } from '../../types/report'
 
 type FieldProps = {
   title: string
   type: string
-  options: string
+  question: string
   viewPermissions?: string[]
 }
 
 const ReportAdminModal: React.FC<
   {
-    report?: any
+    report?: ReportProps
     onRefetch?: () => void
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, ...props }) => {
@@ -32,12 +33,12 @@ const ReportAdminModal: React.FC<
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
-    const { options, type } = formValue
+    const { question, type } = formValue
     switch (type) {
       case 'metabase':
         return {
           metabase: {
-            resource: { question: parseInt(options) },
+            resource: { question: parseInt(question) },
             params: { appId },
           },
         }
@@ -114,7 +115,10 @@ const ReportAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
+          title: report?.title,
           type: 'metabase',
+          question: report?.options?.metabase?.resource?.question,
+          viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
         }}
       >
         <Form.Item
@@ -145,7 +149,7 @@ const ReportAdminModal: React.FC<
         </Form.Item>
         <Form.Item
           label={formatMessage(reportMessages.ReportAdminModal.setting)}
-          name="options"
+          name="question"
           rules={[
             {
               required: true,

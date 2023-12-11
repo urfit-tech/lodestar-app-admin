@@ -1,5 +1,5 @@
 import { AreaChartOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { Flex, Box } from '@chakra-ui/react'
 import { Button, Dropdown, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -10,8 +10,8 @@ import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ReportAdminModal from '../../components/report/ReportAdminModal'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import { useMutateReport, useMutateReportPermissionGroup, useReportCollection } from '../../hooks/report'
 import { ReportProps } from '../../types/report'
 import ForbiddenPage from '../ForbiddenPage'
 import pageMessages from '../translation'
@@ -26,7 +26,8 @@ const ReportCollectionPage: React.FC = () => {
   const { permissions } = useAuth()
   const { enabledModules } = useApp()
   const { reports, loadingReports, refetchReports } = useReportCollection()
-  const [deleteReport] = useMutation<hasura.DELETE_REPORT, hasura.DELETE_REPORTVariables>(DELETE_REPORT)
+  const { deleteReport } = useMutateReport()
+  const { deleteReportPermissionGroupByReportId } = useMutateReportPermissionGroup()
   const getReportOptions = (report: ReportProps) => {
     const { options, type } = report
     switch (type) {
@@ -71,7 +72,7 @@ const ReportCollectionPage: React.FC = () => {
     },
     {
       dataIndex: 'options',
-      width: enabledModules.permission_group ? '25%' : '45%',
+      width: enabledModules.permission_group ? '20%' : '45%',
       title: `${formatMessage(pageMessages.ReportCollectionPage.options)}`,
       render: (text, record, index) => (
         <div>
@@ -82,12 +83,22 @@ const ReportCollectionPage: React.FC = () => {
     },
     {
       dataIndex: 'viewingPermission',
-      width: '20%',
-      title: `${formatMessage(pageMessages.ReportCollectionPage.viewingPermission)}`,
+      width: enabledModules.permission_group ? '25%' : '0%',
+      title: enabledModules.permission_group
+        ? `${formatMessage(pageMessages.ReportCollectionPage.viewingPermission)}`
+        : '',
       render: (text, record, index) =>
         enabledModules.permission_group ? (
           <div>
-            <StyledTitle className="mr-2">{/* {record.viewingPermission} */}</StyledTitle>
+            <StyledTitle className="mr-2">
+              <Flex flexWrap="wrap">
+                {record.viewingPermissions?.map(viewingPermission => (
+                  <Box p="4px" m="4px" color="#9b9b9b" outline="solid 1px #cdcdcd" borderRadius="4px" bg="#fff">
+                    {viewingPermission.name}
+                  </Box>
+                ))}
+              </Flex>
+            </StyledTitle>
           </div>
         ) : null,
     },
@@ -95,24 +106,41 @@ const ReportCollectionPage: React.FC = () => {
       width: '5%',
       render: (text, record, index) => (
         <div>
-          <Dropdown
-            trigger={['hover']}
-            overlay={
-              <Menu>
-                <Menu.Item
-                  className="cursor-pointer"
-                  onClick={async () => {
-                    await deleteReport({ variables: { reportId: record.id } }).catch(handleError)
-                    refetchReports?.()
-                  }}
-                >
-                  {formatMessage(pageMessages['*'].delete)}
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type="link" icon={<MoreOutlined />} />
-          </Dropdown>
+          {permissions.REPORT_ADMIN ? (
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item className="cursor-pointer">
+                    <ReportAdminModal
+                      report={record}
+                      onRefetch={refetchReports}
+                      renderTrigger={({ setVisible }) => (
+                        <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
+                      )}
+                    />
+                  </Menu.Item>
+                  <Menu.Item
+                    className="cursor-pointer"
+                    onClick={async () => {
+                      try {
+                        if (enabledModules.permission_group) {
+                          await deleteReportPermissionGroupByReportId({ variables: { reportId: record.id } })
+                        }
+                        await deleteReport({ variables: { id: record.id } }).catch(handleError)
+                        refetchReports?.()
+                      } catch (error) {
+                        handleError(error)
+                      }
+                    }}
+                  >
+                    {formatMessage(pageMessages['*'].delete)}
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type="link" icon={<MoreOutlined />} />
+            </Dropdown>
+          ) : null}
         </div>
       ),
     },
@@ -126,16 +154,18 @@ const ReportCollectionPage: React.FC = () => {
         <AreaChartOutlined className="mr-3" />
         <span>{formatMessage(pageMessages.ReportCollectionPage.pageTitle)}</span>
       </AdminPageTitle>
-      <div className="d-flex align-item-center justify-content-between mb-4">
-        <ReportAdminModal
-          onRefetch={refetchReports}
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(pageMessages.ReportCollectionPage.addReport)}
-            </Button>
-          )}
-        />
-      </div>
+      {permissions.REPORT_ADMIN ? (
+        <div className="d-flex align-item-center justify-content-between mb-4">
+          <ReportAdminModal
+            onRefetch={refetchReports}
+            renderTrigger={({ setVisible }) => (
+              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+                {formatMessage(pageMessages.ReportCollectionPage.addReport)}
+              </Button>
+            )}
+          />
+        </div>
+      ) : null}
       <AdminBlock>
         <Table
           columns={columns}
@@ -150,52 +180,5 @@ const ReportCollectionPage: React.FC = () => {
     </AdminLayout>
   )
 }
-
-const useReportCollection = () => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_REPORTS_COLLECTION,
-    hasura.GET_REPORTS_COLLECTIONVariables
-  >(
-    gql`
-      query GET_REPORTS_COLLECTION {
-        report {
-          id
-          title
-          type
-          options
-          report_permission_groups {
-            id
-            permission_group_id
-          }
-        }
-      }
-    `,
-  )
-
-  const reports: ReportProps[] =
-    data?.report.map(r => {
-      return {
-        id: r.id,
-        title: r.title,
-        type: r.type || '',
-        options: r.options,
-      }
-    }) || []
-
-  return {
-    reports,
-    loadingReports: loading,
-    errorReports: error,
-    refetchReports: refetch,
-  }
-}
-
-const DELETE_REPORT = gql`
-  mutation DELETE_REPORT($reportId: uuid!) {
-    delete_report(where: { id: { _eq: $reportId } }) {
-      affected_rows
-    }
-  }
-`
 
 export default ReportCollectionPage
