@@ -15,13 +15,11 @@ import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../ty
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
-import { Uppy } from '@uppy/core'
-import XHRUpload from '@uppy/xhr-upload'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import hooksMessages from './translation'
 import moment, { Moment } from 'moment'
-import { max, sum } from 'lodash'
+import { last, max, sum } from 'lodash'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -990,20 +988,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
       })) || [],
     [data],
   )
-  const refetchAttachments = useCallback(async () => {
-    await axios
-      .post(
-        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync`,
-        {},
-        {
-          headers: {
-            Authorization: `bearer ${authToken}`,
-          },
-        },
-      )
-      .catch(handleError)
-      .finally(() => refetch?.())
-  }, [authToken, refetch])
+
   return {
     maxSize: data?.attachment_aggregate.aggregate?.max?.size || 0,
     maxDuration: data?.attachment_aggregate.aggregate?.max?.duration || 0,
@@ -1011,101 +996,83 @@ export const useAttachments = (options?: { contentType?: string; status?: string
     totalDuration: data?.attachment_aggregate.aggregate?.sum?.duration || 0,
     attachments,
     loading,
-    refetch: refetchAttachments,
+    refetch,
   }
 }
 
-export const useCaptions = (videoAttachmentId: string) => {
+export const useCaptions = (videoAttachmentId?: string) => {
   const captionLanguages = [
-    { code: 'zh', name: 'Mandarin Chinese' },
-    { code: 'hi', name: 'Hindi' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'en', name: 'English' },
-    { code: 'ar', name: 'Arabic' },
-    { code: 'pt', name: 'Portuguese' },
-    { code: 'bn', name: 'Bengali' },
-    { code: 'ru', name: 'Russian' },
-    { code: 'ja', name: 'Japanese' },
-    { code: 'de', name: 'German' },
-    { code: 'pa', name: 'Panjabi' },
-    { code: 'jv', name: 'Javanese' },
-    { code: 'ko', name: 'Korean' },
-    { code: 'vi', name: 'Vietnamese' },
-    { code: 'fr', name: 'French' },
-    { code: 'ur', name: 'Urdu' },
-    { code: 'it', name: 'Italian' },
-    { code: 'tr', name: 'Turkish' },
-    { code: 'fa', name: 'Persian' },
-    { code: 'pl', name: 'Polish' },
-    { code: 'uk', name: 'Ukrainian' },
-    { code: 'my', name: 'Burmese' },
-    { code: 'th', name: 'Thai' },
+    { srclang: 'zh', language: 'Mandarin Chinese', label: '中文' },
+    { srclang: 'en', language: ' English', label: 'English' },
+    { srclang: 'ko', language: 'Korean', label: '조선말' },
+    { srclang: 'ja', language: 'Japanese', label: '日本語' },
+    { srclang: 'hi', language: 'Hindi', label: 'हिन्दी' },
+    { srclang: 'es', language: 'Spanish', label: 'Español' },
+    { srclang: 'ar', language: 'Arabic', label: 'Arabic' },
+    { srclang: 'pt', language: 'Portuguese', label: 'Portuguese' },
+    { srclang: 'bn', language: 'Bengali', label: 'Bengali' },
+    { srclang: 'ru', language: 'Russian', label: 'Russian' },
+    { srclang: 'de', language: 'German', label: 'German' },
+    { srclang: 'pa', language: 'Panjabi', label: 'Panjabi' },
+    { srclang: 'jv', language: 'Javanese', label: 'Javanese' },
+    { srclang: 'vi', language: 'Vietnamese', label: 'Vietnamese' },
+    { srclang: 'fr', language: 'French', label: 'French' },
+    { srclang: 'ur', language: 'Urdu', label: 'Urdu' },
+    { srclang: 'it', language: 'Italian', label: 'Italian' },
+    { srclang: 'tr', language: 'Turkish', label: 'Turkish' },
+    { srclang: 'fa', language: 'Persian', label: 'Persian' },
+    { srclang: 'pl', language: 'Polish', label: 'Polish' },
+    { srclang: 'uk', language: 'Ukrainian', label: 'Ukrainian' },
+    { srclang: 'my', language: 'Burmese', label: 'Burmese' },
+    { srclang: 'th', language: 'Thai', label: 'Thai' },
   ]
   const { authToken } = useAuth()
-  const [uppy, setUppy] = useState<Uppy | null>(null)
-  const [captions, setCaptions] = useState<{ label: string; language: string }[]>([])
-  const refetch = useCallback(
+  const [captions, setCaptions] = useState<{ label: string; srclang: string; language: string }[]>([])
+  // TODO: fetch from s3
+  const refetchCaption = useCallback(
     () =>
       axios
-        .get(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions`, {
+        .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoAttachmentId}/captions`, {
           headers: {
-            Authorization: `bearer ${authToken}`,
+            Authorization: `Bearer ${authToken}`,
           },
         })
         .then(({ data: { code, result } }) => {
-          setCaptions(code === 'SUCCESS' ? result : [])
+          const caption = result.map((url: string) => {
+            const pathname = new URL(url).pathname
+            const srcLang = last(pathname.split('/'))?.split('.')[0]
+            return captionLanguages.find(cl => cl.srclang === srcLang)
+          })
+          setCaptions(code === 'SUCCESS' ? caption : [])
         }),
     [authToken, videoAttachmentId],
   )
+  // TODO: deleteCaption from s3
   const deleteCaption = useCallback(
     (languageCode: string) =>
       axios
-        .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions/${languageCode}`, {
-          headers: {
-            Authorization: `bearer ${authToken}`,
-          },
-        })
-        .then(({ data: { code } }) => {
-          code === 'SUCCESS' && refetch()
-        }),
-    [authToken, refetch, videoAttachmentId],
-  )
-  const addCaption = useCallback(
-    async (languageCode: typeof captionLanguages[number]['code']) =>
-      new Promise((resolve, reject) => {
-        setUppy(
-          new Uppy({
-            autoProceed: true,
-            restrictions: {
-              maxNumberOfFiles: 1,
-              maxTotalFileSize: 10 * 1024 * 1024, // limited 10MB at once
+        .delete(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoAttachmentId}/captions/${languageCode}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
             },
-          })
-            .use(XHRUpload, {
-              endpoint: `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions/${languageCode}`,
-              headers: {
-                Authorization: `bearer ${authToken}`,
-              },
-            })
-            .on('complete', () => {
-              uppy?.reset()
-              resolve(null)
-            })
-            .on('error', reject),
+          },
         )
-      }),
-    [authToken, uppy, videoAttachmentId],
+        .then(({ data: { code } }) => {
+          code === 'SUCCESS' && refetchCaption()
+        }),
+    [authToken, refetchCaption, videoAttachmentId],
   )
+
   useEffect(() => {
-    refetch()
-  }, [refetch, videoAttachmentId])
+    refetchCaption()
+  }, [refetchCaption, videoAttachmentId])
   return {
     captions,
     captionLanguages,
-    refetch,
-    addCaption,
+    refetchCaption,
     deleteCaption,
-    uppy,
   }
 }
 
