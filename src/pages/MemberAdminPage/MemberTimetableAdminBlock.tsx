@@ -298,8 +298,8 @@ const useProgramTimetable = (memberId: string) => {
     hasura.UPDATE_PROGRAM_TIMETABLEVariables
   >(UPDATE_PROGRAM_TIMETABLE)
   const { data, refetch: refetchProgramTimetable } = useQuery<
-    hasura.GET_PROGRAM_TIMETABLE,
-    hasura.GET_PROGRAM_TIMETABLEVariables
+    hasura.GetProgramTimetable,
+    hasura.GetProgramTimetableVariables
   >(GetProgramTimetable, {
     variables: {
       memberId,
@@ -384,8 +384,13 @@ const useProgramTimetable = (memberId: string) => {
 }
 
 const GetProgramTimetable = gql`
-  query GET_PROGRAM_TIMETABLE($memberId: String!) {
-    program(where: { published_at: { _is_null: false }, program_plans: { currency_id: { _eq: "LSC" } } }) {
+  query GetProgramTimetable($memberId: String!) {
+    program(
+      where: {
+        published_at: { _is_null: false }
+        program_plans: { currency_id: { _eq: "LSC" }, period_type: { _eq: "Y" }, period_amount: { _eq: "1" } }
+      }
+    ) {
       id
       title
       program_plans(
