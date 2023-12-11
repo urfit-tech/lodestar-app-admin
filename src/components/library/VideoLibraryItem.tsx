@@ -1,22 +1,22 @@
 import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
-import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
-import Tus from '@uppy/tus'
-import { Button, List, Modal, Select, Tag } from 'antd'
+import { Button, List, Modal, Select, Tag, Upload } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
-import Cookies from 'js-cookie'
+import { last } from 'lodash'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
+import { VideoJsPlayer } from 'video.js'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
+import { configAwsS3MultipartUppy } from '../../pages/MediaLibraryPage/MediaLibraryPage'
 import { Attachment, UploadState } from '../../types/general'
-import CloudflareVideoPlayer from './CloudflareVideoPlayer'
 import VideoPlayer from './VidoePlayer'
 
 const messages = defineMessages({
@@ -116,6 +116,9 @@ export const PreviewButton: React.VFC<
   const [loading, setLoading] = useState(true)
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [sources, setSources] = useState<{ src: string; type: string }[]>([])
+  const [captions, setCaptions] = useState<string[]>([])
+  const [playerInstance, setPlayerInstance] = useState<VideoJsPlayer | null>(null)
 
   useEffect(() => {
     if (isModalVisible) {
@@ -138,13 +141,52 @@ export const PreviewButton: React.VFC<
           },
         )
         .then(({ data }) => {
-          const url = data.result
-          Cookies.set('cloudfront-signed', new URL(url).search, { expires: 1 / 12 })
+          const search = new URL(data.result).search
+          const pathname = new URL(videoUrl).pathname
+          setSources([
+            {
+              type: 'application/x-mpegURL',
+              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${pathname}${search}`,
+            },
+          ])
         })
         .catch(error => console.log(error.toString()))
         .finally(() => setLoading(false))
+      // getCaptions
+      const captionsPath = videoUrl.includes('hls')
+        ? url.replace('output', 'captions')
+        : url.replace('manifest', 'text')
+      axios
+        .post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
+          {
+            url: `${captionsPath}`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        .then(({ data }) => {
+          const search = new URL(data.result).search
+          axios
+            .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/captions`, {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            })
+            .then(response => {
+              const urls = response.data.result
+              const signedUrls = urls.map((key: any) => `${key}${search}`)
+              setCaptions(signedUrls)
+            })
+        })
+        .catch(error => console.log(error))
+        .finally(() => setLoading(false))
     }
   }, [isModalVisible, isExternalLink, videoUrl])
+
   return (
     <>
       <Modal
@@ -153,15 +195,25 @@ export const PreviewButton: React.VFC<
         visible={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false)
+          setLoading(true)
+          if (playerInstance) {
+            playerInstance.dispose()
+          }
         }}
       >
         {!loading &&
           (isExternalLink ? (
             <ReactPlayer url={videoUrl} width="100%" controls />
           ) : videoUrl ? (
-            <VideoPlayer sources={[{ type: 'application/x-mpegURL', src: videoUrl }]} />
+            <VideoPlayer
+              sources={sources}
+              captions={captions}
+              onChangePlayerInstance={(instance: VideoJsPlayer) => {
+                setPlayerInstance(instance)
+              }}
+            />
           ) : (
-            <CloudflareVideoPlayer videoId={videoId} width="100%" />
+            <div>error when play video</div>
           ))}
       </Modal>
       <Button
@@ -176,11 +228,9 @@ export const PreviewButton: React.VFC<
   )
 }
 
-export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean } & ButtonProps> = ({
-  videoId,
-  isExternalLink,
-  ...buttonProps
-}) => {
+export const CaptionUploadButton: React.VFC<
+  { videoId: string; isExternalLink: boolean; videoUrl: string } & ButtonProps
+> = ({ videoId, isExternalLink, videoUrl, ...buttonProps }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
@@ -188,28 +238,34 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
     <>
       <Button
         size="small"
-        disabled={true || isExternalLink} //TODO: fix caption upload to aws
+        disabled={isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
         icon={<FileWordOutlined />}
       />
-      {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
+      {isModalVisible && (
+        <CaptionModal videoId={videoId} videoUrl={videoUrl} onCancel={() => setIsModalVisible(false)} destroyOnClose />
+      )}
     </>
   )
 }
 
-const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ...modalProps }) => {
-  const inputRef = useRef<HTMLInputElement>(null)
+const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps> = ({
+  videoId,
+  videoUrl,
+  ...modalProps
+}) => {
+  const { authToken } = useAuth()
   const { formatMessage } = useIntl()
-  const { captions, captionLanguages, refetch: refetchCaptions, deleteCaption, addCaption, uppy } = useCaptions(videoId)
-  const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['code']>()
+  const { captions, captionLanguages, refetchCaption, deleteCaption } = useCaptions(videoId)
+  const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['srclang']>()
   return (
     <Modal visible footer={null} title={formatMessage(messages.manageCaption)} {...modalProps}>
       <div className="d-flex mb-2">
         {formatMessage(messages.uploadedCaptions)}：
         {captions.map(caption => (
-          <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.language)}>
+          <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.srclang)}>
             {caption.label}
           </Tag>
         ))}
@@ -221,99 +277,76 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
         allowClear
         placeholder={formatMessage(messages.chooseCaptionLanguage)}
         value={languageCode}
-        onChange={code =>
-          addCaption(code).then(() => {
-            setLanguageCode('')
-            refetchCaptions()
-          })
-        }
+        onChange={code => setLanguageCode(code)}
       >
         {captionLanguages.map(captionLanguage => (
-          <Select.Option key={captionLanguage.code} value={captionLanguage.code}>
-            {captionLanguage.name}
+          <Select.Option key={captionLanguage.srclang} value={captionLanguage.srclang}>
+            {captionLanguage.label}
           </Select.Option>
         ))}
       </Select>
-      {uppy && (
-        <Button block onClick={() => inputRef.current?.click()}>
-          {formatMessage(messages.chooseFile)}
-        </Button>
-      )}
-      {uppy && (
-        <input
-          accept=".srt,.vtt"
-          ref={inputRef}
-          type="file"
-          hidden
-          onChange={e => {
-            const files = Array.from(e.target.files || [])
-            if (files.length > 0) {
-              uppy.resetProgress()
-            }
-            files.forEach(file => {
-              try {
-                uppy.addFile({
-                  source: 'file input',
-                  name: file.name,
-                  type: file.type,
-                  data: file,
-                })
-              } catch (err: any) {
-                if (err.isRestriction) {
-                  // handle restrictions
-                  alert('Restriction error:' + err)
-                } else {
-                  // handle other errors
-                  console.error(err)
-                }
-              }
-            })
+      {languageCode && (
+        <Upload
+          accept=".vtt"
+          customRequest={async ({ file, onSuccess, onError }) => {
+            const url = videoUrl.includes('output')
+              ? `${videoUrl.split('output')[0]}captions/${languageCode}.${last(file.name.split('.'))}`
+              : `${videoUrl.split('manifest')[0]}text/${languageCode}.${last(file.name.split('.'))}`
+            const key = new URL(url).pathname.substring(1)
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('key', key)
+            await axios
+              .post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/captions`, formData, {
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                  'Content-Type': 'multipart/form-data',
+                },
+              })
+              .then(res => {
+                onSuccess(res, file)
+                refetchCaption()
+              })
+              .catch(error => onError(error))
           }}
-        />
+        >
+          <Button block>{formatMessage(messages.chooseFile)}</Button>
+        </Upload>
       )}
-      {uppy && <StatusBar uppy={uppy} hideUploadButton showProgressDetails />}
     </Modal>
   )
 }
 
 export const ReUploadButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onFinish?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onFinish, ...buttonProps }) => {
+  { videoId: string; videoName: string; isExternalLink: boolean; onFinish?: () => void } & ButtonProps
+> = ({ videoId, videoName, isExternalLink, onFinish, ...buttonProps }) => {
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
+  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
   const uppy = useUppy(() => {
-    const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/stream`
-    return new Uppy({
-      autoProceed: true,
-      restrictions: {
-        maxNumberOfFiles: 1,
-        allowedFileTypes: ['video/*'],
-        maxTotalFileSize: 10 * 1024 * 1024 * 1024, // limited 10GB at once
-      },
-    })
-      .use(Tus, {
-        removeFingerprintOnSuccess: true,
-        chunkSize: 10 * 1024 * 1024, // 10MB
-        endpoint: tusEndpoint,
-        onBeforeRequest: async req => {
-          if (req.getURL() === tusEndpoint) {
-            req.setHeader('Authorization', `bearer ${authToken}`)
-          }
-        },
-      })
-      .on('upload', () => setUploadState('uploading'))
-      .on('complete', () => {
+    return configAwsS3MultipartUppy({
+      authToken: authToken || '',
+      appId,
+      currentMemberId: currentMemberId || '',
+      onCompleted: () => {
         onFinish?.()
         setUploadState('upload-success')
-      })
+      },
+      onUpload: () => {
+        setUploadState('uploading')
+      },
+      autoProceed: true,
+      maxNumberOfFiles: 1,
+      origin: { id: videoId, name: videoName },
+    })
   })
   return (
     <>
       <Button
         size="small"
-        disabled={true || uploadState === 'uploading' || isExternalLink} //TODO: should update  to aws
+        disabled={uploadState === 'uploading' || isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}

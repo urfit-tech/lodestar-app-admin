@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import { first, last } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useContext, useEffect, useRef } from 'react'
 import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js'
@@ -6,6 +6,7 @@ import 'video.js/dist/video-js.min.css'
 import 'videojs-contrib-quality-levels'
 import 'videojs-hls-quality-selector'
 import LocaleContext from '../../contexts/LocaleContext'
+import { useCaptions } from '../../hooks/data'
 
 const isMobile: boolean = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent)
 
@@ -14,19 +15,13 @@ const isIOS = /(iPhone|iPad|iPod|iOS)/i.test(window.navigator.userAgent)
 type VideoJsPlayerProps = {
   loading?: boolean
   sources: { src: string; type: string; withCredentials?: boolean }[]
+  captions: string[]
+  onChangePlayerInstance: (instance: VideoJsPlayer) => void
 }
 const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
-  ;(videojs as any).Vhs.xhr.beforeRequest = (options: videojs.XhrOptions) => {
-    const signed = Cookies.get('cloudfront-signed')
-
-    console.log(props.sources)
-
-    console.log(signed)
-    if (options.uri && options.uri.includes('kolable.com/')) options.uri = options.uri + signed
-    return options
-  }
   const playerRef = useRef<VideoJsPlayer | null>(null)
   const { currentLocale } = useContext(LocaleContext)
+  const { captionLanguages } = useCaptions()
   const { enabledModules } = useApp()
   const videoOptions: VideoJsPlayerOptions = {
     html5: {
@@ -84,8 +79,18 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
         : undefined,
   }
 
+  const remoteTrackOptionFormatter = (src: string): videojs.TextTrackOptions => {
+    const filename = last(src.split('/'))
+    const currentLang = captionLanguages.find(setting => setting.srclang === first(filename?.split('.')))
+    return { src, kind: 'subtitles', ...currentLang }
+  }
+
   const setCaption = (player: VideoJsPlayer) => {
     const textTracks = player?.textTracks() ?? []
+    props.captions?.forEach(src => {
+      const textTrackOption = remoteTrackOptionFormatter(src)
+      player.addRemoteTextTrack(textTrackOption, false)
+    })
     for (let i = 0; i < textTracks.length; i++) {
       let track = textTracks[i]
       if (track.kind === 'captions' || track.kind === 'subtitles') {
@@ -115,8 +120,6 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
     }
   }, [playerRef])
 
-  //   if (props.loading) return <spinner width="100%" height="400px" />
-
   return (
     <div>
       <video
@@ -126,6 +129,7 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
         ref={ref => {
           if (ref && !playerRef.current && Number(videoOptions.sources?.length) > 0) {
             playerRef.current = videojs(ref, videoOptions, function () {})
+            props.onChangePlayerInstance(playerRef.current)
           }
         }}
         onLoadedData={handleOnLoadedData}
