@@ -8,6 +8,7 @@ import { handleError } from '../../helpers'
 import hasura from '../../hasura'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { reportMessages } from './translations'
+import { useMutateReport } from '../../hooks/report'
 
 type FieldProps = {
   title: string
@@ -22,9 +23,9 @@ const ReportAdminModal: React.FC<
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, ...props }) => {
   const [loading, setLoading] = useState(false)
-  const [insertReport] = useMutation<hasura.INSERT_REPORT, hasura.INSERT_REPORTVariables>(INSERT_REPORT)
+  const { insertReport } = useMutateReport()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
@@ -139,20 +140,14 @@ const ReportAdminModal: React.FC<
         >
           <Input />
         </Form.Item>
+        {enabledModules.permission_group ? (
+          <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermission">
+            <Input />
+          </Form.Item>
+        ) : null}
       </Form>
     </AdminModal>
   )
 }
-
-const INSERT_REPORT = gql`
-  mutation INSERT_REPORT($data: [report_insert_input!]!) {
-    insert_report(
-      objects: $data
-      on_conflict: { constraint: report_pkey, update_columns: [title, options, app_id, type] }
-    ) {
-      affected_rows
-    }
-  }
-`
 
 export default ReportAdminModal

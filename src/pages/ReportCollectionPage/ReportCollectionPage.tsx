@@ -2,6 +2,8 @@ import { AreaChartOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/ic
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -11,6 +13,7 @@ import ReportAdminModal from '../../components/report/ReportAdminModal'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ReportProps } from '../../types/report'
+import ForbiddenPage from '../ForbiddenPage'
 import pageMessages from '../translation'
 
 const StyledTitle = styled.span`
@@ -20,6 +23,8 @@ const StyledTitle = styled.span`
 
 const ReportCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
+  const { enabledModules } = useApp()
   const { reports, loadingReports, refetchReports } = useReportCollection()
   const [deleteReport] = useMutation<hasura.DELETE_REPORT, hasura.DELETE_REPORTVariables>(DELETE_REPORT)
   const getReportOptions = (report: ReportProps) => {
@@ -36,6 +41,7 @@ const ReportCollectionPage: React.FC = () => {
   const onCellClick = (record: ReportProps) => {
     return {
       onClick: () => {
+        // check permission
         window.open(`${process.env.PUBLIC_URL}/report/${record.id}`)
       },
     }
@@ -65,7 +71,7 @@ const ReportCollectionPage: React.FC = () => {
     },
     {
       dataIndex: 'options',
-      width: '45%',
+      width: enabledModules.permission_group ? '25%' : '45%',
       title: `${formatMessage(pageMessages.ReportCollectionPage.options)}`,
       render: (text, record, index) => (
         <div>
@@ -73,6 +79,17 @@ const ReportCollectionPage: React.FC = () => {
         </div>
       ),
       onCell: onCellClick,
+    },
+    {
+      dataIndex: 'viewingPermission',
+      width: '20%',
+      title: `${formatMessage(pageMessages.ReportCollectionPage.viewingPermission)}`,
+      render: (text, record, index) =>
+        enabledModules.permission_group ? (
+          <div>
+            <StyledTitle className="mr-2">{/* {record.viewingPermission} */}</StyledTitle>
+          </div>
+        ) : null,
     },
     {
       width: '5%',
@@ -100,6 +117,9 @@ const ReportCollectionPage: React.FC = () => {
       ),
     },
   ]
+
+  if (!enabledModules.report || (!permissions.REPORT_ADMIN && !permissions.REPORT_VIEW)) return <ForbiddenPage />
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -143,6 +163,10 @@ const useReportCollection = () => {
           title
           type
           options
+          report_permission_groups {
+            id
+            permission_group_id
+          }
         }
       }
     `,

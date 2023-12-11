@@ -504,6 +504,7 @@ const pageMessages = {
     title: { id: 'page.ReportCollectionPage.title', defaultMessage: '報表名稱' },
     type: { id: 'page.ReportCollectionPage.type', defaultMessage: '種類' },
     options: { id: 'page.ReportCollectionPage.options', defaultMessage: '報表設定' },
+    viewingPermission: { id: 'page.ReportCollectionPage.viewingPermission', defaultMessage: '觀看權限' },
   }),
 }
 

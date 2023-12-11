@@ -7,5 +7,6 @@ export const reportMessages = {
     title: { id: 'reportMessages.reportMessages.title', defaultMessage: '報表名稱' },
     type: { id: 'reportMessages.reportMessages.type', defaultMessage: '種類' },
     setting: { id: 'reportMessages.reportMessages.setting', defaultMessage: '報表設定' },
+    viewingPermission: { id: 'reportMessages.reportMessages.viewingPermission', defaultMessage: '觀看權限' },
   }),
 }
