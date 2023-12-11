@@ -16,7 +16,6 @@ import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { configAwsS3MultipartUppy } from '../../pages/MediaLibraryPage/MediaLibraryPage'
 import { Attachment, UploadState } from '../../types/general'
-import CloudflareVideoPlayer from './CloudflareVideoPlayer'
 import VideoPlayer from './VidoePlayer'
 
 const messages = defineMessages({
@@ -202,7 +201,7 @@ export const PreviewButton: React.VFC<
           ) : videoUrl ? (
             <VideoPlayer sources={sources} captions={captions} />
           ) : (
-            <CloudflareVideoPlayer videoId={videoId} width="100%" />
+            <div>error when play video</div>
           ))}
       </Modal>
       <Button
