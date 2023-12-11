@@ -298,9 +298,9 @@ const useProgramTimetable = (memberId: string) => {
     hasura.UPDATE_PROGRAM_TIMETABLEVariables
   >(UPDATE_PROGRAM_TIMETABLE)
   const { data, refetch: refetchProgramTimetable } = useQuery<
-    hasura.GET_PROGRAM_TIMETABLE,
-    hasura.GET_PROGRAM_TIMETABLEVariables
-  >(GET_PROGRAM_TIMETABLE, {
+    hasura.GetProgramTimetable,
+    hasura.GetProgramTimetableVariables
+  >(GetProgramTimetable, {
     variables: {
       memberId,
     },
@@ -312,7 +312,7 @@ const useProgramTimetable = (memberId: string) => {
         id: p.id,
         title: p.title,
         categories: p.program_categories.map(pc => pc.category.name),
-        coins: p.program_plans[0].list_price,
+        coins: p.program_plans[0]?.list_price || 0,
         position: 0,
       })) || [],
     [data],
@@ -383,12 +383,20 @@ const useProgramTimetable = (memberId: string) => {
   }
 }
 
-const GET_PROGRAM_TIMETABLE = gql`
-  query GET_PROGRAM_TIMETABLE($memberId: String!) {
-    program(where: { published_at: { _is_null: false }, program_plans: { currency_id: { _eq: "LSC" } } }) {
+const GetProgramTimetable = gql`
+  query GetProgramTimetable($memberId: String!) {
+    program(
+      where: {
+        published_at: { _is_null: false }
+        program_plans: { currency_id: { _eq: "LSC" }, period_type: { _eq: "Y" }, period_amount: { _eq: "1" } }
+      }
+    ) {
       id
       title
-      program_plans(order_by: [{ list_price: asc }]) {
+      program_plans(
+        where: { period_type: { _eq: "Y" }, period_amount: { _eq: "1" } }
+        order_by: [{ list_price: asc }]
+      ) {
         list_price
       }
       program_package_programs(
