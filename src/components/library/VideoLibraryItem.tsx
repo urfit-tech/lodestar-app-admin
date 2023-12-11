@@ -159,7 +159,7 @@ export const PreviewButton: React.VFC<
         .post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
           {
-            url: `${captionsPath}*`,
+            url: `${captionsPath}`,
           },
           {
             headers: {
@@ -181,7 +181,7 @@ export const PreviewButton: React.VFC<
               setCaptions(signedUrls)
             })
         })
-        // .catch(error => setError(error.toString()))
+        .catch(error => console.log(error))
         .finally(() => setLoading(false))
     }
   }, [isModalVisible, isExternalLink, videoUrl])
