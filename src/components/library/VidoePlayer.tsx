@@ -26,14 +26,14 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
   const videoOptions: VideoJsPlayerOptions = {
     html5: {
       vhs: {
-        overrideNative: !videojs.browser.IS_SAFARI,
+        overrideNative: true,
         limitRenditionByPlayerDimensions: false,
         useBandwidthFromLocalStorage: true,
         useNetworkInformationApi: true,
       },
-      nativeTextTracks: videojs.browser.IS_SAFARI,
-      nativeAudioTracks: videojs.browser.IS_SAFARI,
-      nativeVideoTracks: videojs.browser.IS_SAFARI,
+      nativeTextTracks: false,
+      nativeAudioTracks: false,
+      nativeVideoTracks: false,
     },
     language: currentLocale,
     playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 4],
@@ -82,7 +82,7 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
   const remoteTrackOptionFormatter = (src: string): videojs.TextTrackOptions => {
     const filename = last(src.split('/'))
     const currentLang = captionLanguages.find(setting => setting.srclang === first(filename?.split('.')))
-    return { src, kind: 'subtitles', ...currentLang }
+    return { src, kind: 'subtitles', default: true, ...currentLang }
   }
 
   const setCaption = (player: VideoJsPlayer) => {
