@@ -8,7 +8,9 @@ export const useMutateReport = () => {
         objects: $data
         on_conflict: { constraint: report_pkey, update_columns: [title, options, app_id, type] }
       ) {
-        affected_rows
+        returning {
+          id
+        }
       }
     }
   `)
@@ -22,8 +24,8 @@ export const useMutateReportPermissionGroup = () => {
     hasura.InsertReportPermissionGroup,
     hasura.InsertReportPermissionGroupVariables
   >(gql`
-    mutation InsertReportPermissionGroup($report_permission_group: [report_permission_group_insert_input!]!) {
-      insert_report_permission_group(objects: $report_permission_group) {
+    mutation InsertReportPermissionGroup($data: [report_permission_group_insert_input!]!) {
+      insert_report_permission_group(objects: $data) {
         affected_rows
       }
     }

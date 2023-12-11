@@ -1,19 +1,20 @@
-import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import hasura from '../../hasura'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { reportMessages } from './translations'
-import { useMutateReport } from '../../hooks/report'
+import { useMutateReport, useMutateReportPermissionGroup } from '../../hooks/report'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 
 type FieldProps = {
   title: string
   type: string
   options: string
+  viewPermissions?: string[]
 }
 
 const ReportAdminModal: React.FC<
@@ -24,8 +25,10 @@ const ReportAdminModal: React.FC<
 > = ({ report, onRefetch, onCancel, ...props }) => {
   const [loading, setLoading] = useState(false)
   const { insertReport } = useMutateReport()
+  const { insertReportPermissionGroup } = useMutateReportPermissionGroup()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
@@ -63,6 +66,17 @@ const ReportAdminModal: React.FC<
           variables: {
             data: [insertReportData],
           },
+        }).then(async ({ data }) => {
+          insertReportPermissionGroup({
+            variables: {
+              data:
+                values.viewPermissions?.map(permissionGroupId => ({
+                  report_id: data?.insert_report?.returning[0].id,
+                  permission_group_id: permissionGroupId,
+                  editor_id: currentMemberId,
+                })) ?? [],
+            },
+          })
         })
         onRefetch?.()
         onSuccess?.()
@@ -141,8 +155,8 @@ const ReportAdminModal: React.FC<
           <Input />
         </Form.Item>
         {enabledModules.permission_group ? (
-          <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermission">
-            <Input />
+          <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermissions">
+            <PermissionGroupSelector />
           </Form.Item>
         ) : null}
       </Form>
