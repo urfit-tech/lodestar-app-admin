@@ -6,16 +6,18 @@ import { Button, List, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
+import Cookies from 'js-cookie'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
-import VideoPlayer from './VideoPlayer'
+import CloudflareVideoPlayer from './CloudflareVideoPlayer'
+import VideoPlayer from './VidoePlayer'
 
 const messages = defineMessages({
   preview: { id: 'program.ui.preview', defaultMessage: '預覽' },
@@ -72,40 +74,24 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-export const DeleteButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
+export const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
+  videoId,
+  onDelete,
+  ...buttonProps
+}) => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
   const { deleteAttachments } = useMutateAttachment()
 
   const handleClick = () => {
     if (window.confirm('This action cannot be reverted.')) {
       setDeleting(true)
-      if (isExternalLink) {
-        deleteAttachments({ variables: { attachmentIds: [videoId] } })
-          .then(() => {
-            onDelete?.()
-          })
-          .catch(handleError)
-          .finally(() => setDeleting(false))
-      } else {
-        axios
-          .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
-            headers: {
-              Authorization: `bearer ${authToken}`,
-            },
-          })
-          .then(({ data: { code, error } }) => {
-            if (code === 'SUCCESS') {
-              onDelete?.()
-            } else {
-              alert(error)
-            }
-          })
-          .finally(() => setDeleting(false))
-      }
+      deleteAttachments({ variables: { attachmentIds: [videoId] } })
+        .then(() => {
+          onDelete?.()
+        })
+        .catch(handleError)
+        .finally(() => setDeleting(false))
     }
   }
   return (
@@ -113,7 +99,6 @@ export const DeleteButton: React.VFC<
       <Button
         title={formatMessage(messages.delete)}
         size="small"
-        disabled={true} //TODO: fix caption upload to aws
         loading={deleting}
         danger
         onClick={handleClick}
@@ -127,22 +112,62 @@ export const DeleteButton: React.VFC<
 export const PreviewButton: React.VFC<
   { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
 > = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
+  const { authToken } = useAuth()
+  const [loading, setLoading] = useState(true)
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
+
+  useEffect(() => {
+    if (isModalVisible) {
+      if (isExternalLink || !videoUrl) {
+        setLoading(false)
+        return
+      }
+
+      const url = videoUrl.includes('hls') ? `${videoUrl.split('hls')[0]}*` : `${videoUrl.split('manifest')[0]}*`
+      axios
+        .post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
+          {
+            url,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        .then(({ data }) => {
+          const url = data.result
+          Cookies.set('cloudfront-signed', new URL(url).search, { expires: 1 / 12 })
+        })
+        .catch(error => console.log(error.toString()))
+        .finally(() => setLoading(false))
+    }
+  }, [isModalVisible, isExternalLink, videoUrl])
   return (
     <>
-      <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
-        {isExternalLink ? (
-          <ReactPlayer url={videoUrl} width="100%" controls />
-        ) : (
-          <VideoPlayer videoId={videoId} width="100%" />
-        )}
+      <Modal
+        title={title}
+        footer={null}
+        visible={isModalVisible}
+        onCancel={() => {
+          setIsModalVisible(false)
+        }}
+      >
+        {!loading &&
+          (isExternalLink ? (
+            <ReactPlayer url={videoUrl} width="100%" controls />
+          ) : videoUrl ? (
+            <VideoPlayer sources={[{ type: 'application/x-mpegURL', src: videoUrl }]} />
+          ) : (
+            <CloudflareVideoPlayer videoId={videoId} width="100%" />
+          ))}
       </Modal>
       <Button
         size="small"
         title={formatMessage(commonMessages.ui.preview)}
         type="primary"
-        disabled={true} //TODO: fix caption upload to aws
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
         icon={<EyeOutlined />}
