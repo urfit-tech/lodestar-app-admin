@@ -16,6 +16,7 @@ type VideoJsPlayerProps = {
   loading?: boolean
   sources: { src: string; type: string; withCredentials?: boolean }[]
   captions: string[]
+  onChangePlayerInstance: (instance: VideoJsPlayer) => void
 }
 const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
   const playerRef = useRef<VideoJsPlayer | null>(null)
@@ -128,6 +129,7 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
         ref={ref => {
           if (ref && !playerRef.current && Number(videoOptions.sources?.length) > 0) {
             playerRef.current = videojs(ref, videoOptions, function () {})
+            props.onChangePlayerInstance(playerRef.current)
           }
         }}
         onLoadedData={handleOnLoadedData}

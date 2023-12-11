@@ -12,6 +12,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
+import { VideoJsPlayer } from 'video.js'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { configAwsS3MultipartUppy } from '../../pages/MediaLibraryPage/MediaLibraryPage'
@@ -117,6 +118,7 @@ export const PreviewButton: React.VFC<
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [sources, setSources] = useState<{ src: string; type: string }[]>([])
   const [captions, setCaptions] = useState<string[]>([])
+  const [playerInstance, setPlayerInstance] = useState<VideoJsPlayer | null>(null)
 
   useEffect(() => {
     if (isModalVisible) {
@@ -184,6 +186,7 @@ export const PreviewButton: React.VFC<
         .finally(() => setLoading(false))
     }
   }, [isModalVisible, isExternalLink, videoUrl])
+
   return (
     <>
       <Modal
@@ -193,13 +196,22 @@ export const PreviewButton: React.VFC<
         onCancel={() => {
           setIsModalVisible(false)
           setLoading(true)
+          if (playerInstance) {
+            playerInstance.dispose()
+          }
         }}
       >
         {!loading &&
           (isExternalLink ? (
             <ReactPlayer url={videoUrl} width="100%" controls />
           ) : videoUrl ? (
-            <VideoPlayer sources={sources} captions={captions} />
+            <VideoPlayer
+              sources={sources}
+              captions={captions}
+              onChangePlayerInstance={(instance: VideoJsPlayer) => {
+                setPlayerInstance(instance)
+              }}
+            />
           ) : (
             <div>error when play video</div>
           ))}
