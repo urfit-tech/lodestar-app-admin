@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect, useCallback } from 'react';
-import { ActivityAdminProps } from '../../types/activity';
+
 
 interface ActivityDisplayProps {
   id: string;
@@ -51,7 +51,6 @@ const fetchActivitiesApi = (
     }
   }).then(response => {
     response.data.activities = response.data.activities || [];
-    console.log('response.data', response.data)
     return response.data;
   });
 };
@@ -63,6 +62,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
   const [currentTabActivityCount, setCurrentTabActivityCount] = useState<number>(0);
   const [offset, setOffset] = useState<number>(0);
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false);
+  const [showLoadMoreButton , setShowLoadMoreButton] = useState<boolean>(false)
 
   const limit = 20;
 
@@ -110,15 +110,18 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
           return timeB - timeA;
         });
 
-        console.log('updatedActivities',updatedActivities)
+        setShowLoadMoreButton(updatedActivities.length !== data.totalCount);
       
         return updatedActivities;
       });
       
-      setCurrentTabActivityCount(() => {
-        console.log(data.totalCount)
-        return data.totalCount
-      });
+      if (!isLoadMore && !categoryId) {
+        setCurrentTabActivityCount(() => {
+          console.log(data.totalCount)
+          return data.totalCount
+        });
+      }
+  
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred'));
     } finally {
@@ -144,7 +147,9 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
     errorActivities: error, 
     activities, 
     currentTabActivityCount, 
-    loadMoreActivities 
+    loadMoreActivities ,
+    showLoadMoreButton
+
   };
 };
 

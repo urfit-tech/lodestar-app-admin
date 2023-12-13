@@ -70,22 +70,18 @@ const ActivityCollectionTabs: React.FC<{
       scenario: currentTab,
     }
   }, [currentTab, memberId, appId])
-  // 'Holding' | 'Finished' | 'Draft' | 'PrivateHolding'
 
   const basicCondition = useMemo(() => {
     return adminCondition
   }, [adminCondition])
 
-  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
-    basicCondition,
-    selectedCategoryId,
-  )
+  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, showLoadMoreButton } =
+    useActivityCollection(basicCondition, selectedCategoryId)
   const { categories } = useCategoryCollection(condition[currentTab])
 
   useEffect(() => {
     if (!loadingActivities && currentTabActivityCount !== undefined) {
       setCounts(prevCounts => {
-        console.log('prevCounts', prevCounts)
         return {
           ...prevCounts,
           [currentTab]: currentTabActivityCount,
@@ -169,7 +165,7 @@ const ActivityCollectionTabs: React.FC<{
                 ))
               )}
             </div>
-            {loadMoreActivities && (
+            {showLoadMoreButton && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
