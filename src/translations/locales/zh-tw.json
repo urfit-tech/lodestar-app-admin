@@ -1663,6 +1663,7 @@
   "member.ui.switchTable": "切換列表模式",
   "member.ui.newTask":"新增待辦",
   "member.ui.editTask":"編輯待辦",
+  "member.ui.memberPage": "學員主頁",
   "member.status.priorityHigh":"High",
   "member.status.priorityMedium":"Medium",
   "member.status.priorityLow":"Low",
