@@ -26,14 +26,14 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
   const videoOptions: VideoJsPlayerOptions = {
     html5: {
       vhs: {
-        overrideNative: true,
+        overrideNative: !(isMobile && isIOS),
         limitRenditionByPlayerDimensions: false,
         useBandwidthFromLocalStorage: true,
         useNetworkInformationApi: true,
       },
-      nativeTextTracks: false,
-      nativeAudioTracks: false,
-      nativeVideoTracks: false,
+      nativeTextTracks: isMobile && isIOS,
+      nativeAudioTracks: isMobile && isIOS,
+      nativeVideoTracks: isMobile && isIOS,
     },
     language: currentLocale,
     playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 4],
@@ -93,7 +93,11 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
     })
     for (let i = 0; i < textTracks.length; i++) {
       let track = textTracks[i]
-      if (track.kind === 'captions' || track.kind === 'subtitles') {
+      if (track.kind === 'captions') {
+        track.mode = 'hidden'
+        break
+      }
+      if (track.kind === 'subtitles') {
         track.mode = 'showing'
         break
       }
@@ -128,11 +132,14 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
         className="video-js vjs-big-play-centered"
         ref={ref => {
           if (ref && !playerRef.current && Number(videoOptions.sources?.length) > 0) {
-            playerRef.current = videojs(ref, videoOptions, function () {})
+            playerRef.current = videojs(ref, videoOptions, function () {
+              this.on('loadeddata', () => {
+                setCaption(playerRef.current as VideoJsPlayer)
+              })
+            })
             props.onChangePlayerInstance(playerRef.current)
           }
         }}
-        onLoadedData={handleOnLoadedData}
         autoPlay
         controls
       />
