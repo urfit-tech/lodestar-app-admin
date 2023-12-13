@@ -1,6 +1,6 @@
 import { Button, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
@@ -31,7 +31,7 @@ const ActivityCollectionTabs: React.FC<{
   memberId: string | null
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const [currentTab, setCurrentTab] = useState<Tab>('holding')
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -58,41 +58,23 @@ const ActivityCollectionTabs: React.FC<{
       activity_during_period: { ended_at: { _gt: 'now()' } },
     },
   }
-  const { loading, id: appId, enabledModules, settings } = useApp()
 
-  const adminCondition = {
-    holding: {
+  const adminCondition = useMemo(() => {
+    const baseCondition = {
       organizerId: memberId,
-      isPrivate: false,
-      publishedAtNotNull: true,
-      activityEndedAfterNow: true,
       appId: appId,
-    },
-    finished: {
-      organizerId: memberId,
-      publishedAtNotNull: true,
-      activityEndedBeforeNow: true,
-      appId: appId,
-    },
-    draft: {
-      organizerId: memberId,
-      publishedAtIsNull: true,
-      activityEndedIsNull: true,
-      appId: appId,
-    },
-    privateHolding: {
-      organizerId: memberId,
-      isPrivate: true,
-      activityEndedAfterNow: true,
-      appId: appId,
-    },
-  }
+    }
+
+    return {
+      ...baseCondition,
+      scenario: currentTab,
+    }
+  }, [currentTab, memberId, appId])
+  // 'Holding' | 'Finished' | 'Draft' | 'PrivateHolding'
 
   const basicCondition = useMemo(() => {
-    return {
-      ...adminCondition[currentTab],
-    }
-  }, [currentTab, memberId])
+    return adminCondition
+  }, [adminCondition])
 
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
     basicCondition,
@@ -100,12 +82,17 @@ const ActivityCollectionTabs: React.FC<{
   )
   const { categories } = useCategoryCollection(condition[currentTab])
 
-  if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
-    setCounts({
-      ...counts,
-      [currentTab]: currentTabActivityCount,
-    })
-  }
+  useEffect(() => {
+    if (!loadingActivities && currentTabActivityCount !== undefined) {
+      setCounts(prevCounts => {
+        console.log('prevCounts', prevCounts)
+        return {
+          ...prevCounts,
+          [currentTab]: currentTabActivityCount,
+        }
+      })
+    }
+  }, [loadingActivities, currentTabActivityCount, currentTab])
 
   const tabContents = [
     {
@@ -140,7 +127,9 @@ const ActivityCollectionTabs: React.FC<{
         .map(tabContent => (
           <Tabs.TabPane
             key={tabContent.key}
-            tab={`${tabContent.tab} ${counts[tabContent.key] ? `(${counts[tabContent.key]})` : ''}`}
+            tab={`${tabContent.tab} ${
+              !loadingActivities && counts[tabContent.key] !== undefined ? `(${counts[tabContent.key]})` : ''
+            }`}
           >
             <>
               <StyledButton
@@ -185,7 +174,6 @@ const ActivityCollectionTabs: React.FC<{
                 <Button
                   loading={loading}
                   onClick={() => {
-                    // setLoading(true)
                     loadMoreActivities()
                   }}
                 >
