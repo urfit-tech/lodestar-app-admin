@@ -1003,7 +1003,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
 export const useCaptions = (videoAttachmentId?: string) => {
   const captionLanguages = [
     { srclang: 'zh', language: 'Mandarin Chinese', label: '中文' },
-    { srclang: 'en', language: 'English', label: 'English' },
+    { srclang: 'en', language: ' English', label: 'English' },
     { srclang: 'ko', language: 'Korean', label: '조선말' },
     { srclang: 'ja', language: 'Japanese', label: '日本語' },
     { srclang: 'hi', language: 'Hindi', label: 'हिन्दी' },

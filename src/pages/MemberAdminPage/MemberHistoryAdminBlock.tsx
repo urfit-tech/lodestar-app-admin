@@ -15,37 +15,7 @@ const MemberHistoryAdminBlock: React.VFC<{ memberId: string }> = ({ memberId }) 
       endedAt: dateRange?.[1],
     },
   })
-
-  const isValidLog = (log: ProgramContentLog) => log.ended_at - log.started_at > 1
-
-  // sort Logs desc first
-  const sortedLogs = (data?.program_content_log || [])
-    .filter(isValidLog)
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-
-  type ProgramContentLog = hasura.GET_HISTORY['program_content_log'][number]
-
-  const mergedLogs = sortedLogs
-    .reduce<ProgramContentLog[]>((accumulatedLogs, currentLog) => {
-      const lastLog = accumulatedLogs[accumulatedLogs.length - 1]
-
-      if (lastLog && lastLog.program_content.id === currentLog.program_content.id) {
-        // Merge consecutive logs with the same program_content ID.
-        // Update the last log to have the earliest 'started_at' and the latest 'ended_at'.
-        const updatedLog = {
-          ...lastLog,
-          started_at: Math.min(lastLog.started_at, currentLog.started_at),
-          ended_at: Math.max(lastLog.ended_at, currentLog.ended_at),
-        }
-        accumulatedLogs[accumulatedLogs.length - 1] = updatedLog
-      } else {
-        // If not consecutive, add the current log as a new entry.
-        accumulatedLogs.push({ ...currentLog })
-      }
-      return accumulatedLogs
-    }, [])
-    .filter(isValidLog)
-
+  const logs = data?.program_content_log.filter(v => v.ended_at - v.started_at > 1) || []
   return (
     <>
       <DatePicker.RangePicker
@@ -60,11 +30,11 @@ const MemberHistoryAdminBlock: React.VFC<{ memberId: string }> = ({ memberId }) 
         onChange={dates => setDateRange(dates)}
       />
       <AdminBlock>
-        {!loading && mergedLogs.length === 0 ? (
+        {!loading && logs.length === 0 ? (
           <div>No history.</div>
         ) : (
           <Timeline pending={loading ? 'Loading...' : null}>
-            {mergedLogs.map(v => (
+            {logs.map(v => (
               <Timeline.Item key={v.id}>
                 <span className="mr-2">{moment(v.created_at).format('MM-DD HH:mm')}</span>
                 <div className="row">
@@ -98,16 +68,12 @@ const MemberHistoryAdminBlock: React.VFC<{ memberId: string }> = ({ memberId }) 
                         </a>
                       </Breadcrumb.Item>
                     </Breadcrumb>
-                    <div>
-                      {v.program_content.duration > 0
-                        ? `${Math.round(((v.ended_at - v.started_at) / v.program_content.duration) * 100)}% watched`
-                        : '0% watched'}
-                    </div>
+                    <div>{Math.round(((v.ended_at - v.started_at) / v.program_content.duration) * 100)}% watched</div>
                   </div>
                   <div className="col-12 col-lg-6">
                     <Slider
                       range
-                      max={Math.round(v.program_content.duration)}
+                      max={v.program_content.duration}
                       defaultValue={[v.started_at, v.ended_at]}
                       disabled
                       tipFormatter={v => v && new Date(v * 1000).toISOString().substr(11, 8)}
