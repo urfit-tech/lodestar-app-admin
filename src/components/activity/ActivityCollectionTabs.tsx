@@ -76,8 +76,10 @@ const ActivityCollectionTabs: React.FC<{
     return adminCondition
   }, [adminCondition])
 
-  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, showLoadMoreButton } =
-    useActivityCollection(basicCondition, selectedCategoryId)
+  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
+    basicCondition,
+    selectedCategoryId,
+  )
   const { categories } = useCategoryCollection(condition[currentTab])
 
   useEffect(() => {
