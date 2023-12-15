@@ -63,6 +63,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
   const [offset, setOffset] = useState<number>(0);
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false);
   const [showLoadMoreButton , setShowLoadMoreButton] = useState<boolean>(false)
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true); // 新添加的状态变量
 
   const limit = 20;
 
@@ -79,13 +80,15 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
 
   useEffect(() => {
     setOffset(0);
+    setIsInitialLoad(true); 
   }, [basicCondition, categoryId]);
 
 
-  const fetchActivities = useCallback(async () => {
-    setLoading(true);
+  const fetchActivities = useCallback(async (isLoadMoreCall = false, newOffset = 0) => {
+    console.log("#R########2")
+    console.log(limit, newOffset)
     try {
-      const data = await fetchActivitiesApi(basicCondition, categoryId, limit, offset);
+      const data = await fetchActivitiesApi(basicCondition, categoryId, limit, newOffset);
 
       console.log('tranformActivityData', data )
 
@@ -95,7 +98,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
       setActivities(prevActivities => {
         let updatedActivities;
       
-        if (isLoadMore) {
+        if (isLoadMoreCall) {
           const combinedActivities = [...prevActivities, ...tranformActivityData];
           updatedActivities = Array.from(new Set(combinedActivities.map(a => a.id)))
             .map(id => combinedActivities.find(a => a.id === id))
@@ -131,16 +134,37 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
   }, [basicCondition, categoryId, offset, limit]);
 
   useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
+    if (isInitialLoad) {
+      setLoading(true);
+      fetchActivities()
+        .then(() => setLoading(false))
+        .catch(error => {
+          setError(error instanceof Error ? error : new Error('An unknown error occurred'));
+          setLoading(false);
+          setIsLoadMore(false);
+        });
+    }
+    setIsInitialLoad(true);
+  }, [basicCondition, categoryId, offset, limit]);
 
-  const loadMoreActivities = useCallback(() => {
-    setIsLoadMore(true);
-    
-    setOffset((prevOffset) => {
-      return prevOffset + limit
+  const loadMoreActivities = showLoadMoreButton ? () => {
+    return new Promise<void>((resolve, reject) => {
+      const newOffset = offset + limit;
+      setIsLoadMore(true);
+      setIsInitialLoad(false);
+      setOffset(newOffset);
+      fetchActivities(true, newOffset) 
+        .then(() => {
+          setIsLoadMore(false);
+          resolve();
+        })
+        .catch(error => {
+          setError(error instanceof Error ? error : new Error('An unknown error occurred'));
+          setIsLoadMore(false);
+          reject(error);
+        });
     });
-  }, [limit]);
+  } : undefined;
 
   return { 
     loadingActivities: loading, 

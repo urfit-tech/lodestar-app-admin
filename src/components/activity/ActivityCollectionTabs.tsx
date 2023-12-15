@@ -36,6 +36,7 @@ const ActivityCollectionTabs: React.FC<{
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
+
   const condition = {
     holding: {
       organizer_id: { _eq: memberId },
@@ -165,12 +166,13 @@ const ActivityCollectionTabs: React.FC<{
                 ))
               )}
             </div>
-            {showLoadMoreButton && (
+            {loadMoreActivities && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
                   onClick={() => {
-                    loadMoreActivities()
+                    setLoading(true)
+                    loadMoreActivities().then(() => setLoading(false))
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
