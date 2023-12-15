@@ -7,6 +7,7 @@ import {
   ActivityBasicCondition,
   FetchActivitiesResponse,
 } from "./activitiyCollectionType";
+import { useAuth } from "lodestar-app-element/src/contexts/AuthContext";
 
 enum LoadingState {
   Idle,
@@ -16,6 +17,7 @@ enum LoadingState {
 }
 
 const fetchActivitiesApi = (
+  authToken: string | null,
   basicCondition: ActivityBasicCondition,
   categoryId: string | null,
   limit: number,
@@ -25,6 +27,9 @@ const fetchActivitiesApi = (
     .get<FetchActivitiesResponse>(
       `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/activity/activity_collection`,
       {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
         params: {
           basicCondition,
           categoryId,
@@ -43,6 +48,7 @@ const useActivityCollection = (
   basicCondition: ActivityBasicCondition,
   categoryId: string | null,
 ) => {
+  const { authToken } = useAuth(); 
   const [activityCollection, setActivityCollection] =
     useState<ActivityCollectionState>({
       activities: [],
@@ -84,6 +90,7 @@ const useActivityCollection = (
 
       try {
         const data = await fetchActivitiesApi(
+          authToken,
           basicCondition,
           categoryId,
           limit,
