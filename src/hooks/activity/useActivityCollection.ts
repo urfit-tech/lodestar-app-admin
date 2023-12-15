@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { useState, useEffect, useCallback } from 'react';
-
-
+enum LoadingState {
+  Idle,
+  InitialLoading,
+  LoadingMore,
+  None
+}
 interface ActivityDisplayProps {
   id: string;
   coverUrl: string | null;
@@ -64,6 +68,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false);
   const [showLoadMoreButton , setShowLoadMoreButton] = useState<boolean>(false)
   const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true); // 新添加的状态变量
+  const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.Idle);
 
   const limit = 20;
 
@@ -80,7 +85,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
 
   useEffect(() => {
     setOffset(0);
-    setIsInitialLoad(true); 
+    setLoadingState(LoadingState.InitialLoading);
   }, [basicCondition, categoryId]);
 
 
@@ -134,7 +139,7 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
   }, [basicCondition, categoryId, offset, limit]);
 
   useEffect(() => {
-    if (isInitialLoad) {
+    if ((loadingState === LoadingState.InitialLoading)|| (loadingState === LoadingState.Idle)) {
       setLoading(true);
       fetchActivities()
         .then(() => setLoading(false))
@@ -144,14 +149,13 @@ const useActivityCollection = (basicCondition: ActivityBasicCondition, categoryI
           setIsLoadMore(false);
         });
     }
-    setIsInitialLoad(true);
   }, [basicCondition, categoryId, offset, limit]);
 
   const loadMoreActivities = showLoadMoreButton ? () => {
     return new Promise<void>((resolve, reject) => {
       const newOffset = offset + limit;
       setIsLoadMore(true);
-      setIsInitialLoad(false);
+      setLoadingState(LoadingState.LoadingMore);
       setOffset(newOffset);
       fetchActivities(true, newOffset) 
         .then(() => {
