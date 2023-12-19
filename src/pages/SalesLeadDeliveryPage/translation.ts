@@ -40,5 +40,6 @@ export const salesLeadDeliveryPageMessages = {
     contained: { id: 'page.salesLeadDeliveryPage.contained', defaultMessage: 'contained ' },
     onlyFilter: { id: 'page.salesLeadDeliveryPage.onlyFilter', defaultMessage: 'only filter ' },
     excluded: { id: 'page.salesLeadDeliveryPage.excluded', defaultMessage: 'excluded ' },
+    closedRange: { id: 'page.salesLeadDeliveryPage.closedRange', defaultMessage: 'closed date range' },
   }),
 }
