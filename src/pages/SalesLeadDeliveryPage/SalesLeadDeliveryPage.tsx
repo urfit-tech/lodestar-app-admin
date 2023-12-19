@@ -48,6 +48,7 @@ type Filter = {
   completedLead: LeadTypeFilter
   closedLead: LeadTypeFilter
   recycledLead: LeadTypeFilter
+  closedAtRange: [Date, Date] | null
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -68,6 +69,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     completedLead: 'excluded',
     closedLead: 'excluded',
     recycledLead: 'excluded',
+    closedAtRange: null,
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -234,7 +236,6 @@ const FilterSection: React.FC<{
           </Form.Item>
         </Input.Group>
       </Form.Item>
-
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
         name="createdAtRange"
@@ -309,6 +310,14 @@ const FilterSection: React.FC<{
           </Radio>
         </Radio.Group>
       </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedRange)}
+        name="closedAtRange"
+      >
+        <DatePicker.RangePicker allowClear disabled={notCalled} />
+      </Form.Item>
+
       <Form.Item
         name="recycledLead"
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
@@ -447,12 +456,37 @@ const ConfirmSection: React.FC<{
         : {
             _is_null: filter.completedLead === 'excluded',
           },
+    _or:
+      filter.closedLead === 'contained' && filter.closedAtRange
+        ? [
+            {
+              closed_at: {
+                _gte: moment(filter.closedAtRange[0]).startOf('day'),
+                _lte: moment(filter.closedAtRange[1]).endOf('day'),
+              },
+            },
+            {
+              closed_at: {
+                _is_null: true,
+              },
+            },
+          ]
+        : undefined,
     closed_at:
-      filter.closedLead === 'contained'
-        ? undefined
-        : {
-            _is_null: filter.closedLead === 'excluded',
-          },
+      filter.closedLead === 'excluded'
+        ? {
+            _is_null: true,
+          }
+        : filter.closedLead === 'only'
+        ? filter.closedAtRange
+          ? {
+              _gte: moment(filter.closedAtRange[0]).startOf('day'),
+              _lte: moment(filter.closedAtRange[1]).endOf('day'),
+            }
+          : {
+              _is_null: false,
+            }
+        : undefined,
     recycled_at:
       filter.recycledLead === 'contained'
         ? undefined
