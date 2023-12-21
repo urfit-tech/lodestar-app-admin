@@ -288,6 +288,7 @@ const MemberContractCreationBlock: React.FC<{
                   ended_at: string | Date
                   scope: any
                   constraint: number | null
+                  coupon_plan_products: { coupon_plan_id: string; product_id: string }[]
                 }
               }
             | undefined
@@ -323,8 +324,14 @@ const MemberContractCreationBlock: React.FC<{
                         description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
                         started_at: coupon.startedAt ?? serviceStartedAt.toISOString(),
                         ended_at: coupon.endedAt ?? serviceEndedAt?.toISOString(),
-                        scope: coupon.scope,
+                        scope: coupon.scope.filter((item: string) => !item.includes('_')),
                         constraint: coupon.constraint,
+                        coupon_plan_products: coupon.scope
+                          .filter((item: string) => item.includes('_'))
+                          .map((item: string) => ({
+                            coupon_plan_id: couponPlanId,
+                            product_id: item,
+                          })),
                       },
                     }
                   : undefined,
