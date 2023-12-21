@@ -79,8 +79,13 @@ const MemberContractCreationBlock: React.FC<{
 
   const selectedCustomCoupons = flatten(
     products
-      .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
-      .map(product => product.customCoupons),
+      .filter(product => contractProducts.find(contractProduct => contractProduct.id === product.id))
+      .map(product => {
+        const productAmount = contractProducts.find(contractProduct => contractProduct.id === product.id)?.amount
+        return Array(productAmount)
+          .fill(null)
+          .map(() => product.customCoupons)
+      }),
   )
 
   const handleMemberContractCreate = async () => {
@@ -283,6 +288,7 @@ const MemberContractCreationBlock: React.FC<{
                   ended_at: string | Date
                   scope: any
                   constraint: number | null
+                  coupon_plan_products: { data: { product_id: string }[] }
                 }
               }
             | undefined
@@ -318,8 +324,15 @@ const MemberContractCreationBlock: React.FC<{
                         description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
                         started_at: coupon.startedAt ?? serviceStartedAt.toISOString(),
                         ended_at: coupon.endedAt ?? serviceEndedAt?.toISOString(),
-                        scope: coupon.scope,
+                        scope: coupon.scope.filter((item: string) => !item.includes('_')),
                         constraint: coupon.constraint,
+                        coupon_plan_products: {
+                          data: coupon.scope
+                            .filter((item: string) => item.includes('_'))
+                            .map((item: string) => ({
+                              product_id: item,
+                            })),
+                        },
                       },
                     }
                   : undefined,
