@@ -124,12 +124,19 @@ export const PreviewButton: React.VFC<
         return
       }
 
+      const url = videoUrl.includes('hls') ? `${videoUrl.split('hls')[0]}*` : `${videoUrl.split('manifest')[0]}*`
       axios
-        .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/sign`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        .post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
+          {
+            url,
           },
-        })
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
         .then(({ data }) => {
           const { signedVideoUrl, signedCaptionUrl, cloudfrontOptions, captionPaths } = data.result
           const videoSearch = new URL(signedVideoUrl).search
