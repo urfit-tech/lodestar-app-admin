@@ -79,8 +79,13 @@ const MemberContractCreationBlock: React.FC<{
 
   const selectedCustomCoupons = flatten(
     products
-      .filter(product => selectedProducts.find(selectedProduct => selectedProduct.id === product.id))
-      .map(product => product.customCoupons),
+      .filter(product => contractProducts.find(contractProduct => contractProduct.id === product.id))
+      .map(product => {
+        const productAmount = contractProducts.find(contractProduct => contractProduct.id === product.id)?.amount
+        return Array(productAmount)
+          .fill(null)
+          .map(() => product.customCoupons)
+      }),
   )
 
   const handleMemberContractCreate = async () => {
