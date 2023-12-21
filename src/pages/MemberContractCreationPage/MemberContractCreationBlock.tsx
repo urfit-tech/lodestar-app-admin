@@ -288,7 +288,7 @@ const MemberContractCreationBlock: React.FC<{
                   ended_at: string | Date
                   scope: any
                   constraint: number | null
-                  coupon_plan_products: { coupon_plan_id: string; product_id: string }[]
+                  coupon_plan_products: { data: { product_id: string }[] }
                 }
               }
             | undefined
@@ -329,7 +329,6 @@ const MemberContractCreationBlock: React.FC<{
                         coupon_plan_products: coupon.scope
                           .filter((item: string) => item.includes('_'))
                           .map((item: string) => ({
-                            coupon_plan_id: couponPlanId,
                             product_id: item,
                           })),
                       },
