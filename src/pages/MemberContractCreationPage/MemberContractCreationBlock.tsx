@@ -326,11 +326,13 @@ const MemberContractCreationBlock: React.FC<{
                         ended_at: coupon.endedAt ?? serviceEndedAt?.toISOString(),
                         scope: coupon.scope.filter((item: string) => !item.includes('_')),
                         constraint: coupon.constraint,
-                        coupon_plan_products: coupon.scope
-                          .filter((item: string) => item.includes('_'))
-                          .map((item: string) => ({
-                            product_id: item,
-                          })),
+                        coupon_plan_products: {
+                          data: coupon.scope
+                            .filter((item: string) => item.includes('_'))
+                            .map((item: string) => ({
+                              product_id: item,
+                            })),
+                        },
                       },
                     }
                   : undefined,
