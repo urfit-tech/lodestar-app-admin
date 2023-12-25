@@ -138,32 +138,46 @@ export const PreviewButton: React.VFC<
           },
         )
         .then(({ data }) => {
-          const { signedVideoUrl, signedCaptionUrl, cloudfrontOptions, captionPaths } = data.result
-          const videoSearch = new URL(signedVideoUrl).search
-          const captionSearch = new URL(signedCaptionUrl).search
-          const hlsPath = cloudfrontOptions?.playPaths ? new URL(cloudfrontOptions.playPaths.hls).pathname : null
-          const dashPath = cloudfrontOptions?.playPaths ? new URL(cloudfrontOptions.playPaths.dash).pathname : null
-          const cloudfrontMigratedHlsPath = cloudfrontOptions?.path ? new URL(cloudfrontOptions.path).pathname : null
-          const source = cloudfrontOptions?.playPaths
-            ? [
-                {
-                  type: 'application/x-mpegURL',
-                  src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${hlsPath}${videoSearch}`,
-                },
-                {
-                  type: 'application/dash+xml',
-                  src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${dashPath}${videoSearch}`,
-                },
-              ]
-            : [
-                {
-                  type: 'application/x-mpegURL',
-                  src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${cloudfrontMigratedHlsPath}${videoSearch}`,
-                },
-              ]
-          const captions = captionPaths?.map((captionUrl: string) => `${captionUrl}${captionSearch}`)
-          setSources(source)
-          setCaptions(captions)
+          const search = new URL(data.result).search
+          const pathname = new URL(videoUrl).pathname
+          setSources([
+            {
+              type: 'application/x-mpegURL',
+              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${pathname}${search}`,
+            },
+          ])
+        })
+        .catch(error => console.log(error.toString()))
+        .finally(() => setLoading(false))
+      // getCaptions
+      const captionsPath = videoUrl.includes('hls')
+        ? url.replace('output', 'captions')
+        : url.replace('manifest', 'text')
+      axios
+        .post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
+          {
+            url: `${captionsPath}`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        .then(({ data }) => {
+          const search = new URL(data.result).search
+          axios
+            .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/captions`, {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            })
+            .then(response => {
+              const urls = response.data.result
+              const signedUrls = urls.map((key: any) => `${key}${search}`)
+              setCaptions(signedUrls)
+            })
         })
         .catch(error => console.log(error))
         .finally(() => setLoading(false))
