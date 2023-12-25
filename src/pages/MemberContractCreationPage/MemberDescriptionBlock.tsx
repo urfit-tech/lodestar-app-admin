@@ -4,7 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { handleError, notEmpty } from 'lodestar-app-element/src/helpers'
 import { length } from 'ramda'
-import React, { memo, useState } from 'react'
+import React, { Fragment, memo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ContractInfo } from '.'
 import hasura from '../../hasura'
@@ -100,8 +100,8 @@ const MemberDescriptionBlock: React.FC<{
           onFinish={handleSubmit}
         >
           {properties.map(property => (
-            <>
-              <Form.Item key={property.id} label={property.name} name={property.id}>
+            <Fragment key={property.id}>
+              <Form.Item label={property.name} name={property.id}>
                 {property?.placeholder?.includes('/') ? (
                   <Select>
                     {property?.placeholder?.split('/').map((value: string, idx: number) => (
@@ -120,7 +120,7 @@ const MemberDescriptionBlock: React.FC<{
                   member.properties.find(memberProperty => memberProperty.propertyId === property.id) ? '' : 'ant-alert'
                 }
               ></div>
-            </>
+            </Fragment>
           ))}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button className="mr-2" onClick={() => form.resetFields()}>

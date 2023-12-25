@@ -86,8 +86,9 @@ const MemberContractCreationForm: React.FC<
                           rules={[{ required: true, message: '請選擇合約' }]}
                           fieldKey={[field.fieldKey, 'id']}
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
+                          initialValue={products[0].id}
                         >
-                          <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
+                          <Select<string> className="mr-3" style={{ width: '250px' }}>
                             {products
                               .filter(
                                 product =>
@@ -198,12 +199,11 @@ const MemberContractCreationForm: React.FC<
                     <Radio value="student">學生</Radio>
                   </Radio.Group>
                 </Form.Item>
-
-                <Form.Item noStyle>
-                  {identity === 'student' && (
+                {identity === 'student' && (
+                  <Form.Item name="certification" valuePropName="fileList" noStyle>
                     <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
-                  )}
-                </Form.Item>
+                  </Form.Item>
+                )}
 
                 {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
               </div>
