@@ -179,7 +179,7 @@ export const useManagerLeads = (manager: Manager) => {
       try {
         const payload = {
           memberIds: salesLeadMemberPhoneData.member.map((v: { id: any }) => v.id) || [],
-          appId: appId
+          appId: appId 
         };
   
         const { data } = await axios.post(
@@ -188,8 +188,6 @@ export const useManagerLeads = (manager: Manager) => {
           { headers: { authorization: `Bearer ${authToken}` } },
         );
   
-        console.log(data);
-  
         setSalesLeadMemberInfo(data);
       } catch (error) {
         setError(error);
@@ -197,7 +195,6 @@ export const useManagerLeads = (manager: Manager) => {
         setLoading(false);
       }
     } else {
-      console.log("authToken or salesLeadMemberPhoneData is missing");
       setLoading(false);
     }
   }, [authToken, salesLeadMemberPhoneData]);
@@ -279,49 +276,18 @@ export const useManagerLeads = (manager: Manager) => {
     errorMembers,
     refetchMembers,
     totalLeads,
-    followedLeads: totalLeads?.filter(lead => lead.status === 'FOLLOWED'),
-    idledLeads: totalLeads?.filter(lead => lead.status === 'IDLED'),
-    contactedLeads: totalLeads?.filter(lead => lead.status === 'CONTACTED'),
-    answeredLeads: totalLeads?.filter(lead => lead.status === 'ANSWERED'),
-    invitedLeads: totalLeads?.filter(lead => lead?.status === 'INVITED'),
-    presentedLeads: totalLeads?.filter(lead => lead?.status === 'PRESENTED'),
-    signedLeads: totalLeads?.filter(lead => lead?.status === 'SIGNED'),
-    closedLeads: totalLeads?.filter(lead => lead?.status === 'CLOSED'),
-    completedLeads: totalLeads?.filter(lead => lead?.status === 'COMPLETED'),
+    followedLeads: totalLeads.filter(lead => lead.status === 'FOLLOWED'),
+    idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
+    contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
+    answeredLeads: totalLeads.filter(lead => lead.status === 'ANSWERED'),
+    invitedLeads: totalLeads.filter(lead => lead?.status === 'INVITED'),
+    presentedLeads: totalLeads.filter(lead => lead?.status === 'PRESENTED'),
+    signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
+    closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
+    completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
   };
 };
 
-const GetSalesLeadMemberData = gql`
-  query GetSalesLeadMemberData($memberIds: [String!]!, $propertyIds: [uuid!]!, $categoryIds: [String!]!) {
-    member_task(where: { member_id: { _in: $memberIds } }, order_by: { created_at: desc }) {
-      member_id
-      status
-    }
-    member_property(where: { _and: [{ member_id: { _in: $memberIds } }, { property_id: { _in: $propertyIds } }] }) {
-      member_id
-      property_id
-      value
-    }
-    member_phone(where: { member_id: { _in: $memberIds } }) {
-      member_id
-      phone
-    }
-    member_note(order_by: { created_at: desc }, where: { member_id: { _in: $memberIds }, type: { _is_null: true } }) {
-      member_id
-      description
-    }
-    member_category(where: { _and: [{ member_id: { _in: $memberIds } }, { category_id: { _in: $categoryIds } }] }) {
-      member_id
-      category_id
-    }
-    active_member_contract: member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
-      member_id
-      agreed_at
-      revoked_at
-      values
-    }
-  }
-`
 const GetSalesLeadMembers = gql`
   query GetSalesLeadMembers($appId: String!, $managerId: String!) {
     member(
