@@ -1030,7 +1030,6 @@ export const useCaptions = (videoAttachmentId?: string) => {
   ]
   const { authToken } = useAuth()
   const [captions, setCaptions] = useState<{ label: string; srclang: string; language: string }[]>([])
-  // TODO: fetch from s3
   const refetchCaption = useCallback(
     () =>
       axios
@@ -1049,7 +1048,21 @@ export const useCaptions = (videoAttachmentId?: string) => {
         }),
     [authToken, videoAttachmentId],
   )
-  // TODO: deleteCaption from s3
+  const downloadCaption = useCallback(
+    (srclang: string) =>
+      axios
+        .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoAttachmentId}/sign`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+        .then(({ data }) => {
+          const { captionSignedUrls } = data.result
+          const downloadLink = captionSignedUrls.find((captionUrl: string) => captionUrl.includes(srclang))
+          window.location.href = downloadLink
+        }),
+    [authToken, videoAttachmentId],
+  )
   const deleteCaption = useCallback(
     (languageCode: string) =>
       axios
@@ -1075,6 +1088,7 @@ export const useCaptions = (videoAttachmentId?: string) => {
     captionLanguages,
     refetchCaption,
     deleteCaption,
+    downloadCaption,
   }
 }
 
