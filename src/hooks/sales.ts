@@ -315,14 +315,3 @@ const GetSalesLeadMembers = gql`
     }
   }
 `
-
-
-const useDeepCompareMemoize = (value: hasura.GetSalesLeadMembers | undefined) => {
-  const ref = useRef<hasura.GetSalesLeadMembers | undefined>();
-
-  if (!isEqual(value, ref.current)) {
-    ref.current = value;
-  }
-
-  return ref.current;
-};
