@@ -772,9 +772,7 @@ export const programMessages = {
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
-    practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
-    notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
     passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
     question: { id: 'program.label.question', defaultMessage: '題目' },
@@ -782,11 +780,8 @@ export const programMessages = {
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
-    contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
-    audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
-    contentPlan: { id: 'program.label.contentPlan', defaultMessage: 'Content Plan' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -805,13 +800,6 @@ export const programMessages = {
     },
     noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
     noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
-
-    practicePrivateTips: { id: 'program.text.practicePrivateTips', defaultMessage: '勾選後學員將只能看到自己的作品' },
-    practiceFileSizeTips: { id: 'program.text.practiceFileSizeTips', defaultMessage: '單檔案大小不超過 5GB' },
-    deleteContentWarning: {
-      id: 'program.text.deleteContentWarning',
-      defaultMessage: '你確定要刪除此內容？此動作無法還原',
-    },
     deleteQuestionDescription: {
       id: 'program.text.deleteQuestionDescription',
       defaultMessage: '題目刪除即不可恢復，確定要刪除嗎？',
@@ -828,10 +816,6 @@ export const programMessages = {
     noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
-    deletePracticeWarning: {
-      id: 'program.text.deletePracticeWarning',
-      defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
-    },
     searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
@@ -854,9 +838,6 @@ export const programMessages = {
     deleteQuestion: { id: 'program.ui.deleteQuestion', defaultMessage: '刪除題目' },
     deleteChoice: { id: 'program.ui.deleteChoice', defaultMessage: '刪除選項' },
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
-    videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
-    articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
-    audioContent: { id: 'program.ui.audioContent', defaultMessage: 'Audio content' },
     uploadAudioFile: { id: 'program.ui.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
 }

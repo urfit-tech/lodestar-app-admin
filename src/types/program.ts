@@ -109,6 +109,12 @@ export type ProgramContentProps = {
   }[]
   videos: AttachmentSelectorValue[]
   audios: ProgramContentAudioProps[]
+  ebook:
+    | {
+        id: string
+        data: any
+      }
+    | null
   programContentBodyData: any
   displayMode: DisplayMode
 }

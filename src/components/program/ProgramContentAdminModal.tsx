@@ -14,6 +14,7 @@ import {
   Skeleton,
   Tooltip,
 } from 'antd'
+import { Box } from '@chakra-ui/react'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
@@ -22,18 +23,20 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { last } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import {
   contentTypeFormat,
+  convertFileToArrayBuffer,
   generateUrlWithID,
   getFileDuration,
   getVideoIDByURL,
   handleError,
   uploadFile,
 } from '../../helpers'
-import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
+import programMessages from './translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
@@ -45,14 +48,10 @@ import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
-
-const messages = defineMessages({
-  contentPlan: { id: 'program.label.contentPlan', defaultMessage: '適用方案' },
-  uploadVideo: { id: 'program.ui.uploadVideo', defaultMessage: '上傳影片' },
-  uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
-  duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
-  uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
-})
+import Epub from 'epubjs'
+import type { NavItem } from 'epubjs/types/navigation'
+import { useMutateProgramContentEbook } from '../../hooks/ebook'
+import { program_content_ebook_toc_insert_input } from '../../hasura'
 
 const StyledRadio = styled(Radio)`
   && .ant-radio {
@@ -130,8 +129,9 @@ const ProgramContentAdminModal: React.FC<{
   const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const { updatePlans, updateMaterials, updateVideos, updateAudios } = useProgramContentActions(programContent.id)
-
   const { insertAttachment } = useMutateAttachment()
+  const { insertProgramContentEbook, deleteProgramContentEbook, deleteProgramContentEbookToc } =
+    useMutateProgramContentEbook()
 
   const uploadCanceler = useRef<Canceler>()
   const [visible, setVisible] = useState(false)
@@ -148,6 +148,8 @@ const ProgramContentAdminModal: React.FC<{
   const [loading, setLoading] = useState(false)
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [audioFiles, setAudioFiles] = useState<File[]>(programContent.audios.map(v => v.data) || [])
+  const [ebookFile, setEbookFile] = useState<File | null>(programContent.ebook?.data || null)
+
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
     caption?: boolean
@@ -184,34 +186,33 @@ const ProgramContentAdminModal: React.FC<{
           audio => audio.data.name === file.name && audio.data.lastModified === file.lastModified,
         ),
     )
-
     let audioDuration = newAudioFiles.length === 0 && audioFiles.length > 0 ? values.duration : 0
-
-    if (newAudioFiles.length > 0) {
-      for (const file of newAudioFiles) {
-        await uploadFile(`audios/${appId}/${programId}/${programContent.id}`, file, authToken, {
-          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
-          onUploadProgress: ({ loaded, total }) => {
-            setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
-          },
-        }).catch(() => {
-          uploadError.materials = true
-          setFailedUploadFiles(prev => [...prev, file])
-        })
-        audioDuration += await getFileDuration(file)
-      }
-    }
     if (contentType === 'audio') {
+      if (newAudioFiles.length > 0) {
+        for (const file of newAudioFiles) {
+          await uploadFile(`audios/${appId}/${programId}/${programContent.id}`, file, authToken, {
+            cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+            onUploadProgress: ({ loaded, total }) => {
+              setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
+            },
+          }).catch(() => {
+            uploadError.materials = true
+            setFailedUploadFiles(prev => [...prev, file])
+          })
+          audioDuration += await getFileDuration(file)
+        }
+      }
       form.setFieldsValue({ duration: audioDuration })
     }
-    // upload materials
+
+    // upload materials when material is not empty and content type is video or text or audio
     const newMaterialFiles = materialFiles.filter(
       file =>
         !programContentBody.materials.some(
           material => material.data.name === file.name && material.data.lastModified === file.lastModified,
         ),
     )
-    if (newMaterialFiles.length) {
+    if (newMaterialFiles.length && (contentType === 'video' || contentType === 'text' || contentType === 'audio')) {
       for (const file of newMaterialFiles) {
         await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
@@ -226,6 +227,54 @@ const ProgramContentAdminModal: React.FC<{
     }
     setIsUploadFailed(uploadError)
 
+    // upload ebook
+    const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
+    if (contentType === 'ebook' && newEbookFile) {
+      if (programContent.programContentType !== 'ebook') {
+        deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
+        deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
+      }
+
+      await uploadFile(`ebooks/${appId}/${programContent.id}_${newEbookFile.name}`, newEbookFile, authToken, {
+        cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+        onUploadProgress: ({ loaded, total }) => {
+          setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
+        },
+      }).catch(() => {
+        uploadError.materials = true
+        setFailedUploadFiles(prev => [...prev, newEbookFile])
+      })
+
+      const url = await convertFileToArrayBuffer(newEbookFile).catch(handleError)
+      const book = Epub(url)
+      const toc = (await book.loaded.navigation).toc as NavItem[]
+
+      const convert = (toc: NavItem[]): program_content_ebook_toc_insert_input[] => {
+        return toc.map((v, index) => ({
+          label: v.label,
+          href: v.href,
+          position: index,
+          subitems: v.subitems ? { data: convert(v.subitems) } : undefined,
+        }))
+      }
+
+      insertProgramContentEbook({
+        variables: {
+          programContentEbook: {
+            program_content_id: programContent.id,
+            data: {
+              name: newEbookFile.name,
+              type: newEbookFile.type,
+              size: newEbookFile.size,
+              lastModified: newEbookFile.lastModified,
+            },
+            program_content_ebook_tocs: { data: convert(toc) },
+          },
+        },
+      }).catch(handleError)
+    }
+
+    // update program content
     try {
       await updateProgramContent({
         variables: {
@@ -244,9 +293,6 @@ const ProgramContentAdminModal: React.FC<{
             : null,
         },
       })
-      if (videoPipeline === 'attachment') {
-        await updateVideos(values.videoAttachment ? [values.videoAttachment.id] : [])
-      }
       if (videoPipeline === 'externalLink' && externalVideoInfo?.status === 'success') {
         const attachmentId = uuidV4()
         await insertAttachment({
@@ -283,17 +329,23 @@ const ProgramContentAdminModal: React.FC<{
         },
       })
       await updatePlans(values.planIds || [])
-      if (!uploadError.materials) {
-        await updateMaterials(materialFiles)
-      }
-      if (!uploadError.audio) {
-        await updateAudios(audioFiles)
-      }
+
       if (Object.values(uploadError).some(v => v)) {
         message.error(formatMessage(commonMessages.event.failedUpload))
       } else {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         setUploadProgress({})
+      }
+
+      // video use media-library
+      if (contentType === 'video' && videoPipeline === 'attachment') {
+        await updateVideos(values.videoAttachment ? [values.videoAttachment.id] : [])
+      }
+      if (!uploadError.materials && (contentType === 'video' || contentType === 'text' || contentType === 'audio')) {
+        await updateMaterials(materialFiles)
+      }
+      if (!uploadError.audio && contentType === 'audio') {
+        await updateAudios(audioFiles)
       }
     } catch (error) {
       message.error(formatMessage(commonMessages.event.failedSave))
@@ -305,6 +357,7 @@ const ProgramContentAdminModal: React.FC<{
     setVideoPipeline('attachment')
     setExternalVideoInfo({ status: 'idle' })
     setLoading(false)
+    form.resetFields()
   }
 
   useEffect(() => {
@@ -331,260 +384,313 @@ const ProgramContentAdminModal: React.FC<{
         closable={false}
         visible={visible}
       >
-        {programContent && (
-          <Form
-            form={form}
-            layout="vertical"
-            initialValues={{
-              videoAttachment: last(programContent.videos),
-              publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
-              isNotifyUpdate: programContent.isNotifyUpdate,
-              title: programContent.title || '',
-              planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
-              duration: programContent.duration || 0,
-              video: programContentBody.data?.video,
-              texttrack: programContentBody.data?.texttrack,
-              description: BraftEditor.createEditorState(programContentBody.description),
-              videoPipeline: 'attachment',
-              selectedSource: 'youtube',
-              displayMode: programContent.displayMode,
-              contentBodyType: programContent.programContentType,
-            }}
-            onValuesChange={(values: Partial<FieldProps>) => {
-              form.setFieldsValue({
-                duration: values.videoAttachment?.duration || form.getFieldValue('duration') || 0,
-              })
-            }}
-            onFinish={handleSubmit}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-4">
-              <div className="d-flex align-items-center">
-                <Form.Item name="contentBodyType" className="mb-0 mr-2">
-                  <Select
-                    onChange={v => {
-                      if (typeof v === 'string') {
-                        setContentType(v)
-                      }
-                    }}
-                  >
-                    <Select.Option value="video">{formatMessage(programMessages.ui.videoContent)}</Select.Option>
-                    <Select.Option value="text">{formatMessage(programMessages.ui.articleContent)}</Select.Option>
-                    <Select.Option value="audio">{formatMessage(programMessages.ui.audioContent)}</Select.Option>
-                  </Select>
-                </Form.Item>
-
-                {programContent.displayMode && (
-                  <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
-                )}
-
-                <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                  <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
-                </Form.Item>
-              </div>
-
-              <div className="d-flex align-items-center">
-                <Button
-                  disabled={loading}
-                  onClick={() => {
-                    setVisible(false)
-                    form.resetFields()
-                  }}
-                  className="mr-2"
-                >
-                  {formatMessage(commonMessages.ui.cancel)}
-                </Button>
-                <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
-                  {formatMessage(commonMessages.ui.save)}
-                </Button>
-                <Dropdown
-                  trigger={['click']}
-                  placement="bottomRight"
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        onClick={() =>
-                          window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
-                          deleteProgramContent({ variables: { programContentId: programContent.id } })
-                            .then(() => onRefetch?.())
-                            .catch(handleError)
+        <>
+          {programContent && (
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{
+                videoAttachment: last(programContent.videos),
+                publishedAt: programContent.publishedAt
+                  ? moment(programContent.publishedAt)
+                  : moment().startOf('minute'),
+                isNotifyUpdate: programContent.isNotifyUpdate,
+                title: programContent.title || '',
+                planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
+                duration: programContent.duration || 0,
+                video: programContentBody.data?.video,
+                texttrack: programContentBody.data?.texttrack,
+                description: BraftEditor.createEditorState(programContentBody.description),
+                videoPipeline: 'attachment',
+                selectedSource: 'youtube',
+                displayMode: programContent.displayMode,
+                contentBodyType: programContent.programContentType,
+                ebookFile: programContent.ebook?.data || null,
+              }}
+              onValuesChange={(values: Partial<FieldProps>) => {
+                form.setFieldsValue({
+                  duration: values.videoAttachment?.duration || form.getFieldValue('duration') || 0,
+                })
+              }}
+              onFinish={handleSubmit}
+            >
+              <div className="d-flex align-items-center justify-content-between mb-4">
+                <div className="d-flex align-items-center">
+                  <Form.Item name="contentBodyType" className="mb-0 mr-2">
+                    <Select
+                      onChange={v => {
+                        if (typeof v === 'string') {
+                          setContentType(v)
                         }
-                      >
-                        {formatMessage(programMessages.ui.deleteContent)}
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <MoreOutlined />
-                </Dropdown>
+                      }}
+                    >
+                      <Select.Option value="video">{formatMessage(programMessages['*'].videoContent)}</Select.Option>
+                      <Select.Option value="text">{formatMessage(programMessages['*'].articleContent)}</Select.Option>
+                      <Select.Option value="audio">{formatMessage(programMessages['*'].audioContent)}</Select.Option>
+                      <Select.Option value="ebook">{formatMessage(programMessages['*'].ebook)}</Select.Option>
+                    </Select>
+                  </Form.Item>
+
+                  {programContent.displayMode && (
+                    <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
+                  )}
+
+                  <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
+                    <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+                  </Form.Item>
+                </div>
+
+                <div className="d-flex align-items-center">
+                  <Button
+                    disabled={loading}
+                    onClick={() => {
+                      setVisible(false)
+                      form.resetFields()
+                    }}
+                    className="mr-2"
+                  >
+                    {formatMessage(commonMessages.ui.cancel)}
+                  </Button>
+                  <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
+                    {formatMessage(commonMessages.ui.save)}
+                  </Button>
+                  <Dropdown
+                    trigger={['click']}
+                    placement="bottomRight"
+                    overlay={
+                      <Menu>
+                        <Menu.Item
+                          onClick={() =>
+                            window.confirm(
+                              formatMessage(programMessages.ProgramContentAdminModal.deleteContentWarning),
+                            ) &&
+                            deleteProgramContent({ variables: { programContentId: programContent.id } })
+                              .then(() => onRefetch?.())
+                              .catch(handleError)
+                          }
+                        >
+                          {formatMessage(programMessages['*'].deleteContent)}
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <MoreOutlined />
+                  </Dropdown>
+                </div>
               </div>
-            </div>
 
-            <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
-              <Input />
-            </Form.Item>
-            <Form.Item label={formatMessage(messages.contentPlan)} name="planIds">
-              <ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />
-            </Form.Item>
+              <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
+                <Input />
+              </Form.Item>
+              <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)} name="planIds">
+                <ProgramPlanSelector
+                  programId={programId}
+                  placeholder={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)}
+                />
+              </Form.Item>
 
-            {contentType === 'video' ? (
-              enabledModules.program_content_external_file ? (
-                <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
-                  <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
-                    <div className={`d-flex align-items-center mb-3`}>
-                      <StyledRadio value="attachment">{formatMessage(commonMessages.menu.mediaLibrary)}</StyledRadio>
-                      <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
-                        <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
-                          <AttachmentSelector contentType="video/*" />
-                        </Form.Item>
-                      </div>
-                    </div>
-
-                    <div className="d-flex align-items-center">
-                      <StyledRadio value="externalLink">{formatMessage(commonMessages.label.externalLink)}</StyledRadio>
-                      <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
-                        <div className="d-lg-flex align-items-center">
-                          <Form.Item name="selectedSource" noStyle>
-                            <Select
-                              style={{ width: '110px' }}
-                              onChange={value =>
-                                setExternalVideoInfo({
-                                  status: externalVideoInfo.status,
-                                  source: value.toString(),
-                                })
-                              }
-                            >
-                              <Select.Option key="youtube" value="youtube">
-                                YouTube
-                              </Select.Option>
-                            </Select>
+              {contentType === 'video' ? (
+                enabledModules.program_content_external_file ? (
+                  <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
+                    <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
+                      <div className={`d-flex align-items-center mb-3`}>
+                        <StyledRadio value="attachment">{formatMessage(commonMessages.menu.mediaLibrary)}</StyledRadio>
+                        <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
+                          <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
+                            <AttachmentSelector contentType="video/*" />
                           </Form.Item>
-                          <Form.Item name="externalLink" className="mb-0">
-                            <StyledInput
-                              status={externalVideoInfo?.status}
-                              placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
-                              onChange={async e => {
-                                const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
-                                const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
-                                const res = await axios.get(`https://noembed.com/embed?url=${url}`)
-                                if (e.target.value === '') {
-                                  setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
-                                } else if (e.target.value !== '' && res.data.error) {
-                                  setExternalVideoInfo({
-                                    status: 'error',
-                                    source: externalVideoInfo.source,
-                                    url: e.target.value,
-                                  })
-                                } else if (id && url) {
-                                  form.setFieldsValue({ externalLink: url })
-                                  setExternalVideoInfo({
-                                    id: id,
-                                    status: 'success',
-                                    source: externalVideoInfo.source,
-                                    thumbnailUrl: res.data?.thumbnail_url || null,
-                                    url: e.target.value,
-                                    title: res.data?.title || '',
-                                  })
-                                }
-                              }}
-                            />
-                          </Form.Item>
-
-                          {externalVideoInfo?.status === 'error' ? (
-                            <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
-                          ) : externalVideoInfo?.status === 'success' ? (
-                            <StyledExternalLinkTitle>
-                              <span>{externalVideoInfo.title}</span>
-                            </StyledExternalLinkTitle>
-                          ) : null}
                         </div>
                       </div>
-                    </div>
-                  </Radio.Group>
+
+                      <div className="d-flex align-items-center">
+                        <StyledRadio value="externalLink">
+                          {formatMessage(commonMessages.label.externalLink)}
+                        </StyledRadio>
+                        <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
+                          <div className="d-lg-flex align-items-center">
+                            <Form.Item name="selectedSource" noStyle>
+                              <Select
+                                style={{ width: '110px' }}
+                                onChange={value =>
+                                  setExternalVideoInfo({
+                                    status: externalVideoInfo.status,
+                                    source: value.toString(),
+                                  })
+                                }
+                              >
+                                <Select.Option key="youtube" value="youtube">
+                                  YouTube
+                                </Select.Option>
+                              </Select>
+                            </Form.Item>
+                            <Form.Item name="externalLink" className="mb-0">
+                              <StyledInput
+                                status={externalVideoInfo?.status}
+                                placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
+                                onChange={async e => {
+                                  const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
+                                  const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
+                                  const res = await axios.get(`https://noembed.com/embed?url=${url}`)
+                                  if (e.target.value === '') {
+                                    setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
+                                  } else if (e.target.value !== '' && res.data.error) {
+                                    setExternalVideoInfo({
+                                      status: 'error',
+                                      source: externalVideoInfo.source,
+                                      url: e.target.value,
+                                    })
+                                  } else if (id && url) {
+                                    form.setFieldsValue({ externalLink: url })
+                                    setExternalVideoInfo({
+                                      id: id,
+                                      status: 'success',
+                                      source: externalVideoInfo.source,
+                                      thumbnailUrl: res.data?.thumbnail_url || null,
+                                      url: e.target.value,
+                                      title: res.data?.title || '',
+                                    })
+                                  }
+                                }}
+                              />
+                            </Form.Item>
+
+                            {externalVideoInfo?.status === 'error' ? (
+                              <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
+                            ) : externalVideoInfo?.status === 'success' ? (
+                              <StyledExternalLinkTitle>
+                                <span>{externalVideoInfo.title}</span>
+                              </StyledExternalLinkTitle>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    </Radio.Group>
+                  </Form.Item>
+                ) : (
+                  <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
+                    <AttachmentSelector contentType="video/*" />
+                  </Form.Item>
+                )
+              ) : null}
+
+              {contentType === 'audio' ? (
+                <Form.Item
+                  label={
+                    <span className="d-flex align-items-center">
+                      {formatMessage(programMessages.ProgramContentAdminModal.audioFile)}
+                      <Tooltip
+                        title={
+                          <StyledTips>
+                            {formatMessage(programMessages.ProgramContentAdminModal.audioFileTips)}
+                          </StyledTips>
+                        }
+                      >
+                        <QuestionCircleFilled className="ml-2" />
+                      </Tooltip>
+                    </span>
+                  }
+                >
+                  <FileUploader
+                    renderTrigger={({ onClick }) => (
+                      <>
+                        <Button icon={<UploadOutlined />} onClick={onClick}>
+                          {formatMessage(programMessages['*'].uploadAudioFile)}
+                        </Button>
+                        {isUploadFailed.audio && (
+                          <span className="ml-2">
+                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                          </span>
+                        )}
+                      </>
+                    )}
+                    showUploadList
+                    accept=".mp3"
+                    fileList={audioFiles}
+                    uploadProgress={uploadProgress}
+                    failedUploadFiles={failedUploadFiles}
+                    downloadableLink={file => `audios/${appId}/${programId}/${programContent.id}`}
+                    onChange={files => setAudioFiles(files)}
+                  />
                 </Form.Item>
-              ) : (
-                <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
-                  <AttachmentSelector contentType="video/*" />
+              ) : null}
+
+              {(contentType === 'video' || contentType === 'audio') && (
+                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.duration)} name="duration">
+                  <InputNumber
+                    min={0}
+                    formatter={v => Math.ceil(Number(v) / 60).toString()}
+                    parser={v => Number(v) * 60}
+                  />
                 </Form.Item>
-              )
-            ) : null}
+              )}
 
-            {contentType === 'audio' ? (
-              <Form.Item
-                label={
-                  <span className="d-flex align-items-center">
-                    {formatMessage(programMessages.label.audioFile)}
-                    <Tooltip title={<StyledTips>{formatMessage(programMessages.text.audioFileTips)}</StyledTips>}>
-                      <QuestionCircleFilled className="ml-2" />
-                    </Tooltip>
-                  </span>
-                }
-              >
-                <FileUploader
-                  renderTrigger={({ onClick }) => (
-                    <>
-                      <Button icon={<UploadOutlined />} onClick={onClick}>
-                        {formatMessage(programMessages.ui.uploadAudioFile)}
-                      </Button>
-                      {isUploadFailed.audio && (
-                        <span className="ml-2">
-                          <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                          <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                        </span>
-                      )}
-                    </>
-                  )}
-                  showUploadList
-                  accept=".mp3"
-                  fileList={audioFiles}
-                  uploadProgress={uploadProgress}
-                  failedUploadFiles={failedUploadFiles}
-                  downloadableLink={file => `audios/${appId}/${programId}/${programContent.id}`}
-                  onChange={files => setAudioFiles(files)}
-                />
-              </Form.Item>
-            ) : null}
+              {enabledModules.ebook && contentType === 'ebook' ? (
+                <Form.Item label="電子書檔案">
+                  <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
+                    {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
+                  </Box>
+                  <FileUploader
+                    renderTrigger={({ onClick }) => (
+                      <>
+                        <Button icon={<UploadOutlined />} onClick={onClick}>
+                          {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
+                        </Button>
+                        {isUploadFailed.audio && (
+                          <span className="ml-2">
+                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                          </span>
+                        )}
+                      </>
+                    )}
+                    showUploadList
+                    multiple={false}
+                    accept=".epub"
+                    fileList={ebookFile ? [ebookFile] : []}
+                    uploadProgress={uploadProgress}
+                    failedUploadFiles={failedUploadFiles}
+                    downloadableLink={() => `ebooks/${appId}/${programId}/${programContent.id}`}
+                    onChange={files => files && setEbookFile(files[0])}
+                  />
+                </Form.Item>
+              ) : null}
 
-            {(contentType === 'video' || contentType === 'audio') && (
-              <Form.Item label={formatMessage(messages.duration)} name="duration">
-                <InputNumber
-                  min={0}
-                  formatter={v => Math.ceil(Number(v) / 60).toString()}
-                  parser={v => Number(v) * 60}
-                />
-              </Form.Item>
-            )}
+              {enabledModules.program_content_material && contentType !== 'ebook' ? (
+                <Form.Item label={formatMessage(commonMessages.label.material)}>
+                  <FileUploader
+                    renderTrigger={({ onClick }) => (
+                      <>
+                        <Button icon={<UploadOutlined />} onClick={onClick}>
+                          {formatMessage(commonMessages.ui.selectFile)}
+                        </Button>
+                        {isUploadFailed.materials && (
+                          <span className="ml-2">
+                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                          </span>
+                        )}
+                      </>
+                    )}
+                    multiple
+                    showUploadList
+                    fileList={materialFiles}
+                    uploadProgress={uploadProgress}
+                    failedUploadFiles={failedUploadFiles}
+                    downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
+                    onChange={files => setMaterialFiles(files)}
+                  />
+                </Form.Item>
+              ) : null}
 
-            {enabledModules.program_content_material && (
-              <Form.Item label={formatMessage(commonMessages.label.material)}>
-                <FileUploader
-                  renderTrigger={({ onClick }) => (
-                    <>
-                      <Button icon={<UploadOutlined />} onClick={onClick}>
-                        {formatMessage(commonMessages.ui.selectFile)}
-                      </Button>
-                      {isUploadFailed.materials && (
-                        <span className="ml-2">
-                          <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                          <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                        </span>
-                      )}
-                    </>
-                  )}
-                  multiple
-                  showUploadList
-                  fileList={materialFiles}
-                  uploadProgress={uploadProgress}
-                  failedUploadFiles={failedUploadFiles}
-                  downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
-                  onChange={files => setMaterialFiles(files)}
-                />
-              </Form.Item>
-            )}
-            <Form.Item label={formatMessage(programMessages.label.description)} name="description">
-              <AdminBraftEditor />
-            </Form.Item>
-          </Form>
-        )}
+              {contentType !== 'ebook' ? (
+                <Form.Item label={formatMessage(programMessages['*'].description)} name="description">
+                  <AdminBraftEditor />
+                </Form.Item>
+              ) : null}
+            </Form>
+          )}
+        </>
       </Modal>
     </>
   )
