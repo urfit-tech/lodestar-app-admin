@@ -8,13 +8,14 @@ import AdminLayout from '../components/layout/AdminLayout'
 import PermissionGroupAdminItem from '../components/permission/PermissionGroupAdminItem'
 import PermissionGroupAdminModal from '../components/permission/PermissionGroupAdminModal'
 import { commonMessages, permissionGroupsAdminMessages } from '../helpers/translation'
-import { usePermissionGroupCollection } from '../hooks/permission'
+import { usePermissionGroupAndPermissionGroupPermissionCollection } from '../hooks/permission'
 import { ReactComponent as UsersIcon } from '../images/icon/users.svg'
 import ForbiddenPage from './ForbiddenPage'
 
 const PermissionGroupAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupCollection()
+  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } =
+    usePermissionGroupAndPermissionGroupPermissionCollection()
   const { permissions } = useAuth()
   const { enabledModules } = useApp()
 
@@ -52,7 +53,7 @@ const PermissionGroupAdminPage: React.VFC = () => {
           key={permissionGroup.id}
           id={permissionGroup.id}
           name={permissionGroup.name}
-          permissionIds={permissionGroup.permissionIds}
+          permissionGroupPermissions={permissionGroup.permissionGroupPermissions}
           onRefetch={refetchPermissionGroups}
         />
       ))}

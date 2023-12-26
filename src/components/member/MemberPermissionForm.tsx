@@ -11,7 +11,7 @@ import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/tra
 import { useDefaultPermissions } from '../../hooks/permission'
 import { PermissionGroupProps } from '../../types/general'
 import { MemberAdminProps, UserRole } from '../../types/member'
-import PermissionGroupInputSelector from '../form/PermissionGroupInputSelector'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
 import PermissionInput from '../form/PermissionInput'
 
 type FieldProps = {
@@ -127,7 +127,7 @@ const MemberPermissionForm: React.FC<{
 
       {enabledModules.permission_group && (
         <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
-          <PermissionGroupInputSelector />
+          <PermissionGroupSelector />
         </Form.Item>
       )}
 
