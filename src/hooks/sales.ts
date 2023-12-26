@@ -8,11 +8,8 @@ import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useProperty } from './member'
-import { useCategory } from './data'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
-import { isEqual } from 'lodash'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
@@ -162,7 +159,7 @@ export const useManagerLeads = (manager: Manager) => {
     error: errorMembers,
     loading: loadingMembers,
     refetch: refetchMembers,
-  } = useQuery(GetSalesLeadMembers, {
+  } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
     variables: { managerId: manager.id, appId },
   });
   const { authToken } = useAuth();
@@ -175,7 +172,7 @@ export const useManagerLeads = (manager: Manager) => {
     setLoading(true);
     setError(null);
   
-    if (authToken && salesLeadMemberPhoneData?.member.length > 0) {
+    if (authToken && salesLeadMemberPhoneData  && salesLeadMemberPhoneData?.member.length > 0) {
       try {
         const payload = {
           memberIds: salesLeadMemberPhoneData.member.map((v: { id: any }) => v.id) || [],
