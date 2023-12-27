@@ -31,6 +31,7 @@ const formMessages = {
     salesLead: { id: 'form.PermissionInput.salesLead', defaultMessage: '名單派發' },
     salesManagement: { id: 'form.PermissionInput.salesManagement', defaultMessage: '業務管理' },
     customScript: { id: 'form.PermissionInput.customScript', defaultMessage: '自訂腳本' },
+    report: { id: 'form.PermissionInput.report', defaultMessage: '報表分析' },
   }),
   PermissionGroup: defineMessages({
     // backstage
@@ -352,6 +353,16 @@ const formMessages = {
     CUSTOM_SCRIPT_ADMIN: {
       id: 'form.PermissionGroup.CUSTOM_SCRIPT_ADMIN',
       defaultMessage: '自訂腳本功能',
+    },
+
+    // report
+    REPORT_ADMIN: {
+      id: 'form.PermissionGroup.REPORT_ADMIN',
+      defaultMessage: '所有報表功能',
+    },
+    REPORT_VIEW: {
+      id: 'form.PermissionGroup.REPORT_VIEW',
+      defaultMessage: '查看報表',
     },
   }),
   GiftPlanInput: defineMessages({

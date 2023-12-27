@@ -6,7 +6,7 @@ import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { useCouponCollection } from '../../hooks/data'
+import { useCouponCollection } from '../../hooks/coupon'
 import { CouponProps, OrderDiscountProps, OrderProductProps } from '../../types/checkout'
 import CouponCard from './CouponCard'
 import couponMessages from './translation'
@@ -24,7 +24,7 @@ const CouponSelectionModal: React.FC<{
 }> = ({ memberId, orderProducts, orderDiscounts, onSelect, render, withAddCoupon }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
-  const { coupons, loadingCoupons, refetchCoupons } = useCouponCollection(memberId)
+  const { data: coupons, loading: loadingCoupons, fetch: refetchCoupons } = useCouponCollection(memberId)
 
   const [code, setCode] = useState('')
   const [visible, setVisible] = useState(false)

@@ -48,7 +48,7 @@
   "CraftPageCollectionPage.CraftPageReplicateModal.originPageName": "原始的页面名称",
   "CraftPageCollectionPage.CraftPageReplicateModal.originPath": "原始的网址路径",
   "ForbiddenPage.*.home": "Home",
-  "ForbiddenPage.*.noAuthority": "You are not authorized to view this page.",
+  "ForbiddenPage.*.noAuthority": "你没有此页浏览权限",
   "ForbiddenPage.*.previousPage": "Previous",
   "GiftPlanCollectionAdminPage.GiftPlanCollectionBlock.createAt": "建立日期",
   "ProgramAdminPage.*.approvalHistory": "审核纪录",

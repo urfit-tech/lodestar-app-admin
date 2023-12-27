@@ -67,7 +67,7 @@
   "pages.craft.promptTemplateName": "請輸入樣板名稱",
   "craft.resolver.SectionSettings": "區塊",
   "ForbiddenPage.*.home": "Home",
-  "ForbiddenPage.*.noAuthority": "You are not authorized to view this page.",
+  "ForbiddenPage.*.noAuthority": "你沒有此頁瀏覽權限",
   "ForbiddenPage.*.previousPage": "Previous",
   "GiftPlanCollectionAdminPage.GiftPlanCollectionBlock.createAt": "建立日期",
   "ProgramAdminPage.*.approvalHistory": "審核紀錄",

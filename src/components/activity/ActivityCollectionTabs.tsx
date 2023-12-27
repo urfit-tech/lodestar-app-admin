@@ -1,10 +1,11 @@
 import { Button, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { useActivityCollection, useCategoryCollection } from '../../hooks/activity'
+import { useCategoryCollection } from '../../hooks/activity'
+import useActivityCollection from '../../hooks/activity/useActivityCollection'
 import Activity from './Activity'
 
 const StyledButton = styled(Button)`
@@ -30,11 +31,12 @@ const ActivityCollectionTabs: React.FC<{
   memberId: string | null
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const [currentTab, setCurrentTab] = useState<Tab>('holding')
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
+
   const condition = {
     holding: {
       organizer_id: { _eq: memberId },
@@ -57,18 +59,39 @@ const ActivityCollectionTabs: React.FC<{
       activity_during_period: { ended_at: { _gt: 'now()' } },
     },
   }
+
+  const adminCondition = useMemo(() => {
+    const baseCondition = {
+      organizerId: memberId,
+      appId: appId,
+    }
+
+    return {
+      ...baseCondition,
+      scenario: currentTab,
+    }
+  }, [currentTab, memberId, appId])
+
+  const basicCondition = useMemo(() => {
+    return adminCondition
+  }, [adminCondition])
+
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
-    condition[currentTab],
+    basicCondition,
     selectedCategoryId,
   )
   const { categories } = useCategoryCollection(condition[currentTab])
 
-  if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
-    setCounts({
-      ...counts,
-      [currentTab]: currentTabActivityCount,
-    })
-  }
+  useEffect(() => {
+    if (!loadingActivities && currentTabActivityCount !== undefined) {
+      setCounts(prevCounts => {
+        return {
+          ...prevCounts,
+          [currentTab]: currentTabActivityCount,
+        }
+      })
+    }
+  }, [loadingActivities, currentTabActivityCount, currentTab])
 
   const tabContents = [
     {
@@ -103,7 +126,9 @@ const ActivityCollectionTabs: React.FC<{
         .map(tabContent => (
           <Tabs.TabPane
             key={tabContent.key}
-            tab={`${tabContent.tab} ${counts[tabContent.key] ? `(${counts[tabContent.key]})` : ''}`}
+            tab={`${tabContent.tab} ${
+              !loadingActivities && counts[tabContent.key] !== undefined ? `(${counts[tabContent.key]})` : ''
+            }`}
           >
             <>
               <StyledButton
@@ -125,20 +150,23 @@ const ActivityCollectionTabs: React.FC<{
               ))}
             </>
             <div className="row py-5">
-              {loadingActivities && <Skeleton active />}
-              {activities.map(activity => (
-                <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                  <Activity
-                    id={activity.id}
-                    coverUrl={activity.coverUrl}
-                    title={activity.title}
-                    includeSessionTypes={activity.includeSessionTypes}
-                    participantsCount={activity.participantsCount}
-                    startedAt={activity.startedAt}
-                    endedAt={activity.endedAt}
-                  />
-                </div>
-              ))}
+              {loadingActivities ? (
+                <Skeleton active />
+              ) : (
+                activities.map(activity => (
+                  <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
+                    <Activity
+                      id={activity.id}
+                      coverUrl={activity.coverUrl}
+                      title={activity.title}
+                      includeSessionTypes={activity.includeSessionTypes}
+                      participantsCount={activity.participantsCount}
+                      startedAt={activity.startedAt}
+                      endedAt={activity.endedAt}
+                    />
+                  </div>
+                ))
+              )}
             </div>
             {loadMoreActivities && (
               <div className="text-center mt-4">

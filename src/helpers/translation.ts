@@ -573,6 +573,7 @@ export const activityMessages = {
     onlineActivity: { id: 'activity.label.onlineActivity', defaultMessage: '線上活動' },
     offlineActivity: { id: 'activity.label.offlineActivity', defaultMessage: '實體活動' },
     onlineAndOfflineActivity: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
+    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' }
   }),
   status: defineMessages({
     public: { id: 'activity.status.public', defaultMessage: '公開' },
@@ -743,18 +744,6 @@ export const checkoutMessages = {
       chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
     }),
   },
-}
-
-export const reportMessages = {
-  '*': defineMessages({
-    pageTitle: { id: 'report.*.pageTitle', defaultMessage: '報表分析' },
-    addReport: { id: 'report.*.addReport', defaultMessage: '新增報表' },
-  }),
-  label: defineMessages({
-    title: { id: 'report.label.title', defaultMessage: '報表名稱' },
-    type: { id: 'report.label.type', defaultMessage: '種類' },
-    options: { id: 'report.label.options', defaultMessage: '報表設定' },
-  }),
 }
 
 export const programMessages = {
