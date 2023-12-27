@@ -19,7 +19,7 @@ const PermissionGroupAdminItem: React.VFC<
   PermissionGroupProps & {
     onRefetch?: () => void
   }
-> = ({ id, name, permissionGroupPermissions, onRefetch }) => {
+> = ({ id, name, permissionIds, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -34,7 +34,7 @@ const PermissionGroupAdminItem: React.VFC<
             )}
             id={id}
             name={name}
-            permissionGroupPermissions={permissionGroupPermissions}
+            permissionIds={permissionIds}
             onRefetch={onRefetch}
           />
           <PermissionGroupDeletionModal id={id || ''} onRefetch={onRefetch} />

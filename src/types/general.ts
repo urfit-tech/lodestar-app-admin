@@ -110,12 +110,7 @@ export type PaymentLog = {
 export type PermissionGroupProps = {
   id: string
   name: string
-  permissionGroupPermissions: PermissionGroupPermission[]
-}
-
-export type PermissionGroupPermission = {
-  id: string
-  permissionId: string
+  permissionIds: string[]
 }
 
 export type Member = {

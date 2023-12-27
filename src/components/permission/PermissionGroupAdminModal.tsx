@@ -23,7 +23,7 @@ const PermissionGroupAdminModal: React.FC<
     Partial<PermissionGroupProps> & {
       onRefetch?: () => void
     }
-> = ({ id, name, permissionGroupPermissions, onRefetch, ...props }) => {
+> = ({ id, name, permissionIds, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
@@ -118,9 +118,7 @@ const PermissionGroupAdminModal: React.FC<
         hideRequiredMark
         initialValues={{
           name,
-          permissionIds: permissionGroupPermissions?.map(
-            permissionGroupPermission => permissionGroupPermission.permissionId,
-          ),
+          permissionIds,
         }}
       >
         <Form.Item

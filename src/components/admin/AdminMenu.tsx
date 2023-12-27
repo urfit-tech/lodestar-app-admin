@@ -469,7 +469,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.report && (!!permissions.REPORT_ADMIN || !!permissions.REPORT_VIEW),
+      permissionIsAllowed: !!enabledModules.report && !!permissions.REPORT_ADMIN,
       key: 'report_collection',
       icon: () => <AreaChartOutlined style={{ margin: 0 }} />,
       name: formatMessage(adminMessages.AdminMenu.report),

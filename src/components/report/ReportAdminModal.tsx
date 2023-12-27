@@ -1,44 +1,39 @@
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { useMutateReport, useMutateReportPermissionGroup } from '../../hooks/report'
-import { ReportProps } from '../../types/report'
+import { commonMessages, reportMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import PermissionGroupSelector from '../form/PermissionGroupSelector'
-import { reportMessages } from './translations'
 
 type FieldProps = {
   title: string
   type: string
-  question: string
-  viewPermissions?: string[]
+  options: string
 }
 
 const ReportAdminModal: React.FC<
   {
-    report?: ReportProps
+    report?: any
     onRefetch?: () => void
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, ...props }) => {
   const [loading, setLoading] = useState(false)
-  const { insertReport } = useMutateReport()
-  const { insertReportPermissionGroup } = useMutateReportPermissionGroup()
+  const [insertReport] = useMutation<hasura.INSERT_REPORT, hasura.INSERT_REPORTVariables>(INSERT_REPORT)
   const [form] = useForm<FieldProps>()
-  const { id: appId, enabledModules } = useApp()
-  const { currentMemberId } = useAuth()
+  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
-    const { question, type } = formValue
+    const { options, type } = formValue
     switch (type) {
       case 'metabase':
         return {
           metabase: {
-            resource: { question: parseInt(question) },
+            resource: { question: parseInt(options) },
             params: { appId },
           },
         }
@@ -67,17 +62,6 @@ const ReportAdminModal: React.FC<
           variables: {
             data: [insertReportData],
           },
-        }).then(async ({ data }) => {
-          insertReportPermissionGroup({
-            variables: {
-              data:
-                values.viewPermissions?.map(permissionGroupId => ({
-                  report_id: data?.insert_report?.returning[0].id,
-                  permission_group_id: permissionGroupId,
-                  editor_id: currentMemberId,
-                })) ?? [],
-            },
-          })
         })
         onRefetch?.()
         onSuccess?.()
@@ -99,10 +83,10 @@ const ReportAdminModal: React.FC<
               setVisible(false)
             }}
           >
-            {formatMessage(reportMessages.ReportAdminModal.cancel)}
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(reportMessages.ReportAdminModal.confirm)}
+            {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
@@ -115,14 +99,11 @@ const ReportAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: report?.title,
           type: 'metabase',
-          question: report?.options?.metabase?.resource?.question,
-          viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
         }}
       >
         <Form.Item
-          label={formatMessage(reportMessages.ReportAdminModal.title)}
+          label={formatMessage(reportMessages.label.title)}
           name="title"
           rules={[
             {
@@ -133,7 +114,7 @@ const ReportAdminModal: React.FC<
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(reportMessages.ReportAdminModal.type)}
+          label={formatMessage(reportMessages.label.type)}
           name="type"
           rules={[
             {
@@ -148,8 +129,8 @@ const ReportAdminModal: React.FC<
           </Select>
         </Form.Item>
         <Form.Item
-          label={formatMessage(reportMessages.ReportAdminModal.setting)}
-          name="question"
+          label={formatMessage(reportMessages.label.options)}
+          name="options"
           rules={[
             {
               required: true,
@@ -158,14 +139,20 @@ const ReportAdminModal: React.FC<
         >
           <Input />
         </Form.Item>
-        {enabledModules.permission_group ? (
-          <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermissions">
-            <PermissionGroupSelector />
-          </Form.Item>
-        ) : null}
       </Form>
     </AdminModal>
   )
 }
+
+const INSERT_REPORT = gql`
+  mutation INSERT_REPORT($data: [report_insert_input!]!) {
+    insert_report(
+      objects: $data
+      on_conflict: { constraint: report_pkey, update_columns: [title, options, app_id, type] }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default ReportAdminModal

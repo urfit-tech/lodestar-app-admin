@@ -17,9 +17,11 @@ export const useDefaultPermissions = () => {
   `)
 
   const defaultRolePermissions =
-    data?.role_permission.reduce<{
-      [roleId in string]?: string[]
-    }>(
+    data?.role_permission.reduce<
+      {
+        [roleId in string]?: string[]
+      }
+    >(
       (accumulator, currentValue) => ({
         ...accumulator,
         [currentValue.role_id]: [...(accumulator[currentValue.role_id] || []), currentValue.permission_id],
@@ -38,42 +40,11 @@ export const useDefaultPermissions = () => {
 export const usePermissionGroupCollection = () => {
   const { id: appId } = useApp()
   const { loading, error, data, refetch } = useQuery<
-    hasura.GetPermissionGroupCollection,
-    hasura.GetPermissionGroupCollectionVariables
+    hasura.GET_PERMISSION_GROUP_COLLECTION,
+    hasura.GET_PERMISSION_GROUP_COLLECTIONVariables
   >(
     gql`
-      query GetPermissionGroupCollection($appId: String) {
-        permission_group(where: { app_id: { _eq: $appId } }) {
-          id
-          name
-        }
-      }
-    `,
-    { variables: { appId } },
-  )
-
-  const permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[] =
-    data?.permission_group.map(v => ({
-      id: v.id,
-      name: v.name,
-    })) || []
-
-  return {
-    loadingPermissionGroups: loading,
-    errorPermissionGroups: error,
-    permissionGroups,
-    refetchPermissionGroups: refetch,
-  }
-}
-
-export const usePermissionGroupAndPermissionGroupPermissionCollection = () => {
-  const { id: appId } = useApp()
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GetPermissionGroupAndPermissionGroupPermissionCollection,
-    hasura.GetPermissionGroupAndPermissionGroupPermissionCollectionVariables
-  >(
-    gql`
-      query GetPermissionGroupAndPermissionGroupPermissionCollection($appId: String) {
+      query GET_PERMISSION_GROUP_COLLECTION($appId: String) {
         permission_group(where: { app_id: { _eq: $appId } }) {
           id
           name
@@ -91,11 +62,7 @@ export const usePermissionGroupAndPermissionGroupPermissionCollection = () => {
     data?.permission_group.map(v => ({
       id: v.id,
       name: v.name,
-      permissionGroupPermissions:
-        v.permission_group_permissions.map(w => ({
-          id: w.id,
-          permissionId: w.permission_id,
-        })) || [],
+      permissionIds: v.permission_group_permissions.map(w => w.permission_id) || [],
     })) || []
 
   return {
