@@ -69,7 +69,7 @@ const MemberAdminPage: React.FC = () => {
         ),
         <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
           <div className="p-5">
-            <MemberCouponAdminBlock coupons={memberAdmin.coupons} />
+            <MemberCouponAdminBlock memberId={memberId} />
           </div>
         </Tabs.TabPane>,
         enabledModules.voucher && (

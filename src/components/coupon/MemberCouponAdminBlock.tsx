@@ -1,21 +1,23 @@
-import { Tabs } from 'antd'
+import { Skeleton, Tabs } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
-import { CouponPlanProps } from '../../types/checkout'
+import { useCouponCollection } from '../../hooks/coupon'
+import { CouponProps } from '../../types/checkout'
 import CouponPlanAdminCard from './CouponPlanAdminCard'
 import CouponPlanDescriptionScopeBlock from './CouponPlanDescriptionScopeBlock'
 
-const MemberCouponAdminBlock: React.FC<{
-  coupons: {
-    status: {
-      outdated: boolean
-      used: boolean
-    }
-    couponPlan: CouponPlanProps & {
-      productIds: string[]
-    }
-  }[]
+const MemberCouponAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
+  const { loading, error, data: coupons } = useCouponCollection(memberId)
+  if (loading || error) {
+    return <Skeleton active />
+  }
+
+  return <CouponCollectionTabs coupons={coupons} />
+}
+
+const CouponCollectionTabs: React.FC<{
+  coupons: CouponProps[]
 }> = ({ coupons }) => {
   const { formatMessage } = useIntl()
 
@@ -23,23 +25,32 @@ const MemberCouponAdminBlock: React.FC<{
     {
       key: 'available',
       tab: formatMessage(promotionMessages.status.available),
-      couponPlans: coupons.filter(v => !v.status.outdated && !v.status.used).map(w => w.couponPlan),
+      couponPlans: coupons.filter(v => !v.status.outdated && !v.status.used).map(w => w.couponCode?.couponPlan),
       isAvailable: true,
     },
     {
       key: 'notYet',
       tab: formatMessage(promotionMessages.status.notYet),
       couponPlans: coupons
-        .filter(v => v.couponPlan.startedAt && v.couponPlan.startedAt.getTime() > Date.now() && !v.status.used)
-        .map(w => w.couponPlan),
+        .filter(
+          v =>
+            v.couponCode?.couponPlan.startedAt &&
+            v.couponCode?.couponPlan.startedAt.getTime() > Date.now() &&
+            !v.status.used,
+        )
+        .map(w => w.couponCode?.couponPlan),
       isAvailable: false,
     },
     {
       key: 'expired',
       tab: formatMessage(promotionMessages.status.unavailable),
       couponPlans: coupons
-        .filter(v => (v.couponPlan.endedAt && v.couponPlan.endedAt.getTime() < Date.now()) || v.status.used)
-        .map(w => w.couponPlan),
+        .filter(
+          v =>
+            (v.couponCode?.couponPlan.endedAt && v.couponCode?.couponPlan.endedAt.getTime() < Date.now()) ||
+            v.status.used,
+        )
+        .map(w => w.couponCode?.couponPlan),
       isAvailable: false,
     },
   ]
