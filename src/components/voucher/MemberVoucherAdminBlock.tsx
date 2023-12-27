@@ -1,13 +1,13 @@
 import Icon from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
 import { Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { rgba } from '../../helpers'
+import { useEnrolledVoucherCollection } from '../../hooks/voucher'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
+import { VoucherProps } from '../../types/voucher'
 import { BREAK_POINT } from '../common/Responsive'
 
 const messages = defineMessages({
@@ -19,76 +19,13 @@ const messages = defineMessages({
   items: { id: 'voucher.text.items', defaultMessage: '個項目' },
 })
 
-type VoucherProps = {
-  id: string
-  title: string
-  description: string | null
-  startedAt?: Date
-  endedAt?: Date
-  productQuantityLimit: number
-  available: boolean
-}
-
 const MemberVoucherAdminBlock: React.VFC<{
   memberId: string
 }> = ({ memberId }) => {
-  const { loading, error, data } = useQuery<
-    hasura.GET_MEMBER_VOUCHER_COLLECTION,
-    hasura.GET_MEMBER_VOUCHER_COLLECTIONVariables
-  >(
-    gql`
-      query GET_MEMBER_VOUCHER_COLLECTION($memberId: String!) {
-        voucher(where: { member_id: { _eq: $memberId } }, order_by: [{ created_at: desc }]) {
-          id
-          status {
-            outdated
-            used
-          }
-          voucher_code {
-            id
-            code
-            voucher_plan {
-              id
-              title
-              description
-              started_at
-              ended_at
-              product_quantity_limit
-              voucher_plan_products {
-                id
-                product_id
-              }
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: { memberId },
-    },
-  )
-
+  const { loading, error, data: vouchers } = useEnrolledVoucherCollection(memberId)
   if (loading || error) {
     return <Skeleton active />
   }
-
-  const vouchers: (VoucherProps & {
-    productIds: string[]
-  })[] =
-    data?.voucher.map(voucher => ({
-      id: voucher.id,
-      title: voucher.voucher_code.voucher_plan.title || '',
-      startedAt: voucher.voucher_code.voucher_plan.started_at
-        ? new Date(voucher.voucher_code.voucher_plan.started_at)
-        : undefined,
-      endedAt: voucher.voucher_code.voucher_plan.ended_at
-        ? new Date(voucher.voucher_code.voucher_plan.ended_at)
-        : undefined,
-      productQuantityLimit: voucher.voucher_code.voucher_plan.product_quantity_limit,
-      available: !!voucher.status && !voucher.status.outdated && !voucher.status.used,
-      productIds: voucher.voucher_code.voucher_plan.voucher_plan_products.map(product => product.product_id),
-      description: decodeURI(voucher.voucher_code.voucher_plan.description || ''),
-    })) || []
 
   return <VoucherCollectionTabs vouchers={vouchers} />
 }

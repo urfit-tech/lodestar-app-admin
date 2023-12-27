@@ -12,9 +12,7 @@ export type CouponPlanProps = {
   constraint: number | null
   startedAt: Date | null
   endedAt: Date | null
-  count?: number
-  remaining?: number
-  productIds?: string[]
+  productIds: string[]
 }
 
 export type CouponCodeProps = {
@@ -27,15 +25,11 @@ export type CouponCodeProps = {
 
 export type CouponProps = {
   id: string
-  member: {
-    id: string
-    email: string
-  }
   status: {
     used: boolean
     outdated: boolean
   }
-  couponCode?: {
+  couponCode: {
     code: string
     couponPlan: CouponPlanProps
   }
@@ -54,7 +48,7 @@ export type VoucherPlanBriefProps = {
   sale?: { amount: number; price: number }
   category?: { id: string; name: string }
   pinCode: string | null
-  bonusCoins: {amount: number, endedAt?: Date} | null
+  bonusCoins: { amount: number; endedAt?: Date } | null
 }
 
 export type VoucherPlanProps = VoucherPlanBriefProps & {

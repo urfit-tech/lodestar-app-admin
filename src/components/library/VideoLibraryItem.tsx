@@ -1,4 +1,12 @@
-import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
+import { DownloadOutlined } from '@ant-design/compatible/node_modules/@ant-design/icons'
+import {
+  CloseCircleOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  FileWordOutlined,
+  SyncOutlined,
+  UploadOutlined,
+} from '@ant-design/icons'
 import { StatusBar, useUppy } from '@uppy/react'
 import { Button, List, Modal, Select, Tag, Upload } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
@@ -124,60 +132,38 @@ export const PreviewButton: React.VFC<
         return
       }
 
-      const url = videoUrl.includes('hls') ? `${videoUrl.split('hls')[0]}*` : `${videoUrl.split('manifest')[0]}*`
       axios
-        .post(
-          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
-          {
-            url,
+        .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/sign`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          },
-        )
-        .then(({ data }) => {
-          const search = new URL(data.result).search
-          const pathname = new URL(videoUrl).pathname
-          setSources([
-            {
-              type: 'application/x-mpegURL',
-              src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${pathname}${search}`,
-            },
-          ])
         })
-        .catch(error => console.log(error.toString()))
-        .finally(() => setLoading(false))
-      // getCaptions
-      const captionsPath = videoUrl.includes('hls')
-        ? url.replace('output', 'captions')
-        : url.replace('manifest', 'text')
-      axios
-        .post(
-          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/sign-cloudfront-url`,
-          {
-            url: `${captionsPath}`,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          },
-        )
         .then(({ data }) => {
-          const search = new URL(data.result).search
-          axios
-            .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoId}/captions`, {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-              },
-            })
-            .then(response => {
-              const urls = response.data.result
-              const signedUrls = urls.map((key: any) => `${key}${search}`)
-              setCaptions(signedUrls)
-            })
+          const {
+            videoSignedPaths: { hlsPath, dashPath, cloudfrontMigratedHlsPath },
+            captionSignedUrls,
+          } = data.result
+
+          const source =
+            hlsPath && dashPath
+              ? [
+                  {
+                    type: 'application/x-mpegURL',
+                    src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${hlsPath}`,
+                  },
+                  {
+                    type: 'application/dash+xml',
+                    src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${dashPath}`,
+                  },
+                ]
+              : [
+                  {
+                    type: 'application/x-mpegURL',
+                    src: `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos${cloudfrontMigratedHlsPath}`,
+                  },
+                ]
+          setSources(source)
+          setCaptions(captionSignedUrls)
         })
         .catch(error => console.log(error))
         .finally(() => setLoading(false))
@@ -248,6 +234,42 @@ export const CaptionUploadButton: React.VFC<
   )
 }
 
+export const CaptionTag: React.VFC<
+  {
+    caption: { label: string; srclang: string; language: string }
+    deleteCaption: (srclang: string) => void
+    downloadCaption: (srclang: string) => void
+  } & ButtonProps
+> = ({ caption, deleteCaption, downloadCaption }) => {
+  const [downloading, setDownloading] = useState(false)
+
+  return (
+    <Tag
+      style={{ display: 'flex', alignItems: 'center' }}
+      icon={
+        downloading ? (
+          <SyncOutlined spin />
+        ) : (
+          <DownloadOutlined
+            onClick={async () => {
+              setDownloading(true)
+              await downloadCaption(caption.srclang)
+              setDownloading(false)
+            }}
+          />
+        )
+      }
+      key={caption.language}
+      className="mr-1"
+      closable
+      closeIcon={<CloseCircleOutlined className="ml-1" />}
+      onClose={() => deleteCaption(caption.srclang)}
+    >
+      {caption.label}
+    </Tag>
+  )
+}
+
 const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps> = ({
   videoId,
   videoUrl,
@@ -255,16 +277,15 @@ const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps
 }) => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
-  const { captions, captionLanguages, refetchCaption, deleteCaption } = useCaptions(videoId)
+  const { captions, captionLanguages, refetchCaption, deleteCaption, downloadCaption } = useCaptions(videoId)
   const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['srclang']>()
+
   return (
     <Modal visible footer={null} title={formatMessage(messages.manageCaption)} {...modalProps}>
       <div className="d-flex mb-2">
         {formatMessage(messages.uploadedCaptions)}：
         {captions.map(caption => (
-          <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.srclang)}>
-            {caption.label}
-          </Tag>
+          <CaptionTag caption={caption} deleteCaption={deleteCaption} downloadCaption={downloadCaption} />
         ))}
       </div>
       <Select
@@ -284,6 +305,7 @@ const CaptionModal: React.VFC<{ videoId: string; videoUrl: string } & ModalProps
       </Select>
       {languageCode && (
         <Upload
+          showUploadList={{ showRemoveIcon: false }}
           accept=".vtt"
           customRequest={async ({ file, onSuccess, onError }) => {
             const url = videoUrl.includes('output')

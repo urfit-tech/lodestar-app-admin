@@ -5,7 +5,6 @@ import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
-import { CouponPlanProps } from '../types/checkout'
 import { PermissionGroupProps } from '../types/general'
 import {
   MemberPropertyProps,
@@ -135,31 +134,6 @@ export const useMemberAdmin = (memberId: string) => {
             description
             rejected_at
           }
-          coupons {
-            id
-            status {
-              outdated
-              used
-            }
-            coupon_code {
-              id
-              coupon_plan {
-                id
-                title
-                description
-                scope
-                type
-                amount
-                constraint
-                started_at
-                ended_at
-                coupon_plan_products {
-                  id
-                  product_id
-                }
-              }
-            }
-          }
           member_permission_extras {
             id
             permission_id
@@ -204,15 +178,6 @@ export const useMemberAdmin = (memberId: string) => {
 
   const memberAdmin:
     | (MemberAdminProps & {
-        coupons: {
-          status: {
-            outdated: boolean
-            used: boolean
-          }
-          couponPlan: CouponPlanProps & {
-            productIds: string[]
-          }
-        }[]
         noAgreedContract: boolean
         permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
       })
@@ -257,25 +222,6 @@ export const useMemberAdmin = (memberId: string) => {
               }
             : null,
           noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
-          coupons: data.member_by_pk.coupons.map(v => ({
-            status: {
-              outdated: !!v.status?.outdated,
-              used: !!v.status?.used,
-            },
-            couponPlan: {
-              id: v.coupon_code.coupon_plan.id,
-              title: v.coupon_code.coupon_plan.title || '',
-              description: v.coupon_code.coupon_plan.description || '',
-              scope: v.coupon_code.coupon_plan.scope,
-              type:
-                v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
-              amount: v.coupon_code.coupon_plan.amount,
-              constraint: v.coupon_code.coupon_plan.constraint,
-              startedAt: v.coupon_code.coupon_plan.started_at ? new Date(v.coupon_code.coupon_plan.started_at) : null,
-              endedAt: v.coupon_code.coupon_plan.ended_at ? new Date(v.coupon_code.coupon_plan.ended_at) : null,
-              productIds: v.coupon_code.coupon_plan.coupon_plan_products.map(v => v.product_id),
-            },
-          })),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
