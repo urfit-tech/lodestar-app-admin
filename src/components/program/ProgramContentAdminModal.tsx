@@ -1,4 +1,5 @@
 import Icon, { EditOutlined, MoreOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
+import { Box } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -14,10 +15,10 @@ import {
   Skeleton,
   Tooltip,
 } from 'antd'
-import { Box } from '@chakra-ui/react'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
+import Epub from 'epubjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -26,6 +27,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
+import { program_content_ebook_toc_insert_input } from '../../hasura'
 import {
   contentTypeFormat,
   convertFileToArrayBuffer,
@@ -35,9 +37,9 @@ import {
   handleError,
   uploadFile,
 } from '../../helpers'
-import programMessages from './translation'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
+import { useMutateProgramContentEbook } from '../../hooks/ebook'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ProgramContentProps } from '../../types/program'
@@ -48,10 +50,8 @@ import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
-import Epub from 'epubjs'
+import programMessages from './translation'
 import type { NavItem } from 'epubjs/types/navigation'
-import { useMutateProgramContentEbook } from '../../hooks/ebook'
-import { program_content_ebook_toc_insert_input } from '../../hasura'
 
 const StyledRadio = styled(Radio)`
   && .ant-radio {
@@ -229,7 +229,7 @@ const ProgramContentAdminModal: React.FC<{
 
     // upload ebook
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
-    if (contentType === 'ebook' && newEbookFile) {
+    if (enabledModules.ebook && contentType === 'ebook' && newEbookFile) {
       if (programContent.programContentType !== 'ebook') {
         deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
         deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
@@ -427,7 +427,9 @@ const ProgramContentAdminModal: React.FC<{
                       <Select.Option value="video">{formatMessage(programMessages['*'].videoContent)}</Select.Option>
                       <Select.Option value="text">{formatMessage(programMessages['*'].articleContent)}</Select.Option>
                       <Select.Option value="audio">{formatMessage(programMessages['*'].audioContent)}</Select.Option>
-                      <Select.Option value="ebook">{formatMessage(programMessages['*'].ebook)}</Select.Option>
+                      {enabledModules.ebook ? (
+                        <Select.Option value="ebook">{formatMessage(programMessages['*'].ebook)}</Select.Option>
+                      ) : null}
                     </Select>
                   </Form.Item>
 
