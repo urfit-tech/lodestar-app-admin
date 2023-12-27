@@ -1042,34 +1042,3 @@ export const useMutateMemberProperty = () => {
   `)
   return { updateMemberProperty }
 }
-
-export const useMemberPermissionGroups = (memberId: string) => {
-  const { loading, data, error } = useQuery<
-    hasura.GetMemberPermissionGroups,
-    hasura.GetMemberPermissionGroupsVariables
-  >(
-    gql`
-      query GetMemberPermissionGroups($memberId: String!) {
-        member_permission_group(where: { member_id: { _eq: $memberId } }) {
-          id
-          permission_group {
-            id
-            name
-          }
-        }
-      }
-    `,
-    { variables: { memberId } },
-  )
-  const memberPermissionGroups: { permission_group_id: string; name: string }[] =
-    data?.member_permission_group.map(v => ({
-      permission_group_id: v.permission_group.id,
-      name: v.permission_group.name,
-    })) || []
-
-  return {
-    loading,
-    memberPermissionGroups,
-    error,
-  }
-}

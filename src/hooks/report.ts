@@ -11,12 +11,6 @@ export const useReport = (reportId: string) => {
           title
           type
           options
-          report_permission_groups {
-            permission_group {
-              id
-              name
-            }
-          }
         }
       }
     `,
@@ -32,11 +26,6 @@ export const useReport = (reportId: string) => {
     title: data?.report_by_pk?.title || '',
     type: data?.report_by_pk?.type || '',
     options: data?.report_by_pk?.options || {},
-    viewingPermissions:
-      data?.report_by_pk?.report_permission_groups?.map(v => ({
-        id: v.permission_group?.id || '',
-        name: v.permission_group?.name || '',
-      })) || [],
   }
 
   return {
