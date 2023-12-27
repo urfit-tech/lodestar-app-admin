@@ -87,12 +87,22 @@ const VideoPlayer: React.VFC<VideoJsPlayerProps> = props => {
 
   const setCaption = (player: VideoJsPlayer) => {
     const textTracks = player?.textTracks() ?? []
+
+    // REFACTOR: remove this loop after backend fixed api video/.*m3u8
     props.captions?.forEach(src => {
+      const labels = []
+      for (let i = 0; i < textTracks.length; i++) {
+        let track = textTracks[i]
+        labels.push(track.label)
+      }
       const textTrackOption = remoteTrackOptionFormatter(src)
-      player.addRemoteTextTrack(textTrackOption, false)
+      if (!labels.includes(textTrackOption.label || '')) player.addRemoteTextTrack(textTrackOption, false)
     })
+    //
+
     for (let i = 0; i < textTracks.length; i++) {
       let track = textTracks[i]
+
       if (track.kind === 'captions') {
         track.mode = 'hidden'
         break
