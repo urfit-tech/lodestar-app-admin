@@ -1,5 +1,5 @@
 import { AreaChartOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex, Box } from '@chakra-ui/react'
 import { Button, Dropdown, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -173,7 +173,7 @@ const ReportCollectionPage: React.FC = () => {
         <Table
           columns={columns}
           dataSource={reports.filter(report =>
-            !permissions.REPORT_ADMIN && report.viewingPermissions?.length !== 0
+            report.viewingPermissions?.length !== 0
               ? memberPermissionGroups.filter(memberPermissionGroup =>
                   report.viewingPermissions
                     ?.map((viewingPermission: { id: string }) => viewingPermission.id)
