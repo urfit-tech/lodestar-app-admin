@@ -3,4 +3,5 @@ export type ReportProps = {
   title: string
   type: string
   options: any
+  viewingPermissions?: { id: string; name: string }[]
 }

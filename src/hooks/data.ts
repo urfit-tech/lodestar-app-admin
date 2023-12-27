@@ -764,94 +764,6 @@ export const useMutateAttachment = () => {
   return { insertAttachment, archiveAttachments, deleteAttachments }
 }
 
-export const useCouponCollection = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_COUPON_COLLECTION,
-    hasura.GET_COUPON_COLLECTIONVariables
-  >(
-    gql`
-      query GET_COUPON_COLLECTION($memberId: String!) {
-        coupon(where: { member_id: { _eq: $memberId } }) {
-          id
-          status {
-            outdated
-            used
-          }
-          coupon_code {
-            code
-            coupon_plan {
-              id
-              title
-              amount
-              type
-              constraint
-              started_at
-              ended_at
-              description
-              scope
-              coupon_plan_products {
-                id
-                product_id
-              }
-            }
-          }
-        }
-      }
-    `,
-    { variables: { memberId } },
-  )
-
-  const coupons: CouponProps[] =
-    loading || error || !data
-      ? []
-      : data.coupon.map(coupon => ({
-          id: coupon.id,
-          member: {
-            id: '',
-            email: '',
-          },
-          status: {
-            used: !!coupon.status?.used,
-            outdated: !!coupon.status?.outdated,
-          },
-          couponCode: {
-            code: coupon.coupon_code.code,
-            couponPlan: {
-              id: coupon.coupon_code.coupon_plan.id,
-              startedAt: coupon.coupon_code.coupon_plan.started_at
-                ? new Date(coupon.coupon_code.coupon_plan.started_at)
-                : null,
-              endedAt: coupon.coupon_code.coupon_plan.ended_at
-                ? new Date(coupon.coupon_code.coupon_plan.ended_at)
-                : null,
-              type:
-                coupon.coupon_code.coupon_plan.type === 1
-                  ? 'cash'
-                  : coupon.coupon_code.coupon_plan.type === 2
-                  ? 'percent'
-                  : 'cash',
-              constraint: coupon.coupon_code.coupon_plan.constraint,
-              amount: coupon.coupon_code.coupon_plan.amount,
-              title: coupon.coupon_code.coupon_plan.title || '',
-              description: coupon.coupon_code.coupon_plan.description || '',
-              count: 0,
-              remaining: 0,
-              scope: coupon.coupon_code.coupon_plan.scope,
-              productIds: coupon.coupon_code.coupon_plan.coupon_plan_products.map(
-                couponPlanProduct => couponPlanProduct.product_id,
-              ),
-            },
-          },
-        }))
-
-  return {
-    loadingCoupons: loading,
-    errorCoupons: error,
-    coupons,
-    refetchCoupons: refetch,
-  }
-}
-
 export const useProductSku = (productId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SKU, hasura.GET_PRODUCT_SKUVariables>(
     gql`
@@ -1028,7 +940,6 @@ export const useCaptions = (videoAttachmentId?: string) => {
   ]
   const { authToken } = useAuth()
   const [captions, setCaptions] = useState<{ label: string; srclang: string; language: string }[]>([])
-  // TODO: fetch from s3
   const refetchCaption = useCallback(
     () =>
       axios
@@ -1047,7 +958,21 @@ export const useCaptions = (videoAttachmentId?: string) => {
         }),
     [authToken, videoAttachmentId],
   )
-  // TODO: deleteCaption from s3
+  const downloadCaption = useCallback(
+    (srclang: string) =>
+      axios
+        .get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/videos/${videoAttachmentId}/sign`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+        .then(({ data }) => {
+          const { captionSignedUrls } = data.result
+          const downloadLink = captionSignedUrls.find((captionUrl: string) => captionUrl.includes(srclang))
+          window.location.href = downloadLink
+        }),
+    [authToken, videoAttachmentId],
+  )
   const deleteCaption = useCallback(
     (languageCode: string) =>
       axios
@@ -1073,6 +998,7 @@ export const useCaptions = (videoAttachmentId?: string) => {
     captionLanguages,
     refetchCaption,
     deleteCaption,
+    downloadCaption,
   }
 }
 

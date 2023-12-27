@@ -22,7 +22,6 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { AppProps } from '../../types/app'
-import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import MemberSmsModel from './MemberSmsModal'
 
@@ -119,15 +118,6 @@ const StyledImageHoverMask = styled.div<{ status?: string }>`
 
 const MemberAdminLayout: React.FC<{
   member: MemberAdminProps & {
-    coupons: {
-      status: {
-        outdated: boolean
-        used: boolean
-      }
-      couponPlan: CouponPlanProps & {
-        productIds: string[]
-      }
-    }[]
     noAgreedContract?: boolean
   }
   tabPanes: (React.ReactElement | boolean | undefined)[]

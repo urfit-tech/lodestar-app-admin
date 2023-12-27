@@ -1,8 +1,7 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -24,7 +23,7 @@ const PermissionGroupAdminModal: React.FC<
     Partial<PermissionGroupProps> & {
       onRefetch?: () => void
     }
-> = ({ id, name, permissionIds, onRefetch, ...props }) => {
+> = ({ id, name, permissionGroupPermissions, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
@@ -119,7 +118,9 @@ const PermissionGroupAdminModal: React.FC<
         hideRequiredMark
         initialValues={{
           name,
-          permissionIds,
+          permissionIds: permissionGroupPermissions?.map(
+            permissionGroupPermission => permissionGroupPermission.permissionId,
+          ),
         }}
       >
         <Form.Item
