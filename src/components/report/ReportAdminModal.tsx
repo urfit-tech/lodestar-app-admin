@@ -26,7 +26,7 @@ const ReportAdminModal: React.FC<
 > = ({ report, onRefetch, onCancel, ...props }) => {
   const [loading, setLoading] = useState(false)
   const { insertReport } = useMutateReport()
-  const { insertReportPermissionGroup } = useMutateReportPermissionGroup()
+  const { insertReportPermissionGroup, deleteReportPermissionGroupByReportId } = useMutateReportPermissionGroup()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
   const { currentMemberId } = useAuth()
@@ -68,16 +68,20 @@ const ReportAdminModal: React.FC<
             data: [insertReportData],
           },
         }).then(async ({ data }) => {
-          insertReportPermissionGroup({
+          const reportId = data?.insert_report?.returning[0].id
+          await deleteReportPermissionGroupByReportId({
+            variables: { reportId },
+          }).catch(handleError)
+          await insertReportPermissionGroup({
             variables: {
               data:
                 values.viewPermissions?.map(permissionGroupId => ({
-                  report_id: data?.insert_report?.returning[0].id,
+                  report_id: reportId,
                   permission_group_id: permissionGroupId,
                   editor_id: currentMemberId,
                 })) ?? [],
             },
-          })
+          }).catch(handleError)
         })
         onRefetch?.()
         onSuccess?.()
