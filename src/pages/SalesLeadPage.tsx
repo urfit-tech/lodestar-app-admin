@@ -322,6 +322,7 @@ const SalesLeadTabs: React.VFC<{
       >
         {
           <SalesLeadTable
+            variant="completed"
             manager={manager}
             leads={completedLeads}
             onRefetch={async () => {
