@@ -592,7 +592,10 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
 
 const UPDATE_LEAD_MANAGER = gql`
   mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
-    update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
+    update_member(
+      where: { id: { _in: $memberIds } }
+      _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
+    ) {
       affected_rows
     }
   }
