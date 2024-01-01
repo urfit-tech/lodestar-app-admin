@@ -54,6 +54,7 @@ const adminMessages = {
     creditAdmin: { id: 'admin.AdminMenu.creditAdmin', defaultMessage: '紅利折抵' },
     coinHistory: { id: 'admin.AdminMenu.coinHistory', defaultMessage: '代幣紀錄' },
     memberAdmin: { id: 'admin.AdminMenu.memberAdmin', defaultMessage: '會員管理' },
+    deleteMember: {id: 'admin.AdminMenu.deleteMember' , defaultMessage: '刪除會員'},
     members: { id: 'admin.AdminMenu.members', defaultMessage: '會員列表' },
     permissionGroup: { id: 'admin.AdminMenu.permissionGroup', defaultMessage: '權限組' },
     memberCategory: { id: 'admin.AdminMenu.memberCategory', defaultMessage: '會員分類' },
