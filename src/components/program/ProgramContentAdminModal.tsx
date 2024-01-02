@@ -235,7 +235,7 @@ const ProgramContentAdminModal: React.FC<{
         deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
       }
 
-      await uploadFile(`ebooks/${appId}/${programContent.id}_${newEbookFile.name}`, newEbookFile, authToken, {
+      await uploadFile(`ebooks/${appId}/${programContent.id}`, newEbookFile, authToken, {
         cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
         onUploadProgress: ({ loaded, total }) => {
           setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
