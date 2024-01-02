@@ -1,7 +1,6 @@
 import Icon, { CloseOutlined, MoreOutlined } from '@ant-design/icons'
-import { Button, Divider, Dropdown, Form, Layout, Menu, message, Modal, Tabs } from 'antd'
+import { Button, Divider, Dropdown, Layout, Menu, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
-import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -24,6 +23,7 @@ import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { AppProps } from '../../types/app'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import DeleteMemberModal from './MemberDeleteAdminModel'
 import MemberSmsModel from './MemberSmsModal'
 
 export type renderMemberAdminLayoutProps = {
@@ -93,17 +93,6 @@ const StyledMemberPageMoreOption = styled.div`
   margin-right: 16px;
 `
 
-const StyledModalTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 20px;
-  font-weight: bold;
-`
-
-const StyledDeleteButton = styled(Button)`
-  background-color: var(--error);
-  color: white;
-`
-
 const StyledImageHoverMask = styled.div<{ status?: string }>`
   width: 120px;
   height: 120px;
@@ -130,14 +119,6 @@ const StyledImageHoverMask = styled.div<{ status?: string }>`
     & ${StyledSingleUploader} {
       opacity: 1;
     }
-  }
-`
-
-const StyledModal = styled(Modal)`
-  color: ${props => props.theme['@normal-color']};
-
-  .ant-modal-body {
-    padding-bottom: 24px, 24px, 24px, 12px;
   }
 `
 
@@ -179,27 +160,6 @@ const MemberAdminLayout: React.FC<{
       .catch(handleError)
       .finally(() => setLoading(false))
   }
-  const handleSubmit = async () => {
-    setLoading(true)
-    try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/email/${member.email}`,
-        {
-          headers: { authorization: `Bearer ${authToken}` },
-        },
-      )
-
-      if (response.data.code === 'SUCCESS') {
-        window.open(`${process.env.PUBLIC_URL}/members`, '_self')
-      } else {
-        message.error(response.data.message || 'An unknown error occurred')
-      }
-    } catch (error) {
-      handleError(error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <>
@@ -213,7 +173,7 @@ const MemberAdminLayout: React.FC<{
         <AdminHeaderTitle>{member?.name || member?.username || member.id}</AdminHeaderTitle>
 
         <StyledMemberPageMoreOption>
-          {currentUserRole === 'app-owner' && (
+          {currentUserRole === 'app-owner' && !!(settings['admin.app_owner.delete_member'] === '1') && (
             <Dropdown
               placement="bottomRight"
               overlay={
@@ -356,38 +316,7 @@ const MemberAdminLayout: React.FC<{
           </Tabs>
         </StyledLayoutContent>
 
-        <StyledModal
-          title={null}
-          footer={null}
-          centered
-          destroyOnClose
-          visible={visible}
-          onCancel={() => setVisible(false)}
-          width={384}
-        >
-          <StyledModalTitle className="mb-4">{formatMessage(memberMessages.ui.deleteMember)}</StyledModalTitle>
-
-          <Form layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
-            <Form.Item className="text-left">
-              <span>{formatMessage(memberMessages.text.deleteMemberConfirmation)}</span>
-            </Form.Item>
-
-            <Form.Item className="text-right">
-              <Button onClick={() => setVisible(false)} className="mr-2">
-                {formatMessage(commonMessages.ui.back)}
-              </Button>
-              <StyledDeleteButton
-                htmlType="submit"
-                loading={loading}
-                onClick={() => {
-                  console.log(true)
-                }}
-              >
-                {formatMessage(commonMessages.ui.delete)}
-              </StyledDeleteButton>
-            </Form.Item>
-          </Form>
-        </StyledModal>
+        <DeleteMemberModal email={member.email} visible={visible} setVisible={setVisible} />
       </Layout>
     </>
   )
