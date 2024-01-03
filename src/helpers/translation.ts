@@ -1141,6 +1141,7 @@ export const memberMessages = {
     memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
+    deleteMember: {id: 'member.ui.deleteMember', defaultMessage: '刪除會員'}
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
@@ -1198,6 +1199,11 @@ export const memberMessages = {
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+    },
+    deleteMemberConfirmation: {
+      id: 'member.text.deleteMemberConfirmation',
+      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？'
+
     },
     noMemberNote: {
       id: 'member.text.noMemberNote',
