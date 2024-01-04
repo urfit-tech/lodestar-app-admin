@@ -7,26 +7,40 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
+import { useMemberPermissionGroups } from '../../hooks/member'
 import { useReport } from '../../hooks/report'
 import ForbiddenPage from '../ForbiddenPage'
 
 const ReportPage: React.FC = () => {
   const { enabledModules } = useApp()
-  const { authToken, permissions } = useAuth()
+  const { authToken, permissions, currentMemberId } = useAuth()
   const [isIframeLoading, setIframeLoading] = useState<boolean>(true)
   const { reportId } = useParams<{ reportId: string }>()
   const { report } = useReport(reportId)
+  const { loading: loadingMemberPermissionGroups, memberPermissionGroups } = useMemberPermissionGroups(
+    currentMemberId || '',
+  )
   const { signedUrl } = useReportSignedUrlById(reportId, authToken || '')
   const startedAt = dayjs(Date.now()).add(-1, 'month').format('YYYY-MM-DD')
   const endedAt = dayjs(Date.now()).format('YYYY-MM-DD')
   const signedUrlWithFilter = `${signedUrl}?startedAt=${startedAt}&endedAt=${endedAt}#titled=false`
   const handleIframeLoad = () => setIframeLoading(false)
 
-  if (!enabledModules.report || (!permissions.REPORT_ADMIN && !permissions.REPORT_VIEW)) return <ForbiddenPage />
+  if (
+    !enabledModules.report ||
+    (!permissions.REPORT_ADMIN && !permissions.REPORT_VIEW) ||
+    (report.viewingPermissions?.length !== 0 &&
+      memberPermissionGroups.filter(memberPermissionGroup =>
+        report.viewingPermissions
+          ?.map((viewingPermission: { id: string }) => viewingPermission.id)
+          .includes(memberPermissionGroup.permission_group_id),
+      ).length === 0)
+  )
+    return <ForbiddenPage />
 
   return (
     <AdminBlock style={{ height: '100vh' }}>
-      {isIframeLoading ? (
+      {isIframeLoading || loadingMemberPermissionGroups ? (
         <Spinner />
       ) : (
         <>

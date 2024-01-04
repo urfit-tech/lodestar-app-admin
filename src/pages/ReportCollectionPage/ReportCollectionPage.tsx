@@ -11,6 +11,7 @@ import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ReportAdminModal from '../../components/report/ReportAdminModal'
 import { handleError } from '../../helpers'
+import { useMemberPermissionGroups } from '../../hooks/member'
 import { useMutateReport, useMutateReportPermissionGroup, useReportCollection } from '../../hooks/report'
 import { ReportProps } from '../../types/report'
 import ForbiddenPage from '../ForbiddenPage'
@@ -23,9 +24,10 @@ const StyledTitle = styled.span`
 
 const ReportCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const { reports, loadingReports, refetchReports } = useReportCollection()
+  const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
   const { deleteReport } = useMutateReport()
   const { deleteReportPermissionGroupByReportId } = useMutateReportPermissionGroup()
   const getReportOptions = (report: ReportProps) => {
@@ -84,11 +86,12 @@ const ReportCollectionPage: React.FC = () => {
     {
       dataIndex: 'viewingPermission',
       width: enabledModules.permission_group ? '25%' : '0%',
-      title: enabledModules.permission_group
-        ? `${formatMessage(pageMessages.ReportCollectionPage.viewingPermission)}`
-        : '',
+      title:
+        enabledModules.permission_group && permissions.REPORT_ADMIN
+          ? `${formatMessage(pageMessages.ReportCollectionPage.viewingPermission)}`
+          : '',
       render: (text, record, index) =>
-        enabledModules.permission_group ? (
+        enabledModules.permission_group && permissions.REPORT_ADMIN ? (
           <div>
             <StyledTitle className="mr-2">
               <Flex flexWrap="wrap">
@@ -169,7 +172,15 @@ const ReportCollectionPage: React.FC = () => {
       <AdminBlock>
         <Table
           columns={columns}
-          dataSource={reports}
+          dataSource={reports.filter(report =>
+            report.viewingPermissions?.length !== 0
+              ? memberPermissionGroups.filter(memberPermissionGroup =>
+                  report.viewingPermissions
+                    ?.map((viewingPermission: { id: string }) => viewingPermission.id)
+                    .includes(memberPermissionGroup.permission_group_id),
+                ).length !== 0
+              : true,
+          )}
           rowKey="id"
           loading={loadingReports}
           showSorterTooltip={false}
