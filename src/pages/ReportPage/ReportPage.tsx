@@ -1,17 +1,18 @@
 import { AreaChartOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/spinner'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
-import hasura from '../../hasura'
-import { ReportProps } from '../../types/report'
+import { useReport } from '../../hooks/report'
+import ForbiddenPage from '../ForbiddenPage'
 
 const ReportPage: React.FC = () => {
-  const { authToken } = useAuth()
+  const { enabledModules } = useApp()
+  const { authToken, permissions } = useAuth()
   const [isIframeLoading, setIframeLoading] = useState<boolean>(true)
   const { reportId } = useParams<{ reportId: string }>()
   const { report } = useReport(reportId)
@@ -20,6 +21,9 @@ const ReportPage: React.FC = () => {
   const endedAt = dayjs(Date.now()).format('YYYY-MM-DD')
   const signedUrlWithFilter = `${signedUrl}?startedAt=${startedAt}&endedAt=${endedAt}#titled=false`
   const handleIframeLoad = () => setIframeLoading(false)
+
+  if (!enabledModules.report || (!permissions.REPORT_ADMIN && !permissions.REPORT_VIEW)) return <ForbiddenPage />
+
   return (
     <AdminBlock style={{ height: '100vh' }}>
       {isIframeLoading ? (
@@ -66,40 +70,6 @@ const useReportSignedUrlById = (reportId: string, authToken: string) => {
   }, [reportId, authToken])
 
   return { isLoading, signedUrl, error }
-}
-
-const useReport = (reportId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_REPORT, hasura.GET_REPORTVariables>(
-    gql`
-      query GET_REPORT($id: uuid!) {
-        report_by_pk(id: $id) {
-          id
-          title
-          type
-          options
-        }
-      }
-    `,
-    {
-      variables: {
-        id: reportId,
-      },
-    },
-  )
-
-  const report: ReportProps = {
-    id: data?.report_by_pk?.id,
-    title: data?.report_by_pk?.title || '',
-    type: data?.report_by_pk?.type || '',
-    options: data?.report_by_pk?.options || {},
-  }
-
-  return {
-    report,
-    loadingReport: loading,
-    errorReport: error,
-    refetchReport: refetch,
-  }
 }
 
 export default ReportPage
