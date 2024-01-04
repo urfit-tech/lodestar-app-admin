@@ -20,7 +20,7 @@ const DisplayModeSelector: React.VFC<{
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </Select.Option>
-          {contentType && ['video', 'text', 'audio'].includes(contentType) ? (
+          {contentType && ['video', 'text', 'audio', 'ebook'].includes(contentType) ? (
             <>
               <Select.Option key="trial" value="trial">
                 {formatMessage(

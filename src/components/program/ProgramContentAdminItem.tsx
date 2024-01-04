@@ -10,6 +10,7 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/excla
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
+import { BookHollowIcon } from '../../images/icon/index'
 import { ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import PracticeAdminModal from './PracticeAdminModal'
@@ -81,6 +82,8 @@ const ProgramContentAdminItem: React.FC<{
                 ) : //TODO: remove exercise
                 programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
                   <QuizIcon />
+                ) : programContent.programContentType === 'ebook' ? (
+                  <BookHollowIcon />
                 ) : null
               }
             />

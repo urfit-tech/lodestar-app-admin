@@ -8,6 +8,21 @@ import { BREAK_POINT } from '../components/common/Responsive'
 
 export const TPDirect = (window as any)['TPDirect']
 
+export const convertFileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader()
+    reader.addEventListener('loadend', e => {
+      if (e.target && e.target.result) {
+        resolve(e.target.result as ArrayBuffer)
+      } else {
+        reject(new Error('convert file to array buffer failed'))
+      }
+    })
+    reader.addEventListener('error', reject)
+    reader.readAsArrayBuffer(file)
+  })
+}
+
 export const getBase64 = (img: File, callback: (result: FileReader['result']) => void) => {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
@@ -67,7 +82,7 @@ export const uploadFileV2 = async (
     {
       appId,
       fileName: key,
-      prefix
+      prefix,
     },
     {
       headers: { authorization: `Bearer ${authToken}` },
@@ -81,7 +96,7 @@ export const uploadFileV2 = async (
     },
   })
 
-  return s3UploadRes;
+  return s3UploadRes
 }
 
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {

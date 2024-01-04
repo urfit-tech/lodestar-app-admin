@@ -51,7 +51,7 @@ export const useReportCollection = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GetReportCollection, hasura.GetReportCollectionVariables>(
     gql`
       query GetReportCollection {
-        report {
+        report(order_by: { title: asc }) {
           id
           title
           type
