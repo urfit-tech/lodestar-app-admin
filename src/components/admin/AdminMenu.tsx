@@ -53,6 +53,13 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
   const [openKeys, setOpenKeys] = useState<React.Key[]>([])
   const payload = authToken ? parsePayload(authToken) : null
   const isBusiness = payload && payload.isBusiness
+  const hasSaleGroupPermission = [
+    permissions.GROSS_SALES_ADMIN,
+    permissions.GROSS_SALES_NORMAL,
+    permissions.SALES_RECORDS_ADMIN,
+    permissions.SALES_RECORDS_DETAILS,
+    permissions.SALES_RECORDS_NORMAL,
+  ].some(permission => permission)
   const defaultMenuItems: {
     permissionIsAllowed: boolean
     icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
@@ -65,7 +72,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
     }[]
   }[] = [
     {
-      permissionIsAllowed: !!enabledModules.sale_manager,
+      permissionIsAllowed: !!enabledModules.sale_manager && hasSaleGroupPermission,
       icon: () => <MoneyCircleIcon />,
       key: 'sales',
       name: formatMessage(adminMessages.AdminMenu.salesAdmin),
@@ -469,7 +476,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.report && !!permissions.REPORT_ADMIN,
+      permissionIsAllowed: !!enabledModules.report && (!!permissions.REPORT_ADMIN || !!permissions.REPORT_VIEW),
       key: 'report_collection',
       icon: () => <AreaChartOutlined style={{ margin: 0 }} />,
       name: formatMessage(adminMessages.AdminMenu.report),

@@ -1,5 +1,5 @@
-import Icon, { CloseOutlined } from '@ant-design/icons'
-import { Button, Divider, Layout, message, Tabs } from 'antd'
+import Icon, { CloseOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Layout, Menu, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -23,6 +23,7 @@ import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { AppProps } from '../../types/app'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import DeleteMemberModal from './MemberDeleteAdminModel'
 import MemberSmsModel from './MemberSmsModal'
 
 export type renderMemberAdminLayoutProps = {
@@ -87,6 +88,11 @@ const StyledSingleUploader = styled(SingleUploader)`
     }
   }
 `
+
+const StyledMemberPageMoreOption = styled.div`
+  margin-right: 16px;
+`
+
 const StyledImageHoverMask = styled.div<{ status?: string }>`
   width: 120px;
   height: 120px;
@@ -126,7 +132,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -134,6 +140,8 @@ const MemberAdminLayout: React.FC<{
   const { renderMemberAdminLayout } = useCustomRenderer()
   const avatarId = uuid()
   const { updateMemberAvatar } = useMutateMember()
+
+  const [visible, setVisible] = useState(false)
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
@@ -163,6 +171,24 @@ const MemberAdminLayout: React.FC<{
         </Link>
 
         <AdminHeaderTitle>{member?.name || member?.username || member.id}</AdminHeaderTitle>
+
+        <StyledMemberPageMoreOption>
+          {currentUserRole === 'app-owner' && !!(settings['admin.app_owner.delete_member'] === '1') && (
+            <Dropdown
+              placement="bottomRight"
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={() => setVisible(true)}>
+                    {formatMessage(memberMessages.ui.deleteMember)}
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={['click']}
+            >
+              <MoreOutlined />
+            </Dropdown>
+          )}
+        </StyledMemberPageMoreOption>
 
         {(permissions.CHECK_MEMBER_PAGE_PROGRAM_INFO ||
           permissions.CHECK_MEMBER_PAGE_PROJECT_INFO ||
@@ -289,6 +315,8 @@ const MemberAdminLayout: React.FC<{
             }) || tabPanes}
           </Tabs>
         </StyledLayoutContent>
+
+        <DeleteMemberModal email={member.email} visible={visible} setVisible={setVisible} />
       </Layout>
     </>
   )

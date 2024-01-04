@@ -9,7 +9,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ProgramContentBody, ProgramContentProps } from '../../types/program'
@@ -19,6 +19,7 @@ import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
+import programMessages from './translation'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -203,7 +204,7 @@ const PracticeForm: React.FC<{
               {formatMessage(messages.displayPrivate)}
               <Tooltip
                 placement="right"
-                title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
+                title={<StyledTips>{formatMessage(programMessages.PracticeAdminModal.practicePrivateTips)}</StyledTips>}
                 style={{ position: 'relative' }}
               >
                 <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
@@ -225,7 +226,7 @@ const PracticeForm: React.FC<{
           </Form.Item>
 
           <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-            <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
+            <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>
 
@@ -250,13 +251,13 @@ const PracticeForm: React.FC<{
               <Menu>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(programMessages.text.deletePracticeWarning)) &&
+                    window.confirm(formatMessage(programMessages.PracticeAdminModal.deletePracticeWarning)) &&
                     deleteProgramContent({ variables: { programContentId: programContent.id } })
                       .then(() => onRefetch?.())
                       .catch(handleError)
                   }
                 >
-                  {formatMessage(programMessages.ui.deleteContent)}
+                  {formatMessage(programMessages['*'].deleteContent)}
                 </Menu.Item>
               </Menu>
             }
@@ -266,14 +267,17 @@ const PracticeForm: React.FC<{
         </div>
       </div>
 
-      <StyledTitle className="mb-3">{formatMessage(programMessages.label.practice)}</StyledTitle>
+      <StyledTitle className="mb-3">{formatMessage(programMessages.PracticeAdminModal.practice)}</StyledTitle>
 
-      <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
+      <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
         <Input />
       </Form.Item>
 
-      <Form.Item label={formatMessage(programMessages.label.contentPlan)} name="planIds">
-        <ProgramPlanSelector programId={programId} placeholder={formatMessage(programMessages.label.contentPlan)} />
+      <Form.Item label={formatMessage(programMessages.PracticeAdminModal.contentPlan)} name="planIds">
+        <ProgramPlanSelector
+          programId={programId}
+          placeholder={formatMessage(programMessages.PracticeAdminModal.contentPlan)}
+        />
       </Form.Item>
 
       <Form.Item label={formatMessage(messages.difficulty)} name="difficulty">
@@ -290,7 +294,7 @@ const PracticeForm: React.FC<{
               placement="top"
               title={
                 <StyledPracticeFileSizeTips>
-                  {formatMessage(programMessages.text.practiceFileSizeTips)}
+                  {formatMessage(programMessages.PracticeAdminModal.practiceFileSizeTips)}
                 </StyledPracticeFileSizeTips>
               }
             >
@@ -302,7 +306,7 @@ const PracticeForm: React.FC<{
       >
         <FileUploader multiple showUploadList fileList={attachments} onChange={files => setAttachments(files)} />
       </Form.Item>
-      <Form.Item label={<span>{formatMessage(programMessages.label.description)}</span>} name="description">
+      <Form.Item label={<span>{formatMessage(programMessages['*'].description)}</span>} name="description">
         <AdminBraftEditor />
       </Form.Item>
     </Form>

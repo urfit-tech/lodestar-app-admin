@@ -88,6 +88,10 @@ export const useProgram = (programId: string) => {
                 id
                 data
               }
+              program_content_ebook {
+                id
+                data
+              }
             }
           }
           program_roles(order_by: [{ created_at: asc }, { id: desc }]) {
@@ -180,7 +184,7 @@ export const useProgram = (programId: string) => {
           displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
           duration: pc.duration,
-          programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,
+          programContentType: pc.program_content_type?.type || null,
           isNotifyUpdate: pc.is_notify_update,
           notifiedAt: pc.notified_at && new Date(pc.notified_at),
           programPlans: pc.program_content_plans.map(pcp => ({
@@ -205,15 +209,18 @@ export const useProgram = (programId: string) => {
             id: pca.id,
             data: pca.data,
           })),
+          ebook: pc.program_content_ebook
+            ? { id: pc.program_content_ebook.id, data: pc.program_content_ebook.data }
+            : null,
         })),
       })),
       roles: data.program_by_pk.program_roles.map(programRole => ({
         id: programRole.id,
         name: programRole.name as ProgramRoleName,
         member: {
-          id: programRole.member && programRole.member.id || null,
-          name: programRole.member && programRole.member.name || null,
-          pictureUrl: programRole.member && programRole.member.picture_url || null,
+          id: (programRole.member && programRole.member.id) || null,
+          name: (programRole.member && programRole.member.name) || null,
+          pictureUrl: (programRole.member && programRole.member.picture_url) || null,
         },
       })),
       plans: data.program_by_pk.program_plans.map(programPlan => ({
