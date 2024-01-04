@@ -8,6 +8,7 @@ import { commonMessages } from '../../helpers/translation'
 import { MicrophoneIcon } from '../../images/icon'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
+import { BookHollowIcon } from '../../images/icon/index'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import { ProgramContentProps } from '../../types/program'
@@ -81,6 +82,8 @@ const ProgramContentAdminItem: React.FC<{
                 ) : //TODO: remove exercise
                 programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
                   <QuizIcon />
+                ) : programContent.programContentType === 'ebook' ? (
+                  <BookHollowIcon />
                 ) : null
               }
             />

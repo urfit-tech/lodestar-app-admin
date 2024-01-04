@@ -573,7 +573,7 @@ export const activityMessages = {
     onlineActivity: { id: 'activity.label.onlineActivity', defaultMessage: '線上活動' },
     offlineActivity: { id: 'activity.label.offlineActivity', defaultMessage: '實體活動' },
     onlineAndOfflineActivity: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
-    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' }
+    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
   }),
   status: defineMessages({
     public: { id: 'activity.status.public', defaultMessage: '公開' },
@@ -773,7 +773,6 @@ export const programMessages = {
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
-    practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
     availableToGoBack: { id: 'program.label.availableToGoBack', defaultMessage: '可返回前題' },
     availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
@@ -787,11 +786,8 @@ export const programMessages = {
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
     exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
-    contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
-    audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
-    contentPlan: { id: 'program.label.contentPlan', defaultMessage: 'Content Plan' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -810,13 +806,6 @@ export const programMessages = {
     },
     noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
     noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
-
-    practicePrivateTips: { id: 'program.text.practicePrivateTips', defaultMessage: '勾選後學員將只能看到自己的作品' },
-    practiceFileSizeTips: { id: 'program.text.practiceFileSizeTips', defaultMessage: '單檔案大小不超過 5GB' },
-    deleteContentWarning: {
-      id: 'program.text.deleteContentWarning',
-      defaultMessage: '你確定要刪除此內容？此動作無法還原',
-    },
     deleteQuestionDescription: {
       id: 'program.text.deleteQuestionDescription',
       defaultMessage: '題目刪除即不可恢復，確定要刪除嗎？',
@@ -863,9 +852,6 @@ export const programMessages = {
     deleteQuestion: { id: 'program.ui.deleteQuestion', defaultMessage: '刪除題目' },
     deleteChoice: { id: 'program.ui.deleteChoice', defaultMessage: '刪除選項' },
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
-    videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
-    articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
-    audioContent: { id: 'program.ui.audioContent', defaultMessage: 'Audio content' },
     uploadAudioFile: { id: 'program.ui.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
 }
@@ -1168,6 +1154,7 @@ export const memberMessages = {
     memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
+    deleteMember: { id: 'member.ui.deleteMember', defaultMessage: '刪除會員' },
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
@@ -1226,6 +1213,10 @@ export const memberMessages = {
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+    },
+    deleteMemberConfirmation: {
+      id: 'member.text.deleteMemberConfirmation',
+      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？',
     },
     noMemberNote: {
       id: 'member.text.noMemberNote',

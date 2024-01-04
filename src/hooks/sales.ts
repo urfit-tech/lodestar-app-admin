@@ -3,13 +3,13 @@ import { gql } from '@apollo/client'
 import moment from 'moment'
 import { sum, prop, sortBy } from 'ramda'
 import hasura from '../hasura'
-import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
+import { SalesProps, LeadProps, LeadStatus, Manager, GetSalesLeadMemberDataInfo } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useProperty } from './member'
-import { useCategory } from './data'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import axios from 'axios'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION_BY_MEMBER_PERMISSION>(
@@ -152,11 +152,8 @@ export const useSales = (salesId: string) => {
     refetchSales: refetch,
   }
 }
-
 export const useManagerLeads = (manager: Manager) => {
-  const { id: appId } = useApp()
-  const { properties } = useProperty()
-  const { categories } = useCategory('member')
+  const { id: appId } = useApp();
   const {
     data: salesLeadMemberPhoneData,
     error: errorMembers,
@@ -164,27 +161,54 @@ export const useManagerLeads = (manager: Manager) => {
     refetch: refetchMembers,
   } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
     variables: { managerId: manager.id, appId },
-  })
+  });
+  const { authToken } = useAuth();
 
-  const {
-    data: salesLeadMemberData,
-    error,
-    loading,
-    refetch,
-  } = useQuery<hasura.GetSalesLeadMemberData, hasura.GetSalesLeadMemberDataVariables>(GetSalesLeadMemberData, {
-    variables: {
-      memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
-      propertyIds: properties.map(v => v.id),
-      categoryIds: categories.map(v => v.id),
-    },
-    notifyOnNetworkStatusChange: true,
-  })
+  const [salesLeadMemberInfo, setSalesLeadMemberInfo] = useState<GetSalesLeadMemberDataInfo>();
+  const [error, setError] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+  
+    if (authToken && salesLeadMemberPhoneData  && salesLeadMemberPhoneData?.member.length > 0) {
+      try {
+        const payload = {
+          memberIds: salesLeadMemberPhoneData.member.map((v: { id: any }) => v.id) || [],
+          appId: appId 
+        };
+  
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/saleLeadMemberData`,
+          payload,
+          { headers: { authorization: `Bearer ${authToken}` } },
+        );
+  
+        setSalesLeadMemberInfo(data);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  }, [authToken, salesLeadMemberPhoneData]);
+  
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = () => {
+    fetchData();
+  };
   const convertToLead = (v: hasura.GetSalesLeadMembers['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
-    const signed = Number(salesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
+    const signed = Number(salesLeadMemberInfo?.activeMemberContract?.filter(mc => mc.memberId === v.id).length) > 0
     const status: LeadStatus = v.followed_at
       ? 'FOLLOWED'
       : signed
@@ -195,9 +219,9 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'CLOSED'
       : v.completed_at
       ? 'COMPLETED'
-      : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id)?.status === 'done'
+      : salesLeadMemberInfo?.memberTask?.find(mt => mt.memberId === v.id)?.status === 'done'
       ? 'PRESENTED'
-      : salesLeadMemberData?.member_task.find(mt => mt.member_id === v.id) //member has member_task => INVITED demo
+      : salesLeadMemberInfo?.memberTask?.find(mt => mt.memberId === v.id) //member has member_task => INVITED demo
       ? 'INVITED'
       : v.last_member_note_answered
       ? 'ANSWERED'
@@ -211,18 +235,17 @@ export const useManagerLeads = (manager: Manager) => {
       email: v.email,
       pictureUrl: v.picture_url || '',
       createdAt: moment(v.created_at).toDate(),
-      phones: v.member_phones.map(_v => ({ phoneNumber: _v.phone, isValid: _v.is_valid })),
-      notes: salesLeadMemberData?.member_note.filter(mn => mn.member_id === v.id)[0]?.description || '',
+      phones: v.member_phones?.map(_v => ({ phoneNumber: _v.phone, isValid: _v.is_valid })),
+      notes: salesLeadMemberInfo?.memberNote?.filter(mn => mn.memberId === v.id)[0]?.description || '',
       categoryNames:
-        salesLeadMemberData?.member_category
-          .filter(mc => mc.member_id === v.id)
-          .map(_v => categories.find(c => c.id === _v.category_id)?.name || '') || [],
+      salesLeadMemberInfo?.memberCategory
+          .filter(mc => mc.memberId === v.id)
+          .map(_v => _v.name || '') || [],
       properties:
-        salesLeadMemberData?.member_property
-          .filter(mp => mp.member_id === v.id)
+        salesLeadMemberInfo?.memberProperty?.filter(mp => mp.memberId === v.id)
           .map(v => ({
-            id: properties.find(p => p.id === v.property_id)?.id || '',
-            name: properties.find(p => p.id === v.property_id)?.name || '',
+            id: v.propertyId || '',
+            name: v.name || '',
             value: v.value,
           })) || [],
       status,
@@ -239,7 +262,7 @@ export const useManagerLeads = (manager: Manager) => {
   }
 
   const totalLeads: LeadProps[] = sortBy(prop('id'))(
-    salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [],
+    salesLeadMemberPhoneData?.member.map(convertToLead)?.filter(notEmpty) || [],
   )
 
   return {
@@ -259,40 +282,9 @@ export const useManagerLeads = (manager: Manager) => {
     signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
     closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
     completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
-  }
-}
+  };
+};
 
-const GetSalesLeadMemberData = gql`
-  query GetSalesLeadMemberData($memberIds: [String!]!, $propertyIds: [uuid!]!, $categoryIds: [String!]!) {
-    member_task(where: { member_id: { _in: $memberIds } }, order_by: { created_at: desc }) {
-      member_id
-      status
-    }
-    member_property(where: { _and: [{ member_id: { _in: $memberIds } }, { property_id: { _in: $propertyIds } }] }) {
-      member_id
-      property_id
-      value
-    }
-    member_phone(where: { member_id: { _in: $memberIds } }) {
-      member_id
-      phone
-    }
-    member_note(order_by: { created_at: desc }, where: { member_id: { _in: $memberIds }, type: { _is_null: true } }) {
-      member_id
-      description
-    }
-    member_category(where: { _and: [{ member_id: { _in: $memberIds } }, { category_id: { _in: $categoryIds } }] }) {
-      member_id
-      category_id
-    }
-    active_member_contract: member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
-      member_id
-      agreed_at
-      revoked_at
-      values
-    }
-  }
-`
 const GetSalesLeadMembers = gql`
   query GetSalesLeadMembers($appId: String!, $managerId: String!) {
     member(

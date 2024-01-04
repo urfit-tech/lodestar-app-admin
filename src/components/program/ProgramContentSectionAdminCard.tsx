@@ -118,7 +118,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                   .catch(handleError)
               }
             >
-              {formatMessage(programMessages.ProgramContentSectionAdminCard.videoContent)}
+              {formatMessage(programMessages['*'].videoContent)}
             </StyledMenuItem>
             <StyledMenuItem
               onClick={() =>
@@ -136,7 +136,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                   .catch(handleError)
               }
             >
-              {formatMessage(programMessages.ProgramContentSectionAdminCard.articleContent)}
+              {formatMessage(programMessages['*'].articleContent)}
             </StyledMenuItem>
             <StyledMenuItem
               onClick={() =>
@@ -154,8 +154,28 @@ const ProgramContentSectionAdminCard: React.FC<{
                   .catch(handleError)
               }
             >
-              {formatMessage(programMessages.ProgramContentSectionAdminCard.audioContent)}
+              {formatMessage(programMessages['*'].audioContent)}
             </StyledMenuItem>
+            {enabledModules.ebook ? (
+              <StyledMenuItem
+                onClick={() =>
+                  createProgramContent({
+                    variables: {
+                      programContentSectionId: programContentSection.id,
+                      title: 'untitled',
+                      position: programContentSection.programContents.length,
+                      programContentType: 'ebook',
+                      publishedAt: isProgramPublished ? new Date() : null,
+                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                    },
+                  })
+                    .then(() => onRefetch?.())
+                    .catch(handleError)
+                }
+              >
+                {formatMessage(programMessages['*'].ebook)}
+              </StyledMenuItem>
+            ) : null}
             {enabledModules.practice && (
               <StyledMenuItem
                 onClick={() =>

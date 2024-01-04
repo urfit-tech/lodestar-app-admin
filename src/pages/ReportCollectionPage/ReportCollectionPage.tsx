@@ -92,17 +92,24 @@ const ReportCollectionPage: React.FC = () => {
           : '',
       render: (text, record, index) =>
         enabledModules.permission_group && permissions.REPORT_ADMIN ? (
-          <div>
-            <StyledTitle className="mr-2">
-              <Flex flexWrap="wrap">
-                {record.viewingPermissions?.map(viewingPermission => (
-                  <Box p="4px" m="4px" color="#9b9b9b" outline="solid 1px #cdcdcd" borderRadius="4px" bg="#fff">
-                    {viewingPermission.name}
-                  </Box>
-                ))}
-              </Flex>
-            </StyledTitle>
-          </div>
+          <Flex flexWrap="wrap">
+            {record.viewingPermissions?.map(viewingPermission => (
+              <Box
+                m="0 6px 6px 0"
+                px="4px"
+                color="#9b9b9b"
+                outline="solid 1px #cdcdcd"
+                borderRadius="4px"
+                bg="#fff"
+                fontWeight="500"
+                lineHeight="22px"
+                fontSize="12px"
+                letterSpacing="0.6px"
+              >
+                {viewingPermission.name}
+              </Box>
+            ))}
+          </Flex>
         ) : null,
     },
     {

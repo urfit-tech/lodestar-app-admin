@@ -617,6 +617,7 @@ const SalesLeadTable: React.VFC<{
                       ) {
                         message.success('已成功收錄！')
                         onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -656,6 +657,7 @@ const SalesLeadTable: React.VFC<{
                       ) {
                         message.success('已成功取消收藏！')
                         onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -696,6 +698,7 @@ const SalesLeadTable: React.VFC<{
                       ) {
                         message.success('已成功完成此名單！')
                         onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -736,6 +739,7 @@ const SalesLeadTable: React.VFC<{
                       ) {
                         message.success('已取消已完成名單！')
                         onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -777,6 +781,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已成功回收此名單！')
                           onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -815,6 +820,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已成功拒絕此名單！')
                           onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -853,6 +859,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已成功刪除此名單！')
                           onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
