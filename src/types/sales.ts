@@ -15,7 +15,7 @@ export type LeadStatus =
 
 export type Manager = {
   id: string
-  avatarUrl: string | null
+  avatarUrl: string | null  
   name: string
   username: string
   email: string
@@ -128,72 +128,4 @@ export type SalesMemberProps = {
 export type GroupSettingProps = {
   name: string
   sales: SalesMemberProps[]
-}
-
-export type MemberTask = {
-  memberId: string
-  status: string
-}
-
-export type MemberProperty = {
-  name: string
-  memberId: string
-  propertyId: string
-  value: string
-}
-
-export type MemberPhone = {
-  memberId: string
-  phone: string
-}
-
-export type MemberNote = {
-  memberId: string | null
-  description: string | null
-}
-
-export type MemberCategory = {
-  name: string
-  memberId: string
-  categoryId: string
-}
-
-export type MemberContract = {
-  memberId: string
-  agreedAt: Date | null
-  revokedAt: Date | null
-  values: any | null
-}
-
-export type ApiResponse = {
-  data: {
-    member_task: Array<{
-      memberId: string
-      status: string
-    }>
-    member_property: Array<{
-      memberId: string
-      propertyId: string
-      value: string
-    }>
-    member_phone: Array<{
-      memberId: string
-      phone: string
-    }>
-    active_member_contract: Array<{
-      memberId: string
-      agreed_at: string | null
-      revoked_at: string | null
-      values: any | null
-    }>
-  }
-}
-
-export type GetSalesLeadMemberDataInfo = {
-  memberTask: MemberTask[]
-  memberProperty: MemberProperty[]
-  memberPhone: MemberPhone[]
-  memberNote: MemberNote[]
-  memberCategory: MemberCategory[]
-  activeMemberContract: MemberContract[]
 }
