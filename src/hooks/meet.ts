@@ -35,9 +35,9 @@ export const useMutateMeet = () => {
       }
     }
   `)
-  const [deleteMeet] = useMutation<hasura.DeleteMeet, hasura.DeleteMeetVariables>(gql`
+  const [deleteGeneralMeet] = useMutation<hasura.DeleteMeet, hasura.DeleteMeetVariables>(gql`
     mutation DeleteMeet($meetId: uuid!) {
-      update_meet_by_pk(pk_columns: { id: $meetId }, _set:{deleted_at:"now()"}) {
+      update_meet_by_pk(pk_columns: { id: $meetId }, _set: { deleted_at: "now()" }) {
         id
       }
     }
@@ -45,7 +45,7 @@ export const useMutateMeet = () => {
   return {
     insertMeet,
     updateMeet,
-    deleteMeet,
+    deleteGeneralMeet,
   }
 }
 
@@ -59,7 +59,10 @@ export const useMutateMeetMember = () => {
   `)
   const [deleteMeetMember] = useMutation<hasura.DeleteMeetMember, hasura.DeleteMeetMemberVariables>(gql`
     mutation DeleteMeetMember($meetId: uuid!, $memberId: String!) {
-      update_meet_member(where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } },_set:{deleted_at:"now()"}) {
+      update_meet_member(
+        where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } }
+        _set: { deleted_at: "now()" }
+      ) {
         affected_rows
       }
     }
@@ -78,19 +81,18 @@ export const GetOverlapMeets = gql`
         started_at: { _lte: $endedAt }
         ended_at: { _gte: $startedAt }
         deleted_at: { _is_null: true }
-        meet_members:{
-          deleted_at:{_is_null:true}
-        }
+        meet_members: { deleted_at: { _is_null: true } }
       }
     ) {
       id
       target
       host_member_id
       service_id
-      meet_members{
+      meet_members {
         id
         member_id
       }
+      gateway
     }
   }
 `
@@ -100,6 +102,7 @@ export const GetMeetById = gql`
     meet_by_pk(id: $meetId) {
       id
       type
+      gateway
     }
   }
 `
