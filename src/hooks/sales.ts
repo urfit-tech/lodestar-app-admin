@@ -175,7 +175,7 @@ export const useManagerLeads = (manager: Manager) => {
     if (authToken && salesLeadMemberPhoneData  && salesLeadMemberPhoneData?.member.length > 0) {
       try {
         const payload = {
-          memberIds: salesLeadMemberPhoneData.member.map((v: { id: any }) => v.id) || [],
+          managerId: manager.id,
           appId: appId 
         };
   
