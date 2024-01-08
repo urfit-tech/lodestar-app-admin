@@ -67,6 +67,10 @@ const appointmentMessages = {
       id: 'appointment.AppointmentPeriodCard.notYetConfigured',
       defaultMessage: 'not yet configured',
     },
+    downloadMeetingRecord: {
+      id: 'appointment.AppointmentPeriodCard.downloadMeetingRecord',
+      defaultMessage: '下載錄影',
+    },
   }),
   AppointmentDetailModal: defineMessages({
     email: { id: 'appointmentMessages.AppointmentDetailModal.email', defaultMessage: '信箱' },
