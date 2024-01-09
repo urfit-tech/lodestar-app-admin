@@ -198,7 +198,7 @@ const AppointmentPeriodCard: React.FC<
                       return downloadFile(
                         `${appointmentPlan.title}_${dayjs(startedAt).format('YYYY-MM-DD-HHmm')}_${dayjs(endedAt).format(
                           'YYYY-MM-DD-HHmm',
-                        )}`,
+                        )}.mp4`,
                         {
                           url: link,
                         },
