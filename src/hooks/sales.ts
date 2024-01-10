@@ -172,7 +172,7 @@ export const useManagerLeads = (manager: Manager) => {
     setLoading(true);
     setError(null);
   
-    if (authToken && salesLeadMemberPhoneData  && salesLeadMemberPhoneData?.member.length > 0) {
+    if (authToken && manager && manager.id && appId ) {
       try {
         const payload = {
           managerId: manager.id,
@@ -194,7 +194,7 @@ export const useManagerLeads = (manager: Manager) => {
     } else {
       setLoading(false);
     }
-  }, [authToken, salesLeadMemberPhoneData]);
+  }, [authToken]);
   
 
   useEffect(() => {
