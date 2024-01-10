@@ -287,6 +287,7 @@ export const useMemberNotesAdmin = (
           created_at
           type
           status
+          metadata
           author {
             id
             picture_url
@@ -315,7 +316,17 @@ export const useMemberNotesAdmin = (
 
   const notes: Pick<
     MemberNote,
-    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+    | 'id'
+    | 'createdAt'
+    | 'type'
+    | 'status'
+    | 'author'
+    | 'member'
+    | 'duration'
+    | 'description'
+    | 'note'
+    | 'attachments'
+    | 'metadata'
   >[] =
     data?.member_note.map(v => ({
       id: v.id,
@@ -341,6 +352,7 @@ export const useMemberNotesAdmin = (
         data: u.data,
         options: u.options,
       })),
+      metadata: v.metadata,
     })) || []
 
   const loadMoreNotes =

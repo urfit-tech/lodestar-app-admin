@@ -46,6 +46,7 @@ const MemberNoteAdminModal: React.FC<
         | 'description'
         | 'note'
         | 'attachments'
+        | 'metadata'
       >
       onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
       info?: {
@@ -196,13 +197,16 @@ const MemberNoteAdminModal: React.FC<
                 fileList={attachments}
                 onChange={files => setAttachments(files)}
                 downloadableLink={
-                  note?.attachments &&
-                  (file => {
-                    const attachmentId = note.attachments?.find(
-                      v => v.data.name === file.name && v.data.lastModified,
-                    )?.id
-                    return `attachments/${attachmentId}`
-                  })
+                  note?.attachments
+                    ? note?.metadata?.meetId
+                      ? file => file.name
+                      : file => {
+                          const attachmentId = note.attachments?.find(
+                            v => v.data.name === file.name && v.data.lastModified,
+                          )?.id
+                          return `attachments/${attachmentId}`
+                        }
+                    : undefined
                 }
               />
             </Form.Item>

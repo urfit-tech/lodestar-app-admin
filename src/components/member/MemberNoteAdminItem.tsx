@@ -49,7 +49,17 @@ const StyledAuthorName = styled.div`
 const MemberNoteAdminItem: React.FC<{
   note: Pick<
     MemberNote,
-    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+    | 'id'
+    | 'createdAt'
+    | 'type'
+    | 'status'
+    | 'author'
+    | 'member'
+    | 'duration'
+    | 'description'
+    | 'note'
+    | 'attachments'
+    | 'metadata'
   >
   onRefetch?: () => void
 }> = ({ note, onRefetch }) => {
