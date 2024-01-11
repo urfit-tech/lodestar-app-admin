@@ -9,7 +9,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { dateRangeFormatter, handleError } from '../../helpers'
+import { dateRangeFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
 import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
@@ -182,6 +182,37 @@ const AppointmentPeriodCard: React.FC<
       </StyledInfo>
 
       <div className="d-flex align-items-center justify-content-end">
+        {enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom' ? (
+          <>
+            <Button
+              type="link"
+              size="small"
+              disabled={!meet?.recording_url || !meet.recording_type}
+              onClick={
+                meet
+                  ? async () => {
+                      const link = await getFileDownloadableLink(
+                        meet.recording_url ? meet.recording_url : `meets/${meet.id}.${meet.recording_type}`,
+                        authToken,
+                      )
+                      return downloadFile(
+                        `${appointmentPlan.title}_${dayjs(startedAt).format('YYYY-MM-DD-HHmm')}_${dayjs(endedAt).format(
+                          'YYYY-MM-DD-HHmm',
+                        )}.mp4`,
+                        {
+                          url: link,
+                        },
+                      )
+                    }
+                  : undefined
+              }
+            >
+              {formatMessage(appointmentMessages.AppointmentPeriodCard.downloadMeetingRecord)}
+            </Button>
+            <Divider type="vertical" />
+          </>
+        ) : null}
+
         <AppointmentIssueAndResultModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" size="small" onClick={() => setVisible(true)}>
