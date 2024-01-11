@@ -153,6 +153,13 @@ export const useMemberAdmin = (memberId: string) => {
                 }
               }
             }
+            order_discounts_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
           }
           member_categories {
             category {
@@ -223,8 +230,17 @@ export const useMemberAdmin = (memberId: string) => {
             : null,
           noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: sum(
-            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          consumption: Math.max(
+            sum(
+              data.member_by_pk.order_logs.map(
+                orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0,
+              ),
+            ) -
+              sum(
+                data.member_by_pk.order_logs.map(
+                  orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+                ),
+              ),
           ),
           coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
           categories: data.member_by_pk.member_categories.map(v => ({
