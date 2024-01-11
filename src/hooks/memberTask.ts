@@ -24,7 +24,7 @@ export const useMutateMemberTask = () => {
           ]
         }
       ) {
-          id
+        id
       }
     }
   `)
@@ -37,7 +37,7 @@ export const useMutateMemberTask = () => {
   `)
   const [deleteMemberTask] = useMutation<hasura.DeleteMemberTask, hasura.DeleteMemberTaskVariables>(gql`
     mutation DeleteMemberTask($memberTaskId: String!) {
-      delete_member_task(where: { id: { _eq: $memberTaskId } }) {
+      update_member_task(where: { id: { _eq: $memberTaskId } }, _set: { deleted_at: "now()" }) {
         affected_rows
       }
     }

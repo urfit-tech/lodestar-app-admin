@@ -431,6 +431,8 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
           id
           host_member_id
           options
+          recording_url
+          recording_type
           meet_members {
             id
             member_id
@@ -450,12 +452,16 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
   const meet: {
     id: string
     hostMemberId: string
+    recording_url: string | null
+    recording_type: string | null
     options: any
     meetMembers: { id: string; memberId: string }[]
   } | null = data?.meet?.[0]
     ? {
         id: data.meet[0].id,
         hostMemberId: data.meet[0].host_member_id,
+        recording_url: data.meet[0].recording_url || null,
+        recording_type: data.meet[0].recording_type || null,
         options: data.meet[0].options,
         meetMembers: data.meet[0].meet_members.map(v => ({
           id: v.id,
