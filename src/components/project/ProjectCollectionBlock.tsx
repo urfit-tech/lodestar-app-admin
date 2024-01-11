@@ -150,7 +150,7 @@ const ProjectCollectionBlock: React.FC<{
 const useProjectPreviewCollection = (
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
   orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
-    { created_at: 'desc_nulls_last' as hasura.order_by },
+    { published_at: 'desc_nulls_last' as hasura.order_by },
   ],
 ) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
