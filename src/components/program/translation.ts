@@ -85,6 +85,10 @@ const programMessages = {
     privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },
   }),
   ProgramContentAdminModal: defineMessages({
+    ebookFile: {
+      id: 'program.ProgramContentAdminModal.ebookFile',
+      defaultMessage: '電子書檔案',
+    },
     uploadEbookFileTips: {
       id: 'program.ProgramContentAdminModal.uploadEbookFileTips',
       defaultMessage: '只接受符合 EPUB 3 格式檔案',
