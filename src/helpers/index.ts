@@ -451,7 +451,7 @@ export const fuzzySearch = (searchText: string, targetText: string) => {
   return true
 }
 
-export const deleteMeeting = async (meetId: string, authToken: string | null) => {
+export const deleteZoomMeet = async (meetId: string, authToken: string | null) => {
   if (!meetId) return
   const response = await axios.delete(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`, {
     headers: {
