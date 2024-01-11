@@ -36,6 +36,7 @@ import {
   getVideoIDByURL,
   handleError,
   uploadFile,
+  uploadFileV2,
 } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
