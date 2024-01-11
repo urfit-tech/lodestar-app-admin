@@ -227,24 +227,22 @@ const ProgramContentAdminModal: React.FC<{
     }
     setIsUploadFailed(uploadError)
 
-    // upload ebook
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
-    if (enabledModules.ebook && contentType === 'ebook' && newEbookFile) {
-      if (programContent.programContentType !== 'ebook') {
-        deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
-        deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
-      }
 
-      await uploadFile(`ebooks/${appId}/${programContent.id}`, newEbookFile, authToken, {
+    if (programContent.programContentType !== 'ebook' || !ebookFile) {
+      deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
+      deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
+    }
+    if (enabledModules.ebook && contentType === 'ebook' && newEbookFile) {
+      await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
         cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
         onUploadProgress: ({ loaded, total }) => {
           setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
         },
-      }).catch(() => {
+      }).catch(error => {
         uploadError.materials = true
         setFailedUploadFiles(prev => [...prev, newEbookFile])
       })
-
       const url = await convertFileToArrayBuffer(newEbookFile).catch(handleError)
       const book = Epub(url)
       const toc = (await book.loaded.navigation).toc as NavItem[]
@@ -628,7 +626,7 @@ const ProgramContentAdminModal: React.FC<{
               )}
 
               {enabledModules.ebook && contentType === 'ebook' ? (
-                <Form.Item label="電子書檔案">
+                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
                   <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
                     {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
                   </Box>

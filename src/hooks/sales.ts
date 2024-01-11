@@ -194,7 +194,7 @@ export const useManagerLeads = (manager: Manager) => {
     } else {
       setLoading(false);
     }
-  }, [authToken]);
+  }, [authToken , manager.id]);
   
 
   useEffect(() => {
