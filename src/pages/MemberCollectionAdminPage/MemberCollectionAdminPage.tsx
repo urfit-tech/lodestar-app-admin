@@ -378,6 +378,7 @@ const TableBlock: React.VFC<{
     loadingMemberPhones,
     loadingManagerInfo,
     loadingMemberOrderProductPrice,
+    loadingMemberOrderDiscountPrice,
     loadingMemberTags,
     loadingMemberProperties,
     memberCollection,
@@ -508,7 +509,12 @@ const TableBlock: React.VFC<{
       dataIndex: 'consumption',
       key: 'consumption',
       align: 'right',
-      render: (_, record) => (loadingMemberOrderProductPrice ? <Spin /> : currencyFormatter(record.consumption)),
+      render: (_, record) =>
+        loadingMemberOrderProductPrice && loadingMemberOrderDiscountPrice ? (
+          <Spin />
+        ) : (
+          currencyFormatter(record.consumption)
+        ),
       sorter: (a, b) => a.consumption - b.consumption,
     },
     {
