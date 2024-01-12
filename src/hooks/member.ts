@@ -153,6 +153,13 @@ export const useMemberAdmin = (memberId: string) => {
                 }
               }
             }
+            order_discounts_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
           }
           member_categories {
             category {
@@ -223,8 +230,17 @@ export const useMemberAdmin = (memberId: string) => {
             : null,
           noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: sum(
-            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          consumption: Math.max(
+            sum(
+              data.member_by_pk.order_logs.map(
+                orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0,
+              ),
+            ) -
+              sum(
+                data.member_by_pk.order_logs.map(
+                  orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+                ),
+              ),
           ),
           coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
           categories: data.member_by_pk.member_categories.map(v => ({
@@ -784,6 +800,29 @@ export const useMemberCollection = (
     { variables: { memberIdList: members.map(member => member.id) } },
   )
 
+  const {
+    loading: loadingMemberOrderDiscountPrice,
+    data: memberOrderDiscountPriceData,
+    refetch: refetchMemberOrderDiscountPrice,
+  } = useQuery<hasura.GetMemberOrderDiscountPrice, hasura.GetMemberOrderDiscountPriceVariables>(
+    gql`
+      query GetMemberOrderDiscountPrice($memberIdList: [String!]) {
+        order_log(where: { member_id: { _in: $memberIdList }, status: { _eq: "SUCCESS" } }) {
+          id
+          member_id
+          order_discounts_aggregate {
+            aggregate {
+              sum {
+                price
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberIdList: members.map(member => member.id) } },
+  )
+
   const { loading: loadingManagerInfo, data: managerInfoData } = useQuery<
     hasura.GetManagerInfo,
     hasura.GetManagerInfoVariables
@@ -868,6 +907,12 @@ export const useMemberCollection = (
       price: v.order_products_aggregate.aggregate?.sum?.price || 0,
     })) || []
 
+  const memberOrderDiscountPrice: { memberId: string; price: number }[] =
+    memberOrderDiscountPriceData?.order_log.map(v => ({
+      memberId: v.member_id,
+      price: v.order_discounts_aggregate.aggregate?.sum?.price || 0,
+    })) || []
+
   const memberCollection: MemberInfoProps[] =
     members.map(v => ({
       ...v,
@@ -876,10 +921,17 @@ export const useMemberCollection = (
         memberPhonesData?.member_phone
           .filter(memberPhone => memberPhone.member_id === v.id)
           .map(memberPhone => memberPhone.phone) || [],
-      consumption: sum(
-        memberOrderProductPrice
-          .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
-          .map(memberOrderProduct => memberOrderProduct.price),
+      consumption: Math.max(
+        sum(
+          memberOrderProductPrice
+            .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
+            .map(memberOrderProduct => memberOrderProduct.price),
+        ) -
+          sum(
+            memberOrderDiscountPrice
+              .filter(memberOrderDiscount => memberOrderDiscount.memberId === v.id)
+              .map(memberOrderDiscount => memberOrderDiscount.price),
+          ),
       ),
       manager: managerInfoData?.member.find(manager => manager.id === v.id)
         ? {
@@ -909,11 +961,13 @@ export const useMemberCollection = (
     loadingMemberPhones,
     loadingManagerInfo,
     loadingMemberOrderProductPrice,
+    loadingMemberOrderDiscountPrice,
     loadingMemberCategories,
     loadingMemberTags,
     loadingMemberProperties,
     memberCollection,
     refetchMemberOrderProductPrice,
+    refetchMemberOrderDiscountPrice,
     refetchMemberCategories,
     refetchMemberTags,
     refetchMemberProperties,
