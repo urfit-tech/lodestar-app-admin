@@ -651,7 +651,7 @@ const ProgramContentAdminModal: React.FC<{
                     fileList={ebookFile ? [ebookFile] : []}
                     uploadProgress={uploadProgress}
                     failedUploadFiles={failedUploadFiles}
-                    downloadableLink={() => `ebooks/${appId}/${programId}/${programContent.id}`}
+                    downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
                     onChange={files => files && setEbookFile(files[0])}
                   />
                 </Form.Item>
