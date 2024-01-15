@@ -6,7 +6,7 @@ import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { AppProps, Permission } from 'lodestar-app-element/src/types/app'
+import { AppProps } from 'lodestar-app-element/src/types/app'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -114,7 +114,6 @@ const MemberCollectionAdminPage: React.FC = () => {
           currentUserRole={currentUserRole}
           appId={appId}
           enabledModules={enabledModules}
-          permissions={permissions}
           settings={settings}
           authToken={authToken}
         />
@@ -127,11 +126,11 @@ const MemberCollectionBlock: React.VFC<
   Pick<AppProps, 'enabledModules' | 'settings'> & {
     currentUserRole: string
     appId: string
-    permissions: { [key in Permission]?: boolean }
     authToken: string
   }
-> = ({ currentUserRole, appId, enabledModules, settings, permissions, authToken }) => {
+> = ({ currentUserRole, appId, enabledModules, settings, authToken }) => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
   const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
@@ -213,11 +212,13 @@ const MemberCollectionBlock: React.VFC<
     <>
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex">
-          <div className="mr-3">
-            <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
-          </div>
+          {permissions.MEMBER_ROLE_SELECT && (
+            <div className="mr-3">
+              <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
+            </div>
+          )}
 
-          {enabledModules.permission_group && currentUserRole === 'app-owner' ? (
+          {enabledModules.permission_group && permissions.MEMBER_PERMISSION_GROUP_SELECT ? (
             <PermissionGroupsDropDownSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
           ) : null}
         </div>
