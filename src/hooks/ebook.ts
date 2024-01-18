@@ -37,9 +37,24 @@ export const useMutateProgramContentEbook = () => {
       }
     }
   `)
+
+  const [deleteProgramContentEbookTocProgress] = useMutation<
+    hasura.DeleteProgramContentEbookTocProgress,
+    hasura.DeleteProgramContentEbookTocProgressVariables
+  >(gql`
+    mutation DeleteProgramContentEbookTocProgress($programContentId: uuid!) {
+      delete_program_content_ebook_toc_progress(
+        where: { program_content_ebook_toc: { program_content_id: { _eq: $programContentId } } }
+      ) {
+        affected_rows
+      }
+    }
+  `)
+
   return {
     insertProgramContentEbook,
     deleteProgramContentEbook,
     deleteProgramContentEbookToc,
+    deleteProgramContentEbookTocProgress,
   }
 }

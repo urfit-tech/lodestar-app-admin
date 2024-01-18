@@ -131,8 +131,12 @@ const ProgramContentAdminModal: React.FC<{
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const { updatePlans, updateMaterials, updateVideos, updateAudios } = useProgramContentActions(programContent.id)
   const { insertAttachment } = useMutateAttachment()
-  const { insertProgramContentEbook, deleteProgramContentEbook, deleteProgramContentEbookToc } =
-    useMutateProgramContentEbook()
+  const {
+    insertProgramContentEbook,
+    deleteProgramContentEbook,
+    deleteProgramContentEbookToc,
+    deleteProgramContentEbookTocProgress,
+  } = useMutateProgramContentEbook()
 
   const uploadCanceler = useRef<Canceler>()
   const [visible, setVisible] = useState(false)
@@ -231,6 +235,7 @@ const ProgramContentAdminModal: React.FC<{
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
 
     if (programContent.programContentType !== 'ebook' || !ebookFile) {
+      deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
       deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
       deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
     }
@@ -651,7 +656,7 @@ const ProgramContentAdminModal: React.FC<{
                     fileList={ebookFile ? [ebookFile] : []}
                     uploadProgress={uploadProgress}
                     failedUploadFiles={failedUploadFiles}
-                    downloadableLink={() => `ebooks/${appId}/${programId}/${programContent.id}`}
+                    downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
                     onChange={files => files && setEbookFile(files[0])}
                   />
                 </Form.Item>
