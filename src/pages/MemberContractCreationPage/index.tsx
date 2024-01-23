@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
@@ -352,7 +351,10 @@ const useContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
+        contract(
+          where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
+          order_by: { created_at: desc }
+        ) {
           id
           name
           options
