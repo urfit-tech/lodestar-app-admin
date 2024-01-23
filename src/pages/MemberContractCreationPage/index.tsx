@@ -464,7 +464,10 @@ const usePrivateTeachContractInfo = (
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false }, app_id: { _eq: $appId } }) {
+        contract(
+          where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
+          order_by: { created_at: desc }
+        ) {
           id
           name
           options
