@@ -152,6 +152,20 @@ export const useSales = (salesId: string) => {
     refetchSales: refetch,
   }
 }
+
+export const useGetManagerWithMemberCount = (managerId: string, appId: string) => {
+  const { data, error, loading, refetch } = useQuery(GetManagerWithMemberCount, {
+    variables: { managerId, appId },
+  });
+
+  return {
+    salesLeadMemberPhoneData: data,
+    errorMembers: error,
+    loadingMembers: loading,
+    refetchMembers: refetch,
+  };
+};
+
 export const useManagerLeads = (manager: Manager) => {
   const { id: appId } = useApp();
   const {
@@ -311,4 +325,19 @@ const GetSalesLeadMembers = gql`
       }
     }
   }
+`
+
+const GetManagerWithMemberCount = gql`
+  query GetManagerMemberCount($appId: String!, $managerId: String!) {
+  manager: member_by_pk(id: $managerId) {
+    id
+    name
+    email
+  }
+  memberCount: member_aggregate(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
+    aggregate {
+      count
+    }
+  }
+}
 `
