@@ -32,6 +32,7 @@ import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura, { member_bool_exp } from '../../hasura'
 import { useProperty } from '../../hooks/member'
+import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
 type LeadTypeFilter = 'contained' | 'only' | 'excluded'
@@ -80,6 +81,35 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     { fetchPolicy: 'no-cache' },
   )
 
+  const [visible, setVisible] = useState(false)
+  const [tempMemberIds, setTempMemberIds] = useState<string[]>([])
+  const [tempManagerId, setTempManagerId] = useState<string>('')
+
+  // Extracted logic for updateLeadManager
+  const updateLeadManagerProcess = (memberIds: string[], managerId: string) => {
+    updateLeadManager({ variables: { memberIds, managerId } })
+      .then(({ data }) => {
+        setAssignedResult({
+          status: 'success',
+          data: data?.update_member?.affected_rows || 0,
+        })
+      })
+      .catch(error => {
+        setAssignedResult({
+          status: 'error',
+          error,
+        })
+      })
+  }
+
+  // Handle Modal Confirmation
+  const handleModalConfirm = () => {
+    setVisible(false)
+    if (tempManagerId !== null) {
+      updateLeadManagerProcess(tempMemberIds, tempManagerId)
+    }
+  }
+
   return (
     <AdminLayout>
       <div className="mb-5 d-flex justify-content-between align-items-center">
@@ -109,26 +139,23 @@ const SalesLeadDeliveryPage: React.VFC = () => {
         <ConfirmSection
           filter={filter}
           onNext={({ condition, limit, managerId }) => {
-            setCurrentStep(step => step + 1)
             setAssignedResult({
               status: 'info',
             })
             getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
-                const memberIds = data?.member.map(m => m.id)
-                updateLeadManager({ variables: { memberIds, managerId } })
-                  .then(({ data }) => {
-                    setAssignedResult({
-                      status: 'success',
-                      data: data?.update_member?.affected_rows || 0,
-                    })
-                  })
-                  .catch(error => {
-                    setAssignedResult({
-                      status: 'error',
-                      error,
-                    })
-                  })
+                const memberIds = data?.member?.map(m => m.id) || []
+                setTempMemberIds(memberIds) // Set the state
+                setTempManagerId(managerId || '') // Set the state
+                console.log({ memberIds, managerId })
+                if (memberIds.length > 0) {
+                  setVisible(true)
+                } else {
+                  setCurrentStep(step => step + 1)
+                  if (managerId !== null) {
+                    updateLeadManagerProcess(memberIds, managerId)
+                  }
+                }
               })
               .catch(error => {
                 setAssignedResult({
@@ -142,6 +169,20 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       {currentStep === 2 && assignedResult && (
         <ResultSection result={assignedResult} onBack={() => setCurrentStep(0)} />
       )}
+
+      <SalesLeadLimitConfirmModel
+        email={'some data '}
+        visible={visible}
+        setVisible={setVisible}
+        setCurrentStep={setCurrentStep}
+        onConfirm={handleModalConfirm}
+        confirmationData={{
+          email: 'somedata',
+          memberCount: 1,
+          actionCount: 1,
+          totalCount: 1,
+        }}
+      />
     </AdminLayout>
   )
 }
