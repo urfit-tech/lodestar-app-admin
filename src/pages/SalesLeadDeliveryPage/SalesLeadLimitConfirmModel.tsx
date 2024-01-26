@@ -1,15 +1,9 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { Button, Form, Modal } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { salesLeadDeliveryPageMessages } from './translation'
-
-interface ConfirmationData {
-  managerId: string
-  actionCount: number
-}
 
 interface SalesLeadLimitConfirmModelProps {
   visible: boolean
@@ -21,14 +15,18 @@ interface SalesLeadLimitConfirmModelProps {
 }
 
 const StyledModalTitle = styled.div`
-  color: var(--gray);
+  color: var(--gray-darker);
   font-size: 20px;
   font-weight: bold;
 `
 
-const StyledDeleteButton = styled(Button)`
-  background-color: var(--gray-darker);
-  color: white;
+const StyledHighlightedNumber = styled.span`
+  color: var(--error);
+  height: 24px;
+`
+
+const StyledFormItem = styled(Form.Item)`
+  color: var(--gray-darker);
 `
 
 const StyledModal = styled(Modal)`
@@ -68,23 +66,6 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
     }
   `
 
-  const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
-    UPDATE_LEAD_MANAGER,
-  )
-
-  const GET_LEAD_CANDIDATES = gql`
-    query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
-      member(where: $condition, limit: $limit) {
-        id
-      }
-    }
-  `
-
-  const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
-    GET_LEAD_CANDIDATES,
-    { fetchPolicy: 'no-cache' },
-  )
-
   const handleSubmit = async () => {
     setCurrentStep(step => step + 1)
     onConfirm()
@@ -98,13 +79,13 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
       destroyOnClose
       visible={visible}
       onCancel={() => setVisible(false)}
-      width={384}
+      width={429}
     >
       <StyledModalTitle className="mb-4">
         {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.exceededLimitTitle)}
       </StyledModalTitle>
       <Form layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
-        <Form.Item className="text-left">
+        <StyledFormItem className="text-left">
           <span>
             {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchTargetInfo, {
               managerName,
@@ -112,22 +93,23 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
               currentHoldingsCount,
             })}
           </span>
-        </Form.Item>
-        <Form.Item className="text-left">
+        </StyledFormItem>
+        <StyledFormItem className="text-left">
           <span>
-            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchConfirmation, {
-              anticipatedDispatchCount,
-              totalAfterDispatch,
-            })}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchConfirmationPart1)}{' '}
+            <StyledHighlightedNumber>{anticipatedDispatchCount}</StyledHighlightedNumber>{' '}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchConfirmationPart2)}{' '}
+            <StyledHighlightedNumber>{totalAfterDispatch}</StyledHighlightedNumber>{' '}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchConfirmationPart3)}
           </span>
-        </Form.Item>
+        </StyledFormItem>
         <Form.Item className="text-right">
           <Button onClick={() => setVisible(false)} className="mr-2">
             {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.backButton)}
           </Button>
-          <StyledDeleteButton htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchButton)}
-          </StyledDeleteButton>
+          </Button>
         </Form.Item>
       </Form>
     </StyledModal>

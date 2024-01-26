@@ -51,9 +51,17 @@ export const salesLeadDeliveryPageMessages = {
       id: 'page.salesLeadDeliveryPage.dispatchTargetInfo',
       defaultMessage: '派發對象 {managerName}（{managerEmail}），目前已持有 {currentHoldingsCount} 筆名單',
     },
-    dispatchConfirmation: {
-      id: 'page.salesLeadDeliveryPage.dispatchConfirmation',
-      defaultMessage: '你預計再派發 {anticipatedDispatchCount} 筆名單給他，派發後將會超出上限數量，總計達到 {totalAfterDispatch} 筆，確定要派發嗎？',
+    dispatchConfirmationPart1: {
+      id: 'page.salesLeadDeliveryPage.dispatchConfirmationPart1',
+      defaultMessage: '你預計再派發 ',
+    },
+    dispatchConfirmationPart2: {
+      id: 'page.salesLeadDeliveryPage.dispatchConfirmationPart2',
+      defaultMessage: ' 筆名單給他，派發後將會超出上限數量，總計達到 ',
+    },
+    dispatchConfirmationPart3: {
+      id: 'page.salesLeadDeliveryPage.dispatchConfirmationPart3',
+      defaultMessage: ' 筆，確定要派發嗎？',
     },
     dispatchButton: {
       id: 'page.salesLeadDeliveryPage.dispatchButton',
