@@ -42,4 +42,26 @@ export const salesLeadDeliveryPageMessages = {
     excluded: { id: 'page.salesLeadDeliveryPage.excluded', defaultMessage: 'excluded ' },
     closedRange: { id: 'page.salesLeadDeliveryPage.closedRange', defaultMessage: 'closed date range' },
   }),
+  salesLeadLimitConfirmationModelPage: defineMessages({
+    exceededLimitTitle: {
+      id: 'page.salesLeadDeliveryPage.exceededLimitTitle',
+      defaultMessage: '已超出名單上限',
+    },
+    dispatchTargetInfo: {
+      id: 'page.salesLeadDeliveryPage.dispatchTargetInfo',
+      defaultMessage: '派發對象 {managerName}（{managerEmail}），目前已持有 {currentHoldingsCount} 筆名單',
+    },
+    dispatchConfirmation: {
+      id: 'page.salesLeadDeliveryPage.dispatchConfirmation',
+      defaultMessage: '你預計再派發 {anticipatedDispatchCount} 筆名單給他，派發後將會超出上限數量，總計達到 {totalAfterDispatch} 筆，確定要派發嗎？',
+    },
+    dispatchButton: {
+      id: 'page.salesLeadDeliveryPage.dispatchButton',
+      defaultMessage: '派發',
+    },
+    backButton: {
+      id: 'page.salesLeadDeliveryPage.backButton',
+      defaultMessage: '返回',
+    },
+  })
 }

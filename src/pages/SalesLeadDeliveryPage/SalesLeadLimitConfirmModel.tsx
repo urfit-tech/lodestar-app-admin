@@ -1,11 +1,10 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Modal } from 'antd'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { commonMessages } from '../../helpers/translation'
+import { salesLeadDeliveryPageMessages } from './translation'
 
 interface ConfirmationData {
   managerId: string
@@ -48,10 +47,7 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
   confirmationData,
   anticipatedDispatchCount,
 }) => {
-  console.log(confirmationData)
   const [loading, setLoading] = useState(false)
-
-  const { currentUserRole, authToken } = useAuth()
 
   const { formatMessage } = useIntl()
 
@@ -104,23 +100,33 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
       onCancel={() => setVisible(false)}
       width={384}
     >
-      <StyledModalTitle className="mb-4">已超出名單上限</StyledModalTitle>
+      <StyledModalTitle className="mb-4">
+        {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.exceededLimitTitle)}
+      </StyledModalTitle>
       <Form layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
         <Form.Item className="text-left">
-          <span>{`派發對象 ${managerName}（${managerEmail}），目前已持有 ${currentHoldingsCount} 筆名單`}</span>
+          <span>
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchTargetInfo, {
+              managerName,
+              managerEmail,
+              currentHoldingsCount,
+            })}
+          </span>
         </Form.Item>
         <Form.Item className="text-left">
           <span>
-            你預計再派發 {anticipatedDispatchCount} 筆名單給他，派發後將會超出上限數量，總計達到 {totalAfterDispatch}{' '}
-            筆，確定要派發嗎？
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchConfirmation, {
+              anticipatedDispatchCount,
+              totalAfterDispatch,
+            })}
           </span>
         </Form.Item>
         <Form.Item className="text-right">
           <Button onClick={() => setVisible(false)} className="mr-2">
-            {formatMessage(commonMessages.ui.back)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.backButton)}
           </Button>
           <StyledDeleteButton htmlType="submit" loading={loading}>
-            派發
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchButton)}
           </StyledDeleteButton>
         </Form.Item>
       </Form>

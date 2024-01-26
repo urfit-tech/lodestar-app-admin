@@ -535,7 +535,7 @@ const ConfirmSection: React.FC<{
 
   const isLoading = isLeadCandidatesLoading
 
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
 
   const { managerWithMemberCountData, refetchMembers } = useGetManagerWithMemberCount(managerId as string, appId)
 
@@ -552,10 +552,9 @@ const ConfirmSection: React.FC<{
 
     const isAggregateAvailable = typeof memberCount === 'object' && memberCount !== null && 'aggregate' in memberCount
 
-    const limitCount = 1
+    const limitCount = Number(settings['manager_lead_limit'])
 
     if (isAggregateAvailable && memberCount.aggregate.count + numDeliver > limitCount) {
-      console.log('numDeliver', numDeliver)
       setVisible(true)
     } else {
       handleOnNext()
