@@ -557,6 +557,7 @@ const ConfirmSection: React.FC<{
     if (isAggregateAvailable && memberCount.aggregate.count + numDeliver > limitCount) {
       setVisible(true)
     } else {
+      setCurrentStep(step => step + 1)
       handleOnNext()
     }
   }
