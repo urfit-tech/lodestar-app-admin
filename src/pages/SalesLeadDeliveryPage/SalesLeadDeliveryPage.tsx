@@ -83,23 +83,6 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     { fetchPolicy: 'no-cache' },
   )
 
-  // Extracted logic for updateLeadManager
-  const updateLeadManagerProcess = (memberIds: string[], managerId: string) => {
-    updateLeadManager({ variables: { memberIds, managerId } })
-      .then(({ data }) => {
-        setAssignedResult({
-          status: 'success',
-          data: data?.update_member?.affected_rows || 0,
-        })
-      })
-      .catch(error => {
-        setAssignedResult({
-          status: 'error',
-          error,
-        })
-      })
-  }
-
   return (
     <AdminLayout>
       <div className="mb-5 d-flex justify-content-between align-items-center">
@@ -135,10 +118,20 @@ const SalesLeadDeliveryPage: React.VFC = () => {
             })
             getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
-                const memberIds = data?.member?.map(m => m.id) || []
-                if (managerId !== null) {
-                  updateLeadManagerProcess(memberIds, managerId)
-                }
+                const memberIds = data?.member.map(m => m.id)
+                updateLeadManager({ variables: { memberIds, managerId } })
+                  .then(({ data }) => {
+                    setAssignedResult({
+                      status: 'success',
+                      data: data?.update_member?.affected_rows || 0,
+                    })
+                  })
+                  .catch(error => {
+                    setAssignedResult({
+                      status: 'error',
+                      error,
+                    })
+                  })
               })
               .catch(error => {
                 setAssignedResult({
@@ -549,12 +542,16 @@ const ConfirmSection: React.FC<{
 
   const handleClick = () => {
     const memberCount = managerWithMemberCountData?.memberCount
-
     const isAggregateAvailable = typeof memberCount === 'object' && memberCount !== null && 'aggregate' in memberCount
 
-    const limitCount = Number(settings['manager_lead_limit'])
+    const managerLeadLimit = settings['manager_lead_limit']
+    const isManagerLeadLimitValid = managerLeadLimit && Number(managerLeadLimit) > 0
 
-    if (isAggregateAvailable && memberCount.aggregate.count + numDeliver > limitCount) {
+    if (
+      isManagerLeadLimitValid &&
+      isAggregateAvailable &&
+      memberCount.aggregate.count + numDeliver > Number(managerLeadLimit)
+    ) {
       setVisible(true)
     } else {
       setCurrentStep(step => step + 1)
