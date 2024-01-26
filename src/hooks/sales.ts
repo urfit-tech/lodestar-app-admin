@@ -11,6 +11,19 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
 
+type ManagerWithMemberCountData = {
+  manager: {
+    email: string;
+    id: string;
+    name: string;
+  } | null;
+  memberCount: {
+    aggregate: {
+      count: number;
+    }
+  } | null;
+}
+
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
     gql`
@@ -153,13 +166,54 @@ export const useSales = (salesId: string) => {
   }
 }
 
-export const useGetManagerWithMemberCount = (managerId: string, appId: string) => {
-  const { data, error, loading, refetch } = useQuery(GetManagerWithMemberCount, {
-    variables: { managerId, appId },
-  });
+const transformManagerData = (data: any): ManagerWithMemberCountData => {
+  if (!data || !data.manager || !data.memberCount?.aggregate) {
+    return { manager: null, memberCount: { aggregate: { count: 0 } } };
+  }
+
+  const { manager, memberCount: { aggregate } } = data;
 
   return {
-    salesLeadMemberPhoneData: data,
+    manager: {
+      email: manager.email,
+      id: manager.id,
+      name: manager.name,
+    },
+    memberCount: { 
+      aggregate: { 
+        count: aggregate.count 
+      }
+    },
+  };
+};
+
+export const useGetManagerWithMemberCount = (managerId: string, appId: string) => {
+  const isParamsValid = managerId && appId;
+
+  const { data, error, loading, refetch } = useQuery(GetManagerWithMemberCount, {
+    variables: { managerId, appId },
+    skip: !isParamsValid, 
+  });
+
+  useEffect(() => {
+    if (isParamsValid) {
+      refetch();
+    }
+  }, [managerId, appId, refetch, isParamsValid]);
+
+  const transformedData = useMemo(() => transformManagerData(data), [data]);
+
+  if (!isParamsValid) {
+    return {
+      managerWithMemberCountData: { manager: null, memberCount: 0 },
+      errorMembers: null,
+      loadingMembers: false,
+      refetchMembers: () => {},
+    };
+  }
+
+  return {
+    managerWithMemberCountData: transformedData,
     errorMembers: error,
     loadingMembers: loading,
     refetchMembers: refetch,

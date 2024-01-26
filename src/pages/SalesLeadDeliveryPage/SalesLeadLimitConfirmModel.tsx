@@ -5,22 +5,20 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { commonMessages, memberMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 
 interface ConfirmationData {
-  email: string
-  memberCount: number
+  managerId: string
   actionCount: number
-  totalCount: number
 }
 
 interface SalesLeadLimitConfirmModelProps {
-  email: string
   visible: boolean
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
   onConfirm: () => void
-  confirmationData: ConfirmationData
+  anticipatedDispatchCount: number
+  confirmationData: any
 }
 
 const StyledModalTitle = styled.div`
@@ -43,18 +41,25 @@ const StyledModal = styled(Modal)`
 `
 
 const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
-  email,
   visible,
   setVisible,
   onConfirm,
   setCurrentStep,
   confirmationData,
+  anticipatedDispatchCount,
 }) => {
+  console.log(confirmationData)
   const [loading, setLoading] = useState(false)
 
   const { currentUserRole, authToken } = useAuth()
 
   const { formatMessage } = useIntl()
+
+  const managerName = confirmationData?.manager?.name || 'Unknown Name'
+  const managerEmail = confirmationData?.manager?.email || 'unknown@example.com'
+  const currentHoldingsCount = confirmationData?.memberCount?.aggregate?.count || 0
+
+  const totalAfterDispatch = anticipatedDispatchCount + currentHoldingsCount
 
   const UPDATE_LEAD_MANAGER = gql`
     mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
@@ -99,17 +104,23 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
       onCancel={() => setVisible(false)}
       width={384}
     >
-      <StyledModalTitle className="mb-4">{formatMessage(memberMessages.ui.deleteMember)}</StyledModalTitle>
+      <StyledModalTitle className="mb-4">已超出名單上限</StyledModalTitle>
       <Form layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
         <Form.Item className="text-left">
-          <span>{formatMessage(memberMessages.text.deleteMemberConfirmation)}</span>
+          <span>{`派發對象 ${managerName}（${managerEmail}），目前已持有 ${currentHoldingsCount} 筆名單`}</span>
+        </Form.Item>
+        <Form.Item className="text-left">
+          <span>
+            你預計再派發 {anticipatedDispatchCount} 筆名單給他，派發後將會超出上限數量，總計達到 {totalAfterDispatch}{' '}
+            筆，確定要派發嗎？
+          </span>
         </Form.Item>
         <Form.Item className="text-right">
           <Button onClick={() => setVisible(false)} className="mr-2">
             {formatMessage(commonMessages.ui.back)}
           </Button>
           <StyledDeleteButton htmlType="submit" loading={loading}>
-            {formatMessage(commonMessages.ui.delete)}
+            派發
           </StyledDeleteButton>
         </Form.Item>
       </Form>
