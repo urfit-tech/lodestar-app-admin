@@ -24,8 +24,9 @@ const ReportAdminModal: React.FC<
   {
     report?: ReportProps
     onRefetch?: () => void
+    reports: ReportProps[]
   } & AdminModalProps
-> = ({ report, onRefetch, onCancel, ...props }) => {
+> = ({ report, onRefetch, onCancel, reports, ...props }) => {
   const originFormType = (report && Object.keys(report.options?.metabase?.resource)[0]) || 'question'
   const [loading, setLoading] = useState(false)
   const [formType, setFormType] = useState<'question' | 'dashboard'>('question')
@@ -51,6 +52,11 @@ const ReportAdminModal: React.FC<
     }
   }
 
+  const checkExistReport = (type: string, options: any) => {
+    const formTypeValue = options[type].resource[formType]
+    return reports.filter(r => report?.id !== r.id && r.options?.[type].resource?.[formType] === formTypeValue)
+  }
+
   const handleSubmit = (onSuccess?: () => void) => {
     setLoading(true)
     form
@@ -64,7 +70,10 @@ const ReportAdminModal: React.FC<
           app_id: appId,
           options,
         }
-
+        const existReport = checkExistReport?.(values.type, options)
+        if (existReport.length !== 0) {
+          return handleError({ message: formatMessage(reportMessages.ReportAdminModal.existReport) })
+        }
         if (report) {
           Object.assign(insertReportData, { id: report.id }) // for update report
         }
@@ -96,6 +105,11 @@ const ReportAdminModal: React.FC<
       .finally(() => setLoading(false))
   }
 
+  const handleCancel = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    onCancel?.(event)
+    form.resetFields()
+  }
+
   return (
     <AdminModal
       footer={null}
@@ -104,7 +118,7 @@ const ReportAdminModal: React.FC<
           <Button
             className="mr-2"
             onClick={e => {
-              onCancel?.(e)
+              handleCancel(e)
               setVisible(false)
             }}
           >
@@ -115,7 +129,7 @@ const ReportAdminModal: React.FC<
           </Button>
         </>
       )}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       {...props}
     >
       <Form

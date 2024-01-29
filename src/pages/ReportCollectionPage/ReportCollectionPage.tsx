@@ -125,6 +125,7 @@ const ReportCollectionPage: React.FC = () => {
                   <Menu.Item className="cursor-pointer">
                     <ReportAdminModal
                       report={record}
+                      reports={reports}
                       onRefetch={refetchReports}
                       renderTrigger={({ setVisible }) => (
                         <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
@@ -170,6 +171,7 @@ const ReportCollectionPage: React.FC = () => {
         <div className="d-flex align-item-center justify-content-between mb-4">
           <ReportAdminModal
             onRefetch={refetchReports}
+            reports={reports}
             renderTrigger={({ setVisible }) => (
               <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                 {formatMessage(pageMessages.ReportCollectionPage.addReport)}

@@ -2614,6 +2614,7 @@
   "reportMessages.ReportAdminModal.type": "報表種類",
   "reportMessages.ReportAdminModal.setting": "報表設定",
   "reportMessages.ReportAdminModal.viewingPermission": "觀看權限",
+  "reportMessages.ReportAdminModal.existReport": "已存在相同報表",
   "sale.*.activityTicket": "活動票券",
   "sale.*.appointmentPlan": "預約",
   "sale.*.cancel": "取消",
