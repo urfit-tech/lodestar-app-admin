@@ -49,6 +49,7 @@ const ReportCollectionPage: React.FC = () => {
       },
     }
   }
+
   const columns: ColumnProps<ReportProps>[] = [
     {
       dataIndex: 'title',
@@ -95,6 +96,7 @@ const ReportCollectionPage: React.FC = () => {
           <Flex flexWrap="wrap">
             {record.viewingPermissions?.map(viewingPermission => (
               <Box
+                key={viewingPermission.id}
                 m="0 6px 6px 0"
                 px="4px"
                 color="#9b9b9b"

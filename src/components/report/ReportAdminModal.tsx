@@ -1,20 +1,22 @@
-import { Button, Form, Input, Select } from 'antd'
+import { Button, Form, Input, Radio, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import { reportMessages } from './translations'
 import { useMutateReport, useMutateReportPermissionGroup } from '../../hooks/report'
-import PermissionGroupSelector from '../form/PermissionGroupSelector'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { ReportProps } from '../../types/report'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
+import { reportMessages } from './translations'
 
 type FieldProps = {
   title: string
   type: string
+  formType: 'report' | 'dashboard'
   question: string
+  dashboard: string
   viewPermissions?: string[]
 }
 
@@ -24,7 +26,9 @@ const ReportAdminModal: React.FC<
     onRefetch?: () => void
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, ...props }) => {
+  const originFormType = (report && Object.keys(report.options?.metabase?.resource)[0]) || 'question'
   const [loading, setLoading] = useState(false)
+  const [formType, setFormType] = useState<'question' | 'dashboard'>('question')
   const { insertReport } = useMutateReport()
   const { insertReportPermissionGroup, deleteReportPermissionGroupByReportId } = useMutateReportPermissionGroup()
   const [form] = useForm<FieldProps>()
@@ -33,12 +37,12 @@ const ReportAdminModal: React.FC<
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
-    const { question, type } = formValue
+    const { type, formType, dashboard, question } = formValue
     switch (type) {
       case 'metabase':
         return {
           metabase: {
-            resource: { question: parseInt(question) },
+            resource: { [formType]: parseInt(question || dashboard) },
             params: { appId },
           },
         }
@@ -60,6 +64,7 @@ const ReportAdminModal: React.FC<
           app_id: appId,
           options,
         }
+
         if (report) {
           Object.assign(insertReportData, { id: report.id }) // for update report
         }
@@ -121,7 +126,8 @@ const ReportAdminModal: React.FC<
         initialValues={{
           title: report?.title,
           type: 'metabase',
-          question: report?.options?.metabase?.resource?.question,
+          formType: originFormType,
+          [originFormType]: report?.options?.metabase?.resource?.[originFormType],
           viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
         }}
       >
@@ -139,6 +145,7 @@ const ReportAdminModal: React.FC<
         <Form.Item
           label={formatMessage(reportMessages.ReportAdminModal.type)}
           name="type"
+          style={{ marginBottom: '0px' }}
           rules={[
             {
               required: true,
@@ -151,9 +158,15 @@ const ReportAdminModal: React.FC<
             </Select.Option>
           </Select>
         </Form.Item>
+        <Form.Item style={{ marginTop: '16px' }} name="formType">
+          <Radio.Group onChange={e => setFormType(e.target.value)}>
+            <Radio value="question">嵌入單一報表</Radio>
+            <Radio value="dashboard">嵌入儀表板</Radio>
+          </Radio.Group>
+        </Form.Item>
         <Form.Item
           label={formatMessage(reportMessages.ReportAdminModal.setting)}
-          name="question"
+          name={originFormType || formType}
           rules={[
             {
               required: true,
