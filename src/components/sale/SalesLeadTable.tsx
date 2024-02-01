@@ -509,12 +509,12 @@ const SalesLeadTable: React.VFC<{
     _managerId && setManagerId(_managerId)
   }
 
-  const { data: memberAppId, error: memberError } = useQuery(GET_MEMBER_APPID, {
+  const { data: memberAppId } = useQuery(GET_MEMBER_APPID, {
     variables: { managerId: managerId },
     skip: managerId === '',
   })
 
-  const { data: managerAppIds, error: managerError } = useQuery(GET_MANAGER_APPID, {
+  const { data: managerAppIds } = useQuery(GET_MANAGER_APPID, {
     variables: { managerIds: selectedRowKeys },
     skip: selectedRowKeys.length === 0,
   })
@@ -544,8 +544,13 @@ const SalesLeadTable: React.VFC<{
         .map(info => `id: ${info.id}\napp_id: ${info.app_id}\nname: ${info.name}\n\n`)
         .join('')
       alert(`移轉名單有誤: \n${alertMes}`)
-    } else if (matchedAppIds.length > 0) {
-      const handleTransfer = async () => {
+
+      setManagerId('')
+      return
+    }
+
+    if (matchedAppIds.length > 0) {
+      const _handleTransfer = async () => {
         try {
           const { data } = await transferLeads({
             variables: { memberIds: matchedAppIds.map(rowKey => rowKey.id.toString()), managerId },
@@ -566,7 +571,9 @@ const SalesLeadTable: React.VFC<{
           setManagerId('')
         }
       }
-      handleTransfer()
+
+      _handleTransfer()
+      return
     }
   }, [managerId, memberAppId])
 
