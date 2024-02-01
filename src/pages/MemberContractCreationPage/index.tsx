@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
@@ -70,6 +69,7 @@ type ContractInfo = {
     id: string
     name: string
     options: any
+    description: string
   }[]
   products: {
     id: string
@@ -352,9 +352,13 @@ const useContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
+        contract(
+          where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
+          order_by: { created_at: desc }
+        ) {
           id
           name
+          description
           options
         }
         project_plan(
@@ -425,6 +429,7 @@ const useContractInfo = (appId: string, memberId: string) => {
       id: c.id,
       name: c.name,
       options: c.options,
+      description: c.description,
     }))
     info.products = data.project_plan.map(v => ({
       id: v.id,

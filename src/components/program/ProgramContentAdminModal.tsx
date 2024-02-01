@@ -234,48 +234,50 @@ const ProgramContentAdminModal: React.FC<{
 
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
 
-    if (programContent.programContentType !== 'ebook' || !ebookFile) {
-      deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
-      deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
-      deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
-    }
-    if (enabledModules.ebook && contentType === 'ebook' && newEbookFile) {
-      await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
-        cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
-        onUploadProgress: ({ loaded, total }) => {
-          setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
-        },
-      }).catch(error => {
-        uploadError.materials = true
-        setFailedUploadFiles(prev => [...prev, newEbookFile])
-      })
-      const url = await convertFileToArrayBuffer(newEbookFile).catch(handleError)
-      const book = Epub(url)
-      const toc = (await book.loaded.navigation).toc as NavItem[]
-
-      const convert = (toc: NavItem[]): program_content_ebook_toc_insert_input[] => {
-        return toc.map((v, index) => ({
-          label: v.label,
-          href: v.href,
-          position: index,
-          subitems: v.subitems ? { data: convert(v.subitems) } : undefined,
-        }))
+    if (enabledModules.ebook && contentType === 'ebook') {
+      if (programContent.programContentType !== 'ebook' || !!ebookFile) {
+        deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
+        deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
+        deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
       }
-
-      insertProgramContentEbook({
-        variables: {
-          programContentEbook: {
-            program_content_id: programContent.id,
-            data: {
-              name: newEbookFile.name,
-              type: newEbookFile.type,
-              size: newEbookFile.size,
-              lastModified: newEbookFile.lastModified,
-            },
-            program_content_ebook_tocs: { data: convert(toc) },
+      if (newEbookFile) {
+        await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
           },
-        },
-      }).catch(handleError)
+        }).catch(error => {
+          uploadError.materials = true
+          setFailedUploadFiles(prev => [...prev, newEbookFile])
+        })
+        const url = await convertFileToArrayBuffer(newEbookFile).catch(handleError)
+        const book = Epub(url)
+        const toc = (await book.loaded.navigation).toc as NavItem[]
+
+        const convert = (toc: NavItem[]): program_content_ebook_toc_insert_input[] => {
+          return toc.map((v, index) => ({
+            label: v.label,
+            href: v.href,
+            position: index,
+            subitems: v.subitems ? { data: convert(v.subitems) } : undefined,
+          }))
+        }
+
+        insertProgramContentEbook({
+          variables: {
+            programContentEbook: {
+              program_content_id: programContent.id,
+              data: {
+                name: newEbookFile.name,
+                type: newEbookFile.type,
+                size: newEbookFile.size,
+                lastModified: newEbookFile.lastModified,
+              },
+              program_content_ebook_tocs: { data: convert(toc) },
+            },
+          },
+        }).catch(handleError)
+      }
     }
 
     // update program content
