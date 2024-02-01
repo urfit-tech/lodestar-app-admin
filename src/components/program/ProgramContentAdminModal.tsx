@@ -234,13 +234,13 @@ const ProgramContentAdminModal: React.FC<{
 
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
 
-    if (enabledModules.ebook) {
-      if (programContent.programContentType !== 'ebook' || !ebookFile) {
+    if (enabledModules.ebook && contentType === 'ebook') {
+      if (programContent.programContentType !== 'ebook' || !!ebookFile) {
         deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
         deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
         deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
       }
-      if (contentType === 'ebook' && newEbookFile) {
+      if (newEbookFile) {
         await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
