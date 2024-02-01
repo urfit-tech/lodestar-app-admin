@@ -51,13 +51,13 @@ const MemberContractCreationForm: React.FC<
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
-        <Descriptions title="合約期間" column={2} bordered className="mb-5">
+        <Descriptions title="合約期間" column={1} bordered className="mb-5">
           <Descriptions.Item label="合約項目">
             <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
-              <Select<string> style={{ width: 150 }}>
+              <Select<string>>
                 {contracts.map(v => (
                   <Select.Option key={v.id} value={v.id}>
-                    {v.name}
+                    {v.name} ({v.description})
                   </Select.Option>
                 ))}
               </Select>
