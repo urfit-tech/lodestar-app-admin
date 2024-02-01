@@ -13,8 +13,8 @@ import { reportMessages } from './translations'
 
 type FieldProps = {
   title: string
-  type: string
-  formType: 'report' | 'dashboard'
+  type: 'metabase'
+  formType: 'question' | 'dashboard'
   question: string
   dashboard: string
   viewPermissions?: string[]
@@ -27,9 +27,10 @@ const ReportAdminModal: React.FC<
     reports: ReportProps[]
   } & AdminModalProps
 > = ({ report, onRefetch, onCancel, reports, ...props }) => {
-  const originFormType = (report && Object.keys(report.options?.metabase?.resource)[0]) || 'question'
+  const originFormType =
+    ((report && Object.keys(report.options?.metabase?.resource)[0]) as FieldProps['formType']) || 'question'
+  const [formType, setFormType] = useState<FieldProps['formType']>(originFormType)
   const [loading, setLoading] = useState(false)
-  const [formType, setFormType] = useState<'question' | 'dashboard'>('question')
   const { insertReport } = useMutateReport()
   const { insertReportPermissionGroup, deleteReportPermissionGroupByReportId } = useMutateReportPermissionGroup()
   const [form] = useForm<FieldProps>()
@@ -53,8 +54,10 @@ const ReportAdminModal: React.FC<
   }
 
   const checkExistReport = (type: string, options: any) => {
-    const formTypeValue = options[type].resource[formType]
-    return reports.filter(r => report?.id !== r.id && r.options?.[type].resource?.[formType] === formTypeValue)
+    const formTypeValue: string = options[type].resource[formType]
+    return reports.filter(
+      r => report?.id !== r.id && r.options?.[type as FieldProps['type']].resource?.[formType] === formTypeValue,
+    )
   }
 
   const handleSubmit = (onSuccess?: () => void) => {
