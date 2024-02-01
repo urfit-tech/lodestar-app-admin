@@ -21,6 +21,7 @@ import {
 import { ResultProps } from 'antd/lib/result'
 import { isEmpty } from 'lodash'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
@@ -32,6 +33,8 @@ import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura, { member_bool_exp } from '../../hasura'
 import { useProperty } from '../../hooks/member'
+import { useGetManagerWithMemberCount } from '../../hooks/sales'
+import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
 type LeadTypeFilter = 'contained' | 'only' | 'excluded'
@@ -108,8 +111,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       {currentStep === 1 && (
         <ConfirmSection
           filter={filter}
+          setCurrentStep={setCurrentStep}
           onNext={({ condition, limit, managerId }) => {
-            setCurrentStep(step => step + 1)
             setAssignedResult({
               status: 'info',
             })
@@ -382,12 +385,14 @@ const FilterSection: React.FC<{
 
 const ConfirmSection: React.FC<{
   filter: Filter
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
   onNext?: (values: { condition: member_bool_exp; limit: number; managerId: string | null }) => void
-}> = ({ filter, onNext }) => {
+}> = ({ filter, setCurrentStep, onNext }) => {
   const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { properties } = useProperty()
+  const [visible, setVisible] = useState(false)
 
   const leadCandidatesCondition = {
     member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
@@ -524,6 +529,37 @@ const ConfirmSection: React.FC<{
 
   const isLoading = isLeadCandidatesLoading
 
+  const { id: appId, settings } = useApp()
+
+  const { managerWithMemberCountData, refetchMembers } = useGetManagerWithMemberCount(managerId as string, appId)
+
+  const handleOnNext = () => {
+    onNext?.({
+      condition: leadCandidatesCondition,
+      limit: numDeliver,
+      managerId: managerId || null,
+    })
+  }
+
+  const handleClick = () => {
+    const memberCount = managerWithMemberCountData?.memberCount
+    const isAggregateAvailable = typeof memberCount === 'object' && memberCount !== null && 'aggregate' in memberCount
+
+    const managerLeadLimit = settings['manager_lead_limit']
+    const isManagerLeadLimitValid = managerLeadLimit && Number(managerLeadLimit) > 0
+
+    if (
+      isManagerLeadLimitValid &&
+      isAggregateAvailable &&
+      memberCount.aggregate.count + numDeliver > Number(managerLeadLimit)
+    ) {
+      setVisible(true)
+    } else {
+      setCurrentStep(step => step + 1)
+      handleOnNext()
+    }
+  }
+
   return (
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
@@ -546,15 +582,20 @@ const ConfirmSection: React.FC<{
             </Col>
           </Row>
         )}
-        <Button
-          type="primary"
-          block
-          onClick={() =>
-            onNext?.({ condition: leadCandidatesCondition, limit: numDeliver, managerId: managerId || null })
-          }
-        >
+        <Button type="primary" block onClick={handleClick}>
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
+
+        {managerId && (
+          <SalesLeadLimitConfirmModel
+            anticipatedDispatchCount={numDeliver}
+            visible={visible}
+            setVisible={setVisible}
+            setCurrentStep={setCurrentStep}
+            onConfirm={handleOnNext}
+            confirmationData={managerWithMemberCountData}
+          />
+        )}
       </div>
     </div>
   )
