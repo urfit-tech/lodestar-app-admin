@@ -69,6 +69,7 @@ type ContractInfo = {
     id: string
     name: string
     options: any
+    description: string
   }[]
   products: {
     id: string
@@ -357,6 +358,7 @@ const useContractInfo = (appId: string, memberId: string) => {
         ) {
           id
           name
+          description
           options
         }
         project_plan(
@@ -427,6 +429,7 @@ const useContractInfo = (appId: string, memberId: string) => {
       id: c.id,
       name: c.name,
       options: c.options,
+      description: c.description,
     }))
     info.products = data.project_plan.map(v => ({
       id: v.id,
