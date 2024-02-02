@@ -68,6 +68,7 @@ type ContractInfo = {
     id: string
     name: string
     options: any
+    description: string
   }[]
   projectPlans: {
     id: string
@@ -470,6 +471,7 @@ const usePrivateTeachContractInfo = (
         ) {
           id
           name
+          description
           options
         }
         projectPrivateTeachPlan: project_plan(where: { title: { _like: "%${
@@ -551,6 +553,7 @@ const usePrivateTeachContractInfo = (
         id: c.id,
         name: c.name,
         options: c.options,
+        description: c.description,
       }))
       info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
         id: v.id,

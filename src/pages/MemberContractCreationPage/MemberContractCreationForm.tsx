@@ -139,7 +139,7 @@ const MemberContractCreationForm: React.FC<
                 <Select<string>>
                   {contracts.map(v => (
                     <Select.Option key={v.id} value={v.id}>
-                      {v.name}
+                      {v.name} ({v.description})
                     </Select.Option>
                   ))}
                 </Select>
