@@ -509,12 +509,12 @@ const SalesLeadTable: React.VFC<{
     _managerId && setManagerId(_managerId)
   }
 
-  const { data: memberAppId } = useQuery(GET_MEMBER_APPID, {
+  const { data: memberAppId } = useQuery(GetMemberAppID, {
     variables: { managerId: managerId },
     skip: managerId === '',
   })
 
-  const { data: managerAppIds } = useQuery(GET_MANAGER_APPID, {
+  const { data: managerAppIds } = useQuery(GetManagerAppIDList, {
     variables: { managerIds: selectedRowKeys },
     skip: selectedRowKeys.length === 0,
   })
@@ -575,7 +575,7 @@ const SalesLeadTable: React.VFC<{
       _handleTransfer()
       return
     }
-  }, [managerId, memberAppId])
+  }, [managerAppIds, managerId, memberAppId, onRefetch, transferLeads])
 
   return (
     <StyledAdminCard>
@@ -1014,16 +1014,16 @@ const TRANSFER_LEADS = gql`
   }
 `
 
-const GET_MEMBER_APPID = gql`
-  query GET_MEMBER_APPID($managerId: String!) {
+const GetMemberAppID = gql`
+  query GetMemberAppID($managerId: String!) {
     member(where: { id: { _eq: $managerId } }) {
       app_id
     }
   }
 `
 
-const GET_MANAGER_APPID = gql`
-  query GET_MANAGER_APPID($managerIds: [String]!) {
+const GetManagerAppIDList = gql`
+  query GetManagerAppIDList($managerIds: [String]!) {
     member(where: { id: { _in: $managerIds } }) {
       id
       app_id
