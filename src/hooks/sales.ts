@@ -356,7 +356,13 @@ export const useManagerLeads = (manager: Manager) => {
 const GetSalesLeadMembers = gql`
   query GetSalesLeadMembers($appId: String!, $managerId: String!) {
     member(
-      where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }
+      where: {
+        app_id: { _eq: $appId }
+        manager_id: { _eq: $managerId }
+        member_phones: { phone: { _is_null: false } }
+        excluded_at: { _is_null: true }
+        _or: [{ star: { _neq: -9999 } }, { star: { _is_null: true } }]
+      }
     ) {
       id
       name
