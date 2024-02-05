@@ -505,8 +505,8 @@ const SalesLeadTable: React.VFC<{
   const businessAppId = useRef('')
 
   const handleTransfer = async () => {
-    const _managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
-    _managerId && setManagerId(_managerId)
+    const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
+    managerId && setManagerId(managerId)
   }
 
   const { data: memberAppId } = useQuery(GetMemberAppID, {
@@ -531,11 +531,11 @@ const SalesLeadTable: React.VFC<{
       return
     }
 
-    for (const _managerId of managerAppIds.member) {
-      if (_managerId.app_id === businessAppId.current) {
-        matchedAppIds.push(_managerId)
+    for (const managerId of managerAppIds.member) {
+      if (managerId.app_id === businessAppId.current) {
+        matchedAppIds.push(managerId)
       } else {
-        nonMatchingAppIds.push(_managerId)
+        nonMatchingAppIds.push(managerId)
       }
     }
 
