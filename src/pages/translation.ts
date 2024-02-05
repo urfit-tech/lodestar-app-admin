@@ -502,7 +502,7 @@ const pageMessages = {
     pageTitle: { id: 'page.ReportCollectionPage.pageTitle', defaultMessage: '報表分析' },
     addReport: { id: 'page.ReportCollectionPage.addReport', defaultMessage: '新增報表' },
     title: { id: 'page.ReportCollectionPage.title', defaultMessage: '報表名稱' },
-    type: { id: 'page.ReportCollectionPage.type', defaultMessage: '種類' },
+    type: { id: 'page.ReportCollectionPage.type', defaultMessage: '報表種類' },
     options: { id: 'page.ReportCollectionPage.options', defaultMessage: '報表設定' },
     viewingPermission: { id: 'page.ReportCollectionPage.viewingPermission', defaultMessage: '觀看權限' },
   }),
