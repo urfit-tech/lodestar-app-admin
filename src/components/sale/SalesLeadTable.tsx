@@ -11,7 +11,7 @@ import {
   SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Input, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
@@ -20,7 +20,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { uniq } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -501,6 +501,82 @@ const SalesLeadTable: React.VFC<{
 
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
+  const [managerId, setManagerId] = useState('')
+  const businessAppId = useRef('')
+
+  const handleTransfer = async () => {
+    const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
+    managerId && setManagerId(managerId)
+  }
+
+  const { data: memberAppId } = useQuery(GetMemberAppID, {
+    variables: { managerId: managerId },
+    skip: managerId === '',
+  })
+
+  const { data: managerAppIds } = useQuery(GetManagerAppIDList, {
+    variables: { managerIds: selectedRowKeys },
+    skip: selectedRowKeys.length === 0,
+  })
+
+  useEffect(() => {
+    if (memberAppId == null || managerId === '') return
+    const matchedAppIds: Record<string, string>[] = []
+    const nonMatchingAppIds: Record<string, string>[] = []
+
+    businessAppId.current = memberAppId?.member[0]?.app_id
+    if (businessAppId.current == null) {
+      alert(`此會員不存在: ${managerId}`)
+      setManagerId('')
+      return
+    }
+
+    for (const managerId of managerAppIds.member) {
+      if (managerId.app_id === businessAppId.current) {
+        matchedAppIds.push(managerId)
+      } else {
+        nonMatchingAppIds.push(managerId)
+      }
+    }
+
+    if (nonMatchingAppIds.length !== 0) {
+      const alertMes = nonMatchingAppIds
+        .map(info => `id: ${info.id}\napp_id: ${info.app_id}\nname: ${info.name}\n\n`)
+        .join('')
+      alert(`移轉名單有誤: \n${alertMes}`)
+
+      setManagerId('')
+      return
+    }
+
+    if (matchedAppIds.length > 0) {
+      const _handleTransfer = async () => {
+        try {
+          const { data } = await transferLeads({
+            variables: { memberIds: matchedAppIds.map(rowKey => rowKey.id.toString()), managerId },
+          })
+
+          if (data?.update_member?.affected_rows) {
+            window.alert('已成功轉移此名單！')
+            onRefetch()
+          }
+        } catch (error: any) {
+          if (error.graphQLErrors) {
+            const graphqlErrors = error.graphQLErrors.map((graphqlError: any) => graphqlError.message)
+            window.alert(`轉移失敗(graphqlErrors)：${graphqlErrors.join(', ')}`)
+          } else {
+            window.alert(`轉移失敗：${error.message}`)
+          }
+        } finally {
+          setManagerId('')
+        }
+      }
+
+      _handleTransfer()
+      return
+    }
+  }, [managerAppIds, managerId, memberAppId, onRefetch, transferLeads])
+
   return (
     <StyledAdminCard>
       {selectedMember && (
@@ -872,29 +948,7 @@ const SalesLeadTable: React.VFC<{
                 </Button>
               </>
             )}
-            <Button
-              icon={<SwapOutlined />}
-              className="mr-2"
-              onClick={() => {
-                const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
-                if (managerId) {
-                  transferLeads({
-                    variables: { memberIds: selectedRowKeys.map(rowKey => rowKey.toString()), managerId },
-                  })
-                    .then(({ data, errors }) => {
-                      if (data?.update_member?.affected_rows) {
-                        window.alert('已成功轉移此名單！')
-                        onRefetch()
-                      } else {
-                        window.alert(`轉移失敗：${errors?.join(', ')}`)
-                      }
-                    })
-                    .catch(error => {
-                      window.alert(`轉移失敗：${error}`)
-                    })
-                }
-              }}
-            >
+            <Button icon={<SwapOutlined />} className="mr-2" onClick={handleTransfer}>
               轉移
             </Button>
           </div>
@@ -963,6 +1017,24 @@ const TRANSFER_LEADS = gql`
   mutation TRANSFER_LEADS($memberIds: [String!]!, $managerId: String!) {
     update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
+    }
+  }
+`
+
+const GetMemberAppID = gql`
+  query GetMemberAppID($managerId: String!) {
+    member(where: { id: { _eq: $managerId } }) {
+      app_id
+    }
+  }
+`
+
+const GetManagerAppIDList = gql`
+  query GetManagerAppIDList($managerIds: [String]!) {
+    member(where: { id: { _in: $managerIds } }) {
+      id
+      app_id
+      name
     }
   }
 `
