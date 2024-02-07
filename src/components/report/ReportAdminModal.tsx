@@ -45,7 +45,8 @@ const ReportAdminModal: React.FC<
         return {
           metabase: {
             resource: { [formType]: parseInt(question || dashboard) },
-            params: { appId },
+            params: formType === 'dashboard' ? { appid: appId } : { appId },
+            //FIXME: Metabase only takes lower case parameter.
           },
         }
       default:
