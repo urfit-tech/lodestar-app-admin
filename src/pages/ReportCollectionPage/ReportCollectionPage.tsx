@@ -49,6 +49,7 @@ const ReportCollectionPage: React.FC = () => {
       },
     }
   }
+
   const columns: ColumnProps<ReportProps>[] = [
     {
       dataIndex: 'title',
@@ -95,6 +96,7 @@ const ReportCollectionPage: React.FC = () => {
           <Flex flexWrap="wrap">
             {record.viewingPermissions?.map(viewingPermission => (
               <Box
+                key={viewingPermission.id}
                 m="0 6px 6px 0"
                 px="4px"
                 color="#9b9b9b"
@@ -123,6 +125,7 @@ const ReportCollectionPage: React.FC = () => {
                   <Menu.Item className="cursor-pointer">
                     <ReportAdminModal
                       report={record}
+                      reports={reports}
                       onRefetch={refetchReports}
                       renderTrigger={({ setVisible }) => (
                         <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
@@ -168,6 +171,7 @@ const ReportCollectionPage: React.FC = () => {
         <div className="d-flex align-item-center justify-content-between mb-4">
           <ReportAdminModal
             onRefetch={refetchReports}
+            reports={reports}
             renderTrigger={({ setVisible }) => (
               <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                 {formatMessage(pageMessages.ReportCollectionPage.addReport)}
