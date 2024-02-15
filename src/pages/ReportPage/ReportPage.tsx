@@ -34,7 +34,8 @@ const ReportPage: React.FC = () => {
         report.viewingPermissions
           ?.map((viewingPermission: { id: string }) => viewingPermission.id)
           .includes(memberPermissionGroup.permission_group_id),
-      ).length === 0)
+      ).length === 0 &&
+      !permissions.REPORT_ADMIN)
   )
     return <ForbiddenPage />
 
