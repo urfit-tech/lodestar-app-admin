@@ -2,11 +2,12 @@ import { defineMessages } from 'react-intl'
 
 export const reportMessages = {
   ReportAdminModal: defineMessages({
-    cancel: { id: 'reportMessages.reportMessages.cancel', defaultMessage: '取消' },
-    confirm: { id: 'reportMessages.reportMessages.confirm', defaultMessage: '確定' },
-    title: { id: 'reportMessages.reportMessages.title', defaultMessage: '報表名稱' },
-    type: { id: 'reportMessages.reportMessages.type', defaultMessage: '種類' },
-    setting: { id: 'reportMessages.reportMessages.setting', defaultMessage: '報表設定' },
-    viewingPermission: { id: 'reportMessages.reportMessages.viewingPermission', defaultMessage: '觀看權限' },
+    cancel: { id: 'reportMessages.ReportAdminModal.cancel', defaultMessage: '取消' },
+    confirm: { id: 'reportMessages.ReportAdminModal.confirm', defaultMessage: '確定' },
+    title: { id: 'reportMessages.ReportAdminModal.title', defaultMessage: '報表名稱' },
+    type: { id: 'reportMessages.ReportAdminModal.type', defaultMessage: '報表種類' },
+    setting: { id: 'reportMessages.ReportAdminModal.setting', defaultMessage: '報表設定' },
+    viewingPermission: { id: 'reportMessages.ReportAdminModal.viewingPermission', defaultMessage: '觀看權限' },
+    existReport: { id: 'reportMessages.ReportAdminModal.existReport', defaultMessage: '已存在相同報表' },
   }),
 }
