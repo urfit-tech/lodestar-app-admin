@@ -20,8 +20,17 @@ import {
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+
+interface MenuItem {
+  role: string | null;
+  count: number | null;
+  intlKey: {
+    id: string;
+    defaultMessage: string;
+  };
+}
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -534,125 +543,113 @@ export const usePublicMember = (memberId: string) => {
     refetchMember: refetch,
   }
 }
-
+// TODO
 export const useMemberRoleCount = (
   appId: string,
   filter?: {
-    name?: string
-    email?: string
-    phone?: string
-    category?: string
-    managerName?: string
-    managerId?: string
-    tag?: string
+    name?: string;
+    email?: string;
+    phone?: string;
+    category?: string;
+    managerName?: string;
+    managerId?: string;
+    tag?: string;
     properties?: {
-      id: string
-      value?: string
-    }[]
-    permissionGroup?: string
+      id: string;
+      value?: string;
+    }[];
+    permissionGroup?: string;
   },
 ) => {
-  const condition: hasura.GET_MEMBER_ROLE_COUNTVariables['condition'] = {
-    app_id: { _eq: appId },
-    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-    manager: filter?.managerName
-      ? {
-          name: { _ilike: `%${filter.managerName}%` },
-        }
-      : undefined,
-    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-    member_phones: filter?.phone
-      ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
-      : undefined,
-    member_categories: filter?.category
-      ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
-          },
-        }
-      : undefined,
-    member_tags: filter?.tag
-      ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
-      : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? {
-          permission_group: { name: { _like: `${filter.permissionGroup}` } },
-        }
-      : undefined,
-    _and: filter?.properties?.length
-      ? filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            member_properties: {
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            },
-          }))
-      : undefined,
-  }
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState(null);
+  const [menu, setMenu] = useState<MenuItem[]>([]);
 
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_MEMBER_ROLE_COUNT,
-    hasura.GET_MEMBER_ROLE_COUNTVariables
-  >(
-    gql`
-      query GET_MEMBER_ROLE_COUNT($condition: member_bool_exp) {
-        member(where: $condition) {
-          id
-          role
-        }
+  const { authToken } = useAuth()
+
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    if (authToken && appId) {
+      try {
+        const payload = {
+          condition: {
+            name: filter?.name ? `%${filter.name}%` : undefined,
+            email: filter?.email ? `%${filter.email}%` : undefined,
+            manager: filter?.managerName ? { name: `%${filter.managerName}%` } : undefined,
+            manager_id: filter?.managerId ? filter.managerId : undefined,
+            member_phones: filter?.phone ? { phone: `%${filter.phone}%` } : undefined,
+            member_categories: filter?.category ? { category: { name: `%${filter.category}%` } } : undefined,
+            member_tags: filter?.tag ? { tag_name: `%${filter.tag}%` } : undefined,
+            member_permission_groups: filter?.permissionGroup ? { permission_group: { name: `${filter.permissionGroup}` } } : undefined,
+            member_properties: filter?.properties?.length
+              ? filter.properties
+                  .filter(property => property.value)
+                  .map(property => ({
+                    property_id: property.id,
+                    value: `%${property.value}%`,
+                  }))
+              : undefined,
+          }
+        };
+
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_YOUR_API_ENDPOINT}/your-api-path`,
+          payload,
+          { headers: { authorization: `Bearer ${authToken}` } },
+        );
+
+        setData(data);
+        setMenu([
+          {
+            role: null,
+            count: data?.member.length || null,
+            intlKey: { id: 'allMembers', defaultMessage: 'All Members' },
+          },
+          {
+            role: 'app-owner',
+            count: data?.member.filter((v: { role: string }) => v.role === 'app-owner').length || 0,
+            intlKey: { id: 'appOwner', defaultMessage: 'App Owner' },
+          },
+          {
+            role: 'content-creator',
+            count: data?.member.filter((v: { role: string }) => v.role === 'content-creator').length || 0,
+            intlKey: { id: 'contentCreator', defaultMessage: 'Content Creator' },
+          },
+          {
+            role: 'general-member',
+            count: data?.member.filter((v: { role: string }) => v.role === 'general-member').length || 0,
+            intlKey: { id: 'generalMember', defaultMessage: 'General Member' },
+          },
+        ]);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
       }
-    `,
-    {
-      variables: {
-        condition,
-      },
-    },
-  )
+    } else {
+      setLoading(false);
+    }
+  }, [authToken, appId, filter]);
 
-  const menu: {
-    role: string | null
-    count: number | null
-    intlKey: { id: string; defaultMessage: string }
-  }[] = [
-    {
-      role: null,
-      count: data?.member.length || null,
-      intlKey: commonMessages.label.allMembers,
-    },
-    {
-      role: 'app-owner',
-      count: data?.member.filter(v => v.role === 'app-owner').length || 0,
-      intlKey: commonMessages.label.appOwner,
-    },
-    {
-      role: 'content-creator',
-      count: data?.member.filter(v => v.role === 'content-creator').length || 0,
-      intlKey: commonMessages.label.contentCreator,
-    },
-    {
-      role: 'general-member',
-      count: data?.member.filter(v => v.role === 'general-member').length || 0,
-      intlKey: commonMessages.label.generalMember,
-    },
-  ]
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = () => {
+    fetchData();
+  };
 
   return {
     loading,
     error,
     menu,
     refetch,
-  }
-}
+  };
+};
 
 export const useMembers = (authToken: string, limit: number, filter?: FiledFilter) => {
   const [loading, setLoading] = useState(false)
