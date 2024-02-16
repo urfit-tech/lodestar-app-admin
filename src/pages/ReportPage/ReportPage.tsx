@@ -1,20 +1,33 @@
 import { AreaChartOutlined } from '@ant-design/icons'
 import { Spinner } from '@chakra-ui/spinner'
+import { InputNumber } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import { useMemberPermissionGroups } from '../../hooks/member'
 import { useReport } from '../../hooks/report'
 import ForbiddenPage from '../ForbiddenPage'
 
+const StyledReportHeightBlock = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+`
+const StyledReportHeightText = styled.div`
+  font-size: 16px;
+  margin-right: 8px;
+`
+
 const ReportPage: React.FC = () => {
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { authToken, permissions, currentMemberId } = useAuth()
   const [isIframeLoading, setIframeLoading] = useState<boolean>(true)
+  const [iframeHeight, setIframeHeight] = useState(600)
   const { reportId } = useParams<{ reportId: string }>()
   const { report } = useReport(reportId)
   const { loading: loadingMemberPermissionGroups, memberPermissionGroups } = useMemberPermissionGroups(
@@ -49,13 +62,26 @@ const ReportPage: React.FC = () => {
             <AreaChartOutlined className="mr-3" />
             <span>{report.title}</span>
           </AdminPageTitle>
+          {settings['report.resizable'] === '1' && (
+            <StyledReportHeightBlock>
+              <StyledReportHeightText>報表高度</StyledReportHeightText>
+              <InputNumber
+                size="middle"
+                value={iframeHeight}
+                onChange={e => {
+                  setIframeHeight(Number(e))
+                }}
+              />
+              <span>px</span>
+            </StyledReportHeightBlock>
+          )}
         </>
       )}
       <iframe
         title="question"
         src={signedUrlWithFilter}
         width="100%"
-        height="600px"
+        height={`${iframeHeight}px`}
         allowTransparency
         onLoad={handleIframeLoad}
         style={{ display: isIframeLoading ? 'none' : 'block' }}
