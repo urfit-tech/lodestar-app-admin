@@ -154,7 +154,6 @@ const ProgramContentAdminModal: React.FC<{
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [audioFiles, setAudioFiles] = useState<File[]>(programContent.audios.map(v => v.data) || [])
   const [ebookFile, setEbookFile] = useState<File | null>(programContent.ebook?.data || null)
-
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
     caption?: boolean
@@ -234,12 +233,18 @@ const ProgramContentAdminModal: React.FC<{
 
     const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
 
+    if (
+      enabledModules.ebook &&
+      ((programContent.programContentType !== 'ebook' && contentType === 'ebook') ||
+        (programContent.programContentType === 'ebook' && contentType !== 'ebook') ||
+        !ebookFile)
+    ) {
+      deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
+      deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
+      deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
+    }
+
     if (enabledModules.ebook && contentType === 'ebook') {
-      if (programContent.programContentType !== 'ebook' || !!ebookFile) {
-        deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
-        deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
-        deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
-      }
       if (newEbookFile) {
         await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
