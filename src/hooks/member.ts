@@ -562,92 +562,111 @@ export const useMemberRoleCount = (
   },
 ) => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<any>('');
   const [data, setData] = useState(null);
   const [menu, setMenu] = useState<MenuItem[]>([]);
 
-  const { authToken } = useAuth()
+  const { authToken } = useAuth();
 
+  const fetchMemberRoleCount = async (filter?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    category?: string;
+    managerName?: string;
+    managerId?: string;
+    tag?: string;
+    properties?: {
+      id: string;
+      value?: string;
+    }[];
+    permissionGroup?: string;
+  }) => {
+    if (!filter) {
+      return; 
+    }
 
-  const fetchData = useCallback(async () => {
+    const payload = {
+      name: filter.name ? `%${filter.name}%` : undefined,
+      email: filter.email ? `%${filter.email}%` : undefined,
+      managerName: filter.managerName ? { name: `%${filter.managerName}%` } : undefined,
+      managerId: filter.managerId ? filter.managerId : undefined,
+      phone: filter.phone ? { phone: `%${filter.phone}%` } : undefined,
+      category: filter.category ? { category: { name: `%${filter.category}%` } } : undefined,
+      tag: filter.tag ? { tag_name: `%${filter.tag}%` } : undefined,
+      permissionGroup: filter.permissionGroup ? `${filter.permissionGroup}` : undefined,
+      properties: filter.properties?.length
+      ? filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            [property.id]: `%${property.value}%`,
+          }))
+      : undefined,
+    };
+
+    const { data: res } = await axios.post(
+      `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/member-role`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
+      },
+    );
+    return res;
+  };
+
+  useEffect(() => {
     setLoading(true);
-    setError(null);
-
-    if (authToken && appId) {
+    (async () => {
       try {
-        const payload = {
-          condition: {
-            name: filter?.name ? `%${filter.name}%` : undefined,
-            email: filter?.email ? `%${filter.email}%` : undefined,
-            manager: filter?.managerName ? { name: `%${filter.managerName}%` } : undefined,
-            manager_id: filter?.managerId ? filter.managerId : undefined,
-            member_phones: filter?.phone ? { phone: `%${filter.phone}%` } : undefined,
-            member_categories: filter?.category ? { category: { name: `%${filter.category}%` } } : undefined,
-            member_tags: filter?.tag ? { tag_name: `%${filter.tag}%` } : undefined,
-            member_permission_groups: filter?.permissionGroup ? { permission_group: { name: `${filter.permissionGroup}` } } : undefined,
-            member_properties: filter?.properties?.length
-              ? filter.properties
-                  .filter(property => property.value)
-                  .map(property => ({
-                    property_id: property.id,
-                    value: `%${property.value}%`,
-                  }))
-              : undefined,
-          }
-        };
-
-        const { data } = await axios.post(
-          `${process.env.REACT_APP_YOUR_API_ENDPOINT}/your-api-path`,
-          payload,
-          { headers: { authorization: `Bearer ${authToken}` } },
-        );
-
-        setData(data);
-        setMenu([
-          {
-            role: null,
-            count: data?.member.length || null,
-            intlKey: { id: 'allMembers', defaultMessage: 'All Members' },
-          },
-          {
-            role: 'app-owner',
-            count: data?.member.filter((v: { role: string }) => v.role === 'app-owner').length || 0,
-            intlKey: { id: 'appOwner', defaultMessage: 'App Owner' },
-          },
-          {
-            role: 'content-creator',
-            count: data?.member.filter((v: { role: string }) => v.role === 'content-creator').length || 0,
-            intlKey: { id: 'contentCreator', defaultMessage: 'Content Creator' },
-          },
-          {
-            role: 'general-member',
-            count: data?.member.filter((v: { role: string }) => v.role === 'general-member').length || 0,
-            intlKey: { id: 'generalMember', defaultMessage: 'General Member' },
-          },
-        ]);
+        const { data } = await fetchMemberRoleCount(filter);
+        if (data) {
+          setData(data);
+          const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0);
+          const roleCounts: { 'app-owner': number; 'content-creator': number; 'general-member': number } = {
+            'app-owner': 0,
+            'content-creator': 0,
+            'general-member': 0,
+          };
+          data.forEach((item: { role: 'app-owner' | 'content-creator' | 'general-member'; count: number }) => {
+            roleCounts[item.role] = item.count;
+          });
+          setMenu([
+            {
+              role: null,
+              count: totalMembers,
+              intlKey: commonMessages.label.allMembers,
+            },
+            {
+              role: 'app-owner',
+              count: roleCounts['app-owner'],
+              intlKey: commonMessages.label.appOwner,
+            },
+            {
+              role: 'content-creator',
+              count: roleCounts['content-creator'],
+              intlKey: commonMessages.label.contentCreator,
+            },
+            {
+              role: 'general-member',
+              count: roleCounts['general-member'],
+              intlKey: commonMessages.label.generalMember,
+            },
+          ]);
+        }
       } catch (error) {
-        setError(error as Error);
+        setError(error);
       } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
-    }
-  }, [authToken, appId, filter]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const refetch = () => {
-    fetchData();
-  };
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authToken, appId, JSON.stringify(filter)]);
 
   return {
     loading,
     error,
     menu,
-    refetch,
+    fetchMemberRoleCount,
   };
 };
 
