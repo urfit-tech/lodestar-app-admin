@@ -543,7 +543,7 @@ export const usePublicMember = (memberId: string) => {
     refetchMember: refetch,
   }
 }
-// TODO
+
 export const useMemberRoleCount = (
   appId: string,
   filter?: {
@@ -605,7 +605,7 @@ export const useMemberRoleCount = (
     };
 
     const { data: res } = await axios.post(
-      `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/member-role`,
+      `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/member-role-count`,
       payload,
       {
         headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
