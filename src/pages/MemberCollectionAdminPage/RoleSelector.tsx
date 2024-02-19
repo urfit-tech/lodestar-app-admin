@@ -25,7 +25,7 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
 }) => {
   const { formatMessage } = useIntl()
   const { loading, id: appId } = useApp()
-  const { loading: loadingMemberRoleCount, menu: menu } = useMemberRoleCount(appId, {
+  const { loading: loadingMemberRoleCount, menu } = useMemberRoleCount(appId, {
     ...fieldFilter,
     properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
       id: propertyId,
