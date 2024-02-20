@@ -174,7 +174,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.certificate,
+      permissionIsAllowed: !!enabledModules.certificate && Boolean(permissions.CERTIFICATE_ADMIN),
       key: 'certificate',
       icon: () => <CertificateIcon className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.certificateAdmin),
