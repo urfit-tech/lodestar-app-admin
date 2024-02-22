@@ -46,6 +46,7 @@ export const useMemberTaskCollection = (options?: {
   executor?: string
   author?: string
   dueAt?: Date[]
+  createdAt?: Date[]
   status?: string
   limit?: number
   orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
@@ -64,6 +65,7 @@ export const useMemberTaskCollection = (options?: {
       ? { _or: [{ name: { _ilike: `%${options.author}%` } }, { username: { _ilike: `%${options.author}%` } }] }
       : undefined,
     due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
+    created_at: options?.createdAt ? { _gte: options?.createdAt[0], _lte: options?.createdAt[1] } : undefined,
     status: options?.status ? { _ilike: options.status } : undefined,
     deleted_at: { _is_null: true },
   }

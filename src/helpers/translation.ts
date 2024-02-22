@@ -1193,6 +1193,7 @@ export const memberMessages = {
     priority: { id: 'member.label.priority', defaultMessage: '優先權' },
     category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
+    createdDate: { id: 'member.label.createdDate', defaultMessage: '建立日期' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
     manager: { id: 'member.label.manager', defaultMessage: '承辦人' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
