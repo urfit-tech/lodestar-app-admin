@@ -573,7 +573,7 @@ export const activityMessages = {
     onlineActivity: { id: 'activity.label.onlineActivity', defaultMessage: '線上活動' },
     offlineActivity: { id: 'activity.label.offlineActivity', defaultMessage: '實體活動' },
     onlineAndOfflineActivity: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
-    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' }
+    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
   }),
   status: defineMessages({
     public: { id: 'activity.status.public', defaultMessage: '公開' },
@@ -1141,7 +1141,7 @@ export const memberMessages = {
     memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
-    deleteMember: {id: 'member.ui.deleteMember', defaultMessage: '刪除會員'}
+    deleteMember: { id: 'member.ui.deleteMember', defaultMessage: '刪除會員' },
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
@@ -1179,6 +1179,7 @@ export const memberMessages = {
     priority: { id: 'member.label.priority', defaultMessage: '優先權' },
     category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
+    createdDate: { id: 'member.label.createdDate', defaultMessage: '建立日期' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
     manager: { id: 'member.label.manager', defaultMessage: '承辦人' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
@@ -1202,8 +1203,7 @@ export const memberMessages = {
     },
     deleteMemberConfirmation: {
       id: 'member.text.deleteMemberConfirmation',
-      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？'
-
+      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？',
     },
     noMemberNote: {
       id: 'member.text.noMemberNote',

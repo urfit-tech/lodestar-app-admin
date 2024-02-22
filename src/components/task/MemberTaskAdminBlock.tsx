@@ -109,6 +109,7 @@ const MemberTaskAdminBlock: React.FC<{
     executor?: string
     author?: string
     dueAt?: Date[]
+    createdAt?: Date[]
     status?: string
   }>({})
   const [display, setDisplay] = useState('table')
@@ -469,6 +470,61 @@ const MemberTaskAdminBlock: React.FC<{
                 setFilter(filter => ({
                   ...filter,
                   dueAt: undefined,
+                }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+    {
+      dataIndex: 'createdAt',
+      title: formatMessage(memberMessages.label.createdDate),
+      render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''),
+      sorter: (a, b) => {
+        if (a.createdAt === null) return 1
+        if (b.createdAt === null) return -1
+        return a.createdAt.getTime() - b.createdAt.getTime()
+      },
+      onCell: onCellClick,
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <DatePicker.RangePicker
+            className="mb-2"
+            value={selectedKeys.length ? [moment(selectedKeys[0]), moment(selectedKeys[1])] : null}
+            onChange={(date, dateString: [string, string]) => {
+              setSelectedKeys(date ? dateString : [])
+            }}
+          />
+          <div className="d-flex justify-content-center">
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(filter => ({
+                  ...filter,
+                  createdAt: selectedKeys.length
+                    ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
+                    : undefined,
+                }))
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(filter => ({
+                  ...filter,
+                  createdAt: undefined,
                 }))
               }}
               size="small"
