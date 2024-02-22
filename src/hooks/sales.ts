@@ -361,7 +361,7 @@ const GetSalesLeadMembers = gql`
         manager_id: { _eq: $managerId }
         member_phones: { phone: { _is_null: false } }
         excluded_at: { _is_null: true }
-        _or: [{ star: { _neq: -9999 } }, { star: { _is_null: true } }]
+        _or: [{ star: { _gte: -9999 } }, { star: { _is_null: true } }]
       }
     ) {
       id
