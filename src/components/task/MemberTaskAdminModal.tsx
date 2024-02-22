@@ -52,6 +52,7 @@ type FieldProps = {
   priority: MemberTaskProps['priority']
   status: MemberTaskProps['status']
   dueAt: Moment | null
+  createdAt: Moment | null
   description: string | null
   hasMeeting: boolean
   meetingHours: number
@@ -181,6 +182,7 @@ const MemberTaskAdminModal: React.FC<
           status: formStatus,
           description: formDescription,
           hasMeeting: formHasMeeting,
+          createdAt: formCreatedAt,
         } = formValues
         if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
         const memberTaskId = memberTask?.id
@@ -280,6 +282,7 @@ const MemberTaskAdminModal: React.FC<
               meet_id: hasMeeting ? memberTask?.meet.id : null,
               meeting_hours: hasMeeting ? formMeetingHours : 0,
               meeting_gateway: hasMeeting ? formMeetingGateway ?? 'jitsi' : null,
+              created_at: toFormat(formCreatedAt),
             },
           },
         }).then(async ({ data }) => {
@@ -433,6 +436,7 @@ const MemberTaskAdminModal: React.FC<
           priority: memberTask?.priority || 'high',
           status: memberTask?.status || 'pending',
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
+          createdAt: memberTask?.createdAt ? moment(memberTask.createdAt) : moment(moment(), 'HH:mm:ss'),
           hasMeeting: memberTask?.hasMeeting || false,
           meetingGateway: memberTask?.meetingGateway || 'jitsi',
           meetingHours: memberTask?.meetingHours || 1,
@@ -544,42 +548,58 @@ const MemberTaskAdminModal: React.FC<
             </Form.Item>
           </div>
         </div>
+        <div className="row">
+          <div className="col-6">
+            <Form.Item label={formatMessage(memberMessages.label.createdDate)} name="createdAt">
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                style={{ width: '100%' }}
+                disabledDate={value => {
+                  return value.valueOf() > new Date().valueOf()
+                }}
+              />
+            </Form.Item>
+          </div>
+          <div className="col-6">
+            <Form.Item
+              label={formatMessage(memberMessages.label.dueDate)}
+              name="dueAt"
+              rules={[
+                formInstance => ({
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(memberMessages.label.dueDate),
+                  }),
+                  validator(_, value) {
+                    const hasMeeting = formInstance.getFieldValue('hasMeeting')
+                    if (hasMeeting && !value) {
+                      return Promise.reject(new Error())
+                    }
+                    return Promise.resolve()
+                  },
+                }),
+              ]}
+            >
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                style={{ width: '100%' }}
+                onChange={async () => {
+                  const formValues = form.getFieldsValue()
+                  const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
+                  if (hasMeeting && formDueAt && enabledModules.meet_service) {
+                    const { overlapMeets } = await getOverlapMeets({
+                      startedAt: formDueAt.toDate().toISOString(),
+                      endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
+                    })
+                    await zoomServiceCheck({ overlapMeets })
+                  }
+                }}
+              />
+            </Form.Item>
+          </div>
+        </div>
 
-        <Form.Item
-          label={formatMessage(memberMessages.label.dueDate)}
-          name="dueAt"
-          rules={[
-            formInstance => ({
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(memberMessages.label.dueDate),
-              }),
-              validator(_, value) {
-                const hasMeeting = formInstance.getFieldValue('hasMeeting')
-                if (hasMeeting && !value) {
-                  return Promise.reject(new Error())
-                }
-                return Promise.resolve()
-              },
-            }),
-          ]}
-        >
-          <DatePicker
-            format="YYYY-MM-DD HH:mm"
-            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-            style={{ width: '100%' }}
-            onChange={async () => {
-              const formValues = form.getFieldsValue()
-              const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
-              if (hasMeeting && formDueAt && enabledModules.meet_service) {
-                const { overlapMeets } = await getOverlapMeets({
-                  startedAt: formDueAt.toDate().toISOString(),
-                  endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
-                })
-                await zoomServiceCheck({ overlapMeets })
-              }
-            }}
-          />
-        </Form.Item>
         <Form.Item
           label={formatMessage(memberMessages.label.meetingLink)}
           name="hasMeeting"
