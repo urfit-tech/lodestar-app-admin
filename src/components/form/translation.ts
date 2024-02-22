@@ -32,6 +32,7 @@ const formMessages = {
     salesManagement: { id: 'form.PermissionInput.salesManagement', defaultMessage: '業務管理' },
     customScript: { id: 'form.PermissionInput.customScript', defaultMessage: '自訂腳本' },
     report: { id: 'form.PermissionInput.report', defaultMessage: '報表分析' },
+    certificate: { id: 'form.PermissionInput.certificate', defaultMessage: '證書' },
   }),
   PermissionGroup: defineMessages({
     // backstage
@@ -158,6 +159,7 @@ const formMessages = {
     COUPON_CODE_EXPORT: { id: 'form.PermissionGroup.COUPON_CODE_EXPORT', defaultMessage: '匯出折扣碼' },
 
     // voucher
+    VOUCHER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.VOUCHER_CATEGORY_ADMIN', defaultMessage: '所有兌換分類功能' },
     VOUCHER_PLAN_ADMIN: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
     VOUCHER_PLAN_NORMAL: { id: 'form.PermissionGroup.VOUCHER_PLAN_NORMAL', defaultMessage: '個人兌換方案功能' },
     VOUCHER_PLAN_READ: { id: 'form.PermissionGroup.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
@@ -171,6 +173,14 @@ const formMessages = {
     MEMBER_ADMIN: { id: 'form.PermissionGroup.MEMBER_ADMIN', defaultMessage: '所有會員列表功能' },
     MEMBER_PROPERTY_ADMIN: { id: 'form.PermissionGroup.MEMBER_PROPERTY_ADMIN', defaultMessage: '所有自訂欄位功能' },
     MEMBER_PHONE_ADMIN: { id: 'form.PermissionGroup.MEMBER_PHONE_ADMIN', defaultMessage: '檢視電話欄位' },
+    MEMBER_PROGRAM_TIMETABLE_EDIT: {
+      id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT',
+      defaultMessage: '編輯會員課表',
+    },
+    MEMBER_PROGRAM_TIMETABLE_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW',
+      defaultMessage: '查看會員課表',
+    },
     MEMBER_STAR_ADMIN: { id: 'form.PermissionGroup.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位' },
     MEMBER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
     MEMBER_MANAGER_ADMIN: { id: 'form.PermissionGroup.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
@@ -241,6 +251,10 @@ const formMessages = {
     PROJECT_ROLE_ADMIN: { id: 'form.PermissionGroup.PROJECT_ROLE_ADMIN', defaultMessage: '角色管理' },
 
     // practice
+    MATERIAL_AUDIT_LOG_ADMIN: {
+      id: 'form.PermissionGroup.MATERIAL_AUDIT_LOG_ADMIN',
+      defaultMessage: '查看教材異動紀錄',
+    },
     PRACTICE_ADMIN: { id: 'form.PermissionGroup.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
     PRACTICE_NORMAL: { id: 'form.PermissionGroup.PRACTICE_NORMAL', defaultMessage: '個人作業功能' },
     // contract
@@ -354,6 +368,12 @@ const formMessages = {
     REPORT_VIEW: {
       id: 'form.PermissionGroup.REPORT_VIEW',
       defaultMessage: '查看報表',
+    },
+
+    // certificate
+    CERTIFICATE_ADMIN: {
+      id: 'form.PermissionGroup.CERTIFICATE_ADMIN',
+      defaultMessage: '證書管理',
     },
   }),
   GiftPlanInput: defineMessages({

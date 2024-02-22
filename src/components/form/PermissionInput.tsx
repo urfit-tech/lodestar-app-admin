@@ -60,6 +60,7 @@ const PermissionInput: React.FC<{
     salesLead: settings['custom.permission_group.salesLead'] === '1',
     salesManagement: settings['custom.permission_group.salesManagement'] === '1',
     report: !!enabledModules.report,
+    certificate: !!enabledModules.certificate,
   }
 
   return (
