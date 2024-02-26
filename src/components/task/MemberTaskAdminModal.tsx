@@ -75,7 +75,7 @@ const MemberTaskAdminModal: React.FC<
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, afterClose, ...props }) => {
   const apolloClient = useApolloClient()
-  const { authToken, currentMemberId } = useAuth()
+  const { authToken, currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -194,7 +194,7 @@ const MemberTaskAdminModal: React.FC<
           if (!formDueAt)
             return handleError({
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(memberMessages.label.dueDate),
+                field: formatMessage(memberMessages.label.executeDate),
               }),
             })
           if (!formExecutorId)
@@ -549,26 +549,28 @@ const MemberTaskAdminModal: React.FC<
           </div>
         </div>
         <div className="row">
-          <div className="col-6">
-            <Form.Item label={formatMessage(memberMessages.label.createdDate)} name="createdAt">
-              <DatePicker
-                format="YYYY-MM-DD HH:mm"
-                showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                style={{ width: '100%' }}
-                disabledDate={value => {
-                  return value.valueOf() > new Date().valueOf()
-                }}
-              />
-            </Form.Item>
-          </div>
-          <div className="col-6">
+          {!!permissions.TASK_CREATED_AT_WRITE && (
+            <div className="col-6">
+              <Form.Item label={formatMessage(memberMessages.label.createdDate)} name="createdAt">
+                <DatePicker
+                  format="YYYY-MM-DD HH:mm"
+                  showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                  style={{ width: '100%' }}
+                  disabledDate={value => {
+                    return value.valueOf() > new Date().valueOf()
+                  }}
+                />
+              </Form.Item>
+            </div>
+          )}
+          <div className={`${!!permissions.TASK_CREATED_AT_WRITE ? 'col-6' : 'col-12'}`}>
             <Form.Item
-              label={formatMessage(memberMessages.label.dueDate)}
+              label={formatMessage(memberMessages.label.executeDate)}
               name="dueAt"
               rules={[
                 formInstance => ({
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(memberMessages.label.dueDate),
+                    field: formatMessage(memberMessages.label.executeDate),
                   }),
                   validator(_, value) {
                     const hasMeeting = formInstance.getFieldValue('hasMeeting')
