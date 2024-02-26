@@ -424,7 +424,7 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'dueAt',
-      title: formatMessage(memberMessages.label.dueDate),
+      title: formatMessage(memberMessages.label.executeDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
       sorter: (a, b) => {
         // In descending order:
