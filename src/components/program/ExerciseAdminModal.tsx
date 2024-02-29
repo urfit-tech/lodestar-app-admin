@@ -1,8 +1,7 @@
 import { EditOutlined, MoreOutlined, WarningOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Checkbox, Dropdown, Form, Menu, message, Modal, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import { flatten } from 'ramda'
 import React, { useState } from 'react'
@@ -358,9 +357,8 @@ const ExerciseAdminModal: React.FC<{
     <>
       <EditOutlined onClick={() => setVisible(true)} />
 
-      <StyledModal
-        isFullWidth
-        width="100vw"
+      <Modal
+        width="70vw"
         footer={null}
         maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
         maskClosable={false}
@@ -455,7 +453,7 @@ const ExerciseAdminModal: React.FC<{
             </Tabs.TabPane>
           </Tabs>
         </Form>
-      </StyledModal>
+      </Modal>
     </>
   )
 }
