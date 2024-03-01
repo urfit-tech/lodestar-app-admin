@@ -828,7 +828,7 @@ const SalesLeadTable: React.VFC<{
             )}
             {variant !== 'completed' && (
               <>
-                {permissions.SALES_MEMBER_LIST_RECYCLE && (
+                {Boolean(permissions.SALES_MEMBER_LIST_RECYCLE) && (
                   <Button
                     icon={<SyncOutlined />}
                     className="mr-2"
