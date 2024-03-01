@@ -323,6 +323,11 @@ const formMessages = {
       id: 'form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN',
       defaultMessage: '名單撥打選擇器功能',
     },
+    SALES_MEMBER_LIST_RECYCLE: {
+      id: 'form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE',
+      defaultMessage: '名單回收功能',
+    },
+
     // merchandise
     MERCHANDISE_ADMIN: { id: 'form.PermissionGroup.MERCHANDISE_ADMIN', defaultMessage: '所有電商管理' },
     MERCHANDISE_CATEGORY_ADMIN: {
