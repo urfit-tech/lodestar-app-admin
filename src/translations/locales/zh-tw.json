@@ -1576,6 +1576,7 @@
   "form.PermissionGroup.SALES_RECORDS_DETAILS": "查看消費者細項",
   "form.PermissionGroup.SALES_RECORDS_NORMAL": "查看個人銷售紀錄",
   "form.PermissionGroup.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN": "查看同機構業績",
+  "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "名單回收功能",
   "form.PermissionGroup.SHIPPING_ADMIN": "所有出貨管理",
   "form.PermissionGroup.SHIPPING_NORMAL": "個人出貨管理",
   "form.PermissionGroup.TASK_ADMIN": "所有待辦清單功能",
