@@ -1,5 +1,6 @@
 import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { EmptyBlock } from '../../components/admin'
@@ -13,6 +14,7 @@ const VoucherPlanCollectionBlock: React.VFC<{
   available: boolean
   condition: hasura.GET_VOUCHER_PLAN_COLLECTIONVariables['condition']
 }> = ({ available, condition }) => {
+  const { permissions } = useAuth()
   const { formatMessage } = useIntl()
   const [loadingMoreVoucherPlans, setLoadingMoreVoucherPlans] = useState(false)
   const {
@@ -52,29 +54,33 @@ const VoucherPlanCollectionBlock: React.VFC<{
                 pinCode={voucherPlan.pinCode}
                 bonusCoins={voucherPlan.bonusCoins}
                 renderEditDropdown={
-                  <Dropdown
-                    trigger={['click']}
-                    overlay={
-                      <Menu>
-                        <Menu.Item>
-                          <VoucherPlanAdminModal
-                            renderTrigger={({ setVisible }) => (
-                              <span onClick={() => setVisible(true)}>
-                                {formatMessage(pageMessages.VoucherPlanCollectionBlock.edit)}
-                              </span>
-                            )}
-                            icon={<EditOutlined />}
-                            title={formatMessage(pageMessages.VoucherPlanCollectionBlock.editVoucherPlan)}
-                            voucherPlan={voucherPlan}
-                            onRefetch={refetch}
-                          />
-                        </Menu.Item>
-                      </Menu>
-                    }
-                    placement="bottomRight"
-                  >
-                    <MoreOutlined className="cursor-pointer" />
-                  </Dropdown>
+                  Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_ADMIN_EDIT) ? (
+                    <Dropdown
+                      trigger={['click']}
+                      overlay={
+                        <Menu>
+                          <Menu.Item>
+                            <VoucherPlanAdminModal
+                              renderTrigger={({ setVisible }) => (
+                                <span onClick={() => setVisible(true)}>
+                                  {formatMessage(pageMessages.VoucherPlanCollectionBlock.edit)}
+                                </span>
+                              )}
+                              icon={<EditOutlined />}
+                              title={formatMessage(pageMessages.VoucherPlanCollectionBlock.editVoucherPlan)}
+                              voucherPlan={voucherPlan}
+                              onRefetch={refetch}
+                            />
+                          </Menu.Item>
+                        </Menu>
+                      }
+                      placement="bottomRight"
+                    >
+                      <MoreOutlined className="cursor-pointer" />
+                    </Dropdown>
+                  ) : (
+                    <></>
+                  )
                 }
               />
             </div>
