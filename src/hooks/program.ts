@@ -149,10 +149,12 @@ export const useProgram = (programId: string) => {
     `,
     { variables: { programId }, fetchPolicy: 'no-cache' },
   )
+
   const program: ProgramAdminProps | null = useMemo(() => {
-    if (loading || error || !data || !data.program_by_pk) {
+    if (loading || error || !data || !data?.program_by_pk) {
       return null
     }
+
     return {
       id: data.program_by_pk.id,
       appId: data.program_by_pk.app_id,
@@ -192,8 +194,8 @@ export const useProgram = (programId: string) => {
             title: pcp.program_plan.title || '',
           })),
           metadata: pc.metadata,
-          programContentBodyData: pc.program_content_body.data,
-          programContentBodyTarget: pc.program_content_body.target,
+          programContentBodyData: pc.program_content_body?.data,
+          programContentBodyTarget: pc.program_content_body?.target,
           attachments: pc.program_content_attachments.map(v => ({
             id: v.attachment_id,
             data: v.data,
