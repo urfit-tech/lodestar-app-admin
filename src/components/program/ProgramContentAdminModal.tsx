@@ -368,7 +368,6 @@ const ProgramContentAdminModal: React.FC<{
     setVideoPipeline('attachment')
     setExternalVideoInfo({ status: 'idle' })
     setLoading(false)
-    form.resetFields()
   }
 
   useEffect(() => {
