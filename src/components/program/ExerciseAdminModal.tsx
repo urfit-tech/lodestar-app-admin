@@ -357,9 +357,8 @@ const ExerciseAdminModal: React.FC<{
     <>
       <EditOutlined onClick={() => setVisible(true)} />
 
-      <StyledModal
-        isFullWidth
-        width="100vw"
+      <Modal
+        width="70vw"
         footer={null}
         maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
         maskClosable={false}
@@ -454,7 +453,7 @@ const ExerciseAdminModal: React.FC<{
             </Tabs.TabPane>
           </Tabs>
         </Form>
-      </StyledModal>
+      </Modal>
     </>
   )
 }
