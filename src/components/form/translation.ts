@@ -153,6 +153,9 @@ const formMessages = {
 
     // coupon
     COUPON_PLAN_ADMIN: { id: 'form.PermissionGroup.COUPON_PLAN_ADMIN', defaultMessage: '所有折價方案功能' },
+    COUPON_PLAN_ADMIN_VIEW: { id: 'form.PermissionGroup.COUPON_PLAN_ADMIN_VIEW', defaultMessage: '檢視折價方案' },
+    COUPON_PLAN_ADMIN_EDIT: { id: 'form.PermissionGroup.COUPON_PLAN_ADMIN_EDIT', defaultMessage: '新增與編輯折價方案' },
+    COUPON_PLAN_ADMIN_DELETE: { id: 'form.PermissionGroup.COUPON_PLAN_ADMIN_DELETE', defaultMessage: '刪除折價方案' },
     COUPON_PLAN_NORMAL: { id: 'form.PermissionGroup.COUPON_PLAN_NORMAL', defaultMessage: '個人折價方案功能' },
     COUPON_PLAN_READ: { id: 'form.PermissionGroup.COUPON_PLAN_READ', defaultMessage: '查看折價方案' },
     COUPON_PLAN_WRITE: { id: 'form.PermissionGroup.COUPON_PLAN_WRITE', defaultMessage: '編寫折價方案' },
@@ -161,6 +164,9 @@ const formMessages = {
     // voucher
     VOUCHER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.VOUCHER_CATEGORY_ADMIN', defaultMessage: '所有兌換分類功能' },
     VOUCHER_PLAN_ADMIN: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
+    VOUCHER_PLAN_ADMIN_VIEW: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_VIEW', defaultMessage: '檢視兌換方案' },
+    VOUCHER_PLAN_ADMIN_EDIT: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_EDIT', defaultMessage: '新增與編輯兌換方案' },
+    VOUCHER_PLAN_ADMIN_DELETE: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_DELETE', defaultMessage: '刪除兌換方案' },
     VOUCHER_PLAN_NORMAL: { id: 'form.PermissionGroup.VOUCHER_PLAN_NORMAL', defaultMessage: '個人兌換方案功能' },
     VOUCHER_PLAN_READ: { id: 'form.PermissionGroup.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
     VOUCHER_PLAN_WRITE: { id: 'form.PermissionGroup.VOUCHER_PLAN_WRITE', defaultMessage: '編寫兌換方案' },

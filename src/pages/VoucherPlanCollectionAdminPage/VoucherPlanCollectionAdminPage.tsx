@@ -41,11 +41,12 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
           },
         ],
         voucher_codes: { remaining: { _nin: [0] } },
-        editor_id: permissions.VOUCHER_PLAN_ADMIN
-          ? undefined
-          : permissions.VOUCHER_PLAN_NORMAL
-          ? { _eq: currentMemberId }
-          : { _eq: '' },
+        editor_id:
+          permissions.VOUCHER_PLAN_ADMIN || permissions.VOUCHER_PLAN_ADMIN_VIEW
+            ? undefined
+            : permissions.VOUCHER_PLAN_NORMAL
+            ? { _eq: currentMemberId }
+            : { _eq: '' },
       },
     },
     {
@@ -61,11 +62,12 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
             ],
           },
         ],
-        editor_id: permissions.VOUCHER_PLAN_ADMIN
-          ? undefined
-          : permissions.VOUCHER_PLAN_NORMAL
-          ? { _eq: currentMemberId }
-          : { _eq: '' },
+        editor_id:
+          permissions.VOUCHER_PLAN_ADMIN || permissions.VOUCHER_PLAN_ADMIN_VIEW
+            ? undefined
+            : permissions.VOUCHER_PLAN_NORMAL
+            ? { _eq: currentMemberId }
+            : { _eq: '' },
       },
     },
   ]
@@ -74,7 +76,10 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
     return <Skeleton active />
   }
 
-  if (!enabledModules.voucher || (!permissions.VOUCHER_PLAN_ADMIN && !permissions.VOUCHER_PLAN_NORMAL)) {
+  if (
+    !enabledModules.voucher ||
+    (!permissions.VOUCHER_PLAN_ADMIN && !permissions.VOUCHER_PLAN_NORMAL && !permissions.VOUCHER_PLAN_ADMIN_VIEW)
+  ) {
     return <ForbiddenPage />
   }
 
@@ -87,16 +92,18 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
 
       <div className="row mb-5">
         <div className="col-8">
-          <VoucherPlanAdminModal
-            renderTrigger={({ setVisible }) => (
-              <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(pageMessages['*'].createVoucherPlan)}
-              </Button>
-            )}
-            icon={<FileAddOutlined />}
-            title={formatMessage(pageMessages['*'].createVoucherPlan)}
-            onRefetch={() => setStateCode(Math.random())}
-          />
+          {(Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_ADMIN_EDIT)) && (
+            <VoucherPlanAdminModal
+              renderTrigger={({ setVisible }) => (
+                <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
+                  {formatMessage(pageMessages['*'].createVoucherPlan)}
+                </Button>
+              )}
+              icon={<FileAddOutlined />}
+              title={formatMessage(pageMessages['*'].createVoucherPlan)}
+              onRefetch={() => setStateCode(Math.random())}
+            />
+          )}
         </div>
         <div className="col-4">
           <Input.Search
