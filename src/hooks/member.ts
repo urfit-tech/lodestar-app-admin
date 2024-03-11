@@ -20,16 +20,16 @@ import {
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 interface MenuItem {
-  role: string | null;
-  count: number | null;
+  role: string | null
+  count: number | null
   intlKey: {
-    id: string;
-    defaultMessage: string;
-  };
+    id: string
+    defaultMessage: string
+  }
 }
 
 export const useMember = (memberId: string) => {
@@ -547,43 +547,42 @@ export const usePublicMember = (memberId: string) => {
 export const useMemberRoleCount = (
   appId: string,
   filter?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    category?: string;
-    managerName?: string;
-    managerId?: string;
-    tag?: string;
+    name?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
     properties?: {
-      id: string;
-      value?: string;
-    }[];
-    permissionGroup?: string;
+      id: string
+      value?: string
+    }[]
+    permissionGroup?: string
   },
 ) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>('');
-  const [data, setData] = useState(null);
-  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<any>('')
+  const [menu, setMenu] = useState<MenuItem[]>([])
 
-  const { authToken } = useAuth();
+  const { authToken } = useAuth()
 
   const fetchMemberRoleCount = async (filter?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    category?: string;
-    managerName?: string;
-    managerId?: string;
-    tag?: string;
+    name?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
     properties?: {
-      id: string;
-      value?: string;
-    }[];
-    permissionGroup?: string;
+      id: string
+      value?: string
+    }[]
+    permissionGroup?: string
   }) => {
     if (!filter) {
-      return; 
+      return
     }
 
     const payload = {
@@ -596,13 +595,13 @@ export const useMemberRoleCount = (
       tag: filter.tag ? { tag_name: `%${filter.tag}%` } : undefined,
       permissionGroup: filter.permissionGroup ? `${filter.permissionGroup}` : undefined,
       properties: filter.properties?.length
-      ? filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            [property.id]: `%${property.value}%`,
-          }))
-      : undefined,
-    };
+        ? filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              [property.id]: `%${property.value}%`,
+            }))
+        : undefined,
+    }
 
     const { data: res } = await axios.post(
       `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/member-role-count`,
@@ -610,26 +609,25 @@ export const useMemberRoleCount = (
       {
         headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
       },
-    );
-    return res;
-  };
+    )
+    return res
+  }
 
   useEffect(() => {
-    setLoading(true);
-    (async () => {
+    setLoading(true)
+    ;(async () => {
       try {
-        const { data } = await fetchMemberRoleCount(filter);
+        const { data } = await fetchMemberRoleCount(filter)
         if (data) {
-          setData(data);
-          const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0);
+          const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0)
           const roleCounts: { 'app-owner': number; 'content-creator': number; 'general-member': number } = {
             'app-owner': 0,
             'content-creator': 0,
             'general-member': 0,
-          };
+          }
           data.forEach((item: { role: 'app-owner' | 'content-creator' | 'general-member'; count: number }) => {
-            roleCounts[item.role] = item.count;
-          });
+            roleCounts[item.role] = item.count
+          })
           setMenu([
             {
               role: null,
@@ -651,24 +649,24 @@ export const useMemberRoleCount = (
               count: roleCounts['general-member'],
               intlKey: commonMessages.label.generalMember,
             },
-          ]);
+          ])
         }
       } catch (error) {
-        setError(error);
+        setError(error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    })();
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authToken, appId, JSON.stringify(filter)]);
+  }, [authToken, appId, JSON.stringify(filter)])
 
   return {
     loading,
     error,
     menu,
     fetchMemberRoleCount,
-  };
-};
+  }
+}
 
 export const useMembers = (authToken: string, limit: number, filter?: FiledFilter) => {
   const [loading, setLoading] = useState(false)
@@ -1037,17 +1035,22 @@ export const useProperty = () => {
         }
       }
     `,
-    { variables: { type: 'member' } },
+    {
+      variables: { type: 'member' },
+    },
   )
 
-  const properties =
-    data?.property.map(v => ({
-      id: v.id,
-      name: v.name,
-      placeholder: v.placeholder?.replace(/[()]/g, ''),
-      isEditable: v.is_editable,
-      isRequired: v.is_required,
-    })) || []
+  const properties = useMemo(() => {
+    return (
+      data?.property.map(v => ({
+        id: v.id,
+        name: v.name,
+        placeholder: v.placeholder?.replace(/[()]/g, ''),
+        isEditable: v.is_editable,
+        isRequired: v.is_required,
+      })) || []
+    )
+  }, [data])
 
   return {
     loadingProperties: loading,
