@@ -182,6 +182,9 @@ const FilterSection: React.FC<{
       right: -120px;
     }
   `
+  const ExcludeCheckBox = styled(Form.Item)`
+    margin-bottom: 0px;
+  `
   const PropertiesItem = styled(Form.Item)`
     margin-bottom: 40px;
     @media (min-width: ${DESKTOP_BREAK_POINT}px) {
@@ -266,7 +269,7 @@ const FilterSection: React.FC<{
         <Checkbox onChange={e => setNotCalled(e.target.checked)} />
       </Form.Item>
       <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}>
-        <Box position="relative" w="100%" display="flex">
+        <Box>
           <Form.Item name="lastCalledRange" noStyle getValueProps={v => ({ value: notCalled ? [null, null] : v })}>
             <DatePicker.RangePicker
               allowClear
@@ -279,7 +282,7 @@ const FilterSection: React.FC<{
               }}
             />
           </Form.Item>
-          <ExactMatchCheckBox
+          <ExcludeCheckBox
             name="excludeLastCalled"
             valuePropName="checked"
             getValueProps={() => ({ checked: notCalled ? false : excludeLastCalled })}
@@ -295,7 +298,7 @@ const FilterSection: React.FC<{
                 {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
               </Text>
             </Checkbox>
-          </ExactMatchCheckBox>
+          </ExcludeCheckBox>
         </Box>
       </Form.Item>
 
@@ -308,7 +311,7 @@ const FilterSection: React.FC<{
       </Form.Item>
 
       <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}>
-        <Box position="relative" w="100%" display="flex">
+        <Box>
           <Form.Item name="lastAnsweredRange" noStyle getValueProps={v => ({ value: notAnswered ? [null, null] : v })}>
             <DatePicker.RangePicker
               allowClear
@@ -321,7 +324,7 @@ const FilterSection: React.FC<{
               }}
             />
           </Form.Item>
-          <ExactMatchCheckBox
+          <ExcludeCheckBox
             name="excludeLastAnswered"
             valuePropName="checked"
             getValueProps={() => ({ checked: notAnswered ? false : excludeLastAnswered })}
@@ -337,7 +340,7 @@ const FilterSection: React.FC<{
                 {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
               </Text>
             </Checkbox>
-          </ExactMatchCheckBox>
+          </ExcludeCheckBox>
         </Box>
       </Form.Item>
 
