@@ -235,6 +235,14 @@ const formMessages = {
       id: 'form.PermissionGroup.EDIT_DELETE_ALL_MEMBER_NOTE',
       defaultMessage: '編輯/刪除所有聯絡紀錄',
     },
+    MEMBER_DISCOUNT_PLAN_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_DISCOUNT_PLAN_VIEW',
+      defaultMessage: '查看會員折價券資訊',
+    },
+    MEMBER_VOUCHER_PLAN_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW',
+      defaultMessage: '查看會員兌換券資訊',
+    },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

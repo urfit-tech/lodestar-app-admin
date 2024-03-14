@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
-import { Skeleton, Tabs } from 'antd'
+import { Result, Skeleton, Tabs } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -34,6 +35,7 @@ const VoucherCollectionTabs: React.VFC<{
 }> = ({ vouchers }) => {
   const [activeKey, setActiveKey] = useState('available')
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
 
   const tabContents: {
     key: string
@@ -53,19 +55,25 @@ const VoucherCollectionTabs: React.VFC<{
   ]
 
   return (
-    <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
-      {tabContents.map(v => (
-        <Tabs.TabPane key={v.key} tab={v.name}>
-          <div className="row">
-            {vouchers.filter(v.isDisplay).map(voucher => (
-              <div key={voucher.id} className="col-12 col-lg-6">
-                <Voucher {...voucher} />
+    <>
+      {Boolean(permissions.MEMBER_VOUCHER_PLAN_VIEW) ? (
+        <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
+          {tabContents.map(v => (
+            <Tabs.TabPane key={v.key} tab={v.name}>
+              <div className="row">
+                {vouchers.filter(v.isDisplay).map(voucher => (
+                  <div key={voucher.id} className="col-12 col-lg-6">
+                    <Voucher {...voucher} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </Tabs.TabPane>
-      ))}
-    </Tabs>
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+      ) : (
+        <Result title="您沒有權限訪問兌換券!" />
+      )}
+    </>
   )
 }
 
