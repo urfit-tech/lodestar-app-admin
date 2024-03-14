@@ -1490,6 +1490,8 @@
   "form.PermissionGroup.MERCHANDISE_ADMIN": "所有電商管理",
   "form.PermissionGroup.MERCHANDISE_CATEGORY_ADMIN": "所有電商分類功能",
   "form.PermissionGroup.MERCHANDISE_NORMAL": "個人電商管理",
+  "form.PermissionGroup.MEMBER_DISCOUNT_PLAN_VIEW": "查看會員折價券資訊",
+  "form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW": "查看會員兌換券資訊",
   "form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY": "調整會員訂單權益功能",
   "form.PermissionGroup.PERMISSION_GROUP_ADMIN": "權限組管理功能",
   "form.PermissionGroup.PODCAST_ADMIN": "所有音頻管理",

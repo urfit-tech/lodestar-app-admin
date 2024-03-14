@@ -1,4 +1,5 @@
-import { Skeleton, Tabs } from 'antd'
+import { Result, Skeleton, Tabs } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
@@ -20,6 +21,7 @@ const CouponCollectionTabs: React.FC<{
   coupons: CouponProps[]
 }> = ({ coupons }) => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
 
   const tabContents = [
     {
@@ -56,31 +58,37 @@ const CouponCollectionTabs: React.FC<{
   ]
 
   return (
-    <Tabs>
-      {tabContents.map(v => (
-        <Tabs.TabPane key={v.key} tab={v.tab}>
-          <div className="row">
-            {v.couponPlans.map(w => (
-              <div className="col-6 mb-3">
-                <CouponPlanAdminCard
-                  isAvailable={v.isAvailable}
-                  couponPlan={w}
-                  renderDescription={() => (
-                    <CouponPlanDescriptionScopeBlock
-                      constraint={w.constraint}
-                      type={w.type}
-                      amount={w.amount}
-                      scope={w.scope}
-                      productIds={w.productIds}
+    <>
+      {Boolean(permissions.MEMBER_DISCOUNT_PLAN_VIEW) ? (
+        <Tabs>
+          {tabContents.map(v => (
+            <Tabs.TabPane key={v.key} tab={v.tab}>
+              <div className="row">
+                {v.couponPlans.map(w => (
+                  <div className="col-6 mb-3">
+                    <CouponPlanAdminCard
+                      isAvailable={v.isAvailable}
+                      couponPlan={w}
+                      renderDescription={() => (
+                        <CouponPlanDescriptionScopeBlock
+                          constraint={w.constraint}
+                          type={w.type}
+                          amount={w.amount}
+                          scope={w.scope}
+                          productIds={w.productIds}
+                        />
+                      )}
                     />
-                  )}
-                />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </Tabs.TabPane>
-      ))}
-    </Tabs>
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+      ) : (
+        <Result title="您沒有權限訪問折價券!" />
+      )}
+    </>
   )
 }
 
