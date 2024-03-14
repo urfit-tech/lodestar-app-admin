@@ -1,7 +1,7 @@
 import { EditOutlined, MoreOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { gql } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { EmptyBlock } from '../../components/admin'
@@ -22,7 +22,6 @@ const CouponCollectionBlock: React.VFC<{
   const [loading, setLoading] = useState(false)
   const { couponPlanPreviews, errorCouponPlans, loadingCouponPlans, refetchCouponPlans, loadMoreCouponPlans } =
     usePreviewCouponPlanCollection(condition)
-  const { permissions } = useAuth()
 
   useEffect(() => {
     refetchCouponPlans()
@@ -59,31 +58,27 @@ const CouponCollectionBlock: React.VFC<{
                     />
                   )}
                   renderEditDropdown={
-                    Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.COUPON_PLAN_ADMIN_EDIT) ? (
-                      <Dropdown
-                        placement="bottomRight"
-                        trigger={['click']}
-                        overlay={
-                          <Menu>
-                            <Menu.Item>
-                              <CouponPlanAdminModal
-                                renderTrigger={({ setVisible }) => (
-                                  <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
-                                )}
-                                icon={<EditOutlined />}
-                                title={formatMessage(pageMessages['*'].editCouponPlan)}
-                                couponPlan={couponPlan}
-                                onRefetch={onRefetch}
-                              />
-                            </Menu.Item>
-                          </Menu>
-                        }
-                      >
-                        <MoreOutlined />
-                      </Dropdown>
-                    ) : (
-                      <></>
-                    )
+                    <Dropdown
+                      placement="bottomRight"
+                      trigger={['click']}
+                      overlay={
+                        <Menu>
+                          <Menu.Item>
+                            <CouponPlanAdminModal
+                              renderTrigger={({ setVisible }) => (
+                                <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
+                              )}
+                              icon={<EditOutlined />}
+                              title={formatMessage(pageMessages['*'].editCouponPlan)}
+                              couponPlan={couponPlan}
+                              onRefetch={onRefetch}
+                            />
+                          </Menu.Item>
+                        </Menu>
+                      }
+                    >
+                      <MoreOutlined />
+                    </Dropdown>
                   }
                   stateCode={stateCode}
                 />

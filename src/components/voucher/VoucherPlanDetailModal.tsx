@@ -1,7 +1,6 @@
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, message, Modal, Tabs } from 'antd'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -64,8 +63,8 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
     ARCHIVE_VOUCHER_CODE,
   )
   const [deleteLoading, setDeleteLoading] = useState(false)
+
   const [activeKey, setActiveKey] = useState('codes')
-  const { permissions } = useAuth()
 
   const mergedVoucherCodes = voucherCodes.map(voucherCode => ({
     ...voucherCode,
@@ -138,13 +137,9 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
                   total: voucherCode.count,
                 })}
                 <AdminModal
-                  renderTrigger={({ setVisible }) =>
-                    Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_ADMIN_DELETE) ? (
-                      <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
-                    ) : (
-                      <></>
-                    )
-                  }
+                  renderTrigger={({ setVisible }) => (
+                    <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
+                  )}
                   title={formatMessage(
                     voucherCode.vouchers.some(voucher => voucher.used)
                       ? promotionMessages.label.canNotDeleteVoucherCode
