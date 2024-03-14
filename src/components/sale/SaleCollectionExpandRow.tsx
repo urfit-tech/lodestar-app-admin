@@ -80,9 +80,7 @@ const SaleCollectionExpandRow = ({
                       <span>{orderProduct.name}</span>
                       {orderProduct.endedAt && orderProduct.type !== 'AppointmentPlan' ? (
                         <span className="ml-2">
-                          {`(${dayjs(orderProduct.endedAt)
-                            .tz(currentTimeZone)
-                            .format('YYYY-MM-DD HH:mm:ss')} ${formatMessage(
+                          {`(${dayjs(orderProduct.endedAt).tz(currentTimeZone).format('YYYY-MM-DD')} ${formatMessage(
                             saleMessages.SaleCollectionExpandRow.productExpired,
                           )})`}
                         </span>

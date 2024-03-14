@@ -1031,7 +1031,7 @@ const GetMemberAppID = gql`
 `
 
 const GetManagerAppIDList = gql`
-  query GetManagerAppIDList($managerIds: [String]!) {
+  query GetManagerAppIDList($managerIds: [String!]) {
     member(where: { id: { _in: $managerIds } }) {
       id
       app_id

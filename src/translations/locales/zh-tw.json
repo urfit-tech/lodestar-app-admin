@@ -2063,7 +2063,7 @@
   "page.salesLeadDeliveryPage.backButton": "返回",
   "page.salesLeadDeliveryPage.closedLead": "已拒絕名單",
   "page.salesLeadDeliveryPage.closedRange": "拒絕日期",
-  "page.salesLeadDeliveryPage.completedLead": "已完成",
+  "page.salesLeadDeliveryPage.completedLead": "已完成名單",
   "page.salesLeadDeliveryPage.contained": "包含",
   "page.salesLeadDeliveryPage.createdAtRange": "名單建立日期",
   "page.salesLeadDeliveryPage.deliverAgain": "再次派發",
