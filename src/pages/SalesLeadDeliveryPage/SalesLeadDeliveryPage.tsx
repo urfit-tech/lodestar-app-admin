@@ -463,6 +463,52 @@ const ConfirmSection: React.FC<{
   const { properties } = useProperty()
   const [visible, setVisible] = useState(false)
 
+  const orCondition = []
+
+  if (filter.closedLead === 'contained' && filter.closedAtRange) {
+    orCondition.push(
+      {
+        closed_at: {
+          _gte: moment(filter.closedAtRange[0]).startOf('day'),
+          _lte: moment(filter.closedAtRange[1]).endOf('day'),
+        },
+      },
+      {
+        closed_at: {
+          _is_null: true,
+        },
+      },
+    )
+  }
+  if (filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled) {
+    orCondition.push(
+      {
+        last_member_note_called: {
+          _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+        },
+      },
+      {
+        last_member_note_called: {
+          _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+        },
+      },
+    )
+  }
+  if (filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered) {
+    orCondition.push(
+      {
+        last_member_note_answered: {
+          _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+        },
+      },
+      {
+        last_member_note_answered: {
+          _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        },
+      },
+    )
+  }
+
   const leadCandidatesCondition = {
     member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
     manager_id: {
@@ -531,48 +577,7 @@ const ConfirmSection: React.FC<{
         : {
             _is_null: filter.completedLead === 'excluded',
           },
-    _or:
-      filter.closedLead === 'contained' && filter.closedAtRange
-        ? [
-            {
-              closed_at: {
-                _gte: moment(filter.closedAtRange[0]).startOf('day'),
-                _lte: moment(filter.closedAtRange[1]).endOf('day'),
-              },
-            },
-            {
-              closed_at: {
-                _is_null: true,
-              },
-            },
-          ]
-        : filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled
-        ? [
-            {
-              last_member_note_called: {
-                _lte: moment(filter.lastCalledRange[0]).startOf('day'),
-              },
-            },
-            {
-              last_member_note_called: {
-                _gte: moment(filter.lastCalledRange[1]).endOf('day'),
-              },
-            },
-          ]
-        : filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered
-        ? [
-            {
-              last_member_note_answered: {
-                _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-              },
-            },
-            {
-              last_member_note_answered: {
-                _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-              },
-            },
-          ]
-        : undefined,
+    _or: orCondition.length !== 0 ? orCondition : undefined,
     closed_at:
       filter.closedLead === 'excluded'
         ? {
