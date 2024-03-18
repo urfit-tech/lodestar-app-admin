@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import hasura from '../hasura'
-import { sum } from 'ramda'
+import { sum, uniq } from 'ramda'
 import { OrderLog } from '../types/general'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
@@ -156,7 +156,7 @@ export const useOrderLogPreviewCollection = (
       : undefined
 
   const orderIdList = orderLogPreviewCollectionData?.order_log.map(v => v.id) || []
-  const memberIds = orderLogPreviewCollectionData?.order_log.map(v => v.member_id) || []
+  const memberIds = uniq(orderLogPreviewCollectionData?.order_log.map(v => v.member_id) || [])
 
   const {
     loading: loadingOrderLogsMember,
