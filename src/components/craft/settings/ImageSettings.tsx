@@ -5,6 +5,7 @@ import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
+import { convertToPx, extractNumber, extractSizeUnit } from '../../../helpers'
 import {
   CraftElementSettings,
   CraftSettingLabel,
@@ -13,7 +14,7 @@ import {
 import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
-import SizeStyleInput, { extractNumber, extractSizeUnit } from '../inputs/SizeStyleInput'
+import SizeStyleInput from '../inputs/SizeStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import craftMessages from '../translation'
 
@@ -22,20 +23,24 @@ type FieldValues = {
   customStyle: CSSObject
 }
 
-const gcd = (width: number, height: number): number => (height === 0 ? width : gcd(height, width % height))
-
 const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
 
-  const [isImgAutoHeight, setIsImgAutoHeight] = useState(props.isAutoHeight === undefined ? false : props.isAutoHeight)
+  const [isImgAutoHeight, setIsImgAutoHeight] = useState(props.customStyle?.isAutoHeight === 'true')
   const [imgSrc, setImgSrc] = useState('')
   const [imgWidth, setImgWidth] = useState(0)
   const [imgHeight, setImgHeight] = useState(0)
   const [aspectRatio, setAspectRatio] = useState(0)
-  const [imgGcd, setImgGcd] = useState(0)
-  const [widthAspect, setWidthAspect] = useState(0)
-  const [heightAspect, setHeightAspect] = useState(0)
+  const [originalImage, setOriginalImage] = useState<{
+    width: string
+    height: string
+    ratio: number
+  }>({
+    width: '0px',
+    height: '0px',
+    ratio: 0,
+  })
 
   if (
     imgSrc === '' &&
@@ -45,16 +50,14 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   ) {
     let dbImgWidth = typeof props.customStyle?.width === 'string' ? extractNumber(props.customStyle?.width) || 0 : 0
     let dbImgHeight = typeof props.customStyle?.height === 'string' ? extractNumber(props.customStyle?.height) || 0 : 0
-    let dbAspectRatio = dbImgHeight / dbImgWidth
-    let dbImgGcd = gcd(dbImgWidth, dbImgHeight)
-    let widthAspect = dbImgWidth / dbImgGcd
-    let heightAspect = dbImgHeight / dbImgGcd
     setImgWidth(dbImgWidth)
     setImgHeight(dbImgHeight)
-    setAspectRatio(dbAspectRatio)
-    setImgGcd(dbImgGcd)
-    setWidthAspect(widthAspect)
-    setHeightAspect(heightAspect)
+    setAspectRatio(dbImgWidth / dbImgHeight)
+    setOriginalImage({
+      width: props?.width?.toString() || '0px',
+      height: props?.height?.toString() || '0px',
+      ratio: extractSizeUnit(props.width?.toString()) === extractSizeUnit(props.height?.toString()) ? extractNumber(props.width?.toString()) / extractNumber(props.height?.toString()) : 3 / 4,
+    })
     setImgSrc(props.customStyle.backgroundImage)
   } else if (props.customStyle?.backgroundImage !== undefined && imgSrc !== props.customStyle?.backgroundImage) {
     let urlImg = new Image()
@@ -62,30 +65,21 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
     let matchImgUrlArr = props?.customStyle?.backgroundImage?.match(regex)
     urlImg.src =
       matchImgUrlArr !== null && matchImgUrlArr !== undefined && matchImgUrlArr.length > 0 ? matchImgUrlArr[0] : ''
-
     urlImg.onload = () => {
       let urlImgWidth = urlImg.src !== '' ? urlImg.naturalWidth : 0
       let urlImgHeight = urlImg.src !== '' ? urlImg.naturalHeight : 0
       setImgWidth(urlImgWidth)
       setImgHeight(urlImgHeight)
-      // Ratio
-      let urlImgAspectRatio = urlImgHeight / urlImgWidth
-      setAspectRatio(urlImgAspectRatio)
-      // GCD
-      let urlImgGcd = gcd(urlImgWidth, urlImgHeight)
-      setImgGcd(urlImgGcd)
-      // Aspect
-      let widthAspect = urlImgWidth / urlImgGcd
-      let heightAspect = urlImgHeight / urlImgGcd
-      setWidthAspect(widthAspect)
-      setHeightAspect(heightAspect)
+      setAspectRatio(urlImgHeight / urlImgWidth)
+      setOriginalImage({
+        width: `${urlImgWidth}px`,
+        height: `${urlImgHeight}px`,
+        ratio: urlImgWidth / urlImgHeight,
+      })
       onPropsChange?.({
         ...props,
         width: urlImgWidth,
         height: urlImgHeight,
-        widthAspect: widthAspect,
-        heightAspect: heightAspect,
-        ratio: urlImgAspectRatio,
         customStyle: {
           ...props.customStyle,
           width: `${urlImgWidth}px`,
@@ -108,64 +102,65 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           width: imgWidth,
           height: imgHeight,
           aspectRatio: aspectRatio,
-          gcd: imgGcd,
-          widthAspect: widthAspect,
-          heightAspect: heightAspect,
+          originalImage,
         }}
         isImgAutoHeight={isImgAutoHeight}
-        onChange={value =>
-          onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value }, ratio: undefined })
-        }
+        onRatioChange={setAspectRatio}
+        onChange={value => {
+          onPropsChange?.({
+            ...props,
+            customStyle: {
+              ...props.customStyle,
+              ...value,
+            },
+          })
+        }}
       />
-      <Form.Item>
+      {!isImgAutoHeight && extractSizeUnit(props.customStyle?.width?.toString()) === extractSizeUnit(props.customStyle?.height?.toString()) && ['px', 'em', 'vh', 'vw'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ?
+        <Form.Item label={formatMessage(craftMessages.ImageSettings.ratio)}>
+          <InputNumber
+            min={0}
+            value={aspectRatio}
+            disabled={isImgAutoHeight}
+            onChange={v => {
+              const ratio = Number(v)
+              setAspectRatio(ratio)
+              onPropsChange?.({
+                ...props,
+                customStyle: {
+                  ...props.customStyle,
+                  height:
+                    extractNumber(props.customStyle?.width?.toString()) / ratio
+                },
+              })
+            }}
+          />
+        </Form.Item>
+        : null}
+
+      {['px', 'em', 'vw'].includes(extractSizeUnit(props.customStyle?.width?.toString())) && ['px', 'em', 'vh'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ? <Form.Item>
         <Checkbox
           checked={isImgAutoHeight}
           onChange={e => {
             setIsImgAutoHeight(!isImgAutoHeight)
-            if (typeof props.customStyle?.width === 'string') {
-              const width =
-                extractNumber(props?.customStyle?.width) !== undefined ? parseInt(props?.customStyle?.width) : 0
-              const newGcd = width / widthAspect
-              const newHeight = isImgAutoHeight
-                ? props?.customStyle?.height
-                : `${heightAspect * newGcd}${
-                    extractSizeUnit(props.customStyle.width.toString()) === 'vw'
-                      ? 'vh'
-                      : extractSizeUnit(props.customStyle.width.toString())
-                  }`
-              onPropsChange?.({
-                ...props,
-                ratio: aspectRatio,
-                customStyle: { ...props.customStyle, height: newHeight },
-                isAutoHeight: !isImgAutoHeight,
-              })
-            }
-          }}
-        >
-          自動
-        </Checkbox>
-      </Form.Item>
-      <Form.Item label={formatMessage(craftMessages.ImageSettings.ratio)}>
-        <InputNumber
-          value={props.ratio !== undefined ? props.ratio : aspectRatio}
-          disabled={isImgAutoHeight}
-          onChange={v => {
-            const ratio = Number(v) || undefined
+            const currentWidth = props.customStyle?.width?.toString() || '100px'
+            const currentHeight = props.customStyle?.height?.toString() || '100px'
+            const currentHeightUnit = extractSizeUnit(currentHeight)
+            const newHeight = e.target.checked ? `${convertToPx(currentWidth) / originalImage.ratio}${currentHeightUnit}` : `${convertToPx(currentWidth) / aspectRatio}${currentHeightUnit}`
             onPropsChange?.({
               ...props,
-              ratio: ratio,
               customStyle: {
                 ...props.customStyle,
-                height:
-                  ratio && props.customStyle?.width
-                    ? ratio * (extractNumber(props.customStyle.width.toString()) || 0) +
-                      (extractSizeUnit(props.customStyle.width.toString()) || 'px')
-                    : props.customStyle?.height,
+                height: newHeight,
+                isAutoHeight: e.target.checked ? 'true' : 'false',
               },
             })
           }}
-        />
-      </Form.Item>
+        >
+          自動調整圖片寬高
+        </Checkbox>
+      </Form.Item> : null}
+
       <Form.Item>
         <SpaceStyleInput
           value={props.customStyle}
@@ -211,7 +206,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
-    </Form>
+    </Form >
   )
 }
 
