@@ -27,7 +27,7 @@ export const useOrderStatuses = () => {
 }
 
 export const useOrderLogPreviewCollection = (
-  currentMemberId: string,
+  memberId: string,
   authStatus: 'Admin' | 'Personal' | 'None',
   filters?: {
     statuses?: string[] | null
@@ -58,14 +58,14 @@ export const useOrderLogPreviewCollection = (
             }
           : undefined
         : {
-            id: { _eq: currentMemberId },
+            id: { _eq: memberId },
           },
     order_products:
       authStatus === 'Personal'
         ? {
             product: {
               product_owner: {
-                member_id: { _eq: currentMemberId },
+                member_id: { _eq: memberId },
               },
             },
           }
@@ -392,10 +392,11 @@ export const useOrderLogExpandRow = (orderId: string) => {
     })) || []
 
   const paymentMethod = paymentLogByOrderIdData?.payment_log[0]?.gateway || null
-  const paymentLogs = paymentLogByOrderIdData?.payment_log.map(p => ({
-    status: p.status,
-    price: p.price,
-  })) || []
+  const paymentLogs =
+    paymentLogByOrderIdData?.payment_log.map(p => ({
+      status: p.status,
+      price: p.price,
+    })) || []
 
   const orderDiscounts =
     orderDiscountByOrderIdData?.order_discount.map(v => ({
