@@ -76,7 +76,7 @@ const SaleCollectionAdminCard: React.VFC<{
     refetchOrderLogAggregate,
     loadMoreOrderLogPreviewCollection,
   } = useOrderLogPreviewCollection(
-    currentMemberId || '',
+    permissions.CHECK_MEMBER_ORDER && memberId ? memberId : currentMemberId || '',
     permissions.SALES_RECORDS_ADMIN ? 'Admin' : permissions.SALES_RECORDS_NORMAL ? 'Personal' : 'None',
     { statuses, orderId, memberNameAndEmail, memberId },
   )
