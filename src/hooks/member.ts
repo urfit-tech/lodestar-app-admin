@@ -5,7 +5,6 @@ import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
-import { CouponPlanProps } from '../types/checkout'
 import { PermissionGroupProps } from '../types/general'
 import {
   MemberPropertyProps,
@@ -21,8 +20,17 @@ import {
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+
+interface MenuItem {
+  role: string | null
+  count: number | null
+  intlKey: {
+    id: string
+    defaultMessage: string
+  }
+}
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -121,6 +129,7 @@ export const useMemberAdmin = (memberId: string) => {
           member_phones {
             id
             phone
+            is_valid
           }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
@@ -133,31 +142,6 @@ export const useMemberAdmin = (memberId: string) => {
             }
             description
             rejected_at
-          }
-          coupons {
-            id
-            status {
-              outdated
-              used
-            }
-            coupon_code {
-              id
-              coupon_plan {
-                id
-                title
-                description
-                scope
-                type
-                amount
-                constraint
-                started_at
-                ended_at
-                coupon_plan_products {
-                  id
-                  product_id
-                }
-              }
-            }
           }
           member_permission_extras {
             id
@@ -172,6 +156,13 @@ export const useMemberAdmin = (memberId: string) => {
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+            order_discounts_aggregate {
               aggregate {
                 sum {
                   price
@@ -203,15 +194,6 @@ export const useMemberAdmin = (memberId: string) => {
 
   const memberAdmin:
     | (MemberAdminProps & {
-        coupons: {
-          status: {
-            outdated: boolean
-            used: boolean
-          }
-          couponPlan: CouponPlanProps & {
-            productIds: string[]
-          }
-        }[]
         noAgreedContract: boolean
         permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
       })
@@ -242,7 +224,10 @@ export const useMemberAdmin = (memberId: string) => {
             : null,
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
+          phones: data.member_by_pk.member_phones.map(v => ({
+            isValid: v.is_valid,
+            phoneNumber: v.phone,
+          })),
           lastRejectedNote: data.member_by_pk.member_notes[0]
             ? {
                 author: {
@@ -253,28 +238,18 @@ export const useMemberAdmin = (memberId: string) => {
               }
             : null,
           noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
-          coupons: data.member_by_pk.coupons.map(v => ({
-            status: {
-              outdated: !!v.status?.outdated,
-              used: !!v.status?.used,
-            },
-            couponPlan: {
-              id: v.coupon_code.coupon_plan.id,
-              title: v.coupon_code.coupon_plan.title || '',
-              description: v.coupon_code.coupon_plan.description || '',
-              scope: v.coupon_code.coupon_plan.scope,
-              type:
-                v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
-              amount: v.coupon_code.coupon_plan.amount,
-              constraint: v.coupon_code.coupon_plan.constraint,
-              startedAt: v.coupon_code.coupon_plan.started_at ? new Date(v.coupon_code.coupon_plan.started_at) : null,
-              endedAt: v.coupon_code.coupon_plan.ended_at ? new Date(v.coupon_code.coupon_plan.ended_at) : null,
-              productIds: v.coupon_code.coupon_plan.coupon_plan_products.map(v => v.product_id),
-            },
-          })),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: sum(
-            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          consumption: Math.max(
+            sum(
+              data.member_by_pk.order_logs.map(
+                orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0,
+              ),
+            ) -
+              sum(
+                data.member_by_pk.order_logs.map(
+                  orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+                ),
+              ),
           ),
           coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
           categories: data.member_by_pk.member_categories.map(v => ({
@@ -337,6 +312,7 @@ export const useMemberNotesAdmin = (
           created_at
           type
           status
+          metadata
           author {
             id
             picture_url
@@ -365,7 +341,17 @@ export const useMemberNotesAdmin = (
 
   const notes: Pick<
     MemberNote,
-    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+    | 'id'
+    | 'createdAt'
+    | 'type'
+    | 'status'
+    | 'author'
+    | 'member'
+    | 'duration'
+    | 'description'
+    | 'note'
+    | 'attachments'
+    | 'metadata'
   >[] =
     data?.member_note.map(v => ({
       id: v.id,
@@ -391,6 +377,7 @@ export const useMemberNotesAdmin = (
         data: u.data,
         options: u.options,
       })),
+      metadata: v.metadata,
     })) || []
 
   const loadMoreNotes =
@@ -574,105 +561,110 @@ export const useMemberRoleCount = (
     permissionGroup?: string
   },
 ) => {
-  const condition: hasura.GET_MEMBER_ROLE_COUNTVariables['condition'] = {
-    app_id: { _eq: appId },
-    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-    manager: filter?.managerName
-      ? {
-          name: { _ilike: `%${filter.managerName}%` },
-        }
-      : undefined,
-    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-    member_phones: filter?.phone
-      ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
-      : undefined,
-    member_categories: filter?.category
-      ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
-          },
-        }
-      : undefined,
-    member_tags: filter?.tag
-      ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
-      : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? {
-          permission_group: { name: { _like: `${filter.permissionGroup}` } },
-        }
-      : undefined,
-    _and: filter?.properties?.length
-      ? filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            member_properties: {
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            },
-          }))
-      : undefined,
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<any>('')
+  const [menu, setMenu] = useState<MenuItem[]>([])
+
+  const { authToken } = useAuth()
+
+  const fetchMemberRoleCount = async (filter?: {
+    name?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
+    properties?: {
+      id: string
+      value?: string
+    }[]
+    permissionGroup?: string
+  }) => {
+    if (!filter) {
+      return
+    }
+
+    const payload = {
+      name: filter.name ? `%${filter.name}%` : undefined,
+      email: filter.email ? `%${filter.email}%` : undefined,
+      managerName: filter.managerName ? { name: `%${filter.managerName}%` } : undefined,
+      managerId: filter.managerId ? filter.managerId : undefined,
+      phone: filter.phone ? { phone: `%${filter.phone}%` } : undefined,
+      category: filter.category ? { category: { name: `%${filter.category}%` } } : undefined,
+      tag: filter.tag ? { tag_name: `%${filter.tag}%` } : undefined,
+      permissionGroup: filter.permissionGroup ? `${filter.permissionGroup}` : undefined,
+      properties: filter.properties?.length
+        ? filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              [property.id]: `%${property.value}%`,
+            }))
+        : undefined,
+    }
+
+    const { data: res } = await axios.post(
+      `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/member-role-count`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
+      },
+    )
+    return res
   }
 
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_MEMBER_ROLE_COUNT,
-    hasura.GET_MEMBER_ROLE_COUNTVariables
-  >(
-    gql`
-      query GET_MEMBER_ROLE_COUNT($condition: member_bool_exp) {
-        member(where: $condition) {
-          id
-          role
+  useEffect(() => {
+    setLoading(true)
+    ;(async () => {
+      try {
+        const { data } = await fetchMemberRoleCount(filter)
+        if (data) {
+          const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0)
+          const roleCounts: { 'app-owner': number; 'content-creator': number; 'general-member': number } = {
+            'app-owner': 0,
+            'content-creator': 0,
+            'general-member': 0,
+          }
+          data.forEach((item: { role: 'app-owner' | 'content-creator' | 'general-member'; count: number }) => {
+            roleCounts[item.role] = item.count
+          })
+          setMenu([
+            {
+              role: null,
+              count: totalMembers,
+              intlKey: commonMessages.label.allMembers,
+            },
+            {
+              role: 'app-owner',
+              count: roleCounts['app-owner'],
+              intlKey: commonMessages.label.appOwner,
+            },
+            {
+              role: 'content-creator',
+              count: roleCounts['content-creator'],
+              intlKey: commonMessages.label.contentCreator,
+            },
+            {
+              role: 'general-member',
+              count: roleCounts['general-member'],
+              intlKey: commonMessages.label.generalMember,
+            },
+          ])
         }
+      } catch (error) {
+        setError(error)
+      } finally {
+        setLoading(false)
       }
-    `,
-    {
-      variables: {
-        condition,
-      },
-    },
-  )
-
-  const menu: {
-    role: string | null
-    count: number | null
-    intlKey: { id: string; defaultMessage: string }
-  }[] = [
-    {
-      role: null,
-      count: data?.member.length || null,
-      intlKey: commonMessages.label.allMembers,
-    },
-    {
-      role: 'app-owner',
-      count: data?.member.filter(v => v.role === 'app-owner').length || 0,
-      intlKey: commonMessages.label.appOwner,
-    },
-    {
-      role: 'content-creator',
-      count: data?.member.filter(v => v.role === 'content-creator').length || 0,
-      intlKey: commonMessages.label.contentCreator,
-    },
-    {
-      role: 'general-member',
-      count: data?.member.filter(v => v.role === 'general-member').length || 0,
-      intlKey: commonMessages.label.generalMember,
-    },
-  ]
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authToken, appId, JSON.stringify(filter)])
 
   return {
     loading,
     error,
     menu,
-    refetch,
+    fetchMemberRoleCount,
   }
 }
 
@@ -822,6 +814,29 @@ export const useMemberCollection = (
     { variables: { memberIdList: members.map(member => member.id) } },
   )
 
+  const {
+    loading: loadingMemberOrderDiscountPrice,
+    data: memberOrderDiscountPriceData,
+    refetch: refetchMemberOrderDiscountPrice,
+  } = useQuery<hasura.GetMemberOrderDiscountPrice, hasura.GetMemberOrderDiscountPriceVariables>(
+    gql`
+      query GetMemberOrderDiscountPrice($memberIdList: [String!]) {
+        order_log(where: { member_id: { _in: $memberIdList }, status: { _eq: "SUCCESS" } }) {
+          id
+          member_id
+          order_discounts_aggregate {
+            aggregate {
+              sum {
+                price
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberIdList: members.map(member => member.id) } },
+  )
+
   const { loading: loadingManagerInfo, data: managerInfoData } = useQuery<
     hasura.GetManagerInfo,
     hasura.GetManagerInfoVariables
@@ -906,6 +921,12 @@ export const useMemberCollection = (
       price: v.order_products_aggregate.aggregate?.sum?.price || 0,
     })) || []
 
+  const memberOrderDiscountPrice: { memberId: string; price: number }[] =
+    memberOrderDiscountPriceData?.order_log.map(v => ({
+      memberId: v.member_id,
+      price: v.order_discounts_aggregate.aggregate?.sum?.price || 0,
+    })) || []
+
   const memberCollection: MemberInfoProps[] =
     members.map(v => ({
       ...v,
@@ -914,10 +935,17 @@ export const useMemberCollection = (
         memberPhonesData?.member_phone
           .filter(memberPhone => memberPhone.member_id === v.id)
           .map(memberPhone => memberPhone.phone) || [],
-      consumption: sum(
-        memberOrderProductPrice
-          .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
-          .map(memberOrderProduct => memberOrderProduct.price),
+      consumption: Math.max(
+        sum(
+          memberOrderProductPrice
+            .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
+            .map(memberOrderProduct => memberOrderProduct.price),
+        ) -
+          sum(
+            memberOrderDiscountPrice
+              .filter(memberOrderDiscount => memberOrderDiscount.memberId === v.id)
+              .map(memberOrderDiscount => memberOrderDiscount.price),
+          ),
       ),
       manager: managerInfoData?.member.find(manager => manager.id === v.id)
         ? {
@@ -947,11 +975,13 @@ export const useMemberCollection = (
     loadingMemberPhones,
     loadingManagerInfo,
     loadingMemberOrderProductPrice,
+    loadingMemberOrderDiscountPrice,
     loadingMemberCategories,
     loadingMemberTags,
     loadingMemberProperties,
     memberCollection,
     refetchMemberOrderProductPrice,
+    refetchMemberOrderDiscountPrice,
     refetchMemberCategories,
     refetchMemberTags,
     refetchMemberProperties,
@@ -1005,17 +1035,22 @@ export const useProperty = () => {
         }
       }
     `,
-    { variables: { type: 'member' } },
+    {
+      variables: { type: 'member' },
+    },
   )
 
-  const properties =
-    data?.property.map(v => ({
-      id: v.id,
-      name: v.name,
-      placeholder: v.placeholder?.replace(/[()]/g, ''),
-      isEditable: v.is_editable,
-      isRequired: v.is_required,
-    })) || []
+  const properties = useMemo(() => {
+    return (
+      data?.property.map(v => ({
+        id: v.id,
+        name: v.name,
+        placeholder: v.placeholder?.replace(/[()]/g, ''),
+        isEditable: v.is_editable,
+        isRequired: v.is_required,
+      })) || []
+    )
+  }, [data])
 
   return {
     loadingProperties: loading,
@@ -1091,4 +1126,35 @@ export const useMutateMemberProperty = () => {
     }
   `)
   return { updateMemberProperty }
+}
+
+export const useMemberPermissionGroups = (memberId: string) => {
+  const { loading, data, error } = useQuery<
+    hasura.GetMemberPermissionGroups,
+    hasura.GetMemberPermissionGroupsVariables
+  >(
+    gql`
+      query GetMemberPermissionGroups($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          id
+          permission_group {
+            id
+            name
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+  const memberPermissionGroups: { permission_group_id: string; name: string }[] =
+    data?.member_permission_group.map(v => ({
+      permission_group_id: v.permission_group.id,
+      name: v.permission_group.name,
+    })) || []
+
+  return {
+    loading,
+    memberPermissionGroups,
+    error,
+  }
 }

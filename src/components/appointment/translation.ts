@@ -12,6 +12,8 @@ const appointmentMessages = {
       id: 'appointmentMessages.*.fetchDataError',
       defaultMessage: '讀取錯誤',
     },
+    create: { id: 'appointmentMessages.*.create', defaultMessage: '建立' },
+    cancel: { id: 'appointmentMessages.*.cancel', defaultMessage: '取消' },
   }),
   AppointmentPeriodCard: defineMessages({
     finished: { id: 'appointmentMessages.AppointmentPeriodCard.finished', defaultMessage: '已結束' },
@@ -25,10 +27,49 @@ const appointmentMessages = {
       id: 'appointment.AppointmentPeriodCard.appointmentCanceledAt',
       defaultMessage: '已於 {time} 取消預約',
     },
+    periodDurationAtMost: {
+      id: 'appointment.AppointmentPeriodCard.periodDurationAtMost',
+      defaultMessage: '諮詢一次 {duration} 分鐘為限',
+    },
     cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: '取消預約' },
+    rescheduleAppointment: {
+      id: 'appointment.AppointmentPeriodCard.rescheduleAppointment',
+      defaultMessage: '更換時段',
+    },
+    notRescheduleAppointmentPeriod: {
+      id: 'appointment.AppointmentPeriodCard.notRescheduleAppointmentPeriod',
+      defaultMessage: '無可更換的時段',
+    },
+    rescheduleOriginScheduled: {
+      id: 'appointment.AppointmentPeriodCard.rescheduleOriginScheduled',
+      defaultMessage: '原時段',
+    },
+    rescheduled: {
+      id: 'appointment.AppointmentPeriodCard.rescheduled',
+      defaultMessage: '更換為：',
+    },
+    rescheduleSuccess: {
+      id: 'appointment.AppointmentPeriodCard.rescheduleSuccess',
+      defaultMessage: '更換成功',
+    },
+    rescheduleSuccessAppointmentPlanTitle: {
+      id: 'appointment.AppointmentPeriodCard.rescheduleSuccessAppointmentPlanTitle',
+      defaultMessage: '{title} 已更換時段為',
+    },
+    rescheduleAppointmentPlanTitle: {
+      id: 'appointment.AppointmentPeriodCard.rescheduleAppointmentPlanTitle',
+      defaultMessage: '更換時段：{title}',
+    },
+    rescheduleConfirm: { id: 'appointment.AppointmentPeriodCard.rescheduleConfirm', defaultMessage: '確定更換' },
+    rescheduleCancel: { id: 'appointment.AppointmentPeriodCard.rescheduleCancel', defaultMessage: '重選時段' },
+    confirm: { id: 'appointment.AppointmentPeriodCard.confirm', defaultMessage: '好' },
     notYetConfigured: {
       id: 'appointment.AppointmentPeriodCard.notYetConfigured',
       defaultMessage: 'not yet configured',
+    },
+    downloadMeetingRecord: {
+      id: 'appointment.AppointmentPeriodCard.downloadMeetingRecord',
+      defaultMessage: '下載錄影',
     },
   }),
   AppointmentDetailModal: defineMessages({
@@ -40,7 +81,6 @@ const appointmentMessages = {
     },
     canceledReason: { id: 'appointmentMessages.AppointmentDetailModal.canceledReason', defaultMessage: '取消原因' },
   }),
-
   AppointmentIssueAndResultModal: defineMessages({
     appointmentIssue: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentIssue',
@@ -59,7 +99,6 @@ const appointmentMessages = {
       defaultMessage: '※此紀錄不會公開給學員看到',
     },
   }),
-
   AppointmentCancelModal: defineMessages({
     confirmCancelAlert: {
       id: 'appointmentMessages.AppointmentCancelModal.confirmCancelAlert',
@@ -78,6 +117,73 @@ const appointmentMessages = {
     meetingLink: {
       id: 'appointmentMessages.AppointmentCancelModal.meetingLink',
       defaultMessage: 'meeting link',
+    },
+  }),
+  AppointmentBasicForm: defineMessages({
+    defaultMeetGateWay: {
+      id: 'appointmentMessages.AppointmentBasicForm.defaultMeetGateWay,',
+      defaultMessage: '預設會議系統',
+    },
+  }),
+  AppointmentPeriodItem: defineMessages({
+    booked: { id: 'appointment.AppointmentPeriodItem.booked', defaultMessage: '已預約' },
+    bookable: { id: 'appointment.AppointmentPeriodItem.bookable', defaultMessage: '可預約' },
+    meetingIsFull: { id: 'appointment.AppointmentPeriodItem.meetingIsFull', defaultMessage: '已無會議室' },
+    closed: { id: 'appointment.AppointmentPeriodItem.closed', defaultMessage: '已關閉' },
+  }),
+  AppointmentPlanScheduleCreationModal: defineMessages({
+    createPeriod: { id: 'appointment.AppointmentPlanScheduleCreationModal.createPeriod', defaultMessage: '建立時段' },
+
+    timezone: {
+      id: 'appointment.AppointmentPlanScheduleCreationModal.timezone',
+      defaultMessage: '時間以 {city} (GMT{timezone}) 顯示',
+    },
+    startedAt: { id: 'appointment.AppointmentPlanScheduleCreationModal.startedAt', defaultMessage: '開始時間' },
+    selectStartedAt: {
+      id: 'appointment.AppointmentPlanScheduleCreationModal.selectStartedAt',
+      defaultMessage: '選擇起始時間',
+    },
+    periodType: { id: 'appointment.AppointmentPlanScheduleCreationModal.periodType', defaultMessage: '訂閱週期' },
+    day: { id: 'appointment.AppointmentPlanScheduleCreationModal.day', defaultMessage: '天' },
+    week: { id: 'appointment.AppointmentPlanScheduleCreationModal.week', defaultMessage: '週' },
+    month: { id: 'appointment.AppointmentPlanScheduleCreationModal.month', defaultMessage: '月' },
+    successfullyCreated: {
+      id: 'appointment.AppointmentPlanScheduleCreationModal.successfullyCreated',
+      defaultMessage: '建立成功',
+    },
+  }),
+  AppointmentScheduleImportModal: defineMessages({
+    noAvailableSchedule: {
+      id: 'appointment.AppointmentScheduleImportModal.noAvailableSchedule',
+      defaultMessage: '沒有可匯入的時段',
+    },
+    repeatEveryDay: {
+      id: 'appointment.AppointmentScheduleImportModal.repeatEveryDay',
+      defaultMessage: '重複週期：每日',
+    },
+    repeatEveryWeek: {
+      id: 'appointment.AppointmentScheduleImportModal.repeatEveryWeek',
+      defaultMessage: '重複週期：每週',
+    },
+    repeatEveryMonth: {
+      id: 'appointment.AppointmentScheduleImportModal.repeatEveryMonth',
+      defaultMessage: '重複週期：每月',
+    },
+    repeatEveryYear: {
+      id: 'appointment.AppointmentScheduleImportModal.repeatEveryYear',
+      defaultMessage: '重複週期：每年',
+    },
+    isExisted: { id: 'appointment.AppointmentScheduleImportModal.isExisted', defaultMessage: '已匯入' },
+    import: { id: 'appointment.AppointmentScheduleImportModal.import', defaultMessage: '匯入' },
+    importPeriod: { id: 'appointment.AppointmentScheduleImportModal.importPeriod', defaultMessage: '匯入時段' },
+    selectPlan: { id: 'appointment.AppointmentScheduleImportModal.selectPlan', defaultMessage: '選擇方案' },
+    scheduleImportNotation: {
+      id: 'appointment.AppointmentScheduleImportModal.scheduleImportNotation',
+      defaultMessage: '將你在其他方案設定的時段複製更新到此方案',
+    },
+    selectImportedSchedule: {
+      id: 'appointment.AppointmentScheduleImportModal.selectedImportedSchedule',
+      defaultMessage: '選擇欲匯入的預約方案時段',
     },
   }),
 }

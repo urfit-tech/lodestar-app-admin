@@ -573,6 +573,7 @@ export const activityMessages = {
     onlineActivity: { id: 'activity.label.onlineActivity', defaultMessage: '線上活動' },
     offlineActivity: { id: 'activity.label.offlineActivity', defaultMessage: '實體活動' },
     onlineAndOfflineActivity: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
+    both: { id: 'activity.label.allActivity', defaultMessage: '實體 & 線上' },
   }),
   status: defineMessages({
     public: { id: 'activity.status.public', defaultMessage: '公開' },
@@ -604,21 +605,19 @@ export const activityMessages = {
 }
 
 export const appointmentMessages = {
-  ui: defineMessages({
-    createPeriod: { id: 'appointment.ui.createPeriod', defaultMessage: '建立時段' },
-    importPeriod: { id: 'appointment.ui.importPeriod', defaultMessage: '匯入時段' },
-  }),
   label: defineMessages({
     duration: { id: 'appointment.label.duration', defaultMessage: '時間長度(分鐘)' },
-    selectPlan: { id: 'appointment.label.selectPlan', defaultMessage: '選擇方案' },
     period: { id: 'appointment.label.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.label.planTitle', defaultMessage: '方案名稱' },
     contactPhone: { id: 'appointment.label.contactPhone', defaultMessage: '聯絡手機' },
     startedAt: { id: 'appointment.label.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.label.periodType', defaultMessage: '重複週期' },
+    reschedule: { id: 'appointment.label.reschedule', defaultMessage: '更換時段' },
     reservationPlan: { id: 'appointment.label.reservationPlan', defaultMessage: '提前預約' },
     reservationAmount: { id: 'appointment.label.reservationAmount', defaultMessage: '時間長度' },
     reservationType: { id: 'appointment.label.reservationType', defaultMessage: '時間單位' },
+    rescheduleAmount: { id: 'appointment.label.rescheduleAmount', defaultMessage: '時間長度' },
+    rescheduleType: { id: 'appointment.label.rescheduleType', defaultMessage: '時間單位' },
     creator: { id: 'appointment.label.creator', defaultMessage: '講師' },
     member: { id: 'appointment.label.member', defaultMessage: '學生' },
     meetingLink: { id: 'appointment.label.meetingLink', defaultMessage: 'Meeting Link' },
@@ -630,6 +629,8 @@ export const appointmentMessages = {
     maximumCapacity: { id: 'appointment.label.maximumCapacity', defaultMessage: 'Maximum Capacity' },
     unlimited: { id: 'appointment.label.unlimited', defaultMessage: 'unlimited' },
     limited: { id: 'appointment.label.limited', defaultMessage: 'limited' },
+    isReschedule: { id: 'appointment.label.isReschedule', defaultMessage: '可更換' },
+    unReschedule: { id: 'appointment.label.unReschedule', defaultMessage: '不可更換' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
@@ -641,8 +642,7 @@ export const appointmentMessages = {
   }),
   text: defineMessages({
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
-    selectStartedAt: { id: 'appointment.text.selectStartedAt', defaultMessage: '選擇起始時間' },
-    timezone: { id: 'appointment.text.timezone', defaultMessage: '時間以 {city} (GMT{timezone}) 顯示' },
+
     noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
     noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
     noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },
@@ -662,14 +662,6 @@ export const appointmentMessages = {
     isPrivatePublishedNotation: {
       id: 'appointment.text.isPrivatePublishedNotation',
       defaultMessage: '你的預約方案已經私密發佈，學生將能購買預約並由預覽網址關注這個方案。',
-    },
-    scheduleImportNotation: {
-      id: 'appointment.text.scheduleImportNotation',
-      defaultMessage: '將你在其他方案設定的時段複製更新到此方案',
-    },
-    selectImportedSchedule: {
-      id: 'appointment.text.selectedImportedSchedule',
-      defaultMessage: '選擇欲匯入的預約方案時段',
     },
   }),
 }
@@ -754,18 +746,6 @@ export const checkoutMessages = {
   },
 }
 
-export const reportMessages = {
-  '*': defineMessages({
-    pageTitle: { id: 'report.*.pageTitle', defaultMessage: '報表分析' },
-    addReport: { id: 'report.*.addReport', defaultMessage: '新增報表' },
-  }),
-  label: defineMessages({
-    title: { id: 'report.label.title', defaultMessage: '報表名稱' },
-    type: { id: 'report.label.type', defaultMessage: '種類' },
-    options: { id: 'report.label.options', defaultMessage: '報表設定' },
-  }),
-}
-
 export const programMessages = {
   status: defineMessages({
     issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
@@ -793,9 +773,7 @@ export const programMessages = {
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
-    practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
-    notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
     passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
     question: { id: 'program.label.question', defaultMessage: '題目' },
@@ -803,11 +781,8 @@ export const programMessages = {
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
-    contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
-    audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
-    contentPlan: { id: 'program.label.contentPlan', defaultMessage: 'Content Plan' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -826,13 +801,6 @@ export const programMessages = {
     },
     noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
     noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
-
-    practicePrivateTips: { id: 'program.text.practicePrivateTips', defaultMessage: '勾選後學員將只能看到自己的作品' },
-    practiceFileSizeTips: { id: 'program.text.practiceFileSizeTips', defaultMessage: '單檔案大小不超過 5GB' },
-    deleteContentWarning: {
-      id: 'program.text.deleteContentWarning',
-      defaultMessage: '你確定要刪除此內容？此動作無法還原',
-    },
     deleteQuestionDescription: {
       id: 'program.text.deleteQuestionDescription',
       defaultMessage: '題目刪除即不可恢復，確定要刪除嗎？',
@@ -849,10 +817,6 @@ export const programMessages = {
     noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
-    deletePracticeWarning: {
-      id: 'program.text.deletePracticeWarning',
-      defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
-    },
     searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
@@ -875,9 +839,6 @@ export const programMessages = {
     deleteQuestion: { id: 'program.ui.deleteQuestion', defaultMessage: '刪除題目' },
     deleteChoice: { id: 'program.ui.deleteChoice', defaultMessage: '刪除選項' },
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
-    videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
-    articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
-    audioContent: { id: 'program.ui.audioContent', defaultMessage: 'Audio content' },
     uploadAudioFile: { id: 'program.ui.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
 }
@@ -1180,6 +1141,7 @@ export const memberMessages = {
     memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
+    deleteMember: { id: 'member.ui.deleteMember', defaultMessage: '刪除會員' },
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
@@ -1216,7 +1178,8 @@ export const memberMessages = {
     taskTitle: { id: 'member.label.taskTitle', defaultMessage: '標題' },
     priority: { id: 'member.label.priority', defaultMessage: '優先權' },
     category: { id: 'member.label.category', defaultMessage: '分類' },
-    dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
+    executeDate: { id: 'member.label.executeDate', defaultMessage: '執行日期' },
+    createdDate: { id: 'member.label.createdDate', defaultMessage: '建立日期' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
     manager: { id: 'member.label.manager', defaultMessage: '承辦人' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
@@ -1237,6 +1200,10 @@ export const memberMessages = {
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+    },
+    deleteMemberConfirmation: {
+      id: 'member.text.deleteMemberConfirmation',
+      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？',
     },
     noMemberNote: {
       id: 'member.text.noMemberNote',
@@ -1456,7 +1423,9 @@ export const permissionGroupsAdminMessages = {
 }
 
 export const salesMessages = defineMessages({
-  answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通名單' },
+  answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通' },
+  demoReservation: { id: 'sales.label.demoReservation', defaultMessage: '預約Demo' },
+  contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '未接通' },
   signedLead: { id: 'sales.label.signedLead', defaultMessage: '已簽約' },
   totalLead: { id: 'sales.label.totalLead', defaultMessage: '全部' },
   recentAnsweredAt: { id: 'sales.label.recentAnsweredAt', defaultMessage: '最近接通' },
@@ -1468,13 +1437,13 @@ export const salesMessages = defineMessages({
   chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '報名查詢' },
   chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
   autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
-  followedLead: { id: 'sales.label.followedLead', defaultMessage: '收藏名單' },
-  idledLead: { id: 'sales.label.idledLead', defaultMessage: '未聯繫名單' },
-  contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '已聯繫名單' },
-  invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },
-  presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已示範名單' },
-  closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案名單' },
-  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成名單' },
+  followedLead: { id: 'sales.label.followedLead', defaultMessage: '收藏' },
+  idledLead: { id: 'sales.label.idledLead', defaultMessage: '未撥打' },
+  calledLead: { id: 'sales.label.calledLead', defaultMessage: '已撥打' },
+  invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '未完成' },
+  presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已完成' },
+  closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案' },
+  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成' },
   paidLead: { id: 'sales.label.paidLead', defaultMessage: '既有學員' },
   potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
   keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },
@@ -1495,6 +1464,11 @@ export const salesMessages = defineMessages({
   lastTask: { id: 'sales.label.lastTask', defaultMessage: '最近待辦' },
   serviceEndedAt: { id: 'sales.label.serviceEndedAt', defaultMessage: '服務截止時間' },
   productItem: { id: 'sales.label.productItem', defaultMessage: '產品項目' },
+  phoneNumberSetting: { id: 'sales.label.phoneNumberSetting', defaultMessage: '手機設定' },
+  invalid: { id: 'sales.label.invalid', defaultMessage: '無效' },
+  valid: { id: 'sales.label.valid', defaultMessage: '恢復' },
+  addNewPhone: { id: 'sales.label.addNewPhone', defaultMessage: '新增手機' },
+  addPhoneNumber: { id: 'sales.label.addPhoneNumber', defaultMessage: '新增號碼' },
 })
 
 export const codeMessages = defineMessages({

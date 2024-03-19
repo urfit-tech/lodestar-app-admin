@@ -21,8 +21,9 @@ import {
 import { ResultProps } from 'antd/lib/result'
 import { isEmpty } from 'lodash'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -32,6 +33,8 @@ import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura, { member_bool_exp } from '../../hasura'
 import { useProperty } from '../../hooks/member'
+import { useGetManagerWithMemberCount } from '../../hooks/sales'
+import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
 type LeadTypeFilter = 'contained' | 'only' | 'excluded'
@@ -40,14 +43,17 @@ type Filter = {
   [key: string]: any
   categoryIds: string[]
   createdAtRange: [Date, Date] | null
-  lastCalledRange: [Date, Date] | null
-  lastAnsweredRange: [Date, Date] | null
+  lastCalledRange: [Moment | null, Moment | null] | null
+  lastAnsweredRange: [Moment | null, Moment | null] | null
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
   completedLead: LeadTypeFilter
   closedLead: LeadTypeFilter
   recycledLead: LeadTypeFilter
+  closedAtRange: [Date, Date] | null
+  excludeLastCalled: boolean
+  excludeLastAnswered: boolean
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -68,7 +74,11 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     completedLead: 'excluded',
     closedLead: 'excluded',
     recycledLead: 'excluded',
+    closedAtRange: null,
+    excludeLastCalled: false,
+    excludeLastAnswered: false,
   })
+
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
   )
@@ -106,8 +116,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       {currentStep === 1 && (
         <ConfirmSection
           filter={filter}
+          setCurrentStep={setCurrentStep}
           onNext={({ condition, limit, managerId }) => {
-            setCurrentStep(step => step + 1)
             setAssignedResult({
               status: 'info',
             })
@@ -152,6 +162,12 @@ const FilterSection: React.FC<{
   const [starRangeIsNull, setStarRangeIsNull] = useState(filter.starRangeIsNull)
   const [notCalled, setNotCalled] = useState(filter.notCalled)
   const [notAnswered, setNotAnswered] = useState(filter.notAnswered)
+  const [lastCalledRange, setLastCalledRange] = useState<[Moment | null, Moment | null] | null>(filter.lastCalledRange)
+  const [lastAnsweredRange, setLastAnsweredRange] = useState<[Moment | null, Moment | null] | null>(
+    filter.lastAnsweredRange,
+  )
+  const [excludeLastCalled, setExcludeLastCalled] = useState(filter.excludeLastCalled)
+  const [excludeLastAnswered, setExcludeLastAnswered] = useState(filter.excludeLastAnswered)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
   const { loadingProperties, properties } = useProperty()
   const { currentMemberId } = useAuth()
@@ -166,19 +182,23 @@ const FilterSection: React.FC<{
       right: -120px;
     }
   `
+  const ExcludeCheckBox = styled(Form.Item)`
+    margin-bottom: 0px;
+  `
   const PropertiesItem = styled(Form.Item)`
     margin-bottom: 40px;
     @media (min-width: ${DESKTOP_BREAK_POINT}px) {
       margin-bottom: 24px;
     }
   `
+
   return (
     <Form<Filter>
       layout="horizontal"
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 12 }}
       initialValues={filter}
-      onFinish={values => onNext?.({ ...values, starRange })}
+      onFinish={values => onNext?.({ ...values, starRange, excludeLastCalled, excludeLastAnswered })}
     >
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
@@ -234,7 +254,6 @@ const FilterSection: React.FC<{
           </Form.Item>
         </Input.Group>
       </Form.Item>
-
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
         name="createdAtRange"
@@ -249,12 +268,38 @@ const FilterSection: React.FC<{
       >
         <Checkbox onChange={e => setNotCalled(e.target.checked)} />
       </Form.Item>
-
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
-        name="lastCalledRange"
-      >
-        <DatePicker.RangePicker allowClear disabled={notCalled} />
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}>
+        <Box>
+          <Form.Item name="lastCalledRange" noStyle getValueProps={v => ({ value: notCalled ? [null, null] : v })}>
+            <DatePicker.RangePicker
+              allowClear
+              disabled={notCalled}
+              onChange={data => {
+                if (!data) {
+                  setExcludeLastCalled(false)
+                }
+                setLastCalledRange(data)
+              }}
+            />
+          </Form.Item>
+          <ExcludeCheckBox
+            name="excludeLastCalled"
+            valuePropName="checked"
+            getValueProps={() => ({ checked: notCalled ? false : excludeLastCalled })}
+          >
+            <Checkbox
+              checked={excludeLastCalled}
+              onChange={e => setExcludeLastCalled(e.target.checked)}
+              style={{ display: 'flex', alignItems: 'center' }}
+              disabled={notCalled ? true : !lastCalledRange}
+            >
+              <Text color="var(--gary-dark)" size="sm">
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.excluded)}
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
+              </Text>
+            </Checkbox>
+          </ExcludeCheckBox>
+        </Box>
       </Form.Item>
 
       <Form.Item
@@ -264,11 +309,39 @@ const FilterSection: React.FC<{
       >
         <Checkbox onChange={e => setNotAnswered(e.target.checked)} />
       </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
-        name="lastAnsweredRange"
-      >
-        <DatePicker.RangePicker allowClear disabled={notAnswered} />
+
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}>
+        <Box>
+          <Form.Item name="lastAnsweredRange" noStyle getValueProps={v => ({ value: notAnswered ? [null, null] : v })}>
+            <DatePicker.RangePicker
+              allowClear
+              disabled={notAnswered}
+              onChange={data => {
+                if (!data) {
+                  setExcludeLastAnswered(false)
+                }
+                setLastAnsweredRange(data)
+              }}
+            />
+          </Form.Item>
+          <ExcludeCheckBox
+            name="excludeLastAnswered"
+            valuePropName="checked"
+            getValueProps={() => ({ checked: notAnswered ? false : excludeLastAnswered })}
+          >
+            <Checkbox
+              defaultChecked={false}
+              onChange={e => setExcludeLastAnswered(e.target.checked)}
+              style={{ display: 'flex', alignItems: 'center' }}
+              disabled={notAnswered ? true : !lastAnsweredRange}
+            >
+              <Text color="var(--gary-dark)" size="sm">
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.excluded)}
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
+              </Text>
+            </Checkbox>
+          </ExcludeCheckBox>
+        </Box>
       </Form.Item>
 
       <Form.Item
@@ -309,6 +382,15 @@ const FilterSection: React.FC<{
           </Radio>
         </Radio.Group>
       </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedRange)}
+        name="closedAtRange"
+        getValueProps={v => ({ value: notCalled ? [null, null] : v })}
+      >
+        <DatePicker.RangePicker allowClear disabled={notCalled} />
+      </Form.Item>
+
       <Form.Item
         name="recycledLead"
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
@@ -372,15 +454,17 @@ const FilterSection: React.FC<{
 
 const ConfirmSection: React.FC<{
   filter: Filter
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
   onNext?: (values: { condition: member_bool_exp; limit: number; managerId: string | null }) => void
-}> = ({ filter, onNext }) => {
+}> = ({ filter, setCurrentStep, onNext }) => {
   const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { properties } = useProperty()
+  const [visible, setVisible] = useState(false)
 
   const leadCandidatesCondition = {
-    member_phones: { phone: { _neq: '' } },
+    member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
     manager_id: {
       _is_null: !filter.managerId,
       _eq: filter.managerId || undefined,
@@ -413,7 +497,7 @@ const ConfirmSection: React.FC<{
       ? {
           _is_null: true,
         }
-      : filter.lastCalledRange
+      : filter.lastCalledRange && !filter.excludeLastCalled
       ? {
           _gte: moment(filter.lastCalledRange[0]).startOf('day'),
           _lte: moment(filter.lastCalledRange[1]).endOf('day'),
@@ -423,7 +507,7 @@ const ConfirmSection: React.FC<{
       ? {
           _is_null: true,
         }
-      : filter.lastAnsweredRange
+      : filter.lastAnsweredRange && !filter.excludeLastAnswered
       ? {
           _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
@@ -447,12 +531,63 @@ const ConfirmSection: React.FC<{
         : {
             _is_null: filter.completedLead === 'excluded',
           },
+    _or:
+      filter.closedLead === 'contained' && filter.closedAtRange
+        ? [
+            {
+              closed_at: {
+                _gte: moment(filter.closedAtRange[0]).startOf('day'),
+                _lte: moment(filter.closedAtRange[1]).endOf('day'),
+              },
+            },
+            {
+              closed_at: {
+                _is_null: true,
+              },
+            },
+          ]
+        : filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled
+        ? [
+            {
+              last_member_note_called: {
+                _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+              },
+            },
+            {
+              last_member_note_called: {
+                _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+              },
+            },
+          ]
+        : filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered
+        ? [
+            {
+              last_member_note_answered: {
+                _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+              },
+            },
+            {
+              last_member_note_answered: {
+                _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+              },
+            },
+          ]
+        : undefined,
     closed_at:
-      filter.closedLead === 'contained'
-        ? undefined
-        : {
-            _is_null: filter.closedLead === 'excluded',
-          },
+      filter.closedLead === 'excluded'
+        ? {
+            _is_null: true,
+          }
+        : filter.closedLead === 'only'
+        ? filter.closedAtRange
+          ? {
+              _gte: moment(filter.closedAtRange[0]).startOf('day'),
+              _lte: moment(filter.closedAtRange[1]).endOf('day'),
+            }
+          : {
+              _is_null: false,
+            }
+        : undefined,
     recycled_at:
       filter.recycledLead === 'contained'
         ? undefined
@@ -489,6 +624,37 @@ const ConfirmSection: React.FC<{
 
   const isLoading = isLeadCandidatesLoading
 
+  const { id: appId, settings } = useApp()
+
+  const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
+
+  const handleOnNext = () => {
+    onNext?.({
+      condition: leadCandidatesCondition,
+      limit: numDeliver,
+      managerId: managerId || null,
+    })
+  }
+
+  const handleClick = () => {
+    const memberCount = managerWithMemberCountData?.memberCount
+    const isAggregateAvailable = typeof memberCount === 'object' && memberCount !== null && 'aggregate' in memberCount
+
+    const managerLeadLimit = settings['manager_lead_limit']
+    const isManagerLeadLimitValid = managerLeadLimit && Number(managerLeadLimit) > 0
+
+    if (
+      isManagerLeadLimitValid &&
+      isAggregateAvailable &&
+      memberCount.aggregate.count + numDeliver > Number(managerLeadLimit)
+    ) {
+      setVisible(true)
+    } else {
+      setCurrentStep(step => step + 1)
+      handleOnNext()
+    }
+  }
+
   return (
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
@@ -511,15 +677,20 @@ const ConfirmSection: React.FC<{
             </Col>
           </Row>
         )}
-        <Button
-          type="primary"
-          block
-          onClick={() =>
-            onNext?.({ condition: leadCandidatesCondition, limit: numDeliver, managerId: managerId || null })
-          }
-        >
+        <Button type="primary" block onClick={handleClick}>
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
+
+        {managerId && (
+          <SalesLeadLimitConfirmModel
+            anticipatedDispatchCount={numDeliver}
+            visible={visible}
+            setVisible={setVisible}
+            setCurrentStep={setCurrentStep}
+            onConfirm={handleOnNext}
+            confirmationData={managerWithMemberCountData}
+          />
+        )}
       </div>
     </div>
   )
@@ -557,7 +728,10 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
 
 const UPDATE_LEAD_MANAGER = gql`
   mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
-    update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
+    update_member(
+      where: { id: { _in: $memberIds } }
+      _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
+    ) {
       affected_rows
     }
   }
@@ -567,6 +741,9 @@ const GET_LEAD_CANDIDATES = gql`
   query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
     member(where: $condition, limit: $limit) {
       id
+      name
+      last_member_note_called
+      last_member_note_answered
     }
   }
 `

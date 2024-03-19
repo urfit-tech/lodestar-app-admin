@@ -11,8 +11,8 @@ import {
   SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
-import { Button, Input, message, Table, Tag } from 'antd'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import { Button, Input, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -20,7 +20,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { uniq } from 'ramda'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -33,6 +33,7 @@ import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
+import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
 
 dayjs.extend(utc)
@@ -64,12 +65,22 @@ const StyledMemberNote = styled.span`
   text-overflow: ellipsis;
 `
 
+const StyledPhones = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+const StyledDelPhone = styled.p`
+  color: var(--gray);
+`
+
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed'
   manager: Manager
   leads: LeadProps[]
   isLoading: boolean
-  onRefetch: () => void
+  onRefetch: () => Promise<void>
 }> = ({ variant, manager, leads, onRefetch, isLoading }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
@@ -83,7 +94,7 @@ const SalesLeadTable: React.VFC<{
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
-    nickNameAndEmail?: string
+    nameAndEmail?: string
     fullName?: string
     phone?: string
     lastTaskCategoryName?: string
@@ -102,9 +113,18 @@ const SalesLeadTable: React.VFC<{
   const [fullNameValue, setFullNameValue] = useState<string>()
   const [refetchLoading, setRefetchLoading] = useState(false)
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
-    null,
-  )
+  const [memberPhoneModalVisible, setMemberPhoneModalVisible] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<{
+    id: string
+    name: string
+    categoryNames: string[]
+    email: string
+    pictureUrl: string
+    phones?: {
+      phoneNumber: string
+      isValid: boolean
+    }[]
+  } | null>(null)
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -158,7 +178,8 @@ const SalesLeadTable: React.VFC<{
 
   const handleFullNameSave = (lead: LeadProps) => {
     const fullNameProperty = properties.find(property => property.name === '本名')
-    if (!fullNameValue) {
+    const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
+    if (!fullNameValue || fullNameValue === fullNamePropertyValue) {
       setEditFullNameMemberId('')
     } else {
       setRefetchLoading(true)
@@ -170,31 +191,30 @@ const SalesLeadTable: React.VFC<{
         .then(() => {
           message.success(formatMessage(commonMessages.event.successfullySaved))
           onRefetch()
+          setRefetchLoading(false)
+          setFullNameValue('')
+          setEditFullNameMemberId('')
         })
         .catch(handleError)
     }
   }
 
-  useEffect(() => {
-    if (!isLoading) {
-      setRefetchLoading(false)
-      setEditFullNameMemberId('')
-      setFullNameValue('')
-    }
-  }, [isLoading])
-
   const dataSource = leads
     .filter(v => {
-      const { nickNameAndEmail, fullName, phone, categoryName, materialName, memberNote } = filters
+      const { nameAndEmail, phone, categoryName, materialName, memberNote } = filters
       const { name, email, phones, categoryNames, notes, properties } = v
+      const fullName = properties.find(property => property.name === '本名')?.value || ''
       const matchesFilter = (filterValue: string | undefined) => (filterData: string) =>
         !filterValue || filterData.trim().toLowerCase().includes(filterValue.trim().toLowerCase())
 
-      const nameAndEmailMatch = matchesFilter(nickNameAndEmail)(name + email)
+      const nameAndEmailMatch = matchesFilter(nameAndEmail)(name + email + fullName)
 
-      const fullNameMatch = matchesFilter(fullName)(properties.find(property => property.name === '本名')?.value || '')
-
-      const phoneMatch = matchesFilter(phone)(phones.join(''))
+      const phoneMatch = matchesFilter(phone)(
+        phones
+          .filter(phone => phone.isValid)
+          .map(phone => phone.phoneNumber)
+          .join(''),
+      )
 
       const categoryNameMatch = matchesFilter(categoryName)(categoryNames.join(''))
 
@@ -204,9 +224,7 @@ const SalesLeadTable: React.VFC<{
 
       const memberNoteMatch = matchesFilter(memberNote)(notes)
 
-      return (
-        nameAndEmailMatch && fullNameMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
-      )
+      return nameAndEmailMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
     })
     .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
@@ -237,12 +255,15 @@ const SalesLeadTable: React.VFC<{
           value: 'N',
         },
       ],
-      sorter: (a, b) =>
-        (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
-        (b.properties.find(property => property.name === '名單分級')?.value || 'N')
-          ? 1
-          : -1,
-      defaultSortOrder: 'descend',
+      sorter: {
+        compare: (a, b) =>
+          (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
+          (b.properties.find(property => property.name === '名單分級')?.value || 'N')
+            ? 1
+            : -1,
+        multiple: 1,
+      },
+      // defaultSortOrder: 'descend',
       onFilter: (value, lead) =>
         value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
       render: (memberId, record) => (
@@ -259,115 +280,140 @@ const SalesLeadTable: React.VFC<{
               setPropertyModalVisible(true)
             }}
           /> */}
-          <Button
-            icon={<CheckSquareOutlined />}
-            className="mr-1"
-            onClick={() => {
-              setSelectedMember({
-                id: record.id,
-                name: record.name,
-                categoryNames: record.categoryNames,
-              })
-              setTaskModalVisible(true)
-            }}
-          />
-          <Button
-            className="mr-1"
-            icon={<FileAddOutlined />}
-            onClick={() => {
-              setSelectedMember({
-                id: record.id,
-                name: record.name,
-                categoryNames: record.categoryNames,
-              })
-              setMemberNoteModalVisible(true)
-            }}
-          />
+          <Tooltip placement="bottom" title={formatMessage(memberMessages.ui.newTask)}>
+            <Button
+              icon={<CheckSquareOutlined />}
+              className="mr-1"
+              onClick={() => {
+                setSelectedMember({
+                  id: record.id,
+                  name: record.name,
+                  categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
+                })
+                setTaskModalVisible(true)
+              }}
+            />
+          </Tooltip>
+          <Tooltip placement="bottom" title={formatMessage(memberMessages.label.createMemberNote)}>
+            <Button
+              className="mr-1"
+              icon={<FileAddOutlined />}
+              onClick={() => {
+                setSelectedMember({
+                  id: record.id,
+                  name: record.name,
+                  categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
+                })
+                setMemberNoteModalVisible(true)
+              }}
+            />
+          </Tooltip>
         </div>
       ),
     },
     {
-      key: 'nickNameAndEmail',
-      dataIndex: 'nickNameAndEmail',
+      key: 'nameAndEmail',
+      dataIndex: 'nameAndEmail',
       width: 200,
       title: formatMessage(salesMessages.memberNickName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
-          nickNameAndEmail: value,
+          nameAndEmail: value,
         }),
       ),
-      render: (nickNameAndEmail, lead) => {
+      render: (nameAndEmail, lead) => {
         const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
         const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
+        const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
         return (
-          <a href={`/admin/members/${lead?.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
-            <span>
-              <Tag color={color}>{leadLevel}</Tag>
-              {lead?.name}
-            </span>
+          <>
+            <a href={`/admin/members/${lead?.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
+              <span>
+                <Tag color={color}>{leadLevel}</Tag>
+                {lead?.name}
+              </span>
+            </a>
             <small>{lead?.email}</small>
-          </a>
+            {hasFullNameProperty ? (
+              <div className="d-flex align-items-center">
+                <p>{`${formatMessage(salesMessages.memberFullName)}：`}</p>
+                {editFullNameMemberId && editFullNameMemberId === lead.id ? (
+                  <Input.Group compact>
+                    <Input
+                      style={{ width: 'auto' }}
+                      defaultValue={fullNamePropertyValue}
+                      onChange={e => setFullNameValue(e.target.value.trim())}
+                    />
+                    <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
+                      {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                    </Button>
+                  </Input.Group>
+                ) : (
+                  <div>
+                    <span>{fullNamePropertyValue}</span>
+                    {!refetchLoading && <EditOutlined onClick={() => handleEditFullName(lead)} />}
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </>
         )
       },
     },
-    hasFullNameProperty
-      ? {
-          key: 'fullName',
-          dataIndex: 'fullName',
-          width: 200,
-          title: formatMessage(salesMessages.memberFullName),
-          ...getColumnSearchProps((value?: string) =>
-            setFilters({
-              ...filters,
-              fullName: value,
-            }),
-          ),
-          render: (fullName, lead) => {
-            const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
-            return editFullNameMemberId && editFullNameMemberId === lead.id ? (
-              <Input.Group compact>
-                <Input
-                  style={{ width: 'auto' }}
-                  defaultValue={fullNamePropertyValue}
-                  onChange={e => setFullNameValue(e.target.value.trim())}
-                />
-                <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
-                  {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
-                </Button>
-              </Input.Group>
-            ) : (
-              <div>
-                <span>{fullNamePropertyValue}</span>
-                {!refetchLoading && <EditOutlined onClick={() => handleEditFullName(lead)} />}
-              </div>
-            )
-          },
-        }
-      : {},
     {
       key: 'phones',
       dataIndex: 'phones',
       width: 100,
       title: formatMessage(salesMessages.tel),
-      render: (phones: string[]) =>
-        phones.map((phone, idx) => (
-          <a
-            key={idx}
-            href="#!"
-            className="m-0 mr-1 cursor-pointer"
-            onClick={() => {
-              call({
-                appId,
-                authToken,
-                phone,
-                salesTelephone: manager.telephone,
-              })
-            }}
-          >
-            {phone}
-          </a>
-        )),
+      render: (phones: { phoneNumber: string; isValid: boolean }[], record) => (
+        <StyledPhones>
+          <div>
+            {phones.map((phone, idx) =>
+              !phone.isValid ? (
+                <StyledDelPhone key={idx}>
+                  <del>{phone.phoneNumber}</del>
+                </StyledDelPhone>
+              ) : (
+                <a
+                  key={idx}
+                  href="#!"
+                  className="m-0 mr-1 cursor-pointer d-flex"
+                  onClick={() => {
+                    call({
+                      appId,
+                      authToken,
+                      phone: phone.phoneNumber,
+                      salesTelephone: manager.telephone,
+                    })
+                  }}
+                >
+                  {phone.phoneNumber}
+                </a>
+              ),
+            )}
+          </div>
+          {!refetchLoading && (
+            <EditOutlined
+              onClick={() => {
+                setSelectedMember({
+                  id: record.id,
+                  name: record.name,
+                  phones: record.phones,
+                  categoryNames: record.categoryNames,
+                  email: record.email,
+                  pictureUrl: record.pictureUrl,
+                })
+                setMemberPhoneModalVisible(true)
+              }}
+            />
+          )}
+        </StyledPhones>
+      ),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -424,21 +470,30 @@ const SalesLeadTable: React.VFC<{
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
-      sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
+      sorter: {
+        compare: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
+        multiple: 2,
+      },
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     {
       key: 'recentContactedAt',
       dataIndex: 'recentContactedAt',
       title: formatMessage(salesMessages.recentContactedAt),
-      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+      sorter: {
+        compare: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+        multiple: 3,
+      },
       render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
     },
     {
       key: 'recentAnsweredAt',
       dataIndex: 'recentAnsweredAt',
       title: formatMessage(salesMessages.recentAnsweredAt),
-      sorter: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
+      sorter: {
+        compare: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
+        multiple: 4,
+      },
       render: recentAnsweredAt =>
         recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
     },
@@ -446,11 +501,86 @@ const SalesLeadTable: React.VFC<{
 
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
+  const [managerId, setManagerId] = useState('')
+  const businessAppId = useRef('')
+
+  const handleTransfer = async () => {
+    const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
+    managerId && setManagerId(managerId)
+  }
+
+  const { data: memberAppId } = useQuery(GetMemberAppID, {
+    variables: { managerId: managerId },
+    skip: managerId === '',
+  })
+
+  const { data: managerAppIds } = useQuery(GetManagerAppIDList, {
+    variables: { managerIds: selectedRowKeys },
+    skip: selectedRowKeys.length === 0,
+  })
+
+  useEffect(() => {
+    if (memberAppId == null || managerId === '') return
+    const matchedAppIds: Record<string, string>[] = []
+    const nonMatchingAppIds: Record<string, string>[] = []
+
+    businessAppId.current = memberAppId?.member[0]?.app_id
+    if (businessAppId.current == null) {
+      alert(`此會員不存在: ${managerId}`)
+      setManagerId('')
+      return
+    }
+
+    for (const managerId of managerAppIds.member) {
+      if (managerId.app_id === businessAppId.current) {
+        matchedAppIds.push(managerId)
+      } else {
+        nonMatchingAppIds.push(managerId)
+      }
+    }
+
+    if (nonMatchingAppIds.length !== 0) {
+      const alertMes = nonMatchingAppIds
+        .map(info => `id: ${info.id}\napp_id: ${info.app_id}\nname: ${info.name}\n\n`)
+        .join('')
+      alert(`移轉名單有誤: \n${alertMes}`)
+
+      setManagerId('')
+      return
+    }
+
+    if (matchedAppIds.length > 0) {
+      const _handleTransfer = async () => {
+        try {
+          const { data } = await transferLeads({
+            variables: { memberIds: matchedAppIds.map(rowKey => rowKey.id.toString()), managerId },
+          })
+
+          if (data?.update_member?.affected_rows) {
+            window.alert('已成功轉移此名單！')
+            onRefetch()
+          }
+        } catch (error: any) {
+          if (error.graphQLErrors) {
+            const graphqlErrors = error.graphQLErrors.map((graphqlError: any) => graphqlError.message)
+            window.alert(`轉移失敗(graphqlErrors)：${graphqlErrors.join(', ')}`)
+          } else {
+            window.alert(`轉移失敗：${error.message}`)
+          }
+        } finally {
+          setManagerId('')
+        }
+      }
+
+      _handleTransfer()
+      return
+    }
+  }, [managerAppIds, managerId, memberAppId, onRefetch, transferLeads])
+
   return (
     <StyledAdminCard>
       {selectedMember && (
         <MemberPropertyModal
-          key={selectedMember.id}
           visible={propertyModalVisible}
           onCancel={() => setPropertyModalVisible(false)}
           member={selectedMember}
@@ -466,25 +596,30 @@ const SalesLeadTable: React.VFC<{
       )}
       {selectedMember && (
         <MemberTaskAdminModal
-          key={selectedMember.id}
           visible={taskModalVisible}
           onCancel={() => setTaskModalVisible(false)}
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
-            setTaskModalVisible(false)
+            onRefetch().then(() => setTaskModalVisible(false))
+          }}
+          afterClose={() => {
+            setSelectedMember(null)
           }}
         />
       )}
       {selectedMember && (
         <MemberNoteAdminModal
-          key={selectedMember.id}
+          info={{ email: selectedMember.email, name: selectedMember.name, pictureUrl: selectedMember.pictureUrl }}
           visible={memberNoteModalVisible}
           onCancel={() => setMemberNoteModalVisible(false)}
+          afterClose={() => {
+            setSelectedMember(null)
+          }}
           title={formatMessage(memberMessages.label.createMemberNote)}
-          onSubmit={({ type, status, duration, description, attachments }) =>
-            insertMemberNote({
+          onSubmit={async ({ type, status, duration, description, attachments }) =>
+            await insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
                 authorId: manager.id,
@@ -497,11 +632,11 @@ const SalesLeadTable: React.VFC<{
               .then(async ({ data }) => {
                 if (type === 'outbound') {
                   if (status !== 'answered') {
-                    updateLastMemberNoteCalled({
+                    await updateLastMemberNoteCalled({
                       variables: { memberId: selectedMember.id, lastMemberNoteCalled: new Date() },
                     }).catch(handleError)
                   } else if (status === 'answered') {
-                    updateLastMemberNoteAnswered({
+                    await updateLastMemberNoteAnswered({
                       variables: { memberId: selectedMember.id, lastMemberNoteAnswered: new Date() },
                     }).catch(handleError)
                   }
@@ -511,11 +646,19 @@ const SalesLeadTable: React.VFC<{
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
                 }
                 message.success(formatMessage(commonMessages.event.successfullyCreated))
-                onRefetch?.()
               })
               .catch(handleError)
-              .finally(() => setMemberNoteModalVisible(false))
+              .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
           }
+        />
+      )}
+      {selectedMember && (
+        <MemberPhoneModal
+          visible={memberPhoneModalVisible}
+          onCancel={() => setMemberPhoneModalVisible(false)}
+          onLeadRefetch={onRefetch}
+          phones={selectedMember.phones || []}
+          memberId={selectedMember.id}
         />
       )}
       <TableWrapper>
@@ -550,7 +693,8 @@ const SalesLeadTable: React.VFC<{
                         data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                       ) {
                         message.success('已成功收錄！')
-                        onRefetch?.()
+                        onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -589,7 +733,8 @@ const SalesLeadTable: React.VFC<{
                         data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                       ) {
                         message.success('已成功取消收藏！')
-                        onRefetch?.()
+                        onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -629,7 +774,8 @@ const SalesLeadTable: React.VFC<{
                         data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                       ) {
                         message.success('已成功完成此名單！')
-                        onRefetch?.()
+                        onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -669,7 +815,8 @@ const SalesLeadTable: React.VFC<{
                         data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                       ) {
                         message.success('已取消已完成名單！')
-                        onRefetch?.()
+                        onRefetch()
+                        setSelectedRowKeys([])
                       } else {
                         message.error('系統錯誤')
                       }
@@ -710,7 +857,8 @@ const SalesLeadTable: React.VFC<{
                           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                         ) {
                           message.success('已成功回收此名單！')
-                          onRefetch?.()
+                          onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -748,7 +896,8 @@ const SalesLeadTable: React.VFC<{
                           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                         ) {
                           message.success('已成功拒絕此名單！')
-                          onRefetch?.()
+                          onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -786,7 +935,8 @@ const SalesLeadTable: React.VFC<{
                           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                         ) {
                           message.success('已成功刪除此名單！')
-                          onRefetch?.()
+                          onRefetch()
+                          setSelectedRowKeys([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -798,29 +948,7 @@ const SalesLeadTable: React.VFC<{
                 </Button>
               </>
             )}
-            <Button
-              icon={<SwapOutlined />}
-              className="mr-2"
-              onClick={() => {
-                const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
-                if (managerId) {
-                  transferLeads({
-                    variables: { memberIds: selectedRowKeys.map(rowKey => rowKey.toString()), managerId },
-                  })
-                    .then(({ data, errors }) => {
-                      if (data?.update_member?.affected_rows) {
-                        window.alert('已成功轉移此名單！')
-                        onRefetch?.()
-                      } else {
-                        window.alert(`轉移失敗：${errors?.join(', ')}`)
-                      }
-                    })
-                    .catch(error => {
-                      window.alert(`轉移失敗：${error}`)
-                    })
-                }
-              }}
-            >
+            <Button icon={<SwapOutlined />} className="mr-2" onClick={handleTransfer}>
               轉移
             </Button>
           </div>
@@ -831,6 +959,7 @@ const SalesLeadTable: React.VFC<{
             selectedRowKeys,
             onChange: onSelectChange,
           }}
+          loading={isLoading}
           rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
@@ -888,6 +1017,24 @@ const TRANSFER_LEADS = gql`
   mutation TRANSFER_LEADS($memberIds: [String!]!, $managerId: String!) {
     update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
+    }
+  }
+`
+
+const GetMemberAppID = gql`
+  query GetMemberAppID($managerId: String!) {
+    member(where: { id: { _eq: $managerId } }) {
+      app_id
+    }
+  }
+`
+
+const GetManagerAppIDList = gql`
+  query GetManagerAppIDList($managerIds: [String!]) {
+    member(where: { id: { _in: $managerIds } }) {
+      id
+      app_id
+      name
     }
   }
 `

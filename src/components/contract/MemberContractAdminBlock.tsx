@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Card, message, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -73,15 +72,15 @@ const MemberContractAdminBlock: React.FC<{
                 parentProductId:
                   values?.projectPlanProductId ||
                   values?.orderProducts?.find(
-                    (v: { name: string; product_id: string }) =>
-                      v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'),
+                    (v: { name?: string; product_id?: string }) =>
+                      v.name?.includes('私塾方案') && v.product_id?.includes('ProjectPlan'),
                   )?.product_id ||
                   '',
               },
               coinLogIds: values?.coinLogs?.map((v: { id: string }) => v.id) || [],
               couponPlanId:
-                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan).coupon_code.data
-                  .coupon_plan?.data.id || '',
+                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan)?.coupon_code?.data
+                  ?.coupon_plan?.data?.id || null,
               // delete contract coupon
               contractCouponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
               contractCouponCodes:
@@ -184,6 +183,7 @@ const useMemberContracts = (memberId: string) => {
           agreed_options
           revoked_at
           values
+          options
           contract {
             id
             name
@@ -203,6 +203,7 @@ const useMemberContracts = (memberId: string) => {
     agreedAt: Date | null
     agreedIp: string | null
     agreedOptions: any
+    options: any
     revokedAt: Date | null
   }[] =
     data?.member_contract.map(v => {
@@ -215,6 +216,7 @@ const useMemberContracts = (memberId: string) => {
         agreedAt: v.agreed_at && new Date(v.agreed_at),
         agreedIp: v.agreed_ip || null,
         agreedOptions: v.agreed_options,
+        options: v.options,
         revokedAt: v.revoked_at && new Date(v.revoked_at),
       }
     }) || []

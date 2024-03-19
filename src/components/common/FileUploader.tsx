@@ -1,10 +1,11 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { downloadFile, getFileDownloadableLink } from '../../helpers'
+import { downloadFile, getFileDownloadableLink, getFileDownloadableLinkV2 } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import FileItem from './FileItem'
 
@@ -20,6 +21,10 @@ const FileUploader: React.FC<{
   failedUploadFiles?: File[]
   uploadProgress?: { [fileName: string]: number }
   downloadableLink?: string | ((file: File) => string)
+  downloadableLinkV2?: {
+    key: string
+    prefix: string
+  }
   renderTrigger?: React.FC<{
     onClick: () => void
   }>
@@ -33,11 +38,13 @@ const FileUploader: React.FC<{
   showUploadList,
   failedUploadFiles,
   downloadableLink,
+  downloadableLinkV2,
   renderTrigger,
   onChange,
   onDownload,
 }) => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
   const { authToken } = useAuth()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [uploadFiles, setUploadFiles] = useState<File[]>([])
@@ -95,6 +102,19 @@ const FileUploader: React.FC<{
                     const link = await getFileDownloadableLink(
                       `${typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}`,
                       authToken,
+                    )
+                    return downloadFile(v.name, {
+                      url: link,
+                    })
+                  }
+                : downloadableLinkV2
+                ? async () => {
+                    onDownload?.(v)
+                    const link = await getFileDownloadableLinkV2(
+                      downloadableLinkV2.key,
+                      downloadableLinkV2.prefix,
+                      authToken,
+                      appId,
                     )
                     return downloadFile(v.name, {
                       url: link,

@@ -1,8 +1,8 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -11,7 +11,7 @@ import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/tra
 import { useDefaultPermissions } from '../../hooks/permission'
 import { PermissionGroupProps } from '../../types/general'
 import { MemberAdminProps, UserRole } from '../../types/member'
-import PermissionGroupInputSelector from '../form/PermissionGroupInputSelector'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
 import PermissionInput from '../form/PermissionInput'
 
 type FieldProps = {
@@ -25,7 +25,8 @@ const MemberPermissionForm: React.FC<{
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { enabledModules, id: appId } = useApp()
+  const { currentMemberId } = useAuth()
   const [form] = useForm<FieldProps>()
   const [updateMemberRole] = useMutation<hasura.UPDATE_MEMBER_ROLE, hasura.UPDATE_MEMBER_ROLEVariables>(
     UPDATE_MEMBER_ROLE,
@@ -33,32 +34,57 @@ const MemberPermissionForm: React.FC<{
   const { loadingPermissions, defaultRolePermissions } = useDefaultPermissions()
   const [selectedRole, setSelectedRole] = useState<UserRole>(memberAdmin?.role || 'general-member')
   const [loading, setLoading] = useState(false)
+  const [insertPermissionAuditLog] = useMutation<
+    hasura.InsertPermissionAuditLog,
+    hasura.InsertPermissionAuditLogVariables
+  >(InsertPermissionAuditLog)
 
   if (!memberAdmin || loadingPermissions) {
     return <Skeleton active />
   }
 
   const handleSubmit = (values: FieldProps) => {
+    const updateVariables = {
+      memberId: memberAdmin.id,
+      role: values.roleId,
+      permissionGroups:
+        values.permissionGroupIds?.map(permissionGroupId => ({
+          member_id: memberAdmin.id,
+          permission_group_id: permissionGroupId,
+        })) || [],
+      permissions:
+        values.permissionIds?.map((permissionId: string) => ({
+          member_id: memberAdmin.id,
+          permission_id: permissionId,
+        })) || [],
+    }
+    const permissionAuditLog = {
+      app_id: appId,
+      member_id: currentMemberId,
+      target: memberAdmin.id,
+      old: {
+        role: memberAdmin.role,
+        permissionGroups: memberAdmin.permissionGroups.map(group => group.id),
+        permissions: memberAdmin.permissionIds,
+      },
+      new: { role: values.roleId, permissionGroups: values.permissionGroupIds, permissions: values.permissionIds },
+    }
+
     setLoading(true)
     updateMemberRole({
-      variables: {
-        memberId: memberAdmin.id,
-        role: values.roleId,
-        permissionGroups:
-          values.permissionGroupIds?.map(permissionGroupId => ({
-            member_id: memberAdmin.id,
-            permission_group_id: permissionGroupId,
-          })) || [],
-        permissions:
-          values.permissionIds?.map((permissionId: string) => ({
-            member_id: memberAdmin.id,
-            permission_id: permissionId,
-          })) || [],
-      },
+      variables: updateVariables,
     })
       .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
+        insertPermissionAuditLog({
+          variables: {
+            permissionAuditLog,
+          },
+        })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            onRefetch?.()
+          })
+          .catch(handleError)
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -101,7 +127,7 @@ const MemberPermissionForm: React.FC<{
 
       {enabledModules.permission_group && (
         <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
-          <PermissionGroupInputSelector />
+          <PermissionGroupSelector />
         </Form.Item>
       )}
 
@@ -148,6 +174,14 @@ const UPDATE_MEMBER_ROLE = gql`
     }
     insert_member_permission_extra(objects: $permissions) {
       affected_rows
+    }
+  }
+`
+
+const InsertPermissionAuditLog = gql`
+  mutation InsertPermissionAuditLog($permissionAuditLog: permission_audit_log_insert_input!) {
+    insert_permission_audit_log_one(object: $permissionAuditLog) {
+      id
     }
   }
 `

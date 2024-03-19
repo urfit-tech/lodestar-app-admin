@@ -1,7 +1,7 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { gql, useApolloClient } from '@apollo/client'
-import { Button, Divider, Dropdown, Menu } from 'antd'
+import { Button, Divider, Dropdown, Menu, message, Skeleton } from 'antd'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -9,15 +9,17 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
-import { dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
+import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
+import { AppointmentPeriodCardProps } from '../../types/appointment'
 import { AvatarImage } from '../common/Image'
 import AppointmentCancelModal from './AppointmentCancelModal'
 import AppointmentConfigureMeetingRoomModal from './AppointmentConfigureMeetingRoomModal'
-import AppointMentDetailModal from './AppointMentDetailModal'
+import AppointmentDetailModal from './AppointmentDetailModal'
 import AppointmentIssueAndResultModal from './AppointmentIssueAndResultModal'
+import AppointmentRescheduleModal from './AppointmentRescheduleModal'
 import appointmentMessages from './translation'
 
 const StyledCard = styled.div`
@@ -29,6 +31,7 @@ const StyledCard = styled.div`
 
   @media (min-width: ${DESKTOP_BREAK_POINT}px) {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
   }
 `
@@ -73,27 +76,6 @@ const StyledDot = styled.div`
   top: 0;
 `
 
-export type AppointmentPeriodCardProps = {
-  id: string
-  avatarUrl: string | null
-  member: {
-    id: string
-    name: string
-    email: string | null
-    phone: string | null
-  }
-  appointmentPlanTitle: string
-  startedAt: Date
-  endedAt: Date
-  canceledAt: Date | null
-  creator: {
-    id: string
-    name: string
-  }
-  orderProduct: { id: string; options: any }
-  meetGenerationMethod: MeetGenerationMethod
-}
-
 export type MeetGenerationMethod = 'auto' | 'manual'
 
 const AppointmentPeriodCard: React.FC<
@@ -102,9 +84,8 @@ const AppointmentPeriodCard: React.FC<
   }
 > = ({
   id,
-  avatarUrl,
   member,
-  appointmentPlanTitle,
+  appointmentPlan,
   startedAt,
   endedAt,
   canceledAt,
@@ -114,71 +95,77 @@ const AppointmentPeriodCard: React.FC<
   meetGenerationMethod,
 }) => {
   const { formatMessage } = useIntl()
-  const { id: appId, enabledModules } = useApp()
+  const { enabledModules } = useApp()
   const { authToken, currentMemberId } = useAuth()
-  const apolloClient = useApolloClient()
+  const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false)
+  const [cancelModalVisible, setCancelModalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { loading: loadingMeetMembers, meet } = useMeetByAppointmentPlanIdAndPeriod(
+    appointmentPlan.id,
+    startedAt,
+    endedAt,
+  )
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
-  const joinUrl =
-    orderProduct.options?.joinUrl ||
-    `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
 
-  const handleJoin = async () => {
+  const handleStartMeet = async () => {
     setLoading(true)
-    if (enabledModules.meet_service && !orderProduct.options?.joinUrl) {
-      const { data } = await apolloClient.query<
-        hasura.GET_APPOINTMENT_PERIOD_MEET_ID,
-        hasura.GET_APPOINTMENT_PERIOD_MEET_IDVariables
-      >({
-        query: gql`
-          query GET_APPOINTMENT_PERIOD_MEET_ID($orderProductId: uuid!) {
-            order_product(where: { id: { _eq: $orderProductId } }) {
-              id
-              options
-            }
-          }
-        `,
-        variables: { orderProductId: orderProduct.id },
-      })
-      const meetId = data.order_product?.[0]?.options?.meetId
-
-      try {
-        await axios
-          .post(
-            `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
-            {
-              role: 'host',
-              name: `${appId}-${currentMemberId}`,
+    try {
+      let startUrl
+      // if (dayjs(startedAt).toDate().getTime() > dayjs().toDate().getTime()) return message.info('會議尚未開始')
+      if (!currentMemberId) return
+      if (meet?.options?.startUrl) {
+        startUrl = meet?.options.startUrl
+      } else if (meetGenerationMethod === 'manual') {
+        return message.info('尚未設定會議連結')
+      } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
+        // create zoom meeting than get startUrl
+        const { data: createMeetData } = await axios.post(
+          `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+          {
+            hostMemberId: creator.id,
+            memberId: member.id,
+            type: 'appointmentPlan',
+            target: appointmentPlan.id,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            autoRecording: true,
+            service: 'zoom',
+            nbfAt: startedAt,
+            expAt: endedAt,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${authToken}`,
             },
-            {
-              headers: {
-                authorization: `Bearer ${authToken}`,
-              },
-            },
-          )
-          .then(({ data: { code, message, data } }) => window.open(data.target))
-      } catch (error) {
-        console.log(`get meets error: ${error}`)
-        window.open(joinUrl)
+          },
+        )
+        startUrl = createMeetData.data?.options?.startUrl
+      } else {
+        // default jitsi
+        startUrl = `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
       }
-    } else {
-      window.open(joinUrl)
+      if (startUrl) window.open(startUrl)
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
     <StyledCard>
       <StyledInfo className="d-flex align-items-center" withMask={isCanceled}>
-        <AvatarImage size="48px" src={avatarUrl} className="mr-4" />
+        <div>
+          <AvatarImage size="48px" src={member.avatarUrl} className="mr-4" />
+        </div>
         <div>
           <StyledTitle>
             {formatMessage(appointmentMessages.AppointmentPeriodCard.appointmentText, {
               name: member.name,
-              title: appointmentPlanTitle,
+              title: appointmentPlan.title,
             })}
           </StyledTitle>
           <StyledMeta>
@@ -195,6 +182,37 @@ const AppointmentPeriodCard: React.FC<
       </StyledInfo>
 
       <div className="d-flex align-items-center justify-content-end">
+        {enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom' ? (
+          <>
+            <Button
+              type="link"
+              size="small"
+              disabled={!meet?.recording_url || !meet.recording_type}
+              onClick={
+                meet
+                  ? async () => {
+                      const link = await getFileDownloadableLink(
+                        meet.recording_url ? meet.recording_url : `meets/${meet.id}.${meet.recording_type}`,
+                        authToken,
+                      )
+                      return downloadFile(
+                        `${appointmentPlan.title}_${dayjs(startedAt).format('YYYY-MM-DD-HHmm')}_${dayjs(endedAt).format(
+                          'YYYY-MM-DD-HHmm',
+                        )}.mp4`,
+                        {
+                          url: link,
+                        },
+                      )
+                    }
+                  : undefined
+              }
+            >
+              {formatMessage(appointmentMessages.AppointmentPeriodCard.downloadMeetingRecord)}
+            </Button>
+            <Divider type="vertical" />
+          </>
+        ) : null}
+
         <AppointmentIssueAndResultModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" size="small" onClick={() => setVisible(true)}>
@@ -207,7 +225,7 @@ const AppointmentPeriodCard: React.FC<
           onRefetch={onRefetch}
         />
         <Divider type="vertical" />
-        <AppointMentDetailModal
+        <AppointmentDetailModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" size="small" onClick={() => setVisible(true)}>
               {formatMessage(appointmentMessages['*'].detail)}
@@ -215,19 +233,25 @@ const AppointmentPeriodCard: React.FC<
           )}
           appointmentEnrollmentId={id}
           member={member}
-          avatarUrl={avatarUrl}
+          avatarUrl={member.avatarUrl}
           startedAt={startedAt}
           endedAt={endedAt}
         />
         <Divider type="vertical" />
 
         <AppointmentConfigureMeetingRoomModal
-          renderTrigger={({ setVisible }) => (
-            <Button type="link" size="small" onClick={() => setVisible(true)} className="position-relative">
-              {formatMessage(appointmentMessages['*'].appointmentConfigureMeetingRoom)}
-              {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl && <StyledDot></StyledDot>}
-            </Button>
-          )}
+          renderTrigger={({ setVisible }) =>
+            meetGenerationMethod === 'manual' && loadingMeetMembers ? (
+              <Skeleton />
+            ) : (
+              <Button type="link" size="small" onClick={() => setVisible(true)} className="position-relative">
+                {formatMessage(appointmentMessages['*'].appointmentConfigureMeetingRoom)}
+                {meetGenerationMethod === 'manual' && (!meet?.options.startUrl || !orderProduct.options?.joinUrl) && (
+                  <StyledDot></StyledDot>
+                )}
+              </Button>
+            )
+          }
           appointmentEnrollmentId={id}
           onRefetch={onRefetch}
           orderProduct={orderProduct}
@@ -248,7 +272,7 @@ const AppointmentPeriodCard: React.FC<
         ) : (
           <>
             <a
-              href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlanTitle}&dates=${startedTime}%2F${endedTime}`}
+              href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlan.title}&dates=${startedTime}%2F${endedTime}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -266,7 +290,7 @@ const AppointmentPeriodCard: React.FC<
                 type="primary"
                 className="ml-2"
                 disabled={!orderProduct.id}
-                onClick={() => handleJoin()}
+                onClick={() => handleStartMeet()}
               >
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
               </StyledButton>
@@ -274,21 +298,41 @@ const AppointmentPeriodCard: React.FC<
             <AppointmentCancelModal
               orderProductId={orderProduct.id}
               onRefetch={onRefetch}
-              renderTrigger={({ setVisible }) => (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item onClick={() => setVisible(true)}>
-                        {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                >
-                  <MoreOutlined className="ml-3" />
-                </Dropdown>
-              )}
+              visible={cancelModalVisible}
+              onCancel={() => setCancelModalVisible(false)}
             />
+
+            <AppointmentRescheduleModal
+              orderProductId={orderProduct.id}
+              appointmentPlanId={appointmentPlan.id}
+              creator={creator}
+              memberId={member.id}
+              visible={rescheduleModalVisible}
+              onRefetch={onRefetch}
+              onRescheduleModalVisible={status => setRescheduleModalVisible(status)}
+              onCancel={() => setRescheduleModalVisible(false)}
+            />
+            <Dropdown
+              overlay={
+                <Menu>
+                  {appointmentPlan.rescheduleAmount !== -1 &&
+                    appointmentPlan.rescheduleType &&
+                    dayjs(startedAt)
+                      .subtract(appointmentPlan.rescheduleAmount, appointmentPlan.rescheduleType)
+                      .isAfter(new Date()) && (
+                      <Menu.Item onClick={() => setRescheduleModalVisible(true)}>
+                        {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleAppointment)}
+                      </Menu.Item>
+                    )}
+                  <Menu.Item onClick={() => setCancelModalVisible(true)}>
+                    {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={['click']}
+            >
+              <MoreOutlined className="ml-3" />
+            </Dropdown>
           </>
         )}
       </div>

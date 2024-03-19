@@ -1,27 +1,17 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Select } from 'antd'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { INSERT_APPOINTMENT_SCHEDULES } from '../../hooks/appointment'
-import { AppointmentPlanAdminProps, AppointmentScheduleProps } from '../../types/appointment'
+import { AppointmentPlanAdmin, AppointmentSchedule } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
-
-const messages = defineMessages({
-  noAvailableSchedule: { id: 'appointment.text.noAvailableSchedule', defaultMessage: '沒有可匯入的時段' },
-  repeatEveryDay: { id: 'appointment.text.repeatEveryDay', defaultMessage: '重複週期：每日' },
-  repeatEveryWeek: { id: 'appointment.text.repeatEveryWeek', defaultMessage: '重複週期：每週' },
-  repeatEveryMonth: { id: 'appointment.text.repeatEveryMonth', defaultMessage: '重複週期：每月' },
-  repeatEveryYear: { id: 'appointment.text.repeatEveryYear', defaultMessage: '重複週期：每年' },
-  isExisted: { id: 'appointment.label.isExisted', defaultMessage: '已匯入' },
-})
+import appointmentMessages from './translation'
 
 const StyledText = styled.div`
   color: var(--gray-dark);
@@ -32,17 +22,24 @@ const StyledSchedule = styled.span<{ isExisted: boolean }>`
   ${props => (props.isExisted ? 'text-decoration: line-through;' : '')}
 `
 
-type AppointmentPlanImportingProps = {
+type OverLappingSchedule = Pick<
+  AppointmentSchedule,
+  'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'
+> & {
+  isExisted: boolean
+}
+
+type AppointmentPlanImporting = {
   id: string
   title: string
   creator: {
     id: string
     name: string
   }
-  schedules: (AppointmentScheduleProps & { isExisted: boolean })[]
+  schedules: OverLappingSchedule[]
 }
 
-const isScheduleOverlapping = (scheduleA: AppointmentScheduleProps, scheduleB: AppointmentScheduleProps) =>
+const isScheduleOverlapping = (scheduleA: OverLappingSchedule, scheduleB: Omit<OverLappingSchedule, 'isExisted'>) =>
   scheduleA.intervalType === scheduleB.intervalType &&
   scheduleA.intervalAmount === scheduleB.intervalAmount &&
   Number.isInteger(
@@ -60,7 +57,7 @@ const isScheduleOverlapping = (scheduleA: AppointmentScheduleProps, scheduleB: A
   )
 
 const AppointmentScheduleImportModal: React.VFC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps
+  appointmentPlanAdmin: AppointmentPlanAdmin
   creatorId?: string | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, creatorId, onRefetch }) => {
@@ -79,7 +76,7 @@ const AppointmentScheduleImportModal: React.VFC<{
   if (loadingAppointmentPlans) {
     return (
       <Button icon={<FileAddOutlined />} disabled>
-        {formatMessage(appointmentMessages.ui.importPeriod)}
+        {formatMessage(appointmentMessages.AppointmentScheduleImportModal.importPeriod)}
       </Button>
     )
   }
@@ -121,10 +118,12 @@ const AppointmentScheduleImportModal: React.VFC<{
             setVisible(true)
           }}
         >
-          {formatMessage(appointmentMessages.ui.importPeriod)}
+          {formatMessage(appointmentMessages.AppointmentScheduleImportModal.importPeriod)}
         </Button>
       )}
-      title={<div className="mb-3">{formatMessage(appointmentMessages.ui.importPeriod)}</div>}
+      title={
+        <div className="mb-3">{formatMessage(appointmentMessages.AppointmentScheduleImportModal.importPeriod)}</div>
+      }
       maskClosable={false}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -136,19 +135,21 @@ const AppointmentScheduleImportModal: React.VFC<{
               setSelectedPlanId(null)
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(appointmentMessages['*'].cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(commonMessages.ui.import)}
+            {formatMessage(appointmentMessages.AppointmentScheduleImportModal.import)}
           </Button>
         </>
       )}
     >
-      <StyledText className="mb-4">{formatMessage(appointmentMessages.text.scheduleImportNotation)}</StyledText>
+      <StyledText className="mb-4">
+        {formatMessage(appointmentMessages.AppointmentScheduleImportModal.scheduleImportNotation)}
+      </StyledText>
       <Form layout="vertical">
-        <Form.Item label={formatMessage(appointmentMessages.label.selectPlan)}>
+        <Form.Item label={formatMessage(appointmentMessages.AppointmentScheduleImportModal.selectPlan)}>
           <Select<string>
-            placeholder={formatMessage(appointmentMessages.text.selectImportedSchedule)}
+            placeholder={formatMessage(appointmentMessages.AppointmentScheduleImportModal.selectImportedSchedule)}
             showSearch
             onSelect={id => setSelectedPlanId(id)}
           >
@@ -171,17 +172,21 @@ const AppointmentScheduleImportModal: React.VFC<{
                   <span>{moment(schedule.startedAt).format('YYYY-MM-DD(dd) HH:mm')}</span>
                   <StyledText className="d-inline ml-2">
                     {schedule.intervalType === 'D'
-                      ? formatMessage(messages.repeatEveryDay)
+                      ? formatMessage(appointmentMessages.AppointmentScheduleImportModal.repeatEveryDay)
                       : schedule.intervalType === 'W'
-                      ? formatMessage(messages.repeatEveryWeek)
+                      ? formatMessage(appointmentMessages.AppointmentScheduleImportModal.repeatEveryWeek)
                       : schedule.intervalType === 'M'
-                      ? formatMessage(messages.repeatEveryMonth)
+                      ? formatMessage(appointmentMessages.AppointmentScheduleImportModal.repeatEveryMonth)
                       : schedule.intervalType === 'Y'
-                      ? formatMessage(messages.repeatEveryYear)
+                      ? formatMessage(appointmentMessages.AppointmentScheduleImportModal.repeatEveryYear)
                       : null}
                   </StyledText>
                 </StyledSchedule>
-                {schedule.isExisted && <span className="ml-2">{formatMessage(messages.isExisted)}</span>}
+                {schedule.isExisted && (
+                  <span className="ml-2">
+                    {formatMessage(appointmentMessages.AppointmentScheduleImportModal.isExisted)}
+                  </span>
+                )}
               </li>
             )) || null}
         </ul>
@@ -190,7 +195,7 @@ const AppointmentScheduleImportModal: React.VFC<{
   )
 }
 
-const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps, creatorId?: string | null) => {
+const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdmin, creatorId?: string | null) => {
   const [{ now, startedAt }] = useState<{
     now: Date
     startedAt: Date
@@ -246,7 +251,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
     `,
   )
 
-  const appointmentPlans: AppointmentPlanImportingProps[] =
+  const appointmentPlans: AppointmentPlanImporting[] =
     data?.appointment_plan.map(v => ({
       id: v.id,
       title: v.title || '',

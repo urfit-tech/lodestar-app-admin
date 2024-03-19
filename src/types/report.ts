@@ -2,5 +2,16 @@ export type ReportProps = {
   id: string
   title: string
   type: string
-  options: any
+  options: {
+    metabase: {
+      params: {
+        appId: string
+      }
+      resource: {
+        question?: string
+        dashboard?: string
+      }
+    }
+  }
+  viewingPermissions?: { id: string; name: string }[]
 }

@@ -1,7 +1,6 @@
-import Icon, { CloseOutlined } from '@ant-design/icons'
-import { Button, Divider, Layout, message, Tabs } from 'antd'
+import Icon, { CloseOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Layout, Menu, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -23,8 +22,8 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { AppProps } from '../../types/app'
-import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import DeleteMemberModal from './MemberDeleteAdminModel'
 import MemberSmsModel from './MemberSmsModal'
 
 export type renderMemberAdminLayoutProps = {
@@ -50,6 +49,13 @@ const StyledDescription = styled.div`
   color: var(--gray-darker);
   display: flex;
   align-items: center;
+`
+const StyledSpan = styled.span`
+  width: 100%;
+  text-align: left;
+`
+const StyledDelPhone = styled.span`
+  color: var(--gray);
 `
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);
@@ -82,6 +88,11 @@ const StyledSingleUploader = styled(SingleUploader)`
     }
   }
 `
+
+const StyledMemberPageMoreOption = styled.div`
+  margin-right: 16px;
+`
+
 const StyledImageHoverMask = styled.div<{ status?: string }>`
   width: 120px;
   height: 120px;
@@ -113,15 +124,6 @@ const StyledImageHoverMask = styled.div<{ status?: string }>`
 
 const MemberAdminLayout: React.FC<{
   member: MemberAdminProps & {
-    coupons: {
-      status: {
-        outdated: boolean
-        used: boolean
-      }
-      couponPlan: CouponPlanProps & {
-        productIds: string[]
-      }
-    }[]
     noAgreedContract?: boolean
   }
   tabPanes: (React.ReactElement | boolean | undefined)[]
@@ -130,7 +132,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -138,6 +140,8 @@ const MemberAdminLayout: React.FC<{
   const { renderMemberAdminLayout } = useCustomRenderer()
   const avatarId = uuid()
   const { updateMemberAvatar } = useMutateMember()
+
+  const [visible, setVisible] = useState(false)
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
@@ -167,6 +171,24 @@ const MemberAdminLayout: React.FC<{
         </Link>
 
         <AdminHeaderTitle>{member?.name || member?.username || member.id}</AdminHeaderTitle>
+
+        <StyledMemberPageMoreOption>
+          {currentUserRole === 'app-owner' && !!(settings['admin.app_owner.delete_member'] === '1') && (
+            <Dropdown
+              placement="bottomRight"
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={() => setVisible(true)}>
+                    {formatMessage(memberMessages.ui.deleteMember)}
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={['click']}
+            >
+              <MoreOutlined />
+            </Dropdown>
+          )}
+        </StyledMemberPageMoreOption>
 
         {(permissions.CHECK_MEMBER_PAGE_PROGRAM_INFO ||
           permissions.CHECK_MEMBER_PAGE_PROJECT_INFO ||
@@ -214,15 +236,25 @@ const MemberAdminLayout: React.FC<{
           <StyledSiderContent className="pt-0">
             <StyledDescription>
               <Icon className="mr-2" component={() => <EmailIcon />} />
-              <span>{member?.email}</span>
+              <StyledSpan>{member?.email}</StyledSpan>
             </StyledDescription>
             {permissions['MEMBER_PHONE_ADMIN'] &&
-              member?.phones.map(phone => (
-                <StyledDescription key={phone}>
+              member?.phones.map((phone, index) => (
+                <StyledDescription key={index}>
                   <Icon className="mr-2" component={() => <PhoneIcon />} />
-                  <span className="mr-2">{phone}</span>
+                  {!phone.isValid ? (
+                    <StyledDelPhone className="mr-2">
+                      <del> {phone.phoneNumber} </del>
+                    </StyledDelPhone>
+                  ) : (
+                    <span className="mr-2">{phone.phoneNumber}</span>
+                  )}
                   {enabledModules.sms && (
-                    <MemberSmsModel memberId={member.id} phone={phone} name={member.name || member.username} />
+                    <MemberSmsModel
+                      memberId={member.id}
+                      phone={phone.phoneNumber}
+                      name={member.name || member.username}
+                    />
                   )}
                 </StyledDescription>
               ))}
@@ -283,6 +315,8 @@ const MemberAdminLayout: React.FC<{
             }) || tabPanes}
           </Tabs>
         </StyledLayoutContent>
+
+        <DeleteMemberModal email={member.email} visible={visible} setVisible={setVisible} />
       </Layout>
     </>
   )

@@ -1,13 +1,12 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { groupBy } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { EmptyBlock } from '../admin'
 import AppointmentPeriodCollection from './AppointmentPeriodCollection'
 
@@ -16,7 +15,7 @@ const messages = defineMessages({
 })
 
 const AppointmentPlanScheduleBlock: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -32,10 +31,6 @@ const AppointmentPlanScheduleBlock: React.FC<{
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
-  }
-
-  if (appointmentPlanAdmin.periods.length === 0) {
-    return <EmptyBlock>{formatMessage(messages.noPeriodCreated)}</EmptyBlock>
   }
 
   const handleDelete = (scheduleId: string) =>
@@ -68,26 +63,48 @@ const AppointmentPlanScheduleBlock: React.FC<{
       .catch(handleError)
   }
 
-  const periodCollections = groupBy(period => moment(period.startedAt).format('YYYYMMDD'), appointmentPlanAdmin.periods)
+  const periodCollections = groupBy(
+    period => dayjs(period.startedAt).format('YYYYMMDD'),
+    appointmentPlanAdmin.periods.filter(v =>
+      appointmentPlanAdmin.reservationType &&
+      appointmentPlanAdmin.reservationAmount &&
+      appointmentPlanAdmin.reservationAmount !== 0
+        ? dayjs(v.startedAt)
+            .subtract(appointmentPlanAdmin.reservationAmount, appointmentPlanAdmin.reservationType)
+            .toDate() > dayjs().toDate()
+        : v,
+    ),
+  )
 
   return (
     <>
-      {Object.values(periodCollections).map(periods => (
-        <AppointmentPeriodCollection
-          key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
-          periods={periods.map(period => ({
-            id: period.id,
-            schedule: appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.scheduleId) || null,
-            scheduleId: period.scheduleId,
-            startedAt: period.startedAt,
-            endedAt: period.endedAt,
-            isEnrolled: period.isEnrolled,
-            isExcluded: period.isExcluded,
-          }))}
-          onDelete={handleDelete}
-          onClose={handleClose}
-        />
-      ))}
+      {Object.values(periodCollections).length === 0 ? (
+        <EmptyBlock>{formatMessage(messages.noPeriodCreated)}</EmptyBlock>
+      ) : (
+        Object.values(periodCollections).map(periods => (
+          <AppointmentPeriodCollection
+            key={dayjs(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
+            appointmentPlan={{
+              id: appointmentPlanAdmin.id,
+              capacity: appointmentPlanAdmin.capacity,
+              defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+              creatorId: appointmentPlanAdmin.creatorId,
+            }}
+            periods={periods.map(period => ({
+              schedule:
+                appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
+              appointmentScheduleId: period.appointmentScheduleId,
+              appointmentScheduleCreatedAt: period.appointmentScheduleCreatedAt,
+              startedAt: period.startedAt,
+              endedAt: period.endedAt,
+              isEnrolled: period.isEnrolled,
+              isExcluded: period.isExcluded,
+            }))}
+            onDelete={handleDelete}
+            onClose={handleClose}
+          />
+        ))
+      )}
     </>
   )
 }

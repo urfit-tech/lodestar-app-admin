@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Checkbox, Divider, Spin } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { groupBy, prop, sortBy, uniq } from 'ramda'
 import React from 'react'
@@ -60,6 +59,8 @@ const PermissionInput: React.FC<{
     customScript: !!enabledModules.customScript,
     salesLead: settings['custom.permission_group.salesLead'] === '1',
     salesManagement: settings['custom.permission_group.salesManagement'] === '1',
+    report: !!enabledModules.report,
+    certificate: !!enabledModules.certificate,
   }
 
   return (

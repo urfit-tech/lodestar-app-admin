@@ -46,10 +46,16 @@ const MemberNoteAdminModal: React.FC<
         | 'description'
         | 'note'
         | 'attachments'
+        | 'metadata'
       >
       onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
+      info?: {
+        email: string
+        name: string
+        pictureUrl: string
+      }
     }
-> = ({ note, onSubmit, ...props }) => {
+> = ({ info, note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole } = useAuth()
@@ -91,17 +97,22 @@ const MemberNoteAdminModal: React.FC<
       attachments,
     })
       .then(() => onSuccess())
-      .finally(() => setIsSubmitting(false))
+      .finally(() => {
+        setIsSubmitting(false)
+        form.resetFields()
+      })
   }
 
   return (
     <AdminModal
       footer={null}
+      onCancel={e => onCancel?.(e)}
       renderFooter={({ setVisible }) => (
         <>
           <Button
             className="mr-2"
-            onClick={() => {
+            onClick={e => {
+              onCancel?.(e)
               setVisible(false)
               resetModal()
             }}
@@ -118,15 +129,15 @@ const MemberNoteAdminModal: React.FC<
     >
       <div className="d-flex align-items-center mb-4">
         <CustomRatioImage
-          src={note?.member?.pictureUrl || DefaultAvatar}
+          src={note?.member?.pictureUrl || info?.pictureUrl || DefaultAvatar}
           shape="circle"
           width="36px"
           ratio={1}
           className="mr-2"
         />
         <div className="flex-grow-1">
-          <StyledMemberName>{note?.member?.name}</StyledMemberName>
-          <StyledMemberEmail>{note?.member?.email}</StyledMemberEmail>
+          <StyledMemberName>{note?.member?.name || info?.name}</StyledMemberName>
+          <StyledMemberEmail>{note?.member?.email || info?.email}</StyledMemberEmail>
         </div>
       </div>
 
@@ -186,13 +197,16 @@ const MemberNoteAdminModal: React.FC<
                 fileList={attachments}
                 onChange={files => setAttachments(files)}
                 downloadableLink={
-                  note?.attachments &&
-                  (file => {
-                    const attachmentId = note.attachments?.find(
-                      v => v.data.name === file.name && v.data.lastModified,
-                    )?.id
-                    return `attachments/${attachmentId}`
-                  })
+                  note?.attachments
+                    ? note?.metadata?.meetId
+                      ? file => file.name
+                      : file => {
+                          const attachmentId = note.attachments?.find(
+                            v => v.data.name === file.name && v.data.lastModified,
+                          )?.id
+                          return `attachments/${attachmentId}`
+                        }
+                    : undefined
                 }
               />
             </Form.Item>

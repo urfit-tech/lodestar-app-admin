@@ -8,6 +8,21 @@ import { BREAK_POINT } from '../components/common/Responsive'
 
 export const TPDirect = (window as any)['TPDirect']
 
+export const convertFileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader()
+    reader.addEventListener('loadend', e => {
+      if (e.target && e.target.result) {
+        resolve(e.target.result as ArrayBuffer)
+      } else {
+        reject(new Error('convert file to array buffer failed'))
+      }
+    })
+    reader.addEventListener('error', reject)
+    reader.readAsArrayBuffer(file)
+  })
+}
+
 export const getBase64 = (img: File, callback: (result: FileReader['result']) => void) => {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
@@ -57,6 +72,7 @@ export const uploadFile = async (key: string, file: Blob, authToken: string | nu
 export const uploadFileV2 = async (
   key: string,
   file: Blob,
+  prefix: string,
   authToken: string | null,
   appId: string,
   config?: AxiosRequestConfig,
@@ -66,6 +82,7 @@ export const uploadFileV2 = async (
     {
       appId,
       fileName: key,
+      prefix,
     },
     {
       headers: { authorization: `Bearer ${authToken}` },
@@ -78,20 +95,30 @@ export const uploadFileV2 = async (
       'Content-Type': file.type,
     },
   })
-  const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
-  const importRes = await axios.post(
-    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/import`,
+
+  return s3UploadRes
+}
+
+export const getFileDownloadableLinkV2 = async (
+  key: string,
+  prefix: string,
+  authToken: string | null,
+  appId: string,
+) => {
+  const { data } = await axios.post(
+    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/storage/download`,
     {
       appId,
-      fileInfos: [{ key, checksum: eTag }],
+      fileName: key,
+      prefix,
     },
     {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: { authorization: `Bearer ${authToken}` },
     },
   )
-  return importRes
+
+
+  return data
 }
 
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
@@ -111,14 +138,16 @@ export const getFileDownloadableLink = async (key: string, authToken: string | n
 }
 
 export const downloadFile = async (fileName: string, config: AxiosRequestConfig) =>
-  await axios({ ...config, method: 'GET', responseType: 'blob' }).then((response: any) => {
-    const url = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-  })
+  await axios({ ...config, method: 'GET', responseType: 'blob' })
+    .then((response: any) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+    })
+    .catch(error => console.error(error))
 
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -425,7 +454,7 @@ export const isValidEmail = (email: string) => {
   return /^[.\w%+-]+@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
 }
 
-export const deleteMeeting = async (meetId: string, authToken: string | null) => {
+export const deleteZoomMeet = async (meetId: string, authToken: string | null) => {
   if (!meetId) return
   const response = await axios.delete(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`, {
     headers: {
@@ -434,6 +463,7 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   })
   return response.status
 }
+
 export const updateMeeting = async (
   meetId: string,
   meetingMemberId: string | null,
@@ -485,7 +515,6 @@ export const createMeeting = async (
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
       {
-        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
         autoRecording: true,
         service: 'zoom',
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
@@ -511,4 +540,19 @@ export const createMeeting = async (
     )
     return { meetId: null, continueInsertTask }
   }
+}
+
+export const getVideoDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+
+    video.onloadedmetadata = function () {
+      window.URL.revokeObjectURL(video.src)
+      const duration = video.duration
+      resolve(duration)
+    }
+
+    video.src = URL.createObjectURL(file)
+  })
 }

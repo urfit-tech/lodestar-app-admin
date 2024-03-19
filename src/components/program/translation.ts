@@ -12,6 +12,13 @@ const programMessages = {
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
     contentPlan: { id: 'program.*.contentPlan', defaultMessage: 'Content Plan' },
+    videoContent: { id: 'program.*.videoContent', defaultMessage: 'Video content' },
+    articleContent: { id: 'program.*.articleContent', defaultMessage: 'Article content' },
+    audioContent: { id: 'program.*.audioContent', defaultMessage: 'Audio content' },
+    ebook: { id: 'program.*.ebook', defaultMessage: '電子書' },
+    contentTitle: { id: 'program.*.contentTitle', defaultMessage: '標題' },
+    description: { id: 'program.*.description', defaultMessage: '內容' },
+    uploadAudioFile: { id: 'program.*.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },
@@ -76,6 +83,47 @@ const programMessages = {
   }),
   ProgramContentAdminItem: defineMessages({
     privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },
+  }),
+  ProgramContentAdminModal: defineMessages({
+    ebookFile: {
+      id: 'program.ProgramContentAdminModal.ebookFile',
+      defaultMessage: '電子書檔案',
+    },
+    uploadEbookFileTips: {
+      id: 'program.ProgramContentAdminModal.uploadEbookFileTips',
+      defaultMessage: '只接受符合 EPUB 3 格式檔案',
+    },
+    audioFileTips: {
+      id: 'program.ProgramContentAdminModal.audioFileTips',
+      defaultMessage: 'Accept format: .mp3\nFile size: 250MB',
+    },
+    deleteContentWarning: {
+      id: 'program.ProgramContentAdminModal.deleteContentWarning',
+      defaultMessage: '你確定要刪除此內容？此動作無法還原',
+    },
+    uploadFile: { id: 'program.ProgramContentAdminModal.uploadFile', defaultMessage: '上傳檔案' },
+    audioFile: { id: 'program.ProgramContentAdminModal.audioFile', defaultMessage: 'Audio File' },
+    contentPlan: { id: 'program.ProgramContentAdminModal.contentPlan', defaultMessage: '適用方案' },
+    uploadVideo: { id: 'program.ProgramContentAdminModal.uploadVideo', defaultMessage: '上傳影片' },
+    uploadCaption: { id: 'program.ProgramContentAdminModal.uploadCaption', defaultMessage: '上傳字幕' },
+    duration: { id: 'program.ProgramContentAdminModal.duration', defaultMessage: '內容時長（分鐘）' },
+    uploadMaterial: { id: 'program.ProgramContentAdminModal.uploadMaterial', defaultMessage: '上傳教材' },
+  }),
+  PracticeAdminModal: defineMessages({
+    contentPlan: { id: 'program.PracticeAdminModal.contentPlan', defaultMessage: 'Content Plan' },
+    practice: { id: 'program.PracticeAdminModal.practice', defaultMessage: '作業練習' },
+    deletePracticeWarning: {
+      id: 'program.PracticeAdminModal.deletePracticeWarning',
+      defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
+    },
+    practicePrivateTips: {
+      id: 'program.PracticeAdminModal.practicePrivateTips',
+      defaultMessage: '勾選後學員將只能看到自己的作品',
+    },
+    practiceFileSizeTips: {
+      id: 'program.PracticeAdminModal.practiceFileSizeTips',
+      defaultMessage: '單檔案大小不超過 5GB',
+    },
   }),
   ExerciseAdminModal: defineMessages({
     exerciseSetting: { id: 'program.ExerciseAdminModal.exerciseSetting', defaultMessage: '測驗設定' },
@@ -170,9 +218,6 @@ const programMessages = {
     },
     deleteSection: { id: 'program.ProgramContentSectionAdminCard.deleteSection', defaultMessage: 'Delete section' },
     createContent: { id: 'program.ProgramContentSectionAdminCard.createContent', defaultMessage: 'Create content' },
-    videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
-    articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
-    audioContent: { id: 'program.ProgramContentSectionAdminCard.audioContent', defaultMessage: 'Audio content' },
     programPractice: {
       id: 'program.ProgramContentSectionAdminCard.practiceContent',
       defaultMessage: 'Practice content',

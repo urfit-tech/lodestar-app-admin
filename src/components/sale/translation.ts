@@ -155,6 +155,7 @@ const saleMessages = {
     orderDeleted: { id: 'sale.OrderExportModal.orderDeleted', defaultMessage: '已刪除' },
     orderExpired: { id: 'sale.OrderExportModal.orderExpired', defaultMessage: '已失效' },
     orderLogCategory: { id: 'sale.OrderExportModal.orderLogCategory', defaultMessage: '訂單項目' },
+    exportMime: { id: 'sale.OrderExportModal.exportMime', defaultMessage: '檔案類型' },
     orderCategory: { id: 'sale.OrderExportModal.orderCategory', defaultMessage: '訂單項目' },
     all: { id: 'sale.OrderExportModal.all', defaultMessage: '全部產品' },
     specify: { id: 'sale.OrderExportModal.specify', defaultMessage: '指定產品' },
@@ -180,6 +181,7 @@ const saleMessages = {
     invoiceAddress: { id: 'sale.OrderExportModal.invoiceAddress', defaultMessage: '發票地址' },
     shippingFee: { id: 'sale.OrderExportModal.shippingFee', defaultMessage: 'Shipping fee' },
     referrer: { id: 'sale.OrderExportModal.referrer', defaultMessage: 'recommender' },
+    requestSuccess: { id: 'sale.OrderExportModal.requestSuccess', defaultMessage: 'request success, result will send to your mail.' },
   }),
 }
 

@@ -44,7 +44,7 @@ export const StyledMenu = styled(Menu)`
   }
 `
 
-const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
+const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { enabledModules, settings } = useApp()
@@ -53,6 +53,13 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const [openKeys, setOpenKeys] = useState<React.Key[]>([])
   const payload = authToken ? parsePayload(authToken) : null
   const isBusiness = payload && payload.isBusiness
+  const hasSaleGroupPermission = [
+    permissions.GROSS_SALES_ADMIN,
+    permissions.GROSS_SALES_NORMAL,
+    permissions.SALES_RECORDS_ADMIN,
+    permissions.SALES_RECORDS_DETAILS,
+    permissions.SALES_RECORDS_NORMAL,
+  ].some(permission => permission)
   const defaultMenuItems: {
     permissionIsAllowed: boolean
     icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
@@ -65,7 +72,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     }[]
   }[] = [
     {
-      permissionIsAllowed: !!enabledModules.sale_manager,
+      permissionIsAllowed: !!enabledModules.sale_manager && hasSaleGroupPermission,
       icon: () => <MoneyCircleIcon />,
       key: 'sales',
       name: formatMessage(adminMessages.AdminMenu.salesAdmin),
@@ -167,7 +174,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.certificate,
+      permissionIsAllowed: !!enabledModules.certificate && Boolean(permissions.CERTIFICATE_ADMIN),
       key: 'certificate',
       icon: () => <CertificateIcon className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.certificateAdmin),
@@ -469,7 +476,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.report && !!permissions.REPORT_ADMIN,
+      permissionIsAllowed: !!enabledModules.report && (!!permissions.REPORT_ADMIN || !!permissions.REPORT_VIEW),
       key: 'report_collection',
       icon: () => <AreaChartOutlined style={{ margin: 0 }} />,
       name: formatMessage(adminMessages.AdminMenu.report),
@@ -711,35 +718,37 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           onOpenChange={handleOpenChange}
           onClick={handleClick}
         >
-          {defaultMenuItems
-            .filter(v => v.permissionIsAllowed)
-            .map(v => {
-              if (v.subMenuItems) {
-                return (
-                  <Menu.SubMenu
-                    key={v.key}
-                    title={
-                      <span className="d-flex">
-                        <Icon component={v.icon} className="d-flex align-items-center" />
-                        <span>{v.name}</span>
-                      </span>
-                    }
-                  >
-                    {v.subMenuItems
-                      .filter(w => w.permissionIsAllowed)
-                      .map(w => (
-                        <Menu.Item key={w.key}>{w.name}</Menu.Item>
-                      ))}
-                  </Menu.SubMenu>
-                )
-              }
-              return (
-                <Menu.Item key={v.key} className="d-flex">
-                  <Icon component={v.icon} className="d-flex align-items-center" />
-                  <span>{v.name}</span>
-                </Menu.Item>
-              )
-            })}
+          {opened
+            ? defaultMenuItems
+                .filter(v => v.permissionIsAllowed)
+                .map(v => {
+                  if (v.subMenuItems) {
+                    return (
+                      <Menu.SubMenu
+                        key={v.key}
+                        title={
+                          <span className="d-flex">
+                            <Icon component={v.icon} className="d-flex align-items-center" />
+                            <span>{v.name}</span>
+                          </span>
+                        }
+                      >
+                        {v.subMenuItems
+                          .filter(w => w.permissionIsAllowed)
+                          .map(w => (
+                            <Menu.Item key={w.key}>{w.name}</Menu.Item>
+                          ))}
+                      </Menu.SubMenu>
+                    )
+                  }
+                  return (
+                    <Menu.Item key={v.key} className="d-flex">
+                      <Icon component={v.icon} className="d-flex align-items-center" />
+                      <span>{v.name}</span>
+                    </Menu.Item>
+                  )
+                })
+            : null}
         </StyledMenu>
       )}
     </>

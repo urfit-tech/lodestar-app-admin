@@ -23,7 +23,7 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
   }
 `
 
-const PermissionGroupInputSelector: React.FC<{
+const PermissionGroupSelector: React.FC<{
   single?: boolean
   value?: string
   onChange?: (value: string) => void
@@ -46,4 +46,4 @@ const PermissionGroupInputSelector: React.FC<{
   )
 }
 
-export default PermissionGroupInputSelector
+export default PermissionGroupSelector

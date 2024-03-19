@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -14,16 +13,16 @@ const AppointmentPlanCollectionTabs: React.VFC<{
 }> = ({ creatorId }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { counts } = useAppointmentPlansCounts(creatorId)
+  const { loading, counts } = useAppointmentPlansCounts(creatorId)
 
-  if (!counts) {
+  if (loading) {
     return <Skeleton active />
   }
 
   const tabContents: {
     key: string
     tab: string
-    condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+    condition: hasura.GetAppointmentPlanCollectionAdminVariables['condition']
     withAppointmentButton?: Boolean
     permissionIsAllowed: boolean
   }[] = [
@@ -66,7 +65,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
       {tabContents
         .filter(v => v.permissionIsAllowed)
         .map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} ${`(${counts[tabContent.key]})`}`}>
+          <Tabs.TabPane key={tabContent.key} tab={counts ? `${tabContent.tab} ${`(${counts[tabContent.key]})`}` : null}>
             <AdminPageBlock>
               <AppointmentPlanCollectionTable
                 condition={tabContent.condition}
@@ -80,9 +79,9 @@ const AppointmentPlanCollectionTabs: React.VFC<{
 }
 
 const useAppointmentPlansCounts = (creatorId?: string | null) => {
-  const { data } = useQuery<hasura.GET_APPOINTMENT_PLAN_COUNTS, hasura.GET_APPOINTMENT_PLAN_COUNTSVariables>(
+  const { loading, data } = useQuery<hasura.GetAppointmentPlanCounts, hasura.GetAppointmentPlanCountsVariables>(
     gql`
-      query GET_APPOINTMENT_PLAN_COUNTS($condition: appointment_plan_bool_exp!) {
+      query GetAppointmentPlanCounts($condition: appointment_plan_bool_exp!) {
         published: appointment_plan_aggregate(
           where: { _and: [$condition, { published_at: { _is_null: false }, is_private: { _eq: false } }] }
         ) {
@@ -119,6 +118,7 @@ const useAppointmentPlansCounts = (creatorId?: string | null) => {
     : null
 
   return {
+    loading,
     counts,
   }
 }

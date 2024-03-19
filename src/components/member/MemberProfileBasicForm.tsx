@@ -74,13 +74,17 @@ const MemberProfileBasicForm: React.FC<{
           phones: permissions['MEMBER_PHONE_ADMIN']
             ? values.phones
                 .filter((phone: string) => !!phone)
-                .map((phone: string) => ({
-                  member_id: memberAdmin.id,
-                  phone,
-                }))
-            : memberAdmin.phones.map((phone: string) => ({
+                .map((phone: string) => {
+                  const findPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
+                  return {
+                    member_id: memberAdmin.id,
+                    phone,
+                    is_valid: findPhone?.isValid,
+                  }
+                })
+            : memberAdmin.phones.map(phone => ({
                 member_id: memberAdmin.id,
-                phone,
+                phone: phone.phoneNumber,
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
@@ -131,7 +135,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
+        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -205,7 +209,7 @@ const PhoneCollectionInput: React.FC<{
             value={phone}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, e.target.value)
+              newValue.splice(index, 1, e.target.value.trim())
               onChange && onChange(newValue)
             }}
           />

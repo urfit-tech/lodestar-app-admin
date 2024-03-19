@@ -1,21 +1,27 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Select, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Spin, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../../types/appointment'
+import { useService } from '../../hooks/service'
+import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
   hoursAgo: { id: 'appointment.label.hoursAgo', defaultMessage: '小時前' },
   daysAgo: { id: 'appointment.label.daysAgo', defaultMessage: '天前' },
   appointmentDeadline: {
-    id: 'appointment.text.appointmentDeadline.',
+    id: 'appointment.text.appointmentDeadline',
     defaultMessage: '限定用戶於時段開始前多久需完成預約',
+  },
+  isReschedule: {
+    id: 'appointment.text.isReschedule',
+    defaultMessage: '是否允許更換預約時段',
   },
 })
 
@@ -24,21 +30,60 @@ type FieldProps = {
   phone: string
   reservationAmount: number
   reservationType: ReservationType
+  rescheduleAmount: number
+  rescheduleType: ReservationType
   meetGenerationMethod: MeetGenerationMethod
+  defaultMeetGateway: string
 }
 
+const UpdateAppointmentPlan = gql`
+  mutation UpdateAppointmentPlan(
+    $appointmentPlanId: uuid!
+    $title: String!
+    $phone: String!
+    $reservationAmount: numeric
+    $reservationType: String
+    $rescheduleAmount: Int
+    $rescheduleType: String
+    $meetGenerationMethod: String
+    $defaultMeetGateway: String
+  ) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: {
+        title: $title
+        phone: $phone
+        reservation_amount: $reservationAmount
+        reservation_type: $reservationType
+        reschedule_amount: $rescheduleAmount
+        reschedule_type: $rescheduleType
+        meet_generation_method: $meetGenerationMethod
+        default_meet_gateway: $defaultMeetGateway
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
+
 const AppointmentPlanBasicForm: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
-  const [updateAppointmentPlanTitle] = useMutation<
-    hasura.UPDATE_APPOINTMENT_PLAN_TITLE,
-    hasura.UPDATE_APPOINTMENT_PLAN_TITLEVariables
-  >(UPDATE_APPOINTMENT_PLAN_TITLE)
+  const { loading: loadingService, services } = useService()
+  const [updateAppointmentPlan] = useMutation<hasura.UpdateAppointmentPlan, hasura.UpdateAppointmentPlanVariables>(
+    UpdateAppointmentPlan,
+  )
   const [loading, setLoading] = useState(false)
+  const [meetGenerationMethod, setMeetGenerationMethod] = useState<'manual' | 'auto'>(
+    appointmentPlanAdmin?.meetGenerationMethod as 'auto' | 'manual',
+  )
+  const [reservationType, setReservationType] = useState(appointmentPlanAdmin?.reservationType as ReservationType)
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
@@ -46,14 +91,18 @@ const AppointmentPlanBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    updateAppointmentPlanTitle({
+    updateAppointmentPlan({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
-        title: values.title || '',
+        title: values.title,
         phone: values.phone,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
+        rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
+        rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
+        defaultMeetGateway:
+          meetGenerationMethod === 'auto' && values.defaultMeetGateway ? values.defaultMeetGateway : 'jitsi',
       },
     })
       .then(() => {
@@ -77,7 +126,10 @@ const AppointmentPlanBasicForm: React.FC<{
         phone: appointmentPlanAdmin.phone,
         reservationAmount: appointmentPlanAdmin.reservationAmount || 0,
         reservationType: appointmentPlanAdmin.reservationType || 'hour',
+        rescheduleAmount: appointmentPlanAdmin.rescheduleAmount || 1,
+        rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
+        defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway ?? 'jitsi',
       }}
       onFinish={handleSubmit}
     >
@@ -133,11 +185,10 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} max={reservationType === 'hour' ? 23 : undefined} />
           </Form.Item>
 
           <Form.Item
-            className="ml-2"
             name="reservationType"
             rules={[
               {
@@ -148,7 +199,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <Select style={{ width: '100px' }}>
+            <Select style={{ width: '150px' }} onChange={v => setReservationType(v as 'hour' | 'day')}>
               <Select.Option key="hour" value="hour">
                 {formatMessage(messages.hoursAgo)}
               </Select.Option>
@@ -160,8 +211,72 @@ const AppointmentPlanBasicForm: React.FC<{
         </Input.Group>
       </Form.Item>
 
+      <Form.Item
+        className="align-items-baseline mb-0"
+        label={
+          <span className="d-flex align-items-center">
+            {formatMessage(appointmentMessages.label.reschedule)}
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.isReschedule)}</StyledTips>}>
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+      >
+        <Radio.Group
+          value={isReschedule}
+          onChange={e => {
+            setIsReschedule(e.target.value)
+            form.setFieldsValue({ rescheduleAmount: e.target.value ? 1 : -1 })
+          }}
+        >
+          <Radio value={true} className="mb-2">
+            {formatMessage(appointmentMessages.label.isReschedule)}
+          </Radio>
+          <Radio value={false}>{formatMessage(appointmentMessages.label.unReschedule)}</Radio>
+        </Radio.Group>
+        {isReschedule && (
+          <Input.Group compact>
+            <Form.Item
+              name="rescheduleAmount"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(appointmentMessages.label.rescheduleAmount),
+                  }),
+                },
+              ]}
+            >
+              <InputNumber min={1} />
+            </Form.Item>
+
+            <Form.Item
+              className="ml-2"
+              name="rescheduleType"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(appointmentMessages.label.rescheduleType),
+                  }),
+                },
+              ]}
+            >
+              <Select style={{ width: '100px' }}>
+                <Select.Option key="hour" value="hour">
+                  {formatMessage(messages.hoursAgo)}
+                </Select.Option>
+                <Select.Option key="day" value="day">
+                  {formatMessage(messages.daysAgo)}
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          </Input.Group>
+        )}
+      </Form.Item>
+
       <Form.Item label={formatMessage(appointmentMessages.label.meetingLink)} name="meetGenerationMethod">
-        <Select style={{ width: '150px' }}>
+        <Select style={{ width: '150px' }} onChange={value => setMeetGenerationMethod(value as 'auto' | 'manual')}>
           <Select.Option key="auto" value="auto">
             {formatMessage(appointmentMessages.label.automaticallyGenerated)}
           </Select.Option>
@@ -170,6 +285,23 @@ const AppointmentPlanBasicForm: React.FC<{
           </Select.Option>
         </Select>
       </Form.Item>
+
+      {loadingService ? (
+        <Spin />
+      ) : enabledModules.meet_service &&
+        services.filter(service => service.gateway === 'zoom').length !== 0 &&
+        meetGenerationMethod === 'auto' ? (
+        <Form.Item label="預設會議系統" name="defaultMeetGateway">
+          <Select style={{ width: '150px' }} defaultValue="zoom">
+            <Select.Option key="zoom" value="zoom">
+              Zoom
+            </Select.Option>
+            <Select.Option key="jitsi" value="jitsi">
+              Jitsi
+            </Select.Option>
+          </Select>
+        </Form.Item>
+      ) : null}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
@@ -182,29 +314,4 @@ const AppointmentPlanBasicForm: React.FC<{
     </Form>
   )
 }
-
-const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_TITLE(
-    $appointmentPlanId: uuid!
-    $title: String!
-    $phone: String!
-    $reservationAmount: numeric
-    $reservationType: String
-    $meetGenerationMethod: String
-  ) {
-    update_appointment_plan(
-      where: { id: { _eq: $appointmentPlanId } }
-      _set: {
-        title: $title
-        phone: $phone
-        reservation_amount: $reservationAmount
-        reservation_type: $reservationType
-        meet_generation_method: $meetGenerationMethod
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
-
 export default AppointmentPlanBasicForm

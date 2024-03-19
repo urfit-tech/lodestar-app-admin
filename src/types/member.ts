@@ -1,6 +1,7 @@
 import { Category } from './general'
 
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
+export type MeetingGateway = 'jitsi' | 'zoom'
 
 export type MemberProps = {
   id: string
@@ -88,7 +89,10 @@ export type MemberAdminProps = {
   manager: MemberBriefProps | null
   tags: string[]
   specialities: string[]
-  phones: string[]
+  phones: {
+    isValid: boolean
+    phoneNumber: string
+  }[]
   categories: Category[]
   permissionIds: string[]
   lastRejectedNote: {
@@ -161,6 +165,15 @@ export type MemberTaskProps = {
   dueAt: Date | null
   createdAt: Date | null
   hasMeeting: boolean
+  meetingGateway: MeetingGateway
+  meetingHours: number
+  meet: {
+    id: string | any
+    startedAt: Date
+    endedAt: Date
+    nbfAt: Date | null
+    expAt: Date | null
+  }
   description: string | null
   member: {
     id: string

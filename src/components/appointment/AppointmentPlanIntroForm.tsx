@@ -1,14 +1,13 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { gql } from '@apollo/client'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
 type FieldProps = {
@@ -16,7 +15,7 @@ type FieldProps = {
 }
 
 const AppointmentPlanIntroForm: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()

@@ -1,10 +1,13 @@
 import { Button } from 'antd'
+import dayjs from 'dayjs'
 import moment from 'moment'
+import { groupBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import { AppointmentPeriodProps, AppointmentScheduleProps } from '../../types/appointment'
+import { useService } from '../../hooks/service'
+import { AppointmentPeriod, AppointmentSchedule } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
 
@@ -43,34 +46,68 @@ const messages = defineMessages({
 })
 
 type AppointmentPeriodCollectionProps = {
-  periods: (AppointmentPeriodProps & { schedule: AppointmentScheduleProps | null })[]
+  appointmentPlan: {
+    id: string
+    capacity: number
+    defaultMeetGateway: string
+    creatorId: string
+  }
+  periods: (Pick<AppointmentPeriod, 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    schedule: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'> | null
+    isEnrolled?: boolean
+    isExcluded?: boolean
+    appointmentScheduleCreatedAt: Date
+  })[]
   onDelete?: (scheduleId: string) => Promise<any>
   onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
 }
 
-const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({ periods, onDelete, onClose }) => {
+const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({
+  appointmentPlan,
+  periods,
+  onDelete,
+  onClose,
+}) => {
   const { formatMessage } = useIntl()
+  const { loading: loadingServices, services } = useService()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
 
   return (
     <>
       <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+
       <StyledWrapper>
-        {periods.map(period => (
-          <div
-            key={period.id}
-            onClick={() => {
-              if (period.isEnrolled) {
-                return
-              }
-              setSelectedPeriod(period)
-              setVisible(true)
-            }}
-          >
-            <AppointmentPeriodItem {...period} />
-          </div>
-        ))}
+        {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
+          .map(periods =>
+            periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
+          )
+          .map(periods => periods[0])
+          .map((period, index) => (
+            <AppointmentPeriodItem
+              key={`${appointmentPlan.id}-${index}`}
+              creatorId={appointmentPlan.creatorId}
+              appointmentPlan={{
+                id: appointmentPlan.id,
+                capacity: appointmentPlan.capacity,
+                defaultMeetGateway: appointmentPlan.defaultMeetGateway,
+              }}
+              period={{
+                startedAt: period.startedAt,
+                endedAt: period.endedAt,
+              }}
+              services={services}
+              loadingServices={loadingServices}
+              isPeriodExcluded={period.isExcluded}
+              isEnrolled={period.isEnrolled}
+              onClick={() => {
+                if (!period.isEnrolled) {
+                  setSelectedPeriod(period)
+                  setVisible(true)
+                }
+              }}
+            />
+          ))}
       </StyledWrapper>
 
       <AdminModal
@@ -86,7 +123,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                   danger
                   block
                   onClick={() =>
-                    onDelete?.(selectedPeriod.scheduleId).then(() => {
+                    onDelete?.(selectedPeriod.appointmentScheduleId).then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })
@@ -105,7 +142,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                   block
                   onClick={() =>
                     onClose &&
-                    onClose(selectedPeriod.scheduleId, selectedPeriod.startedAt)?.then(() => {
+                    onClose(selectedPeriod.appointmentScheduleId, selectedPeriod.startedAt)?.then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })

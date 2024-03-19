@@ -88,6 +88,10 @@ export const useProgram = (programId: string) => {
                 id
                 data
               }
+              program_content_ebook {
+                id
+                data
+              }
             }
           }
           program_roles(order_by: [{ created_at: asc }, { id: desc }]) {
@@ -145,10 +149,12 @@ export const useProgram = (programId: string) => {
     `,
     { variables: { programId }, fetchPolicy: 'no-cache' },
   )
+
   const program: ProgramAdminProps | null = useMemo(() => {
-    if (loading || error || !data || !data.program_by_pk) {
+    if (loading || error || !data || !data?.program_by_pk) {
       return null
     }
+
     return {
       id: data.program_by_pk.id,
       appId: data.program_by_pk.app_id,
@@ -180,7 +186,7 @@ export const useProgram = (programId: string) => {
           displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
           duration: pc.duration,
-          programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,
+          programContentType: pc.program_content_type?.type || null,
           isNotifyUpdate: pc.is_notify_update,
           notifiedAt: pc.notified_at && new Date(pc.notified_at),
           programPlans: pc.program_content_plans.map(pcp => ({
@@ -188,8 +194,8 @@ export const useProgram = (programId: string) => {
             title: pcp.program_plan.title || '',
           })),
           metadata: pc.metadata,
-          programContentBodyData: pc.program_content_body.data,
-          programContentBodyTarget: pc.program_content_body.target,
+          programContentBodyData: pc.program_content_body?.data,
+          programContentBodyTarget: pc.program_content_body?.target,
           attachments: pc.program_content_attachments.map(v => ({
             id: v.attachment_id,
             data: v.data,
@@ -205,15 +211,18 @@ export const useProgram = (programId: string) => {
             id: pca.id,
             data: pca.data,
           })),
+          ebook: pc.program_content_ebook
+            ? { id: pc.program_content_ebook.id, data: pc.program_content_ebook.data }
+            : null,
         })),
       })),
       roles: data.program_by_pk.program_roles.map(programRole => ({
         id: programRole.id,
         name: programRole.name as ProgramRoleName,
         member: {
-          id: programRole.member && programRole.member.id || null,
-          name: programRole.member && programRole.member.name || null,
-          pictureUrl: programRole.member && programRole.member.picture_url || null,
+          id: (programRole.member && programRole.member.id) || null,
+          name: (programRole.member && programRole.member.name) || null,
+          pictureUrl: (programRole.member && programRole.member.picture_url) || null,
         },
       })),
       plans: data.program_by_pk.program_plans.map(programPlan => ({

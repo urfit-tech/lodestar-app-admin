@@ -1,16 +1,19 @@
 // organize-imports-ignore
-import { useQuery } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import { FileAddOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Tooltip, message } from 'antd'
+import { Button, Checkbox, DatePicker, Input, message, Select, Skeleton, Spin, Table, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { gql } from '@apollo/client'
+import { SorterResult } from 'antd/lib/table/interface'
 import moment from 'moment'
-import React, { useRef, useState } from 'react'
+import dayjs from 'dayjs'
+import axios from 'axios'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useCategory } from '../../hooks/data'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import hasura from '../../hasura'
@@ -19,12 +22,11 @@ import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
-import axios from 'axios'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
+import { useMemberTaskCollection } from '../../hooks/task'
+import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
-import { useToast } from '@chakra-ui/toast'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -96,8 +98,10 @@ export const categoryColors: string[] = [
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
+  const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { id: appId, enabledModules } = useApp()
+  const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
     title?: string
@@ -105,29 +109,38 @@ const MemberTaskAdminBlock: React.FC<{
     executor?: string
     author?: string
     dueAt?: Date[]
+    createdAt?: Date[]
     status?: string
   }>({})
   const [display, setDisplay] = useState('table')
-  const { loading: categoriesLoading, categories } = useCategory('task')
-  const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
-    useMemberTaskCollection({
-      memberId,
-      ...filter,
-      limit: display === 'table' ? 10 : undefined,
-    })
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { authToken, currentMember } = useAuth()
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const [meetingLoading, setMeetingLoading] = useState<{ index: number; loading: boolean } | null>()
   const [meetingMember, setMeetingMember] = useState<{
     id: string
     name: string
   }>({ id: '', name: '' })
-  const { enabledModules, id: appId } = useApp()
+  const [orderBy, setOrderBy] = useState<hasura.member_task_order_by>({
+    created_at: 'desc' as hasura.order_by,
+  })
+  const { loading: categoriesLoading, categories } = useCategory('task')
+  const [excludedIds, setExcludedIds] = useState<string[]>([])
+  const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
+    useMemberTaskCollection({
+      memberId,
+      excludedIds,
+      setExcludedIds,
+      ...filter,
+      orderBy,
+      limit: display === 'table' ? 10 : undefined,
+    })
   const { insertMemberNote } = useMutateMemberNote()
-  const toast = useToast()
+
+  useEffect(() => {
+    setExcludedIds([])
+  }, [orderBy])
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -182,7 +195,7 @@ const MemberTaskAdminBlock: React.FC<{
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  if (categoriesLoading || !categories) {
+  if (categoriesLoading || !categories || !currentMember) {
     return <Skeleton active />
   }
 
@@ -193,48 +206,73 @@ const MemberTaskAdminBlock: React.FC<{
   const onCellClick = (record: MemberTaskProps) => {
     return {
       onClick: () => {
-        setMeetingMember(() => record.member)
         setSelectedMemberTask(() => record)
         setVisible(() => true)
       },
     }
   }
 
-  const meetingButtonOnClick = async (meetingMember: { id: string; name: string }) => {
-    if (!enabledModules.meet_service) {
-      setJitsiModalVisible(true)
-      return
+  const getMeetingLink = async (
+    memberTaskId: string,
+    meetId: string,
+    startedAt: Date,
+    endedAt: Date,
+    nbfAt: Date | null,
+    expAt: Date | null,
+    memberId: string,
+    hostMemberName: string,
+  ) => {
+    const jitsiUrl = 'https://meet.jit.si/ROOM_NAME#config.startWithVideoMuted=true&userInfo.displayName="MEMBER_NAME"'
+      .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
+      .replace('MEMBER_NAME', hostMemberName)
+
+    // jitsi or zoom
+    const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
+      query: GetMeetById,
+      variables: { meetId },
+    })
+    const isCurrentTimeInMeetingPeriod = moment(new Date()).isBetween(nbfAt, expAt, null, '[)')
+    if (!isCurrentTimeInMeetingPeriod) {
+      return message.error('非會議時間')
     }
-    const currentTime = new Date()
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
-        {
-          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMember.id}`,
-          autoRecording: true,
-          service: 'zoom',
-          nbf: null,
-          exp: null,
-          startedAt: currentTime,
-          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
-        },
-        {
-          headers: {
-            authorization: `Bearer ${authToken}`,
+    let startUrl
+    if (enabledModules.meet_service && data.meet_by_pk?.gateway === 'zoom') {
+      // create zoom meeting than get startUrl
+      try {
+        const { data: createMeetData } = await axios.post(
+          `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+          {
+            memberId: memberId,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            autoRecording: true,
+            nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
+            expAt: endedAt,
+            service: 'zoom',
+            target: memberTaskId,
+            hostMemberId: currentMemberId,
+            type: `${data.meet_by_pk?.type}`,
           },
-        },
-      )
-      window.open(response.data.data.options.startUrl)
-    } catch {
-      toast({
-        title: '已達同時會議上限額度，請升級方案',
-        status: 'error',
-        duration: 3000,
-        position: 'top',
-      })
-      setJitsiModalVisible(true)
-    } finally {
-      setMeetingLoading(null)
+          {
+            headers: {
+              authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        startUrl = createMeetData.data?.options?.startUrl
+      } catch (error) {
+        handleError(error)
+      }
+      if (startUrl) {
+        window.open(startUrl, '_blank')
+      } else {
+        window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
+        // setJitsiModalVisible(true)
+      }
+    } else {
+      // module meet_service not enabled, default jitsi
+      window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
+      // setJitsiModalVisible(true)
     }
   }
 
@@ -257,7 +295,7 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.meeting),
       render: (text, record, index) => (
         <div>
-          {record.hasMeeting && (
+          {(record.hasMeeting || record.meetingGateway) && (
             <Button
               type="primary"
               size="small"
@@ -269,7 +307,19 @@ const MemberTaskAdminBlock: React.FC<{
                     loading: true,
                   }
                 })
-                meetingButtonOnClick(record.member)
+                setMeetingMember(() => record.member)
+                getMeetingLink(
+                  record.id,
+                  record.meet.id,
+                  record.meet.startedAt,
+                  record.meet.endedAt,
+                  record.meet.nbfAt,
+                  record.meet.expAt,
+                  record.member.id,
+                  currentMember.id,
+                ).finally(() => {
+                  setMeetingLoading(null)
+                })
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
@@ -374,9 +424,17 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'dueAt',
-      title: formatMessage(memberMessages.label.dueDate),
+      title: formatMessage(memberMessages.label.executeDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
-      sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
+      sorter: (a, b) => {
+        // In descending order:
+        // - If 'a.dueAt' is null, return 1 to prioritize 'a' before 'b'.
+        // - If 'b.dueAt' is null, return -1 to prioritize non-null 'b' before 'a'.
+        // - Otherwise, compare the time values of 'dueAt'.
+        if (a.dueAt === null) return 1
+        if (b.dueAt === null) return -1
+        return a.dueAt.getTime() - b.dueAt.getTime()
+      },
       onCell: onCellClick,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
@@ -412,6 +470,61 @@ const MemberTaskAdminBlock: React.FC<{
                 setFilter(filter => ({
                   ...filter,
                   dueAt: undefined,
+                }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+    {
+      dataIndex: 'createdAt',
+      title: formatMessage(memberMessages.label.createdDate),
+      render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''),
+      sorter: (a, b) => {
+        if (a.createdAt === null) return 1
+        if (b.createdAt === null) return -1
+        return a.createdAt.getTime() - b.createdAt.getTime()
+      },
+      onCell: onCellClick,
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <DatePicker.RangePicker
+            className="mb-2"
+            value={selectedKeys.length ? [moment(selectedKeys[0]), moment(selectedKeys[1])] : null}
+            onChange={(date, dateString: [string, string]) => {
+              setSelectedKeys(date ? dateString : [])
+            }}
+          />
+          <div className="d-flex justify-content-center">
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(filter => ({
+                  ...filter,
+                  createdAt: selectedKeys.length
+                    ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
+                    : undefined,
+                }))
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(filter => ({
+                  ...filter,
+                  createdAt: undefined,
                 }))
               }}
               size="small"
@@ -628,6 +741,13 @@ const MemberTaskAdminBlock: React.FC<{
             showSorterTooltip={false}
             rowClassName="cursor-pointer"
             pagination={false}
+            onChange={sorter => {
+              const newSorter = sorter as SorterResult<MemberTaskProps>
+              setOrderBy({
+                [newSorter.field === 'dueAt' ? 'due_at' : newSorter.field === 'priority' ? 'priority' : 'created_at']:
+                  newSorter.order === 'ascend' ? 'asc' : 'desc',
+              })
+            }}
           />
         ) : null}
 
@@ -655,192 +775,11 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
-          meetingButtonOnClick={() => meetingButtonOnClick(meetingMember)}
           onCancel={() => setSelectedMemberTask(null)}
         />
       )}
     </>
   )
-}
-
-const useMemberTaskCollection = (options?: {
-  memberId?: string
-  title?: string
-  categoryIds?: string[]
-  executor?: string
-  author?: string
-  dueAt?: Date[]
-  status?: string
-  limit?: number
-}) => {
-  const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
-    member_id: { _eq: options?.memberId },
-    title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
-    category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
-    executor: options?.executor
-      ? { _or: [{ name: { _ilike: `%${options.executor}%` } }, { username: { _ilike: `%${options.executor}%` } }] }
-      : undefined,
-    author: options?.author
-      ? { _or: [{ name: { _ilike: `%${options.author}%` } }, { username: { _ilike: `%${options.author}%` } }] }
-      : undefined,
-    due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
-    status: options?.status ? { _ilike: options.status } : undefined,
-  }
-
-  const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_MEMBER_TASK_COLLECTION,
-    hasura.GET_MEMBER_TASK_COLLECTIONVariables
-  >(
-    gql`
-      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int) {
-        executors: member_task(where: { executor_id: { _is_null: false } }, distinct_on: [executor_id]) {
-          id
-          executor {
-            id
-            name
-          }
-        }
-        authors: member_task(where: { author_id: { _is_null: false } }, distinct_on: [author_id]) {
-          id
-          author {
-            id
-            name
-          }
-        }
-        member_task_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-        member_task(where: $condition, limit: $limit, order_by: { created_at: desc }) {
-          id
-          title
-          description
-          priority
-          status
-          due_at
-          created_at
-          has_meeting
-          category {
-            id
-            name
-          }
-          member {
-            id
-            name
-            username
-          }
-          executor {
-            id
-            name
-            username
-            picture_url
-          }
-          author {
-            id
-            name
-            username
-            picture_url
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        condition,
-        limit: options?.limit,
-      },
-    },
-  )
-
-  const executors: {
-    id: string
-    name: string
-  }[] =
-    data?.executors.map(v => ({
-      id: v.executor?.id || '',
-      name: v.executor?.name || '',
-    })) || []
-
-  const authors: {
-    id: string
-    name: string
-  }[] =
-    data?.authors.map(v => ({
-      id: v.author?.id || '',
-      name: v.author?.name || '',
-    })) || []
-
-  const memberTasks: MemberTaskProps[] =
-    loading || error || !data
-      ? []
-      : data.member_task.map(v => ({
-          id: v.id,
-          title: v.title || '',
-          priority: v.priority as MemberTaskProps['priority'],
-          status: v.status as MemberTaskProps['status'],
-          category: v.category
-            ? {
-                id: v.category.id,
-                name: v.category.name,
-              }
-            : null,
-          dueAt: v.due_at && new Date(v.due_at),
-          createdAt: v.created_at && new Date(v.created_at),
-          hasMeeting: v.has_meeting,
-          description: v.description || '',
-          member: {
-            id: v.member.id,
-            name: v.member.name || v.member.username,
-          },
-          executor: v.executor
-            ? {
-                id: v.executor.id,
-                name: v.executor.name || v.executor.username,
-                avatarUrl: v.executor.picture_url || null,
-              }
-            : null,
-          author: v.author
-            ? {
-                id: v.author.id,
-                name: v.author.name || v.author.username,
-                avatarUrl: v.author.picture_url || null,
-              }
-            : null,
-        }))
-
-  const loadMoreMemberTasks =
-    (data?.member_task_aggregate.aggregate?.count || 0) > (options?.limit || 0)
-      ? () =>
-          fetchMore({
-            variables: {
-              condition: {
-                ...condition,
-                created_at: { _lt: data?.member_task.slice(-1)[0]?.created_at },
-              },
-              limit: options?.limit,
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              return Object.assign({}, prev, {
-                member_task_aggregate: fetchMoreResult.member_task_aggregate,
-                member_task: [...prev.member_task, ...fetchMoreResult.member_task],
-              })
-            },
-          })
-      : undefined
-
-  return {
-    loadingMemberTasks: loading,
-    errorMemberTasks: error,
-    executors,
-    authors,
-    memberTasks,
-    refetchMemberTasks: refetch,
-    loadMoreMemberTasks,
-  }
 }
 
 export default MemberTaskAdminBlock
