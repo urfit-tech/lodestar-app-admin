@@ -165,7 +165,10 @@ const formMessages = {
     VOUCHER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.VOUCHER_CATEGORY_ADMIN', defaultMessage: '所有兌換分類功能' },
     VOUCHER_PLAN_ADMIN: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
     VOUCHER_PLAN_ADMIN_VIEW: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_VIEW', defaultMessage: '檢視兌換方案' },
-    VOUCHER_PLAN_ADMIN_EDIT: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_EDIT', defaultMessage: '新增與編輯兌換方案' },
+    VOUCHER_PLAN_ADMIN_EDIT: {
+      id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_EDIT',
+      defaultMessage: '新增與編輯兌換方案',
+    },
     VOUCHER_PLAN_ADMIN_DELETE: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_DELETE', defaultMessage: '刪除兌換方案' },
     VOUCHER_PLAN_NORMAL: { id: 'form.PermissionGroup.VOUCHER_PLAN_NORMAL', defaultMessage: '個人兌換方案功能' },
     VOUCHER_PLAN_READ: { id: 'form.PermissionGroup.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
@@ -226,8 +229,14 @@ const formMessages = {
     CHECK_MEMBER_COIN: { id: 'form.PermissionGroup.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
     CHECK_MEMBER_HISTORY: { id: 'form.PermissionGroup.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
     MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡記錄管理功能' },
-    MEMBER_DISCOUNT_PLAN_VIEW: { id: 'form.PermissionGroup.MEMBER_DISCOUNT_PLAN_VIEW', defaultMessage: '查看會員折價券資訊' },
-    MEMBER_VOUCHER_PLAN_VIEW: { id: 'form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW', defaultMessage: '查看會員兌換券資訊' },
+    MEMBER_COUPON_PLAN_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW',
+      defaultMessage: '查看會員折價券資訊',
+    },
+    MEMBER_VOUCHER_PLAN_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW',
+      defaultMessage: '查看會員兌換券資訊',
+    },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

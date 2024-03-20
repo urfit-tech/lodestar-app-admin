@@ -1,4 +1,4 @@
-import { Result, Skeleton, Tabs } from 'antd'
+import { Skeleton, Tabs } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -58,37 +58,31 @@ const CouponCollectionTabs: React.FC<{
   ]
 
   return (
-    <>
-      {Boolean(permissions.MEMBER_DISCOUNT_PLAN_VIEW) ? (
-        <Tabs>
-          {tabContents.map(v => (
-            <Tabs.TabPane key={v.key} tab={v.tab}>
-              <div className="row">
-                {v.couponPlans.map(w => (
-                  <div className="col-6 mb-3">
-                    <CouponPlanAdminCard
-                      isAvailable={v.isAvailable}
-                      couponPlan={w}
-                      renderDescription={() => (
-                        <CouponPlanDescriptionScopeBlock
-                          constraint={w.constraint}
-                          type={w.type}
-                          amount={w.amount}
-                          scope={w.scope}
-                          productIds={w.productIds}
-                        />
-                      )}
+    <Tabs>
+      {tabContents.map(v => (
+        <Tabs.TabPane key={v.key} tab={v.tab}>
+          <div className="row">
+            {v.couponPlans.map(w => (
+              <div className="col-6 mb-3">
+                <CouponPlanAdminCard
+                  isAvailable={v.isAvailable}
+                  couponPlan={w}
+                  renderDescription={() => (
+                    <CouponPlanDescriptionScopeBlock
+                      constraint={w.constraint}
+                      type={w.type}
+                      amount={w.amount}
+                      scope={w.scope}
+                      productIds={w.productIds}
                     />
-                  </div>
-                ))}
+                  )}
+                />
               </div>
-            </Tabs.TabPane>
-          ))}
-        </Tabs>
-      ) : (
-        <Result title="您沒有權限訪問折價券!" />
-      )}
-    </>
+            ))}
+          </div>
+        </Tabs.TabPane>
+      ))}
+    </Tabs>
   )
 }
 
