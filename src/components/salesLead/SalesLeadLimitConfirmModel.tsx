@@ -1,9 +1,8 @@
-import { gql } from '@apollo/client'
 import { Button, Form, Modal } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { salesLeadDeliveryPageMessages } from './translation'
+import { salesLeadDeliveryPageMessages } from '../../pages/SalesLeadDeliveryPage/translation'
 
 interface SalesLeadLimitConfirmModelProps {
   visible: boolean
@@ -45,8 +44,6 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
   confirmationData,
   anticipatedDispatchCount,
 }) => {
-  const [loading, setLoading] = useState(false)
-
   const { formatMessage } = useIntl()
 
   const managerName = confirmationData?.manager?.name || 'Unknown Name'
@@ -54,17 +51,6 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
   const currentHoldingsCount = confirmationData?.memberCount?.aggregate?.count || 0
 
   const totalAfterDispatch = anticipatedDispatchCount + currentHoldingsCount
-
-  const UPDATE_LEAD_MANAGER = gql`
-    mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
-      update_member(
-        where: { id: { _in: $memberIds } }
-        _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
-      ) {
-        affected_rows
-      }
-    }
-  `
 
   const handleSubmit = async () => {
     setCurrentStep(step => step + 1)
@@ -107,7 +93,7 @@ const SalesLeadLimitConfirmModel: React.FC<SalesLeadLimitConfirmModelProps> = ({
           <Button onClick={() => setVisible(false)} className="mr-2">
             {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.backButton)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit">
             {formatMessage(salesLeadDeliveryPageMessages.salesLeadLimitConfirmationModelPage.dispatchButton)}
           </Button>
         </Form.Item>
