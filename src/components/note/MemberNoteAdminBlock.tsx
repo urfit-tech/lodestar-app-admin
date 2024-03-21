@@ -4,6 +4,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
@@ -40,6 +41,7 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
 }
 
 const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
+  const [activeMemberNoteId, setActiveMemberId] = useQueryParam('id', StringParam)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
@@ -66,7 +68,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             {formatMessage(memberMessages.label.createMemberNote)}
           </Button>
         )}
-        onSubmit={({ type, status, duration, description, attachments }) =>
+        onSubmit={({ type, status, duration, description, note, attachments }) =>
           insertMemberNote({
             variables: {
               memberId: memberAdmin.id,
@@ -75,6 +77,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               status,
               duration,
               description,
+              note,
             },
           })
             .then(async ({ data }) => {
@@ -109,10 +112,12 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           notes.map(note => (
             <MemberNoteAdminItem
               key={note.id}
+              isActive={note.id === activeMemberNoteId}
               note={note}
               onRefetch={() => {
                 refetchMemberAdmin()
                 refetchNotes()
+                setActiveMemberId(undefined)
               }}
             />
           ))

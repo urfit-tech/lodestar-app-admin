@@ -118,7 +118,6 @@ export const getFileDownloadableLinkV2 = async (
     },
   )
 
-
   return data
 }
 
@@ -576,4 +575,46 @@ export const getVideoDuration = (file: File): Promise<number> => {
 
     video.src = URL.createObjectURL(file)
   })
+}
+
+export const extractNumber = (string?: string) => {
+  return string?.match(/\d+/g)?.[0] ? Number(string.match(/\d+/g)?.[0]) : 0
+}
+
+export const extractSizeUnit = (string?: string) => string?.match(/px|%|rem|em|vw|vh/g)?.[0] || 'px'
+
+export const convertToPx = (value: string) => {
+  const unit = extractSizeUnit(value)
+  const num = extractNumber(value)
+  switch (unit) {
+    case 'px':
+      return num
+    case 'em':
+      const rootFontSize = window.getComputedStyle(document.documentElement).fontSize
+      const rootFontSizeValue = parseFloat(rootFontSize)
+      return num * rootFontSizeValue
+    case 'vh':
+      return (num * window.innerHeight) / 100
+    case 'vw':
+      return (num * window.innerWidth) / 100
+    default:
+      return num
+  }
+}
+
+export const convertPxToUnit = (value: number, unit: string) => {
+  switch (unit) {
+    case 'px':
+      return `${value}px`
+    case 'em':
+      const rootFontSize = window.getComputedStyle(document.documentElement).fontSize
+      const rootFontSizeValue = parseFloat(rootFontSize)
+      return `${value / rootFontSizeValue}rem`
+    case 'vh':
+      return `${(value * 100) / window.innerHeight}vh`
+    case 'vw':
+      return `${(value * 100) / window.innerWidth}vw`
+    default:
+      return `${value}px`
+  }
 }
