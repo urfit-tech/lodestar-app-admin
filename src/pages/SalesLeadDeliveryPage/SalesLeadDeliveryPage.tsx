@@ -463,59 +463,51 @@ const ConfirmSection: React.FC<{
   const { properties } = useProperty()
   const [visible, setVisible] = useState(false)
 
-  const andCondition = []
+  const orCondition = []
 
-  if (filter.lastCalledRange && filter.excludeLastCalled) {
-    const lastCalledCondition = {
-      _or: [
-        {
-          last_member_note_called: {
-            _lte: moment(filter.lastCalledRange[0]).startOf('day'),
-          },
+  if (filter.closedLead === 'contained' && filter.closedAtRange) {
+    orCondition.push(
+      {
+        closed_at: {
+          _gte: moment(filter.closedAtRange[0]).startOf('day'),
+          _lte: moment(filter.closedAtRange[1]).endOf('day'),
         },
-        {
-          last_member_note_called: {
-            _gte: moment(filter.lastCalledRange[1]).endOf('day'),
-          },
+      },
+      {
+        closed_at: {
+          _is_null: true,
         },
-      ],
-    }
-
-    andCondition.push(lastCalledCondition)
+      },
+    )
   }
-
-  if (filter.lastAnsweredRange && filter.excludeLastAnswered) {
-    const lastAnsweredCondition = {
-      _or: [
-        {
-          last_member_note_answered: {
-            _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-          },
+  if (filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled) {
+    orCondition.push(
+      {
+        last_member_note_called: {
+          _lte: moment(filter.lastCalledRange[0]).startOf('day'),
         },
-        {
-          last_member_note_answered: {
-            _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-          },
+      },
+      {
+        last_member_note_called: {
+          _gte: moment(filter.lastCalledRange[1]).endOf('day'),
         },
-      ],
-    }
-
-    andCondition.push(lastAnsweredCondition)
+      },
+    )
   }
-
-  properties.map(property => {
-    if (!isEmpty(filter[property.name])) {
-      andCondition.push({
-        member_properties: {
-          property: { name: { _eq: property.name } },
-          value: filter[`is${property.name}ExactMatch`]
-            ? { _eq: `${filter[property.name]}` }
-            : { _like: `%${filter[property.name]}%` },
+  if (filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered) {
+    orCondition.push(
+      {
+        last_member_note_answered: {
+          _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
         },
-      })
-    }
-    return undefined
-  })
+      },
+      {
+        last_member_note_answered: {
+          _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        },
+      },
+    )
+  }
 
   const leadCandidatesCondition = {
     member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
@@ -567,29 +559,25 @@ const ConfirmSection: React.FC<{
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
         }
       : undefined,
-    _and: andCondition.length === 0 ? undefined : andCondition,
+    _and: properties.map(property => {
+      return {
+        member_properties: !isEmpty(filter[property.name])
+          ? {
+              property: { name: { _eq: property.name } },
+              value: filter[`is${property.name}ExactMatch`]
+                ? { _eq: `${filter[property.name]}` }
+                : { _like: `%${filter[property.name]}%` },
+            }
+          : undefined,
+      }
+    }),
     completed_at:
       filter.completedLead === 'contained'
         ? undefined
         : {
             _is_null: filter.completedLead === 'excluded',
           },
-    _or:
-      filter.closedLead === 'contained' && filter.closedAtRange
-        ? [
-            {
-              closed_at: {
-                _gte: moment(filter.closedAtRange[0]).startOf('day'),
-                _lte: moment(filter.closedAtRange[1]).endOf('day'),
-              },
-            },
-            {
-              closed_at: {
-                _is_null: true,
-              },
-            },
-          ]
-        : undefined,
+    _or: orCondition.length !== 0 ? orCondition : undefined,
     closed_at:
       filter.closedLead === 'excluded'
         ? {
