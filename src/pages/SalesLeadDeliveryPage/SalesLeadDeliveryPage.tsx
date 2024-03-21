@@ -463,6 +463,60 @@ const ConfirmSection: React.FC<{
   const { properties } = useProperty()
   const [visible, setVisible] = useState(false)
 
+  const andCondition = []
+
+  if (filter.lastCalledRange && filter.excludeLastCalled) {
+    const lastCalledCondition = {
+      _or: [
+        {
+          last_member_note_called: {
+            _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+          },
+        },
+        {
+          last_member_note_called: {
+            _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+          },
+        },
+      ],
+    }
+
+    andCondition.push(lastCalledCondition)
+  }
+
+  if (filter.lastAnsweredRange && filter.excludeLastAnswered) {
+    const lastAnsweredCondition = {
+      _or: [
+        {
+          last_member_note_answered: {
+            _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          },
+        },
+        {
+          last_member_note_answered: {
+            _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+          },
+        },
+      ],
+    }
+
+    andCondition.push(lastAnsweredCondition)
+  }
+
+  properties.map(property => {
+    if (!isEmpty(filter[property.name])) {
+      andCondition.push({
+        member_properties: {
+          property: { name: { _eq: property.name } },
+          value: filter[`is${property.name}ExactMatch`]
+            ? { _eq: `${filter[property.name]}` }
+            : { _like: `%${filter[property.name]}%` },
+        },
+      })
+    }
+    return undefined
+  })
+
   const leadCandidatesCondition = {
     member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
     manager_id: {
@@ -513,18 +567,7 @@ const ConfirmSection: React.FC<{
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
         }
       : undefined,
-    _and: properties.map(property => {
-      return {
-        member_properties: !isEmpty(filter[property.name])
-          ? {
-              property: { name: { _eq: property.name } },
-              value: filter[`is${property.name}ExactMatch`]
-                ? { _eq: `${filter[property.name]}` }
-                : { _like: `%${filter[property.name]}%` },
-            }
-          : undefined,
-      }
-    }),
+    _and: andCondition.length === 0 ? undefined : andCondition,
     completed_at:
       filter.completedLead === 'contained'
         ? undefined
@@ -543,32 +586,6 @@ const ConfirmSection: React.FC<{
             {
               closed_at: {
                 _is_null: true,
-              },
-            },
-          ]
-        : filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled
-        ? [
-            {
-              last_member_note_called: {
-                _lte: moment(filter.lastCalledRange[0]).startOf('day'),
-              },
-            },
-            {
-              last_member_note_called: {
-                _gte: moment(filter.lastCalledRange[1]).endOf('day'),
-              },
-            },
-          ]
-        : filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered
-        ? [
-            {
-              last_member_note_answered: {
-                _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-              },
-            },
-            {
-              last_member_note_answered: {
-                _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
               },
             },
           ]

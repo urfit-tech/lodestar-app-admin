@@ -47,6 +47,7 @@ const StyledAuthorName = styled.div`
 `
 
 const MemberNoteAdminItem: React.FC<{
+  isActive?: boolean
   note: Pick<
     MemberNote,
     | 'id'
@@ -62,12 +63,13 @@ const MemberNoteAdminItem: React.FC<{
     | 'metadata'
   >
   onRefetch?: () => void
-}> = ({ note, onRefetch }) => {
+}> = ({ isActive, note, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
   const { archiveAttachments } = useMutateAttachment()
+  const [modalVisible, setModalVisible] = React.useState(isActive || false)
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -111,53 +113,7 @@ const MemberNoteAdminItem: React.FC<{
         overlay={
           <Menu>
             <StyledMenuItem>
-              <MemberNoteAdminModal
-                title={formatMessage(memberMessages.label.editNote)}
-                note={note}
-                renderTrigger={({ setVisible }) => (
-                  <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
-                )}
-                onSubmit={({ type, status, duration, description, attachments }) =>
-                  updateMemberNote({
-                    variables: {
-                      memberNoteId: note.id,
-                      data: {
-                        type,
-                        status,
-                        duration,
-                        description,
-                      },
-                    },
-                  })
-                    .then(async ({ data }) => {
-                      const memberNoteId = data?.update_member_note_by_pk?.id
-                      const deletedAttachmentIds =
-                        note.attachments
-                          ?.filter(noteAttachment =>
-                            attachments.every(
-                              attachment =>
-                                attachment.name !== noteAttachment.data.name &&
-                                attachment.lastModified !== noteAttachment.data.lastModified,
-                            ),
-                          )
-                          .map(attachment => attachment.id) || []
-                      const newAttachments = attachments.filter(attachment =>
-                        note.attachments?.every(
-                          noteAttachment =>
-                            noteAttachment.data.name !== attachment.name &&
-                            noteAttachment.data.lastModified !== attachment.lastModified,
-                        ),
-                      )
-                      if (memberNoteId && attachments.length) {
-                        await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-                        await uploadAttachments('MemberNote', memberNoteId, newAttachments)
-                      }
-                      message.success(formatMessage(commonMessages.event.successfullyEdited))
-                      onRefetch?.()
-                    })
-                    .catch(handleError)
-                }
-              />
+              <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
             </StyledMenuItem>
             <StyledMenuItem>
               <AdminModal
@@ -189,6 +145,52 @@ const MemberNoteAdminItem: React.FC<{
       >
         <MoreOutlined />
       </Dropdown>
+      <MemberNoteAdminModal
+        title={formatMessage(memberMessages.label.editNote)}
+        note={note}
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onSubmit={({ type, status, duration, description, attachments }) =>
+          updateMemberNote({
+            variables: {
+              memberNoteId: note.id,
+              data: {
+                type,
+                status,
+                duration,
+                description,
+              },
+            },
+          })
+            .then(async ({ data }) => {
+              const memberNoteId = data?.update_member_note_by_pk?.id
+              const deletedAttachmentIds =
+                note.attachments
+                  ?.filter(noteAttachment =>
+                    attachments.every(
+                      attachment =>
+                        attachment.name !== noteAttachment.data.name &&
+                        attachment.lastModified !== noteAttachment.data.lastModified,
+                    ),
+                  )
+                  .map(attachment => attachment.id) || []
+              const newAttachments = attachments.filter(attachment =>
+                note.attachments?.every(
+                  noteAttachment =>
+                    noteAttachment.data.name !== attachment.name &&
+                    noteAttachment.data.lastModified !== attachment.lastModified,
+                ),
+              )
+              if (memberNoteId && attachments.length) {
+                await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+              }
+              message.success(formatMessage(commonMessages.event.successfullyEdited))
+              onRefetch?.()
+            })
+            .catch(handleError)
+        }
+      />
     </div>
   )
 }
