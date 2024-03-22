@@ -1,6 +1,5 @@
 import { DesktopOutlined, MobileOutlined, RedoOutlined, TabletOutlined, UndoOutlined } from '@ant-design/icons'
 import { useEditor } from '@craftjs/core'
-import { Button, message } from 'antd'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
@@ -10,6 +9,7 @@ import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
+import { Button, useToast } from '@chakra-ui/react'
 
 const messages = defineMessages({
   desktop: { id: 'craft.settings.responsiveSelector.desktop', defaultMessage: '桌面' },
@@ -25,19 +25,26 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   const { currentMemberId } = useAuth()
   const { updateAppPage } = useMutateAppPage()
   const theme = useAppTheme()
+  const toast = useToast()
 
   const handleSave = () => {
     if (!currentMemberId) {
       return
     }
     setLoading(true)
+    toast.closeAll()
     updateAppPage({
       pageId,
       editorId: currentMemberId,
       craftData: JSON.parse(editor.query.serialize()),
     })
       .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        toast({
+          title: formatMessage(commonMessages.event.successfullySaved),
+          status: 'success',
+          duration: 1500,
+          position: 'top',
+        })
         editor.actions.history.clear()
       })
       .catch(handleError)
@@ -60,19 +67,31 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   return (
     <div className="d-flex align-items-center">
       <DesktopOutlined
+        title="桌面"
         style={{ color: device === 'desktop' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('desktop')}
+        onClick={() => {
+          handleDeviceChange('desktop')
+          handleSave()
+        }}
       />
       <TabletOutlined
+        title="平板"
         style={{ color: device === 'tablet' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('tablet')}
+        onClick={() => {
+          handleDeviceChange('tablet')
+          handleSave()
+        }}
       />
       <MobileOutlined
+        title="手機"
         style={{ color: device === 'mobile' ? activeColor : inactiveColor }}
         className="mr-3"
-        onClick={() => handleDeviceChange('mobile')}
+        onClick={() => {
+          handleDeviceChange('mobile')
+          handleSave()
+        }}
       />
 
       <UndoOutlined
@@ -93,9 +112,10 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => editor.actions.history.redo()}
       />
       <Button
-        loading={loading}
-        type="primary"
         className="mr-2"
+        isLoading={loading}
+        colorScheme="primary"
+        borderRadius="0.25rem"
         disabled={!editor.query.history.canUndo()}
         onClick={() => handleSave()}
       >
