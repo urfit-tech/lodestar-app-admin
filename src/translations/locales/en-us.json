@@ -2174,6 +2174,7 @@
   "program.*.fetchDataError": "讀取錯誤",
   "program.*.isRequired": "*此欄位必填",
   "program.*.nothingIsChange": "無修改項目",
+  "program.*.pinnedStatus": "釘選",
   "program.*.notifyUpdate": "通知內容更新",
   "program.*.save": "儲存",
   "program.*.successfullySaved": "儲存成功",

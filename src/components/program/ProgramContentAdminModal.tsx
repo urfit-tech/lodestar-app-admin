@@ -113,6 +113,7 @@ type FieldProps = {
   externalLink?: string
   displayMode: DisplayMode
   contentBodyType: string
+  pinnedStatus: boolean
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'
@@ -297,6 +298,7 @@ const ProgramContentAdminModal: React.FC<{
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
           programContentBodyId: updatedProgramContentBodyId,
           displayMode: values.displayMode,
+          pinnedStatus: values.pinnedStatus,
           publishedAt: values.publishedAt
             ? values.publishedAt.toDate()
             : values.displayMode !== 'conceal'
@@ -416,6 +418,7 @@ const ProgramContentAdminModal: React.FC<{
                 displayMode: programContent.displayMode,
                 contentBodyType: programContent.programContentType,
                 ebookFile: programContent.ebook?.data || null,
+                pinnedStatus: programContent.pinned_status,
               }}
               onValuesChange={(values: Partial<FieldProps>) => {
                 form.setFieldsValue({
@@ -449,6 +452,9 @@ const ProgramContentAdminModal: React.FC<{
 
                   <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
                     <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+                  </Form.Item>
+                  <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
+                    <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
                   </Form.Item>
                 </div>
 

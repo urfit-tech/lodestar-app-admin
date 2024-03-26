@@ -8,9 +8,10 @@ import { commonMessages } from '../../helpers/translation'
 import { MicrophoneIcon } from '../../images/icon'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
+import { BookHollowIcon } from '../../images/icon/index'
+import PinIcon from '../../images/icon/pin-v-2.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
-import { BookHollowIcon } from '../../images/icon/index'
 import { ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import PracticeAdminModal from './PracticeAdminModal'
@@ -51,6 +52,19 @@ const StyledDisplayModeTag = styled(StyledTag)<{ variant?: string }>`
 const StyledPrivateTag = styled(StyledTag)`
   background: var(--gray-darker);
 `
+const StyledPinnedIcon = styled.span<{ pin: boolean }>`
+  ${({ pin }) =>
+    pin &&
+    `
+      ::before{
+        content: url('${PinIcon}');
+        position: absolute;
+        top: -11px;
+        right: -11px;
+        font-size: 20px; 
+      }
+    `}
+`
 const messages = defineMessages({
   programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
 })
@@ -65,90 +79,93 @@ const ProgramContentAdminItem: React.FC<{
   const { formatMessage } = useIntl()
 
   return (
-    <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
-      <div>
-        <div className="d-flex">
-          <div className="d-flex justify-content-center align-items-center mr-3">
-            <StyledIcon
-              component={() =>
-                programContent.programContentType && programContent.programContentType === 'text' ? (
-                  <FileTextOutlined />
-                ) : programContent.programContentType === 'video' ? (
-                  <VideoIcon />
-                ) : programContent.programContentType === 'audio' ? (
-                  <MicrophoneIcon />
-                ) : programContent.programContentType === 'practice' ? (
-                  <PracticeIcon />
-                ) : //TODO: remove exercise
-                programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
-                  <QuizIcon />
-                ) : programContent.programContentType === 'ebook' ? (
-                  <BookHollowIcon />
-                ) : null
-              }
-            />
+    <div style={{ position: 'relative' }}>
+      <StyledPinnedIcon pin={programContent.pinned_status}></StyledPinnedIcon>
+      <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
+        <div>
+          <div className="d-flex">
+            <div className="d-flex justify-content-center align-items-center mr-3">
+              <StyledIcon
+                component={() =>
+                  programContent.programContentType && programContent.programContentType === 'text' ? (
+                    <FileTextOutlined />
+                  ) : programContent.programContentType === 'video' ? (
+                    <VideoIcon />
+                  ) : programContent.programContentType === 'audio' ? (
+                    <MicrophoneIcon />
+                  ) : programContent.programContentType === 'practice' ? (
+                    <PracticeIcon />
+                  ) : //TODO: remove exercise
+                  programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
+                    <QuizIcon />
+                  ) : programContent.programContentType === 'ebook' ? (
+                    <BookHollowIcon />
+                  ) : null
+                }
+              />
+            </div>
+            <StyledTitle>{programContent.title}</StyledTitle>
           </div>
-          <StyledTitle>{programContent.title}</StyledTitle>
+          {showPlans && (
+            <StyledDescriptions type="secondary">
+              {formatMessage(messages.programContentPlans)}
+              {programContent.programPlans
+                ?.map(programPlan => programPlan.title)
+                .join(formatMessage(commonMessages.ui.comma))}
+            </StyledDescriptions>
+          )}
         </div>
-        {showPlans && (
-          <StyledDescriptions type="secondary">
-            {formatMessage(messages.programContentPlans)}
-            {programContent.programPlans
-              ?.map(programPlan => programPlan.title)
-              .join(formatMessage(commonMessages.ui.comma))}
-          </StyledDescriptions>
-        )}
-      </div>
 
-      <div className="d-flex align-items-center">
-        {programContent.metadata?.withInvalidQuestion && (
-          <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
-        )}
+        <div className="d-flex align-items-center">
+          {programContent.metadata?.withInvalidQuestion && (
+            <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
+          )}
 
-        {programContent.displayMode === 'conceal' ? (
-          <StyledDisplayModeTag className="mr-3" variant="conceal">
-            {formatMessage(programMessages.DisplayModeSelector.conceal)}
-          </StyledDisplayModeTag>
-        ) : programContent.displayMode === 'trial' ? (
-          <StyledDisplayModeTag className="mr-3">
-            {formatMessage(
-              programContent.programContentType === 'audio'
-                ? programMessages.DisplayModeSelector.audioTrial
-                : programMessages.DisplayModeSelector.trial,
-            )}
-          </StyledDisplayModeTag>
-        ) : programContent.displayMode === 'loginToTrial' ? (
-          <StyledDisplayModeTag className="mr-3">
-            {formatMessage(
-              programContent.programContentType === 'audio'
-                ? programMessages.DisplayModeSelector.loginToAudioTrial
-                : programMessages.DisplayModeSelector.loginToTrial,
-            )}
-          </StyledDisplayModeTag>
-        ) : null}
+          {programContent.displayMode === 'conceal' ? (
+            <StyledDisplayModeTag className="mr-3" variant="conceal">
+              {formatMessage(programMessages.DisplayModeSelector.conceal)}
+            </StyledDisplayModeTag>
+          ) : programContent.displayMode === 'trial' ? (
+            <StyledDisplayModeTag className="mr-3">
+              {formatMessage(
+                programContent.programContentType === 'audio'
+                  ? programMessages.DisplayModeSelector.audioTrial
+                  : programMessages.DisplayModeSelector.trial,
+              )}
+            </StyledDisplayModeTag>
+          ) : programContent.displayMode === 'loginToTrial' ? (
+            <StyledDisplayModeTag className="mr-3">
+              {formatMessage(
+                programContent.programContentType === 'audio'
+                  ? programMessages.DisplayModeSelector.loginToAudioTrial
+                  : programMessages.DisplayModeSelector.loginToTrial,
+              )}
+            </StyledDisplayModeTag>
+          ) : null}
 
-        {programContent.metadata?.private && (
-          <StyledPrivateTag className="mr-3">
-            {formatMessage(programMessages.ProgramContentAdminItem.privatePractice)}
-          </StyledPrivateTag>
-        )}
+          {programContent.metadata?.private && (
+            <StyledPrivateTag className="mr-3">
+              {formatMessage(programMessages.ProgramContentAdminItem.privatePractice)}
+            </StyledPrivateTag>
+          )}
 
-        {isProgramPublished
-          ? programContent.publishedAt && (
-              <StyledDescriptions type="secondary" className="mr-3">
-                {dateFormatter(programContent.publishedAt)}
-              </StyledDescriptions>
-            )
-          : null}
+          {isProgramPublished
+            ? programContent.publishedAt && (
+                <StyledDescriptions type="secondary" className="mr-3">
+                  {dateFormatter(programContent.publishedAt)}
+                </StyledDescriptions>
+              )
+            : null}
 
-        {programContent.programContentType === 'practice' ? (
-          <PracticeAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-        ) : // TODO: remove exercise
-        programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
-          <ExerciseAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-        ) : (
-          <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-        )}
+          {programContent.programContentType === 'practice' ? (
+            <PracticeAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
+          ) : // TODO: remove exercise
+          programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
+            <ExerciseAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
+          ) : (
+            <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
+          )}
+        </div>
       </div>
     </div>
   )
