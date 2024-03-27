@@ -41,4 +41,6 @@ export type ProgramPackagePlanProps = {
   isTempoDelivery: boolean
   isParticipantsVisible: boolean
   position: number
+  remindPeriodAmount: number | null | undefined
+  remindPeriodType: string | null | undefined
 }
