@@ -342,6 +342,8 @@ export const useProgramPackage = (id: string) => {
             is_tempo_delivery
             is_participants_visible
             position
+            remind_period_amount
+            remind_period_type
             program_package_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -409,6 +411,8 @@ export const useProgramPackage = (id: string) => {
               isParticipantsVisible: plan.is_participants_visible,
               position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
+              remindPeriodAmount: plan.remind_period_amount !== undefined ? plan.remind_period_amount : null,
+              remindPeriodType: plan.remind_period_type !== undefined ? plan.remind_period_type : null,
             })) ?? [],
           categories: data.program_package_by_pk.program_package_categories.map(v => ({
             id: v.category.id,

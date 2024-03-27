@@ -1,7 +1,6 @@
 import { EditOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Divider, Tag } from 'antd'
-import { gql } from '@apollo/client'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -110,6 +109,8 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
     isTempoDelivery,
     isParticipantsVisible,
     position,
+    remindPeriodAmount,
+    remindPeriodType,
     onRefetch,
   }) => {
     const { formatMessage } = useIntl()
@@ -155,6 +156,8 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
               isTempoDelivery,
               isParticipantsVisible,
               position,
+              remindPeriodAmount,
+              remindPeriodType,
             }}
             title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
             renderTrigger={({ setVisible }) => (
