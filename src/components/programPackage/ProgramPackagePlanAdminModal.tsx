@@ -98,7 +98,7 @@ const ProgramPackagePlanAdminModal: React.FC<
     plan?.isSubscription ? 'subscription' : plan?.periodType && plan?.periodAmount ? 'period' : 'perpetual',
   )
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!plan?.discountDownPrice)
-  const [withRemindToggle, setWithRemindToggle] = useState(!!plan?.remindPeriodType)
+  const [withRemindToggle, setWithRemindToggle] = useState(!!plan?.remindPeriodType && !!plan?.remindPeriodAmount)
 
   const withPeriod = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
   const withRemind = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
