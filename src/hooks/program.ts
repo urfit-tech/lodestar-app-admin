@@ -46,6 +46,7 @@ export const useProgram = (programId: string) => {
           program_content_sections(order_by: { position: asc }) {
             id
             title
+            collapsed_status
             program_contents(order_by: { position: asc }) {
               id
               title
@@ -53,6 +54,7 @@ export const useProgram = (programId: string) => {
               list_price
               duration
               is_notify_update
+              pinned_status
               notified_at
               metadata
               display_mode
@@ -186,6 +188,7 @@ export const useProgram = (programId: string) => {
           displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
           duration: pc.duration,
+          pinned_status: pc.pinned_status || false,
           programContentType: pc.program_content_type?.type || null,
           isNotifyUpdate: pc.is_notify_update,
           notifiedAt: pc.notified_at && new Date(pc.notified_at),
@@ -215,6 +218,7 @@ export const useProgram = (programId: string) => {
             ? { id: pc.program_content_ebook.id, data: pc.program_content_ebook.data }
             : null,
         })),
+        collapsed_status: pcs.collapsed_status || false,
       })),
       roles: data.program_by_pk.program_roles.map(programRole => ({
         id: programRole.id,
@@ -606,6 +610,7 @@ export const useMutateProgramContent = () => {
         $notifiedAt: timestamptz
         $programContentBodyId: uuid!
         $displayMode: String
+        $pinnedStatus: Boolean
       ) {
         update_program_content(
           where: { id: { _eq: $programContentId } }
@@ -619,6 +624,7 @@ export const useMutateProgramContent = () => {
             notified_at: $notifiedAt
             content_body_id: $programContentBodyId
             display_mode: $displayMode
+            pinned_status: $pinnedStatus
           }
         ) {
           affected_rows
@@ -720,6 +726,7 @@ export const useProgramContent = (programContentId: string) => {
           is_notify_update
           notified_at
           metadata
+          pinned_status
           program_content_body {
             id
             data
@@ -769,6 +776,7 @@ export const useProgramContent = (programContentId: string) => {
             : data.program_content_by_pk.program_content_type?.type || null,
         isNotifyUpdate: data.program_content_by_pk.is_notify_update,
         notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
+        pinned_status: data.program_content_by_pk.pinned_status,
         programPlans: data.program_content_by_pk.program_content_plans.map(pcp => ({
           id: pcp.program_plan.id,
           title: pcp.program_plan.title || '',

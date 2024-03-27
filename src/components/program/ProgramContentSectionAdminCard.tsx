@@ -1,9 +1,9 @@
 import { MoreOutlined, PlusOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { Button, Dropdown, Menu, Typography } from 'antd'
-import { gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { Button, Checkbox, Dropdown, Menu, Typography } from 'antd'
+import { CheckboxProps } from 'antd/lib/checkbox'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -45,6 +45,27 @@ const ProgramContentSectionAdminCard: React.FC<{
     hasura.DELETE_PROGRAM_CONTENT_SECTIONVariables
   >(DELETE_PROGRAM_CONTENT_SECTION)
 
+  const [isCollapse, setIsCollapse] = useState(programContentSection.collapsed_status)
+  const [isCollapseLoading, setIsCollapseLoading] = useState(false)
+
+  const toggleChecked: CheckboxProps['onChange'] = async e => {
+    try {
+      setIsCollapseLoading(true)
+      await updateProgramContentSection({
+        variables: {
+          id: programContentSection.id,
+          title: programContentSection.title,
+          collapsed_status: e.target.checked,
+        },
+      })
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setIsCollapseLoading(false)
+      setIsCollapse(e.target.checked)
+    }
+  }
+
   return (
     <AdminBlock>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -54,7 +75,7 @@ const ProgramContentSectionAdminCard: React.FC<{
           editable={{
             onChange: title => {
               updateProgramContentSection({
-                variables: { id: programContentSection.id, title },
+                variables: { id: programContentSection.id, title, collapsed_status: isCollapse },
               })
                 .then(() => onRefetch?.())
                 .catch(handleError)
@@ -63,6 +84,10 @@ const ProgramContentSectionAdminCard: React.FC<{
         >
           {programContentSection.title}
         </Typography.Title>
+
+        <Checkbox disabled={isCollapseLoading} defaultChecked={isCollapse} onChange={toggleChecked}>
+          {'展開章節'}
+        </Checkbox>
 
         <Dropdown
           trigger={['click']}
@@ -274,9 +299,13 @@ const INSERT_PROGRAM_CONTENT = gql`
     }
   }
 `
+
 const UPDATE_PROGRAM_CONTENT_SECTION = gql`
-  mutation UPDATE_PROGRAM_CONTENT_SECTION($id: uuid!, $title: String) {
-    update_program_content_section(where: { id: { _eq: $id } }, _set: { title: $title }) {
+  mutation UPDATE_PROGRAM_CONTENT_SECTION($id: uuid!, $title: String, $collapsed_status: Boolean) {
+    update_program_content_section(
+      where: { id: { _eq: $id } }
+      _set: { title: $title, collapsed_status: $collapsed_status }
+    ) {
       affected_rows
     }
   }
