@@ -41,6 +41,7 @@ const AppTmpPasswordPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [expiredAt, setExpiredAt] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { authToken } = useAuth()
 
   if (!permissions.APP_TMP_PASSWORD_ADMIN) {
     return <ForbiddenPage />
@@ -57,12 +58,20 @@ const AppTmpPasswordPage: React.FC = () => {
         }
         const {
           data: { result, code, message: errorMessage },
-        } = await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`, {
-          appId,
-          applicant: currentMemberId,
-          email: values.userEmail,
-          purpose: values.purpose,
-        })
+        } = await axios.post(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`,
+          {
+            appId,
+            applicant: currentMemberId,
+            email: values.userEmail,
+            purpose: values.purpose,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
         if (code !== 'SUCCESS') {
           if (code === 'E_TMP_PASSWORD') {
             setErrorMessage(`臨時密碼申請錯誤，請確認使用者信箱或權限！`)
