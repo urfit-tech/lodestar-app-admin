@@ -27,7 +27,7 @@ const ProgramStructureAdminBlock: React.FC<{
         programId: program.id,
         title: 'Untitled Block',
         position: program.contentSections.length,
-        collapsedStatus: program.contentSections.length === 0 ? true : false,
+        collapsedStatus: true,
       },
     })
       .then(() => onRefetch?.())
