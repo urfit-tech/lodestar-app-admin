@@ -1,4 +1,5 @@
 import { Skeleton, Tabs } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
@@ -20,6 +21,7 @@ const CouponCollectionTabs: React.FC<{
   coupons: CouponProps[]
 }> = ({ coupons }) => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
 
   const tabContents = [
     {

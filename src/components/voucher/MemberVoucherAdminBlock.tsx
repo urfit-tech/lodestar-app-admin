@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Skeleton, Tabs } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -34,6 +35,7 @@ const VoucherCollectionTabs: React.VFC<{
 }> = ({ vouchers }) => {
   const [activeKey, setActiveKey] = useState('available')
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
 
   const tabContents: {
     key: string
