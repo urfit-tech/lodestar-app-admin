@@ -32,6 +32,9 @@ const ProgramPlanAdminBlock: React.FC<{
             <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('subscription')}>
               {formatMessage(commonMessages.ui.subscriptionPlan)}
             </Button>
+            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('membership')}>
+              {formatMessage(commonMessages.ui.membershipPlan)}
+            </Button>
           </div>
         )}
         onRefetch={onRefetch}
