@@ -1,27 +1,28 @@
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import moment from 'moment'
-import { sum, prop, sortBy } from 'ramda'
+import { sum, prop, sortBy, isEmpty } from 'ramda'
 import hasura from '../hasura'
-import { SalesProps, LeadProps, LeadStatus, Manager, GetSalesLeadMemberDataInfo } from '../types/sales'
+import { SalesProps, LeadProps, LeadStatus, Manager, GetSalesLeadMemberDataInfo, Property } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
+import { Filter } from '../types/sales'
 
 type ManagerWithMemberCountData = {
   manager: {
-    email: string;
-    id: string;
-    name: string;
-  } | null;
+    email: string
+    id: string
+    name: string
+  } | null
   memberCount: {
     aggregate: {
-      count: number;
+      count: number
     }
-  } | null;
+  } | null
 }
 
 export const useManagers = () => {
@@ -168,10 +169,13 @@ export const useSales = (salesId: string) => {
 
 const transformManagerData = (data: any): ManagerWithMemberCountData => {
   if (!data || !data.manager || !data.memberCount?.aggregate) {
-    return { manager: null, memberCount: { aggregate: { count: 0 } } };
+    return { manager: null, memberCount: { aggregate: { count: 0 } } }
   }
 
-  const { manager, memberCount: { aggregate } } = data;
+  const {
+    manager,
+    memberCount: { aggregate },
+  } = data
 
   return {
     manager: {
@@ -179,29 +183,29 @@ const transformManagerData = (data: any): ManagerWithMemberCountData => {
       id: manager.id,
       name: manager.name,
     },
-    memberCount: { 
-      aggregate: { 
-        count: aggregate.count 
-      }
+    memberCount: {
+      aggregate: {
+        count: aggregate.count,
+      },
     },
-  };
-};
+  }
+}
 
 export const useGetManagerWithMemberCount = (managerId: string, appId: string) => {
-  const isParamsValid = managerId && appId;
+  const isParamsValid = managerId && appId
 
   const { data, error, loading, refetch } = useQuery(GetManagerWithMemberCount, {
     variables: { managerId, appId },
-    skip: !isParamsValid, 
-  });
+    skip: !isParamsValid,
+  })
 
   useEffect(() => {
     if (isParamsValid) {
-      refetch();
+      refetch()
     }
-  }, [managerId, appId, refetch, isParamsValid]);
+  }, [managerId, appId, refetch, isParamsValid])
 
-  const transformedData = useMemo(() => transformManagerData(data), [data]);
+  const transformedData = useMemo(() => transformManagerData(data), [data])
 
   if (!isParamsValid) {
     return {
@@ -209,7 +213,7 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
       errorMembers: null,
       loadingMembers: false,
       refetchMembers: () => {},
-    };
+    }
   }
 
   return {
@@ -217,11 +221,60 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
     errorMembers: error,
     loadingMembers: loading,
     refetchMembers: refetch,
-  };
-};
+  }
+}
+
+const GetSalesLeadMembers = gql`
+  query GetSalesLeadMembers($appId: String!, $managerId: String!) {
+    member(
+      where: {
+        app_id: { _eq: $appId }
+        manager_id: { _eq: $managerId }
+        member_phones: { phone: { _is_null: false } }
+        excluded_at: { _is_null: true }
+        _or: [{ star: { _gte: -9999 } }, { star: { _is_null: true } }]
+      }
+    ) {
+      id
+      name
+      email
+      picture_url
+      star
+      created_at
+      assigned_at
+      followed_at
+      closed_at
+      completed_at
+      excluded_at
+      recycled_at
+      last_member_note_created
+      last_member_note_called
+      last_member_note_answered
+      member_phones {
+        phone
+        is_valid
+      }
+    }
+  }
+`
+
+const GetManagerWithMemberCount = gql`
+  query GetManagerMemberCount($appId: String!, $managerId: String!) {
+    manager: member_by_pk(id: $managerId) {
+      id
+      name
+      email
+    }
+    memberCount: member_aggregate(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
+      aggregate {
+        count
+      }
+    }
+  }
+`
 
 export const useManagerLeads = (manager: Manager) => {
-  const { id: appId } = useApp();
+  const { id: appId } = useApp()
   const {
     data: salesLeadMemberPhoneData,
     error: errorMembers,
@@ -229,49 +282,48 @@ export const useManagerLeads = (manager: Manager) => {
     refetch: refetchMembers,
   } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
     variables: { managerId: manager.id, appId },
-  });
-  const { authToken } = useAuth();
+  })
+  const { authToken } = useAuth()
 
-  const [salesLeadMemberInfo, setSalesLeadMemberInfo] = useState<GetSalesLeadMemberDataInfo>();
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [salesLeadMemberInfo, setSalesLeadMemberInfo] = useState<GetSalesLeadMemberDataInfo>()
+  const [error, setError] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-  
-    if (authToken && manager && manager.id && appId ) {
+    setLoading(true)
+    setError(null)
+
+    if (authToken && manager && manager.id && appId) {
       try {
         const payload = {
           managerId: manager.id,
-          appId: appId 
-        };
-  
+          appId: appId,
+        }
+
         const { data } = await axios.post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/saleLeadMemberData`,
           payload,
           { headers: { authorization: `Bearer ${authToken}` } },
-        );
-  
-        setSalesLeadMemberInfo(data);
+        )
+
+        setSalesLeadMemberInfo(data)
       } catch (error) {
-        setError(error);
+        setError(error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [authToken , manager.id]);
-  
+  }, [appId, authToken, manager])
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData()
+  }, [fetchData])
 
   const refetch = () => {
-    fetchData();
-  };
+    fetchData()
+  }
   const convertToLead = (v: hasura.GetSalesLeadMembers['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
@@ -306,11 +358,10 @@ export const useManagerLeads = (manager: Manager) => {
       phones: v.member_phones?.map(_v => ({ phoneNumber: _v.phone, isValid: _v.is_valid })),
       notes: salesLeadMemberInfo?.memberNote?.filter(mn => mn.memberId === v.id)[0]?.description || '',
       categoryNames:
-      salesLeadMemberInfo?.memberCategory
-          .filter(mc => mc.memberId === v.id)
-          .map(_v => _v.name || '') || [],
+        salesLeadMemberInfo?.memberCategory.filter(mc => mc.memberId === v.id).map(_v => _v.name || '') || [],
       properties:
-        salesLeadMemberInfo?.memberProperty?.filter(mp => mp.memberId === v.id)
+        salesLeadMemberInfo?.memberProperty
+          ?.filter(mp => mp.memberId === v.id)
           .map(v => ({
             id: v.propertyId || '',
             name: v.name || '',
@@ -350,54 +401,175 @@ export const useManagerLeads = (manager: Manager) => {
     signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
     closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
     completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
-  };
-};
-
-const GetSalesLeadMembers = gql`
-  query GetSalesLeadMembers($appId: String!, $managerId: String!) {
-    member(
-      where: {
-        app_id: { _eq: $appId }
-        manager_id: { _eq: $managerId }
-        member_phones: { phone: { _is_null: false } }
-        excluded_at: { _is_null: true }
-        _or: [{ star: { _gte: -9999 } }, { star: { _is_null: true } }]
-      }
-    ) {
-      id
-      name
-      email
-      picture_url
-      star
-      created_at
-      assigned_at
-      followed_at
-      closed_at
-      completed_at
-      excluded_at
-      recycled_at
-      last_member_note_created
-      last_member_note_called
-      last_member_note_answered
-      member_phones {
-        phone
-        is_valid
-      }
-    }
-  }
-`
-
-const GetManagerWithMemberCount = gql`
-  query GetManagerMemberCount($appId: String!, $managerId: String!) {
-  manager: member_by_pk(id: $managerId) {
-    id
-    name
-    email
-  }
-  memberCount: member_aggregate(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
-    aggregate {
-      count
-    }
   }
 }
+
+export const GetLeadCandidates = gql`
+  query GetLeadCandidates($condition: member_bool_exp, $limit: Int) {
+    member(where: $condition, limit: $limit) {
+      id
+      picture_url
+      name
+      email
+      role
+      created_at
+      username
+      logined_at
+      manager_id
+      star
+      closed_at
+      completed_at
+      recycled_at
+      last_member_note_called
+      last_member_note_answered
+    }
+  }
 `
+
+export const useSalesLeadCandidates = ({
+  filter,
+  properties,
+  limit,
+}: {
+  filter: Filter
+  properties: Property[]
+  limit: number
+}) => {
+  const leadCandidatesCondition = {
+    member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
+    manager_id: {
+      _is_null: !filter.managerId,
+      _eq: filter.managerId || undefined,
+    },
+    member_categories:
+      filter.categoryIds.length > 0
+        ? {
+            category: {
+              name: {
+                _in: filter.categoryIds,
+              },
+            },
+          }
+        : undefined,
+    created_at: filter.createdAtRange
+      ? {
+          _gte: moment(filter.createdAtRange[0]).startOf('day'),
+          _lte: moment(filter.createdAtRange[1]).endOf('day'),
+        }
+      : undefined,
+    star: filter.starRangeIsNull
+      ? {
+          _is_null: true,
+        }
+      : {
+          _gte: filter.starRange[0],
+          _lte: filter.starRange[1],
+        },
+    last_member_note_called:
+      filter.lastCalledRange && !filter.excludeLastCalled
+        ? {
+            _gte: moment(filter.lastCalledRange[0]).startOf('day'),
+            _lte: moment(filter.lastCalledRange[1]).endOf('day'),
+          }
+        : undefined,
+    last_member_note_answered:
+      filter.lastAnsweredRange && !filter.excludeLastAnswered
+        ? {
+            _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+            _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+          }
+        : undefined,
+    completed_at:
+      filter.completedLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.completedLead === 'excluded',
+          },
+    closed_at:
+      filter.closedLead === 'excluded'
+        ? {
+            _is_null: true,
+          }
+        : filter.closedLead === 'only'
+        ? filter.closedAtRange
+          ? {
+              _gte: moment(filter.closedAtRange[0]).startOf('day'),
+              _lte: moment(filter.closedAtRange[1]).endOf('day'),
+            }
+          : {
+              _is_null: false,
+            }
+        : undefined,
+    recycled_at:
+      filter.recycledLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.recycledLead === 'excluded',
+          },
+    _and: properties.map(property => {
+      return {
+        member_properties: !isEmpty(filter[property.name])
+          ? {
+              property: { name: { _eq: property.name } },
+              value: filter[`is${property.name}ExactMatch`]
+                ? { _eq: `${filter[property.name]}` }
+                : { _like: `%${filter[property.name]}%` },
+            }
+          : undefined,
+      }
+    }),
+    _or:
+      filter.closedLead === 'contained' && filter.closedAtRange
+        ? [
+            {
+              closed_at: {
+                _gte: moment(filter.closedAtRange[0]).startOf('day'),
+                _lte: moment(filter.closedAtRange[1]).endOf('day'),
+              },
+            },
+            {
+              closed_at: {
+                _is_null: true,
+              },
+            },
+          ]
+        : undefined,
+  }
+
+  const { data: leadCandidatesData, loading: loadingLeadCandidates } = useQuery<
+    hasura.GetLeadCandidates,
+    hasura.GetLeadCandidatesVariables
+  >(GetLeadCandidates, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      condition: leadCandidatesCondition,
+    },
+  })
+
+  const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
+
+  const members = leadCandidatesData?.member.slice(0, limit).map(m => ({
+    id: m.id,
+    pictureUrl: m.picture_url || '',
+    name: m.name,
+    email: m.email,
+    role: m.role as 'general-member' | 'content-creator' | 'app-owner',
+    createdAt: new Date(m.created_at),
+    username: m.username,
+    loginedAt: m.logined_at,
+    managerId: m.manager_id || '',
+    star: m.star,
+    lastMemberNoteCalled: m.last_member_note_called ? moment(m.last_member_note_called).format('YYYY-MM-DD') : '',
+    lastMemberNoteAnswered: m.last_member_note_answered ? moment(m.last_member_note_answered).format('YYYY-MM-DD') : '',
+    closedAt: m.closed_at ? moment(m.closed_at).format('YYYY-MM-DD') : '',
+    completedAt: m.completed_at ? moment(m.completed_at).format('YYYY-MM-DD') : '',
+    recycledAt: m.recycled_at ? moment(m.recycled_at).format('YYYY-MM-DD') : '',
+  }))
+
+  return {
+    leadCandidatesCondition,
+    leadCandidatesCounts,
+    loadingLeadCandidates,
+    members,
+  }
+}
