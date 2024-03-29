@@ -1,4 +1,4 @@
-import { Checkbox, Collapse, Input, InputNumber } from 'antd'
+import { Checkbox, Collapse, Input, } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
@@ -140,7 +140,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
             })
           }}
         >
-          自動調整圖片寬高
+          {formatMessage(craftMessages.ImageSettings.autoImageHeight)}
         </Checkbox>
       </Form.Item>
 
@@ -161,7 +161,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
             })
           }}
         >
-          圖片滿版
+          {formatMessage(craftMessages.ImageSettings.fullScreenImage)}
         </Checkbox>
       </Form.Item>
 

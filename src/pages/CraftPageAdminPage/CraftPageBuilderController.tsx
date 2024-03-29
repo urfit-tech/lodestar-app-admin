@@ -4,18 +4,13 @@ import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 import { Button, useToast } from '@chakra-ui/react'
-
-const messages = defineMessages({
-  desktop: { id: 'craft.settings.responsiveSelector.desktop', defaultMessage: '桌面' },
-  tablet: { id: 'craft.settings.responsiveSelector.tablet', defaultMessage: '平板' },
-  mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
-})
+import pageMessages from '../translation'
 
 const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
@@ -67,7 +62,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   return (
     <div className="d-flex align-items-center">
       <DesktopOutlined
-        title="桌面"
+        title={formatMessage(pageMessages.CraftPageBuilderController.desktop)}
         style={{ color: device === 'desktop' ? activeColor : inactiveColor }}
         className="mr-2"
         onClick={() => {
@@ -76,7 +71,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         }}
       />
       <TabletOutlined
-        title="平板"
+        title={formatMessage(pageMessages.CraftPageBuilderController.tablet)}
         style={{ color: device === 'tablet' ? activeColor : inactiveColor }}
         className="mr-2"
         onClick={() => {
@@ -85,7 +80,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         }}
       />
       <MobileOutlined
-        title="手機"
+        title={formatMessage(pageMessages.CraftPageBuilderController.mobile)}
         style={{ color: device === 'mobile' ? activeColor : inactiveColor }}
         className="mr-3"
         onClick={() => {
