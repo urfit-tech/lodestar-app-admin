@@ -28,6 +28,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   const { formatMessage } = useIntl()
 
   const [isImgAutoHeight, setIsImgAutoHeight] = useState(props.customStyle?.isAutoHeight === 'true')
+  const [isFullScreenImage, setIsFullScreenImage] = useState(props.customStyle?.isFullScreenImage === 'true')
   const [imgSrc, setImgSrc] = useState('')
   const [imgWidth, setImgWidth] = useState(0)
   const [imgHeight, setImgHeight] = useState(0)
@@ -105,7 +106,9 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           originalImage,
         }}
         isImgAutoHeight={isImgAutoHeight}
-        onRatioChange={setAspectRatio}
+        isFullScreenImage={isFullScreenImage}
+        onIsImgAutoHeightChange={setIsImgAutoHeight}
+        onIsFullScreenImageChange={setIsFullScreenImage}
         onChange={value => {
           onPropsChange?.({
             ...props,
@@ -116,30 +119,10 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           })
         }}
       />
-      {!isImgAutoHeight && extractSizeUnit(props.customStyle?.width?.toString()) === extractSizeUnit(props.customStyle?.height?.toString()) && ['px', 'em', 'vh', 'vw'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ?
-        <Form.Item label={formatMessage(craftMessages.ImageSettings.ratio)}>
-          <InputNumber
-            min={0}
-            value={aspectRatio}
-            disabled={isImgAutoHeight}
-            onChange={v => {
-              const ratio = Number(v)
-              setAspectRatio(ratio)
-              onPropsChange?.({
-                ...props,
-                customStyle: {
-                  ...props.customStyle,
-                  height:
-                    extractNumber(props.customStyle?.width?.toString()) / ratio
-                },
-              })
-            }}
-          />
-        </Form.Item>
-        : null}
 
-      {['px', 'em', 'vw'].includes(extractSizeUnit(props.customStyle?.width?.toString())) && ['px', 'em', 'vh'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ? <Form.Item>
+      <Form.Item>
         <Checkbox
+          disabled={!(extractSizeUnit(props.customStyle?.width?.toString()) === 'px' && extractSizeUnit(props.customStyle?.height?.toString()) === 'px')}
           checked={isImgAutoHeight}
           onChange={e => {
             setIsImgAutoHeight(!isImgAutoHeight)
@@ -159,7 +142,28 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
         >
           自動調整圖片寬高
         </Checkbox>
-      </Form.Item> : null}
+      </Form.Item>
+
+      <Form.Item>
+        <Checkbox
+          disabled={!(extractSizeUnit(props.customStyle?.width?.toString()) === '%' && extractSizeUnit(props.customStyle?.height?.toString()) === '%')}
+          checked={isFullScreenImage}
+          onChange={e => {
+            setIsFullScreenImage(!isFullScreenImage)
+            onPropsChange?.({
+              ...props,
+              customStyle: {
+                ...props.customStyle,
+                isFullScreenImage: e.target.checked ? 'true' : 'false',
+                width: e.target.checked ? '100%' : props.customStyle?.width?.toString() || '100%',
+                height: e.target.checked ? '100%' : props.customStyle?.height?.toString() || '100%',
+              },
+            })
+          }}
+        >
+          圖片滿版
+        </Checkbox>
+      </Form.Item>
 
       <Form.Item>
         <SpaceStyleInput
