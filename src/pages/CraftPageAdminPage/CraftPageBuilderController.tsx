@@ -1,21 +1,16 @@
 import { DesktopOutlined, MobileOutlined, RedoOutlined, TabletOutlined, UndoOutlined } from '@ant-design/icons'
 import { useEditor } from '@craftjs/core'
-import { Button, message } from 'antd'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
-
-const messages = defineMessages({
-  desktop: { id: 'craft.settings.responsiveSelector.desktop', defaultMessage: '桌面' },
-  tablet: { id: 'craft.settings.responsiveSelector.tablet', defaultMessage: '平板' },
-  mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
-})
+import { Button, useToast } from '@chakra-ui/react'
+import pageMessages from '../translation'
 
 const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
@@ -25,19 +20,26 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   const { currentMemberId } = useAuth()
   const { updateAppPage } = useMutateAppPage()
   const theme = useAppTheme()
+  const toast = useToast()
 
   const handleSave = () => {
     if (!currentMemberId) {
       return
     }
     setLoading(true)
+    toast.closeAll()
     updateAppPage({
       pageId,
       editorId: currentMemberId,
       craftData: JSON.parse(editor.query.serialize()),
     })
       .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        toast({
+          title: formatMessage(commonMessages.event.successfullySaved),
+          status: 'success',
+          duration: 1500,
+          position: 'top',
+        })
         editor.actions.history.clear()
       })
       .catch(handleError)
@@ -60,19 +62,31 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   return (
     <div className="d-flex align-items-center">
       <DesktopOutlined
+        title={formatMessage(pageMessages.CraftPageBuilderController.desktop)}
         style={{ color: device === 'desktop' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('desktop')}
+        onClick={() => {
+          handleDeviceChange('desktop')
+          handleSave()
+        }}
       />
       <TabletOutlined
+        title={formatMessage(pageMessages.CraftPageBuilderController.tablet)}
         style={{ color: device === 'tablet' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('tablet')}
+        onClick={() => {
+          handleDeviceChange('tablet')
+          handleSave()
+        }}
       />
       <MobileOutlined
+        title={formatMessage(pageMessages.CraftPageBuilderController.mobile)}
         style={{ color: device === 'mobile' ? activeColor : inactiveColor }}
         className="mr-3"
-        onClick={() => handleDeviceChange('mobile')}
+        onClick={() => {
+          handleDeviceChange('mobile')
+          handleSave()
+        }}
       />
 
       <UndoOutlined
@@ -93,9 +107,10 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => editor.actions.history.redo()}
       />
       <Button
-        loading={loading}
-        type="primary"
         className="mr-2"
+        isLoading={loading}
+        colorScheme="primary"
+        borderRadius="0.25rem"
         disabled={!editor.query.history.canUndo()}
         onClick={() => handleSave()}
       >

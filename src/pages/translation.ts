@@ -506,6 +506,12 @@ const pageMessages = {
     options: { id: 'page.ReportCollectionPage.options', defaultMessage: '報表設定' },
     viewingPermission: { id: 'page.ReportCollectionPage.viewingPermission', defaultMessage: '觀看權限' },
   }),
+  // CraftPageAdminPage
+  CraftPageBuilderController: defineMessages({
+    desktop: { id: 'page.CraftPageBuilderController.desktop', defaultMessage: 'desktop' },
+    tablet: { id: 'page.CraftPageBuilderController.tablet', defaultMessage: 'tablet' },
+    mobile: { id: 'page.CraftPageBuilderController.mobile', defaultMessage: 'mobile' },
+  }),
 }
 
 export default pageMessages
