@@ -109,7 +109,7 @@ const MemberNoteAdminItem: React.FC<{
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
         </div>
       </div>
-      <Dropdown
+      {permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? <Dropdown
         overlay={
           <Menu>
             <StyledMenuItem>
@@ -144,7 +144,7 @@ const MemberNoteAdminItem: React.FC<{
         trigger={['click']}
       >
         <MoreOutlined />
-      </Dropdown>
+      </Dropdown> : null}
 
       <MemberNoteAdminModal
         title={formatMessage(memberMessages.label.editNote)}
@@ -152,36 +152,39 @@ const MemberNoteAdminItem: React.FC<{
         visible={modalVisible}
         onCancel={() => { setModalVisible(false) }}
         onSubmit={async ({ type, status, duration, description, attachments }) => {
-          if (!permissions.MEMBER_NOTE_ADMIN || !permissions.EDIT_DELETE_ALL_MEMBER_NOTE) return Promise.resolve()
-          try {
-            const { data } = await updateMemberNote({
-              variables: {
-                memberNoteId: note.id,
-                data: {
-                  type,
-                  status,
-                  duration,
-                  description,
+          if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
+            try {
+              const { data } = await updateMemberNote({
+                variables: {
+                  memberNoteId: note.id,
+                  data: {
+                    type,
+                    status,
+                    duration,
+                    description,
+                  },
                 },
-              },
-            })
-            const memberNoteId = data?.update_member_note_by_pk?.id
-            const deletedAttachmentIds = note.attachments
-              ?.filter(noteAttachment => attachments.every(
-                attachment => attachment.name !== noteAttachment.data.name &&
-                  attachment.lastModified !== noteAttachment.data.lastModified))
-              .map(attachment_1 => attachment_1.id) || []
-            const newAttachments = attachments.filter(attachment_2 => note.attachments?.every(
-              noteAttachment_1 => noteAttachment_1.data.name !== attachment_2.name &&
-                noteAttachment_1.data.lastModified !== attachment_2.lastModified))
-            if (memberNoteId && attachments.length) {
-              await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-              await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+              })
+              const memberNoteId = data?.update_member_note_by_pk?.id
+              const deletedAttachmentIds = note.attachments
+                ?.filter(noteAttachment => attachments.every(
+                  attachment => attachment.name !== noteAttachment.data.name &&
+                    attachment.lastModified !== noteAttachment.data.lastModified))
+                .map(attachment_1 => attachment_1.id) || []
+              const newAttachments = attachments.filter(attachment_2 => note.attachments?.every(
+                noteAttachment_1 => noteAttachment_1.data.name !== attachment_2.name &&
+                  noteAttachment_1.data.lastModified !== attachment_2.lastModified))
+              if (memberNoteId && attachments.length) {
+                await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+              }
+              message.success(formatMessage(commonMessages.event.successfullyEdited))
+              onRefetch?.()
+            } catch (error) {
+              return handleError(error)
             }
-            message.success(formatMessage(commonMessages.event.successfullyEdited))
-            onRefetch?.()
-          } catch (error) {
-            return handleError(error)
+          } else {
+            return Promise.resolve()
           }
         }
         }
