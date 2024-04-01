@@ -165,7 +165,10 @@ const formMessages = {
     VOUCHER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.VOUCHER_CATEGORY_ADMIN', defaultMessage: '所有兌換分類功能' },
     VOUCHER_PLAN_ADMIN: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
     VOUCHER_PLAN_ADMIN_VIEW: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_VIEW', defaultMessage: '檢視兌換方案' },
-    VOUCHER_PLAN_ADMIN_EDIT: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_EDIT', defaultMessage: '新增與編輯兌換方案' },
+    VOUCHER_PLAN_ADMIN_EDIT: {
+      id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_EDIT',
+      defaultMessage: '新增與編輯兌換方案',
+    },
     VOUCHER_PLAN_ADMIN_DELETE: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN_DELETE', defaultMessage: '刪除兌換方案' },
     VOUCHER_PLAN_NORMAL: { id: 'form.PermissionGroup.VOUCHER_PLAN_NORMAL', defaultMessage: '個人兌換方案功能' },
     VOUCHER_PLAN_READ: { id: 'form.PermissionGroup.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
@@ -194,7 +197,6 @@ const formMessages = {
     MEMBER_CONTRACT_REVOKE: { id: 'form.PermissionGroup.MEMBER_CONTRACT_REVOKE', defaultMessage: '解除合約功能' },
     MEMBER_ATTENDANT: { id: 'form.PermissionGroup.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
     SALES_CALL_ADMIN: { id: 'form.PermissionGroup.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
-    VIEW_ALL_MEMBER_NOTE: { id: 'form.PermissionGroup.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡紀錄' },
     MEMBER_EMAIL_EDIT: { id: 'form.PermissionGroup.MEMBER_EMAIL_EDIT', defaultMessage: '編輯信箱' },
     MEMBER_USERNAME_EDIT: { id: 'form.PermissionGroup.MEMBER_USERNAME_EDIT', defaultMessage: '編輯帳號' },
     MEMBER_CREATE: { id: 'form.PermissionGroup.MEMBER_CREATE', defaultMessage: '添加會員' },
@@ -225,7 +227,14 @@ const formMessages = {
     CHECK_MEMBER_ORDER: { id: 'form.PermissionGroup.CHECK_MEMBER_ORDER', defaultMessage: '查看會員訂單紀錄' },
     CHECK_MEMBER_COIN: { id: 'form.PermissionGroup.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
     CHECK_MEMBER_HISTORY: { id: 'form.PermissionGroup.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
-    MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡記錄管理功能' },
+
+    // member_note
+    MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡紀錄管理功能' },
+    VIEW_ALL_MEMBER_NOTE: { id: 'form.PermissionGroup.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡紀錄' },
+    EDIT_DELETE_ALL_MEMBER_NOTE: {
+      id: 'form.PermissionGroup.EDIT_DELETE_ALL_MEMBER_NOTE',
+      defaultMessage: '編輯/刪除所有聯絡紀錄',
+    },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

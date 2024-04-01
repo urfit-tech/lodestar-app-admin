@@ -1476,7 +1476,7 @@
   "form.PermissionGroup.MEMBER_CREATE": "添加会员",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "编辑信箱",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "指派承办人功能",
-  "form.PermissionGroup.MEMBER_NOTE_ADMIN": "聯絡記錄管理功能",
+  "form.PermissionGroup.MEMBER_NOTE_ADMIN": "联络纪录管理功能",
   "form.PermissionGroup.MEMBER_PHONE_ADMIN": "检视电话栏位",
   "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT": "編輯會員課表",
   "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW": "查看會員課表",
