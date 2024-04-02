@@ -1,7 +1,6 @@
 import { EditOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Divider, Tag } from 'antd'
-import { gql } from '@apollo/client'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -17,7 +16,12 @@ import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import ProductSkuModal from '../common/ProductSkuModal'
-import ProgramPlanAdminModal from './ProgramPlanAdminModal'
+import {
+  MembershipPlanModal,
+  PeriodPlanModal,
+  PerpetualPlanModal,
+  SubscriptionPlanModal,
+} from './programPlanAdminModals'
 
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
@@ -69,7 +73,80 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'subscription'
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
-    : 'perpetual'
+    : programPlan.listPrice
+    ? 'perpetual'
+    : 'membership'
+
+  const RenderProgramPlan: React.FC = () => {
+    switch (programPlanType) {
+      case 'perpetual':
+        return (
+          <PerpetualPlanModal
+            onRefetch={onRefetch}
+            onProductGiftPlanRefetch={refetchProductGiftPlan}
+            programId={programId}
+            programPlan={programPlan}
+            productGiftPlan={productGiftPlan}
+            renderTrigger={({ onOpen }) => (
+              <div className="d-flex align-items-center">
+                <EditOutlined onClick={() => onOpen?.()} />
+              </div>
+            )}
+          />
+        )
+
+      case 'period':
+        return (
+          <PeriodPlanModal
+            onRefetch={onRefetch}
+            onProductGiftPlanRefetch={refetchProductGiftPlan}
+            programId={programId}
+            programPlan={programPlan}
+            productGiftPlan={productGiftPlan}
+            renderTrigger={({ onOpen }) => (
+              <div className="d-flex align-items-center">
+                <EditOutlined onClick={() => onOpen?.()} />
+              </div>
+            )}
+          />
+        )
+
+      case 'subscription':
+        return (
+          <SubscriptionPlanModal
+            onRefetch={onRefetch}
+            onProductGiftPlanRefetch={refetchProductGiftPlan}
+            programId={programId}
+            programPlan={programPlan}
+            productGiftPlan={productGiftPlan}
+            renderTrigger={({ onOpen }) => (
+              <div className="d-flex align-items-center">
+                <EditOutlined onClick={() => onOpen?.()} />
+              </div>
+            )}
+          />
+        )
+
+      case 'membership':
+        return (
+          <MembershipPlanModal
+            onRefetch={onRefetch}
+            onProductGiftPlanRefetch={refetchProductGiftPlan}
+            programId={programId}
+            programPlan={programPlan}
+            renderTrigger={({ onOpen }) => (
+              <div className="d-flex align-items-center">
+                <EditOutlined onClick={() => onOpen?.()} />
+              </div>
+            )}
+          />
+        )
+
+      default:
+        return <></>
+    }
+  }
+
   return (
     <AdminBlock>
       <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
@@ -79,32 +156,13 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
               ? formatMessage(commonMessages.ui.subscriptionPlan)
               : programPlanType === 'period'
               ? formatMessage(commonMessages.ui.periodPlan)
-              : formatMessage(commonMessages.ui.perpetualPlan)}
+              : programPlanType === 'perpetual'
+              ? formatMessage(commonMessages.ui.perpetualPlan)
+              : formatMessage(commonMessages.ui.membershipPlan)}
           </Tag>
           {programPlan.title}
         </div>
-        <ProgramPlanAdminModal
-          onRefetch={onRefetch}
-          onProductGiftPlanRefetch={refetchProductGiftPlan}
-          programId={programId}
-          programPlan={programPlan}
-          productGiftPlan={productGiftPlan}
-          renderTrigger={({ onOpen }) => (
-            <div className="d-flex align-items-center">
-              <EditOutlined
-                onClick={() =>
-                  onOpen?.(
-                    programPlan.periodAmount && programPlan.periodType
-                      ? programPlan.autoRenewed
-                        ? 'subscription'
-                        : 'period'
-                      : 'perpetual',
-                  )
-                }
-              />
-            </div>
-          )}
-        />
+        <RenderProgramPlan />
       </AdminBlockTitle>
       <StyledPriceBlock>
         <PriceLabel
