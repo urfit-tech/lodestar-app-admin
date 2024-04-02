@@ -230,7 +230,7 @@ const formMessages = {
 
     // member_note
     MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡紀錄管理功能' },
-    VIEW_ALL_MEMBER_NOTE: { id: 'form.PermissionGroup.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡紀錄' },
+    VIEW_ALL_MEMBER_NOTE: { id: 'form.PermissionGroup.VIEW_ALL_MEMBER_NOTE', defaultMessage: '檢視所有聯絡紀錄' },
     EDIT_DELETE_ALL_MEMBER_NOTE: {
       id: 'form.PermissionGroup.EDIT_DELETE_ALL_MEMBER_NOTE',
       defaultMessage: '編輯/刪除所有聯絡紀錄',

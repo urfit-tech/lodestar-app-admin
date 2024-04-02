@@ -1560,7 +1560,7 @@
   "form.PermissionGroup.TASK_ADMIN": "所有待办清单功能",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "所有待办分类功能",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "設定待辦建立日期",
-  "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "查看所有联络纪录",
+  "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "檢視所有联络纪录",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "所有兌換分類功能",
   "form.PermissionGroup.VOUCHER_CODE_EXPORT": "汇出兑换码",
   "form.PermissionGroup.VOUCHER_PLAN_ADMIN": "所有兑换方案功能",

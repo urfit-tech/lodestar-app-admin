@@ -402,7 +402,7 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
-  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN || !permissions.VIEW_ALL_MEMBER_NOTE) {
+  if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
   }
 
@@ -448,14 +448,14 @@ const NoteCollectionPage: React.FC = () => {
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
                   })
                 }}
-                onRow={note => ({
-                  onClick: () => {
-                    if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
-                      setSelectedNote(note)
-                      setVisible(true)
-                    }
-                  },
-                })}
+                onRow={
+                  (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) ?
+                    note => ({
+                      onClick: () => {
+                        setSelectedNote(note)
+                        setVisible(true)
+                      },
+                    }) : undefined}
               />
             )}
             onSubmit={
