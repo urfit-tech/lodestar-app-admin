@@ -1,4 +1,5 @@
 import { DesktopOutlined, MobileOutlined, RedoOutlined, TabletOutlined, UndoOutlined } from '@ant-design/icons'
+import { Button, useToast } from '@chakra-ui/react'
 import { useEditor } from '@craftjs/core'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -8,11 +9,13 @@ import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
-import CraftPageBuilderContext from './CraftPageBuilderContext'
-import { Button, useToast } from '@chakra-ui/react'
 import pageMessages from '../translation'
+import CraftPageBuilderContext from './CraftPageBuilderContext'
 
-const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
+const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: () => void }> = ({
+  pageId,
+  onAppPageUpdate,
+}) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
   const { device, onDeviceChange } = useContext(CraftPageBuilderContext)
@@ -68,6 +71,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('desktop')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
       <TabletOutlined
@@ -77,6 +81,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('tablet')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
       <MobileOutlined
@@ -86,6 +91,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('mobile')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
 
