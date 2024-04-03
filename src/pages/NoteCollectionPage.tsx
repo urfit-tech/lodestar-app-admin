@@ -402,7 +402,7 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
-  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN) {
+  if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
   }
 
@@ -448,61 +448,64 @@ const NoteCollectionPage: React.FC = () => {
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
                   })
                 }}
-                onRow={note => ({
-                  onClick: () => {
-                    setSelectedNote(note)
-                    setVisible(true)
-                  },
-                })}
+                onRow={
+                  (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) ?
+                    note => ({
+                      onClick: () => {
+                        setSelectedNote(note)
+                        setVisible(true)
+                      },
+                    }) : undefined}
               />
             )}
             onSubmit={
-              selectedNote
+              (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) &&
+                selectedNote
                 ? ({ type, status, duration, description, note, attachments }) =>
-                    updateMemberNote({
-                      variables: {
-                        memberNoteId: selectedNote.id || '',
-                        data: {
-                          type,
-                          status,
-                          duration,
-                          description,
-                          note,
-                        },
+                  updateMemberNote({
+                    variables: {
+                      memberNoteId: selectedNote.id || '',
+                      data: {
+                        type,
+                        status,
+                        duration,
+                        description,
+                        note,
                       },
-                    })
-                      .then(async ({ data }) => {
-                        setUpdatedNotes(prev => ({
-                          ...prev,
-                          [selectedNote.id]: note,
-                        }))
+                    },
+                  })
+                    .then(async ({ data }) => {
+                      setUpdatedNotes(prev => ({
+                        ...prev,
+                        [selectedNote.id]: note,
+                      }))
 
-                        const memberNoteId = data?.update_member_note_by_pk?.id
-                        const deletedAttachmentIds =
-                          selectedNote.attachments
-                            ?.filter(noteAttachment =>
-                              attachments.every(
-                                attachment =>
-                                  attachment.name !== noteAttachment.data.name &&
-                                  attachment.lastModified !== noteAttachment.data.lastModified,
-                              ),
-                            )
-                            ?.map(attachment => attachment.id) || []
-                        const newAttachments = attachments.filter(attachment =>
-                          selectedNote.attachments?.every(
-                            noteAttachment =>
-                              noteAttachment.data.name !== attachment.name &&
-                              noteAttachment.data.lastModified !== attachment.lastModified,
-                          ),
-                        )
-                        if (memberNoteId && attachments.length) {
-                          await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-                          await uploadAttachments('MemberNote', memberNoteId, newAttachments)
-                        }
-                        message.success(formatMessage(commonMessages.event.successfullyEdited))
-                        refetchNotes()
-                      })
-                      .catch(handleError)
+                      const memberNoteId = data?.update_member_note_by_pk?.id
+                      const deletedAttachmentIds =
+                        selectedNote.attachments
+                          ?.filter(noteAttachment =>
+                            attachments.every(
+                              attachment =>
+                                attachment.name !== noteAttachment.data.name &&
+                                attachment.lastModified !== noteAttachment.data.lastModified,
+                            ),
+                          )
+                          ?.map(attachment => attachment.id) || []
+                      const newAttachments = attachments.filter(attachment =>
+                        selectedNote.attachments?.every(
+                          noteAttachment =>
+                            noteAttachment.data.name !== attachment.name &&
+                            noteAttachment.data.lastModified !== attachment.lastModified,
+                        ),
+                      )
+                      if (memberNoteId && attachments.length) {
+                        await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                        await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+                      }
+                      message.success(formatMessage(commonMessages.event.successfullyEdited))
+                      refetchNotes()
+                    })
+                    .catch(handleError)
                 : undefined
             }
           />
@@ -595,59 +598,59 @@ const useMemberNotesAdmin = (
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
       ? {
-          _gte: filters.range[0].toDate(),
-          _lte: filters.range[1].toDate(),
-        }
+        _gte: filters.range[0].toDate(),
+        _lte: filters.range[1].toDate(),
+      }
       : undefined,
     author:
       currentUserRole === 'app-owner'
-        ? // permissions.VIEW_ALL_MEMBER_NOTE
-          filters?.author
+        ?
+        filters?.author
           ? {
-              _or: [
-                { name: { _ilike: `%${filters.author}%` } },
-                { username: { _ilike: `%${filters.author}%` } },
-                { email: { _ilike: `%${filters.author}%` } },
-              ],
-            }
+            _or: [
+              { name: { _ilike: `%${filters.author}%` } },
+              { username: { _ilike: `%${filters.author}%` } },
+              { email: { _ilike: `%${filters.author}%` } },
+            ],
+          }
           : undefined
         : {
-            id: {
-              _eq: currentMemberId,
-            },
+          id: {
+            _eq: currentMemberId,
           },
+        },
     member: {
       manager: filters?.manager
         ? {
-            _or: [
-              { name: { _ilike: `%${filters.manager}%` } },
-              { username: { _ilike: `%${filters.manager}%` } },
-              { email: { _ilike: `%${filters.manager}%` } },
-            ],
-          }
+          _or: [
+            { name: { _ilike: `%${filters.manager}%` } },
+            { username: { _ilike: `%${filters.manager}%` } },
+            { email: { _ilike: `%${filters.manager}%` } },
+          ],
+        }
         : undefined,
       _or: filters?.member
         ? [
-            { id: { _eq: filters.member } },
-            { name: { _ilike: `%${filters.member}%` } },
-            { username: { _ilike: `%${filters.member}%` } },
-            { email: { _ilike: `%${filters.member}%` } },
-          ]
+          { id: { _eq: filters.member } },
+          { name: { _ilike: `%${filters.member}%` } },
+          { username: { _ilike: `%${filters.member}%` } },
+          { email: { _ilike: `%${filters.member}%` } },
+        ]
         : undefined,
       _and:
         filters?.categories || filters?.tags
           ? [
-              {
-                _or: filters.categories?.map(categoryId => ({
-                  member_categories: { category_id: { _eq: categoryId } },
-                })),
-              },
-              {
-                _or: filters.tags?.map(tag => ({
-                  member_tags: { tag_name: { _eq: tag } },
-                })),
-              },
-            ]
+            {
+              _or: filters.categories?.map(categoryId => ({
+                member_categories: { category_id: { _eq: categoryId } },
+              })),
+            },
+            {
+              _or: filters.tags?.map(tag => ({
+                member_tags: { tag_name: { _eq: tag } },
+              })),
+            },
+          ]
           : undefined,
     },
   }
@@ -765,9 +768,9 @@ const useMemberNotesAdmin = (
       },
       manager: v.member?.manager
         ? {
-            id: v.member.manager.id,
-            name: v.member.manager.name || v.member.manager.username,
-          }
+          id: v.member.manager.id,
+          name: v.member.manager.name || v.member.manager.username,
+        }
         : null,
       member: {
         id: v.member?.id || '',

@@ -1474,7 +1474,7 @@
   "form.PermissionGroup.MEMBER_CREATE": "Thêm thành viên",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Chỉnh sửa hộp thư",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "Đăng ký chức năng của người tổ chức",
-  "form.PermissionGroup.MEMBER_NOTE_ADMIN": "聯絡記錄管理功能",
+  "form.PermissionGroup.MEMBER_NOTE_ADMIN": "MEMBER_NOTE_ADMIN",
   "form.PermissionGroup.MEMBER_PHONE_ADMIN": "Kiểm tra thanh điện thoại",
   "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT": "編輯會員課表",
   "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW": "查看會員課表",

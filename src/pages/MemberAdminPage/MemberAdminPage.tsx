@@ -55,7 +55,7 @@ const MemberAdminPage: React.FC = () => {
             </AdminBlock>
           </div>
         </Tabs.TabPane>,
-        enabledModules.member_note && (
+        enabledModules.member_note && (permissions.MEMBER_NOTE_ADMIN || permissions.VIEW_ALL_MEMBER_NOTE) && (
           <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
             <MemberNoteAdminBlock memberId={memberId} />
           </Tabs.TabPane>
