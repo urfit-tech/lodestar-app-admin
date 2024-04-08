@@ -158,6 +158,7 @@ export type MemberTaskProps = {
   title: string
   priority: 'high' | 'medium' | 'low'
   status: 'pending' | 'in-progress' | 'done'
+  isPrivate: boolean
   category: {
     id: string
     name: string
