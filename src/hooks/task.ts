@@ -112,6 +112,7 @@ export const useMemberTaskCollection = (options?: {
           has_meeting
           meeting_gateway
           meeting_hours
+          is_private
           meet {
             id
             started_at
@@ -215,6 +216,7 @@ export const useMemberTaskCollection = (options?: {
             avatarUrl: v.author.picture_url || null,
           }
         : null,
+      isPrivate: v.is_private,
     })) || []
 
   const loadMoreMemberTasks =
