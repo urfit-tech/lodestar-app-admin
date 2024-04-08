@@ -27,6 +27,7 @@ import { useMutateMemberNote } from '../../hooks/member'
 import { useMemberTaskCollection } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
+import { LockIcon } from '../../images/icon'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -278,8 +279,14 @@ const MemberTaskAdminBlock: React.FC<{
 
   const columns: ColumnProps<MemberTaskProps>[] = [
     {
+      dataIndex: 'isPrivate',
+      width: '1%',
+      render: (text, record, index) => (record.isPrivate ? <LockIcon /> : null),
+      onCell: onCellClick,
+    },
+    {
       dataIndex: 'title',
-      width: '20%',
+      width: '19%',
       title: formatMessage(memberMessages.label.taskTitle),
       render: (text, record, index) => (
         <div>

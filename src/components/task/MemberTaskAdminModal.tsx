@@ -52,6 +52,7 @@ type FieldProps = {
   hasMeeting: boolean
   meetingHours: number
   meetingGateway: 'jitsi' | 'zoom'
+  isPrivate: boolean
 }
 
 type OverlapMeets = Pick<Meet, 'id' | 'target' | 'hostMemberId' | 'serviceId' | 'meetMembers'>[]
@@ -178,7 +179,9 @@ const MemberTaskAdminModal: React.FC<
           description: formDescription,
           hasMeeting: formHasMeeting,
           createdAt: formCreatedAt,
+          isPrivate: formIsPrivate,
         } = formValues
+
         if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
         const memberTaskId = memberTask?.id
         const memberTaskMeetId = memberTask?.meet?.id || null
@@ -278,6 +281,7 @@ const MemberTaskAdminModal: React.FC<
               meeting_hours: hasMeeting ? formMeetingHours : 0,
               meeting_gateway: hasMeeting ? formMeetingGateway ?? 'jitsi' : null,
               created_at: toFormat(formCreatedAt),
+              is_private: formIsPrivate,
             },
           },
         }).then(async ({ data }) => {
@@ -423,6 +427,13 @@ const MemberTaskAdminModal: React.FC<
         layout="vertical"
         colon={false}
         hideRequiredMark
+        // onValuesChange={(changedValues, allValues) => {
+        //   console.log(changedValues)
+
+        //   if ('isPrivate' in changedValues) {
+        //     form.setFieldsValue({ isPrivate: changedValues.isPrivate })
+        //   }
+        // }}
         initialValues={{
           title: memberTask?.title || '',
           categoryId: memberTask?.category?.id,
@@ -436,6 +447,7 @@ const MemberTaskAdminModal: React.FC<
           meetingGateway: memberTask?.meetingGateway || 'jitsi',
           meetingHours: memberTask?.meetingHours || 1,
           description: memberTask?.description || '',
+          isPrivate: memberTask?.isPrivate || false,
         }}
       >
         <Form.Item
@@ -451,6 +463,16 @@ const MemberTaskAdminModal: React.FC<
           ]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item name="isPrivate" valuePropName="checked">
+          <Checkbox
+          // checked={form.getFieldValue('isPrivate')}
+          // onChange={e => {
+          //   form.setFieldsValue({ isPrivate: e.target.value })
+          // }}
+          >
+            {formatMessage(memberMessages.label.isPrivate)}
+          </Checkbox>
         </Form.Item>
         <Form.Item label={formatMessage(memberMessages.label.category)} name="categoryId">
           <CategorySelector classType="task" single />
