@@ -1195,6 +1195,10 @@ export const memberMessages = {
     hasMeeting: { id: 'member.label.hasMeeting', defaultMessage: '新增線上會議連結' },
     createMeeting: { id: 'member.label.createMeeting', defaultMessage: '產生會議連結' },
     meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長(小時)' },
+    isPrivate: {
+      id: 'member.label.isPrivate',
+      defaultMessage: 'Private (only visible to the author and the executor)',
+    },
   }),
   text: {
     deleteMemberNoteConfirmation: {
