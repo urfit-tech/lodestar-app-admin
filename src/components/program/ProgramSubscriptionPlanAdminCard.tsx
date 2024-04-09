@@ -73,9 +73,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'subscription'
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
-    : programPlan.listPrice
-    ? 'perpetual'
-    : 'membership'
+    : programPlan.card_id
+    ? 'membership'
+    : 'perpetual'
 
   const RenderProgramPlan: React.FC = () => {
     switch (programPlanType) {

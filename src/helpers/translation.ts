@@ -66,7 +66,7 @@ export const commonMessages = {
     perpetualPlan: { id: 'common.ui.perpetualPlan', defaultMessage: '永久方案' },
     periodPlan: { id: 'common.ui.periodPlan', defaultMessage: '限時方案' },
     subscriptionPlan: { id: 'common.ui.subscriptionPlan', defaultMessage: '訂閱方案' },
-    membershipPlan:{ id: 'common.ui.membershipPlan', defaultMessage: '身份方案' },
+    membershipPlan: { id: 'common.ui.membershipPlan', defaultMessage: '身份方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
@@ -481,7 +481,7 @@ export const commonMessages = {
     day: { id: 'common.unit.day', defaultMessage: '天' },
     week: { id: 'common.unit.week', defaultMessage: '週' },
     month: { id: 'common.unit.month', defaultMessage: '月' },
-    year: { id: 'common.label.year', defaultMessage: '年' },
+    year: { id: 'common.unit.year', defaultMessage: '年' },
   }),
   placeholder: defineMessages({
     enterUrlLink: { id: 'common.placeholder.enterUrlLink', defaultMessage: '輸入網址連結' },

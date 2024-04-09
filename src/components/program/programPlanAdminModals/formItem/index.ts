@@ -12,3 +12,4 @@ export { default as ProgramExpirationNoticeItem } from './ProgramExpirationNotic
 export { default as PublishItem } from './PublishItem'
 export { default as SaleItem } from './SaleItem'
 export { default as TitleItem } from './TitleItem'
+export { default as IdentityMembershipItem } from './MembershipCardItem'

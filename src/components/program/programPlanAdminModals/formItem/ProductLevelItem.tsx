@@ -10,10 +10,10 @@ interface ParticipantsProps {
   label?: string
   name: string
   programPlanId: string | undefined
-  setProductLevel: React.Dispatch<React.SetStateAction<number>>
+  getProductLevel?: React.Dispatch<React.SetStateAction<number>>
 }
 
-const ParticipantsItem: React.FC<ParticipantsProps> = ({ label, name, programPlanId, setProductLevel }) => {
+const ParticipantsItem: React.FC<ParticipantsProps> = ({ label, name, programPlanId, getProductLevel }) => {
   const { enabledModules } = useApp()
   const { loading: loadingProductLevel, productLevel } = useProductLevel(`ProgramPlan_${programPlanId}`)
 
@@ -21,8 +21,8 @@ const ParticipantsItem: React.FC<ParticipantsProps> = ({ label, name, programPla
   const _label = label ? label : formatMessage(programMessages.ProgramPlanAdminModal.productLevel)
 
   useEffect(() => {
-    !loadingProductLevel && setProductLevel(productLevel)
-  }, [setProductLevel, loadingProductLevel, productLevel])
+    !loadingProductLevel && getProductLevel && getProductLevel(productLevel)
+  }, [getProductLevel, loadingProductLevel, productLevel])
 
   return (
     <>

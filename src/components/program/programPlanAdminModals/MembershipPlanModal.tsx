@@ -9,11 +9,13 @@ import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { ProgramPlan } from '../../../types/program'
 import AdminModal, { AdminModalProps } from '../../admin/AdminModal'
-import { PermissionItem, TitleItem } from './formItem'
+import { IdentityMembershipItem, PermissionItem, TitleItem } from './formItem'
 
 type FieldProps = {
   title: string
   type: 1 | 2 | 3
+  membershipCard: string
+  cardId: string
 }
 
 const MembershipPlanModal: React.FC<
@@ -49,14 +51,16 @@ const MembershipPlanModal: React.FC<
             title: values.title || '',
             autoRenewed: false,
             listPrice: 0,
+            cardId: values.membershipCard ? values.membershipCard : null,
           },
         })
-          .then(_ => {})
-          .catch(handleError)
-          .finally(() => {
+          .then(_ => {
             setLoading(false)
             message.success(formatMessage(commonMessages.event.successfullySaved))
             onSuccess()
+          })
+          .catch(handleError)
+          .finally(() => {
             onProductGiftPlanRefetch?.()
             onRefetch?.()
           })
@@ -103,6 +107,7 @@ const MembershipPlanModal: React.FC<
       >
         <TitleItem name="title" />
         <PermissionItem name="type" />
+        <IdentityMembershipItem name="membershipCard" membershipId={programPlan?.card_id} />
       </Form>
     </AdminModal>
   )
@@ -116,6 +121,7 @@ const UPSERT_MEMBERSHIP_PLAN = gql`
     $title: String!
     $autoRenewed: Boolean!
     $listPrice: numeric!
+    $cardId: uuid!
   ) {
     insert_program_plan(
       objects: {
@@ -125,8 +131,9 @@ const UPSERT_MEMBERSHIP_PLAN = gql`
         title: $title
         auto_renewed: $autoRenewed
         list_price: $listPrice
+        card_id: $cardId
       }
-      on_conflict: { constraint: program_plan_pkey, update_columns: [type, title, auto_renewed, list_price] }
+      on_conflict: { constraint: program_plan_pkey, update_columns: [type, title, auto_renewed, list_price, card_id] }
     ) {
       affected_rows
       returning {
@@ -135,4 +142,5 @@ const UPSERT_MEMBERSHIP_PLAN = gql`
     }
   }
 `
+
 export default MembershipPlanModal

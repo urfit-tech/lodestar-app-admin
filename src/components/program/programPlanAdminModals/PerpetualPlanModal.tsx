@@ -231,7 +231,7 @@ const PerpetualPlan: React.FC<
         <ParticipantsItem name="isParticipantsVisible" />
         <PermissionItem name="type" />
         <GiftItem name="hasGiftPlan" />
-        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} setProductLevel={setProductLevel} />
+        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} getProductLevel={setProductLevel} />
         <CurrencyItem name="currencyId" />
         <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />

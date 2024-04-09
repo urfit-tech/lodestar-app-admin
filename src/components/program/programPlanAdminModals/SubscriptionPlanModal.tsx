@@ -253,7 +253,7 @@ const SubscriptionPlanModal: React.FC<
           isChecked={withRemind}
           onChange={e => setWithRemind(e.target.checked)}
         />
-        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} setProductLevel={setProductLevel} />
+        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} getProductLevel={setProductLevel} />
         <CurrencyItem name="currencyId" />
         <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />
