@@ -1494,6 +1494,8 @@
   "form.PermissionGroup.MERCHANDISE_ADMIN": "Semua manajemen e-niaga",
   "form.PermissionGroup.MERCHANDISE_CATEGORY_ADMIN": "Semua fungsi klasifikasi e-niaga",
   "form.PermissionGroup.MERCHANDISE_NORMAL": "Manajemen e-niaga pribadi",
+  "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "查看會員折價券資訊",
+  "form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW": "查看會員兌換券資訊",
   "form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY": "調整會員訂單權益功能",
   "form.PermissionGroup.PERMISSION_GROUP_ADMIN": "Fungsi manajemen grup izin",
   "form.PermissionGroup.PODCAST_ADMIN": "Semua Manajemen Audio",

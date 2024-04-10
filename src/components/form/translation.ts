@@ -239,8 +239,8 @@ const formMessages = {
       id: 'form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT',
       defaultMessage: 'View member note transcript',
     },
-    MEMBER_COUPON_PLAN_VIEW: {
-      id: 'form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW',
+    MEMBER_DISCOUNT_PLAN_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_DISCOUNT_PLAN_VIEW',
       defaultMessage: '查看會員折價券資訊',
     },
     MEMBER_VOUCHER_PLAN_VIEW: {
