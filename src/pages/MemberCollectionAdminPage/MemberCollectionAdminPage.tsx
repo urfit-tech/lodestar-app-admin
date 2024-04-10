@@ -6,7 +6,6 @@ import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { AppProps } from 'lodestar-app-element/src/types/app'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -94,8 +93,8 @@ const StyledTag = styled(Tag)`
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { isAuthenticating, permissions, currentUserRole, authToken } = useAuth()
-  const { loading, id: appId, enabledModules, settings } = useApp()
+  const { isAuthenticating, permissions, authToken } = useAuth()
+  const { loading } = useApp()
   const [fieldFilter, setFieldFilter] = useState<FieldFilter>({})
   const limit = 10
   const { loading: loadingMembers, members, fetchMembers, nextToken } = useMembers(authToken || '', limit, fieldFilter)
@@ -114,10 +113,6 @@ const MemberCollectionAdminPage: React.FC = () => {
         <Spin />
       ) : (
         <MemberCollectionBlock
-          currentUserRole={currentUserRole}
-          appId={appId}
-          enabledModules={enabledModules}
-          settings={settings}
           members={members}
           fieldFilter={fieldFilter}
           setFieldFilter={setFieldFilter}
@@ -239,46 +234,21 @@ export const MemberFieldFilter: React.FC<{
   )
 }
 
-export const MemberCollectionBlock: React.VFC<
-  Pick<AppProps, 'enabledModules' | 'settings'> & {
-    currentUserRole: string
-    appId: string
-    members: {
-      id: string
-      pictureUrl: string | null
-      name: string
-      email: string
-      role: 'general-member' | 'content-creator' | 'app-owner'
-      createdAt: Date
-      username: string
-      loginedAt: Date | null
-      managerId: string | null
-    }[]
-    loadingMembers: boolean
-    fieldFilter: FieldFilter
-    setFieldFilter: (filter: FieldFilter) => void
-    nextToken: string | null
-    limit: number
-    fetchMembers: (
-      filter: FieldFilter | undefined,
-      option: { limit?: number | undefined; nextToken?: string | null | undefined },
-    ) => Promise<ResponseMembers>
-  }
-> = ({
-  currentUserRole,
-  appId,
-  enabledModules,
-  settings,
-  members,
-  nextToken,
-  limit,
-  loadingMembers,
-  fieldFilter,
-  setFieldFilter,
-  fetchMembers,
-}) => {
+export const MemberCollectionBlock: React.VFC<{
+  members: MemberCollectionProps[]
+  loadingMembers: boolean
+  fieldFilter: FieldFilter
+  setFieldFilter: (filter: FieldFilter) => void
+  nextToken: string | null
+  limit: number
+  fetchMembers: (
+    filter: FieldFilter | undefined,
+    option: { limit?: number | undefined; nextToken?: string | null | undefined },
+  ) => Promise<ResponseMembers>
+}> = ({ members, nextToken, limit, loadingMembers, fieldFilter, setFieldFilter, fetchMembers }) => {
   const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const { permissions, currentUserRole } = useAuth()
+  const { id: appId, enabledModules, settings } = useApp()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
 
