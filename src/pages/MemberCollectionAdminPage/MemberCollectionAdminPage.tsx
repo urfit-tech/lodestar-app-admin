@@ -24,13 +24,13 @@ import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMemberCollection, useMembers, useProperty } from '../../hooks/member'
 import { TableIcon } from '../../images/icon'
-import { MemberInfoProps, ResponseMembers, UserRole } from '../../types/member'
+import { MemberCollectionProps, MemberInfoProps, ResponseMembers, UserRole } from '../../types/member'
 import ForbiddenPage from '../ForbiddenPage'
 import DuplicatePhoneBlock from './DuplicatePhoneBlock'
 import PermissionGroupsDropDownSelector from './PermissionGroupsDropDownSelector'
 import RoleSelector from './RoleSelector'
 
-export type FiledFilter = {
+export type FieldFilter = {
   role?: UserRole
   name?: string
   email?: string
@@ -96,7 +96,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { isAuthenticating, permissions, currentUserRole, authToken } = useAuth()
   const { loading, id: appId, enabledModules, settings } = useApp()
-  const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
+  const [fieldFilter, setFieldFilter] = useState<FieldFilter>({})
   const limit = 10
   const { loading: loadingMembers, members, fetchMembers, nextToken } = useMembers(authToken || '', limit, fieldFilter)
 
@@ -134,8 +134,8 @@ const MemberCollectionAdminPage: React.FC = () => {
 const MemberSelectControlPanel: React.FC<{
   permissions: { [key: string]: boolean }
   enabledModules: { [key: string]: boolean | undefined }
-  fieldFilter: FiledFilter
-  setFieldFilter: (filter: FiledFilter) => void
+  fieldFilter: FieldFilter
+  setFieldFilter: (filter: FieldFilter) => void
 }> = ({ permissions, enabledModules, fieldFilter, setFieldFilter }) => {
   return (
     <div className="d-flex">
@@ -155,7 +155,7 @@ const MemberSelectControlPanel: React.FC<{
 const MemberImportExportControlPanel: React.FC<{
   permissions: { [key: string]: boolean }
   enabledModules: { [key: string]: boolean | undefined }
-  fieldFilter: FiledFilter
+  fieldFilter: FieldFilter
   exportImportVersionTag: boolean
   appId: string
   sortOrder: {
@@ -255,12 +255,12 @@ export const MemberCollectionBlock: React.VFC<
       managerId: string | null
     }[]
     loadingMembers: boolean
-    fieldFilter: FiledFilter
-    setFieldFilter: (filter: FiledFilter) => void
+    fieldFilter: FieldFilter
+    setFieldFilter: (filter: FieldFilter) => void
     nextToken: string | null
     limit: number
     fetchMembers: (
-      filter: FiledFilter | undefined,
+      filter: FieldFilter | undefined,
       option: { limit?: number | undefined; nextToken?: string | null | undefined },
     ) => Promise<ResponseMembers>
   }
@@ -394,8 +394,9 @@ export const MemberCollectionBlock: React.VFC<
           fieldFilter={fieldFilter}
           properties={properties}
           visibleShowMoreButton={true}
+          visibleColumnSearchProps={true}
           fetchMembers={fetchMembers}
-          onFieldFilterChange={(filter: FiledFilter) => setFieldFilter(filter)}
+          onFieldFilterChange={(filter: FieldFilter) => setFieldFilter(filter)}
           onSortOrderChange={(createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) =>
             setSortOrder({ createdAt, loginedAt, consumption })
           }
@@ -421,20 +422,10 @@ export const MemberCollectionBlock: React.VFC<
 export const MemberCollectionTableBlock: React.VFC<{
   visibleColumnIds: string[]
   loadingMembers: boolean
-  currentMembers: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-    role: 'general-member' | 'content-creator' | 'app-owner'
-    createdAt: Date
-    username: string
-    loginedAt: Date | null
-    managerId: string | null
-  }[]
+  currentMembers: MemberCollectionProps[]
   limit: number
   nextToken?: string | null
-  fieldFilter: FiledFilter
+  fieldFilter?: FieldFilter
   properties: {
     id: any
     name: string
@@ -443,19 +434,20 @@ export const MemberCollectionTableBlock: React.VFC<{
     isRequired: boolean
   }[]
   visibleShowMoreButton: boolean
+  visibleColumnSearchProps: boolean
   extraColumn?: {
     title: string
     key: string
     dataIndex: string
   }[]
   fetchMembers?: (
-    filter: FiledFilter | undefined,
+    filter: FieldFilter | undefined,
     option: {
       limit?: number
       nextToken?: string | null
     },
   ) => Promise<ResponseMembers>
-  onFieldFilterChange?: (filter: FiledFilter) => void
+  onFieldFilterChange?: (filter: FieldFilter) => void
   onSortOrderChange?: (createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) => void
   onCurrentMembersChange?: (
     value: {
@@ -476,9 +468,10 @@ export const MemberCollectionTableBlock: React.VFC<{
   currentMembers,
   limit,
   nextToken,
-  fieldFilter,
+  fieldFilter = {},
   properties,
   visibleShowMoreButton,
+  visibleColumnSearchProps,
   extraColumn = [],
   fetchMembers,
   onFieldFilterChange,
@@ -503,7 +496,7 @@ export const MemberCollectionTableBlock: React.VFC<{
 
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `${value}` : undefined })
+      const newProperties = pickBy({ ...fieldFilter?.properties, [columnId]: value ? `${value}` : undefined })
       onFieldFilterChange?.({
         ...fieldFilter,
         properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
@@ -683,6 +676,11 @@ export const MemberCollectionTableBlock: React.VFC<{
       }),
   ]
 
+  const visibleColumnSearchPropsColumns = columns.map(column => {
+    const { onFilterDropdownVisibleChange, filterIcon, filterDropdown, ...noSearchPropsColumn } = column
+    return visibleColumnSearchProps ? column : noSearchPropsColumn
+  })
+
   useEffect(() => {
     setCurrentNextToken(nextToken)
   }, [nextToken])
@@ -691,7 +689,9 @@ export const MemberCollectionTableBlock: React.VFC<{
     <>
       <TableWrapper>
         <Table<MemberInfoProps>
-          columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
+          columns={visibleColumnSearchPropsColumns.filter(
+            column => column.key === 'name' || visibleColumnIds.includes(column.key as string),
+          )}
           rowKey="id"
           loading={loadingMembers}
           dataSource={memberCollection}

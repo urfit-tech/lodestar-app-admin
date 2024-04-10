@@ -36,11 +36,8 @@ import hasura, { member_bool_exp } from '../../hasura'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import { useGetManagerWithMemberCount } from '../../hooks/sales'
-import {
-  FiledFilter,
-  MemberCollectionTableBlock,
-  MemberFieldFilter,
-} from '../MemberCollectionAdminPage/MemberCollectionAdminPage'
+import { MemberCollectionProps } from '../../types/member'
+import { MemberCollectionTableBlock, MemberFieldFilter } from '../MemberCollectionAdminPage/MemberCollectionAdminPage'
 import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
@@ -517,7 +514,6 @@ const ConfirmSection: React.FC<{
     'managerName',
     ...propertyColumnIds,
   ])
-  const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
 
   const limit = 50
   const allFieldColumns: ({
@@ -703,23 +699,7 @@ const ConfirmSection: React.FC<{
 
   const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
 
-  const members = leadCandidatesData?.member.slice(0, limit).map(m => ({
-    id: m.id,
-    pictureUrl: m.picture_url || '',
-    name: m.name,
-    email: m.email,
-    role: m.role as 'general-member' | 'content-creator' | 'app-owner',
-    createdAt: new Date(m.created_at),
-    username: m.username,
-    loginedAt: m.logined_at,
-    managerId: m.manager_id || '',
-    star: m.star,
-    lastMemberNoteCalled: m.last_member_note_called ? moment(m.last_member_note_called).format('YYYY-MM-DD') : '',
-    lastMemberNoteAnswered: m.last_member_note_answered ? moment(m.last_member_note_answered).format('YYYY-MM-DD') : '',
-    closedAt: m.closed_at ? moment(m.closed_at).format('YYYY-MM-DD') : '',
-    completedAt: m.completed_at ? moment(m.completed_at).format('YYYY-MM-DD') : '',
-    recycledAt: m.recycled_at ? moment(m.recycled_at).format('YYYY-MM-DD') : '',
-  }))
+  const members = leadCandidatesData?.member.slice(0, limit) as MemberCollectionProps[]
 
   const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
 
@@ -800,12 +780,11 @@ const ConfirmSection: React.FC<{
           <MemberCollectionTableBlock
             visibleColumnIds={visibleColumnIds}
             loadingMembers={loadingLeadCandidates || !members}
-            currentMembers={members || []}
+            currentMembers={members}
             limit={limit}
-            fieldFilter={fieldFilter}
             properties={properties}
             visibleShowMoreButton={false}
-            onFieldFilterChange={(filter: FiledFilter) => setFieldFilter(filter)}
+            visibleColumnSearchProps={false}
             extraColumn={extraColumn}
           />
         </AdminCard>

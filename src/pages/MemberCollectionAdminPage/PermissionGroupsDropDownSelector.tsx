@@ -3,11 +3,11 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import { usePermissionGroupsDropdownMenu } from '../../hooks/permission'
 import pageMessages from '../translation'
-import { FiledFilter } from './MemberCollectionAdminPage'
+import { FieldFilter } from './MemberCollectionAdminPage'
 
 const PermissionGroupsDropDownSelector: React.VFC<{
-  fieldFilter: FiledFilter
-  onFiledFilterChange: (filter: FiledFilter) => void
+  fieldFilter: FieldFilter
+  onFiledFilterChange: (filter: FieldFilter) => void
 }> = ({ fieldFilter, onFiledFilterChange }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
