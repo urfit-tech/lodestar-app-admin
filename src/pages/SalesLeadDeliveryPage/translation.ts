@@ -6,7 +6,10 @@ export const salesLeadDeliveryPageMessages = {
     filterSalesLead: { id: 'page.salesLeadDeliveryPage.filterSalesLead', defaultMessage: '篩選名單' },
     deliveryConfirm: { id: 'page.salesLeadDeliveryPage.deliveryConfirm', defaultMessage: '確認派發' },
     deliveryResult: { id: 'page.salesLeadDeliveryPage.deliveryResult', defaultMessage: '派發結果' },
-    previewResult: { id: 'page.salesLeadDeliveryPage.previewResult', defaultMessage: '預覽前 {limit} 筆資料' },
+    previewResult: {
+      id: 'page.salesLeadDeliveryPage.previewResult',
+      defaultMessage: '{limit} items before previewing',
+    },
     originalManager: { id: 'page.salesLeadDeliveryPage.originalManager', defaultMessage: '原承辦人' },
     field: { id: 'page.salesLeadDeliveryPage.field', defaultMessage: '領域' },
     starRangeIsNull: { id: 'page.salesLeadDeliveryPage.starRangeIsNull', defaultMessage: '沒有星等的人' },

@@ -2073,7 +2073,7 @@
   "page.salesLeadDeliveryPage.salesLeadDelivery": "名單派發",
   "page.salesLeadDeliveryPage.starRange": "星等",
   "page.salesLeadDeliveryPage.starRangeIsNull": "沒有星等的人",
-  "page.salesLeadDeliveryPage.previewResult": "預覽前 {limit} 筆資料",
+  "page.salesLeadDeliveryPage.previewResult": "{giới hạn} mục trước khi xem trước",
   "pageProgramProgressCollectionAdminPage.exerciseFailed": "Không thành công ",
   "pageProgramProgressCollectionAdminPage.exercisePassed": " Đạt ",
   "pageProgramProgressCollectionAdminPage.exerciseStatus": " Trạng thái kỳ thi ",

@@ -2073,7 +2073,7 @@
   "page.salesLeadDeliveryPage.salesLeadDelivery": "名單派發",
   "page.salesLeadDeliveryPage.starRange": "星等",
   "page.salesLeadDeliveryPage.starRangeIsNull": "沒有星等的人",
-  "page.salesLeadDeliveryPage.previewResult": "預覽前 {limit} 筆資料",
+  "page.salesLeadDeliveryPage.previewResult": "{limit} item sebelum dipratinjau",
   "pageProgramProgressCollectionAdminPage.exerciseFailed": "Gagal",
   "pageProgramProgressCollectionAdminPage.exercisePassed": "Lulus",
   "pageProgramProgressCollectionAdminPage.exerciseStatus": "Status Ujian",
