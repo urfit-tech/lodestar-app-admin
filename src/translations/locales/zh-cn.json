@@ -1485,6 +1485,8 @@
   "form.PermissionGroup.MERCHANDISE_ADMIN": "所有电商管理",
   "form.PermissionGroup.MERCHANDISE_CATEGORY_ADMIN": "所有电商分类功能",
   "form.PermissionGroup.MERCHANDISE_NORMAL": "个人电商管理",
+  "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "查看会员折价券资讯",
+  "form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW": "查看会员兑换券资讯",
   "form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY": "調整會員訂單權益功能",
   "form.PermissionGroup.PERMISSION_GROUP_ADMIN": "权限组管理功能",
   "form.PermissionGroup.PODCAST_ADMIN": "所有音频管理",
