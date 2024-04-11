@@ -1,7 +1,6 @@
 import { CloseOutlined } from '@ant-design/icons'
 import { Editor } from '@craftjs/core'
-import { Button } from '@chakra-ui/react'
-import { message, Skeleton, Tabs } from 'antd'
+import { Button, message, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
@@ -64,10 +63,7 @@ const CraftPageAdminPage: React.VFC = () => {
       <CraftPageBuilderProvider>
         <AdminHeader>
           <Link to="/craft-page">
-            <Button
-              className="mr-3"
-              variant="link"
-            >
+            <Button type="link" className="mr-3">
               <CloseOutlined />
             </Button>
           </Link>
@@ -77,9 +73,7 @@ const CraftPageAdminPage: React.VFC = () => {
           <div className="d-flex align-items-center">
             {(!activeKey || activeKey === 'editor') && <CraftPageBuilderController pageId={pageId} />}
             <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" borderRadius="0.25rem">
-                {formatMessage(commonMessages.ui.preview)}
-              </Button>
+              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
             </a>
           </div>
         </AdminHeader>

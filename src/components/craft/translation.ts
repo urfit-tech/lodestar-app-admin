@@ -67,8 +67,7 @@ const craftMessages = {
     postSectionId: { id: 'craft.PostCollectionSettings.postSectionId', defaultMessage: '文章區塊 ID' },
   }),
   ImageSettings: defineMessages({
-    autoImageHeight: { id: 'craft.ImageSettings.autoImageHeight', defaultMessage: 'auto image height' },
-    fullScreenImage: { id: 'craft.ImageSettings.fullScreenImage', defaultMessage: 'full screen image' },
+    ratio: { id: 'craft.ImageSettings.ratio', defaultMessage: '比例' },
   }),
   SizeStyleInput: defineMessages({
     height: { id: 'craft.SizeStyleInput.height', defaultMessage: '高度' },

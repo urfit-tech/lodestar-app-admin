@@ -1,4 +1,4 @@
-import { Checkbox, Collapse, Input } from 'antd'
+import { Checkbox, Collapse, Input, InputNumber } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
@@ -28,7 +28,6 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   const { formatMessage } = useIntl()
 
   const [isImgAutoHeight, setIsImgAutoHeight] = useState(props.customStyle?.isAutoHeight === 'true')
-  const [isFullScreenImage, setIsFullScreenImage] = useState(props.customStyle?.isFullScreenImage === 'true')
   const [imgSrc, setImgSrc] = useState('')
   const [imgWidth, setImgWidth] = useState(0)
   const [imgHeight, setImgHeight] = useState(0)
@@ -109,9 +108,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           originalImage,
         }}
         isImgAutoHeight={isImgAutoHeight}
-        isFullScreenImage={isFullScreenImage}
-        onIsImgAutoHeightChange={setIsImgAutoHeight}
-        onIsFullScreenImageChange={setIsFullScreenImage}
+        onRatioChange={setAspectRatio}
         onChange={value => {
           onPropsChange?.({
             ...props,
@@ -122,63 +119,57 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           })
         }}
       />
+      {!isImgAutoHeight &&
+      extractSizeUnit(props.customStyle?.width?.toString()) ===
+        extractSizeUnit(props.customStyle?.height?.toString()) &&
+      ['px', 'em', 'vh', 'vw'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ? (
+        <Form.Item label={formatMessage(craftMessages.ImageSettings.ratio)}>
+          <InputNumber
+            min={0}
+            value={aspectRatio}
+            disabled={isImgAutoHeight}
+            onChange={v => {
+              const ratio = Number(v)
+              setAspectRatio(ratio)
+              onPropsChange?.({
+                ...props,
+                customStyle: {
+                  ...props.customStyle,
+                  height: extractNumber(props.customStyle?.width?.toString()) / ratio,
+                },
+              })
+            }}
+          />
+        </Form.Item>
+      ) : null}
 
-      <Form.Item>
-        <Checkbox
-          disabled={
-            !(
-              extractSizeUnit(props.customStyle?.width?.toString()) === 'px' &&
-              extractSizeUnit(props.customStyle?.height?.toString()) === 'px'
-            )
-          }
-          checked={isImgAutoHeight}
-          onChange={e => {
-            setIsImgAutoHeight(!isImgAutoHeight)
-            const currentWidth = props.customStyle?.width?.toString() || '100px'
-            const currentHeight = props.customStyle?.height?.toString() || '100px'
-            const currentHeightUnit = extractSizeUnit(currentHeight)
-            const newHeight = e.target.checked
-              ? `${convertToPx(currentWidth) / originalImage.ratio}${currentHeightUnit}`
-              : `${convertToPx(currentWidth) / aspectRatio}${currentHeightUnit}`
-            onPropsChange?.({
-              ...props,
-              customStyle: {
-                ...props.customStyle,
-                height: newHeight,
-                isAutoHeight: e.target.checked ? 'true' : 'false',
-              },
-            })
-          }}
-        >
-          {formatMessage(craftMessages.ImageSettings.autoImageHeight)}
-        </Checkbox>
-      </Form.Item>
-
-      <Form.Item>
-        <Checkbox
-          disabled={
-            !(
-              extractSizeUnit(props.customStyle?.width?.toString()) === '%' &&
-              extractSizeUnit(props.customStyle?.height?.toString()) === '%'
-            )
-          }
-          checked={isFullScreenImage}
-          onChange={e => {
-            setIsFullScreenImage(!isFullScreenImage)
-            onPropsChange?.({
-              ...props,
-              customStyle: {
-                ...props.customStyle,
-                isFullScreenImage: e.target.checked ? 'true' : 'false',
-                width: e.target.checked ? '100%' : props.customStyle?.width?.toString() || '100%',
-                height: e.target.checked ? '100%' : props.customStyle?.height?.toString() || '100%',
-              },
-            })
-          }}
-        >
-          {formatMessage(craftMessages.ImageSettings.fullScreenImage)}
-        </Checkbox>
-      </Form.Item>
+      {['px', 'em', 'vw'].includes(extractSizeUnit(props.customStyle?.width?.toString())) &&
+      ['px', 'em', 'vh'].includes(extractSizeUnit(props.customStyle?.height?.toString())) ? (
+        <Form.Item>
+          <Checkbox
+            checked={isImgAutoHeight}
+            onChange={e => {
+              setIsImgAutoHeight(!isImgAutoHeight)
+              const currentWidth = props.customStyle?.width?.toString() || '100px'
+              const currentHeight = props.customStyle?.height?.toString() || '100px'
+              const currentHeightUnit = extractSizeUnit(currentHeight)
+              const newHeight = e.target.checked
+                ? `${convertToPx(currentWidth) / originalImage.ratio}${currentHeightUnit}`
+                : `${convertToPx(currentWidth) / aspectRatio}${currentHeightUnit}`
+              onPropsChange?.({
+                ...props,
+                customStyle: {
+                  ...props.customStyle,
+                  height: newHeight,
+                  isAutoHeight: e.target.checked ? 'true' : 'false',
+                },
+              })
+            }}
+          >
+            自動調整圖片寬高
+          </Checkbox>
+        </Form.Item>
+      ) : null}
 
       <Form.Item>
         <SpaceStyleInput
