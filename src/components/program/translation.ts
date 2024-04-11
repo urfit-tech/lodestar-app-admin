@@ -8,6 +8,7 @@ const programMessages = {
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
     notifyUpdate: { id: 'program.*.notifyUpdate', defaultMessage: '通知內容更新' },
+    pinnedStatus: {id: 'program.*.pinnedStatus', defaultMessage: '釘選'},
     successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },

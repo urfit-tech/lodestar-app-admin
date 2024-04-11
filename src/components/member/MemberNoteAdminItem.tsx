@@ -2,7 +2,7 @@ import Icon, { MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
@@ -65,11 +65,13 @@ const MemberNoteAdminItem: React.FC<{
   onRefetch?: () => void
 }> = ({ isActive, note, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
   const { archiveAttachments } = useMutateAttachment()
-  const [modalVisible, setModalVisible] = React.useState(isActive || false)
+  const [modalVisible, setModalVisible] = useState(
+    permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? isActive : false,
+  )
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -109,60 +111,66 @@ const MemberNoteAdminItem: React.FC<{
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
         </div>
       </div>
-      <Dropdown
-        overlay={
-          <Menu>
-            <StyledMenuItem>
-              <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
-            </StyledMenuItem>
-            <StyledMenuItem>
-              <AdminModal
-                title={formatMessage(memberMessages.label.deleteNote)}
-                renderTrigger={({ setVisible }) => (
-                  <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
-                )}
-                cancelText={formatMessage(commonMessages.ui.back)}
-                okText={formatMessage(commonMessages.ui.delete)}
-                onOk={() =>
-                  deleteMemberNote({
-                    variables: { memberNoteId: note.id, deletedAt: new Date(), currentMemberId: currentMemberId },
-                  })
-                    .then(() => {
-                      message.success(formatMessage(commonMessages.event.successfullyDeleted))
-                      onRefetch?.()
+      {permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? (
+        <Dropdown
+          overlay={
+            <Menu>
+              <StyledMenuItem>
+                <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
+              </StyledMenuItem>
+              <StyledMenuItem>
+                <AdminModal
+                  title={formatMessage(memberMessages.label.deleteNote)}
+                  renderTrigger={({ setVisible }) => (
+                    <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
+                  )}
+                  cancelText={formatMessage(commonMessages.ui.back)}
+                  okText={formatMessage(commonMessages.ui.delete)}
+                  onOk={() =>
+                    deleteMemberNote({
+                      variables: { memberNoteId: note.id, deletedAt: new Date(), currentMemberId: currentMemberId },
                     })
-                    .catch(handleError)
-                }
-              >
-                <StyledModalParagraph>
-                  {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
-                </StyledModalParagraph>
-              </AdminModal>
-            </StyledMenuItem>
-          </Menu>
-        }
-        trigger={['click']}
-      >
-        <MoreOutlined />
-      </Dropdown>
+                      .then(() => {
+                        message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                        onRefetch?.()
+                      })
+                      .catch(handleError)
+                  }
+                >
+                  <StyledModalParagraph>
+                    {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
+                  </StyledModalParagraph>
+                </AdminModal>
+              </StyledMenuItem>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <MoreOutlined />
+        </Dropdown>
+      ) : null}
+
       <MemberNoteAdminModal
         title={formatMessage(memberMessages.label.editNote)}
         note={note}
         visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onSubmit={({ type, status, duration, description, attachments }) =>
-          updateMemberNote({
-            variables: {
-              memberNoteId: note.id,
-              data: {
-                type,
-                status,
-                duration,
-                description,
-              },
-            },
-          })
-            .then(async ({ data }) => {
+        onCancel={() => {
+          setModalVisible(false)
+        }}
+        onSubmit={async ({ type, status, duration, description, attachments }) => {
+          if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
+            try {
+              const { data } = await updateMemberNote({
+                variables: {
+                  memberNoteId: note.id,
+                  data: {
+                    type,
+                    status,
+                    duration,
+                    description,
+                  },
+                },
+              })
               const memberNoteId = data?.update_member_note_by_pk?.id
               const deletedAttachmentIds =
                 note.attachments
@@ -173,12 +181,12 @@ const MemberNoteAdminItem: React.FC<{
                         attachment.lastModified !== noteAttachment.data.lastModified,
                     ),
                   )
-                  .map(attachment => attachment.id) || []
-              const newAttachments = attachments.filter(attachment =>
+                  .map(attachment_1 => attachment_1.id) || []
+              const newAttachments = attachments.filter(attachment_2 =>
                 note.attachments?.every(
-                  noteAttachment =>
-                    noteAttachment.data.name !== attachment.name &&
-                    noteAttachment.data.lastModified !== attachment.lastModified,
+                  noteAttachment_1 =>
+                    noteAttachment_1.data.name !== attachment_2.name &&
+                    noteAttachment_1.data.lastModified !== attachment_2.lastModified,
                 ),
               )
               if (memberNoteId && attachments.length) {
@@ -187,9 +195,13 @@ const MemberNoteAdminItem: React.FC<{
               }
               message.success(formatMessage(commonMessages.event.successfullyEdited))
               onRefetch?.()
-            })
-            .catch(handleError)
-        }
+            } catch (error) {
+              return handleError(error)
+            }
+          } else {
+            return Promise.resolve()
+          }
+        }}
       />
     </div>
   )

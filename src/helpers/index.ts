@@ -556,7 +556,7 @@ export const getVideoDuration = (file: File): Promise<number> => {
   })
 }
 
-export const extractNumber = (string?: string) => {
+export const extractSizeNumber = (string?: string) => {
   return string?.match(/\d+/g)?.[0] ? Number(string.match(/\d+/g)?.[0]) : 0
 }
 
@@ -564,7 +564,7 @@ export const extractSizeUnit = (string?: string) => string?.match(/px|%|rem|em|v
 
 export const convertToPx = (value: string) => {
   const unit = extractSizeUnit(value)
-  const num = extractNumber(value)
+  const num = extractSizeNumber(value)
   switch (unit) {
     case 'px':
       return num

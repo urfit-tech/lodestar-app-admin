@@ -402,7 +402,7 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
-  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN) {
+  if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
   }
 
@@ -448,16 +448,20 @@ const NoteCollectionPage: React.FC = () => {
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
                   })
                 }}
-                onRow={note => ({
-                  onClick: () => {
-                    setSelectedNote(note)
-                    setVisible(true)
-                  },
-                })}
+                onRow={
+                  permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE
+                    ? note => ({
+                        onClick: () => {
+                          setSelectedNote(note)
+                          setVisible(true)
+                        },
+                      })
+                    : undefined
+                }
               />
             )}
             onSubmit={
-              selectedNote
+              (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) && selectedNote
                 ? ({ type, status, duration, description, note, attachments }) =>
                     updateMemberNote({
                       variables: {
@@ -601,8 +605,7 @@ const useMemberNotesAdmin = (
       : undefined,
     author:
       currentUserRole === 'app-owner'
-        ? // permissions.VIEW_ALL_MEMBER_NOTE
-          filters?.author
+        ? filters?.author
           ? {
               _or: [
                 { name: { _ilike: `%${filters.author}%` } },
