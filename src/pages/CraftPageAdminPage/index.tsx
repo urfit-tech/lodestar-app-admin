@@ -1,9 +1,11 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { Button } from '@chakra-ui/react'
 import { Editor } from '@craftjs/core'
-import { Skeleton, Tabs } from 'antd'
+import { Button } from '@chakra-ui/react'
+import { message, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React from 'react'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { handleError } from 'lodestar-app-element/src/helpers'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -11,7 +13,7 @@ import { AdminBlock, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarW
 import { useResolver } from '../../components/craft/CraftResolver'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { useAppPage } from '../../hooks/appPage'
+import { useAppPage, useMutateAppPage } from '../../hooks/appPage'
 import CraftPageBasicSettingBlock from './CraftPageBasicSettingBlock'
 import CraftPageBuilderBlock from './CraftPageBuilderBlock'
 import { CraftPageBuilderProvider } from './CraftPageBuilderContext'
@@ -24,7 +26,34 @@ const CraftPageAdminPage: React.VFC = () => {
   const { host } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { appPage, loadingAppPage, errorAppPage, refetchAppPage } = useAppPage(pageId)
+  const [loading, setLoading] = useState(false)
+  const { currentMemberId } = useAuth()
+  const { updateAppPage } = useMutateAppPage()
   const resolver = useResolver()
+
+  const handleSave = (
+    serializedData: string,
+    callbacks?: { onSuccess?: () => void; onFailure?: (error: Error) => void },
+  ) => {
+    if (!currentMemberId) {
+      return
+    }
+    setLoading(true)
+    updateAppPage({
+      pageId,
+      editorId: currentMemberId,
+      craftData: JSON.parse(serializedData),
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        callbacks?.onSuccess?.()
+      })
+      .catch(error => {
+        handleError(error)
+        callbacks?.onFailure?.(error)
+      })
+      .finally(() => setLoading(false))
+  }
 
   if (!appPage || loadingAppPage || errorAppPage) {
     return <Skeleton active />
@@ -35,7 +64,10 @@ const CraftPageAdminPage: React.VFC = () => {
       <CraftPageBuilderProvider>
         <AdminHeader>
           <Link to="/craft-page">
-            <Button className="mr-3" variant="link">
+            <Button
+              className="mr-3"
+              variant="link"
+            >
               <CloseOutlined />
             </Button>
           </Link>
@@ -43,9 +75,7 @@ const CraftPageAdminPage: React.VFC = () => {
           <AdminHeaderTitle>{appPage.title}</AdminHeaderTitle>
 
           <div className="d-flex align-items-center">
-            {(!activeKey || activeKey === 'editor') && (
-              <CraftPageBuilderController pageId={pageId} onAppPageUpdate={refetchAppPage} />
-            )}
+            {(!activeKey || activeKey === 'editor') && <CraftPageBuilderController pageId={pageId} />}
             <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" borderRadius="0.25rem">
                 {formatMessage(commonMessages.ui.preview)}
