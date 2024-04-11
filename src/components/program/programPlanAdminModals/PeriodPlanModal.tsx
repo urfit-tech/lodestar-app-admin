@@ -82,13 +82,10 @@ const PeriodPlanModal: React.FC<
   const [loading, setLoading] = useState(false)
   const currencyId = programPlan?.currencyId || ''
   const [withRemind, setWithRemind] = useState(false)
-  const [productLevel, setProductLevel] = useState(0)
 
   useEffect(() => {
     setWithRemind(!!programPlan?.remindPeriodAmount && !!programPlan?.remindPeriodType)
-
-    form.setFieldsValue({ productLevel: productLevel })
-  }, [programPlan, productLevel, form])
+  }, [programPlan])
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -233,7 +230,6 @@ const PeriodPlanModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
-          productLevel: productLevel,
         }}
       >
         <TitleItem name="title" />
@@ -247,7 +243,7 @@ const PeriodPlanModal: React.FC<
           isChecked={withRemind}
           onChange={e => setWithRemind(e.target.checked)}
         />
-        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} getProductLevel={setProductLevel} />
+        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
         <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />

@@ -6,7 +6,7 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
 import moment, { Moment } from 'moment'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import { handleError } from '../../../helpers'
@@ -78,11 +78,6 @@ const PerpetualPlan: React.FC<
   const { updateProductLevel } = useMutateProductLevel()
   const [loading, setLoading] = useState(false)
   const currencyId = programPlan?.currencyId || ''
-  const [productLevel, setProductLevel] = useState(0)
-
-  useEffect(() => {
-    form.setFieldsValue({ productLevel: productLevel })
-  }, [programPlan, productLevel, form])
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -223,7 +218,6 @@ const PerpetualPlan: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
-          productLevel: productLevel,
         }}
       >
         <TitleItem name="title" />
@@ -231,7 +225,7 @@ const PerpetualPlan: React.FC<
         <ParticipantsItem name="isParticipantsVisible" />
         <PermissionItem name="type" />
         <GiftItem name="hasGiftPlan" />
-        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} getProductLevel={setProductLevel} />
+        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
         <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />

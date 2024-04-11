@@ -85,14 +85,11 @@ const SubscriptionPlanModal: React.FC<
   const currencyId = programPlan?.currencyId || ''
   const [withRemind, setWithRemind] = useState(false)
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(false)
-  const [productLevel, setProductLevel] = useState(0)
 
   useEffect(() => {
     setWithRemind(!!programPlan?.remindPeriodAmount && !!programPlan?.remindPeriodType)
     setWithDiscountDownPrice(!!programPlan?.discountDownPrice)
-
-    form.setFieldsValue({ productLevel: productLevel })
-  }, [programPlan, productLevel, form])
+  }, [programPlan])
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -239,7 +236,6 @@ const SubscriptionPlanModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
-          productLevel: productLevel,
         }}
       >
         <TitleItem name="title" />
@@ -253,7 +249,7 @@ const SubscriptionPlanModal: React.FC<
           isChecked={withRemind}
           onChange={e => setWithRemind(e.target.checked)}
         />
-        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} getProductLevel={setProductLevel} />
+        <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
         <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />
