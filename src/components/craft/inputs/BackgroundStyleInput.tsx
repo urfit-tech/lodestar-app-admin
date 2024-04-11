@@ -6,10 +6,10 @@ import craftMessages from '../translation'
 import ColorPicker from './ColorPicker'
 import ImageInput from './ImageInput'
 
-export type BackgroundStyle = Pick<CSSObject, 'background' | 'backgroundImage' | 'backgroundColor' | 'width' | 'height'>
+export type BackgroundStyle = Pick<CSSObject, 'background' | 'backgroundImage' | 'backgroundColor'>
 type BackgroundStyleInputProps = {
   value?: BackgroundStyle
-  onChange?: (value: BackgroundStyle & { customStyle: CSSObject }) => void
+  onChange?: (value: BackgroundStyle) => void
 }
 
 const defaultColor = '#fff'
@@ -21,28 +21,20 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
   const handleTypeChange = (type: typeof backgroundType) => {
     switch (type) {
       case 'none':
-        onChange?.({
-          customStyle: { ...value, background: 'unset', backgroundColor: undefined, backgroundImage: undefined },
-        })
+        onChange?.({ background: 'unset', backgroundColor: undefined, backgroundImage: undefined })
         break
       case 'solid':
         onChange?.({
-          customStyle: {
-            ...value,
-            background: undefined,
-            backgroundColor: value?.backgroundColor || defaultColor,
-            backgroundImage: undefined,
-          },
+          background: undefined,
+          backgroundColor: value?.backgroundColor || defaultColor,
+          backgroundImage: undefined,
         })
         break
       case 'image':
         onChange?.({
-          customStyle: {
-            ...value,
-            background: undefined,
-            backgroundColor: undefined,
-            backgroundImage: value?.backgroundImage || `url()`,
-          },
+          background: undefined,
+          backgroundColor: undefined,
+          backgroundImage: value?.backgroundImage || `url()`,
         })
         break
     }
@@ -62,7 +54,7 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
         <Form.Item noStyle>
           <ColorPicker
             value={value?.backgroundColor || defaultColor}
-            onChange={color => onChange?.({ customStyle: { ...value, backgroundColor: color } })}
+            onChange={color => onChange?.({ backgroundColor: color })}
           />
         </Form.Item>
       )}
@@ -72,22 +64,7 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
           <ImageInput
             value={value?.backgroundImage?.slice(4, -1).replace(/"/g, '') || defaultImage}
             onChange={url => {
-              let urlImg = new Image()
-              urlImg.src = url
-              urlImg.onload = () => {
-                let urlImgWidth = urlImg.src !== '' ? urlImg.naturalWidth : 1
-                let urlImgHeight = urlImg.src !== '' ? urlImg.naturalHeight : 1
-                onChange?.({
-                  width: `${urlImgWidth}px`,
-                  height: `${urlImgHeight}px`,
-                  customStyle: {
-                    ...value,
-                    backgroundImage: `url(${url})`,
-                    width: `${urlImgWidth}px`,
-                    height: `${urlImgHeight}px`,
-                  },
-                })
-              }
+              onChange?.({ backgroundImage: `url(${url})` })
             }}
           />
         </Form.Item>
