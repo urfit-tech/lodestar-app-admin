@@ -551,7 +551,9 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.member_note && Boolean(permissions.MEMBER_NOTE_ADMIN),
+      permissionIsAllowed:
+        !!enabledModules.member_note &&
+        (Boolean(permissions.MEMBER_NOTE_ADMIN) || Boolean(permissions.VIEW_ALL_MEMBER_NOTE)),
       key: 'note_collection',
       icon: () => <UsersIcon />,
       name: formatMessage(adminMessages.AdminMenu.noteAdmin),

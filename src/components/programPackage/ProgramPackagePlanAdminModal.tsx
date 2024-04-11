@@ -16,6 +16,7 @@ import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
+import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
 import programPackageMessages from './translation'
@@ -47,6 +48,10 @@ const messages = defineMessages({
     defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
   },
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
+  programPackageExpirationNotice: {
+    id: 'program.ProgramPlanAdminModal.programExpirationNotice',
+    defaultMessage: '課程到期通知',
+  },
 })
 
 type FieldProps = {
@@ -62,6 +67,7 @@ type FieldProps = {
   discountDownPrice?: number
   description: EditorState
   productLevel?: number
+  remindPeriod: { type: PeriodType; amount: number }
 }
 
 type ProgramPackagePlanType = 'perpetual' | 'period' | 'subscription'
@@ -92,8 +98,10 @@ const ProgramPackagePlanAdminModal: React.FC<
     plan?.isSubscription ? 'subscription' : plan?.periodType && plan?.periodAmount ? 'period' : 'perpetual',
   )
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!plan?.discountDownPrice)
+  const [withRemindToggle, setWithRemindToggle] = useState(!!plan?.remindPeriodType && !!plan?.remindPeriodAmount)
 
   const withPeriod = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
+  const withRemind = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
   const isSubscription = programPackagePlanType === 'subscription'
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -121,6 +129,8 @@ const ProgramPackagePlanAdminModal: React.FC<
               description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
               position: plan?.position || -1,
               program_package_id: programPackageId,
+              remind_period_amount: withRemind && withRemindToggle ? values.remindPeriod.amount : null,
+              remind_period_type: withRemind && withRemindToggle ? values.remindPeriod.type : null,
             },
           },
         })
@@ -194,6 +204,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           discountDownPrice: plan?.discountDownPrice || null,
           description: BraftEditor.createEditorState(plan?.description),
           productLevel: productLevel,
+          remindPeriod: { amount: plan?.remindPeriodAmount || 1, type: plan?.remindPeriodType || 'D' },
         }}
       >
         <Form.Item
@@ -238,6 +249,19 @@ const ProgramPackagePlanAdminModal: React.FC<
             </Radio>
           </Radio.Group>
         </Form.Item>
+
+        {withRemind && (
+          <div>
+            <Checkbox checked={withRemindToggle} className="mb-2" onChange={e => setWithRemindToggle(e.target.checked)}>
+              {formatMessage(messages.programPackageExpirationNotice)}
+            </Checkbox>
+            {withRemindToggle && (
+              <Form.Item name="remindPeriod">
+                <PeriodSelector />
+              </Form.Item>
+            )}
+          </div>
+        )}
 
         {withPeriod && (
           <Form.Item
