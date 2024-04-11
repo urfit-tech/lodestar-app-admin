@@ -103,6 +103,8 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
     isTempoDelivery,
     isParticipantsVisible,
     position,
+    remindPeriodAmount,
+    remindPeriodType,
     onRefetch,
   }) => {
     const { formatMessage } = useIntl()
@@ -148,6 +150,8 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
               isTempoDelivery,
               isParticipantsVisible,
               position,
+              remindPeriodAmount,
+              remindPeriodType,
             }}
             title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
             renderTrigger={({ setVisible }) => (

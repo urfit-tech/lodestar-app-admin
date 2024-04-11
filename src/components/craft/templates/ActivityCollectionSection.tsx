@@ -43,13 +43,13 @@ const ActivityCollectionSection: React.VFC = () => {
         <CraftActivityCollection variant="card" source={{ from: 'publishedAt', limit: 4 }}>
           <CraftImage
             customStyle={{ backgroundImage: `url("https://static.kolable.com/images/demo/cover-01-m.png")` }}
-            responsive={{
-              desktop: {
-                customStyle: {
-                  backgroundImage: `url('https://static.kolable.com/images/demo/cover-01.png')`,
-                },
-              },
-            }}
+            // responsive={{
+            //   desktop: {
+            //     customStyle: {
+            //       backgroundImage: `url('https://static.kolable.com/images/demo/cover-01.png')`,
+            //     },
+            //   },
+            // }}
           />
         </CraftActivityCollection>
       </Element>

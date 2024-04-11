@@ -63,6 +63,7 @@ export type ProgramContentSectionProps = {
   id: string
   title: string
   programContents: ProgramContentProps[]
+  collapsed_status: boolean
 }
 
 export type ProgramContent = {
@@ -86,6 +87,7 @@ export type ProgramContent = {
   }[]
   videos: Attachment[]
   programContentBodyData: any
+  pinned_status: boolean
 }
 
 export type ProgramContentProps = {
@@ -97,6 +99,7 @@ export type ProgramContentProps = {
   programContentType: string | null
   isNotifyUpdate: boolean
   notifiedAt: Date | null
+  pinned_status: boolean
   programPlans?: {
     id: string
     title: string | null
@@ -109,12 +112,10 @@ export type ProgramContentProps = {
   }[]
   videos: AttachmentSelectorValue[]
   audios: ProgramContentAudioProps[]
-  ebook:
-    | {
-        id: string
-        data: any
-      }
-    | null
+  ebook: {
+    id: string
+    data: any
+  } | null
   programContentBodyData: any
   displayMode: DisplayMode
 }

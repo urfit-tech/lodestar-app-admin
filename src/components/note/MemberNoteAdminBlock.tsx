@@ -41,7 +41,7 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
 }
 
 const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
-  const [activeMemberNoteId, setActiveMemberId] = useQueryParam('id', StringParam)
+  const [activeMemberNoteId, setActiveMemberNoteId] = useQueryParam('id', StringParam)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
@@ -117,7 +117,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               onRefetch={() => {
                 refetchMemberAdmin()
                 refetchNotes()
-                setActiveMemberId(undefined)
+                setActiveMemberNoteId(undefined)
               }}
             />
           ))

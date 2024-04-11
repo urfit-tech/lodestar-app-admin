@@ -4,7 +4,6 @@ import { Button, Divider, Skeleton } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import ProgramContentSectionAdminCard from '../../components/program/ProgramContentSectionAdminCard'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
@@ -14,10 +13,7 @@ const ProgramStructureAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [createProgramContentSection] = useMutation<
-    hasura.INSERT_PROGRAM_CONTENT_SECTION,
-    hasura.INSERT_PROGRAM_CONTENT_SECTIONVariables
-  >(INSERT_PROGRAM_CONTENT_SECTION)
+  const [createProgramContentSection] = useMutation(INSERT_PROGRAM_CONTENT_SECTION)
   const [loading, setLoading] = useState(false)
 
   if (!program) {
@@ -31,6 +27,7 @@ const ProgramStructureAdminBlock: React.FC<{
         programId: program.id,
         title: 'Untitled Block',
         position: program.contentSections.length,
+        collapsedStatus: true,
       },
     })
       .then(() => onRefetch?.())
@@ -66,8 +63,15 @@ const ProgramStructureAdminBlock: React.FC<{
 }
 
 const INSERT_PROGRAM_CONTENT_SECTION = gql`
-  mutation INSERT_PROGRAM_CONTENT_SECTION($programId: uuid!, $title: String!, $position: Int!) {
-    insert_program_content_section(objects: { program_id: $programId, title: $title, position: $position }) {
+  mutation INSERT_PROGRAM_CONTENT_SECTION(
+    $programId: uuid!
+    $title: String!
+    $position: Int!
+    $collapsedStatus: Boolean
+  ) {
+    insert_program_content_section(
+      objects: { program_id: $programId, title: $title, position: $position, collapsed_status: $collapsedStatus }
+    ) {
       returning {
         id
       }
