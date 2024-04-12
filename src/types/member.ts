@@ -239,3 +239,15 @@ export type ResponseMembers = {
     beforeCursor: string | null
   }
 }
+
+export type MemberCollectionProps = {
+  id: string
+  pictureUrl: string | null
+  name: string
+  email: string
+  role: 'general-member' | 'content-creator' | 'app-owner'
+  createdAt: Date
+  username: string
+  loginedAt: Date | null
+  managerId: string | null
+}
