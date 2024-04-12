@@ -2078,6 +2078,7 @@
   "page.salesLeadDeliveryPage.salesLeadDelivery": "名單派發",
   "page.salesLeadDeliveryPage.starRange": "星等",
   "page.salesLeadDeliveryPage.starRangeIsNull": "沒有星等的人",
+  "page.salesLeadDeliveryPage.previewResult": "预览前 {limit} 笔资料",
   "pageProgramProgressCollectionAdminPage.exerciseFailed": "未通过",
   "pageProgramProgressCollectionAdminPage.exercisePassed": "通过",
   "pageProgramProgressCollectionAdminPage.exerciseStatus": "测验状态",
