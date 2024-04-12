@@ -1,4 +1,4 @@
-import { Button, Form, Input, Radio, Select } from 'antd'
+import { Button, Checkbox, Form, Input, Radio, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -18,6 +18,7 @@ type FieldProps = {
   question: string
   dashboard: string
   viewPermissions?: string[]
+  canViewSelfDataOnly: boolean
 }
 
 const ReportAdminModal: React.FC<
@@ -39,15 +40,16 @@ const ReportAdminModal: React.FC<
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
-    const { type, formType, dashboard, question } = formValue
+    const { type, formType, dashboard, question, canViewSelfDataOnly } = formValue
     switch (type) {
       case 'metabase':
         return {
           metabase: {
             resource: { [formType]: parseInt(question || dashboard) },
-            params: formType === 'dashboard' ? { appid: appId } : { appId },
             //FIXME: Metabase only takes lower case parameter.
+            params: formType === 'dashboard' ? { appid: appId } : { appId },
           },
+          canViewSelfDataOnly,
         }
       default:
         return null
@@ -147,6 +149,7 @@ const ReportAdminModal: React.FC<
           formType: originFormType,
           [originFormType]: report?.options?.metabase?.resource?.[originFormType],
           viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
+          canViewSelfDataOnly: false,
         }}
       >
         <Form.Item
@@ -192,6 +195,9 @@ const ReportAdminModal: React.FC<
           ]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item name="canViewSelfDataOnly" valuePropName="checked">
+          <Checkbox> {formatMessage(reportMessages.ReportAdminModal.canViewSelfDataOnly)}</Checkbox>
         </Form.Item>
         {enabledModules.permission_group ? (
           <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermissions">
