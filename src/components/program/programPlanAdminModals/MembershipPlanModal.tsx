@@ -70,7 +70,7 @@ const MembershipPlanModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.salesPlan)}
+      title={formatMessage(commonMessages.label.membershipPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (

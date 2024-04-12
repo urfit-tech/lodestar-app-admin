@@ -167,7 +167,7 @@ const PerpetualPlan: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.salesPlan)}
+      title={formatMessage(commonMessages.label.perpetualPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (

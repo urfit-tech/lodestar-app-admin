@@ -178,7 +178,7 @@ const PeriodPlanModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.salesPlan)}
+      title={formatMessage(commonMessages.label.periodPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (

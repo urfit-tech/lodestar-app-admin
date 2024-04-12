@@ -183,7 +183,7 @@ const SubscriptionPlanModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.salesPlan)}
+      title={formatMessage(commonMessages.label.subscriptionPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
