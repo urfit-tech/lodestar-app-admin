@@ -58,7 +58,7 @@ const MemberNoteAdminModal: React.FC<
 > = ({ info, note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole } = useAuth()
   const { enabledModules } = useApp()
 
   const [type, setType] = useState(note?.type || '')
@@ -120,9 +120,7 @@ const MemberNoteAdminModal: React.FC<
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button loading={isSubmitting} type="primary" onClick={() => {
-            if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
-              handleSubmit(() => setVisible(false))
-            }
+            handleSubmit(() => setVisible(false))
           }}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
