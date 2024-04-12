@@ -8,6 +8,10 @@ export const reportMessages = {
     type: { id: 'reportMessages.ReportAdminModal.type', defaultMessage: '報表種類' },
     setting: { id: 'reportMessages.ReportAdminModal.setting', defaultMessage: '報表設定' },
     viewingPermission: { id: 'reportMessages.ReportAdminModal.viewingPermission', defaultMessage: '觀看權限' },
+    canViewSelfDataOnly: {
+      id: 'reportMessages.ReportAdminModal.canViewSelfDataOnly',
+      defaultMessage: 'Only can view Self Data',
+    },
     existReport: { id: 'reportMessages.ReportAdminModal.existReport', defaultMessage: '已存在相同報表' },
   }),
 }
