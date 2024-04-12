@@ -1659,7 +1659,7 @@
   "member.label.memberNoteMember": " Tên thành viên /E-mail",
   "member.label.memberNoteNote": " Lưu ý ",
   "member.label.note": " Hồ sơ liên hệ ",
-  "member.label.noteForAdmin": " Lưu ý (chỉ quản trị viên mới có thể xem) ",
+  "member.label.noteForPermission": " Lưu ý (chỉ quản trị viên mới có thể xem) ",
   "member.label.order": " Hồ sơ Đặt hàng ",
   "member.label.permission": " Cài đặt quyền ",
   "member.label.priority": "quyền ưu tiên",
