@@ -1661,7 +1661,7 @@
   "member.label.memberNoteMember": "Nama Anggota /Surel",
   "member.label.memberNoteNote": "備註",
   "member.label.note": "Catatan kontak",
-  "member.label.noteForAdmin": "Catatan (hanya admin yang dapat melihat)",
+  "member.label.noteForPermission": "Catatan (hanya admin yang dapat melihat)",
   "member.label.order": "Catatan Pesanan",
   "member.label.permission": "Pengaturan Izin",
   "member.label.priority": "Prioritas",

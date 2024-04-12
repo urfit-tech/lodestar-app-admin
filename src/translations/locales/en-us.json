@@ -1661,7 +1661,7 @@
   "member.label.memberNoteMember": "Member Name /Email",
   "member.label.memberNoteNote": "Note",
   "member.label.note": "Contact record",
-  "member.label.noteForAdmin": "Note (only admins can see)",
+  "member.label.noteForPermission": "Note (visible only to those with permission)",
   "member.label.order": "Order Record",
   "member.label.permission": "Permission Setting",
   "member.label.priority": "Priority",

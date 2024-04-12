@@ -1665,7 +1665,7 @@
   "member.label.memberNoteMember": "學員姓名 / Email",
   "member.label.memberNoteNote": "備註",
   "member.label.note": "聯絡紀錄",
-  "member.label.noteForAdmin": "備註（僅有管理者看得到）",
+  "member.label.noteForPermission": "備註（僅有權限者看得到）",
   "member.label.order": "訂單紀錄",
   "member.label.permission": "權限設定",
   "member.label.priority": "優先權",

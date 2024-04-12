@@ -1169,7 +1169,7 @@ export const memberMessages = {
     history: { id: 'member.label.history', defaultMessage: '歷程紀錄' },
     callType: { id: 'member.label.callType', defaultMessage: '通話類型' },
     description: { id: 'member.label.description', defaultMessage: '內容' },
-    noteForAdmin: { id: 'member.label.noteForAdmin', defaultMessage: '備註（僅有管理者看得到）' },
+    noteForPermission: { id: 'member.label.noteForPermission', defaultMessage: 'Note (visible only to those with permission)' },
     status: { id: 'member.label.status', defaultMessage: '狀態' },
     duration: { id: 'member.label.duration', defaultMessage: '通時' },
     createMemberNote: { id: 'member.label.createNote', defaultMessage: '新增紀錄' },
