@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { useMemo } from 'react'
@@ -206,7 +207,7 @@ export const useAppointmentEnrollmentCollection = (
           started_at: { _gte: startedAt },
           canceled_at: { _is_null: true },
           ended_at: {
-            _lte: endedAt || moment().startOf('minute').toDate(),
+            _lte: dayjs().isBefore(dayjs(endedAt)) ? moment().startOf('minute').toDate() : endedAt,
           },
         }
       : {}
