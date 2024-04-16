@@ -857,10 +857,10 @@ const useMemberNotesAdmin = (
   }
 }
 
-export const useFindMemberNoteByNoteId = (memberId: string) => {
+export const useFindMemberNoteByNoteId = (memberNoteId: string, memberId?: string) => {
   const GET_MEMBER_NOTE_BY_ID_QUERY = gql`
-    query GET_MEMBER_NOTE_BY_ID($memberId: String!) {
-      member_note(where: { id: { _eq: $memberId } }) {
+    query GET_MEMBER_NOTE_BY_ID($memberNoteId: String!, $memberId: String) {
+      member_note(where: { id: { _eq: $memberNoteId }, member_id: { _eq: $memberId } }) {
         id
         created_at
         type
@@ -932,6 +932,7 @@ export const useFindMemberNoteByNoteId = (memberId: string) => {
   `
   const { loading, error, data } = useQuery(GET_MEMBER_NOTE_BY_ID_QUERY, {
     variables: {
+      memberNoteId,
       memberId,
     },
   })

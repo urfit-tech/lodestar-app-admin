@@ -51,7 +51,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
     { member: memberId },
     searchText,
   )
-  const { foundNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+  const { foundNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '', memberId)
 
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
