@@ -58,7 +58,7 @@ const MemberNoteAdminModal: React.FC<
 > = ({ info, note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { currentUserRole } = useAuth()
+  const { permissions } = useAuth()
   const { enabledModules } = useApp()
 
   const [type, setType] = useState(note?.type || '')
@@ -227,7 +227,7 @@ const MemberNoteAdminModal: React.FC<
           label={formatMessage(memberMessages.label.noteForPermission)}
           name="note"
           initialValue={note?.note}
-          className={currentUserRole === 'app-owner' ? '' : 'd-none'}
+          className={permissions.MEMBER_NOTE_VIEW_EDIT ? '' : 'd-none'}
         >
           <Input.TextArea />
         </Form.Item>
