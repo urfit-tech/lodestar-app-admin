@@ -780,7 +780,7 @@ const ConfirmSection: React.FC<{
           <MemberCollectionTableBlock
             visibleColumnIds={visibleColumnIds}
             loadingMembers={loadingLeadCandidates || !members}
-            currentMembers={members}
+            currentMembers={members || []}
             limit={limit}
             properties={properties}
             visibleShowMoreButton={false}
