@@ -91,6 +91,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
               ...props,
               customStyle: {
                 ...props.customStyle,
+                isImageAutoHeight: e.target.checked ? 'true' : 'false',
                 height: `${newHeight}${imgHeightUnit}`,
                 isAutoHeight: e.target.checked ? 'true' : 'false',
               },
