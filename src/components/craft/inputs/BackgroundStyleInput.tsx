@@ -5,8 +5,6 @@ import EmptyCover from '../../../images/default/empty-cover.png'
 import craftMessages from '../translation'
 import ColorPicker from './ColorPicker'
 import ImageInput from './ImageInput'
-import { useContext } from 'react'
-import CraftPageBuilderContext from '../../../pages/CraftPageAdminPage/CraftPageBuilderContext'
 
 export type BackgroundStyle = Pick<CSSObject, 'background' | 'backgroundImage' | 'backgroundColor' | 'width' | 'height'>
 type BackgroundStyleInputProps = {

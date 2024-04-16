@@ -106,7 +106,7 @@ const BasicToolbox: React.FC = () => {
         as={CraftElement.CraftImage}
         width='300'
         height='120'
-        customStyle={{ backgroundImage: `url(${img.src})`, width: '300px', height: "120px" }}
+        customStyle={{ backgroundImage: `url(${img.src})`, width: '300px', height: "120px", isImageAutoHeight: 'false', isFullScreenImage: 'false' }}
       />
       <CraftTool
         as={CraftElement.CraftButton}
