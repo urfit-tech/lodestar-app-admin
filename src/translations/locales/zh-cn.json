@@ -1549,6 +1549,7 @@
   "form.PermissionGroup.SALES_LEAD_ADMIN": "名单拨打",
   "form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN": "名单分派功能",
   "form.PermissionGroup.SALES_LEAD_NORMAL": "個人名單撥打管理功能",
+  "form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR": "同組別名單撥打選擇器功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "名单拨打选择器功能",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "业绩总表",
   "form.PermissionGroup.SALES_READ": "查看所有订单",

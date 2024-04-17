@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
 import ManagerInput from '../components/common/ManagerInput'
+import MemberSelector from '../components/form/MemberSelector'
 import AdminLayout from '../components/layout/AdminLayout'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
@@ -25,8 +26,9 @@ const StyledManagerBlock = styled.div`
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { managers } = useManagers()
   const { currentMemberId, currentMember, permissions } = useAuth()
+  const { managers } = useManagers(!(Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) && Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR))
+    || Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR))
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
@@ -45,10 +47,14 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
+        {(permissions.SALES_LEAD_SELECTOR_ADMIN || permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
-            <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
+            <MemberSelector
+              members={managers}
+              value={manager.id}
+              onChange={value => typeof value === 'string' && setManagerId(value)}
+            />
           </StyledManagerBlock>
         ) : currentMember ? (
           <div>承辦編號：{currentMember.id}</div>
