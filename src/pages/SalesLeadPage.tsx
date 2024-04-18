@@ -27,7 +27,8 @@ const SalesLeadPage: React.VFC = () => {
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
   const { managers } = useManagers(
-    !(Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) && Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR)) ||
+    (Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === true &&
+      Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true) ||
       Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR),
   )
   const [activeKey, setActiveKey] = useState('followed')
