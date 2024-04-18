@@ -435,7 +435,7 @@ export const MemberCollectionTableBlock: React.VFC<{
 }> = ({
   visibleColumnIds,
   loadingMembers,
-  currentMembers,
+  currentMembers = [],
   limit,
   nextToken,
   fieldFilter = {},
