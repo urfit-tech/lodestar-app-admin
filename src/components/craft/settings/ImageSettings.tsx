@@ -30,20 +30,32 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   const { device } = useContext(CraftPageBuilderContext)
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
-
-  const [isImgAutoHeight, setIsImgAutoHeight] = useState(props.customStyle?.isAutoHeight === 'true')
-  const [isFullScreenImage, setIsFullScreenImage] = useState(props.customStyle?.isFullScreenImage === 'true')
-  const [imgSrc, setImgSrc] = useState('')
-  const [imgWidth, setImgWidth] = useState(0)
-  const [imgHeight, setImgHeight] = useState(0)
+  const [isImageAutoHeight, setIsImageAutoHeight] = useState(
+    props.customStyle?.isImageAutoHeight === 'true' ? true : false,
+  )
+  const [isFullScreenImage, setIsFullScreenImage] = useState(
+    props.customStyle?.isFullScreenImage === 'true' ? true : false,
+  )
+  const [imgWidth, setImgWidth] = useState(
+    props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0,
+  )
+  const [imgHeight, setImgHeight] = useState(
+    props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0,
+  )
+  const [imgWidthUnit, setImgWidthUnit] = useState<Unit>(
+    (extractSizeUnit(props.customStyle?.width?.toString()) as Unit) || 'px',
+  )
+  const [imgHeightUnit, setImgHeightUnit] = useState<Unit>(
+    (extractSizeUnit(props.customStyle?.height?.toString()) as Unit) || 'px',
+  )
   const [aspectRatio, setAspectRatio] = useState(0)
-
+  console.log(props)
   useEffect(() => {
     setImgWidth(props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0)
     setImgHeight(props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0)
     setImgWidthUnit((extractSizeUnit(props.customStyle?.width?.toString()) as Unit) || 'px')
     setImgHeightUnit((extractSizeUnit(props.customStyle?.height?.toString()) as Unit) || 'px')
-    setIsImageAutoHeight(props.customStyle?.isAutoHeight === 'true' ? true : false)
+    setIsImageAutoHeight(props.customStyle?.isImageAutoHeight === 'true' ? true : false)
     setIsFullScreenImage(props.customStyle?.isFullScreenImage === 'true' ? true : false)
     setAspectRatio(
       Number(
@@ -63,15 +75,18 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onChange={handleChange}>
       <SizeStyleInput
         value={props.customStyle}
-        imgProps={{
-          width: imgWidth,
-          height: imgHeight,
-          aspectRatio: aspectRatio,
-          originalImage,
-        }}
-        isImgAutoHeight={isImgAutoHeight}
+        aspectRatio={aspectRatio}
+        width={imgWidth}
+        height={imgHeight}
+        widthUnit={imgWidthUnit}
+        heightUnit={imgHeightUnit}
+        isImageAutoHeight={isImageAutoHeight}
         isFullScreenImage={isFullScreenImage}
-        onIsImgAutoHeightChange={setIsImgAutoHeight}
+        onWidthChange={setImgWidth}
+        onHeightChange={setImgHeight}
+        onWidthUnitChange={setImgWidthUnit}
+        onHeightUnitChange={setImgHeightUnit}
+        onIsImageAutoHeightChange={setIsImageAutoHeight}
         onIsFullScreenImageChange={setIsFullScreenImage}
         onChange={value => {
           onPropsChange?.({
@@ -83,7 +98,6 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           })
         }}
       />
-
       <Form.Item>
         <Checkbox
           disabled={
@@ -92,21 +106,17 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
               extractSizeUnit(props.customStyle?.height?.toString()) === 'px'
             )
           }
-          checked={isImgAutoHeight}
+          checked={isImageAutoHeight}
           onChange={e => {
-            setIsImgAutoHeight(!isImgAutoHeight)
-            const currentWidth = props.customStyle?.width?.toString() || '100px'
-            const currentHeight = props.customStyle?.height?.toString() || '100px'
-            const currentHeightUnit = extractSizeUnit(currentHeight)
-            const newHeight = e.target.checked
-              ? `${convertToPx(currentWidth) / originalImage.ratio}${currentHeightUnit}`
-              : `${convertToPx(currentWidth) / aspectRatio}${currentHeightUnit}`
+            setIsImageAutoHeight(!isImageAutoHeight)
+            const newHeight = e.target.checked ? (imgWidth / aspectRatio).toFixed(0) : imgHeight
             onPropsChange?.({
               ...props,
               customStyle: {
                 ...props.customStyle,
-                height: newHeight,
-                isAutoHeight: e.target.checked ? 'true' : 'false',
+                isImageAutoHeight: e.target.checked ? 'true' : 'false',
+                isFullScreenImage: e.target.checked ? 'false' : props.customStyle?.isFullScreenImage,
+                height: `${newHeight}${imgHeightUnit}`,
               },
             })
           }}
@@ -131,8 +141,9 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
               customStyle: {
                 ...props.customStyle,
                 isFullScreenImage: e.target.checked ? 'true' : 'false',
-                width: e.target.checked ? '100%' : props.customStyle?.width?.toString() || '100%',
-                height: e.target.checked ? '100%' : props.customStyle?.height?.toString() || '100%',
+                isImageAutoHeight: e.target.checked ? 'false' : props.customStyle?.isImageAutoHeight,
+                width: e.target.checked ? '100%' : `${imgWidth}%` || '100%',
+                height: e.target.checked ? '100%' : `${imgHeight}%` || '100%',
               },
             })
           }}

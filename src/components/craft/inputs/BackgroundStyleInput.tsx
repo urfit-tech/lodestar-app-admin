@@ -9,7 +9,14 @@ import ImageInput from './ImageInput'
 export type BackgroundStyle = Pick<CSSObject, 'background' | 'backgroundImage' | 'backgroundColor' | 'width' | 'height'>
 type BackgroundStyleInputProps = {
   value?: BackgroundStyle
-  onChange?: (value: BackgroundStyle & { customStyle: CSSObject }) => void
+  onChange?: (
+    value: BackgroundStyle & { customStyle: CSSObject },
+    responsive?: {
+      mobile?: CSSObject & { customStyle?: CSSObject }
+      tablet?: CSSObject & { customStyle?: CSSObject }
+      desktop?: CSSObject & { customStyle?: CSSObject }
+    },
+  ) => void
 }
 
 const defaultColor = '#fff'

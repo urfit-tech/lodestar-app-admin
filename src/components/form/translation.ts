@@ -320,10 +320,14 @@ const formMessages = {
     ANALYSIS_ADMIN: { id: 'form.PermissionGroup.ANALYSIS_ADMIN', defaultMessage: '所有數據分析功能' },
 
     // sales
-    SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '查看所有業績' },
+    SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '所有業績總表' },
     SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN: {
       id: 'form.PermissionGroup.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN',
       defaultMessage: '查看同機構業績',
+    },
+    SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN: {
+      id: 'form.PermissionGroup.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN',
+      defaultMessage: '查看同組別業績',
     },
 
     // sales_lead
@@ -334,6 +338,11 @@ const formMessages = {
       id: 'form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN',
       defaultMessage: '名單撥打選擇器功能',
     },
+    SALES_LEAD_SAME_DIVISION_SELECTOR: {
+      id: 'form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR',
+      defaultMessage: '同組別名單撥打選擇器功能',
+    },
+
     // merchandise
     MERCHANDISE_ADMIN: { id: 'form.PermissionGroup.MERCHANDISE_ADMIN', defaultMessage: '所有電商管理' },
     MERCHANDISE_CATEGORY_ADMIN: {
