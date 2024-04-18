@@ -1,6 +1,6 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -24,20 +24,16 @@ import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
-import AdminCard from '../../components/admin/AdminCard'
 import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura, { member_bool_exp } from '../../hasura'
-import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import { useGetManagerWithMemberCount } from '../../hooks/sales'
-import { MemberCollectionProps } from '../../types/member'
-import { MemberCollectionTableBlock, MemberFieldFilter } from '../MemberCollectionAdminPage/MemberCollectionAdminPage'
 import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
@@ -83,12 +79,12 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     excludeLastAnswered: false,
   })
 
-  const [updateLeadManager] = useMutation<hasura.UpdateLeadManager, hasura.UpdateLeadManagerVariables>(
-    UpdateLeadManager,
+  const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
+    UPDATE_LEAD_MANAGER,
   )
 
-  const [getLeadManager] = useLazyQuery<hasura.GetLeadCandidates, hasura.GetLeadCandidatesVariables>(
-    GetLeadCandidates,
+  const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
+    GET_LEAD_CANDIDATES,
     { fetchPolicy: 'no-cache' },
   )
 
@@ -455,40 +451,6 @@ const FilterSection: React.FC<{
     </Form>
   )
 }
-type Property = { id: string; name: string; placeholder: string | undefined; isEditable: boolean; isRequired: boolean }
-
-const extraColumn = [
-  {
-    title: '星等',
-    dataIndex: 'star',
-    key: 'star',
-  },
-  {
-    title: '上次撥打日期',
-    dataIndex: 'lastMemberNoteCalled',
-    key: 'lastMemberNoteCalled',
-  },
-  {
-    title: '上次接通日期',
-    dataIndex: 'lastMemberNoteAnswered',
-    key: 'lastMemberNoteAnswered',
-  },
-  {
-    title: '完成日期',
-    dataIndex: 'completedAt',
-    key: 'completedAt',
-  },
-  {
-    title: '拒絕日期',
-    dataIndex: 'closedAt',
-    key: 'closedAt',
-  },
-  {
-    title: '回收日期',
-    dataIndex: 'recycledAt',
-    key: 'recycledAt',
-  },
-]
 
 const ConfirmSection: React.FC<{
   filter: Filter
@@ -500,45 +462,9 @@ const ConfirmSection: React.FC<{
   const [numDeliver, setNumDeliver] = useState(1)
   const { properties } = useProperty()
   const [visible, setVisible] = useState(false)
-  const { currentUserRole } = useAuth()
-  const { id: appId, settings, enabledModules } = useApp()
-  const propertyColumn = JSON.parse(settings['sales_lead_delivery_page.confirm_section.default_member_property_column'])
-  const propertyColumnIds = propertyColumn
-    .map((columnName: string) => properties.find(property => columnName === property.name))
-    .map((property: Property) => property.id)
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>([
-    '#',
-    'createdAt',
-    'consumption',
-    'categories',
-    'managerName',
-    ...propertyColumnIds,
-  ])
-
-  const limit = 50
-  const allFieldColumns: ({
-    id: string
-    title: string
-  } | null)[] = [
-    { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
-    { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
-    { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
-    { id: 'categories', title: formatMessage(commonMessages.label.category) },
-    { id: 'tags', title: formatMessage(commonMessages.label.tags) },
-    enabledModules.member_assignment && currentUserRole === 'app-owner'
-      ? { id: 'managerName', title: formatMessage(memberMessages.label.manager) }
-      : null,
-    ...extraColumn.map(column => ({
-      id: column.key,
-      title: column.title,
-    })),
-    ...properties.map(property => ({
-      id: property.id,
-      title: property.name,
-    })),
-  ]
 
   const andCondition = []
+
   if (filter.lastCalledRange && filter.excludeLastCalled) {
     const lastCalledCondition = {
       _or: [
@@ -687,19 +613,35 @@ const ConfirmSection: React.FC<{
           },
   }
 
-  const { data: leadCandidatesData, loading: loadingLeadCandidates } = useQuery<
-    hasura.GetLeadCandidates,
-    hasura.GetLeadCandidatesVariables
-  >(GetLeadCandidates, {
-    fetchPolicy: 'no-cache',
-    variables: {
-      condition: leadCandidatesCondition,
+  const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
+    hasura.GET_LEAD_CANDIDATES_AGGREGATE,
+    hasura.GET_LEAD_CANDIDATES_AGGREGATEVariables
+  >(
+    gql`
+      query GET_LEAD_CANDIDATES_AGGREGATE($condition: member_bool_exp) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      fetchPolicy: 'no-cache',
+      variables: {
+        condition: leadCandidatesCondition,
+      },
     },
-  })
+  )
 
-  const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
+  const filteredMemberIdCount = useMemo(() => {
+    const count = leadCandidatesData?.member_aggregate.aggregate?.count || 0
+    return count
+  }, [leadCandidatesData?.member_aggregate])
 
-  const members = leadCandidatesData?.member.slice(0, limit) as MemberCollectionProps[]
+  const isLoading = isLeadCandidatesLoading
+
+  const { id: appId, settings } = useApp()
 
   const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
 
@@ -734,21 +676,21 @@ const ConfirmSection: React.FC<{
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
-          loading={loadingLeadCandidates}
+          loading={isLoading}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
-          value={`${numDeliver} / ${leadCandidatesCounts}`}
+          value={`${numDeliver} / ${filteredMemberIdCount}`}
         />
         <div className="mb-2">
           <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
-        {!loadingLeadCandidates && (
+        {!isLoading && (
           <Row className="mb-2">
             <Col span={6}>
-              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={leadCandidatesCounts} />
+              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIdCount} />
             </Col>
             <Col span={18}>
-              <Slider value={numDeliver} onChange={setNumDeliver} max={leadCandidatesCounts} />
+              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIdCount} />
             </Col>
           </Row>
         )}
@@ -767,28 +709,6 @@ const ConfirmSection: React.FC<{
           />
         )}
       </div>
-      <Box className="container mt-4">
-        <Flex alignItems="center" justifyContent="space-between">
-          <Text>{formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.previewResult, { limit })}</Text>
-          <MemberFieldFilter
-            allColumns={allFieldColumns}
-            visibleColumnIds={visibleColumnIds}
-            setVisibleColumnIds={setVisibleColumnIds}
-          />
-        </Flex>
-        <AdminCard className="mb-5 mt-2">
-          <MemberCollectionTableBlock
-            visibleColumnIds={visibleColumnIds}
-            loadingMembers={loadingLeadCandidates || !members}
-            currentMembers={members}
-            limit={limit}
-            properties={properties}
-            visibleShowMoreButton={false}
-            visibleColumnSearchProps={false}
-            extraColumn={extraColumn}
-          />
-        </AdminCard>
-      </Box>
     </div>
   )
 }
@@ -823,8 +743,8 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
   )
 }
 
-const UpdateLeadManager = gql`
-  mutation UpdateLeadManager($memberIds: [String!], $managerId: String) {
+const UPDATE_LEAD_MANAGER = gql`
+  mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
     update_member(
       where: { id: { _in: $memberIds } }
       _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
@@ -834,22 +754,11 @@ const UpdateLeadManager = gql`
   }
 `
 
-const GetLeadCandidates = gql`
-  query GetLeadCandidates($condition: member_bool_exp, $limit: Int) {
+const GET_LEAD_CANDIDATES = gql`
+  query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
     member(where: $condition, limit: $limit) {
       id
-      picture_url
       name
-      email
-      role
-      created_at
-      username
-      logined_at
-      manager_id
-      star
-      closed_at
-      completed_at
-      recycled_at
       last_member_note_called
       last_member_note_answered
     }

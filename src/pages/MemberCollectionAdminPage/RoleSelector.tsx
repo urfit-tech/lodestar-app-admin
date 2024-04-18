@@ -7,7 +7,7 @@ import { UserRoleName } from '../../components/common/UserRole'
 import { useMemberRoleCount } from '../../hooks/member'
 import { UserRole } from '../../types/member'
 import pageMessages from '../translation'
-import { FieldFilter } from './MemberCollectionAdminPage'
+import { FiledFilter } from './MemberCollectionAdminPage'
 
 const StyledDropdown = styled(Dropdown)`
   width: 100%;
@@ -19,7 +19,7 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `
 
-const RoleSelector: React.VFC<{ fieldFilter: FieldFilter; onFiledFilterChange: (filter: FieldFilter) => void }> = ({
+const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (filter: FiledFilter) => void }> = ({
   fieldFilter,
   onFiledFilterChange,
 }) => {

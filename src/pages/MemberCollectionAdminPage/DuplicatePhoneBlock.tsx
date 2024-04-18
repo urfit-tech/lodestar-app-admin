@@ -1,15 +1,15 @@
-import Icon from '@ant-design/icons'
+import { Button, Skeleton } from 'antd'
 import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
-import { Button, Skeleton } from 'antd'
-import { flatten } from 'ramda'
-import { Fragment, useState } from 'react'
-import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
+import Icon from '@ant-design/icons'
+import { useState } from 'react'
+import { useIntl } from 'react-intl'
+import { flatten } from 'ramda'
+import { notEmpty } from '../../helpers'
 import pageMessages from '../translation'
 
 const StyledAlertText = styled.div`
@@ -117,15 +117,13 @@ const DuplicatePhoneBlock: React.VFC = () => {
                     {phone}
                     <StyledDuplicatedNumberMemberList>
                       {members.map(({ id, name, email }) => (
-                        <Fragment key={id}>
-                          <StyledDuplicatedNumberMemberItemButton
-                            type="link"
-                            onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
-                          >
-                            <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
-                            <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
-                          </StyledDuplicatedNumberMemberItemButton>
-                        </Fragment>
+                        <StyledDuplicatedNumberMemberItemButton
+                          type="link"
+                          onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
+                        >
+                          <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
+                          <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
+                        </StyledDuplicatedNumberMemberItemButton>
                       ))}
                     </StyledDuplicatedNumberMemberList>
                   </StyledDuplicatedNumberListItem>

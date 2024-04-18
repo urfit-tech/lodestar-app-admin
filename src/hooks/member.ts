@@ -21,7 +21,7 @@ import {
 import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
-import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 interface MenuItem {
   role: string | null
@@ -668,7 +668,7 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMembers = (authToken: string, limit: number, filter?: FieldFilter) => {
+export const useMembers = (authToken: string, limit: number, filter?: FiledFilter) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<any>('')
   const [members, setMembers] = useState<
@@ -688,7 +688,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FieldFilte
   const [nextToken, setNextToken] = useState<string | null>(null)
 
   const fetchMembers = async (
-    filter: FieldFilter | undefined,
+    filter: FiledFilter | undefined,
     option: {
       limit?: number
       nextToken?: string | null

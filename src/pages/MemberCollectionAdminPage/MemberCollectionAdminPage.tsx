@@ -6,6 +6,7 @@ import { isEmpty, negate, pickBy } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { AppProps } from 'lodestar-app-element/src/types/app'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -23,13 +24,13 @@ import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMemberCollection, useMembers, useProperty } from '../../hooks/member'
 import { TableIcon } from '../../images/icon'
-import { MemberCollectionProps, MemberInfoProps, ResponseMembers, UserRole } from '../../types/member'
+import { MemberInfoProps, ResponseMembers, UserRole } from '../../types/member'
 import ForbiddenPage from '../ForbiddenPage'
 import DuplicatePhoneBlock from './DuplicatePhoneBlock'
 import PermissionGroupsDropDownSelector from './PermissionGroupsDropDownSelector'
 import RoleSelector from './RoleSelector'
 
-export type FieldFilter = {
+export type FiledFilter = {
   role?: UserRole
   name?: string
   email?: string
@@ -93,11 +94,8 @@ const StyledTag = styled(Tag)`
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { isAuthenticating, permissions, authToken } = useAuth()
-  const { loading } = useApp()
-  const [fieldFilter, setFieldFilter] = useState<FieldFilter>({})
-  const limit = 10
-  const { loading: loadingMembers, members, fetchMembers, nextToken } = useMembers(authToken || '', limit, fieldFilter)
+  const { isAuthenticating, permissions, currentUserRole, authToken } = useAuth()
+  const { loading, id: appId, enabledModules, settings } = useApp()
 
   if (!isAuthenticating && !permissions.MEMBER_ADMIN) {
     return <ForbiddenPage />
@@ -113,145 +111,29 @@ const MemberCollectionAdminPage: React.FC = () => {
         <Spin />
       ) : (
         <MemberCollectionBlock
-          members={members}
-          fieldFilter={fieldFilter}
-          setFieldFilter={setFieldFilter}
-          nextToken={nextToken}
-          loadingMembers={loadingMembers}
-          limit={limit}
-          fetchMembers={fetchMembers}
+          currentUserRole={currentUserRole}
+          appId={appId}
+          enabledModules={enabledModules}
+          settings={settings}
+          authToken={authToken}
         />
       )}
     </AdminLayout>
   )
 }
 
-const MemberSelectControlPanel: React.FC<{
-  permissions: { [key: string]: boolean }
-  enabledModules: { [key: string]: boolean | undefined }
-  fieldFilter: FieldFilter
-  setFieldFilter: (filter: FieldFilter) => void
-}> = ({ permissions, enabledModules, fieldFilter, setFieldFilter }) => {
-  return (
-    <div className="d-flex">
-      {permissions.MEMBER_ROLE_SELECT && (
-        <div className="mr-3">
-          <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
-        </div>
-      )}
-
-      {enabledModules.permission_group && permissions.MEMBER_PERMISSION_GROUP_SELECT ? (
-        <PermissionGroupsDropDownSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
-      ) : null}
-    </div>
-  )
-}
-
-const MemberImportExportControlPanel: React.FC<{
-  permissions: { [key: string]: boolean }
-  enabledModules: { [key: string]: boolean | undefined }
-  fieldFilter: FieldFilter
-  exportImportVersionTag: boolean
-  appId: string
-  sortOrder: {
-    createdAt: SortOrder
-    loginedAt: SortOrder
-    consumption: SortOrder
+const MemberCollectionBlock: React.VFC<
+  Pick<AppProps, 'enabledModules' | 'settings'> & {
+    currentUserRole: string
+    appId: string
+    authToken: string
   }
-  visibleColumnIds: string[]
-  columns: { key: string; title: string }[]
-}> = ({
-  permissions,
-  enabledModules,
-  fieldFilter,
-  exportImportVersionTag,
-  appId,
-  sortOrder,
-  visibleColumnIds,
-  columns,
-}) => {
-  return (
-    <>
-      <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal />}</div>
-      <div className="mr-2">
-        {exportImportVersionTag ? (
-          <MemberImportModal />
-        ) : (
-          <OldMemberImportModal /> // TODO: remove this after new export import completed
-        )}
-      </div>
-      {enabledModules.member_info_export ? (
-        exportImportVersionTag ? (
-          <MemberExportModal appId={appId} filter={fieldFilter} sortOrder={sortOrder} />
-        ) : (
-          <OldMemberExportModal // TODO: remove this after new export import completed
-            appId={appId}
-            visibleFields={visibleColumnIds}
-            columns={columns}
-            filter={fieldFilter}
-            sortOrder={sortOrder}
-          />
-        )
-      ) : null}
-    </>
-  )
-}
-
-export const MemberFieldFilter: React.FC<{
-  allColumns: ({
-    id: string
-    title: string
-  } | null)[]
-  visibleColumnIds: string[]
-  setVisibleColumnIds: (value: string[]) => void
-}> = ({ allColumns, visibleColumnIds, setVisibleColumnIds }) => {
+> = ({ currentUserRole, appId, enabledModules, settings, authToken }) => {
   const { formatMessage } = useIntl()
-  return (
-    <Popover
-      trigger="click"
-      placement="bottomLeft"
-      content={
-        <StyledOverlay>
-          <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
-          <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
-            <FilterWrapper>
-              {allColumns.map(column =>
-                column ? (
-                  <Checkbox key={column.id} value={column.id}>
-                    {column.title}
-                  </Checkbox>
-                ) : null,
-              )}
-            </FilterWrapper>
-          </Checkbox.Group>
-        </StyledOverlay>
-      }
-    >
-      <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />}>
-        {formatMessage(memberMessages.label.field)}
-      </StyledButton>
-    </Popover>
-  )
-}
-
-export const MemberCollectionBlock: React.VFC<{
-  members: MemberCollectionProps[]
-  loadingMembers: boolean
-  fieldFilter: FieldFilter
-  setFieldFilter: (filter: FieldFilter) => void
-  nextToken: string | null
-  limit: number
-  fetchMembers: (
-    filter: FieldFilter | undefined,
-    option: { limit?: number | undefined; nextToken?: string | null | undefined },
-  ) => Promise<ResponseMembers>
-}> = ({ members, nextToken, limit, loadingMembers, fieldFilter, setFieldFilter, fetchMembers }) => {
-  const { formatMessage } = useIntl()
-  const { permissions, currentUserRole } = useAuth()
-  const { id: appId, enabledModules, settings } = useApp()
+  const { permissions } = useAuth()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
-
+  const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
   const [sortOrder, setSortOrder] = useState<{
     createdAt: SortOrder
     loginedAt: SortOrder
@@ -263,6 +145,9 @@ export const MemberCollectionBlock: React.VFC<{
   })
 
   const { properties } = useProperty()
+
+  const limit = 10
+  const { loading: loadingMembers, members, fetchMembers, nextToken } = useMembers(authToken, limit, fieldFilter)
 
   const [currentMembers, setCurrentMembers] = useState<
     {
@@ -326,47 +211,81 @@ export const MemberCollectionBlock: React.VFC<{
   return (
     <>
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <MemberSelectControlPanel
-          enabledModules={enabledModules}
-          permissions={permissions}
-          fieldFilter={fieldFilter}
-          setFieldFilter={setFieldFilter}
-        />
+        <div className="d-flex">
+          {permissions.MEMBER_ROLE_SELECT && (
+            <div className="mr-3">
+              <RoleSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
+            </div>
+          )}
+
+          {enabledModules.permission_group && permissions.MEMBER_PERMISSION_GROUP_SELECT ? (
+            <PermissionGroupsDropDownSelector fieldFilter={fieldFilter} onFiledFilterChange={setFieldFilter} />
+          ) : null}
+        </div>
 
         <div className="d-flex">
-          <MemberFieldFilter
-            allColumns={allColumns}
-            visibleColumnIds={visibleColumnIds}
-            setVisibleColumnIds={setVisibleColumnIds}
-          />
-          <MemberImportExportControlPanel
-            permissions={permissions}
-            enabledModules={enabledModules}
-            fieldFilter={fieldFilter}
-            exportImportVersionTag={exportImportVersionTag}
-            appId={appId}
-            sortOrder={sortOrder}
-            visibleColumnIds={visibleColumnIds}
-            columns={columns}
-          />
+          <Popover
+            trigger="click"
+            placement="bottomLeft"
+            content={
+              <StyledOverlay>
+                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                  <FilterWrapper>
+                    {allColumns.map(column =>
+                      column ? (
+                        <Checkbox key={column.id} value={column.id}>
+                          {column.title}
+                        </Checkbox>
+                      ) : null,
+                    )}
+                  </FilterWrapper>
+                </Checkbox.Group>
+              </StyledOverlay>
+            }
+          >
+            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+              {formatMessage(memberMessages.label.field)}
+            </StyledButton>
+          </Popover>
+          <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal />}</div>
+          <div className="mr-2">
+            {exportImportVersionTag ? (
+              <MemberImportModal />
+            ) : (
+              <OldMemberImportModal /> // TODO: remove this after new export import completed
+            )}
+          </div>
+          {enabledModules.member_info_export ? (
+            exportImportVersionTag ? (
+              <MemberExportModal appId={appId} filter={fieldFilter} sortOrder={sortOrder} />
+            ) : (
+              <OldMemberExportModal // TODO: remove this after new export import completed
+                appId={appId}
+                visibleFields={visibleColumnIds}
+                columns={columns}
+                filter={fieldFilter}
+                sortOrder={sortOrder}
+              />
+            )
+          ) : null}
         </div>
       </div>
 
       <DuplicatePhoneBlock />
 
       <AdminCard className="mb-5">
-        <MemberCollectionTableBlock
+        <TableBlock
           visibleColumnIds={visibleColumnIds}
           loadingMembers={loadingMembers || !members}
           currentMembers={currentMembers}
           limit={limit}
           nextToken={nextToken}
           fieldFilter={fieldFilter}
+          authToken={authToken}
           properties={properties}
-          visibleShowMoreButton={true}
-          visibleColumnSearchProps={true}
           fetchMembers={fetchMembers}
-          onFieldFilterChange={(filter: FieldFilter) => setFieldFilter(filter)}
+          onFieldFilterChange={(filter: FiledFilter) => setFieldFilter(filter)}
           onSortOrderChange={(createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) =>
             setSortOrder({ createdAt, loginedAt, consumption })
           }
@@ -389,13 +308,24 @@ export const MemberCollectionBlock: React.VFC<{
   )
 }
 
-export const MemberCollectionTableBlock: React.VFC<{
+const TableBlock: React.VFC<{
   visibleColumnIds: string[]
   loadingMembers: boolean
-  currentMembers: MemberCollectionProps[]
+  currentMembers: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+    role: 'general-member' | 'content-creator' | 'app-owner'
+    createdAt: Date
+    username: string
+    loginedAt: Date | null
+    managerId: string | null
+  }[]
   limit: number
-  nextToken?: string | null
-  fieldFilter?: FieldFilter
+  nextToken: string | null
+  fieldFilter: FiledFilter
+  authToken: string
   properties: {
     id: any
     name: string
@@ -403,21 +333,14 @@ export const MemberCollectionTableBlock: React.VFC<{
     isEditable: boolean
     isRequired: boolean
   }[]
-  visibleShowMoreButton: boolean
-  visibleColumnSearchProps: boolean
-  extraColumn?: {
-    title: string
-    key: string
-    dataIndex: string
-  }[]
-  fetchMembers?: (
-    filter: FieldFilter | undefined,
+  fetchMembers: (
+    filter: FiledFilter | undefined,
     option: {
       limit?: number
       nextToken?: string | null
     },
   ) => Promise<ResponseMembers>
-  onFieldFilterChange?: (filter: FieldFilter) => void
+  onFieldFilterChange?: (filter: FiledFilter) => void
   onSortOrderChange?: (createdAt: SortOrder, loginedAt: SortOrder, consumption: SortOrder) => void
   onCurrentMembersChange?: (
     value: {
@@ -438,11 +361,9 @@ export const MemberCollectionTableBlock: React.VFC<{
   currentMembers,
   limit,
   nextToken,
-  fieldFilter = {},
+  fieldFilter,
+  authToken,
   properties,
-  visibleShowMoreButton,
-  visibleColumnSearchProps,
-  extraColumn = [],
   fetchMembers,
   onFieldFilterChange,
   onSortOrderChange,
@@ -466,7 +387,7 @@ export const MemberCollectionTableBlock: React.VFC<{
 
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      const newProperties = pickBy({ ...fieldFilter?.properties, [columnId]: value ? `${value}` : undefined })
+      const newProperties = pickBy({ ...fieldFilter.properties, [columnId]: value ? `${value}` : undefined })
       onFieldFilterChange?.({
         ...fieldFilter,
         properties: negate(isEmpty)(newProperties) ? newProperties : undefined,
@@ -632,7 +553,6 @@ export const MemberCollectionTableBlock: React.VFC<{
       ),
       ...getColumnSearchProps('managerName'),
     },
-    ...extraColumn,
     ...properties
       .filter(property => visibleColumnIds.includes(property.id))
       .map(property => {
@@ -646,11 +566,6 @@ export const MemberCollectionTableBlock: React.VFC<{
       }),
   ]
 
-  const visibleColumnSearchPropsColumns = columns.map(column => {
-    const { onFilterDropdownVisibleChange, filterIcon, filterDropdown, ...noSearchPropsColumn } = column
-    return visibleColumnSearchProps ? column : noSearchPropsColumn
-  })
-
   useEffect(() => {
     setCurrentNextToken(nextToken)
   }, [nextToken])
@@ -659,9 +574,7 @@ export const MemberCollectionTableBlock: React.VFC<{
     <>
       <TableWrapper>
         <Table<MemberInfoProps>
-          columns={visibleColumnSearchPropsColumns.filter(
-            column => column.key === 'name' || visibleColumnIds.includes(column.key as string),
-          )}
+          columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
           rowKey="id"
           loading={loadingMembers}
           dataSource={memberCollection}
@@ -680,46 +593,45 @@ export const MemberCollectionTableBlock: React.VFC<{
           }}
         />
       </TableWrapper>
-      {visibleShowMoreButton && (
-        <div className="text-center mt-4">
-          <Button
-            disabled={
-              loadingMemberPhones ||
-              loadingManagerInfo ||
-              loadingMemberOrderProductPrice ||
-              loadingMemberTags ||
-              loadingMemberProperties ||
-              !currentNextToken
-            }
-            loading={loading}
-            onClick={async () => {
-              setLoading(true)
-              await fetchMembers?.(fieldFilter, { limit, nextToken: currentNextToken })
-                .then(res => {
-                  setCurrentNextToken(() => res.cursor.afterCursor)
-                  onCurrentMembersChange?.([
-                    ...currentMembers,
-                    ...res.data.map(v => ({
-                      id: v.id,
-                      pictureUrl: v.picture_url,
-                      name: v.name,
-                      email: v.email,
-                      role: v.role,
-                      createdAt: new Date(v.created_at),
-                      username: v.username,
-                      loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-                      managerId: v.manager_id,
-                    })),
-                  ])
-                })
-                .catch(error => handleError(error))
-                .finally(() => setLoading(false))
-            }}
-          >
-            {formatMessage(commonMessages.ui.showMore)}
-          </Button>
-        </div>
-      )}
+
+      <div className="text-center mt-4">
+        <Button
+          disabled={
+            loadingMemberPhones ||
+            loadingManagerInfo ||
+            loadingMemberOrderProductPrice ||
+            loadingMemberTags ||
+            loadingMemberProperties ||
+            !currentNextToken
+          }
+          loading={loading}
+          onClick={async () => {
+            setLoading(true)
+            await fetchMembers(fieldFilter, { limit, nextToken: currentNextToken })
+              .then(res => {
+                setCurrentNextToken(() => res.cursor.afterCursor)
+                onCurrentMembersChange?.([
+                  ...currentMembers,
+                  ...res.data.map(v => ({
+                    id: v.id,
+                    pictureUrl: v.picture_url,
+                    name: v.name,
+                    email: v.email,
+                    role: v.role,
+                    createdAt: new Date(v.created_at),
+                    username: v.username,
+                    loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+                    managerId: v.manager_id,
+                  })),
+                ])
+              })
+              .catch(error => handleError(error))
+              .finally(() => setLoading(false))
+          }}
+        >
+          {formatMessage(commonMessages.ui.showMore)}
+        </Button>
+      </div>
     </>
   )
 }
