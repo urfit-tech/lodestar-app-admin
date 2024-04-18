@@ -495,7 +495,8 @@ const useCurrentMemberDivision = (memberId: string) => {
         value
       }
     }`, { variables: { memberId } })
-  const currentMemberDivision = data?.member_property[0].value
+
+  const currentMemberDivision = data?.member_property[0]?.value || ''
 
   return {
     loading, currentMemberDivision, error
