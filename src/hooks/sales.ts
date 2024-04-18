@@ -6,28 +6,65 @@ import hasura from '../hasura'
 import { SalesProps, LeadProps, LeadStatus, Manager, GetSalesLeadMemberDataInfo } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
 
 type ManagerWithMemberCountData = {
   manager: {
-    email: string;
-    id: string;
-    name: string;
-  } | null;
+    email: string
+    id: string
+    name: string
+  } | null
   memberCount: {
     aggregate: {
-      count: number;
+      count: number
     }
-  } | null;
+  } | null
 }
 
-export const useManagers = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION_BY_MEMBER_PERMISSION>(
+export const useManagers = (onlySameDivision?: boolean) => {
+  const { currentMemberId } = useAuth()
+  const { loading: loadingCurrentMemberDivision, data: currentMemberDivisionData } = useQuery<
+    hasura.GetCurrentMemberDivision,
+    hasura.GetCurrentMemberDivisionVariables
+  >(
     gql`
-      query GET_MANAGER_COLLECTION_BY_MEMBER_PERMISSION {
+      query GetCurrentMemberDivision($memberId: String!) {
+        member_property(where: { member_id: { _eq: $memberId }, property: { name: { _eq: "組別" } } }) {
+          id
+          value
+        }
+      }
+    `,
+    {
+      variables: { memberId: currentMemberId || '' },
+    },
+  )
+
+  const { loading: loadingSamDivisionMembers, data: sameDivisionMembersData } = useQuery<
+    hasura.GetSameDivisionMembers,
+    hasura.GetSameDivisionMembersVariables
+  >(
+    gql`
+      query GetSameDivisionMembers($division: String!) {
+        member_property(where: { value: { _eq: $division } }) {
+          member_id
+        }
+      }
+    `,
+    { variables: { division: currentMemberDivisionData?.member_property[0]?.value || '' } },
+  )
+
+  const {
+    loading: loadingManagerCollection,
+    error,
+    data,
+    refetch,
+  } = useQuery<hasura.GET_MANAGER_COLLECTION>(
+    gql`
+      query GET_MANAGER_COLLECTION {
         member_permission(where: { permission_id: { _eq: "BACKSTAGE_ENTER" } }) {
           member {
             id
@@ -62,19 +99,30 @@ export const useManagers = () => {
 
   const managers: Manager[] = useMemo(
     () =>
-      data?.member_permission.map(v => ({
-        id: v.member?.id || '',
-        name: v.member?.name || '',
-        username: v.member?.username || '',
-        avatarUrl: v.member?.picture_url || null,
-        email: v.member?.email || '',
-        telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
-      })) || [],
-    [data, managerTelephoneExtData],
+      data?.member_permission
+        .filter(v =>
+          onlySameDivision
+            ? sameDivisionMembersData?.member_property.map(v => v.member_id).some(memberId => memberId === v.member?.id)
+            : true,
+        )
+        .map(v => ({
+          id: v.member?.id || '',
+          name: v.member?.name || '',
+          username: v.member?.username || '',
+          avatarUrl: v.member?.picture_url || null,
+          email: v.member?.email || '',
+          telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
+        })) || [],
+    [
+      data?.member_permission,
+      managerTelephoneExtData?.member_property,
+      onlySameDivision,
+      sameDivisionMembersData?.member_property,
+    ],
   )
 
   return {
-    loading,
+    loading: loadingCurrentMemberDivision || loadingManagerCollection || loadingSamDivisionMembers,
     error,
     managers,
     refetch,
@@ -168,10 +216,13 @@ export const useSales = (salesId: string) => {
 
 const transformManagerData = (data: any): ManagerWithMemberCountData => {
   if (!data || !data.manager || !data.memberCount?.aggregate) {
-    return { manager: null, memberCount: { aggregate: { count: 0 } } };
+    return { manager: null, memberCount: { aggregate: { count: 0 } } }
   }
 
-  const { manager, memberCount: { aggregate } } = data;
+  const {
+    manager,
+    memberCount: { aggregate },
+  } = data
 
   return {
     manager: {
@@ -179,29 +230,29 @@ const transformManagerData = (data: any): ManagerWithMemberCountData => {
       id: manager.id,
       name: manager.name,
     },
-    memberCount: { 
-      aggregate: { 
-        count: aggregate.count 
-      }
+    memberCount: {
+      aggregate: {
+        count: aggregate.count,
+      },
     },
-  };
-};
+  }
+}
 
 export const useGetManagerWithMemberCount = (managerId: string, appId: string) => {
-  const isParamsValid = managerId && appId;
+  const isParamsValid = managerId && appId
 
   const { data, error, loading, refetch } = useQuery(GetManagerWithMemberCount, {
     variables: { managerId, appId },
-    skip: !isParamsValid, 
-  });
+    skip: !isParamsValid,
+  })
 
   useEffect(() => {
     if (isParamsValid) {
-      refetch();
+      refetch()
     }
-  }, [managerId, appId, refetch, isParamsValid]);
+  }, [managerId, appId, refetch, isParamsValid])
 
-  const transformedData = useMemo(() => transformManagerData(data), [data]);
+  const transformedData = useMemo(() => transformManagerData(data), [data])
 
   if (!isParamsValid) {
     return {
@@ -209,7 +260,7 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
       errorMembers: null,
       loadingMembers: false,
       refetchMembers: () => {},
-    };
+    }
   }
 
   return {
@@ -217,11 +268,11 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
     errorMembers: error,
     loadingMembers: loading,
     refetchMembers: refetch,
-  };
-};
+  }
+}
 
 export const useManagerLeads = (manager: Manager) => {
-  const { id: appId } = useApp();
+  const { id: appId } = useApp()
   const {
     data: salesLeadMemberPhoneData,
     error: errorMembers,
@@ -229,49 +280,48 @@ export const useManagerLeads = (manager: Manager) => {
     refetch: refetchMembers,
   } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
     variables: { managerId: manager.id, appId },
-  });
-  const { authToken } = useAuth();
+  })
+  const { authToken } = useAuth()
 
-  const [salesLeadMemberInfo, setSalesLeadMemberInfo] = useState<GetSalesLeadMemberDataInfo>();
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [salesLeadMemberInfo, setSalesLeadMemberInfo] = useState<GetSalesLeadMemberDataInfo>()
+  const [error, setError] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-  
-    if (authToken && manager && manager.id && appId ) {
+    setLoading(true)
+    setError(null)
+
+    if (authToken && manager && manager.id && appId) {
       try {
         const payload = {
           managerId: manager.id,
-          appId: appId 
-        };
-  
+          appId: appId,
+        }
+
         const { data } = await axios.post(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/saleLeadMemberData`,
           payload,
           { headers: { authorization: `Bearer ${authToken}` } },
-        );
-  
-        setSalesLeadMemberInfo(data);
+        )
+
+        setSalesLeadMemberInfo(data)
       } catch (error) {
-        setError(error);
+        setError(error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [authToken , manager.id]);
-  
+  }, [appId, authToken, manager])
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData()
+  }, [fetchData])
 
   const refetch = () => {
-    fetchData();
-  };
+    fetchData()
+  }
   const convertToLead = (v: hasura.GetSalesLeadMembers['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
@@ -306,11 +356,10 @@ export const useManagerLeads = (manager: Manager) => {
       phones: v.member_phones?.map(_v => ({ phoneNumber: _v.phone, isValid: _v.is_valid })),
       notes: salesLeadMemberInfo?.memberNote?.filter(mn => mn.memberId === v.id)[0]?.description || '',
       categoryNames:
-      salesLeadMemberInfo?.memberCategory
-          .filter(mc => mc.memberId === v.id)
-          .map(_v => _v.name || '') || [],
+        salesLeadMemberInfo?.memberCategory.filter(mc => mc.memberId === v.id).map(_v => _v.name || '') || [],
       properties:
-        salesLeadMemberInfo?.memberProperty?.filter(mp => mp.memberId === v.id)
+        salesLeadMemberInfo?.memberProperty
+          ?.filter(mp => mp.memberId === v.id)
           .map(v => ({
             id: v.propertyId || '',
             name: v.name || '',
@@ -350,8 +399,8 @@ export const useManagerLeads = (manager: Manager) => {
     signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
     closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
     completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
-  };
-};
+  }
+}
 
 const GetSalesLeadMembers = gql`
   query GetSalesLeadMembers($appId: String!, $managerId: String!) {
@@ -389,15 +438,15 @@ const GetSalesLeadMembers = gql`
 
 const GetManagerWithMemberCount = gql`
   query GetManagerMemberCount($appId: String!, $managerId: String!) {
-  manager: member_by_pk(id: $managerId) {
-    id
-    name
-    email
-  }
-  memberCount: member_aggregate(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
-    aggregate {
-      count
+    manager: member_by_pk(id: $managerId) {
+      id
+      name
+      email
+    }
+    memberCount: member_aggregate(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
+      aggregate {
+        count
+      }
     }
   }
-}
 `
