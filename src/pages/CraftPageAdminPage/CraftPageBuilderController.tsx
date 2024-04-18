@@ -12,7 +12,10 @@ import { Device } from '../../types/general'
 import pageMessages from '../translation'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 
-const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
+const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: () => void }> = ({
+  pageId,
+  onAppPageUpdate,
+}) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
   const { device, onDeviceChange } = useContext(CraftPageBuilderContext)
@@ -68,6 +71,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('desktop')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
       <TabletOutlined
@@ -77,6 +81,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('tablet')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
       <MobileOutlined
@@ -86,6 +91,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         onClick={() => {
           handleDeviceChange('mobile')
           handleSave()
+          onAppPageUpdate?.()
         }}
       />
 

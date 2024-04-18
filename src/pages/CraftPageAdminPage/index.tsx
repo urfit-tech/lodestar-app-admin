@@ -1,4 +1,5 @@
 import { CloseOutlined } from '@ant-design/icons'
+import { Button } from '@chakra-ui/react'
 import { Editor } from '@craftjs/core'
 import { Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
