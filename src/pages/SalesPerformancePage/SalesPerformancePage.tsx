@@ -61,11 +61,16 @@ const SalesPerformancePage: React.VFC = () => {
   const { currentMemberId, permissions, currentUserRole } = useAuth()
   const { formatMessage } = useIntl()
   const [month, setMonth] = useState(moment().startOf('month'))
-  const [activeGroupName, setActiveGroupName] = useState<string>()
   const [activeManagerId, setActiveManagerId] = useState<string | undefined>(currentMemberId || undefined)
+  const [activeGroupName, setActiveGroupName] = useState<string>()
   const [activeDepartment, setActiveDepartment] = useState<string>()
-  const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
   const { currentMemberDepartment, currentMemberDepartmentLoading } = useCurrentMemberDepartment(currentMemberId || '')
+  const { loading: loadingCurrentMemberDivision, currentMemberDivision } = useCurrentMemberDivision(
+    currentMemberId || '',
+  )
+  const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
+
+  const isAdminPermission = currentUserRole === 'app-owner' || Boolean(permissions.SALES_PERFORMANCE_ADMIN)
 
   useEffect(() => {
     if (!currentMemberDepartmentLoading) {
@@ -73,7 +78,14 @@ const SalesPerformancePage: React.VFC = () => {
     }
   }, [currentMemberDepartment, currentMemberDepartmentLoading])
 
+  useEffect(() => {
+    if (!loadingCurrentMemberDivision) {
+      currentMemberDivision && setActiveGroupName(currentMemberDivision)
+    }
+  }, [currentMemberDivision, loadingCurrentMemberDivision])
+
   if (
+    !permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN &&
     !permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN &&
     !permissions.SALES_PERFORMANCE_ADMIN &&
     !permissions.SALES_CALL_ADMIN
@@ -123,7 +135,9 @@ const SalesPerformancePage: React.VFC = () => {
         </span>
       </AdminPageTitle>
       <Box className="d-flex flex-wrap mb-4">
-        {(currentUserRole === 'app-owner' || permissions.SALES_PERFORMANCE_ADMIN) && (
+        {isAdminPermission ||
+        Boolean(isAdminPermission && permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
+        !Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ? (
           <Select
             className="mr-3"
             style={{ width: 200 }}
@@ -134,8 +148,13 @@ const SalesPerformancePage: React.VFC = () => {
             optionFilterProp="children"
             onChange={v => {
               setActiveDepartment(v)
-              setActiveGroupName(undefined)
               setActiveManagerId(undefined)
+              if (
+                isAdminPermission ||
+                (isAdminPermission && permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ||
+                !Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN)
+              )
+                setActiveGroupName(undefined)
             }}
           >
             {uniqBy(manager => manager.department, managers || []).map(manager => (
@@ -144,28 +163,32 @@ const SalesPerformancePage: React.VFC = () => {
               </Select.Option>
             ))}
           </Select>
-        )}
-        <Select
-          className="mr-3"
-          style={{ width: 200 }}
-          showSearch
-          allowClear
-          placeholder="組別"
-          value={activeGroupName}
-          optionFilterProp="children"
-          onChange={v => {
-            setActiveGroupName(v)
-            setActiveManagerId(undefined)
-          }}
-        >
-          {uniqBy(manager => manager.groupName, managers || [])
-            .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
-            .map(manager => (
-              <Select.Option key={manager.id} value={manager.groupName}>
-                {manager.groupName}
-              </Select.Option>
-            ))}
-        </Select>
+        ) : null}
+        {isAdminPermission ||
+        (isAdminPermission && permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ||
+        !Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ? (
+          <Select
+            className="mr-3"
+            style={{ width: 200 }}
+            showSearch
+            allowClear
+            placeholder="組別"
+            value={activeGroupName}
+            optionFilterProp="children"
+            onChange={v => {
+              setActiveGroupName(v)
+              setActiveManagerId(undefined)
+            }}
+          >
+            {uniqBy(manager => manager.groupName, managers || [])
+              .filter(manager => (activeDepartment === undefined ? true : manager.department === activeDepartment))
+              .map(manager => (
+                <Select.Option key={manager.id} value={manager.groupName}>
+                  {manager.groupName}
+                </Select.Option>
+              ))}
+          </Select>
+        ) : null}
 
         {currentMemberId && (
           <Select
@@ -473,6 +496,28 @@ const useCurrentMemberDepartment = (memberId: string) => {
   return {
     currentMemberDepartment: data?.member_property[0]?.value,
     currentMemberDepartmentLoading: loading,
+  }
+}
+
+const useCurrentMemberDivision = (memberId: string) => {
+  const { loading, data, error } = useQuery<hasura.GetCurrentMemberDivision, hasura.GetCurrentMemberDivisionVariables>(
+    gql`
+      query GetCurrentMemberDivision($memberId: String!) {
+        member_property(where: { member_id: { _eq: $memberId }, property: { name: { _eq: "組別" } } }) {
+          id
+          value
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const currentMemberDivision = data?.member_property[0]?.value || ''
+
+  return {
+    loading,
+    currentMemberDivision,
+    error,
   }
 }
 

@@ -415,8 +415,10 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       permissionIsAllowed:
         !!enabledModules.promotion &&
         (Boolean(permissions.COUPON_PLAN_ADMIN) ||
+          Boolean(permissions.COUPON_PLAN_ADMIN_VIEW) ||
           Boolean(permissions.COUPON_PLAN_NORMAL) ||
           Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
+          Boolean(permissions.VOUCHER_PLAN_ADMIN_VIEW) ||
           Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
           Boolean(permissions.GIFT_PLAN_ADMIN) ||
           Boolean(permissions.GIFT_PLAN_NORMAL)),
@@ -425,14 +427,19 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.COUPON_PLAN_NORMAL),
+          permissionIsAllowed:
+            Boolean(permissions.COUPON_PLAN_ADMIN) ||
+            Boolean(permissions.COUPON_PLAN_ADMIN_VIEW) ||
+            Boolean(permissions.COUPON_PLAN_NORMAL),
           key: 'coupon_plans',
           name: formatMessage(adminMessages.AdminMenu.coupons),
         },
         {
           permissionIsAllowed:
             !!enabledModules.voucher &&
-            (Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_NORMAL)),
+            (Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
+              Boolean(permissions.VOUCHER_PLAN_ADMIN_VIEW) ||
+              Boolean(permissions.VOUCHER_PLAN_NORMAL)),
           key: 'voucher_plans',
           name: formatMessage(adminMessages.AdminMenu.vouchers),
         },
@@ -563,6 +570,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
         !!enabledModules.sales &&
         (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
           Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
+          Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ||
           Boolean(permissions.SALES_LEAD_ADMIN) ||
           Boolean(permissions.SALES_LEAD_NORMAL) ||
           Boolean(permissions.SALES_LEAD_DELIVERY_ADMIN)),
@@ -574,7 +582,8 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
           permissionIsAllowed:
             !!enabledModules.sales &&
             (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
-              Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN)),
+              Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
+              Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN)),
           key: 'sales_performance',
           name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
