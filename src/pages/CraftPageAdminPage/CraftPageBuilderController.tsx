@@ -5,19 +5,16 @@ import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 
-const messages = defineMessages({
-  desktop: { id: 'craft.settings.responsiveSelector.desktop', defaultMessage: '桌面' },
-  tablet: { id: 'craft.settings.responsiveSelector.tablet', defaultMessage: '平板' },
-  mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
-})
-
-const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
+const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: () => void }> = ({
+  pageId,
+  onAppPageUpdate,
+}) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
   const { device, onDeviceChange } = useContext(CraftPageBuilderContext)
@@ -62,17 +59,29 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
       <DesktopOutlined
         style={{ color: device === 'desktop' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('desktop')}
+        onClick={() => {
+          handleDeviceChange('desktop')
+          handleSave()
+          onAppPageUpdate?.()
+        }}
       />
       <TabletOutlined
         style={{ color: device === 'tablet' ? activeColor : inactiveColor }}
         className="mr-2"
-        onClick={() => handleDeviceChange('tablet')}
+        onClick={() => {
+          handleDeviceChange('tablet')
+          handleSave()
+          onAppPageUpdate?.()
+        }}
       />
       <MobileOutlined
         style={{ color: device === 'mobile' ? activeColor : inactiveColor }}
         className="mr-3"
-        onClick={() => handleDeviceChange('mobile')}
+        onClick={() => {
+          handleDeviceChange('mobile')
+          handleSave()
+          onAppPageUpdate?.()
+        }}
       />
 
       <UndoOutlined
