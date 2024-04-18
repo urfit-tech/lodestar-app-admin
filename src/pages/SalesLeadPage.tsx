@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
-import ManagerInput from '../components/common/ManagerInput'
 import MemberSelector from '../components/form/MemberSelector'
 import AdminLayout from '../components/layout/AdminLayout'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
@@ -27,8 +26,11 @@ const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const { managers } = useManagers(!(Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) && Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR))
-    || Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR))
+  const { managers } = useManagers(
+    (Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === true &&
+      Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true) ||
+      Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR),
+  )
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
