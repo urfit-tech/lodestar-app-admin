@@ -47,7 +47,9 @@ const CraftPageAdminPage: React.VFC = () => {
               <CraftPageBuilderController pageId={pageId} onAppPageUpdate={refetchAppPage} />
             )}
             <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
-              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+              <Button variant="outline" borderRadius="0.25rem">
+                {formatMessage(commonMessages.ui.preview)}
+              </Button>
             </a>
           </div>
         </AdminHeader>

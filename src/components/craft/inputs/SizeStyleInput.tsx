@@ -6,36 +6,20 @@ import craftMessages from '../translation'
 export type SizeStyle = Pick<CSSObject, 'width' | 'height' | 'backgroundImage'>
 type SizeStyleInputProps = {
   value?: SizeStyle
-  aspectRatio: number
-  width: number
-  height: number
-  widthUnit: 'px' | '%'
-  heightUnit: 'px' | '%'
-  isImageAutoHeight: boolean
+  imgProps: imgProps
+  isImgAutoHeight: boolean
   isFullScreenImage: boolean
-  onWidthChange?: (value: number) => void
-  onHeightChange?: (value: number) => void
-  onWidthUnitChange?: (value: 'px' | '%') => void
-  onHeightUnitChange?: (value: 'px' | '%') => void
-  onIsImageAutoHeightChange?: (value: boolean) => void
+  onIsImgAutoHeightChange?: (value: boolean) => void
   onIsFullScreenImageChange?: (value: boolean) => void
   onChange?: (value: SizeStyle) => void
 }
 
 const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({
   value,
-  aspectRatio,
-  width,
-  height,
-  widthUnit,
-  heightUnit,
-  isImageAutoHeight,
+  imgProps,
+  isImgAutoHeight,
   isFullScreenImage,
-  onWidthChange,
-  onHeightChange,
-  onWidthUnitChange,
-  onHeightUnitChange,
-  onIsImageAutoHeightChange,
+  onIsImgAutoHeightChange,
   onIsFullScreenImageChange,
   onChange,
 }) => {
@@ -46,17 +30,14 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({
       <Form.Item label={formatMessage(craftMessages['*'].width)}>
         <InputNumber
           disabled={isFullScreenImage}
-          value={width}
+          value={value?.width === undefined ? imgProps.width : extractNumber(value?.width?.toString())}
           min={0}
           onChange={v => {
             let newHeight
-            if (isImageAutoHeight && widthUnit === heightUnit && heightUnit === 'px') {
-              const ratioHeight = Number((Number(v) / aspectRatio).toFixed(0))
-              onHeightChange?.(ratioHeight)
-              newHeight = ratioHeight
-            } else if (isFullScreenImage && widthUnit === heightUnit && heightUnit === '%') {
-              onHeightChange?.(100)
-              newHeight = 100
+            if (isImgAutoHeight && currentWidthUnit === currentHeightUnit && currentHeightUnit === 'px') {
+              newHeight = `${Number(v) / imgProps.originalImage.ratio}${currentHeightUnit}`
+            } else if (isFullScreenImage && currentWidthUnit === currentHeightUnit && currentHeightUnit === '%') {
+              newHeight = '100%'
             } else {
               newHeight = height
             }
@@ -70,35 +51,48 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({
         />
         <Select
           defaultValue="px"
-          disabled={(isImageAutoHeight && widthUnit === 'px') || (isFullScreenImage && widthUnit === '%')}
-          value={widthUnit}
+          disabled={
+            (isImgAutoHeight && extractSizeUnit(value?.width?.toString()) === 'px') ||
+            (isFullScreenImage && extractSizeUnit(value?.width?.toString()) === '%')
+          }
+          value={extractSizeUnit(value?.width?.toString())}
           onChange={v => {
-            if (v !== widthUnit) {
+            const currentUnit = extractSizeUnit(value?.width?.toString())
+            if (v !== currentUnit) {
               if (v === 'px') {
                 onIsFullScreenImageChange?.(false)
               } else if (v === '%') {
-                onIsImageAutoHeightChange?.(false)
+                onIsImgAutoHeightChange?.(false)
               }
-              onWidthUnitChange?.(v)
             }
-            onChange?.({ ...value, width: v === '%' && width > 100 ? '100%' : width + v })
+            onChange?.({
+              ...value,
+              width:
+                v === '%' && extractNumber(value?.width?.toString()) > 100
+                  ? '100%'
+                  : extractNumber(value?.width?.toString()) + v,
+            })
           }}
           style={{ width: '70px' }}
         >
           <Select.Option value="px">px</Select.Option>
           <Select.Option value="%">%</Select.Option>
-          <Select.Option value="rem">rem</Select.Option>
-          <Select.Option value="em">em</Select.Option>
-          <Select.Option value="vw">vw</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item label={formatMessage(craftMessages.SizeStyleInput.height)}>
         <InputNumber
           value={height}
           min={0}
-          disabled={isImageAutoHeight || isFullScreenImage}
+          disabled={isImgAutoHeight || isFullScreenImage}
           onChange={v => {
-            onHeightChange?.(Number(Number(v).toFixed(0)))
+            const currentWidthUnit = extractSizeUnit(value?.width?.toString())
+            const currentHeightUnit = extractSizeUnit(value?.height?.toString())
+            let newWidth
+            if (isImgAutoHeight && currentWidthUnit === currentHeightUnit && currentHeightUnit === 'px') {
+              newWidth = `${convertToPx(v?.toString() || '0px') * imgProps.aspectRatio}${currentWidthUnit}`
+            } else {
+              newWidth = value?.width
+            }
             onChange?.({
               ...value,
               height: `${Number(v).toFixed(0)}${heightUnit}`,
@@ -107,26 +101,33 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({
         />
         <Select
           defaultValue="px"
-          disabled={(isImageAutoHeight && widthUnit === 'px') || (isFullScreenImage && widthUnit === '%')}
-          value={heightUnit}
+          disabled={
+            (isImgAutoHeight && extractSizeUnit(value?.width?.toString()) === 'px') ||
+            (isFullScreenImage && extractSizeUnit(value?.width?.toString()) === '%')
+          }
+          value={extractSizeUnit(value?.height?.toString())}
           onChange={v => {
-            if (v !== heightUnit) {
+            const currentUnit = extractSizeUnit(value?.height?.toString())
+            if (v !== currentUnit) {
               if (v === 'px') {
                 onIsFullScreenImageChange?.(false)
               } else if (v === '%') {
-                onIsImageAutoHeightChange?.(false)
+                onIsImgAutoHeightChange?.(false)
               }
-              onHeightUnitChange?.(v)
             }
-            onChange?.({ ...value, height: v === '%' && height > 100 ? '100%' : height + v })
+
+            onChange?.({
+              ...value,
+              height:
+                v === '%' && extractNumber(value?.height?.toString()) > 100
+                  ? '100%'
+                  : extractNumber(value?.height?.toString()) + v,
+            })
           }}
           style={{ width: '70px' }}
         >
           <Select.Option value="px">px</Select.Option>
           <Select.Option value="%">%</Select.Option>
-          <Select.Option value="rem">rem</Select.Option>
-          <Select.Option value="em">em</Select.Option>
-          <Select.Option value="vh">vh</Select.Option>
         </Select>
       </Form.Item>
     </>
