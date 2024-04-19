@@ -358,7 +358,7 @@ const TableBlock: React.VFC<{
 }> = ({
   visibleColumnIds,
   loadingMembers,
-  currentMembers,
+  currentMembers = [],
   limit,
   nextToken,
   fieldFilter,
