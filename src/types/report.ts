@@ -3,6 +3,7 @@ export type ReportProps = {
   title: string
   type: string
   options: {
+    canViewSelfDataOnly: boolean
     metabase: {
       params: {
         appId: string
