@@ -188,12 +188,10 @@ const MemberNoteAdminItem: React.FC<{
                 </StyledStatus>
               </>
             )}
-            {permissions.MEMBER_NOTE_VIEW_EDIT && (
-              <>
-                <MemberNoteAdminNote note={note} />
-                <MemberNoteAdminAttachments note={note} />
-              </>
-            )}
+            <>
+              <MemberNoteAdminNote note={note} />
+              <MemberNoteAdminAttachments note={note} />
+            </>
           </div>
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
