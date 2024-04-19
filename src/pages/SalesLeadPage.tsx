@@ -22,14 +22,21 @@ const StyledManagerBlock = styled.div`
   width: 400px;
 `
 
+const SalesLeadManagerSelectorStatus = () => {
+  const { permissions } = useAuth()
+  if (Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true && Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === false) {
+    return 'onlySameDivision'
+  } else {
+    return 'default'
+  }
+}
+
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
   const { managers } = useManagers(
-    !(Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === true &&
-      Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true) ||
-      Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR),
+    SalesLeadManagerSelectorStatus()
   )
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
