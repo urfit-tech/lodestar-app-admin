@@ -149,7 +149,7 @@ const ReportAdminModal: React.FC<
           formType: originFormType,
           [originFormType]: report?.options?.metabase?.resource?.[originFormType],
           viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
-          canViewSelfDataOnly: false,
+          canViewSelfDataOnly: !!report?.options?.canViewSelfDataOnly,
         }}
       >
         <Form.Item
