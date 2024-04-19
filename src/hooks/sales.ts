@@ -24,7 +24,7 @@ type ManagerWithMemberCountData = {
   } | null
 }
 
-export const useManagers = (onlySameDivision?: boolean) => {
+export const useManagers = (status?: 'default' | 'onlySameDivision') => {
   const { currentMemberId } = useAuth()
   const { loading: loadingCurrentMemberDivision, data: currentMemberDivisionData } = useQuery<
     hasura.GetCurrentMemberDivision,
@@ -101,7 +101,7 @@ export const useManagers = (onlySameDivision?: boolean) => {
     () =>
       data?.member_permission
         .filter(v =>
-          onlySameDivision
+          status === 'onlySameDivision'
             ? sameDivisionMembersData?.member_property.map(v => v.member_id).some(memberId => memberId === v.member?.id)
             : true,
         )
@@ -116,8 +116,8 @@ export const useManagers = (onlySameDivision?: boolean) => {
     [
       data?.member_permission,
       managerTelephoneExtData?.member_property,
-      onlySameDivision,
       sameDivisionMembersData?.member_property,
+      status,
     ],
   )
 
