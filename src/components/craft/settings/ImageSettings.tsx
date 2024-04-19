@@ -13,7 +13,7 @@ import {
   StyledCollapsePanel,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
-import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
+import ImageBackgroundStyleInput from '../inputs/ImageBackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SizeStyleInput from '../inputs/SizeStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
@@ -49,7 +49,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
     (extractSizeUnit(props.customStyle?.height?.toString()) as Unit) || 'px',
   )
   const [aspectRatio, setAspectRatio] = useState(0)
-  console.log(props)
+
   useEffect(() => {
     setImgWidth(props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0)
     setImgHeight(props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0)
@@ -165,7 +165,10 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
         />
       </Form.Item>
       <Form.Item>
-        <BackgroundStyleInput value={props.customStyle} onChange={value => onPropsChange?.({ ...props, ...value })} />
+        <ImageBackgroundStyleInput
+          props={props}
+          onPropsChange={onPropsChange}
+        />
       </Form.Item>
 
       <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
