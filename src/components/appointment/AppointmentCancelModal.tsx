@@ -45,7 +45,7 @@ const AppointmentCancelModal: React.VFC<AdminModalProps & { orderProductId: stri
         }
       })
       await deleteGeneralMeet({ variables: { meetId } })
-      message.success('取消成功')
+      message.success(formatMessage(appointmentMessages.AppointmentCancelModal.cancelSuccess))
     } catch (error) {
       handleError(error)
     } finally {
