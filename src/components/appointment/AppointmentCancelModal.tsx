@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCancelAppointment } from '../../hooks/appointment'
+import { useMutateMeet } from '../../hooks/meet'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import appointmentMessages from './translation'
 
@@ -20,26 +21,38 @@ const StyledModalSubTitle = styled.div`
   letter-spacing: 0.4px;
 `
 
-const AppointmentCancelModal: React.VFC<AdminModalProps & { orderProductId: string; onRefetch?: () => void }> = ({
+const AppointmentCancelModal: React.VFC<AdminModalProps & { orderProductId: string; meetId: string; onRefetch?: () => void }> = ({
   orderProductId,
+  meetId,
   onRefetch,
   ...props
 }) => {
   const { formatMessage } = useIntl()
   const [canceledReason, setCanceledReason] = useState('')
   const [loading, setLoading] = useState(false)
-  const cancelAppointment = useCancelAppointment(orderProductId)
+  const { cancelAppointment } = useCancelAppointment()
+  const { deleteGeneralMeet } = useMutateMeet()
 
-  const handleCancel = (onCancel: () => void) => {
+  const handleCancel = async (onCancel: () => void) => {
     setLoading(true)
-    cancelAppointment(canceledReason)
-      .then(() => {
-        message.success('success!!!')
-        onCancel()
-        onRefetch?.()
+    try {
+      await cancelAppointment({
+        variables: {
+          orderProductId, data: {
+            appointmentCanceledAt: new Date(),
+            appointmentCanceledReason: canceledReason,
+          }
+        }
       })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+      await deleteGeneralMeet({ variables: { meetId } })
+      message.success('取消成功')
+    } catch (error) {
+      handleError(error)
+    } finally {
+      onRefetch?.()
+      onCancel()
+      setLoading(false)
+    }
   }
 
   return (
