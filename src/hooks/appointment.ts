@@ -385,7 +385,7 @@ export const INSERT_APPOINTMENT_SCHEDULES = gql`
   }
 `
 
-export const useCancelAppointment = (orderProductId: string) => {
+export const useCancelAppointment = () => {
   const [cancelAppointment] = useMutation<hasura.CANCEL_APPOINTMENT, hasura.CANCEL_APPOINTMENTVariables>(gql`
     mutation CANCEL_APPOINTMENT($orderProductId: uuid!, $data: jsonb) {
       update_order_product(where: { id: { _eq: $orderProductId } }, _append: { options: $data }) {
@@ -394,16 +394,9 @@ export const useCancelAppointment = (orderProductId: string) => {
     }
   `)
 
-  return (reason: string) =>
-    cancelAppointment({
-      variables: {
-        orderProductId,
-        data: {
-          appointmentCanceledAt: new Date(),
-          appointmentCanceledReason: reason,
-        },
-      },
-    })
+  return {
+    cancelAppointment,
+  }
 }
 
 export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, startedAt: Date, endedAt: Date) => {
