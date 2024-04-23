@@ -1473,7 +1473,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "所有會員分類功能",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "建立合約功能",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "解除合約功能",
-  "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "查看會員折價券資訊",
+  "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "viewing member coupon information",
   "form.PermissionGroup.MEMBER_CREATE": "添加會員",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "編輯信箱",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "指派承辦人功能",
