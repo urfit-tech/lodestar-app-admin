@@ -77,7 +77,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'membership'
     : 'perpetual'
 
-  const RenderProgramPlan: React.FC = () => {
+  const ProgramPlanModal: React.FC = () => {
     switch (programPlanType) {
       case 'perpetual':
         return (
@@ -162,7 +162,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           </Tag>
           {programPlan.title}
         </div>
-        <RenderProgramPlan />
+        <ProgramPlanModal />
       </AdminBlockTitle>
       <StyledPriceBlock>
         <PriceLabel
