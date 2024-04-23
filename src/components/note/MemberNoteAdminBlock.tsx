@@ -10,7 +10,6 @@ import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
-import { useFindMemberNoteByNoteId } from '../../pages/NoteCollectionPage'
 import { AdminBlock } from '../admin'
 import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
@@ -51,19 +50,11 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
     { member: memberId },
     searchText,
   )
-  const { foundNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '', memberId)
-
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
 
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-
-  if (loadingFoundNote) return <></>
-  const indexToRemove = notes.findIndex(note => note.id === activeMemberNoteId)
-  indexToRemove !== -1 && notes.splice(indexToRemove, 1)
-  foundNote.length && notes.unshift(...foundNote)
-
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
@@ -77,7 +68,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             {formatMessage(memberMessages.label.createMemberNote)}
           </Button>
         )}
-        onSubmit={({ type, status, duration, description, attachments, note }) =>
+        onSubmit={({ type, status, duration, description, attachments }) =>
           insertMemberNote({
             variables: {
               memberId: memberAdmin.id,
@@ -86,7 +77,6 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               status,
               duration,
               description,
-              note,
             },
           })
             .then(async ({ data }) => {

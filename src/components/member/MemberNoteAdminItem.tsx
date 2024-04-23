@@ -49,6 +49,38 @@ const StyledAuthorName = styled.div`
   letter-spacing: 0.6px;
   color: var(--gray-dark);
 `
+const StyledCommentTitle = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  color: var(--gray-dark);
+`
+
+const StyledCommentBody = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  color: var(--gray-darker);
+  margin-top: 12px;
+  margin-bottom: 16px;
+`
+const StyledCommentBlock = styled.div`
+  white-space: break-spaces;
+  word-break: break-all;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  border-radius: 4px;
+  border: solid 1px var(--gray-light);
+  padding: 12px;
+  margin-top: 16px;
+`
 
 type MemberNoteType = Pick<
   MemberNote,
@@ -63,41 +95,39 @@ type MemberNoteType = Pick<
   | 'note'
   | 'attachments'
   | 'metadata'
+  | 'transcript'
 >
 
-const MemberNoteAdminNote: React.FC<{ note: MemberNoteType }> = ({ note }) => {
+const MemberNoteTranscriptButton: React.FC<{ transcript: string }> = ({ transcript }) => {
   const { formatMessage } = useIntl()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  if (!note.note) return null
 
   return (
     <>
       {isModalOpen && (
         <Modal
-          title={formatMessage(merchandiseMessages.label.discussionRecord)}
+          title={formatMessage(merchandiseMessages.label.transcript)}
           visible={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
         >
-          {note.note}
+          <div style={{ whiteSpace: 'pre-line' }}>{transcript}</div>
         </Modal>
       )}
       <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
         <Space>
           <Note />
-          {formatMessage(merchandiseMessages.label.discussionRecord)}
+          {formatMessage(merchandiseMessages.label.transcript)}
         </Space>
       </StyledStatus>
     </>
   )
 }
 
-const MemberNoteAdminAttachments: React.FC<{ note: MemberNoteType }> = ({ note }) => {
+const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteType }> = ({ note }) => {
   const { formatMessage } = useIntl()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [attachments, setAttachments] = useState<File[]>(note?.attachments?.map(attachment => attachment.data) || [])
-
-  if (!note.attachments?.length) return null
 
   return (
     <>
@@ -132,7 +162,7 @@ const MemberNoteAdminAttachments: React.FC<{ note: MemberNoteType }> = ({ note }
       <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
         <Space>
           <Attachments />
-          {`${note.attachments.length} ${formatMessage(memberMessages.label.numberAttachment)}`}
+          {`${note.attachments && note.attachments.length} ${formatMessage(memberMessages.label.numberAttachment)}`}
         </Space>
       </StyledStatus>
     </>
@@ -154,7 +184,7 @@ const MemberNoteAdminItem: React.FC<{
   )
 
   return (
-    <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
         <CustomRatioImage
           ratio={1}
@@ -189,53 +219,70 @@ const MemberNoteAdminItem: React.FC<{
               </>
             )}
             <>
-              <MemberNoteAdminNote note={note} />
-              <MemberNoteAdminAttachments note={note} />
+              {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && note.transcript && (
+                <MemberNoteTranscriptButton transcript={note.transcript} />
+              )}
+              {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
+                note.attachments &&
+                note.attachments?.length > 0 && <MemberNoteAttachmentsButton note={note} />}
             </>
           </div>
+
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
+          {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) && note.note && (
+            <StyledCommentBlock>
+              <StyledCommentTitle>備註</StyledCommentTitle>
+              <StyledCommentBody> {note.note}</StyledCommentBody>
+              <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
+            </StyledCommentBlock>
+          )}
         </div>
       </div>
-      {permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? (
-        <Dropdown
-          overlay={
-            <Menu>
-              <StyledMenuItem>
-                <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
-              </StyledMenuItem>
-              <StyledMenuItem>
-                <AdminModal
-                  title={formatMessage(memberMessages.label.deleteNote)}
-                  renderTrigger={({ setVisible }) => (
-                    <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
-                  )}
-                  cancelText={formatMessage(commonMessages.ui.back)}
-                  okText={formatMessage(commonMessages.ui.delete)}
-                  onOk={() =>
-                    deleteMemberNote({
-                      variables: { memberNoteId: note.id, deletedAt: new Date(), currentMemberId: currentMemberId },
-                    })
-                      .then(() => {
-                        message.success(formatMessage(commonMessages.event.successfullyDeleted))
-                        onRefetch?.()
+      <div>
+        {permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? (
+          <Dropdown
+            overlay={
+              <Menu>
+                <StyledMenuItem>
+                  <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
+                </StyledMenuItem>
+                <StyledMenuItem>
+                  <AdminModal
+                    title={formatMessage(memberMessages.label.deleteNote)}
+                    renderTrigger={({ setVisible }) => (
+                      <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
+                    )}
+                    cancelText={formatMessage(commonMessages.ui.back)}
+                    okText={formatMessage(commonMessages.ui.delete)}
+                    onOk={() =>
+                      deleteMemberNote({
+                        variables: {
+                          memberNoteId: note.id,
+                          deletedAt: new Date(),
+                          currentMemberId: currentMemberId,
+                        },
                       })
-                      .catch(handleError)
-                  }
-                >
-                  <StyledModalParagraph>
-                    {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
-                  </StyledModalParagraph>
-                </AdminModal>
-              </StyledMenuItem>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <MoreOutlined />
-        </Dropdown>
-      ) : null}
-
+                        .then(() => {
+                          message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                          onRefetch?.()
+                        })
+                        .catch(handleError)
+                    }
+                  >
+                    <StyledModalParagraph>
+                      {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
+                    </StyledModalParagraph>
+                  </AdminModal>
+                </StyledMenuItem>
+              </Menu>
+            }
+            trigger={['click', 'hover']}
+          >
+            <MoreOutlined />
+          </Dropdown>
+        ) : null}
+      </div>
       <MemberNoteAdminModal
         title={formatMessage(memberMessages.label.editNote)}
         note={note}
