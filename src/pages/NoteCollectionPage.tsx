@@ -12,6 +12,7 @@ import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import { AvatarImage } from '../components/common/Image'
@@ -119,6 +120,7 @@ export type NoteAdmin = {
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
+  const [activeMemberNoteId, _] = useQueryParam('id', StringParam)
 
   const { enabledModules } = useApp()
   const [orderBy, setOrderBy] = useState<hasura.member_note_order_by>({
@@ -131,6 +133,8 @@ const NoteCollectionPage: React.FC = () => {
     orderBy,
     filters,
   )
+  const { foundNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
   const { archiveAttachments } = useMutateAttachment()
@@ -402,6 +406,11 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
+  if (loadingFoundNote) return <></>
+  const indexToRemove = notes.findIndex(note => note.id === activeMemberNoteId)
+  indexToRemove !== -1 && notes.splice(indexToRemove, 1)
+  foundNote.length && notes.unshift(...foundNote)
+
   if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
   }
@@ -433,79 +442,87 @@ const NoteCollectionPage: React.FC = () => {
           <MemberNoteAdminModal
             title={formatMessage(memberMessages.label.editNote)}
             note={selectedNote || undefined}
-            renderTrigger={({ setVisible }) => (
-              <Table<NoteAdmin>
-                columns={columns}
-                rowKey="id"
-                rowClassName="cursor-pointer"
-                pagination={false}
-                loading={loadingNotes}
-                dataSource={notes}
-                onChange={(pagination, filters, sorter) => {
-                  const newSorter = sorter as SorterResult<NoteAdmin>
-                  setOrderBy({
-                    [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
-                      newSorter.order === 'ascend' ? 'asc' : 'desc',
-                  })
-                }}
-                onRow={
-                  (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) ?
-                    note => ({
-                      onClick: () => {
-                        setSelectedNote(note)
-                        setVisible(true)
-                      },
-                    }) : undefined}
-              />
-            )}
-            onSubmit={
-              (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) &&
-                selectedNote
-                ? ({ type, status, duration, description, note, attachments }) =>
-                  updateMemberNote({
-                    variables: {
-                      memberNoteId: selectedNote.id || '',
-                      data: {
-                        type,
-                        status,
-                        duration,
-                        description,
-                        note,
-                      },
-                    },
-                  })
-                    .then(async ({ data }) => {
-                      setUpdatedNotes(prev => ({
-                        ...prev,
-                        [selectedNote.id]: note,
-                      }))
-
-                      const memberNoteId = data?.update_member_note_by_pk?.id
-                      const deletedAttachmentIds =
-                        selectedNote.attachments
-                          ?.filter(noteAttachment =>
-                            attachments.every(
-                              attachment =>
-                                attachment.name !== noteAttachment.data.name &&
-                                attachment.lastModified !== noteAttachment.data.lastModified,
-                            ),
-                          )
-                          ?.map(attachment => attachment.id) || []
-                      const newAttachments = attachments.filter(attachment =>
-                        selectedNote.attachments?.every(
-                          noteAttachment =>
-                            noteAttachment.data.name !== attachment.name &&
-                            noteAttachment.data.lastModified !== attachment.lastModified,
-                        ),
-                      )
-                      if (memberNoteId && attachments.length) {
-                        await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-                        await uploadAttachments('MemberNote', memberNoteId, newAttachments)
-                      }
-                      message.success(formatMessage(commonMessages.event.successfullyEdited))
-                      refetchNotes()
+            renderTrigger={({ setVisible }) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              useEffect(() => {
+                setVisible(Boolean(foundNote.length))
+                setSelectedNote(notes.filter(note => note.id === activeMemberNoteId)[0])
+              }, [])
+              return (
+                <Table<NoteAdmin>
+                  columns={columns}
+                  rowKey="id"
+                  rowClassName="cursor-pointer"
+                  pagination={false}
+                  loading={loadingNotes}
+                  dataSource={notes}
+                  onChange={(pagination, filters, sorter) => {
+                    const newSorter = sorter as SorterResult<NoteAdmin>
+                    setOrderBy({
+                      [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
+                        newSorter.order === 'ascend' ? 'asc' : 'desc',
                     })
-                    .catch(handleError)
+                  }}
+                  onRow={
+                    permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE
+                      ? note => ({
+                          onClick: () => {
+                            setSelectedNote(note)
+                            setVisible(true)
+                          },
+                        })
+                      : undefined
+                  }
+                />
+              )
+            }}
+            onSubmit={
+              (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) && selectedNote
+                ? ({ type, status, duration, description, note, attachments }) =>
+                    updateMemberNote({
+                      variables: {
+                        memberNoteId: selectedNote.id || '',
+                        data: {
+                          type,
+                          status,
+                          duration,
+                          description,
+                          note,
+                        },
+                      },
+                    })
+                      .then(async ({ data }) => {
+                        setUpdatedNotes(prev => ({
+                          ...prev,
+                          [selectedNote.id]: note,
+                        }))
+
+                        const memberNoteId = data?.update_member_note_by_pk?.id
+                        const deletedAttachmentIds =
+                          selectedNote.attachments
+                            ?.filter(noteAttachment =>
+                              attachments.every(
+                                attachment =>
+                                  attachment.name !== noteAttachment.data.name &&
+                                  attachment.lastModified !== noteAttachment.data.lastModified,
+                              ),
+                            )
+                            ?.map(attachment => attachment.id) || []
+                        const newAttachments = attachments.filter(attachment =>
+                          selectedNote.attachments?.every(
+                            noteAttachment =>
+                              noteAttachment.data.name !== attachment.name &&
+                              noteAttachment.data.lastModified !== attachment.lastModified,
+                          ),
+                        )
+                        if (memberNoteId && attachments.length) {
+                          await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                          await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+                        }
+                        message.success(formatMessage(commonMessages.event.successfullyEdited))
+                        refetchNotes()
+                      })
+                      .catch(handleError)
                 : undefined
             }
           />
@@ -598,59 +615,58 @@ const useMemberNotesAdmin = (
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
       ? {
-        _gte: filters.range[0].toDate(),
-        _lte: filters.range[1].toDate(),
-      }
+          _gte: filters.range[0].toDate(),
+          _lte: filters.range[1].toDate(),
+        }
       : undefined,
     author:
-      currentUserRole === 'app-owner' || permissions.MEMBER_NOTE_ADMIN || permissions.VIEW_ALL_MEMBER_NOTE
-        ?
-        filters?.author
+      currentUserRole === 'app-owner'
+        ? filters?.author
           ? {
-            _or: [
-              { name: { _ilike: `%${filters.author}%` } },
-              { username: { _ilike: `%${filters.author}%` } },
-              { email: { _ilike: `%${filters.author}%` } },
-            ],
-          }
+              _or: [
+                { name: { _ilike: `%${filters.author}%` } },
+                { username: { _ilike: `%${filters.author}%` } },
+                { email: { _ilike: `%${filters.author}%` } },
+              ],
+            }
           : undefined
         : {
-          id: {
-            _eq: currentMemberId,
+            id: {
+              _eq: currentMemberId,
+            },
           },
-        },
     member: {
       manager: filters?.manager
         ? {
-          _or: [
-            { name: { _ilike: `%${filters.manager}%` } },
-            { username: { _ilike: `%${filters.manager}%` } },
-            { email: { _ilike: `%${filters.manager}%` } },
-          ],
-        }
+            _or: [
+              { name: { _ilike: `%${filters.manager}%` } },
+              { username: { _ilike: `%${filters.manager}%` } },
+              { email: { _ilike: `%${filters.manager}%` } },
+            ],
+          }
         : undefined,
       _or: filters?.member
         ? [
-          { id: { _eq: filters.member } },
-          { name: { _ilike: `%${filters.member}%` } },
-          { username: { _ilike: `%${filters.member}%` } },
-          { email: { _ilike: `%${filters.member}%` } },
-        ]
+            { id: { _eq: filters.member } },
+            { name: { _ilike: `%${filters.member}%` } },
+            { username: { _ilike: `%${filters.member}%` } },
+            { email: { _ilike: `%${filters.member}%` } },
+          ]
         : undefined,
       _and:
         filters?.categories || filters?.tags
           ? [
-            {
-              _or: filters.categories?.map(categoryId => ({
-                member_categories: { category_id: { _eq: categoryId } },
-              })),
-            },
-            {
-              _or: filters.tags?.map(tag => ({
-                member_tags: { tag_name: { _eq: tag } },
-              })),
-            },
-          ]
+              {
+                _or: filters.categories?.map(categoryId => ({
+                  member_categories: { category_id: { _eq: categoryId } },
+                })),
+              },
+              {
+                _or: filters.tags?.map(tag => ({
+                  member_tags: { tag_name: { _eq: tag } },
+                })),
+              },
+            ]
           : undefined,
     },
   }
@@ -768,9 +784,9 @@ const useMemberNotesAdmin = (
       },
       manager: v.member?.manager
         ? {
-          id: v.member.manager.id,
-          name: v.member.manager.name || v.member.manager.username,
-        }
+            id: v.member.manager.id,
+            name: v.member.manager.name || v.member.manager.username,
+          }
         : null,
       member: {
         id: v.member?.id || '',
@@ -838,6 +854,152 @@ const useMemberNotesAdmin = (
     notes,
     refetchNotes: refetch,
     loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,
+  }
+}
+
+export const useFindMemberNoteByNoteId = (memberNoteId: string, memberId?: string) => {
+  const GET_MEMBER_NOTE_BY_ID_QUERY = gql`
+    query GET_MEMBER_NOTE_BY_ID($memberNoteId: String!, $memberId: String) {
+      member_note(where: { id: { _eq: $memberNoteId }, member_id: { _eq: $memberId } }) {
+        id
+        created_at
+        type
+        status
+        author {
+          id
+          picture_url
+          name
+          username
+        }
+        member {
+          id
+          picture_url
+          name
+          username
+          email
+          manager {
+            id
+            name
+            username
+          }
+          member_categories {
+            id
+            category {
+              id
+              name
+            }
+          }
+          member_tags {
+            tag_name
+          }
+          member_properties(where: { property: { name: { _similar: "廣告素材|行銷活動|廣告組合" } } }) {
+            id
+            property {
+              id
+              name
+            }
+            value
+          }
+          order_logs {
+            id
+            order_products_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+            order_discounts_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+          }
+        }
+        duration
+        description
+        metadata
+        note
+        member_note_attachments {
+          attachment_id
+          data
+          options
+        }
+      }
+    }
+  `
+  const { loading, error, data } = useQuery(GET_MEMBER_NOTE_BY_ID_QUERY, {
+    variables: {
+      memberNoteId,
+      memberId,
+    },
+  })
+
+  const note: NoteAdmin[] =
+    data?.member_note.map((v: any) => ({
+      id: v.id,
+      createdAt: new Date(v.created_at),
+      type: v.type as NoteAdmin['type'],
+      status: v.status || null,
+      author: {
+        id: v.author.id,
+        pictureUrl: v.author.picture_url || null,
+        name: v.author.name,
+      },
+      manager: v.member?.manager
+        ? {
+            id: v.member.manager.id,
+            name: v.member.manager.name || v.member.manager.username,
+          }
+        : null,
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+        properties:
+          v.member?.member_properties.map((w: { property: { name: any }; value: any }) => ({
+            name: w.property.name,
+            value: w.value,
+          })) || [],
+      },
+      memberCategories:
+        v.member?.member_categories.map((u: { category: { id: any; name: any } }) => ({
+          id: u.category.id,
+          name: u.category.name,
+        })) || [],
+      memberTags: v.member?.member_tags.map((u: { tag_name: any }) => u.tag_name) || [],
+      consumption:
+        sum(
+          v.member?.order_logs.map(
+            (u: { order_products_aggregate: { aggregate: { sum: { price: any } } } }) =>
+              u.order_products_aggregate.aggregate?.sum?.price || 0,
+          ) || [],
+        ) -
+        sum(
+          v.member?.order_logs.map(
+            (u: { order_discounts_aggregate: { aggregate: { sum: { price: any } } } }) =>
+              u.order_discounts_aggregate.aggregate?.sum?.price || 0,
+          ) || [],
+        ),
+      duration: v.duration || 0,
+      audioFilePath: v.metadata?.recordfile || null,
+      description: v.description || null,
+      metadata: v.metadata,
+      note: v.note || null,
+      attachments: v.member_note_attachments.map((u: { attachment_id: any; data: any; options: any }) => ({
+        id: u.attachment_id,
+        data: u.data,
+        options: u.options,
+      })),
+    })) || []
+
+  return {
+    loadingFoundNote: loading,
+    errorFoundNote: error,
+    foundNote: note,
   }
 }
 
