@@ -313,6 +313,7 @@ export const useMemberNotesAdmin = (
           type
           status
           metadata
+          transcript
           author {
             id
             picture_url
@@ -352,12 +353,14 @@ export const useMemberNotesAdmin = (
     | 'note'
     | 'attachments'
     | 'metadata'
+    | 'transcript'
   >[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
       type: v.type as NoteAdminProps['type'],
       status: v.status || null,
+      transcript: v.transcript || null,
       author: {
         id: v.author.id,
         pictureUrl: v.author.picture_url || null,
