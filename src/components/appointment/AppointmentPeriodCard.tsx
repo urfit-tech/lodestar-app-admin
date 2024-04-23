@@ -295,12 +295,15 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
               </StyledButton>
             )}
-            <AppointmentCancelModal
-              orderProductId={orderProduct.id}
-              onRefetch={onRefetch}
-              visible={cancelModalVisible}
-              onCancel={() => setCancelModalVisible(false)}
-            />
+            {meet?.id ? (
+              <AppointmentCancelModal
+                orderProductId={orderProduct.id}
+                meetId={meet.id}
+                onRefetch={onRefetch}
+                visible={cancelModalVisible}
+                onCancel={() => setCancelModalVisible(false)}
+              />
+            ) : null}
 
             <AppointmentRescheduleModal
               orderProductId={orderProduct.id}
@@ -324,9 +327,11 @@ const AppointmentPeriodCard: React.FC<
                         {formatMessage(appointmentMessages.AppointmentPeriodCard.rescheduleAppointment)}
                       </Menu.Item>
                     )}
-                  <Menu.Item onClick={() => setCancelModalVisible(true)}>
-                    {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
-                  </Menu.Item>
+                  {meet?.id ? (
+                    <Menu.Item onClick={() => setCancelModalVisible(true)}>
+                      {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
+                    </Menu.Item>
+                  ) : null}
                 </Menu>
               }
               trigger={['click']}
