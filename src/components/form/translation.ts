@@ -240,6 +240,10 @@ const formMessages = {
       id: 'form.PermissionGroup.MEMBER_VOUCHER_PLAN_VIEW',
       defaultMessage: '查看會員兌換券資訊',
     },
+    MEMBER_NOTE_VIEW_EDIT: {
+      id: 'form.PermissionGroup.MEMBER_NOTE_VIEW_EDIT',
+      defaultMessage: 'View and edit member notes',
+    },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

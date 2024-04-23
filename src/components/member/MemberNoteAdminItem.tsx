@@ -1,30 +1,34 @@
 import Icon, { MessageOutlined, MoreOutlined } from '@ant-design/icons'
-import { Dropdown, Menu, message } from 'antd'
+import { Dropdown, Menu, message, Modal, Space } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, memberMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
+import { ReactComponent as Attachments } from '../../images/icon/memberNote-attachments.svg'
+import { ReactComponent as Note } from '../../images/icon/memberNote-note.svg'
 import { MemberNote } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { StyledModalParagraph } from '../common'
+import FileUploader from '../common/FileUploader'
 import { CustomRatioImage } from '../common/Image'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
 
-const StyledStatus = styled.span`
+const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
   display: flex;
   align-items: center;
   margin-left: 12px;
   border-left: 1px solid #d8d8d8;
   padding: 0 12px;
+  cursor: ${props => props.cursor || 'auto'};
 `
 
 const StyledIcon = styled(Icon)<{ variant?: string | null }>`
@@ -46,22 +50,98 @@ const StyledAuthorName = styled.div`
   color: var(--gray-dark);
 `
 
+type MemberNoteType = Pick<
+  MemberNote,
+  | 'id'
+  | 'createdAt'
+  | 'type'
+  | 'status'
+  | 'author'
+  | 'member'
+  | 'duration'
+  | 'description'
+  | 'note'
+  | 'attachments'
+  | 'metadata'
+>
+
+const MemberNoteAdminNote: React.FC<{ note: MemberNoteType }> = ({ note }) => {
+  const { formatMessage } = useIntl()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  if (!note.note) return null
+
+  return (
+    <>
+      {isModalOpen && (
+        <Modal
+          title={formatMessage(merchandiseMessages.label.discussionRecord)}
+          visible={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+        >
+          {note.note}
+        </Modal>
+      )}
+      <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
+        <Space>
+          <Note />
+          {formatMessage(merchandiseMessages.label.discussionRecord)}
+        </Space>
+      </StyledStatus>
+    </>
+  )
+}
+
+const MemberNoteAdminAttachments: React.FC<{ note: MemberNoteType }> = ({ note }) => {
+  const { formatMessage } = useIntl()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [attachments, setAttachments] = useState<File[]>(note?.attachments?.map(attachment => attachment.data) || [])
+
+  if (!note.attachments?.length) return null
+
+  return (
+    <>
+      {isModalOpen && (
+        <Modal
+          title={formatMessage(memberMessages.label.attachment)}
+          visible={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+        >
+          <FileUploader
+            multiple
+            showUploadList
+            fileList={attachments}
+            onChange={files => setAttachments(files)}
+            downloadableLink={
+              note?.attachments
+                ? note?.metadata?.meetId
+                  ? file => file.name
+                  : file => {
+                      const attachmentId = note.attachments?.find(
+                        v => v.data.name === file.name && v.data.lastModified,
+                      )?.id
+                      return `attachments/${attachmentId}`
+                    }
+                : undefined
+            }
+            downloadOnly={true}
+          />
+        </Modal>
+      )}
+      <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
+        <Space>
+          <Attachments />
+          {`${note.attachments.length} ${formatMessage(memberMessages.label.numberAttachment)}`}
+        </Space>
+      </StyledStatus>
+    </>
+  )
+}
+
 const MemberNoteAdminItem: React.FC<{
   isActive?: boolean
-  note: Pick<
-    MemberNote,
-    | 'id'
-    | 'createdAt'
-    | 'type'
-    | 'status'
-    | 'author'
-    | 'member'
-    | 'duration'
-    | 'description'
-    | 'note'
-    | 'attachments'
-    | 'metadata'
-  >
+  note: MemberNoteType
   onRefetch?: () => void
 }> = ({ isActive, note, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -87,25 +167,31 @@ const MemberNoteAdminItem: React.FC<{
           <div className="d-flex align-items-center">
             <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
             {note.type && (
-              <StyledStatus>
-                <StyledIcon
-                  variant={note.status}
-                  component={() =>
-                    (note.type === 'outbound' && <CallOutIcon />) ||
-                    (note.type === 'inbound' && <CallInIcon />) ||
-                    (note.type === 'demo' && <DemoIcon />) ||
-                    (note.type === 'sms' && <MessageOutlined />) ||
-                    null
-                  }
-                />
-                {note.status === 'answered' && note.type !== 'sms' && (
-                  <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
-                )}
-                {note.status === 'missed' && (
-                  <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
-                )}
-              </StyledStatus>
+              <>
+                <StyledStatus>
+                  <StyledIcon
+                    variant={note.status}
+                    component={() =>
+                      (note.type === 'outbound' && <CallOutIcon />) ||
+                      (note.type === 'inbound' && <CallInIcon />) ||
+                      (note.type === 'demo' && <DemoIcon />) ||
+                      (note.type === 'sms' && <MessageOutlined />) ||
+                      null
+                    }
+                  />
+                  {note.status === 'answered' && note.type !== 'sms' && (
+                    <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
+                  )}
+                  {note.status === 'missed' && (
+                    <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
+                  )}
+                </StyledStatus>
+              </>
             )}
+            <>
+              <MemberNoteAdminNote note={note} />
+              <MemberNoteAdminAttachments note={note} />
+            </>
           </div>
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
@@ -157,7 +243,7 @@ const MemberNoteAdminItem: React.FC<{
         onCancel={() => {
           setModalVisible(false)
         }}
-        onSubmit={async ({ type, status, duration, description, attachments }) => {
+        onSubmit={async ({ type, status, duration, description, attachments, note: memberNote_note }) => {
           if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
             try {
               const { data } = await updateMemberNote({
@@ -168,9 +254,11 @@ const MemberNoteAdminItem: React.FC<{
                     status,
                     duration,
                     description,
+                    note: memberNote_note,
                   },
                 },
               })
+
               const memberNoteId = data?.update_member_note_by_pk?.id
               const deletedAttachmentIds =
                 note.attachments
