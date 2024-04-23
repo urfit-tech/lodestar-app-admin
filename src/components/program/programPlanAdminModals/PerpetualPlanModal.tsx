@@ -216,8 +216,8 @@ const PerpetualPlan: React.FC<
           hasGiftPlan: productGiftPlan?.giftPlan.id !== undefined ? true : false,
           productGiftPlanId: productGiftPlan?.id,
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
-          giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
-          giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
+          giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : null,
+          giftPlanEndedAt: productGiftPlan?.endedAt ? moment(productGiftPlan.endedAt) : null,
         }}
       >
         <TitleItem name="title" />
