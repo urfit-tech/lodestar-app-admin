@@ -8,7 +8,7 @@ const programMessages = {
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
     notifyUpdate: { id: 'program.*.notifyUpdate', defaultMessage: '通知內容更新' },
-    pinnedStatus: {id: 'program.*.pinnedStatus', defaultMessage: '釘選'},
+    pinnedStatus: { id: 'program.*.pinnedStatus', defaultMessage: '釘選' },
     successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
@@ -72,6 +72,10 @@ const programMessages = {
     },
     planDescription: { id: 'program.ProgramPlanAdminModal.planDescription', defaultMessage: '方案描述' },
     planTitle: { id: 'program.ProgramPlanAdminModal.planTitle', defaultMessage: '方案名稱' },
+    identityMembership: {
+      id: 'program.ProgramPlanAdminModal.identityMembership',
+      defaultMessage: '適用此身份的會員卡',
+    },
   }),
   DisplayModeSelector: defineMessages({
     conceal: { id: 'program.DisplayModeSelector.conceal', defaultMessage: '隱藏' },
