@@ -125,6 +125,7 @@ export const useProgram = (programId: string) => {
             published_at
             group_buying_people
             is_participants_visible
+            card_id
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -249,6 +250,7 @@ export const useProgram = (programId: string) => {
         isCountdownTimerVisible: programPlan.is_countdown_timer_visible,
         groupBuyingPeople: programPlan.group_buying_people,
         isParticipantsVisible: programPlan.is_participants_visible,
+        card_id: programPlan.card_id,
       })),
       categories: data.program_by_pk.program_categories.map(programCategory => ({
         id: programCategory.category.id,
