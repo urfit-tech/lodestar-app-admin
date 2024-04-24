@@ -34,31 +34,31 @@ type FieldProps = {
 
 const MemberNoteAdminModal: React.FC<
   | AdminModalProps & {
-    note?: Pick<
-      MemberNote,
-      | 'id'
-      | 'createdAt'
-      | 'type'
-      | 'status'
-      | 'author'
-      | 'member'
-      | 'duration'
-      | 'description'
-      | 'note'
-      | 'attachments'
-      | 'metadata'
-    >
-    onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
-    info?: {
-      email: string
-      name: string
-      pictureUrl: string
+      note?: Pick<
+        MemberNote,
+        | 'id'
+        | 'createdAt'
+        | 'type'
+        | 'status'
+        | 'author'
+        | 'member'
+        | 'duration'
+        | 'description'
+        | 'note'
+        | 'attachments'
+        | 'metadata'
+      >
+      onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
+      info?: {
+        email: string
+        name: string
+        pictureUrl: string
+      }
     }
-  }
 > = ({ info, note, onSubmit, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { currentUserRole } = useAuth()
+  const { permissions } = useAuth()
   const { enabledModules } = useApp()
 
   const [type, setType] = useState(note?.type || '')
@@ -83,7 +83,7 @@ const MemberNoteAdminModal: React.FC<
   const handleSubmit = async (onSuccess: () => void) => {
     setIsSubmitting(true)
 
-    const values = await form.validateFields().catch(() => { })
+    const values = await form.validateFields().catch(() => {})
     if (!values) {
       return
     }
@@ -203,11 +203,11 @@ const MemberNoteAdminModal: React.FC<
                     ? note?.metadata?.meetId
                       ? file => file.name
                       : file => {
-                        const attachmentId = note.attachments?.find(
-                          v => v.data.name === file.name && v.data.lastModified,
-                        )?.id
-                        return `attachments/${attachmentId}`
-                      }
+                          const attachmentId = note.attachments?.find(
+                            v => v.data.name === file.name && v.data.lastModified,
+                          )?.id
+                          return `attachments/${attachmentId}`
+                        }
                     : undefined
                 }
               />
@@ -224,10 +224,10 @@ const MemberNoteAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item
-          label={formatMessage(memberMessages.label.noteForAdmin)}
+          label={formatMessage(memberMessages.label.noteForPermission)}
           name="note"
           initialValue={note?.note}
-          className={currentUserRole === 'app-owner' ? '' : 'd-none'}
+          className={permissions.MEMBER_NOTE_VIEW_EDIT ? '' : 'd-none'}
         >
           <Input.TextArea />
         </Form.Item>
