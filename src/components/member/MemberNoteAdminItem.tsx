@@ -4,6 +4,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages, merchandiseMessages } from '../../helpers/translation'
@@ -182,6 +183,7 @@ const MemberNoteAdminItem: React.FC<{
   const [modalVisible, setModalVisible] = useState(
     permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? isActive : false,
   )
+  const location = useLocation()
 
   return (
     <div className="d-flex justify-content-between mb-4">
@@ -245,7 +247,17 @@ const MemberNoteAdminItem: React.FC<{
             overlay={
               <Menu>
                 <StyledMenuItem>
-                  <div onClick={() => setModalVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
+                  <div
+                    onClick={() => {
+                      if (note.id) {
+                        const newUrl = `${location.pathname}?id=${note.id}`
+                        window.history.pushState({ path: newUrl }, '', newUrl)
+                      }
+                      setModalVisible(true)
+                    }}
+                  >
+                    {formatMessage(commonMessages.ui.edit)}
+                  </div>
                 </StyledMenuItem>
                 <StyledMenuItem>
                   <AdminModal
