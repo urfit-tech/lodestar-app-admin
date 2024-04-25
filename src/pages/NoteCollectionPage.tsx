@@ -134,7 +134,7 @@ const NoteCollectionPage: React.FC = () => {
     orderBy,
     filters,
   )
-  const { memberNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+  const { memberNote, loadingMemberNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
   const location = useLocation()
 
   const { updateMemberNote } = useMutateMemberNote()
@@ -408,7 +408,7 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
-  if (loadingFoundNote) return <></>
+  if (loadingMemberNote) return <></>
 
   if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
@@ -1002,7 +1002,7 @@ export const useFindMemberNoteByNoteId = (memberNoteId: string, memberId?: strin
     })) || []
 
   return {
-    loadingFoundNote: loading,
+    loadingMemberNote: loading,
     errorFoundNote: error,
     memberNote: note,
   }
