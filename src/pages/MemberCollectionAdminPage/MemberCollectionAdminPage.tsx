@@ -405,7 +405,7 @@ export const MemberCollectionTableBlock: React.VFC<{
   }[]
   visibleShowMoreButton: boolean
   visibleColumnSearchProps: boolean
-  extraColumn?: {
+  extraColumns?: {
     title: string
     key: string
     dataIndex: string
@@ -442,7 +442,7 @@ export const MemberCollectionTableBlock: React.VFC<{
   properties,
   visibleShowMoreButton,
   visibleColumnSearchProps,
-  extraColumn = [],
+  extraColumns = [],
   fetchMembers,
   onFieldFilterChange,
   onSortOrderChange,
@@ -632,7 +632,15 @@ export const MemberCollectionTableBlock: React.VFC<{
       ),
       ...getColumnSearchProps('managerName'),
     },
-    ...extraColumn,
+    ...extraColumns.map(extraColumn => {
+      const columnKey = extraColumn.key as keyof MemberInfoProps
+      const column: ColumnProps<MemberInfoProps> = {
+        title: extraColumn.title,
+        key: extraColumn.key,
+        render: (text, record, index) => record?.[columnKey],
+      }
+      return column
+    }),
     ...properties
       .filter(property => visibleColumnIds.includes(property.id))
       .map(property => {
