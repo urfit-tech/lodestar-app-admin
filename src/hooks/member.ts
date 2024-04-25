@@ -17,11 +17,12 @@ import {
   UserRole,
   MemberNote,
   ResponseMembers,
+  MemberCollectionProps,
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
-import { FiledFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 interface MenuItem {
   role: string | null
@@ -668,7 +669,7 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMembers = (authToken: string, limit: number, filter?: FiledFilter) => {
+export const useMembers = (authToken: string, limit: number, filter?: FieldFilter) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<any>('')
   const [members, setMembers] = useState<
@@ -688,7 +689,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FiledFilte
   const [nextToken, setNextToken] = useState<string | null>(null)
 
   const fetchMembers = async (
-    filter: FiledFilter | undefined,
+    filter: FieldFilter | undefined,
     option: {
       limit?: number
       nextToken?: string | null
@@ -762,19 +763,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FiledFilte
   }
 }
 
-export const useMemberCollection = (
-  members: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-    role: 'general-member' | 'content-creator' | 'app-owner'
-    createdAt: Date
-    username: string
-    loginedAt: Date | null
-    managerId: string | null
-  }[],
-) => {
+export const useMemberCollection = (members: MemberCollectionProps[]) => {
   const { loading: loadingMemberPhones, data: memberPhonesData } = useQuery<
     hasura.GetMemberPhones,
     hasura.GetMemberPhonesVariables
@@ -947,10 +936,10 @@ export const useMemberCollection = (
               .map(memberOrderDiscount => memberOrderDiscount.price),
           ),
       ),
-      manager: managerInfoData?.member.find(manager => manager.id === v.id)
+      manager: managerInfoData?.member.find(manager => manager.id === v.managerId)
         ? {
-            id: managerInfoData?.member.find(manager => manager.id === v.id)?.id || '',
-            name: managerInfoData?.member.find(manager => manager.id === v.id)?.name || '',
+            id: managerInfoData?.member.find(manager => manager.id === v.managerId)?.id || '',
+            name: managerInfoData?.member.find(manager => manager.id === v.managerId)?.name || '',
           }
         : null,
       categories:
