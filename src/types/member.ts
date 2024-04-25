@@ -44,6 +44,12 @@ export type MemberInfoProps = {
   properties?: {
     [propertyId: string]: string
   }
+  star?: number
+  lastMemberNoteCalled?: Date | null | string
+  lastMemberNoteAnswered?: Date | null | string
+  completedAt?: Date | null | string
+  closedAt?: Date | null | string
+  recycledAt?: Date | null | string
 }
 
 export type MemberPublicProps = {
@@ -251,4 +257,12 @@ export type MemberCollectionProps = {
   username: string
   loginedAt: Date | null
   managerId: string | null
+  star?: number
+  lastMemberNoteCalled?: Date | null
+  lastMemberNoteAnswered?: Date | null
+  completedAt?: Date | null
+  closedAt?: Date | null
+  recycledAt?: Date | null
 }
+
+export type ColumnProperty = { id: string; name: string; placeholder: string | undefined; isEditable: boolean; isRequired: boolean }

@@ -17,6 +17,7 @@ import {
   UserRole,
   MemberNote,
   ResponseMembers,
+  MemberCollectionProps,
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
@@ -765,19 +766,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FieldFilte
   }
 }
 
-export const useMemberCollection = (
-  members: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-    role: 'general-member' | 'content-creator' | 'app-owner'
-    createdAt: Date
-    username: string
-    loginedAt: Date | null
-    managerId: string | null
-  }[],
-) => {
+export const useMemberCollection = (members: MemberCollectionProps[]) => {
   const { loading: loadingMemberPhones, data: memberPhonesData } = useQuery<
     hasura.GetMemberPhones,
     hasura.GetMemberPhonesVariables
@@ -950,10 +939,10 @@ export const useMemberCollection = (
               .map(memberOrderDiscount => memberOrderDiscount.price),
           ),
       ),
-      manager: managerInfoData?.member.find(manager => manager.id === v.id)
+      manager: managerInfoData?.member.find(manager => manager.id === v.managerId)
         ? {
-            id: managerInfoData?.member.find(manager => manager.id === v.id)?.id || '',
-            name: managerInfoData?.member.find(manager => manager.id === v.id)?.name || '',
+            id: managerInfoData?.member.find(manager => manager.id === v.managerId)?.id || '',
+            name: managerInfoData?.member.find(manager => manager.id === v.managerId)?.name || '',
           }
         : null,
       categories:

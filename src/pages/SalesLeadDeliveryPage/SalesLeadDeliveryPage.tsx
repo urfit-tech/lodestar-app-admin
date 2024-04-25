@@ -36,7 +36,7 @@ import hasura, { member_bool_exp } from '../../hasura'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import { useGetManagerWithMemberCount } from '../../hooks/sales'
-import { MemberCollectionProps } from '../../types/member'
+import { ColumnProperty, MemberCollectionProps } from '../../types/member'
 import { MemberCollectionTableBlock, MemberFieldFilter } from '../MemberCollectionAdminPage/MemberCollectionAdminPage'
 import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
@@ -455,40 +455,6 @@ const FilterSection: React.FC<{
     </Form>
   )
 }
-type Property = { id: string; name: string; placeholder: string | undefined; isEditable: boolean; isRequired: boolean }
-
-const extraColumn = [
-  {
-    title: '星等',
-    dataIndex: 'star',
-    key: 'star',
-  },
-  {
-    title: '上次撥打日期',
-    dataIndex: 'lastMemberNoteCalled',
-    key: 'lastMemberNoteCalled',
-  },
-  {
-    title: '上次接通日期',
-    dataIndex: 'lastMemberNoteAnswered',
-    key: 'lastMemberNoteAnswered',
-  },
-  {
-    title: '完成日期',
-    dataIndex: 'completedAt',
-    key: 'completedAt',
-  },
-  {
-    title: '拒絕日期',
-    dataIndex: 'closedAt',
-    key: 'closedAt',
-  },
-  {
-    title: '回收日期',
-    dataIndex: 'recycledAt',
-    key: 'recycledAt',
-  },
-]
 
 const ConfirmSection: React.FC<{
   filter: Filter
@@ -505,7 +471,7 @@ const ConfirmSection: React.FC<{
   const propertyColumn = JSON.parse(settings['sales_lead_delivery_page.confirm_section.default_member_property_column'])
   const propertyColumnIds = propertyColumn
     .map((columnName: string) => properties.find(property => columnName === property.name))
-    .map((property: Property) => property.id)
+    .map((property: ColumnProperty) => property.id)
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>([
     '#',
     'createdAt',
@@ -516,6 +482,40 @@ const ConfirmSection: React.FC<{
   ])
 
   const limit = 50
+
+  const extraColumns = [
+    {
+      title: formatMessage(commonMessages.label.star),
+      dataIndex: 'star',
+      key: 'star',
+    },
+    {
+      title: formatMessage(commonMessages.label.lastMemberNoteCalled),
+      dataIndex: 'lastMemberNoteCalled',
+      key: 'lastMemberNoteCalled',
+    },
+    {
+      title: formatMessage(commonMessages.label.lastMemberNoteAnswered),
+      dataIndex: 'lastMemberNoteAnswered',
+      key: 'lastMemberNoteAnswered',
+    },
+    {
+      title: formatMessage(commonMessages.label.completedAt),
+      dataIndex: 'completedAt',
+      key: 'completedAt',
+    },
+    {
+      title: formatMessage(commonMessages.label.closedAt),
+      dataIndex: 'closedAt',
+      key: 'closedAt',
+    },
+    {
+      title: formatMessage(commonMessages.label.recycledAt),
+      dataIndex: 'recycledAt',
+      key: 'recycledAt',
+    },
+  ]
+
   const allFieldColumns: ({
     id: string
     title: string
@@ -528,7 +528,7 @@ const ConfirmSection: React.FC<{
     enabledModules.member_assignment && currentUserRole === 'app-owner'
       ? { id: 'managerName', title: formatMessage(memberMessages.label.manager) }
       : null,
-    ...extraColumn.map(column => ({
+    ...extraColumns.map(column => ({
       id: column.key,
       title: column.title,
     })),
@@ -699,7 +699,21 @@ const ConfirmSection: React.FC<{
 
   const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
 
-  const members = leadCandidatesData?.member.slice(0, limit) as MemberCollectionProps[]
+  const members = leadCandidatesData?.member.slice(0, limit).map(member => ({
+    ...member,
+    managerId: member.manager_id,
+    createdAt: member.created_at,
+    loginedAt: member.logined_at ? moment(member.logined_at).format('YYYY-MM-DD') : null,
+    lastMemberNoteCalled: member.last_member_note_called
+      ? moment(member.last_member_note_called).format('YYYY-MM-DD')
+      : null,
+    lastMemberNoteAnswered: member.last_member_note_answered
+      ? moment(member.last_member_note_answered).format('YYYY-MM-DD')
+      : null,
+    completedAt: member.completed_at ? moment(member.completed_at).format('YYYY-MM-DD') : null,
+    closedAt: member.closed_at ? moment(member.closed_at).format('YYYY-MM-DD') : null,
+    recycledAt: member.recycled_at ? moment(member.recycled_at).format('YYYY-MM-DD') : null,
+  })) as MemberCollectionProps[]
 
   const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
 
@@ -785,7 +799,7 @@ const ConfirmSection: React.FC<{
             properties={properties}
             visibleShowMoreButton={false}
             visibleColumnSearchProps={false}
-            extraColumn={extraColumn}
+            extraColumns={extraColumns}
           />
         </AdminCard>
       </Box>
