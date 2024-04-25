@@ -134,7 +134,7 @@ const NoteCollectionPage: React.FC = () => {
     orderBy,
     filters,
   )
-  const { memberNote, loadingMemberNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+  const { memberNote, loadingMemberNote } = useMemberNoteById(activeMemberNoteId || '')
   const location = useLocation()
 
   const { updateMemberNote } = useMutateMemberNote()
@@ -862,7 +862,7 @@ const useMemberNotesAdmin = (
   }
 }
 
-export const useFindMemberNoteByNoteId = (memberNoteId: string, memberId?: string) => {
+export const useMemberNoteById = (memberNoteId: string, memberId?: string) => {
   const GET_MEMBER_NOTE_BY_ID_QUERY = gql`
     query GET_MEMBER_NOTE_BY_ID($memberNoteId: String!, $memberId: String) {
       member_note(where: { id: { _eq: $memberNoteId }, member_id: { _eq: $memberId } }) {
