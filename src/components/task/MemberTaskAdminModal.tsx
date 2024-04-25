@@ -238,10 +238,9 @@ const MemberTaskAdminModal: React.FC<
             member: memberTaskMember,
             dueAt: memberTaskDueAt,
             meetingGateway: memberTaskMeetingGateway,
-            meet: memberTaskMeet,
+            meetingHours: memberTaskMeetingHours,
           } = memberTask
 
-          const memberTaskMeetId = memberTaskMeet?.id
           const memberTaskExecutorId = memberTaskExecutor?.id
           const memberTaskMemberId = memberTaskMember.id
           const memberTaskDueAtTime = toMillisecond(memberTaskDueAt)
@@ -253,7 +252,9 @@ const MemberTaskAdminModal: React.FC<
               (memberTaskDueAtTime !== formDueAtTime ||
                 memberTaskExecutorId !== formExecutorId ||
                 memberTaskMemberId !== formMemberId ||
-                memberTaskMeetingGateway !== formMeetingGateway))
+                memberTaskMeetingGateway !== formMeetingGateway ||
+                memberTaskMeetingHours !== formMeetingHours
+              ))
           ) {
             deleteMeet({
               memberTaskMeetId,
@@ -285,15 +286,7 @@ const MemberTaskAdminModal: React.FC<
             },
           },
         }).then(async ({ data }) => {
-          const memberTaskDueAtTime = toMillisecond(memberTask?.dueAt)
-          const formDueAtTime = toMillisecond(formDueAt?.toDate())
-          if (
-            hasMeeting &&
-            (memberTaskDueAtTime !== formDueAtTime ||
-              memberTask?.executor?.id !== formExecutorId ||
-              memberTask.member.id !== formMemberId ||
-              memberTask.meetingGateway !== formMeetingGateway)
-          ) {
+          if (hasMeeting) {
             await insertMeet({
               variables: {
                 meet: {
