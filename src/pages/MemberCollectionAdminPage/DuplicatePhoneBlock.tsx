@@ -3,7 +3,7 @@ import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
 import { Button, Skeleton } from 'antd'
 import { flatten } from 'ramda'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -117,14 +117,15 @@ const DuplicatePhoneBlock: React.VFC = () => {
                     {phone}
                     <StyledDuplicatedNumberMemberList>
                       {members.map(({ id, name, email }) => (
-                        <StyledDuplicatedNumberMemberItemButton
-                          key={id}
-                          type="link"
-                          onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
-                        >
-                          <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
-                          <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
-                        </StyledDuplicatedNumberMemberItemButton>
+                        <Fragment key={id}>
+                          <StyledDuplicatedNumberMemberItemButton
+                            type="link"
+                            onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
+                          >
+                            <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
+                            <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
+                          </StyledDuplicatedNumberMemberItemButton>
+                        </Fragment>
                       ))}
                     </StyledDuplicatedNumberMemberList>
                   </StyledDuplicatedNumberListItem>

@@ -1,6 +1,6 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -24,16 +24,20 @@ import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
+import AdminCard from '../../components/admin/AdminCard'
 import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura, { member_bool_exp } from '../../hasura'
+import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import { useGetManagerWithMemberCount } from '../../hooks/sales'
+import { ColumnProperty, MemberCollectionProps } from '../../types/member'
+import { MemberCollectionTableBlock, MemberFieldFilter } from '../MemberCollectionAdminPage/MemberCollectionAdminPage'
 import SalesLeadLimitConfirmModel from './SalesLeadLimitConfirmModel'
 import { salesLeadDeliveryPageMessages } from './translation'
 
@@ -79,12 +83,12 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     excludeLastAnswered: false,
   })
 
-  const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
-    UPDATE_LEAD_MANAGER,
+  const [updateLeadManager] = useMutation<hasura.UpdateLeadManager, hasura.UpdateLeadManagerVariables>(
+    UpdateLeadManager,
   )
 
-  const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
-    GET_LEAD_CANDIDATES,
+  const [getLeadManager] = useLazyQuery<hasura.GetLeadCandidates, hasura.GetLeadCandidatesVariables>(
+    GetLeadCandidates,
     { fetchPolicy: 'no-cache' },
   )
 
@@ -462,52 +466,130 @@ const ConfirmSection: React.FC<{
   const [numDeliver, setNumDeliver] = useState(1)
   const { properties } = useProperty()
   const [visible, setVisible] = useState(false)
+  const { currentUserRole } = useAuth()
+  const { id: appId, settings, enabledModules } = useApp()
+  const propertyColumn = JSON.parse(settings['sales_lead_delivery_page.confirm_section.default_member_property_column'])
+  const propertyColumnIds = propertyColumn
+    .map((columnName: string) => properties.find(property => columnName === property.name))
+    .map((property: ColumnProperty) => property.id)
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>([
+    '#',
+    'createdAt',
+    'consumption',
+    'categories',
+    'managerName',
+    ...propertyColumnIds,
+  ])
 
-  const orCondition = []
+  const limit = 50
 
-  if (filter.closedLead === 'contained' && filter.closedAtRange) {
-    orCondition.push(
-      {
-        closed_at: {
-          _gte: moment(filter.closedAtRange[0]).startOf('day'),
-          _lte: moment(filter.closedAtRange[1]).endOf('day'),
+  const extraColumns = [
+    {
+      title: formatMessage(commonMessages.label.star),
+      dataIndex: 'star',
+      key: 'star',
+    },
+    {
+      title: formatMessage(commonMessages.label.lastMemberNoteCalled),
+      dataIndex: 'lastMemberNoteCalled',
+      key: 'lastMemberNoteCalled',
+    },
+    {
+      title: formatMessage(commonMessages.label.lastMemberNoteAnswered),
+      dataIndex: 'lastMemberNoteAnswered',
+      key: 'lastMemberNoteAnswered',
+    },
+    {
+      title: formatMessage(commonMessages.label.completedAt),
+      dataIndex: 'completedAt',
+      key: 'completedAt',
+    },
+    {
+      title: formatMessage(commonMessages.label.closedAt),
+      dataIndex: 'closedAt',
+      key: 'closedAt',
+    },
+    {
+      title: formatMessage(commonMessages.label.recycledAt),
+      dataIndex: 'recycledAt',
+      key: 'recycledAt',
+    },
+  ]
+
+  const allFieldColumns: ({
+    id: string
+    title: string
+  } | null)[] = [
+    { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
+    { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
+    { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
+    { id: 'categories', title: formatMessage(commonMessages.label.category) },
+    { id: 'tags', title: formatMessage(commonMessages.label.tags) },
+    enabledModules.member_assignment && currentUserRole === 'app-owner'
+      ? { id: 'managerName', title: formatMessage(memberMessages.label.manager) }
+      : null,
+    ...extraColumns.map(column => ({
+      id: column.key,
+      title: column.title,
+    })),
+    ...properties.map(property => ({
+      id: property.id,
+      title: property.name,
+    })),
+  ]
+
+  const andCondition = []
+  if (filter.lastCalledRange && filter.excludeLastCalled) {
+    const lastCalledCondition = {
+      _or: [
+        {
+          last_member_note_called: {
+            _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+          },
         },
-      },
-      {
-        closed_at: {
-          _is_null: true,
+        {
+          last_member_note_called: {
+            _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+          },
         },
-      },
-    )
+      ],
+    }
+
+    andCondition.push(lastCalledCondition)
   }
-  if (filter.lastCalledRange && filter.excludeLastCalled && !filter.notCalled) {
-    orCondition.push(
-      {
-        last_member_note_called: {
-          _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+
+  if (filter.lastAnsweredRange && filter.excludeLastAnswered) {
+    const lastAnsweredCondition = {
+      _or: [
+        {
+          last_member_note_answered: {
+            _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          },
         },
-      },
-      {
-        last_member_note_called: {
-          _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+        {
+          last_member_note_answered: {
+            _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+          },
         },
-      },
-    )
+      ],
+    }
+
+    andCondition.push(lastAnsweredCondition)
   }
-  if (filter.lastAnsweredRange && filter.excludeLastAnswered && !filter.notAnswered) {
-    orCondition.push(
-      {
-        last_member_note_answered: {
-          _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+
+  properties.map(property => {
+    if (!isEmpty(filter[property.name])) {
+      andCondition.push({
+        member_properties: {
+          property: { name: { _eq: property.name } },
+          value: filter[`is${property.name}ExactMatch`]
+            ? { _eq: `${filter[property.name]}` }
+            : { _like: `%${filter[property.name]}%` },
         },
-      },
-      {
-        last_member_note_answered: {
-          _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-        },
-      },
-    )
-  }
+      })
+    }
+    return undefined
+  })
 
   const leadCandidatesCondition = {
     member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
@@ -559,25 +641,29 @@ const ConfirmSection: React.FC<{
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
         }
       : undefined,
-    _and: properties.map(property => {
-      return {
-        member_properties: !isEmpty(filter[property.name])
-          ? {
-              property: { name: { _eq: property.name } },
-              value: filter[`is${property.name}ExactMatch`]
-                ? { _eq: `${filter[property.name]}` }
-                : { _like: `%${filter[property.name]}%` },
-            }
-          : undefined,
-      }
-    }),
+    _and: andCondition.length === 0 ? undefined : andCondition,
     completed_at:
       filter.completedLead === 'contained'
         ? undefined
         : {
             _is_null: filter.completedLead === 'excluded',
           },
-    _or: orCondition.length !== 0 ? orCondition : undefined,
+    _or:
+      filter.closedLead === 'contained' && filter.closedAtRange
+        ? [
+            {
+              closed_at: {
+                _gte: moment(filter.closedAtRange[0]).startOf('day'),
+                _lte: moment(filter.closedAtRange[1]).endOf('day'),
+              },
+            },
+            {
+              closed_at: {
+                _is_null: true,
+              },
+            },
+          ]
+        : undefined,
     closed_at:
       filter.closedLead === 'excluded'
         ? {
@@ -601,35 +687,33 @@ const ConfirmSection: React.FC<{
           },
   }
 
-  const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
-    hasura.GET_LEAD_CANDIDATES_AGGREGATE,
-    hasura.GET_LEAD_CANDIDATES_AGGREGATEVariables
-  >(
-    gql`
-      query GET_LEAD_CANDIDATES_AGGREGATE($condition: member_bool_exp) {
-        member_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    {
-      fetchPolicy: 'no-cache',
-      variables: {
-        condition: leadCandidatesCondition,
-      },
+  const { data: leadCandidatesData, loading: loadingLeadCandidates } = useQuery<
+    hasura.GetLeadCandidates,
+    hasura.GetLeadCandidatesVariables
+  >(GetLeadCandidates, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      condition: leadCandidatesCondition,
     },
-  )
+  })
 
-  const filteredMemberIdCount = useMemo(() => {
-    const count = leadCandidatesData?.member_aggregate.aggregate?.count || 0
-    return count
-  }, [leadCandidatesData?.member_aggregate])
+  const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
 
-  const isLoading = isLeadCandidatesLoading
-
-  const { id: appId, settings } = useApp()
+  const members = leadCandidatesData?.member.slice(0, limit).map(member => ({
+    ...member,
+    managerId: member.manager_id,
+    createdAt: new Date(member.created_at),
+    loginedAt: member.logined_at ? moment(member.logined_at).format('YYYY-MM-DD') : null,
+    lastMemberNoteCalled: member.last_member_note_called
+      ? moment(member.last_member_note_called).format('YYYY-MM-DD')
+      : null,
+    lastMemberNoteAnswered: member.last_member_note_answered
+      ? moment(member.last_member_note_answered).format('YYYY-MM-DD')
+      : null,
+    completedAt: member.completed_at ? moment(member.completed_at).format('YYYY-MM-DD') : null,
+    closedAt: member.closed_at ? moment(member.closed_at).format('YYYY-MM-DD') : null,
+    recycledAt: member.recycled_at ? moment(member.recycled_at).format('YYYY-MM-DD') : null,
+  })) as MemberCollectionProps[]
 
   const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
 
@@ -664,21 +748,21 @@ const ConfirmSection: React.FC<{
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
-          loading={isLoading}
+          loading={loadingLeadCandidates}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
-          value={`${numDeliver} / ${filteredMemberIdCount}`}
+          value={`${numDeliver} / ${leadCandidatesCounts}`}
         />
         <div className="mb-2">
           <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
-        {!isLoading && (
+        {!loadingLeadCandidates && (
           <Row className="mb-2">
             <Col span={6}>
-              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIdCount} />
+              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={leadCandidatesCounts} />
             </Col>
             <Col span={18}>
-              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIdCount} />
+              <Slider value={numDeliver} onChange={setNumDeliver} max={leadCandidatesCounts} />
             </Col>
           </Row>
         )}
@@ -697,6 +781,28 @@ const ConfirmSection: React.FC<{
           />
         )}
       </div>
+      <Box className="container mt-4">
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text>{formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.previewResult, { limit })}</Text>
+          <MemberFieldFilter
+            allColumns={allFieldColumns}
+            visibleColumnIds={visibleColumnIds}
+            setVisibleColumnIds={setVisibleColumnIds}
+          />
+        </Flex>
+        <AdminCard className="mb-5 mt-2">
+          <MemberCollectionTableBlock
+            visibleColumnIds={visibleColumnIds}
+            loadingMembers={loadingLeadCandidates || !members}
+            currentMembers={members}
+            limit={limit}
+            properties={properties}
+            visibleShowMoreButton={false}
+            visibleColumnSearchProps={false}
+            extraColumns={extraColumns}
+          />
+        </AdminCard>
+      </Box>
     </div>
   )
 }
@@ -731,8 +837,8 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
   )
 }
 
-const UPDATE_LEAD_MANAGER = gql`
-  mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
+const UpdateLeadManager = gql`
+  mutation UpdateLeadManager($memberIds: [String!], $managerId: String) {
     update_member(
       where: { id: { _in: $memberIds } }
       _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
@@ -742,11 +848,22 @@ const UPDATE_LEAD_MANAGER = gql`
   }
 `
 
-const GET_LEAD_CANDIDATES = gql`
-  query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
+const GetLeadCandidates = gql`
+  query GetLeadCandidates($condition: member_bool_exp, $limit: Int) {
     member(where: $condition, limit: $limit) {
       id
+      picture_url
       name
+      email
+      role
+      created_at
+      username
+      logined_at
+      manager_id
+      star
+      closed_at
+      completed_at
+      recycled_at
       last_member_note_called
       last_member_note_answered
     }
