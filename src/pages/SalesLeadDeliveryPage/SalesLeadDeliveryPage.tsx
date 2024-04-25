@@ -702,7 +702,7 @@ const ConfirmSection: React.FC<{
   const members = leadCandidatesData?.member.slice(0, limit).map(member => ({
     ...member,
     managerId: member.manager_id,
-    createdAt: member.created_at,
+    createdAt: new Date(member.created_at),
     loginedAt: member.logined_at ? moment(member.logined_at).format('YYYY-MM-DD') : null,
     lastMemberNoteCalled: member.last_member_note_called
       ? moment(member.last_member_note_called).format('YYYY-MM-DD')
