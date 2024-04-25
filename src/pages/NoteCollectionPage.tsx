@@ -11,6 +11,7 @@ import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../components/admin'
@@ -133,7 +134,8 @@ const NoteCollectionPage: React.FC = () => {
     orderBy,
     filters,
   )
-  const { foundNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+  const { memberNote, loadingFoundNote } = useFindMemberNoteByNoteId(activeMemberNoteId || '')
+  const location = useLocation()
 
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
@@ -407,9 +409,6 @@ const NoteCollectionPage: React.FC = () => {
   ]
 
   if (loadingFoundNote) return <></>
-  const indexToRemove = notes.findIndex(note => note.id === activeMemberNoteId)
-  indexToRemove !== -1 && notes.splice(indexToRemove, 1)
-  foundNote.length && notes.unshift(...foundNote)
 
   if (!enabledModules.member_note || (!permissions.MEMBER_NOTE_ADMIN && !permissions.VIEW_ALL_MEMBER_NOTE)) {
     return <ForbiddenPage />
@@ -445,9 +444,10 @@ const NoteCollectionPage: React.FC = () => {
             renderTrigger={({ setVisible }) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
               useEffect(() => {
-                setVisible(Boolean(foundNote.length))
-                setSelectedNote(notes.filter(note => note.id === activeMemberNoteId)[0])
+                setVisible(Boolean(memberNote.length))
+                setSelectedNote(memberNote[0])
               }, [])
+
               return (
                 <Table<NoteAdmin>
                   columns={columns}
@@ -467,6 +467,11 @@ const NoteCollectionPage: React.FC = () => {
                     permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE
                       ? note => ({
                           onClick: () => {
+                            if (note.id) {
+                              const newUrl = `${location.pathname}?id=${note.id}`
+                              window.history.pushState({ path: newUrl }, '', newUrl)
+                            }
+
                             setSelectedNote(note)
                             setVisible(true)
                           },
@@ -610,7 +615,7 @@ const useMemberNotesAdmin = (
   orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
   filters?: FiltersProps,
 ) => {
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
 
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
@@ -999,7 +1004,7 @@ export const useFindMemberNoteByNoteId = (memberNoteId: string, memberId?: strin
   return {
     loadingFoundNote: loading,
     errorFoundNote: error,
-    foundNote: note,
+    memberNote: note,
   }
 }
 
