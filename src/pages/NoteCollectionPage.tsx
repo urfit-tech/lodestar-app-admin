@@ -615,7 +615,7 @@ const useMemberNotesAdmin = (
   orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
   filters?: FiltersProps,
 ) => {
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
@@ -625,7 +625,7 @@ const useMemberNotesAdmin = (
         }
       : undefined,
     author:
-      currentUserRole === 'app-owner'
+      currentUserRole === 'app-owner' || permissions.MEMBER_NOTE_ADMIN || permissions.VIEW_ALL_MEMBER_NOTE
         ? filters?.author
           ? {
               _or: [
