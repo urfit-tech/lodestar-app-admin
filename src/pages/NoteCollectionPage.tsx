@@ -615,7 +615,7 @@ const useMemberNotesAdmin = (
   orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
   filters?: FiltersProps,
 ) => {
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
