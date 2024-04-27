@@ -68,7 +68,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             {formatMessage(memberMessages.label.createMemberNote)}
           </Button>
         )}
-        onSubmit={({ type, status, duration, description, note, attachments }) =>
+        onSubmit={({ type, status, duration, description, attachments }) =>
           insertMemberNote({
             variables: {
               memberId: memberAdmin.id,
@@ -77,7 +77,6 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               status,
               duration,
               description,
-              note,
             },
           })
             .then(async ({ data }) => {
