@@ -4,7 +4,6 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages, merchandiseMessages } from '../../helpers/translation'
@@ -181,10 +180,10 @@ const MemberNoteAdminItem: React.FC<{
   const uploadAttachments = useUploadAttachments()
   const { archiveAttachments } = useMutateAttachment()
   const [modalVisible, setModalVisible] = useState(
-    permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE ? isActive : false,
+    permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE || permissions.VIEW_MEMBER_NOTE_TRANSCRIPT
+      ? isActive
+      : false,
   )
-  const location = useLocation()
-
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
@@ -221,7 +220,7 @@ const MemberNoteAdminItem: React.FC<{
               </>
             )}
             <>
-              {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && note.transcript && (
+              {(permissions.VIEW_MEMBER_NOTE_TRANSCRIPT || permissions.MEMBER_NOTE_ADMIN) && note.transcript && (
                 <MemberNoteTranscriptButton transcript={note.transcript} />
               )}
               {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
@@ -232,7 +231,7 @@ const MemberNoteAdminItem: React.FC<{
 
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
-          {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) && note.note && (
+          {(permissions.MEMBER_NOTE_VIEW_EDIT || permissions.MEMBER_NOTE_ADMIN) && note.note && (
             <StyledCommentBlock>
               <StyledCommentTitle>備註</StyledCommentTitle>
               <StyledCommentBody> {note.note}</StyledCommentBody>
@@ -250,7 +249,7 @@ const MemberNoteAdminItem: React.FC<{
                   <div
                     onClick={() => {
                       if (note.id) {
-                        const newUrl = `${location.pathname}?id=${note.id}`
+                        const newUrl = `${window.location.pathname}?id=${note.id}`
                         window.history.pushState({ path: newUrl }, '', newUrl)
                       }
                       setModalVisible(true)

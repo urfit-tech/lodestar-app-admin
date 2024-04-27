@@ -102,26 +102,39 @@ const MemberNoteAdminModal: React.FC<
         form.resetFields()
       })
   }
+  const resetUrlSearch = () => {
+    const currentUrl = new URL(window.location.href)
+    currentUrl.search = ''
+    window.history.replaceState(null, '', currentUrl.href)
+  }
 
   return (
     <AdminModal
       footer={null}
-      onCancel={e => onCancel?.(e)}
+      onCancel={e => {
+        onCancel?.(e)
+        resetUrlSearch()
+      }}
       renderFooter={({ setVisible }) => (
         <>
           <Button
             className="mr-2"
             onClick={e => {
               onCancel?.(e)
+              resetUrlSearch()
               setVisible(false)
               resetModal()
             }}
           >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button loading={isSubmitting} type="primary" onClick={() => {
-            handleSubmit(() => setVisible(false))
-          }}>
+          <Button
+            loading={isSubmitting}
+            type="primary"
+            onClick={() => {
+              handleSubmit(() => setVisible(false))
+            }}
+          >
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
@@ -227,7 +240,7 @@ const MemberNoteAdminModal: React.FC<
           label={formatMessage(memberMessages.label.noteForPermission)}
           name="note"
           initialValue={note?.note}
-          className={permissions.MEMBER_NOTE_VIEW_EDIT ? '' : 'd-none'}
+          className={permissions.MEMBER_NOTE_VIEW_EDIT || permissions.MEMBER_NOTE_ADMIN ? '' : 'd-none'}
         >
           <Input.TextArea />
         </Form.Item>

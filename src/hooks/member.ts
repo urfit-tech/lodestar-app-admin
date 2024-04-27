@@ -286,13 +286,14 @@ export const useMemberNotesAdmin = (
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
-    author: permissions.VIEW_ALL_MEMBER_NOTE
-      ? undefined
-      : {
-          id: {
-            _eq: currentMemberId,
+    author:
+      permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN
+        ? undefined
+        : {
+            id: {
+              _eq: currentMemberId,
+            },
           },
-        },
     member: filters?.member ? { id: { _eq: filters.member } } : undefined,
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }

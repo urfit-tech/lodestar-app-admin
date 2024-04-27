@@ -11,7 +11,6 @@ import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../components/admin'
@@ -135,7 +134,6 @@ const NoteCollectionPage: React.FC = () => {
     filters,
   )
   const { memberNote, loadingMemberNote } = useMemberNoteById(activeMemberNoteId || '')
-  const location = useLocation()
 
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
@@ -468,7 +466,7 @@ const NoteCollectionPage: React.FC = () => {
                       ? note => ({
                           onClick: () => {
                             if (note.id) {
-                              const newUrl = `${location.pathname}?id=${note.id}`
+                              const newUrl = `${window.location.pathname}?id=${note.id}`
                               window.history.pushState({ path: newUrl }, '', newUrl)
                             }
 
