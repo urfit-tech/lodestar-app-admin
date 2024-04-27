@@ -30,6 +30,7 @@ const FileUploader: React.FC<{
   }>
   onChange?: (files: File[]) => void
   onDownload?: (files: File) => void
+  downloadOnly?: boolean
 }> = ({
   fileList,
   multiple,
@@ -42,6 +43,7 @@ const FileUploader: React.FC<{
   renderTrigger,
   onChange,
   onDownload,
+  downloadOnly = false,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
@@ -51,13 +53,15 @@ const FileUploader: React.FC<{
 
   return (
     <>
-      <StyledButtonWrapper>
-        {renderTrigger?.({ onClick: () => inputRef.current?.click() }) || (
-          <Button icon={<UploadOutlined />} onClick={() => inputRef.current?.click()}>
-            {formatMessage(commonMessages.ui.uploadFile)}
-          </Button>
-        )}
-      </StyledButtonWrapper>
+      {!downloadOnly && (
+        <StyledButtonWrapper>
+          {renderTrigger?.({ onClick: () => inputRef.current?.click() }) || (
+            <Button icon={<UploadOutlined />} onClick={() => inputRef.current?.click()}>
+              {formatMessage(commonMessages.ui.uploadFile)}
+            </Button>
+          )}
+        </StyledButtonWrapper>
+      )}
       <input
         ref={inputRef}
         type="file"
@@ -122,7 +126,7 @@ const FileUploader: React.FC<{
                   }
                 : undefined
             }
-            onDelete={() => onChange?.(fileList.filter(w => w.name !== v.name))}
+            onDelete={!downloadOnly ? () => onChange?.(fileList.filter(w => w.name !== v.name)) : undefined}
           />
         ))}
     </>

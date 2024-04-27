@@ -210,6 +210,7 @@ export type MemberNote = {
   note: string | null
   rejectedAt: Date | null
   deletedFrom: string | null
+  transcript: string | null
   member: {
     id: string
     email: string
