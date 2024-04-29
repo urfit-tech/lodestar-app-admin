@@ -349,6 +349,10 @@ export const commonMessages = {
       id: 'common.text.deleteAppNav',
       defaultMessage: '刪除後會直接移除選單/連結，確定要刪除嗎？',
     },
+    displayMembershipCard: {
+      id: 'common.text.displayMembershipCard',
+      defaultMessage: 'Membership card for this identity: {membershipCard}',
+    }
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },

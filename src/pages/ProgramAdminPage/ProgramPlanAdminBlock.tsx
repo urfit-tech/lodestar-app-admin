@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Space } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import {
@@ -17,6 +18,7 @@ const ProgramPlanAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
 
   if (!program) {
     return <Skeleton active />
@@ -63,20 +65,30 @@ const ProgramPlanAdminBlock: React.FC<{
           onRefetch={onRefetch}
         />
 
-        <MembershipPlanModal
-          programId={program.id}
-          renderTrigger={({ onOpen }) => (
-            <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
-          )}
-          onRefetch={onRefetch}
-        />
+        {enabledModules.membership_card && (
+          <MembershipPlanModal
+            programId={program.id}
+            renderTrigger={({ onOpen }) => (
+              <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
+            )}
+            onRefetch={onRefetch}
+          />
+        )}
       </Space>
 
       <div className="row">
         {program.plans.map(programPlan => (
-          <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
-            <ProgramSubscriptionPlanAdminCard programId={program.id} programPlan={programPlan} onRefetch={onRefetch} />
-          </div>
+          <>
+            {!enabledModules.membership_card && programPlan.cardId ? null : (
+              <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
+                <ProgramSubscriptionPlanAdminCard
+                  programId={program.id}
+                  programPlan={programPlan}
+                  onRefetch={onRefetch}
+                />
+              </div>
+            )}
+          </>
         ))}
       </div>
     </>

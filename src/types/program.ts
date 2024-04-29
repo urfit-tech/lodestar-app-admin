@@ -156,7 +156,7 @@ export type ProgramPlan = {
   isCountdownTimerVisible?: boolean
   groupBuyingPeople?: number | null
   isParticipantsVisible: boolean
-  card_id?: string
+  cardId?: string
 }
 
 export type ProgramRoleProps = {
