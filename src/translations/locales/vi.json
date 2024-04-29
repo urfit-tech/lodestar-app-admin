@@ -945,6 +945,7 @@
   "common.text.unpublishingTitle": "Bạn có chắc chắn muốn hủy xuất bản không? ",
   "common.text.unpublishingWarning": "將下架且不會出現在列表，已擁有權益的會員仍然可以看到內容。",
   "common.text.withSharingCode": " URL quảng cáo: {code}",
+  "common.text.displayMembershipCard": "Membership card for this identity: {membershipCard}",
   "common.ui.add": "Thêm",
   "common.ui.addAuthor": " Thêm tác giả ",
   "common.ui.addCategory": "Thêm danh mục",

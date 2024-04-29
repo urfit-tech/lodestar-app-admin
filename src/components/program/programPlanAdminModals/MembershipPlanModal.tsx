@@ -107,7 +107,7 @@ const MembershipPlanModal: React.FC<
       >
         <TitleItem name="title" />
         <PermissionItem name="type" />
-        <IdentityMembershipItem name="membershipCard" membershipId={programPlan?.card_id} />
+        <IdentityMembershipItem name="membershipCard" membershipId={programPlan?.cardId} />
       </Form>
     </AdminModal>
   )
