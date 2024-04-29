@@ -19,7 +19,7 @@ interface cardType {
   title: string
 }
 
-const GET_CARD_TITLE_BY_APPID = gql`
+export const GET_CARD_TITLE_BY_APPID = gql`
   query GET_CARD_TITLE_BY_APPID($appId: String) {
     card(where: { app_id: { _eq: $appId } }) {
       title
@@ -28,7 +28,7 @@ const GET_CARD_TITLE_BY_APPID = gql`
   }
 `
 
-const GET_CARD_TITLE_BY_ID = gql`
+export const GET_CARD_TITLE_BY_ID = gql`
   query GET_CARD_TITLE_BY_ID($id: uuid) {
     card(where: { id: { _eq: $id } }) {
       title
