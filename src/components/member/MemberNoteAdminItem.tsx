@@ -237,7 +237,7 @@ const MemberNoteAdminItem: React.FC<{
 
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
-          {(permissions.MEMBER_NOTE_VIEW_EDIT || permissions.MEMBER_NOTE_ADMIN) && note.note && (
+          {permissions.MEMBER_NOTE_VIEW_EDIT && note.note && (
             <StyledCommentBlock>
               <StyledCommentTitle>備註</StyledCommentTitle>
               <StyledCommentBody> {note.note}</StyledCommentBody>
