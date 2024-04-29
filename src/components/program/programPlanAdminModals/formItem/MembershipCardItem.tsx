@@ -19,8 +19,8 @@ interface cardType {
   title: string
 }
 
-export const GET_CARD_TITLE_BY_APPID = gql`
-  query GET_CARD_TITLE_BY_APPID($appId: String) {
+export const GetCardTitleByAppId = gql`
+  query GetCardTitleByAppId($appId: String) {
     card(where: { app_id: { _eq: $appId } }) {
       title
       id
@@ -28,8 +28,8 @@ export const GET_CARD_TITLE_BY_APPID = gql`
   }
 `
 
-export const GET_CARD_TITLE_BY_ID = gql`
-  query GET_CARD_TITLE_BY_ID($id: uuid) {
+export const GetCardTitleById = gql`
+  query GetCardTitleById($id: uuid) {
     card(where: { id: { _eq: $id } }) {
       title
     }
@@ -42,11 +42,11 @@ const MembershipCard: React.FC<MembershipCardType> = ({ label, name, membershipI
   const [card, setCard] = useState<cardType[]>([])
   const [placeholder, setPlaceholder] = useState('選擇會員卡')
 
-  const { loading: loadingByAppId, data: dataByAppId } = useQuery(GET_CARD_TITLE_BY_APPID, {
+  const { loading: loadingByAppId, data: dataByAppId } = useQuery(GetCardTitleByAppId, {
     variables: { appId: app.id },
   })
 
-  const { loading: loadingById, data: dataById } = useQuery(GET_CARD_TITLE_BY_ID, {
+  const { loading: loadingById, data: dataById } = useQuery(GetCardTitleById, {
     variables: { id: membershipId },
   })
 

@@ -22,7 +22,7 @@ import {
   PerpetualPlanModal,
   SubscriptionPlanModal,
 } from './programPlanAdminModals'
-import { GET_CARD_TITLE_BY_ID } from './programPlanAdminModals/formItem/MembershipCardItem'
+import { GetCardTitleById } from './programPlanAdminModals/formItem/MembershipCardItem'
 
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
@@ -82,8 +82,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     appId,
     `ProgramPlan_${programPlan?.id}`,
   )
-  const { loading: loadingById, data: dataById } = useQuery(GET_CARD_TITLE_BY_ID, {
-    variables: { id: programPlan.card_id },
+  const { loading: loadingById, data: dataById } = useQuery(GetCardTitleById, {
+    variables: { id: programPlan.cardId },
   })
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
@@ -92,7 +92,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'subscription'
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
-    : programPlan.card_id
+    : programPlan.cardId
     ? 'membership'
     : 'perpetual'
 

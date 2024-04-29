@@ -79,7 +79,7 @@ const ProgramPlanAdminBlock: React.FC<{
       <div className="row">
         {program.plans.map(programPlan => (
           <>
-            {!enabledModules.membership_card && programPlan.card_id ? null : (
+            {!enabledModules.membership_card && programPlan.cardId ? null : (
               <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
                 <ProgramSubscriptionPlanAdminCard
                   programId={program.id}
