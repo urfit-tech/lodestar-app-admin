@@ -184,6 +184,12 @@ const MemberNoteAdminItem: React.FC<{
       ? isActive
       : false,
   )
+
+  const removeAdminPath = () => {
+    const newUrl = `${window.location.pathname}`
+    window.history.pushState({ path: newUrl }, '', newUrl)
+  }
+
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
@@ -299,6 +305,7 @@ const MemberNoteAdminItem: React.FC<{
         note={note}
         visible={modalVisible}
         onCancel={() => {
+          removeAdminPath()
           setModalVisible(false)
         }}
         onSubmit={async ({ type, status, duration, description, attachments, note: memberNote_note }) => {
@@ -347,6 +354,7 @@ const MemberNoteAdminItem: React.FC<{
           } else {
             return Promise.resolve()
           }
+          removeAdminPath()
         }}
       />
     </div>
