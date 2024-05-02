@@ -75,12 +75,14 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
-          <div className="p-5">
-            <MemberCouponAdminBlock memberId={memberId} />
-          </div>
-        </Tabs.TabPane>,
-        enabledModules.voucher && (
+        Boolean(permissions.MEMBER_COUPON_PLAN_VIEW) && (
+          <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
+            <div className="p-5">
+              <MemberCouponAdminBlock memberId={memberId} />
+            </div>
+          </Tabs.TabPane>
+        ),
+        enabledModules.voucher && Boolean(permissions.MEMBER_VOUCHER_PLAN_VIEW) && (
           <Tabs.TabPane key="voucher" tab={formatMessage(promotionMessages.label.voucher)}>
             <div className="p-5">
               <MemberVoucherAdminBlock memberId={memberId} />

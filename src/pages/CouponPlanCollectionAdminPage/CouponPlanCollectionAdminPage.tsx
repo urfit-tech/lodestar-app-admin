@@ -39,11 +39,12 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
             ],
           },
         ],
-        editor_id: permissions.COUPON_PLAN_ADMIN
-          ? undefined
-          : permissions.COUPON_PLAN_NORMAL
-          ? { _eq: currentMemberId }
-          : { _eq: '' },
+        editor_id:
+          permissions.COUPON_PLAN_ADMIN || permissions.COUPON_PLAN_ADMIN_VIEW
+            ? undefined
+            : permissions.COUPON_PLAN_NORMAL
+            ? { _eq: currentMemberId }
+            : { _eq: '' },
       },
     },
     {
@@ -56,11 +57,12 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
           { coupon_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
         ],
       },
-      editor_id: permissions.COUPON_PLAN_ADMIN
-        ? undefined
-        : permissions.COUPON_PLAN_NORMAL
-        ? { _eq: currentMemberId }
-        : { _eq: '' },
+      editor_id:
+        permissions.COUPON_PLAN_ADMIN || permissions.COUPON_PLAN_ADMIN_VIEW
+          ? undefined
+          : permissions.COUPON_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
     },
     {
       key: 'unavailable',
@@ -72,11 +74,12 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
           { coupon_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
         ],
       },
-      editor_id: permissions.COUPON_PLAN_ADMIN
-        ? undefined
-        : permissions.COUPON_PLAN_NORMAL
-        ? { _eq: currentMemberId }
-        : { _eq: '' },
+      editor_id:
+        permissions.COUPON_PLAN_ADMIN || permissions.COUPON_PLAN_ADMIN_VIEW
+          ? undefined
+          : permissions.COUPON_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
     },
   ]
 
@@ -84,7 +87,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     return <LoadingPage />
   }
 
-  if (!permissions.COUPON_PLAN_ADMIN && !permissions.COUPON_PLAN_NORMAL) {
+  if (!permissions.COUPON_PLAN_ADMIN && !permissions.COUPON_PLAN_NORMAL && !permissions.COUPON_PLAN_ADMIN_VIEW) {
     return <ForbiddenPage />
   }
 
@@ -97,16 +100,18 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <div className="row mb-5">
         <div className="col-8">
-          <CouponPlanAdminModal
-            renderTrigger={({ setVisible }) => (
-              <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(pageMessages['*'].createCouponPlan)}
-              </Button>
-            )}
-            icon={<FileAddOutlined />}
-            title={formatMessage(pageMessages['*'].createCouponPlan)}
-            onRefetch={() => setStateCode(Math.random())}
-          />
+          {(Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.COUPON_PLAN_ADMIN_EDIT)) && (
+            <CouponPlanAdminModal
+              renderTrigger={({ setVisible }) => (
+                <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
+                  {formatMessage(pageMessages['*'].createCouponPlan)}
+                </Button>
+              )}
+              icon={<FileAddOutlined />}
+              title={formatMessage(pageMessages['*'].createCouponPlan)}
+              onRefetch={() => setStateCode(Math.random())}
+            />
+          )}
         </div>
         <div className="col-4">
           <Input.Search
