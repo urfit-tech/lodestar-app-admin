@@ -112,6 +112,10 @@ const appointmentMessages = {
       id: 'appointmentMessages.AppointmentCancelModal.canceledReason',
       defaultMessage: '取消原因',
     },
+    cancelSuccess: {
+      id: 'appointmentMessages.AppointmentCancelModal.cancelSuccess',
+      defaultMessage: 'Cancellation successful',
+    },
   }),
   AppointmentConfigureMeetingRoomModal: defineMessages({
     meetingLink: {

@@ -3,6 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Button, message, Tabs, Typography } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -51,6 +52,7 @@ const CouponPlanDescriptionTabs: React.FC<{
     ARCHIVE_COUPON_CODE,
   )
   const withDescription = !(BraftEditor.createEditorState(description || '') as EditorState).isEmpty()
+  const { permissions } = useAuth()
 
   const mergedCouponCodes = couponCodes.map(couponCode => ({
     ...couponCode,
@@ -126,7 +128,13 @@ const CouponPlanDescriptionTabs: React.FC<{
                 )}`}
               </Typography.Text>
               <AdminModal
-                renderTrigger={({ setVisible }) => <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />}
+                renderTrigger={({ setVisible }) =>
+                  Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.COUPON_PLAN_ADMIN_DELETE) ? (
+                    <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
+                  ) : (
+                    <></>
+                  )
+                }
                 title={formatMessage(
                   couponPlanCode.coupons.some(coupon => coupon.used)
                     ? couponMessages.CouponPlanDescriptionTabs.canNotDeleteCouponCode
