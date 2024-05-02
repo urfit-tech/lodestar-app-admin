@@ -226,7 +226,7 @@ const MemberNoteAdminItem: React.FC<{
               </>
             )}
             <>
-              {(permissions.VIEW_MEMBER_NOTE_TRANSCRIPT || permissions.MEMBER_NOTE_ADMIN) && note.transcript && (
+              {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && note.transcript && (
                 <MemberNoteTranscriptButton transcript={note.transcript} />
               )}
               {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
