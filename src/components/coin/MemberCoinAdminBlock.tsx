@@ -1,9 +1,9 @@
 import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Input, Menu, message, Popover, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
@@ -104,6 +104,7 @@ const MemberCoinAdminBlock: React.VFC<{
 }> = ({ memberId, withSendingModal = true }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
+  const { permissions } = useAuth()
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
@@ -269,26 +270,30 @@ const MemberCoinAdminBlock: React.VFC<{
                         {text > 0 && '+'}
                         {text} {coinUnit}
                       </StyledLabel>
-                      <Dropdown
-                        trigger={['click']}
-                        overlay={
-                          <Menu onClick={() => setIsRevokedModalVisible(true)}>
-                            <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
-                            <StyledModal
-                              visible={isRevokedModalVisible}
-                              onOk={() => handleRevokeCoin(record.id)}
-                              okText={formatMessage(messages.revokeCoin)}
-                              onCancel={() => setIsRevokedModalVisible(false)}
-                            >
-                              <StyledModalTitle className="mb-4">{formatMessage(messages.revokeCoin)}</StyledModalTitle>
-                              <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
-                            </StyledModal>
-                          </Menu>
-                        }
-                        placement="bottomRight"
-                      >
-                        <MoreOutlined className="cursor-coiner" />
-                      </Dropdown>
+                      {permissions.RECLAIM_COIN && (
+                        <Dropdown
+                          trigger={['click']}
+                          overlay={
+                            <Menu onClick={() => setIsRevokedModalVisible(true)}>
+                              <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
+                              <StyledModal
+                                visible={isRevokedModalVisible}
+                                onOk={() => handleRevokeCoin(record.id)}
+                                okText={formatMessage(messages.revokeCoin)}
+                                onCancel={() => setIsRevokedModalVisible(false)}
+                              >
+                                <StyledModalTitle className="mb-4">
+                                  {formatMessage(messages.revokeCoin)}
+                                </StyledModalTitle>
+                                <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
+                              </StyledModal>
+                            </Menu>
+                          }
+                          placement="bottomRight"
+                        >
+                          <MoreOutlined className="cursor-coiner" />
+                        </Dropdown>
+                      )}
                     </div>
                   ),
                 },
