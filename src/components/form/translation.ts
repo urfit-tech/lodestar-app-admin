@@ -177,6 +177,7 @@ const formMessages = {
 
     // coin
     COIN_ADMIN: { id: 'form.PermissionGroup.COIN_ADMIN', defaultMessage: '所有代幣紀錄功能' },
+    RECLAIM_COIN: { id: 'form.PermissionGroup.RECLAIM_COIN', defaultMessage: 'Reclaim coin' },
 
     // member
     MEMBER_ADMIN: { id: 'form.PermissionGroup.MEMBER_ADMIN', defaultMessage: '所有會員列表功能' },
