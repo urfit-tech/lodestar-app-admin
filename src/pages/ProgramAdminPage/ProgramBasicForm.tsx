@@ -23,8 +23,8 @@ type FieldProps = {
   isIssuesOpen: boolean
   isIntroductionSectionVisible?: boolean
   isEnrolledCountVisible: boolean
-  display_header: boolean
-  display_footer: boolean
+  displayHeader: boolean
+  displayFooter: boolean
 }
 
 const ProgramBasicForm: React.FC<{
@@ -69,8 +69,8 @@ const ProgramBasicForm: React.FC<{
           position: index,
         })),
         productId: `Program_${program.id}`,
-        displayHeader: values.display_header,
-        displayFooter: values.display_footer,
+        displayHeader: values.displayHeader,
+        displayFooter: values.displayFooter,
       },
     })
       .then(() => {
