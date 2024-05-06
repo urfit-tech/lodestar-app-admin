@@ -1,8 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -24,6 +23,8 @@ type FieldProps = {
   isIssuesOpen: boolean
   isIntroductionSectionVisible?: boolean
   isEnrolledCountVisible: boolean
+  display_header: boolean
+  display_footer: boolean
 }
 
 const ProgramBasicForm: React.FC<{
@@ -68,6 +69,8 @@ const ProgramBasicForm: React.FC<{
           position: index,
         })),
         productId: `Program_${program.id}`,
+        displayHeader: values.display_header,
+        displayFooter: values.display_footer,
       },
     })
       .then(() => {
@@ -94,6 +97,8 @@ const ProgramBasicForm: React.FC<{
         isIssuesOpen: program.isIssuesOpen,
         isIntroductionSectionVisible: program.isIntroductionSectionVisible,
         isEnrolledCountVisible: program.isEnrolledCountVisible,
+        displayHeader: program.display_header,
+        displayFooter: program.display_footer,
       }}
       onFinish={handleSubmit}
     >
@@ -159,6 +164,18 @@ const ProgramBasicForm: React.FC<{
           <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.closed)}</Radio>
         </Radio.Group>
       </Form.Item>
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.displayHeader)} name="displayHeader">
+        <Radio.Group>
+          <Radio value={true}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.display)}</Radio>
+          <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.hide)}</Radio>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.displayFooter)} name="displayFooter">
+        <Radio.Group>
+          <Radio value={true}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.display)}</Radio>
+          <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.hide)}</Radio>
+        </Radio.Group>
+      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(ProgramAdminPageMessages['*'].cancel)}
@@ -184,6 +201,8 @@ const UPDATE_PROGRAM_BASIC = gql`
     $programCategories: [program_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $programTags: [program_tag_insert_input!]!
+    $displayHeader: Boolean
+    $displayFooter: Boolean
   ) {
     update_program(
       where: { id: { _eq: $programId } }
@@ -193,6 +212,8 @@ const UPDATE_PROGRAM_BASIC = gql`
         is_issues_open: $isIssuesOpen
         is_introduction_section_visible: $isIntroductionSectionVisible
         is_enrolled_count_visible: $isEnrolledCountVisible
+        display_header: $displayHeader
+        display_footer: $displayFooter
       }
     ) {
       affected_rows
