@@ -147,6 +147,11 @@ const NoteCollectionPage: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<NoteAdmin | null>(null)
   const [playbackRate, setPlaybackRate] = useState(1)
 
+  const removeAdminPath = () => {
+    const newUrl = `${window.location.pathname}`
+    window.history.pushState({ path: newUrl }, '', newUrl)
+  }
+
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdmin> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
@@ -469,7 +474,6 @@ const NoteCollectionPage: React.FC = () => {
                               const newUrl = `${window.location.pathname}?id=${note.id}`
                               window.history.pushState({ path: newUrl }, '', newUrl)
                             }
-
                             setSelectedNote(note)
                             setVisible(true)
                           },
@@ -526,8 +530,10 @@ const NoteCollectionPage: React.FC = () => {
                         refetchNotes()
                       })
                       .catch(handleError)
+                      .finally(removeAdminPath)
                 : undefined
             }
+            onCancel={removeAdminPath}
           />
         </TableWrapper>
 

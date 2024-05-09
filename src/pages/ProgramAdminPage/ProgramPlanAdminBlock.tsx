@@ -1,8 +1,14 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Skeleton } from 'antd'
+import { Button, Skeleton, Space } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import ProgramPlanAdminModal from '../../components/program/ProgramPlanAdminModal'
+import {
+  MembershipPlanModal,
+  PeriodPlanModal,
+  PerpetualPlanModal,
+  SubscriptionPlanModal,
+} from '../../components/program/programPlanAdminModals'
 import ProgramSubscriptionPlanAdminCard from '../../components/program/ProgramSubscriptionPlanAdminCard'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
@@ -12,35 +18,77 @@ const ProgramPlanAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
 
   if (!program) {
     return <Skeleton active />
   }
 
+  const OpenPlanModal: React.FC<{
+    title: string
+    onOpen?: () => void
+    onClose?: () => void
+  }> = ({ title, onOpen }) => {
+    return (
+      <div className="d-flex mb-4">
+        <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.()}>
+          {title}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <>
-      <ProgramPlanAdminModal
-        programId={program.id}
-        renderTrigger={({ onOpen }) => (
-          <div className="d-flex mb-4">
-            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('perpetual')}>
-              {formatMessage(commonMessages.ui.perpetualPlan)}
-            </Button>
-            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('period')}>
-              {formatMessage(commonMessages.ui.periodPlan)}
-            </Button>
-            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('subscription')}>
-              {formatMessage(commonMessages.ui.subscriptionPlan)}
-            </Button>
-          </div>
+      <Space direction="horizontal" size="small">
+        <PerpetualPlanModal
+          programId={program.id}
+          renderTrigger={({ onOpen }) => (
+            <OpenPlanModal title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
+          )}
+          onRefetch={onRefetch}
+        />
+
+        <PeriodPlanModal
+          programId={program.id}
+          renderTrigger={({ onOpen }) => (
+            <OpenPlanModal title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
+          )}
+          onRefetch={onRefetch}
+        />
+
+        <SubscriptionPlanModal
+          programId={program.id}
+          renderTrigger={({ onOpen }) => (
+            <OpenPlanModal title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
+          )}
+          onRefetch={onRefetch}
+        />
+
+        {enabledModules.membership_card && (
+          <MembershipPlanModal
+            programId={program.id}
+            renderTrigger={({ onOpen }) => (
+              <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
+            )}
+            onRefetch={onRefetch}
+          />
         )}
-        onRefetch={onRefetch}
-      />
+      </Space>
+
       <div className="row">
         {program.plans.map(programPlan => (
-          <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
-            <ProgramSubscriptionPlanAdminCard programId={program.id} programPlan={programPlan} onRefetch={onRefetch} />
-          </div>
+          <>
+            {!enabledModules.membership_card && programPlan.cardId ? null : (
+              <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
+                <ProgramSubscriptionPlanAdminCard
+                  programId={program.id}
+                  programPlan={programPlan}
+                  onRefetch={onRefetch}
+                />
+              </div>
+            )}
+          </>
         ))}
       </div>
     </>
