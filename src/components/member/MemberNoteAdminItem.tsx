@@ -184,6 +184,12 @@ const MemberNoteAdminItem: React.FC<{
       ? isActive
       : false,
   )
+
+  const removeAdminPath = () => {
+    const newUrl = `${window.location.pathname}`
+    window.history.pushState({ path: newUrl }, '', newUrl)
+  }
+
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
@@ -220,7 +226,7 @@ const MemberNoteAdminItem: React.FC<{
               </>
             )}
             <>
-              {(permissions.VIEW_MEMBER_NOTE_TRANSCRIPT || permissions.MEMBER_NOTE_ADMIN) && note.transcript && (
+              {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && note.transcript && (
                 <MemberNoteTranscriptButton transcript={note.transcript} />
               )}
               {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
@@ -231,7 +237,7 @@ const MemberNoteAdminItem: React.FC<{
 
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
-          {(permissions.MEMBER_NOTE_VIEW_EDIT || permissions.MEMBER_NOTE_ADMIN) && note.note && (
+          {permissions.MEMBER_NOTE_VIEW_EDIT && note.note && (
             <StyledCommentBlock>
               <StyledCommentTitle>備註</StyledCommentTitle>
               <StyledCommentBody> {note.note}</StyledCommentBody>
@@ -299,6 +305,7 @@ const MemberNoteAdminItem: React.FC<{
         note={note}
         visible={modalVisible}
         onCancel={() => {
+          removeAdminPath()
           setModalVisible(false)
         }}
         onSubmit={async ({ type, status, duration, description, attachments, note: memberNote_note }) => {
@@ -347,6 +354,7 @@ const MemberNoteAdminItem: React.FC<{
           } else {
             return Promise.resolve()
           }
+          removeAdminPath()
         }}
       />
     </div>

@@ -240,7 +240,7 @@ const MemberNoteAdminModal: React.FC<
           label={formatMessage(memberMessages.label.noteForPermission)}
           name="note"
           initialValue={note?.note}
-          className={permissions.MEMBER_NOTE_VIEW_EDIT || permissions.MEMBER_NOTE_ADMIN ? '' : 'd-none'}
+          className={permissions.MEMBER_NOTE_VIEW_EDIT ? '' : 'd-none'}
         >
           <Input.TextArea />
         </Form.Item>
