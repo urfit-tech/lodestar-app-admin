@@ -1,12 +1,10 @@
-import { useQuery } from '@apollo/client'
 import { Button, Tabs } from 'antd'
-import { gql } from '@apollo/client'
+import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { groupBy } from 'ramda'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
+import yup from 'yup'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -147,77 +145,85 @@ const ActivityParticipantCollectionModal: React.FC<
   )
 }
 
-const useActivitySessionParticipants = (activityId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_ACTIVITY_PARTICIPANTS,
-    hasura.GET_ACTIVITY_PARTICIPANTSVariables
-  >(
-    gql`
-      query GET_ACTIVITY_PARTICIPANTS($activityId: uuid!) {
-        activity_enrollment(where: { activity_id: { _eq: $activityId } }, order_by: {}) {
-          activity_session_id
-          order_log_id
-          member_id
-          member_name
-          member_email
-          member_phone
-          order_log_id
-          attended
-          activity_ticket {
-            id
-            title
-          }
-        }
-        activity_session(where: { activity_id: { _eq: $activityId } }, order_by: { started_at: asc }) {
-          id
-          title
-          started_at
-        }
-      }
-    `,
-    { variables: { activityId } },
-  )
-
-  const sessions: {
+type ActivitySessionParticipantsDTO = {
+  id: string
+  title: string
+  participants: {
     id: string
-    title: string
-    participants: {
-      id: string
-      name: string
-      phone: string
-      email: string
-      orderLogId: string
-      attended?: boolean
-      activityTitle: string
-    }[]
-  }[] =
-    loading || error || !data || !data.activity_enrollment
-      ? []
-      : (() => {
-          const sessionParticipants = groupBy(enrollment => enrollment.activity_session_id, data.activity_enrollment)
+    name: string
+    phone: string
+    email: string
+    orderLogId: string
+    attended?: boolean
+    activityTitle: string
+  }[]
+}
 
-          return data.activity_session.map(session => ({
-            id: session.id,
-            title: session.title || '',
-            participants: sessionParticipants[session.id]
-              ? sessionParticipants[session.id].map(participant => ({
-                  id: participant.member_id || '',
-                  name: participant.member_name || '',
-                  phone: participant.member_phone || '',
-                  email: participant.member_email || '',
-                  orderLogId: participant.order_log_id || '',
-                  attended: participant.attended || false,
-                  activityTitle: participant.activity_ticket?.title || '',
-                }))
-              : [],
-          }))
-        })()
+const rawActivitySessionDataSchema = yup.array().of(
+  yup.object({
+    id: yup.string().required(),
+    title: yup.string().required(),
+    participants: yup.array().of(
+      yup.object({
+        id: yup.string().required(),
+        name: yup.string().required(),
+        phone: yup.string().required(),
+        email: yup.string().email().required(),
+        orderLogId: yup.string().required(),
+        attended: yup.boolean().required(),
+        activityTitle: yup.string().required(),
+      }),
+    ),
+  }),
+)
+
+const useActivitySessionParticipants = (activityId: string) => {
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [sessions, setSessions] = useState<ActivitySessionParticipantsDTO[]>([])
+
+  const fetchActivitySessionParticipants = useCallback(async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(`/api/activityParticipants/${activityId}`)
+      const data = response.data
+
+      await rawActivitySessionDataSchema.validate(data)
+
+      const mapApiDataToDTO = (data: any): ActivitySessionParticipantsDTO[] => {
+        return data.map((sessionData: any) => ({
+          id: sessionData.id,
+          title: sessionData.title,
+          participants: sessionData.participants.map((participantData: any) => ({
+            id: participantData.id,
+            name: participantData.name,
+            phone: participantData.phone,
+            email: participantData.email,
+            orderLogId: participantData.orderLogId,
+            attended: participantData.attended,
+            activityTitle: participantData.activityTitle,
+          })),
+        }))
+      }
+
+      setSessions(mapApiDataToDTO(data))
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'An unknown error occurred'
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }, [activityId])
+
+  useEffect(() => {
+    fetchActivitySessionParticipants()
+  }, [fetchActivitySessionParticipants])
 
   return {
     loadingSessions: loading,
     errorSessions: error,
     sessions,
-    refetchSessions: refetch,
+    refetchSessions: fetchActivitySessionParticipants,
   }
 }
 
