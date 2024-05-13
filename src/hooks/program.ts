@@ -181,8 +181,8 @@ export const useProgram = (programId: string) => {
       isCountdownTimerVisible: data.program_by_pk.is_countdown_timer_visible,
       isIntroductionSectionVisible: data.program_by_pk.is_introduction_section_visible,
       isEnrolledCountVisible: data.program_by_pk.is_enrolled_count_visible,
-      display_header: data.program_by_pk.display_header ?? true,
-      display_footer: data.program_by_pk.display_footer ?? true,
+      displayHeader: data.program_by_pk.display_header ?? true,
+      displayFooter: data.program_by_pk.display_footer ?? true,
       contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
         id: pcs.id,
         title: pcs.title || '',

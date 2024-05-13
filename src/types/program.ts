@@ -41,16 +41,14 @@ export type ProgramProps = {
   isSoldOut: boolean | null
   supportLocales: string[]
   metaTag: MetaTag
-
   isDeleted: boolean
   isPrivate: boolean
   isIssuesOpen: boolean
   isCountdownTimerVisible?: boolean
   isIntroductionSectionVisible: boolean
   isEnrolledCountVisible: boolean
-
-  display_header: boolean
-  display_footer: boolean
+  displayHeader: boolean
+  displayFooter: boolean
 }
 
 export type ProgramAdminProps = ProgramProps & {

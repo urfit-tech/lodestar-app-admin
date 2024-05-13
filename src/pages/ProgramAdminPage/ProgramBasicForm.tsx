@@ -97,8 +97,8 @@ const ProgramBasicForm: React.FC<{
         isIssuesOpen: program.isIssuesOpen,
         isIntroductionSectionVisible: program.isIntroductionSectionVisible,
         isEnrolledCountVisible: program.isEnrolledCountVisible,
-        displayHeader: program.display_header,
-        displayFooter: program.display_footer,
+        displayHeader: program.displayHeader,
+        displayFooter: program.displayFooter,
       }}
       onFinish={handleSubmit}
     >
