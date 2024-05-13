@@ -48,6 +48,9 @@ export type ProgramProps = {
   isCountdownTimerVisible?: boolean
   isIntroductionSectionVisible: boolean
   isEnrolledCountVisible: boolean
+
+  display_header: boolean
+  display_footer: boolean
 }
 
 export type ProgramAdminProps = ProgramProps & {
