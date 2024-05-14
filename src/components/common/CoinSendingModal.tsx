@@ -1,8 +1,7 @@
 import { FileAddOutlined, UploadOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber, message, Radio, Space, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -178,9 +177,9 @@ const CoinSendingModal: React.FC<{
         </Form.Item>
         <Form.Item label={formatMessage(messages.increaseCoins)} name="amount">
           <InputNumber
-            min={1}
-            formatter={value => (parseInt(`${value}`) >= 0 ? `+${value}` : `${value}`)}
-            parser={value => value?.replace(/\D/g, '') || ''}
+            // min={1}
+            formatter={value => (Number(`${value}`) > 0 ? `+${value}` : `${value}`)}
+            // parser={value => value?.replace(/\D/g, '') || ''}
           />
         </Form.Item>
         <Form.Item label={formatMessage(messages.availableDateRange)}>

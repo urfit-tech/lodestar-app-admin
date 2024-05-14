@@ -81,13 +81,14 @@ const StyledDescription = styled.div`
   font-size: 12px;
   color: var(--gray-dark);
 `
-const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log' }>`
+const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log'; amount?: number }>`
   padding: 0.125rem 0.5rem;
   color: white;
   font-size: 12px;
   border-radius: 11px;
-  background: ${props => (props.variant === 'coin-log' ? 'var(--success)' : 'var(--warning)')};
-  white-space: nowrap;
+  background: ${props =>
+    props.variant === 'coin-log' && props.amount && props.amount >= 0 ? 'var(--success)' : 'var(--warning)'};
+white - space: nowrap;
 `
 const StyledIcon = styled(Icon)`
   color: ${props => props.theme['@primary-color']};
@@ -266,7 +267,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   dataIndex: 'amount',
                   render: (text, record, index) => (
                     <div className="d-flex justify-content-between">
-                      <StyledLabel variant="coin-log">
+                      <StyledLabel variant="coin-log" amount={text}>
                         {text > 0 && '+'}
                         {text} {coinUnit}
                       </StyledLabel>
@@ -378,7 +379,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   dataIndex: 'amount',
                   render: (text, record, index) => (
                     <div className="d-flex justify-content-between">
-                      <StyledLabel variant="coin-log">
+                      <StyledLabel variant="coin-log" amount={text}>
                         {text > 0 && '+'}
                         {text} {coinUnit}
                       </StyledLabel>
@@ -468,7 +469,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   title: formatMessage(messages.coins),
                   dataIndex: 'coins',
                   render: (text, record, index) => (
-                    <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit}`}</StyledLabel>
+                    <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit} `}</StyledLabel>
                   ),
                 },
               ]}
@@ -506,10 +507,10 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
+          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
         }
       : undefined,
-    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
+    title: filter?.title ? { _like: `% ${filter.title}% ` } : undefined,
     _or: [{ started_at: { _is_null: true } }, { started_at: { _lte: 'now()' } }],
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -604,10 +605,10 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
+          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
         }
       : undefined,
-    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
+    title: filter?.title ? { _like: `% ${filter.title}% ` } : undefined,
     started_at: { _gte: 'now()' },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -700,7 +701,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
   memberId?: string
 }) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
-    id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
+    id: filter?.orderLogId ? { _like: `% ${filter.orderLogId}% ` } : undefined,
     member_id: filter?.memberId
       ? {
           _eq: filter.memberId,
@@ -708,12 +709,12 @@ const useOrderLogWithCoinsCollection = (filter?: {
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
+          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
         }
       : undefined,
     order_discounts: filter?.title
       ? {
-          name: { _like: `%${filter.title}%` },
+          name: { _like: `% ${filter.title}% ` },
           type: { _eq: 'Coin' },
         }
       : { type: { _eq: 'Coin' } },
