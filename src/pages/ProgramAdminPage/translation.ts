@@ -84,6 +84,11 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.*.isEnrolledCountVisible',
       defaultMessage: '購買人數',
     },
+    displayHeader: { id: 'ProgramAdminPage.ProgramBasicForm.displayHeader', defaultMessage: 'display header' },
+    displayFooter: { id: 'ProgramAdminPage.ProgramBasicForm.displayFooter', defaultMessage: 'display footer' },
+    display: { id: 'ProgramAdminPage.ProgramBasicForm.display', defaultMessage: 'display' },
+    hide: { id: 'ProgramAdminPage.ProgramBasicForm.hide', defaultMessage: 'hide' },
+
   }),
   ProgramPlanAdminBlock: defineMessages({
     perpetualPlan: { id: 'ProgramAdminPage.ProgramPlanAdminBlock.perpetualPlan', defaultMessage: '永久方案' },
