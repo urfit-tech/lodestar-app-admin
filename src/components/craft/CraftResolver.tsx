@@ -1,5 +1,4 @@
-import { useApolloClient } from '@apollo/client'
-import { gql } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useIntl } from 'react-intl'
@@ -12,109 +11,115 @@ export const useResolver = () => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   CraftElement.CraftMemberCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.MemberCollectionSettings', defaultMessage: '會員' }),
+    displayName: formatMessage({ id: 'craft.resolver.MemberCollectionSettings', defaultMessage: 'Member' }),
     related: {
       settings: withResponsive(CraftSetting.MemberCollectionSettings),
     },
   }
   CraftElement.CraftProgramCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ProgramCollectionSettings', defaultMessage: '課程' }),
+    displayName: formatMessage({ id: 'craft.resolver.ProgramCollectionSettings', defaultMessage: 'Program' }),
     related: {
       settings: withResponsive(CraftSetting.ProgramCollectionSettings),
     },
   }
   CraftElement.CraftProgramContentCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ProgramContentCollectionSettings', defaultMessage: '課程單元' }),
+    displayName: formatMessage({
+      id: 'craft.resolver.ProgramContentCollectionSettings',
+      defaultMessage: 'Program Content',
+    }),
     related: {
       settings: withResponsive(CraftSetting.ProgramContentCollectionSettings),
     },
   }
   CraftElement.CraftProgramPackageCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ProgramPackageCollectionSettings', defaultMessage: '課程組合' }),
+    displayName: formatMessage({
+      id: 'craft.resolver.ProgramPackageCollectionSettings',
+      defaultMessage: 'Program Package',
+    }),
     related: {
       settings: withResponsive(CraftSetting.ProgramPackageCollectionSettings),
     },
   }
   CraftElement.CraftActivityCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ActivityCollectionSettings', defaultMessage: '活動' }),
+    displayName: formatMessage({ id: 'craft.resolver.ActivityCollectionSettings', defaultMessage: 'Activity' }),
     related: {
       settings: withResponsive(CraftSetting.ActivityCollectionSettings),
     },
   }
   CraftElement.CraftProjectCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ProjectCollectionSettings', defaultMessage: '專案' }),
+    displayName: formatMessage({ id: 'craft.resolver.ProjectCollectionSettings', defaultMessage: 'Project' }),
     related: {
       settings: withResponsive(CraftSetting.ProjectCollectionSettings),
     },
   }
   CraftElement.CraftPostCollection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.PostCollectionSettings', defaultMessage: '文章' }),
+    displayName: formatMessage({ id: 'craft.resolver.PostCollectionSettings', defaultMessage: 'Post' }),
     related: {
       settings: withResponsive(CraftSetting.PostCollectionSettings),
     },
   }
   CraftElement.CraftSection.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.SectionSettings', defaultMessage: '區塊' }),
+    displayName: formatMessage({ id: 'craft.resolver.SectionSettings', defaultMessage: 'Section' }),
     related: {
       settings: withResponsive(CraftSetting.SectionSettings),
     },
   }
   CraftElement.CraftButton.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ButtonSettings', defaultMessage: '按鈕' }),
+    displayName: formatMessage({ id: 'craft.resolver.ButtonSettings', defaultMessage: 'Button' }),
     related: {
       settings: withResponsive(CraftSetting.ButtonSettings),
     },
   }
   CraftElement.CraftCard.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.CardSettings', defaultMessage: '卡片' }),
+    displayName: formatMessage({ id: 'craft.resolver.CardSettings', defaultMessage: 'Card' }),
     related: {
       settings: withResponsive(CraftSetting.CardSettings),
     },
   }
   CraftElement.CraftCarousel.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.CarouselSettings', defaultMessage: '輪播' }),
+    displayName: formatMessage({ id: 'craft.resolver.CarouselSettings', defaultMessage: 'Carousel' }),
     related: {
       settings: withResponsive(CraftSetting.CarouselSettings),
     },
   }
   CraftElement.CraftCollapse.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.CollapseSettings', defaultMessage: '折疊' }),
+    displayName: formatMessage({ id: 'craft.resolver.CollapseSettings', defaultMessage: 'Collapse' }),
     related: {
       settings: withResponsive(CraftSetting.CollapseSettings),
     },
   }
   CraftElement.CraftImage.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ImageSettings', defaultMessage: '圖片' }),
+    displayName: formatMessage({ id: 'craft.resolver.ImageSettings', defaultMessage: 'Image' }),
     related: {
       settings: withResponsive(CraftSetting.ImageSettings),
     },
   }
   CraftElement.CraftLayout.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.LayoutSettings', defaultMessage: '佈局' }),
+    displayName: formatMessage({ id: 'craft.resolver.LayoutSettings', defaultMessage: 'Layout' }),
     related: {
       settings: withResponsive(CraftSetting.LayoutSettings),
     },
   }
   CraftElement.CraftParagraph.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.ParagraphSettings', defaultMessage: '段落' }),
+    displayName: formatMessage({ id: 'craft.resolver.ParagraphSettings', defaultMessage: 'Paragraph' }),
     related: {
       settings: withResponsive(CraftSetting.ParagraphSettings),
     },
   }
   CraftElement.CraftTitle.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.TitleSettings', defaultMessage: '標題' }),
+    displayName: formatMessage({ id: 'craft.resolver.TitleSettings', defaultMessage: 'Title' }),
     related: {
       settings: withResponsive(CraftSetting.TitleSettings),
     },
   }
   CraftElement.CraftEmbedded.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.EmbeddedSettings', defaultMessage: '嵌入' }),
+    displayName: formatMessage({ id: 'craft.resolver.EmbeddedSettings', defaultMessage: 'Embed' }),
     related: {
       settings: withResponsive(CraftSetting.EmbeddedSettings),
     },
   }
   CraftElement.CraftAIBot.craft = {
-    displayName: formatMessage({ id: 'craft.resolver.AIBotSettings', defaultMessage: '嵌入' }),
+    displayName: formatMessage({ id: 'craft.resolver.AIBotSettings', defaultMessage: 'AI BOT' }),
     related: {
       settings: withResponsive(CraftSetting.AIBotSettings),
     },

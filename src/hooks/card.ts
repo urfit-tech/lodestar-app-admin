@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 
 export const useEnrolledMembershipCardIds = (memberId: string) => {
@@ -115,5 +116,24 @@ export const useEnrolledMembershipCards = (memberId: string) => {
     errorMembershipCards: error,
     enrolledMembershipCards,
     refetchMembershipCards: refetch,
+  }
+}
+
+export const useAppMembershipCard = () => {
+  const { id: appId } = useApp()
+  const { data } = useQuery<hasura.GetMembershipCard, hasura.GetMembershipCardVariables>(
+    gql`
+      query GetMembershipCard($appId: String!) {
+        card(where: { app_id: { _eq: $appId } }) {
+          id
+          title
+        }
+      }
+    `,
+    { variables: { appId } },
+  )
+  const membershipCards = data?.card.map(card => ({ id: card.id, title: card.title })) || []
+  return {
+    membershipCards,
   }
 }

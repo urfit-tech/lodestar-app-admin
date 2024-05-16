@@ -1,26 +1,58 @@
-import { useQuery } from '@apollo/client'
 import { Button, Form, InputNumber, Select } from 'antd'
-import { gql } from '@apollo/client'
 import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
-import { craftPageMessages } from '../../helpers/translation'
+import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useAppMembershipCard } from '../../hooks/card'
+import { useProgramList } from '../../hooks/program'
 import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
 import programMessages from './translation'
 
-type ProgramSourceOptions = ProgramCollectionProps['source']
 const ProgramCollectionSelector: React.FC<{
   withOrderSelector?: boolean
-  value?: ProgramSourceOptions
-  onChange?: (value: ProgramSourceOptions) => void
+  value?: ProgramCollectionProps['source']
+  onChange?: (value: ProgramCollectionProps['source']) => void
 }> = ({ withOrderSelector, value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
-  const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
-  const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
+  const { programs } = useProgramList()
+  const { membershipCards } = useAppMembershipCard()
+
   return (
     <div>
+      <Form.Item label={formatMessage(programMessages.ProgramCollectionSelector.programStatus)}>
+        <Select
+          value={value.programStatus || 'public'}
+          onChange={programStatus =>
+            onChange?.({
+              ...value,
+              programStatus,
+              membershipCardId: programStatus === 'membership_card' ? membershipCards[0].id : undefined,
+            })
+          }
+        >
+          <Select.Option value="public">{formatMessage(commonMessages.status.publiclyPublish)}</Select.Option>
+          <Select.Option value="private">{formatMessage(commonMessages.status.privatelyPublish)}</Select.Option>
+          <Select.Option value="membership_card">
+            {formatMessage(programMessages.ProgramCollectionSelector.membershipCard)}
+          </Select.Option>
+        </Select>
+      </Form.Item>
+      {value.programStatus === 'membership_card' && (
+        <Form.Item label={formatMessage(programMessages.ProgramCollectionSelector.membershipCard)}>
+          <Select
+            value={value.membershipCardId || membershipCards[0].id}
+            onChange={membershipCardId => onChange?.({ ...value, membershipCardId })}
+          >
+            {membershipCards.map(card => (
+              <Select.Option key={card.id} value={card.id}>
+                {card.title}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
+
       <Form.Item
         label={
           <CraftSettingLabel>{formatMessage(programMessages.ProgramCollectionSelector.ruleOfSort)}</CraftSettingLabel>
@@ -147,7 +179,7 @@ const ProgramCollectionSelector: React.FC<{
                 allowClear
                 placeholder={formatMessage(programMessages.ProgramCollectionSelector.choiceData)}
                 value={programId}
-                options={programOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
+                options={programs.map(({ id, title }) => ({ key: id, value: id, label: title }))}
                 onChange={selectedProgramId =>
                   selectedProgramId &&
                   onChange?.({
@@ -179,14 +211,5 @@ const ProgramCollectionSelector: React.FC<{
     </div>
   )
 }
-
-const GET_PROGRAM_ID_LIST = gql`
-  query GET_PROGRAM_ID_LIST {
-    program(where: { published_at: { _lt: "now()" } }) {
-      id
-      title
-    }
-  }
-`
 
 export default ProgramCollectionSelector

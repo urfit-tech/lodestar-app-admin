@@ -919,3 +919,18 @@ export const useProgramContentActions = (programContentId: string) => {
     },
   }
 }
+
+export const useProgramList = () => {
+  const { data } = useQuery<hasura.GetProgramList>(gql`
+    query GetProgramList {
+      program(where: { published_at: { _lt: "now()" }, is_deleted: { _eq: false } }) {
+        id
+        title
+      }
+    }
+  `)
+  const programs = data?.program.map(p => ({ id: p.id, title: p.title })) || []
+  return {
+    programs,
+  }
+}
