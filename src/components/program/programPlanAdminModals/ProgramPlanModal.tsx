@@ -23,6 +23,8 @@ const ProgramPlanModal: React.FC<ProgramPlanModalProps> = ({
           programId={programId}
           programPlan={programPlan}
           productGiftPlan={productGiftPlan}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )
 
@@ -34,6 +36,8 @@ const ProgramPlanModal: React.FC<ProgramPlanModalProps> = ({
           programId={programId}
           programPlan={programPlan}
           productGiftPlan={productGiftPlan}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )
 
@@ -45,6 +49,8 @@ const ProgramPlanModal: React.FC<ProgramPlanModalProps> = ({
           programId={programId}
           programPlan={programPlan}
           productGiftPlan={productGiftPlan}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )
 
