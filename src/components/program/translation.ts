@@ -74,7 +74,11 @@ const programMessages = {
     planTitle: { id: 'program.ProgramPlanAdminModal.planTitle', defaultMessage: '方案名稱' },
     identityMembership: {
       id: 'program.ProgramPlanAdminModal.identityMembership',
-      defaultMessage: '適用此身份的會員卡',
+      defaultMessage: 'Membership card applicable',
+    },
+    selectMembershipCard: {
+      id: 'program.ProgramPlanAdminModal.selectMembershipCard',
+      defaultMessage: 'Select membership card',
     },
   }),
   DisplayModeSelector: defineMessages({
