@@ -12,6 +12,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { useProductChannelInfo } from '../../hooks/channel'
+import { useMembershipCardByTargetId } from '../../hooks/programPlan'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
@@ -22,7 +23,6 @@ import {
   PerpetualPlanModal,
   SubscriptionPlanModal,
 } from './programPlanAdminModals'
-import { GetCardTitleById } from './programPlanAdminModals/formItem/MembershipCardItem'
 
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
@@ -82,9 +82,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     appId,
     `ProgramPlan_${programPlan?.id}`,
   )
-  const { loading: loadingById, data: dataById } = useQuery(GetCardTitleById, {
-    variables: { id: programPlan.cardId },
-  })
+  const { cardTitle, cardProducts } = useMembershipCardByTargetId('ProgramPlan', programPlan.id)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
@@ -92,7 +90,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'subscription'
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
-    : programPlan.cardId
+    : cardProducts.length !== 0
     ? 'membership'
     : 'perpetual'
 
@@ -178,8 +176,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
             <ProgramPlanModal />
           </AdminBlockTitle>
           <StyledMemberShipBlock>
-            {!loadingById &&
-              formatMessage(commonMessages.text.displayMembershipCard, { membershipCard: dataById?.card[0].title })}
+            {formatMessage(commonMessages.text.displayMembershipCard, { membershipCard: cardTitle })}
           </StyledMemberShipBlock>
         </>
       ) : (
