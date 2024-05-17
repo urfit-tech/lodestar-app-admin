@@ -663,177 +663,19 @@ const SalesLeadTable: React.VFC<{
       )}
       <TableWrapper>
         {selectedRowKeys.length > 0 && (
-          <div className="d-flex flex-row justify-content-end mb-3">
-            {variant !== 'followed' && (
-              <Button
-                icon={<StarOutlined />}
-                className="mr-2"
-                onClick={() => {
-                  if (window.confirm('確定收錄這些名單？')) {
-                    updateLeads({
-                      variables: {
-                        updateLeads: selectedRowLeads.map(lead => ({
-                          where: {
-                            id: { _eq: lead.id },
-                          },
-                          _set: {
-                            manager_id: manager.id,
-                            star: lead.star,
-                            followed_at: dayjs().utc().toISOString(),
-                            completed_at: lead.completedAt,
-                            closed_at: lead.closedAt,
-                            excluded_at: lead.excludedAt,
-                            recycled_at: lead.recycledAt,
-                          },
-                        })),
-                      },
-                    }).then(({ data }) => {
-                      if (
-                        data?.update_member_many &&
-                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                      ) {
-                        message.success('已成功收錄！')
-                        onRefetch()
-                        setSelectedRowKeys([])
-                      } else {
-                        message.error('系統錯誤')
-                      }
-                    })
-                  }
-                }}
-              >
-                收藏
-              </Button>
-            )}
-            {variant === 'followed' && (
-              <Button
-                className="mr-2"
-                onClick={() => {
-                  if (window.confirm('確定取消收藏這些名單？')) {
-                    updateLeads({
-                      variables: {
-                        updateLeads: selectedRowLeads.map(lead => ({
-                          where: {
-                            id: { _eq: lead.id },
-                          },
-                          _set: {
-                            manager_id: manager.id,
-                            star: lead.star,
-                            followed_at: null,
-                            completed_at: lead.completedAt,
-                            closed_at: lead.closedAt,
-                            excluded_at: lead.excludedAt,
-                            recycled_at: lead.recycledAt,
-                          },
-                        })),
-                      },
-                    }).then(({ data }) => {
-                      if (
-                        data?.update_member_many &&
-                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                      ) {
-                        message.success('已成功取消收藏！')
-                        onRefetch()
-                        setSelectedRowKeys([])
-                      } else {
-                        message.error('系統錯誤')
-                      }
-                    })
-                  }
-                }}
-              >
-                取消收藏
-              </Button>
-            )}
-            {variant !== 'completed' && (
-              <Button
-                icon={<CheckOutlined />}
-                className="mr-2"
-                onClick={() => {
-                  if (window.confirm('確定這些名單已完成？')) {
-                    updateLeads({
-                      variables: {
-                        updateLeads: selectedRowLeads.map(lead => ({
-                          where: {
-                            id: { _eq: lead.id },
-                          },
-                          _set: {
-                            manager_id: manager.id,
-                            star: lead.star,
-                            followed_at: lead.followedAt,
-                            completed_at: dayjs().utc().toISOString(),
-                            closed_at: lead.closedAt,
-                            excluded_at: lead.excludedAt,
-                            recycled_at: lead.recycledAt,
-                          },
-                        })),
-                      },
-                    }).then(({ data }) => {
-                      if (
-                        data?.update_member_many &&
-                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                      ) {
-                        message.success('已成功完成此名單！')
-                        onRefetch()
-                        setSelectedRowKeys([])
-                      } else {
-                        message.error('系統錯誤')
-                      }
-                    })
-                  }
-                }}
-              >
-                完成
-              </Button>
-            )}
-            {variant === 'completed' && (
-              <Button
-                icon={<CloseOutlined />}
-                className="mr-2"
-                onClick={() => {
-                  if (window.confirm('確定取消這些已完成的名單？')) {
-                    updateLeads({
-                      variables: {
-                        updateLeads: selectedRowLeads.map(lead => ({
-                          where: {
-                            id: { _eq: lead.id },
-                          },
-                          _set: {
-                            manager_id: manager.id,
-                            star: lead.star,
-                            followed_at: lead.followedAt,
-                            completed_at: null,
-                            closed_at: lead.closedAt,
-                            excluded_at: lead.excludedAt,
-                            recycled_at: lead.recycledAt,
-                          },
-                        })),
-                      },
-                    }).then(({ data }) => {
-                      if (
-                        data?.update_member_many &&
-                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                      ) {
-                        message.success('已取消已完成名單！')
-                        onRefetch()
-                        setSelectedRowKeys([])
-                      } else {
-                        message.error('系統錯誤')
-                      }
-                    })
-                  }
-                }}
-              >
-                取消完成
-              </Button>
-            )}
-            {variant !== 'completed' && (
-              <>
+          <div className="d-flex flex-row align-items-center justify-content-between mb-3">
+            <b>
+              {formatMessage(salesMessages.selectedCount, {
+                count: selectedRowKeys.length,
+              })}
+            </b>
+            <div className="d-flex flex-row align-items-center">
+              {variant !== 'followed' && (
                 <Button
-                  icon={<SyncOutlined />}
+                  icon={<StarOutlined />}
                   className="mr-2"
                   onClick={() => {
-                    if (window.confirm('確定回收這些名單？')) {
+                    if (window.confirm('確定收錄這些名單？')) {
                       updateLeads({
                         variables: {
                           updateLeads: selectedRowLeads.map(lead => ({
@@ -841,50 +683,92 @@ const SalesLeadTable: React.VFC<{
                               id: { _eq: lead.id },
                             },
                             _set: {
-                              manager_id: null,
+                              manager_id: manager.id,
+                              star: lead.star,
+                              followed_at: dayjs().utc().toISOString(),
+                              completed_at: lead.completedAt,
+                              closed_at: lead.closedAt,
+                              excluded_at: lead.excludedAt,
+                              recycled_at: lead.recycledAt,
+                            },
+                          })),
+                        },
+                      }).then(({ data }) => {
+                        if (
+                          data?.update_member_many &&
+                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                        ) {
+                          message.success('已成功收錄！')
+                          onRefetch()
+                          setSelectedRowKeys([])
+                        } else {
+                          message.error('系統錯誤')
+                        }
+                      })
+                    }
+                  }}
+                >
+                  收藏
+                </Button>
+              )}
+              {variant === 'followed' && (
+                <Button
+                  className="mr-2"
+                  onClick={() => {
+                    if (window.confirm('確定取消收藏這些名單？')) {
+                      updateLeads({
+                        variables: {
+                          updateLeads: selectedRowLeads.map(lead => ({
+                            where: {
+                              id: { _eq: lead.id },
+                            },
+                            _set: {
+                              manager_id: manager.id,
+                              star: lead.star,
+                              followed_at: null,
+                              completed_at: lead.completedAt,
+                              closed_at: lead.closedAt,
+                              excluded_at: lead.excludedAt,
+                              recycled_at: lead.recycledAt,
+                            },
+                          })),
+                        },
+                      }).then(({ data }) => {
+                        if (
+                          data?.update_member_many &&
+                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                        ) {
+                          message.success('已成功取消收藏！')
+                          onRefetch()
+                          setSelectedRowKeys([])
+                        } else {
+                          message.error('系統錯誤')
+                        }
+                      })
+                    }
+                  }}
+                >
+                  取消收藏
+                </Button>
+              )}
+              {variant !== 'completed' && (
+                <Button
+                  icon={<CheckOutlined />}
+                  className="mr-2"
+                  onClick={() => {
+                    if (window.confirm('確定這些名單已完成？')) {
+                      updateLeads({
+                        variables: {
+                          updateLeads: selectedRowLeads.map(lead => ({
+                            where: {
+                              id: { _eq: lead.id },
+                            },
+                            _set: {
+                              manager_id: manager.id,
                               star: lead.star,
                               followed_at: lead.followedAt,
-                              completed_at: lead.completedAt,
+                              completed_at: dayjs().utc().toISOString(),
                               closed_at: lead.closedAt,
-                              excluded_at: lead.excludedAt,
-                              recycled_at: dayjs().utc().toISOString(),
-                            },
-                          })),
-                        },
-                      }).then(({ data }) => {
-                        if (
-                          data?.update_member_many &&
-                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                        ) {
-                          message.success('已成功回收此名單！')
-                          onRefetch()
-                          setSelectedRowKeys([])
-                        } else {
-                          message.error('系統錯誤')
-                        }
-                      })
-                    }
-                  }}
-                >
-                  回收
-                </Button>
-                <Button
-                  icon={<StopOutlined />}
-                  className="mr-2"
-                  onClick={() => {
-                    if (window.confirm('確定拒絕這些名單？')) {
-                      updateLeads({
-                        variables: {
-                          updateLeads: selectedRowLeads.map(lead => ({
-                            where: {
-                              id: { _eq: lead.id },
-                            },
-                            _set: {
-                              manager_id: null,
-                              star: -999,
-                              followed_at: lead.followedAt,
-                              completed_at: lead.completedAt,
-                              closed_at: dayjs().utc().toISOString(),
                               excluded_at: lead.excludedAt,
                               recycled_at: lead.recycledAt,
                             },
@@ -895,7 +779,7 @@ const SalesLeadTable: React.VFC<{
                           data?.update_member_many &&
                           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                         ) {
-                          message.success('已成功拒絕此名單！')
+                          message.success('已成功完成此名單！')
                           onRefetch()
                           setSelectedRowKeys([])
                         } else {
@@ -905,13 +789,15 @@ const SalesLeadTable: React.VFC<{
                     }
                   }}
                 >
-                  拒絕
+                  完成
                 </Button>
+              )}
+              {variant === 'completed' && (
                 <Button
-                  icon={<DeleteOutlined />}
+                  icon={<CloseOutlined />}
                   className="mr-2"
                   onClick={() => {
-                    if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
+                    if (window.confirm('確定取消這些已完成的名單？')) {
                       updateLeads({
                         variables: {
                           updateLeads: selectedRowLeads.map(lead => ({
@@ -919,12 +805,12 @@ const SalesLeadTable: React.VFC<{
                               id: { _eq: lead.id },
                             },
                             _set: {
-                              manager_id: null,
-                              star: -9999,
+                              manager_id: manager.id,
+                              star: lead.star,
                               followed_at: lead.followedAt,
-                              completed_at: lead.completedAt,
+                              completed_at: null,
                               closed_at: lead.closedAt,
-                              excluded_at: dayjs().utc().toISOString(),
+                              excluded_at: lead.excludedAt,
                               recycled_at: lead.recycledAt,
                             },
                           })),
@@ -934,7 +820,7 @@ const SalesLeadTable: React.VFC<{
                           data?.update_member_many &&
                           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
                         ) {
-                          message.success('已成功刪除此名單！')
+                          message.success('已取消已完成名單！')
                           onRefetch()
                           setSelectedRowKeys([])
                         } else {
@@ -944,13 +830,134 @@ const SalesLeadTable: React.VFC<{
                     }
                   }}
                 >
-                  刪除
+                  取消完成
                 </Button>
-              </>
-            )}
-            <Button icon={<SwapOutlined />} className="mr-2" onClick={handleTransfer}>
-              轉移
-            </Button>
+              )}
+              {variant !== 'completed' && (
+                <>
+                  <Button
+                    icon={<SyncOutlined />}
+                    className="mr-2"
+                    onClick={() => {
+                      if (window.confirm('確定回收這些名單？')) {
+                        updateLeads({
+                          variables: {
+                            updateLeads: selectedRowLeads.map(lead => ({
+                              where: {
+                                id: { _eq: lead.id },
+                              },
+                              _set: {
+                                manager_id: null,
+                                star: lead.star,
+                                followed_at: lead.followedAt,
+                                completed_at: lead.completedAt,
+                                closed_at: lead.closedAt,
+                                excluded_at: lead.excludedAt,
+                                recycled_at: dayjs().utc().toISOString(),
+                              },
+                            })),
+                          },
+                        }).then(({ data }) => {
+                          if (
+                            data?.update_member_many &&
+                            data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                          ) {
+                            message.success('已成功回收此名單！')
+                            onRefetch()
+                            setSelectedRowKeys([])
+                          } else {
+                            message.error('系統錯誤')
+                          }
+                        })
+                      }
+                    }}
+                  >
+                    回收
+                  </Button>
+                  <Button
+                    icon={<StopOutlined />}
+                    className="mr-2"
+                    onClick={() => {
+                      if (window.confirm('確定拒絕這些名單？')) {
+                        updateLeads({
+                          variables: {
+                            updateLeads: selectedRowLeads.map(lead => ({
+                              where: {
+                                id: { _eq: lead.id },
+                              },
+                              _set: {
+                                manager_id: null,
+                                star: -999,
+                                followed_at: lead.followedAt,
+                                completed_at: lead.completedAt,
+                                closed_at: dayjs().utc().toISOString(),
+                                excluded_at: lead.excludedAt,
+                                recycled_at: lead.recycledAt,
+                              },
+                            })),
+                          },
+                        }).then(({ data }) => {
+                          if (
+                            data?.update_member_many &&
+                            data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                          ) {
+                            message.success('已成功拒絕此名單！')
+                            onRefetch()
+                            setSelectedRowKeys([])
+                          } else {
+                            message.error('系統錯誤')
+                          }
+                        })
+                      }
+                    }}
+                  >
+                    拒絕
+                  </Button>
+                  <Button
+                    icon={<DeleteOutlined />}
+                    className="mr-2"
+                    onClick={() => {
+                      if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
+                        updateLeads({
+                          variables: {
+                            updateLeads: selectedRowLeads.map(lead => ({
+                              where: {
+                                id: { _eq: lead.id },
+                              },
+                              _set: {
+                                manager_id: null,
+                                star: -9999,
+                                followed_at: lead.followedAt,
+                                completed_at: lead.completedAt,
+                                closed_at: lead.closedAt,
+                                excluded_at: dayjs().utc().toISOString(),
+                                recycled_at: lead.recycledAt,
+                              },
+                            })),
+                          },
+                        }).then(({ data }) => {
+                          if (
+                            data?.update_member_many &&
+                            data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                          ) {
+                            message.success('已成功刪除此名單！')
+                            onRefetch()
+                            setSelectedRowKeys([])
+                          } else {
+                            message.error('系統錯誤')
+                          }
+                        })
+                      }
+                    }}
+                  >
+                    刪除
+                  </Button>
+                </>
+              )}
+              <Button icon={<SwapOutlined />} className="mr-2" onClick={handleTransfer}>
+                轉移
+              </Button>
+            </div>
           </div>
         )}
         <Table<LeadProps>
@@ -958,6 +965,7 @@ const SalesLeadTable: React.VFC<{
           rowSelection={{
             selectedRowKeys,
             onChange: onSelectChange,
+            preserveSelectedRowKeys: true,
           }}
           loading={isLoading}
           rowClassName={lead => lead.notified && 'notified'}

@@ -352,7 +352,7 @@ export const commonMessages = {
     displayMembershipCard: {
       id: 'common.text.displayMembershipCard',
       defaultMessage: 'Membership card for this identity: {membershipCard}',
-    }
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -1492,6 +1492,7 @@ export const salesMessages = defineMessages({
   valid: { id: 'sales.label.valid', defaultMessage: '恢復' },
   addNewPhone: { id: 'sales.label.addNewPhone', defaultMessage: '新增手機' },
   addPhoneNumber: { id: 'sales.label.addPhoneNumber', defaultMessage: '新增號碼' },
+  selectedCount: { id: 'sales.label.selectedCount', defaultMessage: '{count} rows selected' },
 })
 
 export const codeMessages = defineMessages({
