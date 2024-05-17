@@ -2933,6 +2933,7 @@
   "sales.label.salesLeadDelivery": "名單派發",
   "sales.label.salesPerformance": "業績總表",
   "sales.label.salesStatus": "即時戰況",
+  "sales.label.selectedCount": "已選擇{count}筆",
   "sales.label.serviceEndedAt": "服務截止時間",
   "sales.label.signedLead": "已簽約",
   "sales.label.star": "星等",
