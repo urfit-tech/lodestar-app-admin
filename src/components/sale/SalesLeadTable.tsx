@@ -254,6 +254,10 @@ const SalesLeadTable: React.VFC<{
           text: 'N',
           value: 'N',
         },
+        {
+          text: 'C',
+          value: 'C',
+        },
       ],
       sorter: {
         compare: (a, b) =>
