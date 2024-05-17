@@ -45,6 +45,18 @@ export const salesLeadDeliveryPageMessages = {
     onlyFilter: { id: 'page.salesLeadDeliveryPage.onlyFilter', defaultMessage: 'only filter ' },
     excluded: { id: 'page.salesLeadDeliveryPage.excluded', defaultMessage: 'excluded ' },
     closedRange: { id: 'page.salesLeadDeliveryPage.closedRange', defaultMessage: 'closed date range' },
+    clearCompletedAt: {
+      id: 'page.salesLeadDeliveryPage.clearCompletedAt',
+      defaultMessage: 'Clear the last completion time',
+    },
+    clearRecycledAt: {
+      id: 'page.salesLeadDeliveryPage.clearRecycledAt',
+      defaultMessage: 'Clear the last recycling time',
+    },
+    clearClosedAt: {
+      id: 'page.salesLeadDeliveryPage.clearClosedAt',
+      defaultMessage: 'Clear the last rejection time',
+    },
   }),
   salesLeadLimitConfirmationModelPage: defineMessages({
     exceededLimitTitle: {
