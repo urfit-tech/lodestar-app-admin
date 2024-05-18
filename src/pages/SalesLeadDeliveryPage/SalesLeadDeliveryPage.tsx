@@ -84,13 +84,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
   })
 
   const [updateLeadManager] = useMutation<hasura.UpdateLeadManager, hasura.UpdateLeadManagerVariables>(
-    gql`
-      mutation UpdateLeadManager($memberIds: [String!], $updated: member_set_input) {
-        update_member(where: { id: { _in: $memberIds } }, _set: $updated) {
-          affected_rows
-        }
-      }
-    `,
+    UpdateLeadManager,
   )
 
   const [getLeadManager] = useLazyQuery<hasura.GetLeadCandidates, hasura.GetLeadCandidatesVariables>(
@@ -143,6 +137,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
                       completed_at: isClearCompletedAt ? null : undefined,
                       closed_at: isClearClosedAt ? null : undefined,
                       recycled_at: isClearRecycledAt ? null : undefined,
+                      star: isClearCompletedAt || isClearClosedAt || isClearRecycledAt ? 0 : undefined,
                     },
                   },
                 })
