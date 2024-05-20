@@ -81,12 +81,13 @@ const StyledDescription = styled.div`
   font-size: 12px;
   color: var(--gray-dark);
 `
-const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log' }>`
+const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log'; amount?: number }>`
   padding: 0.125rem 0.5rem;
   color: white;
   font-size: 12px;
   border-radius: 11px;
-  background: ${props => (props.variant === 'coin-log' ? 'var(--success)' : 'var(--warning)')};
+  background: ${props =>
+    props.variant === 'coin-log' && props.amount && props.amount >= 0 ? 'var(--success)' : 'var(--warning)'};
   white-space: nowrap;
 `
 const StyledIcon = styled(Icon)`
@@ -274,7 +275,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   dataIndex: 'amount',
                   render: (text, record, index) => (
                     <div className="d-flex justify-content-between">
-                      <StyledLabel variant="coin-log">
+                      <StyledLabel variant="coin-log" amount={text}>
                         {text > 0 && '+'}
                         {text} {coinUnit}
                       </StyledLabel>
@@ -387,7 +388,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   dataIndex: 'amount',
                   render: (text, record, index) => (
                     <div className="d-flex justify-content-between">
-                      <StyledLabel variant="coin-log">
+                      <StyledLabel variant="coin-log" amount={text}>
                         {text > 0 && '+'}
                         {text} {coinUnit}
                       </StyledLabel>
@@ -477,7 +478,7 @@ const MemberCoinAdminBlock: React.VFC<{
                   title: formatMessage(messages.coins),
                   dataIndex: 'coins',
                   render: (text, record, index) => (
-                    <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit}`}</StyledLabel>
+                    <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit} `}</StyledLabel>
                   ),
                 },
               ]}
@@ -628,7 +629,7 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
+          _or: [{ name: { _like: `%{filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
