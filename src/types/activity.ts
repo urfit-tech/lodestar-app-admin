@@ -66,3 +66,33 @@ export type ActivityAdminProps = ActivityProps & {
     }
   })[]
 }
+
+
+export type ActivitySessionParticipantResDto = {
+  id: string;
+  title: string;
+  participants: ParticipantData[];
+}
+type ParticipantData = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  orderLogId: string;
+  attended: boolean;
+  activityTitle: string;
+};
+
+export type ActivitySessionParticipantsDTO = {
+  id: string
+  title: string
+  participants: {
+    id: string
+    name: string
+    phone: string
+    email: string
+    orderLogId: string
+    attended?: boolean
+    activityTitle: string
+  }[]
+}

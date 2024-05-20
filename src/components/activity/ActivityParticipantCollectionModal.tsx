@@ -1,12 +1,14 @@
 import { Button, Tabs } from 'antd'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useCallback, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import yup from 'yup'
+import * as yup from 'yup'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { ActivitySessionParticipantResDto, ActivitySessionParticipantsDTO } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const StyledTitle = styled.div`
@@ -144,34 +146,19 @@ const ActivityParticipantCollectionModal: React.FC<
     </AdminModal>
   )
 }
-
-type ActivitySessionParticipantsDTO = {
-  id: string
-  title: string
-  participants: {
-    id: string
-    name: string
-    phone: string
-    email: string
-    orderLogId: string
-    attended?: boolean
-    activityTitle: string
-  }[]
-}
-
-const rawActivitySessionDataSchema = yup.array().of(
+const rawActivitySessionResDataSchema = yup.array().of(
   yup.object({
     id: yup.string().required(),
-    title: yup.string().required(),
+    title: yup.string().nullable(),
     participants: yup.array().of(
       yup.object({
         id: yup.string().required(),
-        name: yup.string().required(),
-        phone: yup.string().required(),
-        email: yup.string().email().required(),
+        name: yup.string().nullable(),
+        phone: yup.string().nullable(),
+        email: yup.string().nullable(),
         orderLogId: yup.string().required(),
-        attended: yup.boolean().required(),
-        activityTitle: yup.string().required(),
+        attended: yup.boolean().nullable(), // If the value is null, it indicates non-attendance
+        activityTitle: yup.string().nullable(),
       }),
     ),
   }),
@@ -181,49 +168,98 @@ const useActivitySessionParticipants = (activityId: string) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<ActivitySessionParticipantsDTO[]>([])
+  const { authToken } = useAuth()
+  const [requestQueue, setRequestQueue] = useState<string[]>([])
 
-  const fetchActivitySessionParticipants = useCallback(async () => {
-    try {
-      setLoading(true)
-      const response = await axios.get(`/api/activityParticipants/${activityId}`)
-      const data = response.data
+  const fetchActivitySessionParticipants = useCallback(
+    async (activityId: string) => {
+      if (authToken && activityId) {
+        try {
+          setLoading(true)
 
-      await rawActivitySessionDataSchema.validate(data)
+          const response = await axios.get(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/activity/${activityId}/participants`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            },
+          )
+          const { activitySessions: data } = response.data
 
-      const mapApiDataToDTO = (data: any): ActivitySessionParticipantsDTO[] => {
-        return data.map((sessionData: any) => ({
-          id: sessionData.id,
-          title: sessionData.title,
-          participants: sessionData.participants.map((participantData: any) => ({
-            id: participantData.id,
-            name: participantData.name,
-            phone: participantData.phone,
-            email: participantData.email,
-            orderLogId: participantData.orderLogId,
-            attended: participantData.attended,
-            activityTitle: participantData.activityTitle,
-          })),
-        }))
+          try {
+            await rawActivitySessionResDataSchema.validate(data)
+          } catch (error) {
+            const errorMessage = (error as Error).message || 'An unknown error occurred'
+            console.error(activityId, errorMessage)
+            setError(errorMessage)
+            return
+          }
+
+          const mapApiDataToDTO = (data: ActivitySessionParticipantResDto[]): ActivitySessionParticipantsDTO[] => {
+            const idCounts: { [key: string]: number } = {}
+
+            return data.map((sessionData: any) => ({
+              id: sessionData.id,
+              title: sessionData.title ?? '',
+              participants: sessionData.participants.map((participantData: any) => {
+                const originalId = participantData.id
+                let uniqueId = originalId
+
+                if (idCounts[originalId]) {
+                  idCounts[originalId]++
+                  uniqueId = `${originalId}-${idCounts[originalId]}`
+                } else {
+                  idCounts[originalId] = 1
+                }
+
+                return {
+                  id: uniqueId,
+                  name: participantData.name ?? '',
+                  phone: participantData.phone ?? '',
+                  email: participantData.email ?? '',
+                  orderLogId: participantData.orderLogId,
+                  attended: participantData.attended,
+                  activityTitle: participantData.activityTitle ?? '',
+                }
+              }),
+            }))
+          }
+
+          setSessions(mapApiDataToDTO(data))
+        } catch (error) {
+          const errorMessage = (error as Error).message || 'An unknown error occurred'
+          setError(errorMessage)
+        } finally {
+          setLoading(false)
+        }
       }
-
-      setSessions(mapApiDataToDTO(data))
-    } catch (error) {
-      const errorMessage = (error as Error).message || 'An unknown error occurred'
-      setError(errorMessage)
-    } finally {
-      setLoading(false)
-    }
-  }, [activityId])
+    },
+    [authToken],
+  )
 
   useEffect(() => {
-    fetchActivitySessionParticipants()
-  }, [fetchActivitySessionParticipants])
+    if (requestQueue.length > 0) {
+      const currentActivityId = requestQueue[0]
+      fetchActivitySessionParticipants(currentActivityId).then(() => {
+        setRequestQueue(prevQueue => prevQueue.slice(1))
+      })
+    }
+  }, [requestQueue, fetchActivitySessionParticipants])
+
+  const addToRequestQueue = (activityId: string) => {
+    setRequestQueue(prevQueue => [...prevQueue, activityId])
+  }
+
+  useEffect(() => {
+    addToRequestQueue(activityId)
+  }, [activityId])
 
   return {
     loadingSessions: loading,
     errorSessions: error,
     sessions,
-    refetchSessions: fetchActivitySessionParticipants,
+    refetchSessions: addToRequestQueue,
   }
 }
 
