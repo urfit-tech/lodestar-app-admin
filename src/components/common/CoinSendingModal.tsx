@@ -176,11 +176,7 @@ const CoinSendingModal: React.FC<{
           <Input placeholder={formatMessage(messages.descriptionPlaceholder)} />
         </Form.Item>
         <Form.Item label={formatMessage(messages.increaseCoins)} name="amount">
-          <InputNumber
-            // min={1}
-            formatter={value => (Number(`${value}`) > 0 ? `+${value}` : `${value}`)}
-            // parser={value => value?.replace(/\D/g, '') || ''}
-          />
+          <InputNumber formatter={value => (Number(`${value}`) > 0 ? `+${value}` : `${value}`)} />
         </Form.Item>
         <Form.Item label={formatMessage(messages.availableDateRange)}>
           <Input.Group compact>

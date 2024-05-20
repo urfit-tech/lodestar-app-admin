@@ -507,10 +507,10 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
-    title: filter?.title ? { _like: `% ${filter.title}% ` } : undefined,
+    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
     _or: [{ started_at: { _is_null: true } }, { started_at: { _lte: 'now()' } }],
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -605,10 +605,10 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
+          _or: [{ name: { _like: `%{filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
-    title: filter?.title ? { _like: `% ${filter.title}% ` } : undefined,
+    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
     started_at: { _gte: 'now()' },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -701,7 +701,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
   memberId?: string
 }) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
-    id: filter?.orderLogId ? { _like: `% ${filter.orderLogId}% ` } : undefined,
+    id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member_id: filter?.memberId
       ? {
           _eq: filter.memberId,
@@ -709,12 +709,12 @@ const useOrderLogWithCoinsCollection = (filter?: {
       : undefined,
     member: filter?.nameAndEmail
       ? {
-          _or: [{ name: { _like: `% ${filter.nameAndEmail}% ` } }, { email: { _like: ` % ${filter.nameAndEmail}% ` } }],
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     order_discounts: filter?.title
       ? {
-          name: { _like: `% ${filter.title}% ` },
+          name: { _like: `%${filter.title}%` },
           type: { _eq: 'Coin' },
         }
       : { type: { _eq: 'Coin' } },
