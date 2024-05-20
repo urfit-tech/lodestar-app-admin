@@ -169,14 +169,12 @@ const useActivitySessionParticipants = (activityId: string) => {
   const [error, setError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<ActivitySessionParticipantsDTO[]>([])
   const { authToken } = useAuth()
-  const [requestQueue, setRequestQueue] = useState<string[]>([])
 
   const fetchActivitySessionParticipants = useCallback(
     async (activityId: string) => {
       if (authToken && activityId) {
         try {
           setLoading(true)
-
           const response = await axios.get(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/activity/${activityId}/participants`,
             {
@@ -198,21 +196,18 @@ const useActivitySessionParticipants = (activityId: string) => {
 
           const mapApiDataToDTO = (data: ActivitySessionParticipantResDto[]): ActivitySessionParticipantsDTO[] => {
             const idCounts: { [key: string]: number } = {}
-
             return data.map((sessionData: any) => ({
               id: sessionData.id,
               title: sessionData.title ?? '',
               participants: sessionData.participants.map((participantData: any) => {
                 const originalId = participantData.id
                 let uniqueId = originalId
-
                 if (idCounts[originalId]) {
                   idCounts[originalId]++
                   uniqueId = `${originalId}-${idCounts[originalId]}`
                 } else {
                   idCounts[originalId] = 1
                 }
-
                 return {
                   id: uniqueId,
                   name: participantData.name ?? '',
@@ -239,27 +234,14 @@ const useActivitySessionParticipants = (activityId: string) => {
   )
 
   useEffect(() => {
-    if (requestQueue.length > 0) {
-      const currentActivityId = requestQueue[0]
-      fetchActivitySessionParticipants(currentActivityId).then(() => {
-        setRequestQueue(prevQueue => prevQueue.slice(1))
-      })
-    }
-  }, [requestQueue, fetchActivitySessionParticipants])
-
-  const addToRequestQueue = (activityId: string) => {
-    setRequestQueue(prevQueue => [...prevQueue, activityId])
-  }
-
-  useEffect(() => {
-    addToRequestQueue(activityId)
-  }, [activityId])
+    fetchActivitySessionParticipants(activityId)
+  }, [activityId, fetchActivitySessionParticipants])
 
   return {
     loadingSessions: loading,
     errorSessions: error,
     sessions,
-    refetchSessions: addToRequestQueue,
+    refetchSessions: () => fetchActivitySessionParticipants(activityId),
   }
 }
 
