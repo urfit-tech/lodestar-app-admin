@@ -564,6 +564,11 @@ export const routesProps = {
     pageName: 'DeactivatePage',
     authenticated: true,
   },
+  membership_card: {
+    path: '/membership-card',
+    pageName: 'MembershipCardPage',
+    authenticated: true,
+  },
 
   // xuemi extra router
   // member_contract_collection: {
