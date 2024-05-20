@@ -102,7 +102,7 @@ const ActivityParticipantCollectionModal: React.FC<
                     data.push([
                       `${index + 1}`.padStart(2, '0'),
                       participant.name,
-                      participant.activityTitle,
+                      participant.activityTicketTitle,
                       participant.attended ? 'v' : '',
                       participant.phone,
                       participant.email,
@@ -129,7 +129,7 @@ const ActivityParticipantCollectionModal: React.FC<
                     <StyledRow key={participant.id}>
                       <StyledCell>{`${index + 1}`.padStart(2, '0')}</StyledCell>
                       <StyledCell>{participant.name}</StyledCell>
-                      <StyledCell>{participant.activityTitle}</StyledCell>
+                      <StyledCell>{participant.activityTicketTitle}</StyledCell>
                       {enabledModules.qrcode && (
                         <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
                       )}
@@ -158,7 +158,7 @@ const rawActivitySessionResDataSchema = yup.array().of(
         email: yup.string().nullable(),
         orderLogId: yup.string().required(),
         attended: yup.boolean().nullable(), // If the value is null, it indicates non-attendance
-        activityTitle: yup.string().nullable(),
+        activityTicketTitle: yup.string().nullable(),
       }),
     ),
   }),
@@ -220,7 +220,7 @@ const useActivitySessionParticipants = (activityId: string) => {
                   email: participantData.email ?? '',
                   orderLogId: participantData.orderLogId,
                   attended: participantData.attended,
-                  activityTitle: participantData.activityTitle ?? '',
+                  activityTicketTitle: participantData.activityTicketTitle ?? '',
                 }
               }),
             }))

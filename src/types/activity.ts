@@ -80,7 +80,7 @@ type ParticipantData = {
   email: string;
   orderLogId: string;
   attended: boolean;
-  activityTitle: string;
+  activityTicketTitle: string;
 };
 
 export type ActivitySessionParticipantsDTO = {
@@ -93,6 +93,6 @@ export type ActivitySessionParticipantsDTO = {
     email: string
     orderLogId: string
     attended?: boolean
-    activityTitle: string
+    activityTicketTitle: string
   }[]
 }
