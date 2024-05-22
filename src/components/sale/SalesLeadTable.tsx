@@ -568,6 +568,7 @@ const SalesLeadTable: React.VFC<{
           }
         } finally {
           setManagerId('')
+          setSelectedRowKeys([])
         }
       }
 
