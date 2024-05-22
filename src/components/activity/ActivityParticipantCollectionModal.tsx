@@ -194,12 +194,12 @@ const useActivitySessionParticipants = (activityId: string) => {
             return
           }
 
-          const mapApiDataToDTO = (data: ActivitySessionParticipantResDto[]): ActivitySessionParticipantsDTO[] => {
+          const mapApiDataToDto = (data: ActivitySessionParticipantResDto[]): ActivitySessionParticipantsDTO[] => {
             const idCounts: { [key: string]: number } = {}
-            return data.map((sessionData: any) => ({
+            return data.map(sessionData => ({
               id: sessionData.id,
               title: sessionData.title ?? '',
-              participants: sessionData.participants.map((participantData: any) => {
+              participants: sessionData.participants.map(participantData => {
                 const originalId = participantData.id
                 let uniqueId = originalId
                 if (idCounts[originalId]) {
@@ -221,7 +221,7 @@ const useActivitySessionParticipants = (activityId: string) => {
             }))
           }
 
-          setSessions(mapApiDataToDTO(data))
+          setSessions(mapApiDataToDto(data))
         } catch (error) {
           const errorMessage = (error as Error).message || 'An unknown error occurred'
           setError(errorMessage)
