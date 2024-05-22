@@ -15,6 +15,7 @@ import ForbiddenPage from '../ForbiddenPage'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import CertificateCollectionTable from './MembershipCardCollectionTable'
+import MembershipCardPageMessages from './translation'
 
 const MembershipCardCollectionPage: React.VFC = () => {
   const history = useHistory()
@@ -32,7 +33,9 @@ const MembershipCardCollectionPage: React.VFC = () => {
       tab: formatMessage(pageMessages['*'].published),
       quantity: publishedQuantity,
       condition: {
-        published_at: { _is_null: false },
+        fixed_expiry_date: {
+          _lt: 'now()',
+        },
       },
     },
     {
@@ -40,7 +43,9 @@ const MembershipCardCollectionPage: React.VFC = () => {
       tab: formatMessage(pageMessages['*'].unpublished),
       quantity: unpublishedQuantity,
       condition: {
-        published_at: { _is_null: true },
+        fixed_expiry_date: {
+          _gt: 'now()',
+        },
       },
     },
   ]
@@ -58,7 +63,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
           <CertificateIcon className="mr-3" />
-          <span>{formatMessage(pageMessages['*'].certificateSetting)}</span>
+          <span>{formatMessage(MembershipCardPageMessages.page.title)}</span>
         </AdminPageTitle>
       </div>
 

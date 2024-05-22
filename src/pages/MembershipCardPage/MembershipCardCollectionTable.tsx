@@ -26,18 +26,19 @@ const StyledLink = styled(Link)`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type CertificateColumn = {
+type MembershipCardColumn = {
   id: string
   title: string
-  certificateTemplate: {
+  membershipCardTemplate: {
     id: string
     template: string
     backgroundImage: string
+    expiredTime: string
   }
 }
 
 const MembershipCardCollectionTable: React.VFC<{
-  condition: hasura.GET_CERTIFICATE_PREVIEWVariables['condition']
+  condition: hasura.GetMembershipCardCollectionVariables['condition']
 }> = ({ condition }) => {
   const { formatMessage } = useIntl()
   const [searchName, setSearchName] = useState<string | null>(null)
@@ -46,7 +47,7 @@ const MembershipCardCollectionTable: React.VFC<{
     title: searchName ? { _ilike: `%${searchName}%` } : undefined,
   })
 
-  const columns: ColumnProps<CertificateColumn>[] = [
+  const columns: ColumnProps<MembershipCardColumn>[] = [
     {
       key: 'title',
       title: formatMessage(pageMessages['*'].title),
@@ -60,7 +61,7 @@ const MembershipCardCollectionTable: React.VFC<{
             className="mr-4"
             width="60px"
             ratio={0.7}
-            src={record.certificateTemplate.backgroundImage || EmptyCover}
+            src={record.membershipCardTemplate.backgroundImage || EmptyCover}
           />
           <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
         </Link>
@@ -101,27 +102,28 @@ const MembershipCardCollectionTable: React.VFC<{
     return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
   }
 
-  return <Table<CertificateColumn> loading={loading} rowKey="id" columns={columns} dataSource={certificates} />
+  return <Table<MembershipCardColumn> loading={loading} rowKey="id" columns={columns} dataSource={certificates} />
 }
 
-const useCertificate = (condition: hasura.GET_CERTIFICATE_PREVIEWVariables['condition']) => {
-  const { loading, error, data } = useQuery<hasura.GET_CERTIFICATE_PREVIEW, hasura.GET_CERTIFICATE_PREVIEWVariables>(
-    GET_CERTIFICATE_PREVIEW,
-    {
-      variables: {
-        condition,
-      },
+const useCertificate = (condition: hasura.GetMembershipCardCollectionVariables['condition']) => {
+  const { loading, error, data } = useQuery<
+    hasura.GetMembershipCardCollection,
+    hasura.GetMembershipCardCollectionVariables
+  >(GET_CERTIFICATE_PREVIEW, {
+    variables: {
+      condition,
     },
-  )
+  })
 
-  const certificates: CertificateColumn[] =
-    data?.certificate.map(v => ({
+  const certificates: MembershipCardColumn[] =
+    data?.card.map(v => ({
       id: v.id,
       title: v.title || '',
-      certificateTemplate: {
-        id: v.certificate_template?.id,
-        template: v.certificate_template?.template || '',
-        backgroundImage: v.certificate_template?.background_image || '',
+      membershipCardTemplate: {
+        id: v.id,
+        template: v.template || '',
+        backgroundImage: '',
+        expiredTime: '',
       },
     })) || []
 
@@ -142,6 +144,24 @@ const GET_CERTIFICATE_PREVIEW = gql`
         template
         background_image
       }
+    }
+  }
+`
+
+const GetMembershipCardCollection = gql`
+  query GetMembershipCardCollection($condition: card_bool_exp!) {
+    card {
+      app_id
+      creator_id
+      description
+      sku
+      template
+      title
+      id
+      fixed_expiry_date
+      relative_expiry_type
+      relative_expiry_amount
+      expiry_type
     }
   }
 `
