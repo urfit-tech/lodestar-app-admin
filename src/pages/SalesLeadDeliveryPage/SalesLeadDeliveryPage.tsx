@@ -121,14 +121,26 @@ const SalesLeadDeliveryPage: React.VFC = () => {
         <ConfirmSection
           filter={filter}
           setCurrentStep={setCurrentStep}
-          onNext={({ condition, limit, managerId }) => {
+          onNext={({ condition, limit, managerId, isClearClosedAt, isClearCompletedAt, isClearRecycledAt }) => {
             setAssignedResult({
               status: 'info',
             })
             getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
                 const memberIds = data?.member.map(m => m.id)
-                updateLeadManager({ variables: { memberIds, managerId } })
+                updateLeadManager({
+                  variables: {
+                    memberIds,
+                    updated: {
+                      manager_id: managerId,
+                      last_manager_assigned_at: new Date(),
+                      completed_at: isClearCompletedAt ? null : undefined,
+                      closed_at: isClearClosedAt ? null : undefined,
+                      recycled_at: isClearRecycledAt ? null : undefined,
+                      star: isClearCompletedAt || isClearClosedAt || isClearRecycledAt ? 0 : undefined,
+                    },
+                  },
+                })
                   .then(({ data }) => {
                     setAssignedResult({
                       status: 'success',
@@ -459,7 +471,14 @@ const FilterSection: React.FC<{
 const ConfirmSection: React.FC<{
   filter: Filter
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
-  onNext?: (values: { condition: member_bool_exp; limit: number; managerId: string | null }) => void
+  onNext?: (values: {
+    condition: member_bool_exp
+    limit: number
+    managerId: string | null
+    isClearCompletedAt: boolean
+    isClearClosedAt: boolean
+    isClearRecycledAt: boolean
+  }) => void
 }> = ({ filter, setCurrentStep, onNext }) => {
   const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
@@ -480,6 +499,9 @@ const ConfirmSection: React.FC<{
     'managerName',
     ...propertyColumnIds,
   ])
+  const [isClearCompletedAt, setIsClearCompletedAt] = useState(false)
+  const [isClearClosedAt, setIsClearClosedAt] = useState(false)
+  const [isClearRecycledAt, setIsClearRecycledAt] = useState(false)
 
   const limit = 50
 
@@ -722,6 +744,9 @@ const ConfirmSection: React.FC<{
       condition: leadCandidatesCondition,
       limit: numDeliver,
       managerId: managerId || null,
+      isClearCompletedAt,
+      isClearClosedAt,
+      isClearRecycledAt,
     })
   }
 
@@ -766,6 +791,23 @@ const ConfirmSection: React.FC<{
             </Col>
           </Row>
         )}
+
+        <Row className="mb-2">
+          <Checkbox checked={isClearCompletedAt} onChange={e => setIsClearCompletedAt(e.target.checked)}>
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.clearCompletedAt)}
+          </Checkbox>
+        </Row>
+        <Row className="mb-2">
+          <Checkbox checked={isClearClosedAt} onChange={e => setIsClearClosedAt(e.target.checked)}>
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.clearClosedAt)}
+          </Checkbox>
+        </Row>
+        <Row className="mb-2">
+          <Checkbox checked={isClearRecycledAt} onChange={e => setIsClearRecycledAt(e.target.checked)}>
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.clearRecycledAt)}
+          </Checkbox>
+        </Row>
+
         <Button type="primary" block onClick={handleClick}>
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
@@ -838,11 +880,8 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
 }
 
 const UpdateLeadManager = gql`
-  mutation UpdateLeadManager($memberIds: [String!], $managerId: String) {
-    update_member(
-      where: { id: { _in: $memberIds } }
-      _set: { manager_id: $managerId, last_manager_assigned_at: "now()" }
-    ) {
+  mutation UpdateLeadManager($memberIds: [String!], $updated: member_set_input) {
+    update_member(where: { id: { _in: $memberIds } }, _set: $updated) {
       affected_rows
     }
   }
