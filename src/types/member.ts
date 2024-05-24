@@ -265,4 +265,25 @@ export type MemberCollectionProps = {
   recycledAt?: Date | null
 }
 
-export type ColumnProperty = { id: string; name: string; placeholder: string | undefined; isEditable: boolean; isRequired: boolean }
+export type MemberCollectionAdminFieldFilter = {
+  role?: UserRole
+  name?: string
+  email?: string
+  phone?: string
+  username?: string
+  category?: string
+  managerName?: string
+  tag?: string
+  permissionGroup?: string
+  properties?: {
+    [propertyId: string]: string | undefined
+  }
+}
+
+export type ColumnProperty = {
+  id: string
+  name: string
+  placeholder: string | undefined
+  isEditable: boolean
+  isRequired: boolean
+}

@@ -2,12 +2,12 @@ import { Select } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import { usePermissionGroupsDropdownMenu } from '../../hooks/permission'
+import { MemberCollectionAdminFieldFilter } from '../../types/member'
 import pageMessages from '../translation'
-import { FieldFilter } from './MemberCollectionAdminPage'
 
 const PermissionGroupsDropDownSelector: React.VFC<{
-  fieldFilter: FieldFilter
-  onFiledFilterChange: (filter: FieldFilter) => void
+  fieldFilter: MemberCollectionAdminFieldFilter
+  onFiledFilterChange: (filter: MemberCollectionAdminFieldFilter) => void
 }> = ({ fieldFilter, onFiledFilterChange }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()

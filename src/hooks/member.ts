@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
-import { isEmpty } from 'lodash'
+import { flatten, isEmpty } from 'lodash'
 import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
@@ -18,11 +18,11 @@ import {
   MemberNote,
   ResponseMembers,
   MemberCollectionProps,
+  MemberCollectionAdminFieldFilter,
 } from '../types/member'
 import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
-import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
 
 interface MenuItem {
   role: string | null
@@ -673,7 +673,7 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMembers = (authToken: string, limit: number, filter?: FieldFilter) => {
+export const useMembers = (authToken: string, limit: number, filter?: MemberCollectionAdminFieldFilter) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<any>('')
   const [members, setMembers] = useState<
@@ -693,7 +693,7 @@ export const useMembers = (authToken: string, limit: number, filter?: FieldFilte
   const [nextToken, setNextToken] = useState<string | null>(null)
 
   const fetchMembers = async (
-    filter: FieldFilter | undefined,
+    filter: MemberCollectionAdminFieldFilter | undefined,
     option: {
       limit?: number
       nextToken?: string | null
@@ -1149,5 +1149,71 @@ export const useMemberPermissionGroups = (memberId: string) => {
     loading,
     memberPermissionGroups,
     error,
+  }
+}
+
+export const useDuplicatedPhoneList = () => {
+  const { loading: loadingDuplicatedMemberPhone, data: duplicatedMemberPhone } = useQuery<
+    hasura.GetDuplicatedMemberPhone,
+    hasura.GetDuplicatedMemberPhoneVariables
+  >(gql`
+    query GetDuplicatedMemberPhone {
+      member_phone_duplicated(limit: 100, order_by: { count: asc }) {
+        phone
+        member_phones {
+          id
+          member_id
+        }
+      }
+    }
+  `)
+
+  const { loading: loadingMembersInfo, data: membersInfoData } = useQuery<
+    hasura.GetMembersInfo,
+    hasura.GetMembersInfoVariables
+  >(
+    gql`
+      query GetMembersInfo($memberIdList: [String!]) {
+        member(where: { id: { _in: $memberIdList } }) {
+          id
+          name
+          email
+        }
+      }
+    `,
+    {
+      variables: {
+        memberIdList: flatten(
+          duplicatedMemberPhone?.member_phone_duplicated.map(v => v.member_phones.map(w => w.member_id)) || [[]],
+        ).filter(notEmpty),
+      },
+    },
+  )
+
+  const memberInfos: { id: string; name: string; email: string }[] =
+    membersInfoData?.member.map(v => ({
+      id: v.id,
+      name: v.name,
+      email: v.email,
+    })) || []
+
+  const duplicatedList =
+    duplicatedMemberPhone?.member_phone_duplicated.map(v => {
+      const duplicatedMemberIdList = v.member_phones.map(w => w.member_id)
+      let memberList: { id: string; name: string; email: string }[] = []
+      memberInfos.forEach(member => {
+        if (duplicatedMemberIdList.some(duplicatedMemberId => duplicatedMemberId === member.id)) memberList.push(member)
+      })
+
+      return {
+        phone: v.phone,
+        members: memberList,
+      }
+    }) || []
+
+  return {
+    loadingDuplicatedMemberPhone,
+    loadingMembersInfo,
+    duplicatedList,
   }
 }

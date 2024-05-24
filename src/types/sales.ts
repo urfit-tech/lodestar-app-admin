@@ -1,3 +1,6 @@
+import { ResultProps } from 'antd/lib/result'
+import { Moment } from 'moment'
+
 export type LeadProps = {
   id: string
   name: string
@@ -98,72 +101,103 @@ export type LeadStatus =
   | 'ANSWERED'
   | 'COMPLETED'
 
+export type MemberTask = {
+  memberId: string
+  status: string
+}
 
+export type MemberProperty = {
+  name: string
+  memberId: string
+  propertyId: string
+  value: string
+}
 
-  export type MemberTask = {
-    memberId: string;
-    status: string;
-  };
-  
-  export type MemberProperty = {
-    name: string
-    memberId: string;
-    propertyId: string;  
-    value: string;
-  };
-  
-  export type MemberPhone = {
-    memberId: string;
-    phone: string;
-  };
-  
-  export type MemberNote = {
-    memberId: string | null;
-    description: string | null;
-  };
-  
-  export type MemberCategory = {
-    name: string;
-    memberId: string;
-    categoryId: string;
-  };
-  
-  export type MemberContract = {
-    memberId: string;
-    agreedAt: Date | null; 
-    revokedAt: Date | null;  
-    values: any | null;   
-  };
-  
-  export type ApiResponse = {
-    data: {
-      member_task: Array<{
-        memberId: string;
-        status: string;
-      }>;
-      member_property: Array<{
-        memberId: string;
-        propertyId: string;
-        value: string;
-      }>;
-      member_phone: Array<{
-        memberId: string;
-        phone: string;
-      }>;
-      active_member_contract: Array<{
-        memberId: string;
-        agreed_at: string | null;
-        revoked_at: string | null;
-        values: any | null;
-      }>;
-    };
-  };
-  
-  export type GetSalesLeadMemberDataInfo = {
-    memberTask: MemberTask[];
-    memberProperty: MemberProperty[];
-    memberPhone: MemberPhone[];
-    memberNote: MemberNote[];
-    memberCategory: MemberCategory[];
-    activeMemberContract: MemberContract[];
-  };
+export type MemberPhone = {
+  memberId: string
+  phone: string
+}
+
+export type MemberNote = {
+  memberId: string | null
+  description: string | null
+}
+
+export type MemberCategory = {
+  name: string
+  memberId: string
+  categoryId: string
+}
+
+export type MemberContract = {
+  memberId: string
+  agreedAt: Date | null
+  revokedAt: Date | null
+  values: any | null
+}
+
+export type ApiResponse = {
+  data: {
+    member_task: Array<{
+      memberId: string
+      status: string
+    }>
+    member_property: Array<{
+      memberId: string
+      propertyId: string
+      value: string
+    }>
+    member_phone: Array<{
+      memberId: string
+      phone: string
+    }>
+    active_member_contract: Array<{
+      memberId: string
+      agreed_at: string | null
+      revoked_at: string | null
+      values: any | null
+    }>
+  }
+}
+
+export type GetSalesLeadMemberDataInfo = {
+  memberTask: MemberTask[]
+  memberProperty: MemberProperty[]
+  memberPhone: MemberPhone[]
+  memberNote: MemberNote[]
+  memberCategory: MemberCategory[]
+  activeMemberContract: MemberContract[]
+}
+
+export type Property = {
+  id: string
+  name: string
+  placeholder: string | undefined
+  isEditable: boolean
+  isRequired: boolean
+}
+
+export type LeadTypeFilter = 'contained' | 'only' | 'excluded'
+
+export type Filter = {
+  [key: string]: any
+  categoryIds: string[]
+  createdAtRange: [Date, Date] | null
+  lastCalledRange: [Moment | null, Moment | null] | null
+  lastAnsweredRange: [Moment | null, Moment | null] | null
+  managerId?: string
+  starRange: [number, number]
+  starRangeIsNull: boolean
+  completedLead: LeadTypeFilter
+  closedLead: LeadTypeFilter
+  recycledLead: LeadTypeFilter
+  closedAtRange: [Date, Date] | null
+  excludeLastCalled: boolean
+  excludeLastAnswered: boolean
+}
+
+export type AssignResult = {
+  status: ResultProps['status']
+  data?: number
+  error?: Error
+}

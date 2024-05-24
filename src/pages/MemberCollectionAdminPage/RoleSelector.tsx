@@ -5,9 +5,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { UserRoleName } from '../../components/common/UserRole'
 import { useMemberRoleCount } from '../../hooks/member'
-import { UserRole } from '../../types/member'
+import { MemberCollectionAdminFieldFilter, UserRole } from '../../types/member'
 import pageMessages from '../translation'
-import { FieldFilter } from './MemberCollectionAdminPage'
 
 const StyledDropdown = styled(Dropdown)`
   width: 100%;
@@ -19,10 +18,10 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `
 
-const RoleSelector: React.VFC<{ fieldFilter: FieldFilter; onFiledFilterChange: (filter: FieldFilter) => void }> = ({
-  fieldFilter,
-  onFiledFilterChange,
-}) => {
+const RoleSelector: React.VFC<{
+  fieldFilter: MemberCollectionAdminFieldFilter
+  onFiledFilterChange: (filter: MemberCollectionAdminFieldFilter) => void
+}> = ({ fieldFilter, onFiledFilterChange }) => {
   const { formatMessage } = useIntl()
   const { loading, id: appId } = useApp()
   const { loading: loadingMemberRoleCount, menu } = useMemberRoleCount(appId, {
