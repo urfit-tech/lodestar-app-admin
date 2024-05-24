@@ -151,7 +151,8 @@
     "videojs-hls-quality-selector": "^1.1.4",
     "wavesurfer.js": "^4.1.1",
     "xlsx": "0.18.5",
-    "xss": "^1.0.10"
+    "xss": "^1.0.10",
+    "yup": "^1.4.0"
   },
   "husky": {
     "hooks": {
