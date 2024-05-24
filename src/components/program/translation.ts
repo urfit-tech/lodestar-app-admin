@@ -36,6 +36,8 @@ const programMessages = {
     defaultTagName: { id: 'program.ProgramCollectionSelector.defaultTagName', defaultMessage: '預設標籤' },
     dataDisplay: { id: 'program.ProgramCollectionSelector.dataDisplay', defaultMessage: '資料顯示' },
     addItem: { id: 'program.ProgramCollectionSelector.addItem', defaultMessage: '新增項目' },
+    membershipCard: { id: 'program.ProgramCollectionSelector.membershipCard', defaultMessage: 'Membership Card' },
+    programStatus: { id: 'program.ProgramCollectionSelector.programStatus', defaultMessage: 'Program Status' },
   }),
   ProgramPackageSelector: defineMessages({
     allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
