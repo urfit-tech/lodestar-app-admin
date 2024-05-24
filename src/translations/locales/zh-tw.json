@@ -2214,6 +2214,7 @@
   "program.*.pinnedStatus": "釘選",
   "program.*.save": "儲存",
   "program.*.successfullySaved": "儲存成功",
+  "program.*.sortProgramPlan": "方案排序",
   "program.*.uploadAudioFile": "上傳音檔",
   "program.*.videoContent": "影片內容",
   "program.DisplayModeSelector.audioTrial": "試聽",

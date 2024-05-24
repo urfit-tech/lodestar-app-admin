@@ -2210,6 +2210,7 @@
   "program.*.pinnedStatus": "Pin",
   "program.*.save": "儲存",
   "program.*.successfullySaved": "儲存成功",
+  "program.*.sortProgramPlan": "Sort Plan",
   "program.*.uploadAudioFile": "Upload audio file",
   "program.*.videoContent": "Video content",
   "program.DisplayModeSelector.audioTrial": "Audio trial",

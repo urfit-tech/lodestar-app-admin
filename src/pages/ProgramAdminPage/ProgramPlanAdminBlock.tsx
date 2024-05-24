@@ -3,6 +3,7 @@ import { Button, Skeleton, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import {
   MembershipPlanModal,
   PeriodPlanModal,
@@ -10,7 +11,9 @@ import {
   SubscriptionPlanModal,
 } from '../../components/program/programPlanAdminModals'
 import ProgramSubscriptionPlanAdminCard from '../../components/program/ProgramSubscriptionPlanAdminCard'
-import { commonMessages } from '../../helpers/translation'
+import { handleError } from '../../helpers'
+import { commonMessages, programMessages } from '../../helpers/translation'
+import { useProgramPlanSortCollection, useUpdateProgramPlanSortCollection } from '../../hooks/program'
 import { ProgramAdminProps } from '../../types/program'
 
 const ProgramPlanAdminBlock: React.FC<{
@@ -19,6 +22,8 @@ const ProgramPlanAdminBlock: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const { programPlanSorts, refetchProgramPlanSorts } = useProgramPlanSortCollection(program?.id || '')
+  const { updatePositions } = useUpdateProgramPlanSortCollection()
 
   if (!program) {
     return <Skeleton active />
@@ -40,41 +45,66 @@ const ProgramPlanAdminBlock: React.FC<{
 
   return (
     <>
-      <Space direction="horizontal" size="small">
-        <PerpetualPlanModal
-          programId={program.id}
-          renderTrigger={({ onOpen }) => (
-            <OpenPlanModal title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
-          )}
-          onRefetch={onRefetch}
-        />
-
-        <PeriodPlanModal
-          programId={program.id}
-          renderTrigger={({ onOpen }) => (
-            <OpenPlanModal title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
-          )}
-          onRefetch={onRefetch}
-        />
-
-        <SubscriptionPlanModal
-          programId={program.id}
-          renderTrigger={({ onOpen }) => (
-            <OpenPlanModal title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
-          )}
-          onRefetch={onRefetch}
-        />
-
-        {enabledModules.membership_card && (
-          <MembershipPlanModal
+      <div className="d-flex justify-content-between">
+        <Space direction="horizontal" size="small">
+          <PerpetualPlanModal
             programId={program.id}
             renderTrigger={({ onOpen }) => (
-              <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
+              <OpenPlanModal title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
             )}
             onRefetch={onRefetch}
           />
-        )}
-      </Space>
+
+          <PeriodPlanModal
+            programId={program.id}
+            renderTrigger={({ onOpen }) => (
+              <OpenPlanModal title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
+            )}
+            onRefetch={onRefetch}
+          />
+
+          <SubscriptionPlanModal
+            programId={program.id}
+            renderTrigger={({ onOpen }) => (
+              <OpenPlanModal title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
+            )}
+            onRefetch={onRefetch}
+          />
+
+          {enabledModules.membership_card && (
+            <MembershipPlanModal
+              programId={program.id}
+              renderTrigger={({ onOpen }) => (
+                <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
+              )}
+              onRefetch={onRefetch}
+            />
+          )}
+        </Space>
+
+        <ItemsSortingModal
+          items={programPlanSorts}
+          triggerText={formatMessage(programMessages['*'].sortProgramPlan)}
+          onSubmit={values =>
+            updatePositions({
+              variables: {
+                data: values.map((value, index) => ({
+                  id: value.id,
+                  program_id: value.programId,
+                  list_price: value.listPrice,
+                  title: value.title || '',
+                  position: index,
+                })),
+              },
+            })
+              .then(() => {
+                refetchProgramPlanSorts()
+                onRefetch?.()
+              })
+              .catch(handleError)
+          }
+        />
+      </div>
 
       <div className="row">
         {program.plans.map(programPlan => (
