@@ -49,8 +49,7 @@ export const useMembershipCardByTargetId = (productType: string, targetId: strin
       variables: { productType, targetId },
     },
   )
-  const cardTitle: string =
-    (cardData && cardData.card_product.map(cardProduct => cardProduct.card.title).toString()) || ''
+  const cardTitle: string = cardData ? cardData.card_product.map(cardProduct => cardProduct.card.title).toString() : ''
 
   const cardProducts: CardProducts = cardData
     ? cardData.card_product.map(card => ({
