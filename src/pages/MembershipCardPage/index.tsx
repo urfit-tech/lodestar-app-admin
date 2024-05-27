@@ -1,2 +1,0 @@
-import MembershipCardCollectionPage from './MembershipCardCollectionPage'
-export default MembershipCardCollectionPage
