@@ -47,6 +47,7 @@ export type LeadProps = {
   followedAt: Date | null
   excludedAt: Date | null
   recycledAt: Date | null
+  leadStatusCategoryId: string
 }
 
 export type SalesProps = {
