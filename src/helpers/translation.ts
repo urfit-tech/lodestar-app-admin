@@ -1480,7 +1480,7 @@ export const salesMessages = defineMessages({
   chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '報名查詢' },
   chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
   autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
-  followedLead: { id: 'sales.label.followedLead', defaultMessage: '收藏' },
+  followedLead: { id: 'sales.label.followedLead', defaultMessage: 'Followed Lead' },
   idledLead: { id: 'sales.label.idledLead', defaultMessage: '未撥打' },
   calledLead: { id: 'sales.label.calledLead', defaultMessage: '已撥打' },
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '未完成' },
@@ -1514,6 +1514,19 @@ export const salesMessages = defineMessages({
   addNewPhone: { id: 'sales.label.addNewPhone', defaultMessage: '新增手機' },
   addPhoneNumber: { id: 'sales.label.addPhoneNumber', defaultMessage: '新增號碼' },
   selectedCount: { id: 'sales.label.selectedCount', defaultMessage: '{count} rows selected' },
+  addList: { id: 'sales.label.addList', defaultMessage: 'Add List' },
+  additionSuccessful: { id: 'sales.label.additionSuccessful', defaultMessage: 'Addition Successful' },
+  additionFailed: { id: 'sales.label.additionFailed', defaultMessage: 'Addition Failed' },
+  savedSuccessfully: { id: 'sales.label.savedSuccessfully', defaultMessage: 'Saved Successfully' },
+  saveFailed: { id: 'sales.label.saveFailed', defaultMessage: 'Saved Failed' },
+  managerList: { id: 'sales.label.managerList', defaultMessage: 'Manager List' },
+  listName: { id: 'sales.label.listName', defaultMessage: 'List Name' },
+  list: { id: 'sales.label.list', defaultMessage: 'List' },
+  moveTo: { id: 'sales.label.moveTo', defaultMessage: 'Move To' },
+  deleteListConfirmMessage: {
+    id: 'sales.label.deleteListConfirmMessage',
+    defaultMessage: 'If the deleted list contains leads, they will all be moved to the default list after deletion.',
+  },
 })
 
 export const codeMessages = defineMessages({

@@ -12,7 +12,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, Input, message, Table, Tag, Tooltip } from 'antd'
+import { Button, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -28,11 +28,15 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
-import { LeadProps, Manager } from '../../types/sales'
+import { useLeadStatusCategory } from '../../hooks/sales'
+import { StyledLine } from '../../pages/SalesLeadPage'
+import { LeadProps, LeadStatus, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
+import AddListModal from './AddListModal'
 import JitsiDemoModal from './JitsiDemoModal'
+import ManagerListModal from './ManagerListModal'
 import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
 
@@ -81,7 +85,9 @@ const SalesLeadTable: React.VFC<{
   leads: LeadProps[]
   isLoading: boolean
   onRefetch: () => Promise<void>
-}> = ({ variant, manager, leads, onRefetch, isLoading }) => {
+  title?: string
+  followedLeads: LeadProps[]
+}> = ({ variant, manager, leads, onRefetch, isLoading, title, followedLeads }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { permissions, authToken } = useAuth()
@@ -124,6 +130,25 @@ const SalesLeadTable: React.VFC<{
       isValid: boolean
     }[]
   } | null>(null)
+  const [isOpenAddListModal, setIsOpenAddListModal] = useState(false)
+  const [isOpenManagerListModal, setIsOpenManagerListModal] = useState(false)
+  const [listStatus, setListStatus] = useState<LeadStatus>('FOLLOWED')
+  const {
+    leadStatusCategories,
+    refetchLeadStatusCategory,
+    handleAddLeadStatusCategory,
+    handleManagerLeadStatusCategory,
+  } = useLeadStatusCategory(manager.id)
+
+  const handleOpenAddListModal = (status: LeadStatus) => {
+    setIsOpenAddListModal(true)
+    setListStatus(status)
+  }
+
+  const handleOpenManagerListModal = (status: LeadStatus) => {
+    setIsOpenManagerListModal(true)
+    setListStatus(status)
+  }
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -666,6 +691,7 @@ const SalesLeadTable: React.VFC<{
         />
       )}
       <TableWrapper>
+        <b>{title}</b>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row align-items-center justify-content-between mb-3">
             <b>
@@ -675,45 +701,108 @@ const SalesLeadTable: React.VFC<{
             </b>
             <div className="d-flex flex-row align-items-center">
               {variant !== 'followed' && (
-                <Button
-                  icon={<StarOutlined />}
+                <Dropdown
                   className="mr-2"
-                  onClick={() => {
-                    if (window.confirm('確定收錄這些名單？')) {
-                      updateLeads({
-                        variables: {
-                          updateLeads: selectedRowLeads.map(lead => ({
-                            where: {
-                              id: { _eq: lead.id },
-                            },
-                            _set: {
-                              manager_id: manager.id,
-                              star: lead.star,
-                              followed_at: dayjs().utc().toISOString(),
-                              completed_at: lead.completedAt,
-                              closed_at: lead.closedAt,
-                              excluded_at: lead.excludedAt,
-                              recycled_at: lead.recycledAt,
-                            },
-                          })),
-                        },
-                      }).then(({ data }) => {
-                        if (
-                          data?.update_member_many &&
-                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                        ) {
-                          message.success('已成功收錄！')
-                          onRefetch()
-                          setSelectedRowKeys([])
-                        } else {
-                          message.error('系統錯誤')
-                        }
-                      })
-                    }
-                  }}
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        onClick={() => {
+                          if (window.confirm(`確定收藏這些名單？`)) {
+                            updateLeads({
+                              variables: {
+                                updateLeads: selectedRowLeads.map(lead => ({
+                                  where: {
+                                    id: { _eq: lead.id },
+                                  },
+                                  _set: {
+                                    manager_id: manager.id,
+                                    star: lead.star,
+                                    followed_at: dayjs().utc().toISOString(),
+                                    completed_at: lead.completedAt,
+                                    closed_at: lead.closedAt,
+                                    excluded_at: lead.excludedAt,
+                                    recycled_at: lead.recycledAt,
+                                    lead_status_category_id: null,
+                                  },
+                                })),
+                              },
+                            }).then(({ data }) => {
+                              if (
+                                data?.update_member_many &&
+                                data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                              ) {
+                                message.success('已成功收錄！')
+                                onRefetch()
+                                setSelectedRowKeys([])
+                              } else {
+                                message.error('系統錯誤')
+                              }
+                            })
+                          }
+                        }}
+                      >
+                        {formatMessage(salesMessages.moveTo) + formatMessage(salesMessages.followedLead)}
+                      </Menu.Item>
+                      {leadStatusCategories.map(category => (
+                        <Menu.Item
+                          key={category.id}
+                          onClick={() => {
+                            if (window.confirm(`確定收藏這些名單到${category.listName}？`)) {
+                              updateLeads({
+                                variables: {
+                                  updateLeads: selectedRowLeads.map(lead => ({
+                                    where: {
+                                      id: { _eq: lead.id },
+                                    },
+                                    _set: {
+                                      manager_id: manager.id,
+                                      star: lead.star,
+                                      followed_at: dayjs().utc().toISOString(),
+                                      completed_at: lead.completedAt,
+                                      closed_at: lead.closedAt,
+                                      excluded_at: lead.excludedAt,
+                                      recycled_at: lead.recycledAt,
+                                      lead_status_category_id: category.id,
+                                    },
+                                  })),
+                                },
+                              }).then(({ data }) => {
+                                if (
+                                  data?.update_member_many &&
+                                  data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length >
+                                    0
+                                ) {
+                                  message.success('已成功收錄！')
+                                  onRefetch()
+                                  setSelectedRowKeys([])
+                                } else {
+                                  message.error('系統錯誤')
+                                }
+                              })
+                            }
+                          }}
+                        >
+                          {formatMessage(salesMessages.moveTo)} {category.listName}
+                        </Menu.Item>
+                      ))}
+                      <StyledLine />
+                      <Menu.Item onClick={() => handleOpenAddListModal('FOLLOWED')}>
+                        {formatMessage(salesMessages.addList)}
+                      </Menu.Item>
+                      {leadStatusCategories.length > 0 && (
+                        <Menu.Item onClick={() => handleOpenManagerListModal('FOLLOWED')}>
+                          {formatMessage(salesMessages.managerList)}
+                        </Menu.Item>
+                      )}
+                    </Menu>
+                  }
                 >
-                  收藏
-                </Button>
+                  <Button icon={<StarOutlined />}>
+                    {formatMessage(salesMessages.moveTo) +
+                      formatMessage(salesMessages.followedLead) +
+                      formatMessage(salesMessages.list)}
+                  </Button>
+                </Dropdown>
               )}
               {variant === 'followed' && (
                 <Button
@@ -734,6 +823,7 @@ const SalesLeadTable: React.VFC<{
                               closed_at: lead.closedAt,
                               excluded_at: lead.excludedAt,
                               recycled_at: lead.recycledAt,
+                              lead_status_category_id: null,
                             },
                           })),
                         },
@@ -979,40 +1069,87 @@ const SalesLeadTable: React.VFC<{
           className="mb-3"
         />
       </TableWrapper>
-      {
-        <JitsiDemoModal
-          member={selectedMember}
-          salesMember={{
-            id: manager.id,
-            name: manager.name,
-            email: manager.email,
-          }}
-          visible={jitsiModalVisible}
-          onCancel={() => setJitsiModalVisible(false)}
-          onFinishCall={(duration: number) => {
-            if (!selectedMember) {
-              return
-            }
 
-            insertMemberNote({
-              variables: {
-                memberId: selectedMember.id,
-                authorId: manager.id,
-                type: 'demo',
-                status: 'answered',
-                duration: duration,
-                description: '',
-                note: 'jitsi demo',
-              },
+      <JitsiDemoModal
+        member={selectedMember}
+        salesMember={{
+          id: manager.id,
+          name: manager.name,
+          email: manager.email,
+        }}
+        visible={jitsiModalVisible}
+        onCancel={() => setJitsiModalVisible(false)}
+        onFinishCall={(duration: number) => {
+          if (!selectedMember) {
+            return
+          }
+
+          insertMemberNote({
+            variables: {
+              memberId: selectedMember.id,
+              authorId: manager.id,
+              type: 'demo',
+              status: 'answered',
+              duration: duration,
+              description: '',
+              note: 'jitsi demo',
+            },
+          })
+            .then(() => {
+              message.success(formatMessage(commonMessages.event.successfullySaved))
+              setJitsiModalVisible(false)
             })
-              .then(() => {
-                message.success(formatMessage(commonMessages.event.successfullySaved))
-                setJitsiModalVisible(false)
-              })
-              .catch(handleError)
+            .catch(handleError)
+        }}
+      />
+      <AddListModal
+        visible={isOpenAddListModal}
+        handleClose={() => {
+          setIsOpenAddListModal(false)
+        }}
+        handleAddLeadStatusCategory={async listName => {
+          await handleAddLeadStatusCategory(
+            listName,
+            listStatus,
+            async () => {
+              alert(formatMessage(salesMessages.additionSuccessful))
+              await refetchLeadStatusCategory()
+              await onRefetch()
+            },
+            err => {
+              console.log(err)
+              alert(formatMessage(salesMessages.additionFailed))
+            },
+          )
+        }}
+      />
+      {leadStatusCategories.length > 0 && (
+        <ManagerListModal
+          visible={isOpenManagerListModal}
+          handleClose={() => {
+            setIsOpenManagerListModal(false)
           }}
+          handleManagerLeadStatusCategory={async (deletedLeadStatusCategoryIds, memberIds) => {
+            if (window.confirm(formatMessage(salesMessages.deleteListConfirmMessage))) {
+              await handleManagerLeadStatusCategory(
+                deletedLeadStatusCategoryIds,
+                memberIds,
+                async () => {
+                  alert(formatMessage(salesMessages.savedSuccessfully))
+                  await refetchLeadStatusCategory()
+                  await onRefetch()
+                },
+                err => {
+                  console.log(err)
+                  alert(formatMessage(salesMessages.saveFailed))
+                },
+              )
+            }
+          }}
+          leadStatusCategories={leadStatusCategories}
+          leads={followedLeads} // TODO: 這邊要改成所有的leads
         />
-      }
+      )}
     </StyledAdminCard>
   )
 }
