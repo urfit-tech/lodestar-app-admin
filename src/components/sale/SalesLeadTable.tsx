@@ -12,7 +12,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, Input, message, Table, Tag, Tooltip } from 'antd'
+import { Button, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -28,6 +28,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
+import { useLeadStatusCategory } from '../../hooks/sales'
 import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
@@ -81,7 +82,8 @@ const SalesLeadTable: React.VFC<{
   leads: LeadProps[]
   isLoading: boolean
   onRefetch: () => Promise<void>
-}> = ({ variant, manager, leads, onRefetch, isLoading }) => {
+  title?: string
+}> = ({ variant, manager, leads, onRefetch, isLoading, title }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -125,6 +127,7 @@ const SalesLeadTable: React.VFC<{
       isValid: boolean
     }[]
   } | null>(null)
+  const { leadStatusCategories } = useLeadStatusCategory(manager.id)
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -667,6 +670,7 @@ const SalesLeadTable: React.VFC<{
         />
       )}
       <TableWrapper>
+        <b>{title}</b>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row align-items-center justify-content-between mb-3">
             <b>
@@ -676,45 +680,95 @@ const SalesLeadTable: React.VFC<{
             </b>
             <div className="d-flex flex-row align-items-center">
               {variant !== 'followed' && (
-                <Button
-                  icon={<StarOutlined />}
+                <Dropdown
                   className="mr-2"
-                  onClick={() => {
-                    if (window.confirm('確定收錄這些名單？')) {
-                      updateLeads({
-                        variables: {
-                          updateLeads: selectedRowLeads.map(lead => ({
-                            where: {
-                              id: { _eq: lead.id },
-                            },
-                            _set: {
-                              manager_id: manager.id,
-                              star: lead.star,
-                              followed_at: dayjs().utc().toISOString(),
-                              completed_at: lead.completedAt,
-                              closed_at: lead.closedAt,
-                              excluded_at: lead.excludedAt,
-                              recycled_at: lead.recycledAt,
-                            },
-                          })),
-                        },
-                      }).then(({ data }) => {
-                        if (
-                          data?.update_member_many &&
-                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                        ) {
-                          message.success('已成功收錄！')
-                          onRefetch()
-                          setSelectedRowKeys([])
-                        } else {
-                          message.error('系統錯誤')
-                        }
-                      })
-                    }
-                  }}
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        onClick={() => {
+                          if (window.confirm(`確定收藏這些名單？`)) {
+                            updateLeads({
+                              variables: {
+                                updateLeads: selectedRowLeads.map(lead => ({
+                                  where: {
+                                    id: { _eq: lead.id },
+                                  },
+                                  _set: {
+                                    manager_id: manager.id,
+                                    star: lead.star,
+                                    followed_at: dayjs().utc().toISOString(),
+                                    completed_at: lead.completedAt,
+                                    closed_at: lead.closedAt,
+                                    excluded_at: lead.excludedAt,
+                                    recycled_at: lead.recycledAt,
+                                    lead_status_category_id: null,
+                                  },
+                                })),
+                              },
+                            }).then(({ data }) => {
+                              if (
+                                data?.update_member_many &&
+                                data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                              ) {
+                                message.success('已成功收錄！')
+                                onRefetch()
+                                setSelectedRowKeys([])
+                              } else {
+                                message.error('系統錯誤')
+                              }
+                            })
+                          }
+                        }}
+                      >
+                        移至收藏
+                      </Menu.Item>
+                      {leadStatusCategories.map(category => (
+                        <Menu.Item
+                          key={category.id}
+                          onClick={() => {
+                            if (window.confirm(`確定收藏這些名單到${category.listName}？`)) {
+                              updateLeads({
+                                variables: {
+                                  updateLeads: selectedRowLeads.map(lead => ({
+                                    where: {
+                                      id: { _eq: lead.id },
+                                    },
+                                    _set: {
+                                      manager_id: manager.id,
+                                      star: lead.star,
+                                      followed_at: dayjs().utc().toISOString(),
+                                      completed_at: lead.completedAt,
+                                      closed_at: lead.closedAt,
+                                      excluded_at: lead.excludedAt,
+                                      recycled_at: lead.recycledAt,
+                                      lead_status_category_id: category.id,
+                                    },
+                                  })),
+                                },
+                              }).then(({ data }) => {
+                                if (
+                                  data?.update_member_many &&
+                                  data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length >
+                                    0
+                                ) {
+                                  message.success('已成功收錄！')
+                                  onRefetch()
+                                  setSelectedRowKeys([])
+                                } else {
+                                  message.error('系統錯誤')
+                                }
+                              })
+                            }
+                          }}
+                        >
+                          移至 {category.listName}
+                        </Menu.Item>
+                      ))}
+                    </Menu>
+                  }
                 >
-                  收藏
-                </Button>
+                  <Button icon={<StarOutlined />}>移至收藏清單</Button>
+                </Dropdown>
               )}
               {variant === 'followed' && (
                 <Button
@@ -735,6 +789,7 @@ const SalesLeadTable: React.VFC<{
                               closed_at: lead.closedAt,
                               excluded_at: lead.excludedAt,
                               recycled_at: lead.recycledAt,
+                              lead_status_category_id: null,
                             },
                           })),
                         },
