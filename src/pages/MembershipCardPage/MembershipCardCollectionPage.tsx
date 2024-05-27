@@ -33,7 +33,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
       tab: formatMessage(pageMessages['*'].published),
       quantity: publishedQuantity,
       condition: {
-        fixed_expiry_date: {
+        fixed_end_date: {
           _lt: 'now()',
         },
       },
@@ -43,7 +43,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
       tab: formatMessage(pageMessages['*'].unpublished),
       quantity: unpublishedQuantity,
       condition: {
-        fixed_expiry_date: {
+        fixed_end_date: {
           _gt: 'now()',
         },
       },

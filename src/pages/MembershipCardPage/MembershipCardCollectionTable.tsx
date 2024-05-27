@@ -40,6 +40,7 @@ type MembershipCardColumn = {
 const MembershipCardCollectionTable: React.VFC<{
   condition: hasura.GetMembershipCardCollectionVariables['condition']
 }> = ({ condition }) => {
+  console.log(JSON.stringify(condition))
   const { formatMessage } = useIntl()
   const [searchName, setSearchName] = useState<string | null>(null)
   const { loading, error, certificates } = useCertificate({
@@ -106,14 +107,17 @@ const MembershipCardCollectionTable: React.VFC<{
 }
 
 const useCertificate = (condition: hasura.GetMembershipCardCollectionVariables['condition']) => {
+  console.log(JSON.stringify(condition))
   const { loading, error, data } = useQuery<
     hasura.GetMembershipCardCollection,
     hasura.GetMembershipCardCollectionVariables
-  >(GET_CERTIFICATE_PREVIEW, {
+  >(GetMembershipCardCollection, {
     variables: {
       condition,
     },
   })
+
+  console.log(data)
 
   const certificates: MembershipCardColumn[] =
     data?.card.map(v => ({
@@ -150,7 +154,7 @@ const GET_CERTIFICATE_PREVIEW = gql`
 
 const GetMembershipCardCollection = gql`
   query GetMembershipCardCollection($condition: card_bool_exp!) {
-    card {
+    card(where: $condition) {
       app_id
       creator_id
       description
@@ -158,9 +162,10 @@ const GetMembershipCardCollection = gql`
       template
       title
       id
-      fixed_expiry_date
-      relative_expiry_type
-      relative_expiry_amount
+      fixed_start_date
+      fixed_end_date
+      relative_period_type
+      relative_period_amount
       expiry_type
     }
   }
