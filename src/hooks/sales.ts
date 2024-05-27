@@ -454,6 +454,8 @@ const GetManagerWithMemberCount = gql`
 `
 
 export const useLeadStatusCategory = (memberId: string) => {
+  const { id: appId } = useApp()
+
   const { data, error, loading, refetch } = useQuery<
     hasura.GetLeadStatusCategory,
     hasura.GetLeadStatusCategoryVariables
@@ -490,6 +492,55 @@ export const useLeadStatusCategory = (memberId: string) => {
     hasura.UpdateMemberLeadStatusCategoryIdVariables
   >(UpdateMemberLeadStatusCategoryId)
 
+  const handleAddLeadStatusCategory = async (
+    listName: string,
+    status: LeadStatus,
+    onFinally?: () => void,
+    onError?: (err: any) => void,
+  ) => {
+    try {
+      const { data } = await upsertCategory({
+        variables: {
+          data: {
+            name: listName,
+            class: 'lead',
+            position: 0,
+            app_id: appId,
+          },
+        },
+      })
+      const categoryId = data?.insert_category_one?.id
+      if (!categoryId) {
+        throw new Error('category id is not found')
+      }
+      await addLeadStatusCategory({ variables: { categoryId, memberId, status } })
+    } catch (error) {
+      onError?.(error)
+    } finally {
+      onFinally?.()
+    }
+  }
+  const handleManagerLeadStatusCategory = async (
+    deleteLeadStatusCategoryIds: string[],
+    memberIds: string[],
+    onFinally?: () => void,
+    onError?: (err: any) => void,
+  ) => {
+    try {
+      await updateMemberLeadStatusCategoryId({ variables: { memberIds, leadStatusCategoryId: null } })
+      await Promise.all(
+        deleteLeadStatusCategoryIds.map(id => {
+          deleteLeadStatusCategory({ variables: { id } })
+          return id
+        }),
+      )
+    } catch (error) {
+      onError?.(error)
+    } finally {
+      onFinally?.()
+    }
+  }
+
   return {
     loadingLeadStatusCategory: loading,
     errorLeadStatusCategory: error,
@@ -500,6 +551,8 @@ export const useLeadStatusCategory = (memberId: string) => {
     renameLeadStatusCategory,
     deleteLeadStatusCategory,
     updateMemberLeadStatusCategoryId,
+    handleAddLeadStatusCategory,
+    handleManagerLeadStatusCategory,
   }
 }
 

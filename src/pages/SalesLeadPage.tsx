@@ -1,7 +1,7 @@
 import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Button, Dropdown, Input, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
+import { Button, Dropdown, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -9,36 +9,26 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
-import AdminModal from '../components/admin/AdminModal'
-import { StyledModalTitle } from '../components/common'
 import MemberSelector from '../components/form/MemberSelector'
 import AdminLayout from '../components/layout/AdminLayout'
+import AddListModal from '../components/sale/AddListModal'
+import ManagerListModal from '../components/sale/ManagerListModal'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
-import { commonMessages, salesMessages } from '../helpers/translation'
+import { salesMessages } from '../helpers/translation'
 import { useLeadStatusCategory, useManagerLeads, useManagers } from '../hooks/sales'
-import { TrashOIcon } from '../images/icon'
-import { LeadProps, LeadStatus, Manager } from '../types/sales'
+import { LeadStatus, Manager } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 
 const StyledManagerBlock = styled.div`
   width: 400px;
 `
 
-const StyledLine = styled.div`
+export const StyledLine = styled.div`
   width: 100%;
   height: 1px;
   background-color: #e9e9e9;
   margin: 2px 0;
-`
-
-const StyledInputTitle = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  color: var(--gray-darker);
-  margin-bottom: 4px;
 `
 
 const SalesLeadManagerSelectorStatus = () => {
@@ -103,7 +93,6 @@ const SalesLeadTabs: React.VFC<{
   activeKey: string
   onActiveKeyChanged: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
-  const { id: appId } = useApp()
   const [refetchLoading, setRefetchLoading] = useState(true)
   const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
   const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
@@ -132,11 +121,9 @@ const SalesLeadTabs: React.VFC<{
   const [listStatus, setListStatus] = useState<LeadStatus>('FOLLOWED')
   const {
     leadStatusCategories,
-    upsertCategory,
-    addLeadStatusCategory,
     refetchLeadStatusCategory,
-    deleteLeadStatusCategory,
-    updateMemberLeadStatusCategoryId,
+    handleAddLeadStatusCategory,
+    handleManagerLeadStatusCategory,
   } = useLeadStatusCategory(manager.id)
 
   const handleOpenAddListModal = (status: LeadStatus) => {
@@ -149,57 +136,6 @@ const SalesLeadTabs: React.VFC<{
     setListStatus(status)
   }
 
-  const handleAddLeadStatus = async (listName: string) => {
-    try {
-      const { data } = await upsertCategory({
-        variables: {
-          data: {
-            name: listName,
-            class: 'lead',
-            position: 0,
-            app_id: appId,
-          },
-        },
-      })
-      const categoryId = data?.insert_category_one?.id
-      if (!categoryId) {
-        throw new Error('category id is not found')
-      }
-      await addLeadStatusCategory({ variables: { categoryId, memberId: manager.id, status: listStatus } })
-      alert(formatMessage(salesMessages.additionSuccessful))
-    } catch (error) {
-      console.log(error)
-      alert(formatMessage(salesMessages.additionFailed))
-    } finally {
-      await refetchLeadStatusCategory()
-      await refetchMembers?.()
-      await refetch?.()
-      setSelectedLeadStatusCategory(null)
-    }
-  }
-  const handleManagerLeadStatus = async (deleteLeadStatusCategoryIds: string[], memberIds: string[]) => {
-    try {
-      if (window.confirm('若是刪除的清單裡面有名單，將會全部移至預設的清單。')) {
-        await updateMemberLeadStatusCategoryId({ variables: { memberIds, leadStatusCategoryId: null } })
-        await Promise.all(
-          deleteLeadStatusCategoryIds.map(id => {
-            deleteLeadStatusCategory({ variables: { id } })
-            return id
-          }),
-        )
-        alert(formatMessage(salesMessages.savedSuccessfully))
-      }
-    } catch (error) {
-      console.log(error)
-      alert(formatMessage(salesMessages.saveFailed))
-    } finally {
-      await refetchLeadStatusCategory()
-      await refetchMembers?.()
-      await refetch?.()
-      setSelectedLeadStatusCategory(null)
-    }
-  }
-
   useEffect(() => {
     if (!loading && !loadingMembers) {
       setRefetchLoading(false)
@@ -207,6 +143,12 @@ const SalesLeadTabs: React.VFC<{
       setRefetchLoading(true)
     }
   }, [loading, loadingMembers])
+
+  const followLeadStatusCategoryLists = followedLeads.filter(lead =>
+    selectedLeadStatusCategory
+      ? selectedLeadStatusCategory.id === lead.leadStatusCategoryId
+      : !lead.leadStatusCategoryId,
+  )
 
   return (
     <>
@@ -236,7 +178,7 @@ const SalesLeadTabs: React.VFC<{
                     }}
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
-                    收藏清單
+                    {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
                     <span>({followedLeads.filter(lead => !lead.leadStatusCategoryId).length})</span>
                   </Menu.Item>
                   {leadStatusCategories.map(category => (
@@ -272,19 +214,19 @@ const SalesLeadTabs: React.VFC<{
           }
         >
           <SalesLeadTable
-            title={selectedLeadStatusCategory?.name}
+            title={`${
+              selectedLeadStatusCategory?.name ||
+              formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)
+            }(${followLeadStatusCategoryLists.length})`}
             variant="followed"
             manager={manager}
-            leads={followedLeads.filter(lead =>
-              selectedLeadStatusCategory
-                ? selectedLeadStatusCategory.id === lead.leadStatusCategoryId
-                : !lead.leadStatusCategoryId,
-            )}
+            leads={followLeadStatusCategoryLists}
             onRefetch={async () => {
               await refetchMembers?.()
               await refetch?.()
             }}
             isLoading={refetchLoading}
+            followedLeads={followedLeads}
           />
         </Tabs.TabPane>
 
@@ -306,6 +248,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           }
         </Tabs.TabPane>
@@ -328,6 +271,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           }
         </Tabs.TabPane>
@@ -372,6 +316,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
           {'contacted' === contactedTabState && (
@@ -383,6 +328,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
           {'answered' === contactedTabState && (
@@ -394,6 +340,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
         </Tabs.TabPane>
@@ -438,6 +385,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
           {'invited' === demoTabState && (
@@ -449,6 +397,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
           {'presented' === demoTabState && (
@@ -460,6 +409,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           )}
         </Tabs.TabPane>
@@ -483,6 +433,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           }
         </Tabs.TabPane>
@@ -505,6 +456,7 @@ const SalesLeadTabs: React.VFC<{
                 await refetch?.()
               }}
               isLoading={refetchLoading}
+              followedLeads={followedLeads}
             />
           }
         </Tabs.TabPane>
@@ -528,6 +480,7 @@ const SalesLeadTabs: React.VFC<{
                   await refetch?.()
                 }}
                 isLoading={refetchLoading}
+                followedLeads={followedLeads}
               />
             }
           </Tabs.TabPane>
@@ -538,7 +491,23 @@ const SalesLeadTabs: React.VFC<{
         handleClose={() => {
           setIsOpenAddListModal(false)
         }}
-        handleAddLeadStatus={handleAddLeadStatus}
+        handleAddLeadStatusCategory={async listName => {
+          await handleAddLeadStatusCategory(
+            listName,
+            listStatus,
+            async () => {
+              alert(formatMessage(salesMessages.additionSuccessful))
+              await refetchLeadStatusCategory()
+              await refetchMembers?.()
+              await refetch?.()
+              setSelectedLeadStatusCategory(null)
+            },
+            err => {
+              console.log(err)
+              alert(formatMessage(salesMessages.additionFailed))
+            },
+          )
+        }}
       />
       {leadStatusCategories.length > 0 && (
         <ManagerListModal
@@ -546,156 +515,30 @@ const SalesLeadTabs: React.VFC<{
           handleClose={() => {
             setIsOpenManagerListModal(false)
           }}
-          handleManagerLeadStatus={handleManagerLeadStatus}
+          handleManagerLeadStatusCategory={async (deletedLeadStatusCategoryIds, memberIds) => {
+            if (window.confirm(formatMessage(salesMessages.deleteListConfirmMessage))) {
+              await handleManagerLeadStatusCategory(
+                deletedLeadStatusCategoryIds,
+                memberIds,
+                async () => {
+                  alert(formatMessage(salesMessages.savedSuccessfully))
+                  await refetchLeadStatusCategory()
+                  await refetchMembers?.()
+                  await refetch?.()
+                  setSelectedLeadStatusCategory(null)
+                },
+                err => {
+                  console.log(err)
+                  alert(formatMessage(salesMessages.saveFailed))
+                },
+              )
+            }
+          }}
           leadStatusCategories={leadStatusCategories}
           leads={followedLeads} // TODO: 這邊要改成所有的leads
         />
       )}
     </>
-  )
-}
-
-const AddListModal: React.VFC<{
-  visible: boolean
-  handleClose: () => void
-  handleAddLeadStatus: (listName: string) => Promise<void>
-}> = ({ visible, handleClose, handleAddLeadStatus }) => {
-  const { formatMessage } = useIntl()
-  const [listName, setListName] = useState('')
-
-  const onCancel = () => {
-    handleClose()
-    setListName('')
-  }
-  return (
-    <AdminModal
-      width={384}
-      centered
-      footer={null}
-      onCancel={onCancel}
-      visible={visible}
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button
-            className="mr-2"
-            onClick={() => {
-              onCancel()
-              setVisible(false)
-            }}
-          >
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" onClick={() => handleAddLeadStatus(listName).then(onCancel)}>
-            {formatMessage(commonMessages.ui.save)}
-          </Button>
-        </>
-      )}
-    >
-      <StyledModalTitle className="mb-4"> {formatMessage(salesMessages.addList)}</StyledModalTitle>
-      <StyledInputTitle>{formatMessage(salesMessages.listName)}</StyledInputTitle>
-      <Input
-        className="mb-4"
-        value={listName}
-        onChange={e => setListName(e.target.value)}
-        placeholder={formatMessage(salesMessages.listName)}
-      />
-    </AdminModal>
-  )
-}
-
-const ManagerListModal: React.VFC<{
-  visible: boolean
-  handleClose: () => void
-  handleManagerLeadStatus: (deletedLeadStatusCategoryIds: string[], memberIds: string[]) => Promise<void>
-  leadStatusCategories: {
-    id: any
-    memberId: string
-    status: string
-    listName: string
-  }[]
-  leads: LeadProps[]
-}> = ({ visible, handleClose, handleManagerLeadStatus, leadStatusCategories, leads }) => {
-  const { formatMessage } = useIntl()
-  const [tempLeadStatusCategories, setTempLeadStatusCategories] = useState<
-    {
-      id: string
-      memberId: string
-      status: string
-      listName: string
-    }[]
-  >(leadStatusCategories)
-
-  useEffect(() => {
-    setTempLeadStatusCategories(leadStatusCategories)
-  }, [leadStatusCategories])
-
-  const deletedLeadStatusCategoryIds = leadStatusCategories
-    .filter(lead => !tempLeadStatusCategories.map(c => c.id).includes(lead.id))
-    .map(c => c.id)
-
-  const onCancel = () => {
-    handleClose()
-    setTempLeadStatusCategories(leadStatusCategories)
-  }
-
-  const removeCategory = (categoryId: string) => {
-    setTempLeadStatusCategories(tempLeadStatusCategories.filter(c => c.id !== categoryId))
-  }
-  return (
-    <AdminModal
-      width={384}
-      centered
-      footer={null}
-      onCancel={onCancel}
-      visible={visible}
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button
-            className="mr-2"
-            onClick={() => {
-              onCancel()
-              setVisible(false)
-            }}
-          >
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              handleManagerLeadStatus(
-                deletedLeadStatusCategoryIds,
-                leads
-                  .filter(lead => deletedLeadStatusCategoryIds.includes(lead.leadStatusCategoryId))
-                  .map(lead => lead.id),
-              ).then(onCancel)
-            }}
-          >
-            {formatMessage(commonMessages.ui.save)}
-          </Button>
-        </>
-      )}
-    >
-      <StyledModalTitle className="mb-4"> {formatMessage(salesMessages.managerList)}</StyledModalTitle>
-      <div style={{ overflow: 'auto', maxHeight: 500 }}>
-        {tempLeadStatusCategories.map(c => (
-          <div key={c.id}>
-            <StyledInputTitle>
-              {formatMessage(salesMessages.listName)}
-              <span className="ml-2">({leads.filter(lead => lead.leadStatusCategoryId === c.id).length}筆)</span>
-            </StyledInputTitle>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <Input value={c.listName} disabled />
-              <TrashOIcon
-                className="cursor-pointer ml-4"
-                onClick={() => {
-                  removeCategory(c.id)
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </AdminModal>
   )
 }
 
