@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import moment from 'moment'
 import { sum, prop, sortBy } from 'ramda'
@@ -366,6 +366,7 @@ export const useManagerLeads = (manager: Manager) => {
             value: v.value,
           })) || [],
       status,
+      leadStatusCategoryId: v.lead_status_category_id,
       assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
       notified: !v.last_member_note_created,
       recentContactedAt: v.last_member_note_called ? dayjs(v.last_member_note_called).toDate() : null,
@@ -428,6 +429,7 @@ const GetSalesLeadMembers = gql`
       last_member_note_created
       last_member_note_called
       last_member_note_answered
+      lead_status_category_id
       member_phones {
         phone
         is_valid
@@ -447,6 +449,113 @@ const GetManagerWithMemberCount = gql`
       aggregate {
         count
       }
+    }
+  }
+`
+
+export const useLeadStatusCategory = (memberId: string) => {
+  const { data, error, loading, refetch } = useQuery<
+    hasura.GetLeadStatusCategory,
+    hasura.GetLeadStatusCategoryVariables
+  >(GetLeadStatusCategory, { variables: { memberId }, skip: !memberId })
+
+  const leadStatusCategories = useMemo(() => {
+    return (
+      data?.lead_status_category.map(v => ({
+        id: v.id as string,
+        memberId: v.member_id,
+        status: v.status,
+        listName: v.category?.name || '',
+      })) || []
+    )
+  }, [data])
+
+  const [addLeadStatusCategory] = useMutation<hasura.AddLeadStatusCategory, hasura.AddLeadStatusCategoryVariables>(
+    AddLeadStatusCategory,
+  )
+  const [upsertCategory] = useMutation<hasura.UpsertCategory, hasura.UpsertCategoryVariables>(UpsertCategory)
+
+  const [renameLeadStatusCategory] = useMutation<
+    hasura.RenameLeadStatusCategory,
+    hasura.RenameLeadStatusCategoryVariables
+  >(RenameLeadStatusCategory)
+
+  const [deleteLeadStatusCategory] = useMutation<
+    hasura.DeleteLeadStatusCategory,
+    hasura.DeleteLeadStatusCategoryVariables
+  >(DeleteLeadStatusCategory)
+
+  const [updateMemberLeadStatusCategoryId] = useMutation<
+    hasura.UpdateMemberLeadStatusCategoryId,
+    hasura.UpdateMemberLeadStatusCategoryIdVariables
+  >(UpdateMemberLeadStatusCategoryId)
+
+  return {
+    loadingLeadStatusCategory: loading,
+    errorLeadStatusCategory: error,
+    leadStatusCategories,
+    refetchLeadStatusCategory: refetch,
+    upsertCategory,
+    addLeadStatusCategory,
+    renameLeadStatusCategory,
+    deleteLeadStatusCategory,
+    updateMemberLeadStatusCategoryId,
+  }
+}
+
+const GetLeadStatusCategory = gql`
+  query GetLeadStatusCategory($memberId: String!) {
+    lead_status_category(where: { member_id: { _eq: $memberId }, status: { _eq: "FOLLOWED" } }) {
+      id
+      member_id
+      status
+      category {
+        id
+        name
+      }
+    }
+  }
+`
+
+const UpsertCategory = gql`
+  mutation UpsertCategory($data: category_insert_input!) {
+    insert_category_one(
+      object: $data
+      on_conflict: { constraint: category_app_id_class_name_key, update_columns: [name] }
+    ) {
+      id
+    }
+  }
+`
+
+const AddLeadStatusCategory = gql`
+  mutation AddLeadStatusCategory($memberId: String!, $status: String!, $categoryId: String!) {
+    insert_lead_status_category_one(object: { member_id: $memberId, status: $status, category_id: $categoryId }) {
+      id
+    }
+  }
+`
+
+const RenameLeadStatusCategory = gql`
+  mutation RenameLeadStatusCategory($categoryId: String!, $newCategoryId: String!) {
+    update_lead_status_category(where: { category_id: { _eq: $categoryId } }, _set: { category_id: $newCategoryId }) {
+      affected_rows
+    }
+  }
+`
+
+const DeleteLeadStatusCategory = gql`
+  mutation DeleteLeadStatusCategory($id: uuid!) {
+    delete_lead_status_category(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`
+
+const UpdateMemberLeadStatusCategoryId = gql`
+  mutation UpdateMemberLeadStatusCategoryId($memberIds: [String!]!, $leadStatusCategoryId: uuid) {
+    update_member(where: { id: { _in: $memberIds } }, _set: { lead_status_category_id: $leadStatusCategoryId }) {
+      affected_rows
     }
   }
 `
