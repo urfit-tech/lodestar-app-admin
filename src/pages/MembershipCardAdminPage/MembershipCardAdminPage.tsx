@@ -18,24 +18,20 @@ import {
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
-import { useCertificate } from '../CertificateAdminPage/CertificateAdminPage'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
-import CertificateBasicForm from './CertificateBasicForm'
 import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
-import CertificateIntroForm from './CertificateIntroForm'
-import CertificatePreviewModal from './CertificatePreviewModal'
-import CertificatePublishAdminBlock from './CertificatePublishAdminBlock'
+import MembershipCardBasicForm from './MembershipCardBasicForm'
 
 const MembershipCardAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { membershipCardId } = useParams<{ membershipCardId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { data } = useMembershipCard(membershipCardId)
+  const { loading, error, data: membershipCard, refetch } = useMembershipCard(membershipCardId)
 
-  console.log(JSON.stringify(data))
-  const { loading, error, certificate, refetch } = useCertificate(membershipCardId)
+  // console.log(JSON.stringify(data))
+  // const { loading, error, certificate, refetch } = useCertificate(membershipCardId)
 
   const [visible, setVisible] = useState(false)
 
@@ -58,7 +54,7 @@ const MembershipCardAdminPage: React.VFC = () => {
             <span className="flex-grow-1" />
           </>
         ) : (
-          <AdminHeaderTitle>{certificate?.title}</AdminHeaderTitle>
+          <AdminHeaderTitle>{membershipCard?.title}</AdminHeaderTitle>
         )}
         <Button className="mr-2" onClick={() => setVisible(true)}>
           {formatMessage(pageMessages.CertificateAdminPage.preview)}
@@ -87,12 +83,12 @@ const MembershipCardAdminPage: React.VFC = () => {
                 </AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
-                  <CertificateBasicForm certificate={certificate} onRefetch={refetch} />
+                  <MembershipCardBasicForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
-                <AdminBlock>
+                {/* <AdminBlock>
                   <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
                   <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
-                </AdminBlock>
+                </AdminBlock> */}
                 <MetaProductDeletionBlock
                   metaProductType="Certificate"
                   targetId={membershipCardId}
@@ -108,20 +104,20 @@ const MembershipCardAdminPage: React.VFC = () => {
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
+            {/* <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
+                  <CertificatePublishAdminBlock membershipCard={certificate} onRefetch={refetch} />
                 </AdminBlock>
               </div>
-            </Tabs.TabPane>
+            </Tabs.TabPane> */}
           </Tabs>
         )}
       </StyledLayoutContent>
-      {certificate && (
+      {/* {membershipCard && (
         <CertificatePreviewModal visible={visible} onCancel={() => setVisible(false)} certificate={certificate} />
-      )}
+      )} */}
     </>
   )
 }
@@ -153,10 +149,27 @@ const useMembershipCard = (membershipCardId: string) => {
       variables: {
         membershipCardId,
       },
+      skip: !membershipCardId,
     },
   )
+  const rawData = data?.card[0] ? data.card[0] : null
 
-  return { loading, error, data, refetch }
+  const membershipCard = rawData
+    ? {
+        id: rawData.id,
+        relativePeriodAmount: rawData.relative_period_amount ? rawData.relative_period_amount : null,
+        relativePeriodType: rawData.relative_period_type,
+        appId: rawData.app_id,
+        description: rawData.description || '',
+        template: rawData.template || '',
+        fixedStartDate: rawData.fixed_start_date,
+        fixedEndDate: rawData.fixed_end_date,
+        expiryType: rawData.expiry_type,
+        title: rawData.title,
+      }
+    : null
+
+  return { loading, error, data: membershipCard, refetch }
 }
 
 // const useCertificate = (membershipCardId: string) => {

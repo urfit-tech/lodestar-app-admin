@@ -58,7 +58,7 @@ export const useMembershipCard = (cardId: string) => {
           id: data.card_by_pk.id,
           title: data.card_by_pk.title || '',
           description: data.card_by_pk.description || '',
-          template: data.card_by_pk.template,
+          template: data.card_by_pk.template || '', 
         }
 
   return {
@@ -68,6 +68,7 @@ export const useMembershipCard = (cardId: string) => {
     refetchMembershipCard: refetch,
   }
 }
+
 
 export const useEnrolledMembershipCards = (memberId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ENROLLED_CARDS, hasura.GET_ENROLLED_CARDSVariables>(
