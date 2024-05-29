@@ -72,7 +72,8 @@ const MembershipCardBasicForm: React.FC<{
       variables: {
         id: membershipCard.id,
         title: values.title || '',
-        expiryType: values.expiryType || 'fixed',
+        expiryType: values.expiryType,
+        relativePeriodType: values.relativePeriodType,
         relativePeriodAmount: values.relativePeriodAmount || 0,
         fixedStartDate: values.fixedStartDate,
         fixedEndDate: values.fixedEndDate,
@@ -110,20 +111,22 @@ const MembershipCardBasicForm: React.FC<{
       <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.sku)} name="sku">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.effectiveDate)} name="expiryType">
+      <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.effectiveDate)}>
         <>
-          <Radio.Group
-            onChange={e => setEffectiveDateType(e.target.value)}
-            value={effectiveDateType}
-            style={{ display: 'flex', gap: '10px' }}
-          >
-            <Radio value="fixed">
-              {formatMessage(MembershipCardAdminPageMessages.basicForm.specifiedEffectiveDate)}
-            </Radio>
-            <Radio value="relative">
-              {formatMessage(MembershipCardAdminPageMessages.basicForm.startCountingAfterHolding)}
-            </Radio>
-          </Radio.Group>
+          <Form.Item name="expiryType">
+            <Radio.Group
+              onChange={e => setEffectiveDateType(e.target.value)}
+              value={effectiveDateType}
+              style={{ display: 'flex', gap: '10px' }}
+            >
+              <Radio value="fixed">
+                {formatMessage(MembershipCardAdminPageMessages.basicForm.specifiedEffectiveDate)}
+              </Radio>
+              <Radio value="relative">
+                {formatMessage(MembershipCardAdminPageMessages.basicForm.startCountingAfterHolding)}
+              </Radio>
+            </Radio.Group>
+          </Form.Item>
 
           {effectiveDateType === 'fixed' && (
             <div style={{ display: 'flex', gap: '16px', marginTop: '10px' }}>
@@ -147,21 +150,21 @@ const MembershipCardBasicForm: React.FC<{
           )}
 
           {effectiveDateType === 'relative' && (
-            <Form.Item name="expirationDate" style={{ marginTop: '10px' }}>
-              <Input.Group compact style={{ display: 'flex', gap: '10px' }}>
-                <Input
-                  key="periodAmount"
-                  style={{ width: '50%' }}
-                  // placeholder={formatMessage(pageMessages['*'].periodAmount)}
-                />
-                <Select key="periodType" style={{ width: '50%' }}>
-                  <Select.Option value="D">{formatMessage(pageMessages['*'].day)}</Select.Option>
-                  <Select.Option value="W">{formatMessage(pageMessages['*'].week)}</Select.Option>
-                  <Select.Option value="M">{formatMessage(pageMessages['*'].month)}</Select.Option>
-                  <Select.Option value="Y">{formatMessage(pageMessages['*'].year)}</Select.Option>
-                </Select>
+            <div style={{ marginTop: '10px' }}>
+              <Input.Group compact>
+                <Form.Item name="relativePeriodAmount" noStyle>
+                  <Input style={{ width: '50%' }} />
+                </Form.Item>
+                <Form.Item name="relativePeriodType" noStyle>
+                  <Select style={{ width: '50%' }}>
+                    <Select.Option value="D">{formatMessage(pageMessages['*'].day)}</Select.Option>
+                    <Select.Option value="W">{formatMessage(pageMessages['*'].week)}</Select.Option>
+                    <Select.Option value="M">{formatMessage(pageMessages['*'].month)}</Select.Option>
+                    <Select.Option value="Y">{formatMessage(pageMessages['*'].year)}</Select.Option>
+                  </Select>
+                </Form.Item>
               </Input.Group>
-            </Form.Item>
+            </div>
           )}
         </>
       </Form.Item>
@@ -188,6 +191,7 @@ const UpdateMembershipCardBasic = gql`
     $sku: String
     $fixedStartDate: timestamptz
     $relativePeriodAmount: Int
+    $relativePeriodType: bpchar
     $fixedEndDate: timestamptz
     $expiryType: bpchar
   ) {
@@ -201,6 +205,7 @@ const UpdateMembershipCardBasic = gql`
         sku: $sku
         fixed_start_date: $fixedStartDate
         relative_period_amount: $relativePeriodAmount
+        relative_period_type: $relativePeriodType
         fixed_end_date: $fixedEndDate
         expiry_type: $expiryType
       }
@@ -218,7 +223,6 @@ const UpdateMembershipCardBasic = gql`
         relative_period_amount
         expiry_type
         fixed_end_date
-        universal_discounts
       }
     }
   }
