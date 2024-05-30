@@ -109,7 +109,6 @@ const MemberCoinAdminBlock: React.VFC<{
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
-  const [isMoreCoinLogVisible, setIsMoreCoinLogVisible] = useState(true)
   const storeCreatedTime = useRef('')
   const currentIndex = useRef(0)
 
@@ -122,16 +121,18 @@ const MemberCoinAdminBlock: React.VFC<{
   const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection(
     currentIndex,
     storeCreatedTime,
-    setIsMoreCoinLogVisible,
     {
       ...fieldFilter,
       memberId,
     },
   )
   const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
-    useFutureCoinLogCollection({ ...fieldFilter, memberId })
+    useFutureCoinLogCollection(currentIndex, storeCreatedTime, { ...fieldFilter, memberId })
   const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
-    useOrderLogWithCoinsCollection({ ...fieldFilter, memberId })
+    useOrderLogWithCoinsCollection(currentIndex, storeCreatedTime, {
+      ...fieldFilter,
+      memberId,
+    })
 
   const [loading, setLoading] = useState(false)
 
@@ -321,7 +322,6 @@ const MemberCoinAdminBlock: React.VFC<{
                     setLoading(true)
                     loadMoreCoinLogs().finally(() => setLoading(false))
                   }}
-                  disabled={!isMoreCoinLogVisible}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
                 </Button>
@@ -510,7 +510,6 @@ const MemberCoinAdminBlock: React.VFC<{
 const useCoinLogCollection = (
   currentIndex: React.MutableRefObject<number>,
   storeCreatedTime: React.MutableRefObject<string>,
-  setIsMoreCoinLogVisible: React.Dispatch<React.SetStateAction<boolean>>,
   filter?: { nameAndEmail?: string; title?: string; memberId?: string },
 ) => {
   const condition: hasura.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
@@ -588,7 +587,6 @@ const useCoinLogCollection = (
 
   if (storeCreatedTime.current === '' && data) {
     storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
-    data?.coin_log?.length < 10 && setIsMoreCoinLogVisible(false)
   }
 
   const loadMoreCoinLogs = () =>
@@ -596,13 +594,12 @@ const useCoinLogCollection = (
       variables: {
         condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
         limit: 10,
-        offset: currentIndex.current,
+        offset: 10 + currentIndex.current,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        fetchMoreResult.coin_log.length < 10 && setIsMoreCoinLogVisible(false)
         currentIndex.current += 10
 
         return Object.assign({}, prev, {
@@ -616,11 +613,16 @@ const useCoinLogCollection = (
     errorCoinLogs: error,
     coinLogs,
     refetchCoinLogs: refetch,
-    loadMoreCoinLogs: (data?.coin_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreCoinLogs : undefined,
+    loadMoreCoinLogs:
+      (data?.coin_log_aggregate.aggregate?.count || 0) - coinLogs.length > 0 ? loadMoreCoinLogs : undefined,
   }
 }
 
-const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
+const useFutureCoinLogCollection = (
+  currentIndex: React.MutableRefObject<number>,
+  storeCreatedTime: React.MutableRefObject<string>,
+  filter?: { nameAndEmail?: string; title?: string; memberId?: string },
+) => {
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -640,13 +642,13 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
     hasura.GET_COIN_ABOUT_TO_SENDVariables
   >(
     gql`
-      query GET_COIN_ABOUT_TO_SEND($condition: coin_log_bool_exp, $limit: Int!) {
+      query GET_COIN_ABOUT_TO_SEND($condition: coin_log_bool_exp, $limit: Int!, $offset: Int!) {
         coin_log_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
-        coin_log(order_by: { created_at: desc }, limit: $limit, where: $condition) {
+        coin_log(order_by: { created_at: desc }, limit: $limit, offset: $offset, where: $condition) {
           id
           member {
             id
@@ -669,6 +671,7 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
       variables: {
         condition,
         limit: 10,
+        offset: 0,
       },
     },
   )
@@ -692,17 +695,23 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
           endedAt: coinFutureLog.ended_at && new Date(coinFutureLog.ended_at),
           amount: coinFutureLog.amount,
         }))
+  if (storeCreatedTime.current === '' && data) {
+    storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
+  }
 
   const loadMoreCoinFutureLogs = () =>
     fetchMore({
       variables: {
-        condition: { ...condition },
+        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
         limit: 10,
+        offset: 10 + currentIndex.current,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
+        currentIndex.current += 10
+
         return Object.assign({}, prev, {
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
         })
@@ -714,16 +723,21 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
     errorCoinFutureLogs: error,
     coinFutureLogs,
     refetchCoinFutureLogs: refetch,
-    loadMoreCoinFutureLogs: (data?.coin_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreCoinFutureLogs : undefined,
+    loadMoreCoinFutureLogs:
+      (data?.coin_log_aggregate.aggregate?.count || 0) - coinFutureLogs.length > 0 ? loadMoreCoinFutureLogs : undefined,
   }
 }
 
-const useOrderLogWithCoinsCollection = (filter?: {
-  orderLogId?: string
-  nameAndEmail?: string
-  title?: string
-  memberId?: string
-}) => {
+const useOrderLogWithCoinsCollection = (
+  currentIndex: React.MutableRefObject<number>,
+  storeCreatedTime: React.MutableRefObject<string>,
+  filter?: {
+    orderLogId?: string
+    nameAndEmail?: string
+    title?: string
+    memberId?: string
+  },
+) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member_id: filter?.memberId
@@ -748,13 +762,13 @@ const useOrderLogWithCoinsCollection = (filter?: {
     hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables
   >(
     gql`
-      query GET_ORDER_LOG_WITH_COINS_COLLECTION($condition: order_log_bool_exp, $limit: Int!) {
+      query GET_ORDER_LOG_WITH_COINS_COLLECTION($condition: order_log_bool_exp, $limit: Int!, $offset: Int!) {
         order_log_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
-        order_log(where: $condition, limit: $limit, order_by: { created_at: desc }) {
+        order_log(where: $condition, limit: $limit, offset: $offset, order_by: { created_at: desc }) {
           id
           created_at
           member {
@@ -777,6 +791,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
       variables: {
         condition,
         limit: 10,
+        offset: 0,
       },
     },
   )
@@ -797,18 +812,24 @@ const useOrderLogWithCoinsCollection = (filter?: {
           createdAt: orderLog.created_at,
         }))
 
+  if (storeCreatedTime.current === '' && data) {
+    storeCreatedTime.current = data?.order_log[0]?.created_at ? data?.order_log[0]?.created_at : ''
+  }
+
   const loadMoreOrderLogs = () =>
     fetchMore({
       variables: {
-        condition: { ...condition },
+        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
         limit: 10,
+        offset: 10 + currentIndex.current,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
+        currentIndex.current += 10
         return Object.assign({}, prev, {
-          coin_log: [...prev.order_log, ...fetchMoreResult.order_log],
+          order_log: [...prev.order_log, ...fetchMoreResult.order_log],
         })
       },
     })
@@ -818,7 +839,8 @@ const useOrderLogWithCoinsCollection = (filter?: {
     errorOrderLogs: error,
     orderLogs,
     refetchOrderLogs: refetch,
-    loadMoreOrderLogs: (data?.order_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreOrderLogs : undefined,
+    loadMoreOrderLogs:
+      (data?.order_log_aggregate.aggregate?.count || 0) - orderLogs.length > 0 ? loadMoreOrderLogs : undefined,
   }
 }
 
