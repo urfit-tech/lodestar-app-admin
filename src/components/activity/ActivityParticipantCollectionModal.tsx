@@ -1,13 +1,14 @@
-import { gql, useQuery } from '@apollo/client'
 import { Button, Tabs } from 'antd'
+import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { groupBy } from 'ramda'
-import React from 'react'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import React, { useCallback, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
+import * as yup from 'yup'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { ActivitySessionParticipantResDto, ActivitySessionParticipantsDTO } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const StyledTitle = styled.div`
@@ -101,7 +102,7 @@ const ActivityParticipantCollectionModal: React.FC<
                     data.push([
                       `${index + 1}`.padStart(2, '0'),
                       participant.name,
-                      participant.activityTitle,
+                      participant.activityTicketTitle,
                       participant.attended ? 'v' : '',
                       participant.phone,
                       participant.email,
@@ -128,7 +129,7 @@ const ActivityParticipantCollectionModal: React.FC<
                     <StyledRow key={participant.id}>
                       <StyledCell>{`${index + 1}`.padStart(2, '0')}</StyledCell>
                       <StyledCell>{participant.name}</StyledCell>
-                      <StyledCell>{participant.activityTitle}</StyledCell>
+                      <StyledCell>{participant.activityTicketTitle}</StyledCell>
                       {enabledModules.qrcode && (
                         <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
                       )}
@@ -145,78 +146,102 @@ const ActivityParticipantCollectionModal: React.FC<
     </AdminModal>
   )
 }
+const rawActivitySessionResDataSchema = yup.array().of(
+  yup.object({
+    id: yup.string().required(),
+    title: yup.string().nullable(),
+    participants: yup.array().of(
+      yup.object({
+        id: yup.string().required(),
+        name: yup.string().nullable(),
+        phone: yup.string().nullable(),
+        email: yup.string().nullable(),
+        orderLogId: yup.string().required(),
+        attended: yup.boolean().nullable(), // If the value is null, it indicates non-attendance
+        activityTicketTitle: yup.string().nullable(),
+      }),
+    ),
+  }),
+)
 
 const useActivitySessionParticipants = (activityId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_ACTIVITY_PARTICIPANTS,
-    hasura.GET_ACTIVITY_PARTICIPANTSVariables
-  >(
-    gql`
-      query GET_ACTIVITY_PARTICIPANTS($activityId: uuid!) {
-        activity_enrollment(where: { activity_id: { _eq: $activityId } }, order_by: {}) {
-          activity_session_id
-          order_log_id
-          member_id
-          member_name
-          member_email
-          member_phone
-          order_log_id
-          attended
-          activity_ticket {
-            id
-            title
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [sessions, setSessions] = useState<ActivitySessionParticipantsDTO[]>([])
+  const { authToken } = useAuth()
+
+  const fetchActivitySessionParticipants = useCallback(
+    async (activityId: string) => {
+      if (authToken && activityId) {
+        try {
+          setLoading(true)
+          const response = await axios.get(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/activity/${activityId}/participants`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            },
+          )
+          const { activitySessions: data } = response.data
+
+          try {
+            await rawActivitySessionResDataSchema.validate(data)
+          } catch (error) {
+            const errorMessage = (error as Error).message || 'An unknown error occurred'
+            console.error(activityId, errorMessage)
+            setError(errorMessage)
+            return
           }
-        }
-        activity_session(where: { activity_id: { _eq: $activityId } }, order_by: { started_at: asc }) {
-          id
-          title
-          started_at
+
+          const mapApiDataToDto = (data: ActivitySessionParticipantResDto[]): ActivitySessionParticipantsDTO[] => {
+            const idCounts: { [key: string]: number } = {}
+            return data.map(sessionData => ({
+              id: sessionData.id,
+              title: sessionData.title ?? '',
+              participants: sessionData.participants.map(participantData => {
+                const originalId = participantData.id
+                let uniqueId = originalId
+                if (idCounts[originalId]) {
+                  idCounts[originalId]++
+                  uniqueId = `${originalId}-${idCounts[originalId]}`
+                } else {
+                  idCounts[originalId] = 1
+                }
+                return {
+                  id: uniqueId,
+                  name: participantData.name ?? '',
+                  phone: participantData.phone ?? '',
+                  email: participantData.email ?? '',
+                  orderLogId: participantData.orderLogId,
+                  attended: participantData.attended,
+                  activityTicketTitle: participantData.activityTicketTitle ?? '',
+                }
+              }),
+            }))
+          }
+
+          setSessions(mapApiDataToDto(data))
+        } catch (error) {
+          const errorMessage = (error as Error).message || 'An unknown error occurred'
+          setError(errorMessage)
+        } finally {
+          setLoading(false)
         }
       }
-    `,
-    { variables: { activityId } },
+    },
+    [authToken],
   )
 
-  const sessions: {
-    id: string
-    title: string
-    participants: {
-      id: string
-      name: string
-      phone: string
-      email: string
-      orderLogId: string
-      attended?: boolean
-      activityTitle: string
-    }[]
-  }[] =
-    loading || error || !data || !data.activity_enrollment
-      ? []
-      : (() => {
-          const sessionParticipants = groupBy(enrollment => enrollment.activity_session_id, data.activity_enrollment)
-
-          return data.activity_session.map(session => ({
-            id: session.id,
-            title: session.title || '',
-            participants: sessionParticipants[session.id]
-              ? sessionParticipants[session.id].map(participant => ({
-                  id: participant.member_id || '',
-                  name: participant.member_name || '',
-                  phone: participant.member_phone || '',
-                  email: participant.member_email || '',
-                  orderLogId: participant.order_log_id || '',
-                  attended: participant.attended || false,
-                  activityTitle: participant.activity_ticket?.title || '',
-                }))
-              : [],
-          }))
-        })()
+  useEffect(() => {
+    fetchActivitySessionParticipants(activityId)
+  }, [activityId, fetchActivitySessionParticipants])
 
   return {
     loadingSessions: loading,
     errorSessions: error,
     sessions,
-    refetchSessions: refetch,
+    refetchSessions: () => fetchActivitySessionParticipants(activityId),
   }
 }
 

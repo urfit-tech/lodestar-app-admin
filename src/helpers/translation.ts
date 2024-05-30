@@ -761,6 +761,9 @@ export const checkoutMessages = {
 }
 
 export const programMessages = {
+  '*': defineMessages({
+    sortProgramPlan: { id: 'program.*.sortProgramPlan', defaultMessage: 'Sort Plan' },
+  }),
   status: defineMessages({
     issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
     issueSolved: { id: 'program.status.issueSolved', defaultMessage: '已解決' },
