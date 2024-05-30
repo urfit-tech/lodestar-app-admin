@@ -2212,6 +2212,7 @@
   "program.*.notifyUpdate": "通知內容更新",
   "program.*.pinnedStatus": "Ghim",
   "program.*.save": "儲存",
+  "program.*.sortProgramPlan": "Sắp xếp giải pháp",
   "program.*.successfullySaved": "儲存成功",
   "program.*.uploadAudioFile": "Upload audio file",
   "program.*.videoContent": "Video content",

@@ -107,7 +107,7 @@ export const useProgram = (programId: string) => {
               picture_url
             }
           }
-          program_plans(order_by: { created_at: asc }) {
+          program_plans(order_by: { position: asc }) {
             id
             type
             title
@@ -918,4 +918,44 @@ export const useProgramContentActions = (programContentId: string) => {
       })
     },
   }
+}
+
+export const useProgramPlanSortCollection = (programId: string) => {
+  const { data, refetch } = useQuery<hasura.GetProgramPlanSortCollection, hasura.GetProgramPlanSortCollectionVariables>(
+    gql`
+      query GetProgramPlanSortCollection($programId: uuid!) {
+        program_plan(where: { program_id: { _eq: $programId } }, order_by: { position: asc }) {
+          id
+          title
+          list_price
+          program_id
+        }
+      }
+    `,
+    { variables: { programId }, skip: !programId },
+  )
+
+  const programPlanSorts =
+    data?.program_plan.map(plan => ({
+      id: plan.id,
+      title: plan.title,
+      listPrice: plan.list_price,
+      programId: plan.program_id,
+    })) || []
+
+  return {
+    programPlanSorts,
+    refetchProgramPlanSorts: refetch,
+  }
+}
+
+export const useUpdateProgramPlanSortCollection = () => {
+  const [updatePositions] = useMutation(gql`
+    mutation UpdateProgramPlanSortCollection($data: [program_plan_insert_input!]!) {
+      insert_program_plan(objects: $data, on_conflict: { constraint: program_plan_pkey, update_columns: position }) {
+        affected_rows
+      }
+    }
+  `)
+  return { updatePositions }
 }
