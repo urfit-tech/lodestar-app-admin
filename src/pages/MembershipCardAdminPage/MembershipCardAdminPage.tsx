@@ -22,6 +22,7 @@ import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
 import MembershipCardBasicForm from './MembershipCardBasicForm'
+import MembershipcardTemplateForm from './MembershipcardTemplateForm'
 
 const MembershipCardAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -85,10 +86,10 @@ const MembershipCardAdminPage: React.VFC = () => {
                   <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
                   <MembershipCardBasicForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
-                {/* <AdminBlock>
+                <AdminBlock>
                   <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
-                  <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
-                </AdminBlock> */}
+                  <MembershipcardTemplateForm membershipCard={membershipCard} onRefetch={refetch} />
+                </AdminBlock>
                 <MetaProductDeletionBlock
                   metaProductType="Certificate"
                   targetId={membershipCardId}
