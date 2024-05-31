@@ -98,10 +98,12 @@ const ProgramAdminPage: React.FC = () => {
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
-                <ProgramOtherForm program={program} onRefetch={refetchProgram} />
-              </AdminBlock>
+              {program?.moduleData && (
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
+                  <ProgramOtherForm program={program} onRefetch={refetchProgram} />
+                </AdminBlock>
+              )}
 
               <AdminBlock>
                 {program?.id ? (
