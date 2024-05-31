@@ -7,15 +7,12 @@ import { useIntl } from 'react-intl'
 import axios, { AxiosRequestConfig } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { handleError, uploadFile, uploadFileV2 } from '../helpers'
+import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
 import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
-import { CouponProps } from '../types/checkout'
-import { Uppy } from '@uppy/core'
-import XHRUpload from '@uppy/xhr-upload'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import hooksMessages from './translation'
@@ -1348,5 +1345,69 @@ export const useAppPlan = () => {
   return {
     appPlan: appPlan,
     appPlanLoading: loading,
+  }
+}
+
+export const useGetProgramTemplate = () => {
+  const { loading, data, error, refetch } = useQuery<hasura.GetProgramTemplate, hasura.GetProgramTemplateVariables>(
+    gql`
+      query GetProgramTemplate {
+        program_template {
+          id
+          name
+          status
+          module_name
+          description
+          created_by
+          program_template_config {
+            id
+            module_data
+            version
+            support_locales
+            is_issues_open
+            is_introduction_section_visible
+            is_enrolled_count_visible
+            display_header
+            display_footer
+            cover_url
+            cover_mobile_url
+            cover_thumbnail_url
+          }
+        }
+      }
+    `,
+  )
+
+  const programTemplates =
+    loading || error || !data
+      ? []
+      : data.program_template.map(programTemplate => ({
+          id: programTemplate.id,
+          name: programTemplate.name || '',
+          status: programTemplate.status,
+          moduleName: programTemplate.module_name,
+          description: programTemplate.description,
+          createdBy: programTemplate.created_by,
+          templateConfig: {
+            id: programTemplate.program_template_config?.id,
+            moduleData: programTemplate.program_template_config?.module_data,
+            version: programTemplate.program_template_config?.version || 1,
+            supportLocales: programTemplate.program_template_config?.support_locales,
+            isIssuesOpen: programTemplate.program_template_config?.is_issues_open,
+            isIntroductionSectionVisible: programTemplate.program_template_config?.is_introduction_section_visible,
+            isEnrolledCountVisible: programTemplate.program_template_config?.is_enrolled_count_visible,
+            displayHeader: programTemplate.program_template_config?.display_header,
+            displayFooter: programTemplate.program_template_config?.display_footer,
+            coverUrl: programTemplate.program_template_config?.cover_url,
+            coverMobileUrl: programTemplate.program_template_config?.cover_mobile_url,
+            coverThumbnailUrl: programTemplate.program_template_config?.cover_thumbnail_url,
+          },
+        }))
+
+  return {
+    loading,
+    programTemplates,
+    error,
+    refetch,
   }
 }

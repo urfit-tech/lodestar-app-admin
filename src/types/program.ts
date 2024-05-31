@@ -49,6 +49,7 @@ export type ProgramProps = {
   isEnrolledCountVisible: boolean
   displayHeader: boolean
   displayFooter: boolean
+  moduleData: TemplateModuleProps | null
 }
 
 export type ProgramAdminProps = ProgramProps & {
@@ -233,4 +234,11 @@ export type Exam = {
   isAvailableToGoBack: boolean
   isAvailableAnnounceScore: boolean
   questionLibraries: QuestionLibrary[]
+}
+
+export interface TemplateModuleProps {
+  expectedStartDate?: Date
+  expectedDuration?: number
+  expectedSections?: number
+  completeRelease?: Date
 }

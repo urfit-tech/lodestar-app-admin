@@ -3,7 +3,7 @@ import { Button, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
@@ -12,6 +12,7 @@ import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
+import { ProgramTemplateSelect, ProgramTemplateType } from '../form/ProgramTemplateSelector'
 
 const StyledLabel = styled.span`
   font-size: 16px;
@@ -33,6 +34,7 @@ type FieldProps = {
   creatorId?: string
   isSubscription?: boolean
   merchandiseType: 'general-physical' | 'general-virtual' | 'customized-physical' | 'customized-virtual'
+  programTemplateId?: string
 }
 
 const ProductCreationModal: React.FC<
@@ -42,14 +44,18 @@ const ProductCreationModal: React.FC<
     withCreatorSelector?: boolean
     withProgramType?: boolean
     withMerchandiseType?: boolean
-    onCreate?: (values: {
-      title: string
-      categoryIds?: string[]
-      creatorId?: string | null
-      isSubscription?: boolean
-      isPhysical?: boolean
-      isCustomized?: boolean
-    }) => Promise<any>
+    withProgramModuleType?: boolean
+    onCreate?: (
+      values: {
+        title: string
+        categoryIds?: string[]
+        creatorId?: string | null
+        isSubscription?: boolean
+        isPhysical?: boolean
+        isCustomized?: boolean
+        programTemplateId?: string
+      } & Partial<ProgramTemplateType['programTemplateConfig']>,
+    ) => Promise<any>
     allowedPermissions?: string[]
     creatorAppellation?: string
     customTitle?: string
@@ -61,6 +67,7 @@ const ProductCreationModal: React.FC<
   withCreatorSelector,
   withProgramType,
   withMerchandiseType,
+  withProgramModuleType,
   onCreate,
   allowedPermissions,
   creatorAppellation,
@@ -73,6 +80,14 @@ const ProductCreationModal: React.FC<
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
+  const templateData = useRef<ProgramTemplateType['programTemplateConfig'] | undefined>({
+    id: '',
+    isIssuesOpen: true,
+    isIntroductionSectionVisible: true,
+    isEnrolledCountVisible: true,
+    displayHeader: true,
+    displayFooter: true,
+  })
 
   const handleSubmit = () => {
     form
@@ -90,6 +105,17 @@ const ProductCreationModal: React.FC<
           isSubscription: withProgramType ? values.isSubscription : undefined,
           isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
+          programTemplateId: values?.programTemplateId,
+          moduleData: templateData.current?.moduleData,
+          supportLocales: templateData.current?.supportLocales,
+          isIssuesOpen: templateData.current?.isIssuesOpen,
+          isIntroductionSectionVisible: templateData.current?.isIntroductionSectionVisible,
+          isEnrolledCountVisible: templateData.current?.isEnrolledCountVisible,
+          displayHeader: templateData.current?.displayHeader,
+          displayFooter: templateData.current?.displayFooter,
+          coverUrl: templateData.current?.coverUrl,
+          coverMobileUrl: templateData.current?.coverMobileUrl,
+          coverThumbnailUrl: templateData.current?.coverThumbnailUrl,
         }).finally(() => setLoading(false))
       })
       .catch(handleError)
@@ -188,6 +214,11 @@ const ProductCreationModal: React.FC<
                 </>
               )}
             </Radio.Group>
+          </Form.Item>
+        )}
+        {withProgramModuleType && (
+          <Form.Item label={formatMessage(commonMessages.label.selectTemplate)} name="programTemplateId">
+            <ProgramTemplateSelect getTemplateData={templateData} />
           </Form.Item>
         )}
       </Form>

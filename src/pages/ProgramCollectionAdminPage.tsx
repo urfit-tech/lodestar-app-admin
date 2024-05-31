@@ -139,7 +139,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
             categoryClassType="program"
             withCreatorSelector={currentUserRole === 'app-owner'}
             withProgramType
-            onCreate={({ title, categoryIds, creatorId }) =>
+            withProgramModuleType={appId === 'cw'}
+            onCreate={({ title, categoryIds, creatorId, ...templateData }) =>
               insertProgram({
                 variables: {
                   ownerId: currentMemberId,
@@ -151,6 +152,17 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       category_id: categoryId,
                       position: index,
                     })) || [],
+                  programTemplateId: templateData?.programTemplateId,
+                  moduleData: templateData?.moduleData,
+                  supportLocales: templateData?.supportLocales,
+                  isIssuesOpen: templateData?.isIssuesOpen,
+                  isIntroductionSectionVisible: templateData?.isIntroductionSectionVisible,
+                  isEnrolledCountVisible: templateData?.isEnrolledCountVisible,
+                  displayHeader: templateData?.displayHeader,
+                  displayFooter: templateData?.displayFooter,
+                  coverUrl: templateData?.coverUrl,
+                  coverMobileUrl: templateData?.coverMobileUrl,
+                  coverThumbnailUrl: templateData?.coverThumbnailUrl,
                 },
               }).then(res => {
                 const programId = res.data?.insert_program?.returning[0]?.id
@@ -511,11 +523,33 @@ const INSERT_PROGRAM = gql`
     $appId: String!
     $title: String!
     $programCategories: [program_category_insert_input!]!
+    $programTemplateId: uuid
+    $moduleData: jsonb
+    $supportLocales: jsonb
+    $isIssuesOpen: Boolean
+    $isIntroductionSectionVisible: Boolean
+    $isEnrolledCountVisible: Boolean
+    $displayHeader: Boolean
+    $displayFooter: Boolean
+    $coverUrl: String
+    $coverMobileUrl: String
+    $coverThumbnailUrl: String
   ) {
     insert_program(
       objects: {
         app_id: $appId
         title: $title
+        program_template_id: $programTemplateId
+        module_data: $moduleData
+        support_locales: $supportLocales
+        is_issues_open: $isIssuesOpen
+        is_introduction_section_visible: $isIntroductionSectionVisible
+        is_enrolled_count_visible: $isEnrolledCountVisible
+        display_header: $displayHeader
+        display_footer: $displayFooter
+        cover_url: $coverUrl
+        cover_mobile_url: $coverMobileUrl
+        cover_thumbnail_url: $coverThumbnailUrl
         program_roles: {
           data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
         }

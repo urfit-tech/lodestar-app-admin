@@ -25,6 +25,7 @@ import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
 import ProgramCoverForm from './ProgramCoverForm'
 import ProgramIntroForm from './ProgramIntroForm'
+import ProgramOtherForm from './ProgramOtherForm'
 import ProgramPlanAdminBlock from './ProgramPlanAdminBlock'
 import ProgramPublishBlock from './ProgramPublishBlock'
 import ProgramRoleAdminPane from './ProgramRoleAdminPane'
@@ -95,6 +96,11 @@ const ProgramAdminPage: React.FC = () => {
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].basicSettings)}</AdminBlockTitle>
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
+                <ProgramOtherForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
               <AdminBlock>
