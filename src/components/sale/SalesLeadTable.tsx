@@ -110,6 +110,7 @@ const SalesLeadTable: React.VFC<{
     memberNote?: string
     status?: string
   }>({})
+  const { permissions } = useAuth()
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
@@ -930,45 +931,47 @@ const SalesLeadTable: React.VFC<{
               )}
               {variant !== 'completed' && (
                 <>
-                  <Button
-                    icon={<SyncOutlined />}
-                    className="mr-2"
-                    onClick={() => {
-                      if (window.confirm('確定回收這些名單？')) {
-                        updateLeads({
-                          variables: {
-                            updateLeads: selectedRowLeads.map(lead => ({
-                              where: {
-                                id: { _eq: lead.id },
-                              },
-                              _set: {
-                                manager_id: null,
-                                star: lead.star,
-                                followed_at: lead.followedAt,
-                                completed_at: lead.completedAt,
-                                closed_at: lead.closedAt,
-                                excluded_at: lead.excludedAt,
-                                recycled_at: dayjs().utc().toISOString(),
-                              },
-                            })),
-                          },
-                        }).then(({ data }) => {
-                          if (
-                            data?.update_member_many &&
-                            data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                          ) {
-                            message.success('已成功回收此名單！')
-                            onRefetch()
-                            setSelectedRowKeys([])
-                          } else {
-                            message.error('系統錯誤')
-                          }
-                        })
-                      }
-                    }}
-                  >
-                    回收
-                  </Button>
+                  {Boolean(permissions.SALES_MEMBER_LIST_RECYCLE) && (
+                    <Button
+                      icon={<SyncOutlined />}
+                      className="mr-2"
+                      onClick={() => {
+                        if (window.confirm('確定回收這些名單？')) {
+                          updateLeads({
+                            variables: {
+                              updateLeads: selectedRowLeads.map(lead => ({
+                                where: {
+                                  id: { _eq: lead.id },
+                                },
+                                _set: {
+                                  manager_id: null,
+                                  star: lead.star,
+                                  followed_at: lead.followedAt,
+                                  completed_at: lead.completedAt,
+                                  closed_at: lead.closedAt,
+                                  excluded_at: lead.excludedAt,
+                                  recycled_at: dayjs().utc().toISOString(),
+                                },
+                              })),
+                            },
+                          }).then(({ data }) => {
+                            if (
+                              data?.update_member_many &&
+                              data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                            ) {
+                              message.success('已成功回收此名單！')
+                              onRefetch()
+                              setSelectedRowKeys([])
+                            } else {
+                              message.error('系統錯誤')
+                            }
+                          })
+                        }
+                      }}
+                    >
+                      回收
+                    </Button>
+                  )}
                   <Button
                     icon={<StopOutlined />}
                     className="mr-2"

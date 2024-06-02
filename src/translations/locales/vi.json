@@ -1570,6 +1570,7 @@
   "form.PermissionGroup.SALES_LEAD_NORMAL": "個人名單撥打管理功能",
   "form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR": "同組別名單撥打選擇器功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Liệt kê chức năng thiết bị lựa chọn quay số",
+  "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "Chức năng tái chế danh sách",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "Tổng số bảng hiệu suất",
   "form.PermissionGroup.SALES_READ": "Xem tất cả các đơn đặt hàng",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "Kiểm tra tất cả các hồ sơ bán hàng",

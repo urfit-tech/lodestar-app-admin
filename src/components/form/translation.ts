@@ -358,6 +358,10 @@ const formMessages = {
       id: 'form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN',
       defaultMessage: '名單撥打選擇器功能',
     },
+    SALES_MEMBER_LIST_RECYCLE: {
+      id: 'form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE',
+      defaultMessage: '名單回收功能',
+    },
     SALES_LEAD_SAME_DIVISION_SELECTOR: {
       id: 'form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR',
       defaultMessage: '同組別名單撥打選擇器功能',

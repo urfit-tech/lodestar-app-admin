@@ -1570,6 +1570,7 @@
   "form.PermissionGroup.SALES_LEAD_NORMAL": "個人名單撥打管理功能",
   "form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR": "同組別名單撥打選擇器功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Fungsi pemilih dial daftar",
+  "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "Daftar fungsi daur ulang",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "Ringkasan Kinerja",
   "form.PermissionGroup.SALES_READ": "Lihat semua pesanan",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "Lihat semua catatan penjualan",
