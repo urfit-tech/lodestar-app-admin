@@ -10,11 +10,11 @@ import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
-import { CertificateIcon } from '../../images/icon'
+import { MembershipCardIcon } from '../../images/icon'
 import ForbiddenPage from '../ForbiddenPage'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
-import CertificateCollectionTable from './MembershipCardCollectionTable'
+import MembershipCardCollectionTable from './MembershipCardCollectionTable'
 import MembershipCardPageMessages from './translation'
 
 const MembershipCardCollectionPage: React.VFC = () => {
@@ -22,14 +22,97 @@ const MembershipCardCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId } = useApp()
   const { isAuthenticating, currentMemberId } = useAuth()
-  const [createCertificate] = useMutation<hasura.InsertCard, hasura.InsertCardVariables>(InsertCard)
-  const { publishedQuantity, unpublishedQuantity } = useCertificateQuantity()
+  const [createMembershipCard] = useMutation(InsertCard)
+  const { availableQuantity, expiredQuantity } = useMembershipCardQuantity()
+  const templateHtml = `
+    <div
+      style="
+        position: relative;
+        width: 400px;
+        height: 250px;
+        background-image: url(https://static.kolable.com/images/default/membership-card-template.png);
+        background-size: cover;
+        background-position: center;
+      "
+    >
+      <div
+        style="
+          position: absolute;
+          top: 19.5%;
+          left: 6.6%;
+          width: 28%;
+          height: 44.8%;
+          padding: 2px;
+          background-image: linear-gradient(to bottom, #4681ff, #0088ff);
+          border-radius: 50%;
+        "
+      >
+        <div
+          style="width: 100%; height: 100%; border-radius: 50%; background-image: url({{  avatar  }}); background-size: cover; background-position: center;"
+        ></div>
+      </div>
+      <div
+        style="
+          font-family: &quot;Roboto&quot;, &quot;Noto Sans TC&quot;, sans-serif;
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 0.58px;
+        "
+      >
+        <div style="position: absolute; top: 22%; left: 41%">
+          <span style="margin-right: 8px; color: #4681ff">姓名</span>
+          <span
+            style="
+              display: inline-block;
+              width: 100px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              vertical-align: middle;
+              color: #1b1464;
+            "
+            >{{ name }}</span
+          >
+        </div>
+        <div style="position: absolute; top: 37%; left: 41%">
+          <span style="margin-right: 8px; color: #4681ff">帳號</span>
+          <span
+            style="
+              display: inline-block;
+              width: 100px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              vertical-align: middle;
+              color: #1b1464;
+            "
+            >{{ account }}</span
+          >
+        </div>
+        <div style="position: absolute; top: 52%; left: 41%">
+          <span style="margin-right: 8px; color: #4681ff">發證日期</span>
+          <span
+            style="
+              display: inline-block;
+              width: 100px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              vertical-align: middle;
+              color: #1b1464;
+            "
+            >{{ date }}</span
+          >
+        </div>
+      </div>
+    </div>
+  `
 
   const tabContents = [
     {
       key: 'available',
       tab: formatMessage(pageMessages['*'].available),
-      quantity: publishedQuantity,
+      quantity: availableQuantity,
       condition: {
         _or: [
           {
@@ -48,7 +131,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
     {
       key: 'unavailable',
       tab: formatMessage(pageMessages['*'].unavailable),
-      quantity: unpublishedQuantity,
+      quantity: expiredQuantity,
       condition: {
         fixed_end_date: {
           _lt: 'now()',
@@ -61,7 +144,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  if (!enabledModules.certificate) {
+  if (!enabledModules.membership_card) {
     return <ForbiddenPage />
   }
 
@@ -69,7 +152,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
-          <CertificateIcon className="mr-3" />
+          <MembershipCardIcon className="mr-3" />
           <span>{formatMessage(MembershipCardPageMessages.page.title)}</span>
         </AdminPageTitle>
       </div>
@@ -84,10 +167,11 @@ const MembershipCardCollectionPage: React.VFC = () => {
             )}
             customModalTitle={formatMessage(MembershipCardPageMessages.page.createCard)}
             onCreate={({ title }) =>
-              createCertificate({
+              createMembershipCard({
                 variables: {
                   title,
                   appId: appId,
+                  template: templateHtml,
                 },
               })
                 .then(({ data }) => {
@@ -104,7 +188,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.quantity})`}>
             <AdminPageBlock>
-              <CertificateCollectionTable condition={tabContent.condition} />
+              <MembershipCardCollectionTable condition={tabContent.condition} />
             </AdminPageBlock>
           </Tabs.TabPane>
         ))}
@@ -114,8 +198,8 @@ const MembershipCardCollectionPage: React.VFC = () => {
 }
 
 const InsertCard = gql`
-  mutation InsertCard($appId: String, $title: String) {
-    insert_card(objects: { app_id: $appId, title: $title }) {
+  mutation InsertCard($appId: String, $title: String, $template: String) {
+    insert_card(objects: { app_id: $appId, title: $title, template: $template }) {
       affected_rows
       returning {
         id
@@ -130,20 +214,42 @@ const InsertCard = gql`
   }
 `
 
-const useCertificateQuantity = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_CERTIFICATE_QUANTITY>(gql`
-    query GET_CERTIFICATE_QUANTITY {
-      certificate {
+const useMembershipCardQuantity = () => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GetMembershipCardQuantity,
+    hasura.GetMembershipCardQuantityVariables
+  >(gql`
+    query GetMembershipCardQuantity {
+      card(where: { deleted_at: { _is_null: true } }) {
         id
-        published_at
+        fixed_end_date
       }
     }
   `)
+
+  const cardData =
+    data?.card.map((card: hasura.GetMembershipCardQuantity['card'][0]) => ({
+      id: card.id,
+      fixedEndDate: card.fixed_end_date,
+    })) || []
+
+  const now = new Date()
+  const availableQuantity = cardData.filter(card => {
+    const endDate = card.fixedEndDate ? new Date(card.fixedEndDate) : null
+    return endDate === null || endDate > now
+  }).length
+
+  const expiredQuantity = cardData.filter(card => {
+    const endDate = card.fixedEndDate ? new Date(card.fixedEndDate) : null
+    return endDate !== null && endDate <= now
+  }).length
+
   return {
     loading,
     error,
-    publishedQuantity: data?.certificate.filter(v => v.published_at).length || 0,
-    unpublishedQuantity: data?.certificate.filter(v => !v.published_at).length || 0,
+    cardData,
+    availableQuantity,
+    expiredQuantity,
     refetch,
   }
 }

@@ -25,3 +25,5 @@ export { ReactComponent as ExportIcon } from './export.svg'
 export { ReactComponent as UserCopyIcon } from './user-copy.svg'
 export { ReactComponent as TableIcon } from './table.svg'
 export { ReactComponent as ErrorBrowserIcon } from './error-browser.svg'
+export { ReactComponent as MembershipCardIcon } from './membership-card.svg'
+
