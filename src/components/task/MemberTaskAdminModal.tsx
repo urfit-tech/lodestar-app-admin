@@ -185,10 +185,24 @@ const MemberTaskAdminModal: React.FC<
         if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
         const memberTaskId = memberTask?.id
         const memberTaskMeetId = memberTask?.meet?.id || null
+        const memberTaskMeetingGateway = memberTask?.meetingGateway
+        const memberTaskExecutorId = memberTask?.executor?.id
+        const memberTaskMemberId = memberTask?.member?.id
+        const memberTaskMeetingHours = memberTask?.meetingHours
+        const memberTaskDueAtTime = toMillisecond(memberTask?.dueAt)
+        const formDueAtTime = toMillisecond(formDueAt?.toDate())
+
         let toBeUsedServiceId: string | null = null
         let updatedMeetId = memberTask?.meet?.id || null
 
-        if (hasMeeting) {
+        if (
+          hasMeeting &&
+          (memberTaskDueAtTime !== formDueAtTime ||
+            memberTaskExecutorId !== formExecutorId ||
+            memberTaskMemberId !== formMemberId ||
+            memberTaskMeetingGateway !== formMeetingGateway ||
+            memberTaskMeetingHours !== formMeetingHours)
+        ) {
           if (!formDueAt)
             return handleError({
               message: formatMessage(errorMessages.form.isRequired, {
@@ -208,8 +222,15 @@ const MemberTaskAdminModal: React.FC<
           })
 
           if (enabledModules.meet_service && formMeetingGateway === 'zoom') {
-            const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
-            toBeUsedServiceId = availableZoomServiceId
+            if (
+              memberTaskExecutorId !== formExecutorId &&
+              (memberTaskDueAtTime === formDueAtTime || memberTaskMeetingHours === formMeetingHours)
+            ) {
+              toBeUsedServiceId = overlapMeets.find(meet => meet.id === memberTaskMeetId)?.serviceId || null
+            } else {
+              const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
+              toBeUsedServiceId = availableZoomServiceId
+            }
           }
 
           if (
@@ -253,8 +274,7 @@ const MemberTaskAdminModal: React.FC<
                 memberTaskExecutorId !== formExecutorId ||
                 memberTaskMemberId !== formMemberId ||
                 memberTaskMeetingGateway !== formMeetingGateway ||
-                memberTaskMeetingHours !== formMeetingHours
-              ))
+                memberTaskMeetingHours !== formMeetingHours))
           ) {
             deleteMeet({
               memberTaskMeetId,
@@ -286,7 +306,14 @@ const MemberTaskAdminModal: React.FC<
             },
           },
         }).then(async ({ data }) => {
-          if (hasMeeting) {
+          if (
+            hasMeeting &&
+            (memberTaskDueAtTime !== formDueAtTime ||
+              memberTaskExecutorId !== formExecutorId ||
+              memberTaskMemberId !== formMemberId ||
+              memberTaskMeetingGateway !== formMeetingGateway ||
+              memberTaskMeetingHours !== formMeetingHours)
+          ) {
             await insertMeet({
               variables: {
                 meet: {
