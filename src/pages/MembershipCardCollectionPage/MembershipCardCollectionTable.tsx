@@ -94,13 +94,19 @@ const MembershipCardCollectionTable: React.VFC<{
 }
 
 const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollectionVariables['condition']) => {
-  console.log(JSON.stringify(condition))
+  const extendedCondition = {
+    ...condition,
+    deleted_at: { _is_null: true },
+  }
+
+  console.log(JSON.stringify(extendedCondition))
+
   const { loading, error, data } = useQuery<
     hasura.GetMembershipCardCollection,
     hasura.GetMembershipCardCollectionVariables
   >(GetMembershipCardCollection, {
     variables: {
-      condition,
+      condition: extendedCondition,
     },
   })
 

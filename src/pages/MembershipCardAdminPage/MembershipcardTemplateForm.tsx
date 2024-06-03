@@ -67,7 +67,7 @@ const StyledButtonWrapper = styled.div`
   }
 `
 
-const CertificateIntroForm: React.FC<{
+const MembershipCardTemplateForm: React.FC<{
   membershipCard: Pick<MembershipCard, 'id' | 'template'> | null
   onRefetch?: () => void
 }> = ({ membershipCard, onRefetch }) => {
@@ -156,4 +156,4 @@ const UpdateMembershipCardTemplate = gql`
   }
 `
 
-export default CertificateIntroForm
+export default MembershipCardTemplateForm

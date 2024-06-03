@@ -21,6 +21,7 @@ type MembershipCard = {
   fixedEndDate: string | null
   expiryType: string
   title: string
+  sku: string | null
 }
 
 type FieldProps = Pick<
@@ -33,6 +34,7 @@ type FieldProps = Pick<
   | 'fixedStartDate'
   | 'fixedEndDate'
   | 'expiryType'
+  | 'sku'
 >
 
 const MembershipCardBasicForm: React.FC<{
@@ -77,6 +79,7 @@ const MembershipCardBasicForm: React.FC<{
         relativePeriodAmount: values.relativePeriodAmount || 0,
         fixedStartDate: values.fixedStartDate,
         fixedEndDate: values.fixedEndDate,
+        sku: values.sku,
       },
     })
       .then(() => {
@@ -102,6 +105,7 @@ const MembershipCardBasicForm: React.FC<{
         description: membershipCard.description,
         fixedStartDate: membershipCard.fixedStartDate,
         fixedEndDate: membershipCard.fixedEndDate,
+        sku: membershipCard.sku,
       }}
       onFinish={handleSubmit}
     >

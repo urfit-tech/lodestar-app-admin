@@ -18,10 +18,11 @@ import MetaProductDeletionBlock from '../../components/common/MetaProductDeletio
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MemberShipCardDiscountBlock from '../../components/membershipCard/MemberShipCardDiscountBlock'
 import hasura from '../../hasura'
+import { MembershipCard } from '../../types/membershipCard'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import MembershipCardBasicForm from './MembershipCardBasicForm'
-import MembershipcardTemplateForm from './MembershipcardTemplateForm'
+import MembershipCardTemplateForm from './MembershipCardTemplateForm'
 import MembershipCardAdminPageMessages from './translation'
 
 const MembershipCardAdminPage: React.VFC = () => {
@@ -85,7 +86,7 @@ const MembershipCardAdminPage: React.VFC = () => {
                   <AdminBlockTitle>
                     {formatMessage(MembershipCardAdminPageMessages.adminPage.membershipCardIntro)}
                   </AdminBlockTitle>
-                  <MembershipcardTemplateForm membershipCard={membershipCard} onRefetch={refetch} />
+                  <MembershipCardTemplateForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
                 <MetaProductDeletionBlock metaProductType="MembershipCard" targetId={membershipCardId} />
               </div>
@@ -132,9 +133,10 @@ const useMembershipCard = (membershipCardId: string) => {
       skip: !membershipCardId,
     },
   )
-  const rawData = data?.card[0] ? data.card[0] : null
 
-  const membershipCard = rawData
+  const rawData = data?.card[0] || null
+
+  const membershipCard: MembershipCard | null = rawData
     ? {
         id: rawData.id,
         relativePeriodAmount: rawData.relative_period_amount ? rawData.relative_period_amount : null,
@@ -146,6 +148,7 @@ const useMembershipCard = (membershipCardId: string) => {
         fixedEndDate: rawData.fixed_end_date,
         expiryType: rawData.expiry_type,
         title: rawData.title,
+        sku: rawData.sku || '',
       }
     : null
 

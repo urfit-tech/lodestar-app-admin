@@ -11,6 +11,7 @@ export type MembershipCard = {
   fixedEndDate: string | null
   expiryType: string
   title: string
+  sku: string | null
 }
 
 export type MembershipCardTermsProductType = 'ActivityTicket' | 'ProgramPlan' | 'ProgramPackagePlan' | 'PodcastProgram'
