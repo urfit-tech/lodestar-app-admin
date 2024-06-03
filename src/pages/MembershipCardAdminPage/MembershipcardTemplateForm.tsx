@@ -2,8 +2,6 @@ import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
-import parserHtml from 'prettier/parser-html'
-import prettier from 'prettier/standalone'
 import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -31,17 +29,17 @@ const StyledTextAreaWrapper = styled.div`
     flex: 7;
     margin-right: 10px;
     margin-bottom: 0;
-    max-width: calc(70% - 10px); // 添加這行
+    max-width: calc(70% - 10px);
   }
 `
 
 const StyledIframeWrapper = styled.div`
-  width: 100%;
+  width: 460px;
   position: relative;
-  height: 250px;
+  height: 260px;
   @media (min-width: ${BREAK_POINT}px) {
     flex: 3;
-    max-width: 30%; // 添加這行
+    max-width: 30%;
   }
 `
 
@@ -49,8 +47,8 @@ const StyledMembershipCard = styled.div<{ scale: number }>`
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 400px;
+  height: 260px;
+  width: 460px;
   overflow: hidden;
   white-space: nowrap;
   transform: scale(${props => props.scale});
@@ -72,13 +70,8 @@ const CertificateIntroForm: React.FC<{
 
   useEffect(() => {
     if (membershipCard) {
-      const formattedTemplate = prettier.format(membershipCard.template, {
-        parser: 'html',
-        plugins: [parserHtml],
-        htmlWhitespaceSensitivity: 'ignore',
-      })
-      form.setFieldsValue({ template: formattedTemplate })
-      updateIframeContent(formattedTemplate)
+      form.setFieldsValue({ template: membershipCard.template })
+      updateIframeContent(membershipCard.template)
     }
   }, [membershipCard, form])
 
@@ -101,13 +94,8 @@ const CertificateIntroForm: React.FC<{
 
   const handleTemplateChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newTemplate = event.target.value
-    const formattedTemplate = prettier.format(newTemplate, {
-      parser: 'html',
-      plugins: [parserHtml],
-      htmlWhitespaceSensitivity: 'ignore',
-    })
-    form.setFieldsValue({ template: formattedTemplate })
-    updateIframeContent(formattedTemplate)
+    form.setFieldsValue({ template: newTemplate })
+    updateIframeContent(newTemplate)
   }
 
   const handleSubmit = (values: FieldProps) => {

@@ -20,7 +20,6 @@ import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
-import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
 import MembershipCardBasicForm from './MembershipCardBasicForm'
 import MembershipcardTemplateForm from './MembershipcardTemplateForm'
 
@@ -30,9 +29,6 @@ const MembershipCardAdminPage: React.VFC = () => {
   const { membershipCardId } = useParams<{ membershipCardId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { loading, error, data: membershipCard, refetch } = useMembershipCard(membershipCardId)
-
-  // console.log(JSON.stringify(data))
-  // const { loading, error, certificate, refetch } = useCertificate(membershipCardId)
 
   const [visible, setVisible] = useState(false)
 
@@ -101,18 +97,9 @@ const MembershipCardAdminPage: React.VFC = () => {
             <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
-                <CertificateEligibilityListBlock certificateId={membershipCardId} />
+                {/* <CertificateEligibilityListBlock certificateId={membershipCardId} /> */}
               </div>
             </Tabs.TabPane>
-
-            {/* <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <CertificatePublishAdminBlock membershipCard={certificate} onRefetch={refetch} />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane> */}
           </Tabs>
         )}
       </StyledLayoutContent>
@@ -172,75 +159,3 @@ const useMembershipCard = (membershipCardId: string) => {
 
   return { loading, error, data: membershipCard, refetch }
 }
-
-// const useCertificate = (membershipCardId: string) => {
-//   const { loading, error, data, refetch } = useQuery<hasura.GET_CERTIFICATE>(
-//     gql`
-//       query GET_CERTIFICATE($membershipCardId: uuid!) {
-//         certificate_by_pk(id: $certificateId) {
-//           id
-//           title
-//           description
-//           qualification
-//           code
-//           period_type
-//           period_amount
-//           author {
-//             id
-//             name
-//           }
-//           certificate_template {
-//             id
-//             title
-//             template
-//             background_image
-//             author {
-//               id
-//               name
-//             }
-//           }
-//           published_at
-//         }
-//       }
-//     `,
-//     {
-//       variables: {
-//         certificateId,
-//       },
-//     },
-//   )
-
-//   const certificate: Certificate | null = data?.certificate_by_pk
-//     ? {
-//         id: data?.certificate_by_pk?.id,
-//         title: data?.certificate_by_pk?.title || '',
-//         description: data?.certificate_by_pk?.description || '',
-//         qualification: data?.certificate_by_pk?.qualification || null,
-//         code: data?.certificate_by_pk?.code || null,
-//         periodType: data?.certificate_by_pk?.period_type as 'D' | 'W' | 'M' | 'Y',
-//         periodAmount: data?.certificate_by_pk?.period_amount,
-//         author: {
-//           id: data?.certificate_by_pk?.certificate_template?.author?.id || '',
-//           name: data?.certificate_by_pk?.certificate_template?.author?.name || '',
-//         },
-//         certificateTemplate: {
-//           id: data?.certificate_by_pk?.certificate_template?.id,
-//           title: data?.certificate_by_pk?.certificate_template?.title || '',
-//           template: data?.certificate_by_pk?.certificate_template?.template || '',
-//           backgroundImage: data?.certificate_by_pk?.certificate_template?.background_image || '',
-//           author: {
-//             id: data?.certificate_by_pk?.certificate_template?.author?.id || '',
-//             name: data?.certificate_by_pk?.certificate_template?.author?.name || '',
-//           },
-//         },
-//         publishedAt: data?.certificate_by_pk?.published_at ? new Date(data.certificate_by_pk.published_at) : null,
-//       }
-//     : null
-
-//   return {
-//     loading,
-//     error,
-//     certificate,
-//     refetch,
-//   }
-// }
