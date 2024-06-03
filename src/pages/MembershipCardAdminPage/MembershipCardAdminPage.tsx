@@ -16,6 +16,7 @@ import {
 } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import MemberShipCardDiscountBlock from '../../components/membershipCard/MemberShipCardDiscountBlock'
 import hasura from '../../hasura'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
@@ -87,6 +88,11 @@ const MembershipCardAdminPage: React.VFC = () => {
                   <MembershipcardTemplateForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
                 <MetaProductDeletionBlock metaProductType="MembershipCard" targetId={membershipCardId} />
+              </div>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab={formatMessage(MembershipCardAdminPageMessages.adminPage.discountSetting)}>
+              <div className="container py-5">
+                <MemberShipCardDiscountBlock membershipCardId={membershipCardId} />
               </div>
             </Tabs.TabPane>
           </Tabs>
