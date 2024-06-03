@@ -3,7 +3,6 @@ import { gql, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -22,6 +21,7 @@ import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import MembershipCardBasicForm from './MembershipCardBasicForm'
 import MembershipcardTemplateForm from './MembershipcardTemplateForm'
+import MembershipCardAdminPageMessages from './translation'
 
 const MembershipCardAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -30,8 +30,6 @@ const MembershipCardAdminPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { loading, error, data: membershipCard, refetch } = useMembershipCard(membershipCardId)
 
-  const [visible, setVisible] = useState(false)
-
   if (Object.keys(enabledModules).length === 0 || loading) {
     return <LoadingPage />
   }
@@ -39,7 +37,7 @@ const MembershipCardAdminPage: React.VFC = () => {
   return (
     <>
       <AdminHeader>
-        <Link to="/certificates">
+        <Link to="/membership-card">
           <Button type="link" className="mr-3">
             <ArrowLeftOutlined />
           </Button>
@@ -53,9 +51,6 @@ const MembershipCardAdminPage: React.VFC = () => {
         ) : (
           <AdminHeaderTitle>{membershipCard?.title}</AdminHeaderTitle>
         )}
-        <Button className="mr-2" onClick={() => setVisible(true)}>
-          {formatMessage(pageMessages.CertificateAdminPage.preview)}
-        </Button>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
@@ -73,39 +68,30 @@ const MembershipCardAdminPage: React.VFC = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="setting" tab={formatMessage(pageMessages['*'].certificateSetting)}>
+            <Tabs.TabPane
+              key="setting"
+              tab={formatMessage(MembershipCardAdminPageMessages.adminPage.membershipCardSetting)}
+            >
               <div className="container py-5">
                 <AdminPaneTitle className="d-flex align-items-center justify-content-between">
-                  {formatMessage(pageMessages['*'].certificateSetting)}
+                  {formatMessage(MembershipCardAdminPageMessages.adminPage.membershipCardSetting)}
                 </AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
                   <MembershipCardBasicForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
                 <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
+                  <AdminBlockTitle>
+                    {formatMessage(MembershipCardAdminPageMessages.adminPage.membershipCardIntro)}
+                  </AdminBlockTitle>
                   <MembershipcardTemplateForm membershipCard={membershipCard} onRefetch={refetch} />
                 </AdminBlock>
-                <MetaProductDeletionBlock
-                  metaProductType="Certificate"
-                  targetId={membershipCardId}
-                  renderDeleteDangerText={formatMessage(pageMessages.CertificateAdminPage.deleteCertificateDangerText)}
-                />
-              </div>
-            </Tabs.TabPane>
-
-            <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
-                {/* <CertificateEligibilityListBlock certificateId={membershipCardId} /> */}
+                <MetaProductDeletionBlock metaProductType="MembershipCard" targetId={membershipCardId} />
               </div>
             </Tabs.TabPane>
           </Tabs>
         )}
       </StyledLayoutContent>
-      {/* {membershipCard && (
-        <CertificatePreviewModal visible={visible} onCancel={() => setVisible(false)} certificate={certificate} />
-      )} */}
     </>
   )
 }

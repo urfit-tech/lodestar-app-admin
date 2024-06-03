@@ -10,10 +10,14 @@ const MembershipCardAdminPageMessages = {
     effectiveDateDescription: { id: 'membershipCardAdminPage.basicForm.effectiveDateDescription', defaultMessage: "If the start date is not specified, it means 'effective immediately'; if the end date is not specified, it means 'never expires.'" },
     membershipCardDescription: { id: 'membershipCardAdminPage.basicForm.startCountingAfterHolding', defaultMessage: 'Card Description' },
   }),
-  MembershipCardPreviewModal: defineMessages({
-    demoName: { id: 'page.MembershipCardPreviewModal.demoName', defaultMessage: 'John Doe' },
-    demoAccount: {id: 'page.MemebrshipCardPreviewModal.demoAccount', defaultMessage: 'demo'}
+  previewModal: defineMessages({
+    demoName: { id: 'membershipCardAdminPage.membershipCardPreviewModal.demoName', defaultMessage: 'John Doe' },
+    demoAccount: {id: 'membershipCardAdminPage.membershipCardPreviewModal.demoAccount', defaultMessage: 'demo'}
   }),
+  adminPage: defineMessages({
+    membershipCardIntro: {id: 'membershipCardAdminPage.adminPage.intro', defaultMessage: 'Membership Card Template '},
+    membershipCardSetting: { id: 'membershipCardAdminPage.adminPage.setting', defaultMessage: 'Membership Card setting' },
+  })
 }
 
 export default MembershipCardAdminPageMessages

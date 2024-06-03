@@ -12,6 +12,7 @@ const hooksMessages = {
     podcastProgram: { id: 'hooks.data.podcastProgram', defaultMessage: '廣播' },
     podcastAlbum: { id: 'hooks.data.podcastAlbum', defaultMessage: '專輯' },
     certificate: { id: 'hooks.data.certificate', defaultMessage: '證書' },
+    membershipCard: {id: 'hooks.data.membershipCard', defaultMessage: 'membership card'}
   }),
 }
 export default hooksMessages

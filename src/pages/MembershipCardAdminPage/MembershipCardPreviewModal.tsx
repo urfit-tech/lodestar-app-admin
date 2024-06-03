@@ -31,8 +31,8 @@ const MembershipCardPreviewModal: React.VFC<{
 
   const templateVars = {
     avatar: DefaultAvatar,
-    name: formatMessage(MembershipCardAdminPageMessages.MembershipCardPreviewModal.demoName),
-    account: formatMessage(MembershipCardAdminPageMessages.MembershipCardPreviewModal.demoAccount),
+    name: formatMessage(MembershipCardAdminPageMessages.previewModal.demoName),
+    account: formatMessage(MembershipCardAdminPageMessages.previewModal.demoAccount),
     date: dayjs().format('YYYY-MM-DD'),
   }
 
