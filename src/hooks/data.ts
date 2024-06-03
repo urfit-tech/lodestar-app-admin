@@ -1236,6 +1236,9 @@ export const useTransformProductToString = (productType: MetaProductType) => {
     case 'Certificate':
       res = formatMessage(hooksMessages.data.certificate)
       break
+    case 'MembershipCard':
+      res = formatMessage(hooksMessages.data.membershipCard)
+      break
     default:
       break
   }

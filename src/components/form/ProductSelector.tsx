@@ -119,24 +119,28 @@ const ProductSelector: React.FC<{
     <TreeSelect
       value={value}
       onChange={selectedValue => {
-        const value = multiple ? selectedValue : [selectedValue]
-        const found = value
-          .map(v => {
-            const productType = (v.includes('_') ? v.slice(0, v.indexOf('_')) : v) as ProductType | 'CouponPlan'
-            const products = productSelections.find(({ productType: type }) => type === productType)!.products
-            return v.includes('_') ? products.find(({ id }) => v === id)! : products
-          })
-          .flat()
-        onFullSelected?.(value.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat())
+        const found =
+          (multiple &&
+            selectedValue
+              .map(v => {
+                const productType = (v.includes('_') ? v.slice(0, v.indexOf('_')) : v) as ProductType | 'CouponPlan'
+                const products = productSelections.find(({ productType: type }) => type === productType)!.products
+                return v.includes('_') ? products.find(({ id }) => v === id)! : products
+              })
+              .flat()) ||
+          []
+        onFullSelected?.(selectedValue.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat())
         onChange?.(
-          value
-            .map(
-              v =>
-                productSelections
-                  .find(productSelection => productSelection.productType === v)
-                  ?.products.map(product => product.id) || v,
-            )
-            .flat(),
+          multiple
+            ? selectedValue
+                .map(
+                  v =>
+                    productSelections
+                      .find(productSelection => productSelection.productType === v)
+                      ?.products.map(product => product.id) || v,
+                )
+                .flat()
+            : selectedValue,
         )
         onProductChange?.(found)
       }}
@@ -289,7 +293,7 @@ const useProductSelections = (onlyValid?: boolean) => {
         }
       }
     `,
-    { variables: { voucherCondition }, fetchPolicy: 'no-cache' },
+    { variables: { voucherCondition }, fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first' },
   )
 
   const productSelections: {
