@@ -1,8 +1,7 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { generate } from 'coupon-code'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -14,8 +13,9 @@ import { handleError } from '../../helpers'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
+import DiscountFormItem from '../common/FormItem/DiscountFormItem'
 import ScopeSelector, { ScopeProps } from '../form/ScopeSelector'
-import CouponPlanDiscountSelector, { CouponPlanDiscountProps } from './CouponPlanDiscountSelector'
+import { CouponPlanDiscountProps } from './CouponPlanDiscountSelector'
 import couponMessages from './translation'
 
 type FieldProps = {
@@ -206,13 +206,8 @@ const CouponPlanAdminModal: React.FC<
         >
           <InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />
         </Form.Item>
-        <Form.Item
-          label={formatMessage(couponMessages['*'].discount)}
-          help={formatMessage(couponMessages.CouponPlanAdminModal.discountHelp)}
-          name="discount"
-        >
-          <CouponPlanDiscountSelector />
-        </Form.Item>
+
+        <DiscountFormItem />
 
         {!couponPlan && (
           <Form.Item
