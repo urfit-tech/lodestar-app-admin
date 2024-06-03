@@ -9,8 +9,10 @@ const MembershipCardAdminPageMessages = {
     startCountingAfterHolding: { id: 'membershipCardAdminPage.basicForm.startCountingAfterHolding', defaultMessage: 'Start counting after holding' },
     effectiveDateDescription: { id: 'membershipCardAdminPage.basicForm.effectiveDateDescription', defaultMessage: "If the start date is not specified, it means 'effective immediately'; if the end date is not specified, it means 'never expires.'" },
     membershipCardDescription: { id: 'membershipCardAdminPage.basicForm.startCountingAfterHolding', defaultMessage: 'Card Description' },
-
-
+  }),
+  MembershipCardPreviewModal: defineMessages({
+    demoName: { id: 'page.MembershipCardPreviewModal.demoName', defaultMessage: 'John Doe' },
+    demoAccount: {id: 'page.MemebrshipCardPreviewModal.demoAccount', defaultMessage: 'demo'}
   }),
 }
 

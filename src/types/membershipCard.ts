@@ -1,7 +1,7 @@
 export type MembershipCard = {
   id: string
   relativePeriodAmount: number | null
-  relativePeriodType: string | null
+  relativePeriodType: 'D' | 'W' | 'M' | 'Y'
   appId: string
   description: string
   template: string
