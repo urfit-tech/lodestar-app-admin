@@ -1,7 +1,6 @@
-import { PlusOutlined } from '@ant-design/icons'
-import { Button, Skeleton, Space } from 'antd'
+import { Skeleton, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { useIntl } from 'react-intl'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import {
@@ -15,10 +14,15 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgramPlanSortCollection, useUpdateProgramPlanSortCollection } from '../../hooks/program'
 import { ProgramAdminProps } from '../../types/program'
+import ModalTriggerButton from './ModalTriggerButton'
 
 const ProgramPlanAdminBlock: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
+  renderTrigger?: React.FC<{
+    onOpen?: () => void
+    onClose?: () => void
+  }>
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
@@ -29,20 +33,6 @@ const ProgramPlanAdminBlock: React.FC<{
     return <Skeleton active />
   }
 
-  const OpenPlanModal: React.FC<{
-    title: string
-    onOpen?: () => void
-    onClose?: () => void
-  }> = ({ title, onOpen }) => {
-    return (
-      <div className="d-flex mb-4">
-        <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.()}>
-          {title}
-        </Button>
-      </div>
-    )
-  }
-
   return (
     <>
       <div className="d-flex justify-content-between">
@@ -50,7 +40,7 @@ const ProgramPlanAdminBlock: React.FC<{
           <PerpetualPlanModal
             programId={program.id}
             renderTrigger={({ onOpen }) => (
-              <OpenPlanModal title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
+              <ModalTriggerButton title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
             )}
             onRefetch={onRefetch}
           />
@@ -58,7 +48,7 @@ const ProgramPlanAdminBlock: React.FC<{
           <PeriodPlanModal
             programId={program.id}
             renderTrigger={({ onOpen }) => (
-              <OpenPlanModal title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
+              <ModalTriggerButton title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
             )}
             onRefetch={onRefetch}
           />
@@ -66,7 +56,7 @@ const ProgramPlanAdminBlock: React.FC<{
           <SubscriptionPlanModal
             programId={program.id}
             renderTrigger={({ onOpen }) => (
-              <OpenPlanModal title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
+              <ModalTriggerButton title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
             )}
             onRefetch={onRefetch}
           />
@@ -75,7 +65,7 @@ const ProgramPlanAdminBlock: React.FC<{
             <MembershipPlanModal
               programId={program.id}
               renderTrigger={({ onOpen }) => (
-                <OpenPlanModal title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
+                <ModalTriggerButton title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
               )}
               onRefetch={onRefetch}
             />
@@ -108,7 +98,7 @@ const ProgramPlanAdminBlock: React.FC<{
 
       <div className="row">
         {program.plans.map(programPlan => (
-          <>
+          <Fragment key={programPlan.id}>
             {!enabledModules.membership_card && programPlan.cardId ? null : (
               <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
                 <ProgramSubscriptionPlanAdminCard
@@ -118,7 +108,7 @@ const ProgramPlanAdminBlock: React.FC<{
                 />
               </div>
             )}
-          </>
+          </Fragment>
         ))}
       </div>
     </>

@@ -1,28 +1,21 @@
 import { EditOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
 import { Button, Divider, Tag } from 'antd'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useProductGiftPlan } from 'lodestar-app-element/src/hooks/giftPlan'
-import React from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { useProductChannelInfo } from '../../hooks/channel'
+import { useMembershipCardByTargetId, useProgramPlanEnrollmentCount } from '../../hooks/programPlan'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import ProductSkuModal from '../common/ProductSkuModal'
-import {
-  MembershipPlanModal,
-  PeriodPlanModal,
-  PerpetualPlanModal,
-  SubscriptionPlanModal,
-} from './programPlanAdminModals'
-import { GetCardTitleById } from './programPlanAdminModals/formItem/MembershipCardItem'
+import ProgramPlanModal from './programPlanAdminModals/ProgramPlanModal'
 
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
@@ -82,9 +75,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     appId,
     `ProgramPlan_${programPlan?.id}`,
   )
-  const { loading: loadingById, data: dataById } = useQuery(GetCardTitleById, {
-    variables: { id: programPlan.cardId },
-  })
+  const { cardTitle, cardProducts } = useMembershipCardByTargetId('ProgramPlan', programPlan.id)
+  const [isOpen, setIsOpen] = useState(false)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
@@ -92,79 +84,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'subscription'
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
-    : programPlan.cardId
+    : cardProducts.length !== 0
     ? 'membership'
     : 'perpetual'
-
-  const ProgramPlanModal: React.FC = () => {
-    switch (programPlanType) {
-      case 'perpetual':
-        return (
-          <PerpetualPlanModal
-            onRefetch={onRefetch}
-            onProductGiftPlanRefetch={refetchProductGiftPlan}
-            programId={programId}
-            programPlan={programPlan}
-            productGiftPlan={productGiftPlan}
-            renderTrigger={({ onOpen }) => (
-              <div className="d-flex align-items-center">
-                <EditOutlined onClick={() => onOpen?.()} />
-              </div>
-            )}
-          />
-        )
-
-      case 'period':
-        return (
-          <PeriodPlanModal
-            onRefetch={onRefetch}
-            onProductGiftPlanRefetch={refetchProductGiftPlan}
-            programId={programId}
-            programPlan={programPlan}
-            productGiftPlan={productGiftPlan}
-            renderTrigger={({ onOpen }) => (
-              <div className="d-flex align-items-center">
-                <EditOutlined onClick={() => onOpen?.()} />
-              </div>
-            )}
-          />
-        )
-
-      case 'subscription':
-        return (
-          <SubscriptionPlanModal
-            onRefetch={onRefetch}
-            onProductGiftPlanRefetch={refetchProductGiftPlan}
-            programId={programId}
-            programPlan={programPlan}
-            productGiftPlan={productGiftPlan}
-            renderTrigger={({ onOpen }) => (
-              <div className="d-flex align-items-center">
-                <EditOutlined onClick={() => onOpen?.()} />
-              </div>
-            )}
-          />
-        )
-
-      case 'membership':
-        return (
-          <MembershipPlanModal
-            onRefetch={onRefetch}
-            onProductGiftPlanRefetch={refetchProductGiftPlan}
-            programId={programId}
-            programPlan={programPlan}
-            renderTrigger={({ onOpen }) => (
-              <div className="d-flex align-items-center">
-                <EditOutlined onClick={() => onOpen?.()} />
-              </div>
-            )}
-          />
-        )
-
-      default:
-        return <></>
-    }
-  }
 
   return (
     <AdminBlock>
@@ -175,11 +97,24 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
               <Tag className="mr-2">{formatMessage(commonMessages.ui.membershipPlan)}</Tag>
               {programPlan.title}
             </div>
-            <ProgramPlanModal />
+            <div className="d-flex align-items-center">
+              <EditOutlined onClick={() => setIsOpen(true)} />
+            </div>
+            {isOpen && (
+              <ProgramPlanModal
+                programPlanType={programPlanType}
+                programId={programId}
+                programPlan={programPlan}
+                productGiftPlan={productGiftPlan}
+                onRefetch={onRefetch}
+                refetchProductGiftPlan={refetchProductGiftPlan}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+              />
+            )}
           </AdminBlockTitle>
           <StyledMemberShipBlock>
-            {!loadingById &&
-              formatMessage(commonMessages.text.displayMembershipCard, { membershipCard: dataById?.card[0].title })}
+            {formatMessage(commonMessages.text.displayMembershipCard, { membershipCard: cardTitle })}
           </StyledMemberShipBlock>
         </>
       ) : (
@@ -197,7 +132,21 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
               </Tag>
               {programPlan.title}
             </div>
-            <ProgramPlanModal />
+            <div className="d-flex align-items-center">
+              <EditOutlined onClick={() => setIsOpen(true)} />
+            </div>
+            {isOpen && (
+              <ProgramPlanModal
+                programPlanType={programPlanType}
+                programId={programId}
+                programPlan={programPlan}
+                productGiftPlan={productGiftPlan}
+                onRefetch={onRefetch}
+                refetchProductGiftPlan={refetchProductGiftPlan}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+              />
+            )}
           </AdminBlockTitle>
           <StyledPriceBlock>
             <PriceLabel
@@ -265,33 +214,6 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
       )}
     </AdminBlock>
   )
-}
-
-const useProgramPlanEnrollmentCount = (programPlanId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
-    hasura.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
-  >(
-    gql`
-      query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {
-        program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    { variables: { programPlanId } },
-  )
-
-  const enrollmentCount = data?.program_plan_enrollment_aggregate.aggregate?.count || 0
-
-  return {
-    loadingEnrollmentCount: loading,
-    errorEnrollmentCount: error,
-    enrollmentCount,
-    refetchEnrollmentCount: refetch,
-  }
 }
 
 export default ProgramSubscriptionPlanAdminCard
