@@ -130,20 +130,18 @@ const MembershipCardBasicForm: React.FC<{
 
           {effectiveDateType === 'fixed' && (
             <div style={{ display: 'flex', gap: '16px', marginTop: '10px' }}>
-              <Form.Item name="fixedStartDate" style={{ flex: 1 }}>
+              <Form.Item name="fixedStartDate" style={{ flex: 1 }} valuePropName={'date'}>
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.startedAt)}
                   format="YYYY-MM-DD HH:mm"
                   showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                  disabledDate={current => !!current && current < moment().startOf('day')}
                 />
               </Form.Item>
-              <Form.Item name="fixedEndDate" style={{ flex: 1 }}>
+              <Form.Item name="fixedEndDate" style={{ flex: 1 }} valuePropName={'date'}>
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.endedAt)}
                   format="YYYY-MM-DD HH:mm"
                   showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-                  disabledDate={current => !!current && current < moment().startOf('day')}
                 />
               </Form.Item>
             </div>
