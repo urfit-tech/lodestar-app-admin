@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, message, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -78,6 +77,15 @@ const MetaProductDeletionBlock: React.FC<{
           .then(() => {
             message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/certificates`)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+        break
+      case 'MembershipCard':
+        archiveCertificate({ variables: { certificateId: targetId } })
+          .then(() => {
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
+            history.push(`/membership-card`)
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -161,7 +169,22 @@ const useArchiveMetaProduct = () => {
       }
     }
   `)
-  return { archiveActivity, archiveProgram, archivePost, archiveMerchandise, archiveCertificate }
+
+  const [archiveMemebershipCard] = useMutation(gql`
+    mutation ArchiveMembershipCard($membershipCardId: uuid!) {
+      update_card(where: { id: { _eq: $membershipCardId } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    archiveActivity,
+    archiveProgram,
+    archivePost,
+    archiveMerchandise,
+    archiveCertificate,
+    archiveMemebershipCard,
+  }
 }
 
 export default MetaProductDeletionBlock
