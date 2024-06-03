@@ -17,9 +17,10 @@ export type CouponPlanDiscountProps = {
 }
 
 const CouponPlanDiscountSelector: React.FC<{
+  displayMode?: string
   value?: CouponPlanDiscountProps
   onChange?: (value: CouponPlanDiscountProps) => void
-}> = ({ value, onChange }) => {
+}> = ({ displayMode, value, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -30,11 +31,13 @@ const CouponPlanDiscountSelector: React.FC<{
             <Select.Option value="cash">
               {formatMessage(couponMessages.CouponPlanDiscountSelector.priceType)}
             </Select.Option>
-            <Select.Option value="percent">
+            <Select.Option value={displayMode === 'membershipCard' ? 'percentage' : 'percent'}>
               {formatMessage(couponMessages.CouponPlanDiscountSelector.ratioType)}
             </Select.Option>
           </Select>
           <InputNumber
+            min={0}
+            max={value.type === 'cash' ? undefined : 100}
             style={{ width: '40%' }}
             formatter={v =>
               `${v} ${value.type === 'cash' ? formatMessage(couponMessages.CouponPlanDiscountSelector.dollar) : '%'}`
