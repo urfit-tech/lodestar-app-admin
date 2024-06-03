@@ -139,7 +139,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
             categoryClassType="program"
             withCreatorSelector={currentUserRole === 'app-owner'}
             withProgramType
-            withProgramModuleType={appId === 'cw'}
+            withProgramModuleType={enabledModules?.program_template}
             onCreate={({ title, categoryIds, creatorId, ...templateData }) =>
               insertProgram({
                 variables: {
