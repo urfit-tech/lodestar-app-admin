@@ -1,27 +1,13 @@
-import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, message, Radio, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
-import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useUpdateMembershipCard } from '../../hooks/membershipCard'
+import { MembershipCard } from '../../types/membershipCard'
 import pageMessages from '../translation'
 import MembershipCardAdminPageMessages from './translation'
-
-type MembershipCard = {
-  id: string
-  relativePeriodAmount: number | null
-  relativePeriodType: string | null
-  appId: string
-  description: string
-  template: string
-  fixedStartDate: string | null
-  fixedEndDate: string | null
-  expiryType: string
-  title: string
-}
 
 type FieldProps = Pick<
   MembershipCard,
@@ -33,6 +19,7 @@ type FieldProps = Pick<
   | 'fixedStartDate'
   | 'fixedEndDate'
   | 'expiryType'
+  | 'sku'
 >
 
 const MembershipCardBasicForm: React.FC<{
@@ -41,12 +28,11 @@ const MembershipCardBasicForm: React.FC<{
 }> = ({ membershipCard, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateMembershipCardBasicMutaion] = useMutation<
-    hasura.UpdateMembershipCardBasic,
-    hasura.UpdateMembershipCardBasicVariables
-  >(UpdateMembershipCardBasic)
   const [loading, setLoading] = useState(false)
-  const [effectiveDateType, setEffectiveDateType] = useState<'fixed' | 'relative'>('fixed')
+  const [effectiveDateType, setEffectiveDateType] = useState<'fixed' | 'relative'>(
+    membershipCard?.expiryType || 'fixed',
+  )
+  const { updateMembershipCard } = useUpdateMembershipCard()
 
   useEffect(() => {
     if (effectiveDateType === 'fixed') {
@@ -68,22 +54,15 @@ const MembershipCardBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    updateMembershipCardBasicMutaion({
-      variables: {
-        id: membershipCard.id,
-        title: values.title || '',
-        expiryType: values.expiryType,
-        relativePeriodType: values.relativePeriodType,
-        relativePeriodAmount: values.relativePeriodAmount || 0,
-        fixedStartDate: values.fixedStartDate,
-        fixedEndDate: values.fixedEndDate,
-      },
-    })
+    updateMembershipCard(membershipCard.id, values)
       .then(() => {
         message.success(formatMessage(pageMessages['*'].successfullySaved))
         onRefetch?.()
       })
-      .catch(handleError)
+      .catch(error => {
+        console.error(error)
+        message.error(formatMessage(pageMessages['*'].fetchDataError))
+      })
       .finally(() => setLoading(false))
   }
 
@@ -100,8 +79,10 @@ const MembershipCardBasicForm: React.FC<{
         relativePeriodAmount: membershipCard.relativePeriodAmount,
         relativePeriodType: membershipCard.relativePeriodType,
         description: membershipCard.description,
-        fixedStartDate: membershipCard.fixedStartDate,
-        fixedEndDate: membershipCard.fixedEndDate,
+        fixedStartDate: membershipCard.fixedStartDate ? moment(membershipCard.fixedStartDate) : null,
+        fixedEndDate: membershipCard.fixedEndDate ? moment(membershipCard.fixedEndDate) : null,
+        sku: membershipCard.sku,
+        expiryType: membershipCard.expiryType,
       }}
       onFinish={handleSubmit}
     >
@@ -130,14 +111,14 @@ const MembershipCardBasicForm: React.FC<{
 
           {effectiveDateType === 'fixed' && (
             <div style={{ display: 'flex', gap: '16px', marginTop: '10px' }}>
-              <Form.Item name="fixedStartDate" style={{ flex: 1 }} valuePropName={'date'}>
+              <Form.Item name="fixedStartDate" style={{ flex: 1 }} valuePropName="value">
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.startedAt)}
                   format="YYYY-MM-DD HH:mm"
                   showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                 />
               </Form.Item>
-              <Form.Item name="fixedEndDate" style={{ flex: 1 }} valuePropName={'date'}>
+              <Form.Item name="fixedEndDate" style={{ flex: 1 }} valuePropName="value">
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.endedAt)}
                   format="YYYY-MM-DD HH:mm"
@@ -178,52 +159,5 @@ const MembershipCardBasicForm: React.FC<{
     </Form>
   )
 }
-
-const UpdateMembershipCardBasic = gql`
-  mutation UpdateMembershipCardBasic(
-    $id: uuid!
-    $title: String
-    $description: String
-    $template: String
-    $creatorId: String
-    $sku: String
-    $fixedStartDate: timestamptz
-    $relativePeriodAmount: Int
-    $relativePeriodType: bpchar
-    $fixedEndDate: timestamptz
-    $expiryType: bpchar
-  ) {
-    update_card(
-      where: { id: { _eq: $id } }
-      _set: {
-        title: $title
-        description: $description
-        template: $template
-        creator_id: $creatorId
-        sku: $sku
-        fixed_start_date: $fixedStartDate
-        relative_period_amount: $relativePeriodAmount
-        relative_period_type: $relativePeriodType
-        fixed_end_date: $fixedEndDate
-        expiry_type: $expiryType
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        title
-        description
-        template
-        creator_id
-        sku
-        fixed_start_date
-        relative_period_type
-        relative_period_amount
-        expiry_type
-        fixed_end_date
-      }
-    }
-  }
-`
 
 export default MembershipCardBasicForm

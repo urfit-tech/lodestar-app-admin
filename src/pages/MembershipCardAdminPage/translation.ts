@@ -19,7 +19,7 @@ const MembershipCardAdminPageMessages = {
         "If the start date is not specified, it means 'effective immediately'; if the end date is not specified, it means 'never expires.'",
     },
     membershipCardDescription: {
-      id: 'membershipCardAdminPage.basicForm.startCountingAfterHolding',
+      id: 'membershipCardAdminPage.basicForm.cardDescription',
       defaultMessage: 'Card Description',
     },
   }),
