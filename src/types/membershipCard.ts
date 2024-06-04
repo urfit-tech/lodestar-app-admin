@@ -3,14 +3,15 @@ import { ApolloClient } from '@apollo/client'
 export type MembershipCard = {
   id: string
   relativePeriodAmount: number | null
-  relativePeriodType: 'D' | 'W' | 'M' | 'Y'
+  relativePeriodType: 'D' | 'W' | 'M' | 'Y' | null
   appId: string
   description: string
   template: string
   fixedStartDate: string | null
   fixedEndDate: string | null
-  expiryType: string
+  expiryType: 'fixed' | 'relative'
   title: string
+  sku: string | null
 }
 
 export type MembershipCardTermsProductType = 'ActivityTicket' | 'ProgramPlan' | 'ProgramPackagePlan' | 'PodcastProgram'
@@ -75,4 +76,14 @@ export type MembershipCardDiscountModalFieldProps = {
   }
   productId: string
   productIds: string[]
+}
+
+export type MembershipCardColumn = {
+  id: string
+  title: string
+  template: string
+  sku: string
+  expiredType: string
+  expiredData: string
+  backgroundImage: string | null
 }

@@ -26,8 +26,14 @@ const MetaProductDeletionBlock: React.FC<{
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const history = useHistory()
-  const { archiveActivity, archiveProgram, archivePost, archiveMerchandise, archiveCertificate } =
-    useArchiveMetaProduct()
+  const {
+    archiveActivity,
+    archiveProgram,
+    archivePost,
+    archiveMerchandise,
+    archiveCertificate,
+    archiveMemebershipCard,
+  } = useArchiveMetaProduct()
 
   let metaProduct = ''
   metaProduct = useTransformProductToString(metaProductType)
@@ -82,7 +88,7 @@ const MetaProductDeletionBlock: React.FC<{
           .finally(() => setLoading(false))
         break
       case 'MembershipCard':
-        archiveCertificate({ variables: { certificateId: targetId } })
+        archiveMemebershipCard({ variables: { membershipCardId: targetId } })
           .then(() => {
             message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/membership-card`)
@@ -170,7 +176,7 @@ const useArchiveMetaProduct = () => {
     }
   `)
 
-  const [archiveMemebershipCard] = useMutation(gql`
+  const [archiveMemebershipCard] = useMutation<hasura.ArchiveMembershipCard, hasura.ArchiveMembershipCardVariables>(gql`
     mutation ArchiveMembershipCard($membershipCardId: uuid!) {
       update_card(where: { id: { _eq: $membershipCardId } }, _set: { deleted_at: "now()" }) {
         affected_rows
