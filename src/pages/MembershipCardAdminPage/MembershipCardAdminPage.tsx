@@ -22,7 +22,7 @@ import { MembershipCard } from '../../types/membershipCard'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import MembershipCardBasicForm from './MembershipCardBasicForm'
-import MembershipCardTemplateForm from './MembershipCardTemplateForm'
+import MembershipCardTemplateForm from './MembershipCardTemplateBlock'
 import MembershipCardAdminPageMessages from './translation'
 
 const MembershipCardAdminPage: React.VFC = () => {

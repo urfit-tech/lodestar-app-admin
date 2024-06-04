@@ -293,6 +293,7 @@ export const useMembershipCardCollection = (condition: hasura.GetMembershipCardC
     variables: {
       condition: extendedCondition,
     },
+    fetchPolicy: 'network-only',
   })
 
   const formatExpiredData = (card: hasura.GetMembershipCardCollection['card'][0]): string => {
