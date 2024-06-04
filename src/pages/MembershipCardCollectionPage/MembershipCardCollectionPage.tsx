@@ -30,7 +30,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
         position: relative;
         width: 400px;
         height: 250px;
-        background-image: url(https://static.kolable.com/images/default/membership-card-template.png);
+        background-image: url(https://static.kolable.com/membership_card_backgrounds/_default/membership-card-template.png);
         background-size: cover;
         background-position: center;
       "
