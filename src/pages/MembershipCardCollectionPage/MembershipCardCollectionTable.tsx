@@ -1,15 +1,15 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
 import { Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import dayjs from 'dayjs'
 import { CustomRatioImage } from 'lodestar-app-element/src/components/common/Image'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { useMembershipCardCollection } from '../../hooks/membershipCard'
 import EmptyCover from '../../images/default/empty-cover.png'
+import { MembershipCardColumn } from '../../types/membershipCard'
 import MembershipCardPageMessages from './translation'
 
 const StyledTitle = styled.div`
@@ -20,16 +20,6 @@ const StyledTitle = styled.div`
 `
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
-
-type MembershipCardColumn = {
-  id: string
-  title: string
-  template: string
-  sku: string
-  expiredType: string
-  expiredData: string
-  backgroundImage: string | null
-}
 
 const MembershipCardCollectionTable: React.VFC<{
   condition: hasura.GetMembershipCardCollectionVariables['condition']
@@ -91,99 +81,5 @@ const MembershipCardCollectionTable: React.VFC<{
 
   return <Table<MembershipCardColumn> loading={loading} rowKey="id" columns={columns} dataSource={membershipCards} />
 }
-
-const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollectionVariables['condition']) => {
-  const { formatMessage } = useIntl()
-  const extendedCondition = {
-    ...condition,
-    deleted_at: { _is_null: true },
-  }
-
-  const { loading, error, data } = useQuery<
-    hasura.GetMembershipCardCollection,
-    hasura.GetMembershipCardCollectionVariables
-  >(GetMembershipCardCollection, {
-    variables: {
-      condition: extendedCondition,
-    },
-  })
-
-  const formatExpiredData = (card: hasura.GetMembershipCardCollection['card'][0]): string => {
-    const expiryType = card.expiry_type || 'fixed'
-    if (expiryType === 'fixed') {
-      const startDate = card.fixed_start_date
-        ? dayjs(card.fixed_start_date).format('YYYY-MM-DD')
-        : formatMessage(MembershipCardPageMessages.page.startToday)
-      const endDate = card.fixed_end_date
-        ? dayjs(card.fixed_end_date).format('YYYY-MM-DD')
-        : formatMessage(MembershipCardPageMessages.page.noExpiry)
-      return `${startDate} ~ ${endDate}`
-    }
-    if (expiryType === 'relative') {
-      const periodAmount = card.relative_period_amount
-      const periodType = card.relative_period_type
-      let periodTypeText = ''
-      if (periodType === 'Y') {
-        periodTypeText = formatMessage(MembershipCardPageMessages.page.year)
-      } else if (periodType === 'M') {
-        periodTypeText = formatMessage(MembershipCardPageMessages.page.month)
-      } else if (periodType === 'D') {
-        periodTypeText = formatMessage(MembershipCardPageMessages.page.day)
-      }
-      return `${periodAmount} ${periodTypeText}`
-    }
-    return ''
-  }
-
-  const extractBackgroundImage = (template: string): string | null => {
-    const backgroundImageRegex = /background-image:\s*url\(([^)]+)\)/i
-    const match = template.match(backgroundImageRegex)
-    return match ? match[1] : null
-  }
-
-  const membershipCards: {
-    id: string
-    title: string
-    template: string
-    sku: string
-    expiredType: string
-    expiredData: string
-    backgroundImage: string | null
-  }[] =
-    data?.card.map(v => ({
-      id: v.id,
-      title: v.title || '',
-      template: v.template || '',
-      sku: v.sku || '',
-      expiredType: v.expiry_type || 'fixed',
-      expiredData: formatExpiredData(v),
-      backgroundImage: extractBackgroundImage(v.template || ''),
-    })) || []
-
-  return {
-    loading,
-    error,
-    membershipCards,
-  }
-}
-
-const GetMembershipCardCollection = gql`
-  query GetMembershipCardCollection($condition: card_bool_exp!) {
-    card(where: $condition, order_by: { created_at: desc }) {
-      app_id
-      creator_id
-      description
-      sku
-      template
-      title
-      id
-      fixed_start_date
-      fixed_end_date
-      relative_period_type
-      relative_period_amount
-      expiry_type
-    }
-  }
-`
 
 export default MembershipCardCollectionTable

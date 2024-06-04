@@ -1,27 +1,13 @@
-import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, message, Radio, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import { useUpdateMembershipCard } from '../../hooks/membershipCard'
+import { MembershipCard } from '../../types/membershipCard'
 import pageMessages from '../translation'
 import MembershipCardAdminPageMessages from './translation'
-
-type MembershipCard = {
-  id: string
-  relativePeriodAmount: number | null
-  relativePeriodType: string | null
-  appId: string
-  description: string
-  template: string
-  fixedStartDate: string | null
-  fixedEndDate: string | null
-  expiryType: 'fixed' | 'relative'
-  title: string
-  sku: string | null
-}
 
 type FieldProps = Pick<
   MembershipCard,
@@ -70,7 +56,12 @@ const MembershipCardBasicForm: React.FC<{
     setLoading(true)
     updateMembershipCard(membershipCard.id, values)
       .then(() => {
+        message.success(formatMessage(pageMessages['*'].successfullySaved))
         onRefetch?.()
+      })
+      .catch(error => {
+        console.error(error)
+        message.error(formatMessage(pageMessages['*'].fetchDataError))
       })
       .finally(() => setLoading(false))
   }
@@ -167,107 +158,6 @@ const MembershipCardBasicForm: React.FC<{
       </Form.Item>
     </Form>
   )
-}
-
-const UpdateMembershipCardBasic = gql`
-  mutation UpdateMembershipCardBasic(
-    $id: uuid!
-    $title: String
-    $description: String
-    $creatorId: String
-    $sku: String
-    $fixedStartDate: timestamptz
-    $relativePeriodAmount: Int
-    $relativePeriodType: bpchar
-    $fixedEndDate: timestamptz
-    $expiryType: bpchar
-  ) {
-    update_card(
-      where: { id: { _eq: $id } }
-      _set: {
-        title: $title
-        description: $description
-        creator_id: $creatorId
-        sku: $sku
-        fixed_start_date: $fixedStartDate
-        relative_period_amount: $relativePeriodAmount
-        relative_period_type: $relativePeriodType
-        fixed_end_date: $fixedEndDate
-        expiry_type: $expiryType
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        title
-        description
-        template
-        creator_id
-        sku
-        fixed_start_date
-        relative_period_type
-        relative_period_amount
-        expiry_type
-        fixed_end_date
-      }
-    }
-  }
-`
-
-const UpdateMembershipCardProductSku = gql`
-  mutation UpdateMembershipCardProductSku($type: String!, $target: String!, $sku: String!) {
-    update_product(where: { type: { _eq: $type }, target: { _eq: $target } }, _set: { sku: $sku }) {
-      affected_rows
-      returning {
-        target
-        type
-        sku
-      }
-    }
-  }
-`
-
-const useUpdateMembershipCard = () => {
-  const { formatMessage } = useIntl()
-  const [updateMembershipCardBasicMutation] = useMutation<
-    hasura.UpdateMembershipCardBasic,
-    hasura.UpdateMembershipCardBasicVariables
-  >(UpdateMembershipCardBasic)
-  const [updateMembershipCardProductSkuMutation] = useMutation(UpdateMembershipCardProductSku)
-
-  const updateMembershipCard = async (membershipCardId: string, values: any) => {
-    try {
-      await updateMembershipCardBasicMutation({
-        variables: {
-          id: membershipCardId,
-          title: values.title || '',
-          expiryType: values.expiryType,
-          relativePeriodType: values.relativePeriodType,
-          relativePeriodAmount: values.relativePeriodAmount || 0,
-          fixedStartDate: values.fixedStartDate,
-          fixedEndDate: values.fixedEndDate,
-          sku: values.sku,
-        },
-      })
-
-      await updateMembershipCardProductSkuMutation({
-        variables: {
-          type: 'Card',
-          target: membershipCardId,
-          sku: values.sku,
-        },
-      })
-
-      message.success(formatMessage(pageMessages['*'].successfullySaved))
-    } catch (error) {
-      console.error(error)
-      message.error(formatMessage(pageMessages['*'].fetchDataError))
-    }
-  }
-
-  return {
-    updateMembershipCard,
-  }
 }
 
 export default MembershipCardBasicForm

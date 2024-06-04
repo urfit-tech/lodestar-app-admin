@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
+import { UpdateMembershipCardTemplate } from '../../hooks/membershipCard'
 import { MembershipCard } from '../../types/membershipCard'
 import pageMessages from '../translation'
 import MembershipCardPreviewModal from './MembershipCardPreviewModal'
@@ -147,13 +148,5 @@ const MembershipCardTemplateForm: React.FC<{
     </>
   )
 }
-
-const UpdateMembershipCardTemplate = gql`
-  mutation UpdateMembershipCardTemplate($membershipCardId: uuid!, $template: String) {
-    update_card(_set: { template: $template }, where: { id: { _eq: $membershipCardId } }) {
-      affected_rows
-    }
-  }
-`
 
 export default MembershipCardTemplateForm

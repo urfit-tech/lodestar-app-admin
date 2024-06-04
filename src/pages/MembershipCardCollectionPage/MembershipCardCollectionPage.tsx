@@ -1,5 +1,5 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Button, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
-import hasura from '../../hasura'
+import { InsertCard, useMembershipCardQuantity } from '../../hooks/membershipCard'
 import { MembershipCardIcon } from '../../images/icon'
 import ForbiddenPage from '../ForbiddenPage'
 import LoadingPage from '../LoadingPage'
@@ -195,63 +195,6 @@ const MembershipCardCollectionPage: React.VFC = () => {
       </Tabs>
     </AdminLayout>
   )
-}
-
-const InsertCard = gql`
-  mutation InsertCard($appId: String, $title: String, $template: String) {
-    insert_card(objects: { app_id: $appId, title: $title, template: $template }) {
-      affected_rows
-      returning {
-        id
-        app_id
-        title
-        description
-        template
-        creator_id
-        sku
-      }
-    }
-  }
-`
-
-const useMembershipCardQuantity = () => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GetMembershipCardQuantity,
-    hasura.GetMembershipCardQuantityVariables
-  >(gql`
-    query GetMembershipCardQuantity {
-      card(where: { deleted_at: { _is_null: true } }) {
-        id
-        fixed_end_date
-      }
-    }
-  `)
-
-  const cardData =
-    data?.card.map((card: hasura.GetMembershipCardQuantity['card'][0]) => ({
-      id: card.id,
-      fixedEndDate: card.fixed_end_date,
-    })) || []
-
-  const now = new Date()
-  const availableQuantity = cardData.filter(card => {
-    const endDate = card.fixedEndDate ? new Date(card.fixedEndDate) : null
-    return endDate === null || endDate > now
-  }).length
-
-  const expiredQuantity = cardData.filter(card => {
-    const endDate = card.fixedEndDate ? new Date(card.fixedEndDate) : null
-    return endDate !== null && endDate <= now
-  }).length
-
-  return {
-    loading,
-    error,
-    cardData,
-    availableQuantity,
-    expiredQuantity,
-    refetch,
-  }
 }
 
 export default MembershipCardCollectionPage

@@ -3,7 +3,7 @@ import { ApolloClient } from '@apollo/client'
 export type MembershipCard = {
   id: string
   relativePeriodAmount: number | null
-  relativePeriodType: 'D' | 'W' | 'M' | 'Y'
+  relativePeriodType: 'D' | 'W' | 'M' | 'Y' | null
   appId: string
   description: string
   template: string
@@ -76,4 +76,14 @@ export type MembershipCardDiscountModalFieldProps = {
   }
   productId: string
   productIds: string[]
+}
+
+export type MembershipCardColumn = {
+  id: string
+  title: string
+  template: string
+  sku: string
+  expiredType: string
+  expiredData: string
+  backgroundImage: string | null
 }
