@@ -18,7 +18,7 @@ type MembershipCard = {
   template: string
   fixedStartDate: string | null
   fixedEndDate: string | null
-  expiryType: string
+  expiryType: 'fixed' | 'relative'
   title: string
   sku: string | null
 }
@@ -43,7 +43,9 @@ const MembershipCardBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [effectiveDateType, setEffectiveDateType] = useState<'fixed' | 'relative'>('fixed')
+  const [effectiveDateType, setEffectiveDateType] = useState<'fixed' | 'relative'>(
+    membershipCard?.expiryType || 'fixed',
+  )
   const { updateMembershipCard } = useUpdateMembershipCard()
 
   useEffect(() => {
@@ -86,9 +88,10 @@ const MembershipCardBasicForm: React.FC<{
         relativePeriodAmount: membershipCard.relativePeriodAmount,
         relativePeriodType: membershipCard.relativePeriodType,
         description: membershipCard.description,
-        fixedStartDate: membershipCard.fixedStartDate,
-        fixedEndDate: membershipCard.fixedEndDate,
+        fixedStartDate: membershipCard.fixedStartDate ? moment(membershipCard.fixedStartDate) : null,
+        fixedEndDate: membershipCard.fixedEndDate ? moment(membershipCard.fixedEndDate) : null,
         sku: membershipCard.sku,
+        expiryType: membershipCard.expiryType,
       }}
       onFinish={handleSubmit}
     >
@@ -117,14 +120,14 @@ const MembershipCardBasicForm: React.FC<{
 
           {effectiveDateType === 'fixed' && (
             <div style={{ display: 'flex', gap: '16px', marginTop: '10px' }}>
-              <Form.Item name="fixedStartDate" style={{ flex: 1 }} valuePropName={'date'}>
+              <Form.Item name="fixedStartDate" style={{ flex: 1 }} valuePropName="value">
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.startedAt)}
                   format="YYYY-MM-DD HH:mm"
                   showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                 />
               </Form.Item>
-              <Form.Item name="fixedEndDate" style={{ flex: 1 }} valuePropName={'date'}>
+              <Form.Item name="fixedEndDate" style={{ flex: 1 }} valuePropName="value">
                 <DatePicker
                   placeholder={formatMessage(commonMessages.label.endedAt)}
                   format="YYYY-MM-DD HH:mm"
@@ -171,7 +174,6 @@ const UpdateMembershipCardBasic = gql`
     $id: uuid!
     $title: String
     $description: String
-    $template: String
     $creatorId: String
     $sku: String
     $fixedStartDate: timestamptz
@@ -185,7 +187,6 @@ const UpdateMembershipCardBasic = gql`
       _set: {
         title: $title
         description: $description
-        template: $template
         creator_id: $creatorId
         sku: $sku
         fixed_start_date: $fixedStartDate

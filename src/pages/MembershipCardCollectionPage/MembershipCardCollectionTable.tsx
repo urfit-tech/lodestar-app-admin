@@ -169,7 +169,7 @@ const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollecti
 
 const GetMembershipCardCollection = gql`
   query GetMembershipCardCollection($condition: card_bool_exp!) {
-    card(where: $condition) {
+    card(where: $condition, order_by: { created_at: desc }) {
       app_id
       creator_id
       description

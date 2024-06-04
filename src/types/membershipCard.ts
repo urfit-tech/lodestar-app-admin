@@ -9,7 +9,7 @@ export type MembershipCard = {
   template: string
   fixedStartDate: string | null
   fixedEndDate: string | null
-  expiryType: string
+  expiryType: 'fixed' | 'relative'
   title: string
   sku: string | null
 }
