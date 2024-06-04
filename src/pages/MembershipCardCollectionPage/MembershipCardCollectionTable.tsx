@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import EmptyCover from '../../images/default/empty-cover.png'
-import pageMessages from '../translation'
+import MembershipCardPageMessages from './translation'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
@@ -44,7 +44,7 @@ const MembershipCardCollectionTable: React.VFC<{
   const columns: ColumnProps<MembershipCardColumn>[] = [
     {
       key: 'title',
-      title: formatMessage(pageMessages['*'].title),
+      title: formatMessage(MembershipCardPageMessages.page.titleColumn),
       width: '50%',
       render: (_, record) => (
         <Link
@@ -71,35 +71,33 @@ const MembershipCardCollectionTable: React.VFC<{
     },
     {
       key: 'validityPeriod',
-      title: '效期',
+      title: formatMessage(MembershipCardPageMessages.page.validityPeriod),
       width: '30%',
       render: (_, record) => {
-        console.log(JSON.stringify(record))
         return <div>{record.expiredData}</div>
       },
     },
     {
       key: 'eligibilityList',
-      title: '料號',
+      title: formatMessage(MembershipCardPageMessages.page.eligibilityList),
       width: '20%',
       render: (_, record) => <div>{record.sku}</div>,
     },
   ]
 
   if (error) {
-    return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
+    return <div>{formatMessage(MembershipCardPageMessages.page.fetchDataError)}</div>
   }
 
   return <Table<MembershipCardColumn> loading={loading} rowKey="id" columns={columns} dataSource={membershipCards} />
 }
 
 const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollectionVariables['condition']) => {
+  const { formatMessage } = useIntl()
   const extendedCondition = {
     ...condition,
     deleted_at: { _is_null: true },
   }
-
-  console.log(JSON.stringify(extendedCondition))
 
   const { loading, error, data } = useQuery<
     hasura.GetMembershipCardCollection,
@@ -113,8 +111,12 @@ const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollecti
   const formatExpiredData = (card: hasura.GetMembershipCardCollection['card'][0]): string => {
     const expiryType = card.expiry_type || 'fixed'
     if (expiryType === 'fixed') {
-      const startDate = card.fixed_start_date ? dayjs(card.fixed_start_date).format('YYYY-MM-DD') : '即日起'
-      const endDate = card.fixed_end_date ? dayjs(card.fixed_end_date).format('YYYY-MM-DD') : '無使用期限'
+      const startDate = card.fixed_start_date
+        ? dayjs(card.fixed_start_date).format('YYYY-MM-DD')
+        : formatMessage(MembershipCardPageMessages.page.startToday)
+      const endDate = card.fixed_end_date
+        ? dayjs(card.fixed_end_date).format('YYYY-MM-DD')
+        : formatMessage(MembershipCardPageMessages.page.noExpiry)
       return `${startDate} ~ ${endDate}`
     }
     if (expiryType === 'relative') {
@@ -122,13 +124,13 @@ const useMembershipCardCollection = (condition: hasura.GetMembershipCardCollecti
       const periodType = card.relative_period_type
       let periodTypeText = ''
       if (periodType === 'Y') {
-        periodTypeText = '年內'
+        periodTypeText = formatMessage(MembershipCardPageMessages.page.year)
       } else if (periodType === 'M') {
-        periodTypeText = '月內'
+        periodTypeText = formatMessage(MembershipCardPageMessages.page.month)
       } else if (periodType === 'D') {
-        periodTypeText = '日內'
+        periodTypeText = formatMessage(MembershipCardPageMessages.page.day)
       }
-      return `${periodAmount}${periodTypeText}`
+      return `${periodAmount} ${periodTypeText}`
     }
     return ''
   }
