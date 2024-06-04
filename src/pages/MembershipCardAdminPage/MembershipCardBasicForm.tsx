@@ -5,7 +5,6 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import pageMessages from '../translation'
 import MembershipCardAdminPageMessages from './translation'
@@ -43,12 +42,9 @@ const MembershipCardBasicForm: React.FC<{
 }> = ({ membershipCard, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateMembershipCardBasicMutaion] = useMutation<
-    hasura.UpdateMembershipCardBasic,
-    hasura.UpdateMembershipCardBasicVariables
-  >(UpdateMembershipCardBasic)
   const [loading, setLoading] = useState(false)
   const [effectiveDateType, setEffectiveDateType] = useState<'fixed' | 'relative'>('fixed')
+  const { updateMembershipCard } = useUpdateMembershipCard()
 
   useEffect(() => {
     if (effectiveDateType === 'fixed') {
@@ -70,23 +66,10 @@ const MembershipCardBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    updateMembershipCardBasicMutaion({
-      variables: {
-        id: membershipCard.id,
-        title: values.title || '',
-        expiryType: values.expiryType,
-        relativePeriodType: values.relativePeriodType,
-        relativePeriodAmount: values.relativePeriodAmount || 0,
-        fixedStartDate: values.fixedStartDate,
-        fixedEndDate: values.fixedEndDate,
-        sku: values.sku,
-      },
-    })
+    updateMembershipCard(membershipCard.id, values)
       .then(() => {
-        message.success(formatMessage(pageMessages['*'].successfullySaved))
         onRefetch?.()
       })
-      .catch(handleError)
       .finally(() => setLoading(false))
   }
 
@@ -229,5 +212,61 @@ const UpdateMembershipCardBasic = gql`
     }
   }
 `
+
+const UpdateMembershipCardProductSku = gql`
+  mutation UpdateMembershipCardProductSku($type: String!, $target: String!, $sku: String!) {
+    update_product(where: { type: { _eq: $type }, target: { _eq: $target } }, _set: { sku: $sku }) {
+      affected_rows
+      returning {
+        target
+        type
+        sku
+      }
+    }
+  }
+`
+
+const useUpdateMembershipCard = () => {
+  const { formatMessage } = useIntl()
+  const [updateMembershipCardBasicMutation] = useMutation<
+    hasura.UpdateMembershipCardBasic,
+    hasura.UpdateMembershipCardBasicVariables
+  >(UpdateMembershipCardBasic)
+  const [updateMembershipCardProductSkuMutation] = useMutation(UpdateMembershipCardProductSku)
+
+  const updateMembershipCard = async (membershipCardId: string, values: any) => {
+    try {
+      await updateMembershipCardBasicMutation({
+        variables: {
+          id: membershipCardId,
+          title: values.title || '',
+          expiryType: values.expiryType,
+          relativePeriodType: values.relativePeriodType,
+          relativePeriodAmount: values.relativePeriodAmount || 0,
+          fixedStartDate: values.fixedStartDate,
+          fixedEndDate: values.fixedEndDate,
+          sku: values.sku,
+        },
+      })
+
+      await updateMembershipCardProductSkuMutation({
+        variables: {
+          type: 'Card',
+          target: membershipCardId,
+          sku: values.sku,
+        },
+      })
+
+      message.success(formatMessage(pageMessages['*'].successfullySaved))
+    } catch (error) {
+      console.error(error)
+      message.error(formatMessage(pageMessages['*'].fetchDataError))
+    }
+  }
+
+  return {
+    updateMembershipCard,
+  }
+}
 
 export default MembershipCardBasicForm
