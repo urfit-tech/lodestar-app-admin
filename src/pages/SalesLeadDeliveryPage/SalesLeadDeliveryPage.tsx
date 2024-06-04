@@ -487,7 +487,9 @@ const ConfirmSection: React.FC<{
   const [visible, setVisible] = useState(false)
   const { currentUserRole } = useAuth()
   const { id: appId, settings, enabledModules } = useApp()
-  const propertyColumn = JSON.parse(settings['sales_lead_delivery_page.confirm_section.default_member_property_column'])
+  const propertyColumn = JSON.parse(
+    settings['sales_lead_delivery_page.confirm_section.default_member_property_column'] || '[]',
+  )
   const propertyColumnIds = propertyColumn
     .map((columnName: string) => properties.find(property => columnName === property.name))
     .map((property: ColumnProperty) => property.id)
