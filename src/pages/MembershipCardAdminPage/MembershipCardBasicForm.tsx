@@ -1,5 +1,6 @@
 import { Button, DatePicker, Form, Input, message, Radio, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -33,6 +34,7 @@ const MembershipCardBasicForm: React.FC<{
     membershipCard?.expiryType || 'fixed',
   )
   const { updateMembershipCard } = useUpdateMembershipCard()
+  const { enabledModules } = useApp()
 
   useEffect(() => {
     if (effectiveDateType === 'fixed') {
@@ -89,9 +91,13 @@ const MembershipCardBasicForm: React.FC<{
       <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.cardTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.sku)} name="sku">
-        <Input />
-      </Form.Item>
+
+      {enabledModules.sku ? (
+        <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.sku)} name="sku">
+          <Input />
+        </Form.Item>
+      ) : null}
+
       <Form.Item label={formatMessage(MembershipCardAdminPageMessages.basicForm.effectiveDate)}>
         <>
           <Form.Item name="expiryType">
