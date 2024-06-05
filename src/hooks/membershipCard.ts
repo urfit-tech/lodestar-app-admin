@@ -11,6 +11,7 @@ import hasura from '../hasura'
 import { useIntl } from 'react-intl'
 import dayjs from 'dayjs'
 import MembershipCardPageMessages from '../pages/MembershipCardCollectionPage/translation'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const fetchMembershipCardEquityProgramPlanProduct = async (queryClient: any, membershipCardId: string) => {
   const data: hasura.GetProgramPlanByMembershipCard = await executeQuery(queryClient, {
@@ -503,6 +504,7 @@ export const useUpdateMembershipCard = () => {
     hasura.UpdateMembershipCardBasicVariables
   >(UpdateMembershipCardBasic)
   const [updateMembershipCardProductSkuMutation] = useMutation(UpdateMembershipCardProductSku)
+  const { enabledModules } = useApp()
 
   const updateMembershipCard = async (membershipCardId: string, values: any) => {
     try {
@@ -515,17 +517,20 @@ export const useUpdateMembershipCard = () => {
           relativePeriodAmount: values.relativePeriodAmount || 0,
           fixedStartDate: values.fixedStartDate,
           fixedEndDate: values.fixedEndDate,
-          sku: values.sku,
+          sku: values.sku ?? '',
         },
       })
 
-      await updateMembershipCardProductSkuMutation({
-        variables: {
-          type: 'Card',
-          target: membershipCardId,
-          sku: values.sku,
-        },
-      })
+      if (enabledModules.sku) {
+        await updateMembershipCardProductSkuMutation({
+          variables: {
+            type: 'Card',
+            target: membershipCardId,
+            sku: values.sku ?? '',
+          },
+        })
+      }
+
     } catch (error) {
       throw error
     }
@@ -535,3 +540,4 @@ export const useUpdateMembershipCard = () => {
     updateMembershipCard,
   }
 }
+
