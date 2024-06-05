@@ -2,6 +2,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { CustomRatioImage } from 'lodestar-app-element/src/components/common/Image'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -30,6 +31,7 @@ const MembershipCardCollectionTable: React.VFC<{
     ...condition,
     title: searchName ? { _ilike: `%${searchName}%` } : undefined,
   })
+  const { enabledModules } = useApp()
 
   const columns: ColumnProps<MembershipCardColumn>[] = [
     {
@@ -67,13 +69,16 @@ const MembershipCardCollectionTable: React.VFC<{
         return <div>{record.expiredData}</div>
       },
     },
-    {
-      key: 'eligibilityList',
+  ]
+
+  if (enabledModules.sku) {
+    columns.push({
+      key: 'sku',
       title: formatMessage(MembershipCardPageMessages.page.eligibilityList),
       width: '20%',
       render: (_, record) => <div>{record.sku}</div>,
-    },
-  ]
+    })
+  }
 
   if (error) {
     return <div>{formatMessage(MembershipCardPageMessages.page.fetchDataError)}</div>
