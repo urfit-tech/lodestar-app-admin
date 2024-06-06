@@ -454,6 +454,11 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
           key: 'gift_plans',
           name: formatMessage(adminMessages.AdminMenu.gift),
         },
+        {
+          permissionIsAllowed: Boolean(enabledModules.membership_card),
+          key: 'membership_card',
+          name: formatMessage(adminMessages.AdminMenu.membershipCardAdmin),
+        },
       ],
     },
     {

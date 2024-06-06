@@ -194,3 +194,5 @@ const useCertificate = (certificateId: string) => {
     refetch,
   }
 }
+
+export { useCertificate }
