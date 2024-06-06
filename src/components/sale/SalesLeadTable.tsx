@@ -109,7 +109,6 @@ const SalesLeadTable: React.VFC<{
     memberNote?: string
     status?: string
   }>({})
-  const { permissions } = useAuth()
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
