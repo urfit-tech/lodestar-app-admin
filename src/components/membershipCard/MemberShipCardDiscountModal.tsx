@@ -32,7 +32,9 @@ const MemberShipCardDiscountModal: React.FC<
     const values = form.getFieldsValue()
 
     if (model === 'update') {
-      const found = cardDiscounts?.find(discount => discount.product.productId === values.productId)
+      const found = cardDiscounts
+        ?.filter(discount => discount.id !== membershipCardDiscount?.id)
+        .find(discount => discount.product.productId === values.productId)
       if (found) {
         setError('duplicate')
         return
