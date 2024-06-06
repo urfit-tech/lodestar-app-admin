@@ -7,15 +7,12 @@ import { useIntl } from 'react-intl'
 import axios, { AxiosRequestConfig } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { handleError, uploadFile, uploadFileV2 } from '../helpers'
+import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
 import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
-import { ProgramPlanPeriodType } from '../types/program'
-import { CouponProps } from '../types/checkout'
-import { Uppy } from '@uppy/core'
-import XHRUpload from '@uppy/xhr-upload'
+import { LayoutTemplateModuleType, ModuleDataProps, ModuleNameProps, ProgramPlanPeriodType } from '../types/program'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import hooksMessages from './translation'
@@ -1348,5 +1345,71 @@ export const useAppPlan = () => {
   return {
     appPlan: appPlan,
     appPlanLoading: loading,
+  }
+}
+
+export const useGetProgramLayoutTemplate = () => {
+  const { loading, data, error, refetch } = useQuery<
+    hasura.GetProgramLayoutTemplate,
+    hasura.GetProgramLayoutTemplateVariables
+  >(
+    gql`
+      query GetProgramLayoutTemplate {
+        program_layout_template {
+          id
+          name
+          module_name
+        }
+      }
+    `,
+  )
+
+  const constructModuleData = (moduleName: ModuleNameProps | undefined): ModuleDataProps | undefined => {
+    if (!moduleName) return
+    const moduleData: ModuleDataProps = {}
+
+    Object.entries(moduleName).forEach(([_, value]) => {
+      let { name, ...rest } = value
+      let defaultValue = null
+
+      switch (value.type) {
+        case LayoutTemplateModuleType.DATE:
+          defaultValue = ''
+          break
+        case LayoutTemplateModuleType.NUMBER:
+          defaultValue = 0
+          break
+        default:
+          break
+      }
+
+      Object.defineProperty(moduleData, name, {
+        value: {
+          value: defaultValue,
+          ...rest,
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      })
+    })
+
+    return moduleData
+  }
+
+  const layoutTemplates =
+    loading || error || !data
+      ? []
+      : data.program_layout_template.map(layoutTemplate => ({
+          id: layoutTemplate.id,
+          name: layoutTemplate.name || '',
+          moduleData: constructModuleData(layoutTemplate?.module_name),
+        }))
+
+  return {
+    loading,
+    programLayoutTemplates: layoutTemplates,
+    error,
+    refetch,
   }
 }

@@ -58,6 +58,7 @@ export type ProgramAdminProps = ProgramProps & {
   categories: Category[]
   tags: string[]
   approvals: ProgramApprovalProps[]
+  programLayoutTemplateConfig?: ProgramLayoutTemplateConfigType[]
 }
 
 export type ProgramContentSectionProps = {
@@ -233,4 +234,57 @@ export type Exam = {
   isAvailableToGoBack: boolean
   isAvailableAnnounceScore: boolean
   questionLibraries: QuestionLibrary[]
+}
+
+export enum LayoutTemplateModuleType {
+  DATE = 'Date',
+  NUMBER = 'Number',
+}
+
+export enum LayoutTemplateModuleName {
+  EXPECTED_START_DATE = 'expectedStartDate',
+  EXPECTED_DURATION = 'expectedDuration',
+  EXPECTED_SECTIONS = 'expectedSections',
+  COMPLETED_RELEASE = 'completeRelease',
+}
+
+interface BaseModuleProps<T> {
+  id: string
+  type: T
+}
+
+interface ModuleNameTemplate<N, T> extends BaseModuleProps<T> {
+  name: N
+}
+
+interface ModuleDataTemplate<V, T> extends BaseModuleProps<T> {
+  value: V
+}
+
+export type ModuleNameProps = Array<
+  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_START_DATE, LayoutTemplateModuleType.DATE>
+  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_DURATION, LayoutTemplateModuleType.NUMBER>
+  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_SECTIONS, LayoutTemplateModuleType.NUMBER>
+  | ModuleNameTemplate<LayoutTemplateModuleName.COMPLETED_RELEASE, LayoutTemplateModuleType.DATE>
+>
+
+export interface ModuleDataProps {
+  [LayoutTemplateModuleName.EXPECTED_START_DATE]?: ModuleDataTemplate<Date, LayoutTemplateModuleType.DATE>
+  [LayoutTemplateModuleName.EXPECTED_DURATION]?: ModuleDataTemplate<Number, LayoutTemplateModuleType.NUMBER>
+  [LayoutTemplateModuleName.EXPECTED_SECTIONS]?: ModuleDataTemplate<Number, LayoutTemplateModuleType.NUMBER>
+  [LayoutTemplateModuleName.COMPLETED_RELEASE]?: ModuleDataTemplate<Date, LayoutTemplateModuleType.DATE>
+}
+
+export type ProgramLayoutTemplateType = {
+  id: string
+  name: string
+  moduleData?: ModuleDataProps | null
+}
+
+export type ProgramLayoutTemplateConfigType = {
+  id: string
+  programId: string
+  programLayoutTemplateId: string
+  moduleData: ModuleDataProps
+  isActive: boolean
 }
