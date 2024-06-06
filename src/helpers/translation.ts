@@ -517,6 +517,7 @@ export const errorMessages = {
   }),
   form: defineMessages({
     isRequired: { id: 'error.form.isRequired', defaultMessage: '請輸入{field}' },
+    selectIsRequired: { id: 'error.form.selectIsRequired', defaultMessage: 'Please Select {field}' },
     accountNameOrEmail: { id: 'error.form.accountNameOrEmail', defaultMessage: '請輸入使用者名稱或 Email' },
     account: { id: 'error.form.account', defaultMessage: '請輸入使用者名稱' },
     emailFormat: { id: 'error.form.emailFormat', defaultMessage: 'Email 格式錯誤' },

@@ -1,8 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -195,3 +194,5 @@ const useCertificate = (certificateId: string) => {
     refetch,
   }
 }
+
+export { useCertificate }
