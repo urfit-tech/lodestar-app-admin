@@ -41,6 +41,8 @@ export type AdminModalProps = Omit<ModalProps, 'onOk'> & {
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
   }>
   onOk?: (e: React.MouseEvent<HTMLElement>, setVisible: React.Dispatch<React.SetStateAction<boolean>>) => void
+  isOpen?: boolean
+  setIsOpen?: (open: boolean) => void
 }
 
 const AdminModal: React.FC<AdminModalProps> = ({
@@ -49,11 +51,13 @@ const AdminModal: React.FC<AdminModalProps> = ({
   renderFooter,
   children,
   icon,
+  isOpen,
   onCancel,
   onOk,
+  setIsOpen,
   ...ModalProps
 }) => {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(isOpen || false)
 
   return (
     <>
@@ -67,6 +71,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         onCancel={e => {
           onCancel?.(e)
           setVisible(false)
+          setIsOpen?.(false)
         }}
         onOk={async e => {
           onOk?.(e, setVisible)

@@ -1,71 +1,74 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
 import { Button, Form, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
-import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
-import { ProgramPlan } from '../../../types/program'
-import AdminModal, { AdminModalProps } from '../../admin/AdminModal'
-import { IdentityMembershipItem, PermissionItem, TitleItem } from './formItem'
+import { useMembershipCardByTargetId, useUpsertCardProduct, useUpsertProgramPlan } from '../../../hooks/programPlan'
+import { MembershipPlanModalFieldProps, MembershipPlanModalProps } from '../../../types/programPlan'
+import AdminModal from '../../admin/AdminModal'
+import { MembershipItem, PermissionItem, TitleItem } from './formItem'
 
-type FieldProps = {
-  title: string
-  type: 1 | 2 | 3
-  membershipCard: string
-  cardId: string
-}
-
-const MembershipPlanModal: React.FC<
-  Omit<AdminModalProps, 'renderTrigger'> & {
-    programId: string
-    programPlan?: ProgramPlan
-    onRefetch?: () => void
-    onProductGiftPlanRefetch?: () => void
-    renderTrigger?: React.FC<{
-      onOpen?: () => void
-      onClose?: () => void
-    }>
-  }
-> = ({ programId, programPlan, onRefetch, onProductGiftPlanRefetch, renderTrigger, ...modalProps }) => {
+const MembershipPlanModal: React.FC<MembershipPlanModalProps> = ({
+  programId,
+  programPlan,
+  onRefetch,
+  onProductGiftPlanRefetch,
+  renderTrigger,
+  isOpen,
+  setIsOpen,
+  ...modalProps
+}) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
-  const [upsertProgramPlan] = useMutation(UPSERT_MEMBERSHIP_PLAN)
-  const [loading, setLoading] = useState(false)
+  const [form] = useForm<MembershipPlanModalFieldProps>()
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const { upsertProgramPlan } = useUpsertProgramPlan()
+  const { upsertCardProduct } = useUpsertCardProduct()
+  const { cardProducts, refetchMembershipCard } = useMembershipCardByTargetId('ProgramPlan', programPlan?.id || '')
+  const currentCardProduct = cardProducts.find(card => card.targetId === programPlan?.id)
 
-  const handleSubmit = (onSuccess: () => void) => {
-    form
-      .validateFields()
-      .then(() => {
-        setLoading(true)
-        const values: FieldProps = form.getFieldsValue()
-        const newProgramPlanId = uuid()
-
-        upsertProgramPlan({
-          variables: {
-            id: programPlan ? programPlan.id : newProgramPlanId,
-            programId,
-            type: values.type,
-            title: values.title || '',
-            autoRenewed: false,
-            listPrice: 0,
-            cardId: values.membershipCard ? values.membershipCard : null,
-          },
-        })
-          .then(_ => {
-            setLoading(false)
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onSuccess()
-          })
-          .catch(handleError)
-          .finally(() => {
-            onProductGiftPlanRefetch?.()
-            onRefetch?.()
-          })
+  const handleSubmit = async (onSuccess: () => void) => {
+    try {
+      await form.validateFields()
+      setSubmitLoading(true)
+      const values: MembershipPlanModalFieldProps = form.getFieldsValue()
+      const { data: upsertProgramPlanData } = await upsertProgramPlan({
+        variables: {
+          id: programPlan ? programPlan.id : uuid(),
+          programId,
+          type: values.type,
+          title: values.title || '',
+          autoRenewed: false,
+          listPrice: 0,
+          currencyId: 'TWD',
+          discountDownPrice: 0,
+          isParticipantsVisible: false,
+          isCountdownTimerVisible: false,
+        },
       })
-      .catch(() => {})
+      if (values.membershipCard) {
+        upsertProgramPlanData?.insert_program_plan?.returning.map(async plan => {
+          await upsertCardProduct({
+            variables: {
+              id: currentCardProduct ? currentCardProduct.cardProductId : uuid(),
+              productType: 'ProgramPlan',
+              targetId: plan.id,
+              cardId: values.membershipCard,
+            },
+          })
+        })
+      }
+      setSubmitLoading(false)
+      message.success(formatMessage(commonMessages.event.successfullySaved))
+      onSuccess()
+      onRefetch?.()
+      onProductGiftPlanRefetch?.()
+      refetchMembershipCard()
+      form.resetFields()
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
@@ -75,10 +78,25 @@ const MembershipPlanModal: React.FC<
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <Button
+            className="mr-2"
+            onClick={() => {
+              setVisible(false)
+              setIsOpen?.(false)
+            }}
+          >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
+          <Button
+            type="primary"
+            loading={submitLoading}
+            onClick={() =>
+              handleSubmit(() => {
+                setVisible(false)
+                setIsOpen?.(false)
+              })
+            }
+          >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
@@ -93,6 +111,8 @@ const MembershipPlanModal: React.FC<
           }) || null
         )
       }}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
       {...modalProps}
     >
       <Form
@@ -107,40 +127,10 @@ const MembershipPlanModal: React.FC<
       >
         <TitleItem name="title" />
         <PermissionItem name="type" />
-        <IdentityMembershipItem name="membershipCard" membershipId={programPlan?.cardId} />
+        <MembershipItem name="membershipCard" membershipId={currentCardProduct?.cardId} />
       </Form>
     </AdminModal>
   )
 }
-
-const UPSERT_MEMBERSHIP_PLAN = gql`
-  mutation UPSERT_MEMBERSHIP_PLAN(
-    $programId: uuid!
-    $id: uuid!
-    $type: Int!
-    $title: String!
-    $autoRenewed: Boolean!
-    $listPrice: numeric!
-    $cardId: uuid!
-  ) {
-    insert_program_plan(
-      objects: {
-        program_id: $programId
-        id: $id
-        type: $type
-        title: $title
-        auto_renewed: $autoRenewed
-        list_price: $listPrice
-        card_id: $cardId
-      }
-      on_conflict: { constraint: program_plan_pkey, update_columns: [type, title, auto_renewed, list_price, card_id] }
-    ) {
-      affected_rows
-      returning {
-        id
-      }
-    }
-  }
-`
 
 export default MembershipPlanModal

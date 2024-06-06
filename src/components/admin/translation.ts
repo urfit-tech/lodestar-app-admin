@@ -49,6 +49,7 @@ const adminMessages = {
     merchandiseCategory: { id: 'admin.AdminMenu.merchandiseCategory', defaultMessage: '商品分類' },
     shipping: { id: 'admin.AdminMenu.shipping', defaultMessage: '出貨管理' },
     promotionAdmin: { id: 'admin.AdminMenu.promotionAdmin', defaultMessage: '促銷管理' },
+    membershipCardAdmin: {id: 'admin.AdminMenu.membershipCardAdmin', defaultMessage: 'membership card plan'},
     vouchers: { id: 'admin.AdminMenu.voucherPlans', defaultMessage: '兌換方案' },
     voucherCategory: { id: 'admin.AdminMenu.voucherCategory', defaultMessage: 'voucher category' },
     creditAdmin: { id: 'admin.AdminMenu.creditAdmin', defaultMessage: '紅利折抵' },
