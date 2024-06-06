@@ -239,6 +239,7 @@ export const commonMessages = {
     title: { id: 'common.label.title', defaultMessage: '名稱' },
     customTitle: { id: 'common.label.customTitle', defaultMessage: '{customTitle}' },
     category: { id: 'common.label.category', defaultMessage: '分類' },
+    selectTemplate: { id: 'common.label.selectTemplate', defaultMessage: 'Select template' },
     adMaterial: { id: 'common.label.adMaterial', defaultMessage: '廣告素材' },
     memberNote: { id: 'common.label.memberNote', defaultMessage: '最後聯繫紀錄' },
     tag: { id: 'common.label.tag', defaultMessage: '標籤' },
