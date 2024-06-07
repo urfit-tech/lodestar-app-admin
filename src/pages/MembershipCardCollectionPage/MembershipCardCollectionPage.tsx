@@ -143,8 +143,10 @@ const MembershipCardCollectionPage: React.VFC = () => {
   if (isAuthenticating || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
+  const isMembershipCardEnabled = !!enabledModules.membership_card
+  const isAppOwner = currentUserRole === 'app-owner'
 
-  if (!enabledModules.membership_card || currentUserRole !== 'app-owner') {
+  if (!(isMembershipCardEnabled && isAppOwner)) {
     return <ForbiddenPage />
   }
 
