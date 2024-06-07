@@ -67,7 +67,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
-  const { permissions } = useAuth()
+  const { permissions, currentUserRole } = useAuth()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
   const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
@@ -77,6 +77,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   )
   const { cardTitle, cardProducts } = useMembershipCardByTargetId('ProgramPlan', programPlan.id)
   const [isOpen, setIsOpen] = useState(false)
+  const hasMembershipCardPermission = enabledModules.membership_card && currentUserRole === 'app-owner'
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
@@ -87,6 +88,10 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     : cardProducts.length !== 0
     ? 'membership'
     : 'perpetual'
+
+  if (programPlanType === 'membership' && !hasMembershipCardPermission) {
+    return null
+  }
 
   return (
     <AdminBlock>
