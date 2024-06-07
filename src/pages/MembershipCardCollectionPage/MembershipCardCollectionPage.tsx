@@ -21,7 +21,7 @@ const MembershipCardCollectionPage: React.VFC = () => {
   const history = useHistory()
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId } = useApp()
-  const { isAuthenticating, currentMemberId } = useAuth()
+  const { isAuthenticating, currentMemberId, currentUserRole } = useAuth()
   const [createMembershipCard] = useMutation(InsertCard)
   const { availableQuantity, expiredQuantity } = useMembershipCardQuantity()
   const templateHtml = `
@@ -143,8 +143,10 @@ const MembershipCardCollectionPage: React.VFC = () => {
   if (isAuthenticating || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
+  const isMembershipCardEnabled = !!enabledModules.membership_card
+  const isAppOwner = currentUserRole === 'app-owner'
 
-  if (!enabledModules.membership_card) {
+  if (!(isMembershipCardEnabled && isAppOwner)) {
     return <ForbiddenPage />
   }
 
