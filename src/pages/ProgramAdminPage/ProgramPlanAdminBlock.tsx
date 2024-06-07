@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import {
@@ -19,6 +20,7 @@ const ProgramPlanAdminBlock: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const { currentUserRole } = useAuth()
 
   if (!program) {
     return <Skeleton active />
@@ -65,7 +67,7 @@ const ProgramPlanAdminBlock: React.FC<{
           onRefetch={onRefetch}
         />
 
-        {enabledModules.membership_card && (
+        {enabledModules.membership_card && currentUserRole === 'app-owner' && (
           <MembershipPlanModal
             programId={program.id}
             renderTrigger={({ onOpen }) => (
