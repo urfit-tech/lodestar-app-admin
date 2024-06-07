@@ -41,7 +41,6 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
-  // const { programLayoutTemplateConfig, programLayoutTemplateConfigRefetch } = useProgramLayoutTemplateConfig(programId)
 
   return (
     <>
@@ -120,6 +119,8 @@ const ProgramAdminPage: React.FC = () => {
                       coverDefaultUrl={program?.coverUrl || ''}
                       coverMobileUrl={program?.coverMobileUrl || ''}
                       coverThumbnailUrl={program?.coverThumbnailUrl || ''}
+                      coverType={program.coverType}
+                      mobileCoverType={program.mobileCoverType}
                       onRefetch={refetchProgram}
                     />
                   </>

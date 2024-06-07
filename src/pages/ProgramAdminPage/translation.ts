@@ -40,6 +40,10 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.ProgramCoverForm.defaultImageTips',
       defaultMessage: '建議圖片尺寸：1200*675px',
     },
+    defaultVideoTips: {
+      id: 'ProgramAdminPage.ProgramCoverForm.defaultVideoTips',
+      defaultMessage: '建議影片大小：2ooMB',
+    },
     thumbnailImageTips: {
       id: 'ProgramAdminPage.ProgramCoverForm.thumbnailImageTips',
       defaultMessage: '建議圖片尺寸：600*338px',

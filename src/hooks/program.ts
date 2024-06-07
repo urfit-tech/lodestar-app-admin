@@ -45,6 +45,8 @@ export const useProgram = (programId: string) => {
           is_enrolled_count_visible
           display_header
           display_footer
+          cover_type
+          mobile_cover_type
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -190,6 +192,8 @@ export const useProgram = (programId: string) => {
       isEnrolledCountVisible: data.program_by_pk.is_enrolled_count_visible,
       displayHeader: data.program_by_pk.display_header ?? true,
       displayFooter: data.program_by_pk.display_footer ?? true,
+      coverType: data.program_by_pk.cover_type,
+      mobileCoverType: data.program_by_pk.mobile_cover_type,
       contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
         id: pcs.id,
         title: pcs.title || '',

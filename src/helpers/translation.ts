@@ -68,6 +68,7 @@ export const commonMessages = {
     subscriptionPlan: { id: 'common.ui.subscriptionPlan', defaultMessage: '訂閱方案' },
     membershipPlan: { id: 'common.ui.membershipPlan', defaultMessage: '身份方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
+    uploadMedia: { id: 'common.ui.uploadMedia', defaultMessage: '上傳圖片或影片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
     sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
