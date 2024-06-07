@@ -525,6 +525,7 @@ const useCoinLogCollection = (
       : undefined,
     title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
     _or: [{ started_at: { _is_null: true } }, { started_at: { _lte: 'now()' } }],
+    claimed_at: { _is_null: false },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_COIN_RELEASE_HISTORY,
