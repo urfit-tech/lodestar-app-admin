@@ -48,7 +48,7 @@ const StyledAction = styled.div`
   background-color: var(--gray-lighter);
 `
 
-const Activity: React.VFC<{
+const ActivityCard: React.VFC<{
   id: string
   coverUrl: string | null
   title: string
@@ -101,4 +101,4 @@ const Activity: React.VFC<{
   )
 }
 
-export default Activity
+export default ActivityCard
