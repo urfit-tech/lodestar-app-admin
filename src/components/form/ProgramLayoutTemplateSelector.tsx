@@ -1,4 +1,4 @@
-import { Select } from 'antd'
+import { Select, Spin } from 'antd'
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useGetProgramLayoutTemplate } from '../../hooks/data'
@@ -39,6 +39,10 @@ export const ProgramLayoutTemplateSelect: React.FC<{
       getProgramLayoutTemplateData.current = defaultLayoutTemplate
     }
   }, [])
+
+  if (loading) {
+    return <Spin />
+  }
 
   const handleChange = (selectId: string) => {
     const selectedTemplate = programLayoutTemplates.find(template => template.id === selectId)
