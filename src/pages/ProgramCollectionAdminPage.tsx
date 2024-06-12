@@ -164,6 +164,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       moduleData: {
                         ...programLayoutTemplateData?.moduleData,
                       },
+                      isActive: true,
                     },
                   }))
                 programId && history.push(`/programs/${programId}`)
