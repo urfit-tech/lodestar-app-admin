@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { isEmpty } from 'ramda'
+import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -21,6 +21,7 @@ import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock
 import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useMutateProgram, useProgram } from '../../hooks/program'
+import { LayoutTemplateModuleType, ModuleDataProps } from '../../types/program'
 import pageMessages from '../translation'
 import ProgramAdditionalSettingsForm from './ProgramAdditionalSettingsForm'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
@@ -35,6 +36,40 @@ import ProgramStructureAdminBlock from './ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 import ProgramAdminPageMessages from './translation'
 
+function typedObjectEntries<T extends Record<string, any>>(obj: T) {
+  return Object.entries(obj) as [keyof T, T[keyof T]][]
+}
+
+const getInitialValues = (layoutTemplateModuleData: ModuleDataProps | undefined) => {
+  const moduleData: ModuleDataProps = {}
+  if (!layoutTemplateModuleData) return
+  typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
+    let result
+
+    switch (config?.type) {
+      case LayoutTemplateModuleType.NUMBER:
+        result = config.value ? config.value : null
+        break
+
+      case LayoutTemplateModuleType.DATE:
+        result = config.value ? moment(config.value) : null
+        break
+
+      default:
+        break
+    }
+
+    Object.defineProperty(moduleData, key, {
+      value: result,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    })
+  })
+
+  return moduleData
+}
+
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programId } = useParams<{ programId: string }>()
@@ -42,9 +77,8 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
-  const defaultModuleData = program?.programLayoutTemplateConfig?.filter(config => config.isActive === true)[0]
-    ?.moduleData
-  const isShowProgramAdditionalSettingsForm = Boolean(defaultModuleData) && !isEmpty(defaultModuleData)
+  const moduleData = program?.programLayoutTemplateConfig && program?.programLayoutTemplateConfig[0]?.moduleData
+  const programLayoutTemplateModuleData = getInitialValues(moduleData)
 
   return (
     <>
@@ -102,12 +136,14 @@ const ProgramAdminPage: React.FC = () => {
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
-              {program && isShowProgramAdditionalSettingsForm ? (
+              {program?.programLayoutTemplateConfig &&
+              program?.programLayoutTemplateConfig[0]?.moduleData &&
+              programLayoutTemplateModuleData ? (
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
                   <ProgramAdditionalSettingsForm
-                    key={program?.programLayoutTemplateConfig?.filter(item => item.isActive)[0].id}
-                    programLayoutTemplateConfig={program?.programLayoutTemplateConfig}
+                    programLayoutTemplateConfig={program?.programLayoutTemplateConfig[0]}
+                    programLayoutTemplateModuleData={programLayoutTemplateModuleData}
                   />
                 </AdminBlock>
               ) : null}

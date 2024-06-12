@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/form/CategorySelector'
@@ -12,8 +12,8 @@ import { ProgramLayoutTemplateSelect } from '../../components/form/ProgramLayout
 import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { useProductSku } from '../../hooks/data'
-import { ProgramAdminProps, ProgramLayoutTemplateType } from '../../types/program'
+import { useGetProgramLayoutTemplate, useProductSku } from '../../hooks/data'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
@@ -26,6 +26,7 @@ type FieldProps = {
   isEnrolledCountVisible: boolean
   displayHeader: boolean
   displayFooter: boolean
+  programLayoutTemplateId: string
 }
 
 const ProgramBasicForm: React.FC<{
@@ -40,10 +41,10 @@ const ProgramBasicForm: React.FC<{
   )
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
-  const currentProgramLayoutTemplate = program?.programLayoutTemplateConfig?.filter(
-    config => config.isActive === true,
-  )[0]?.ProgramLayoutTemplate
-  const programLayoutTemplateData = useRef<ProgramLayoutTemplateType | undefined>(undefined)
+  const { programLayoutTemplates } = useGetProgramLayoutTemplate()
+  const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig
+    ? program?.programLayoutTemplateConfig[0]?.programLayoutTemplateId
+    : programLayoutTemplates[0]?.id
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -76,8 +77,9 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
-        programLayoutTemplateId: programLayoutTemplateData.current?.id,
-        moduleData: programLayoutTemplateData.current?.moduleData ?? {},
+        programLayoutTemplateId: values.programLayoutTemplateId,
+        moduleData:
+          programLayoutTemplates.find(template => template.id === values.programLayoutTemplateId)?.moduleData ?? {},
       },
     })
       .then(() => {
@@ -106,6 +108,7 @@ const ProgramBasicForm: React.FC<{
         isEnrolledCountVisible: program.isEnrolledCountVisible,
         displayHeader: program.displayHeader,
         displayFooter: program.displayFooter,
+        programLayoutTemplateId: currentProgramLayoutTemplateId,
       }}
       onFinish={handleSubmit}
     >
@@ -136,11 +139,11 @@ const ProgramBasicForm: React.FC<{
         <LanguageSelector />
       </Form.Item>
 
-      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}>
-        <ProgramLayoutTemplateSelect
-          getProgramLayoutTemplateData={programLayoutTemplateData}
-          defaultLayoutTemplate={currentProgramLayoutTemplate}
-        ></ProgramLayoutTemplateSelect>
+      <Form.Item
+        label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}
+        name="programLayoutTemplateId"
+      >
+        <ProgramLayoutTemplateSelect programLayoutTemplates={programLayoutTemplates} />
       </Form.Item>
 
       <Form.Item
