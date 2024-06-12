@@ -45,12 +45,6 @@ const ProgramAdditionalSettingsForm: React.FC<{
     hasura.UpdateProgramLayoutTemplateConfigData,
     hasura.UpdateProgramLayoutTemplateConfigDataVariables
   >(UpdateProgramLayoutTemplateConfigData)
-  // const [initValue, setInitValue] = useState<ModuleDataProps>()
-
-  // useEffect(() => {
-  //   setInitValue(getInitialValues())
-  //   console.log(initValue)
-  // }, [programLayoutTemplateConfig])
 
   if (!programLayoutTemplateConfig) {
     return <Skeleton active />

@@ -38,10 +38,8 @@ const StyledUploadWarning = styled.div`
   height: 100%;
 `
 
-const validateFile = (filename: string): Media => {
-  const videoRegex = /\.(mp4|mov|avi|mkv|flv|wmv)$/i
-
-  if (videoRegex.test(filename)) return 'video'
+const validateFile = (fileType: string): Media => {
+  if (fileType.startsWith('video')) return 'video'
   else return 'image'
 }
 
@@ -76,8 +74,8 @@ const ProgramCoverForm: React.VFC<{
   )
 
   useEffect(() => {
-    if (coverMedia) setIsShowOriginSizeCover(validateFile(coverMedia.name) === 'image')
-    if (coverMobileMedia) setIsShowOriginSizeMobileCover(validateFile(coverMobileMedia.name) === 'image')
+    if (coverMedia) setIsShowOriginSizeCover(validateFile(coverMedia.type) === 'image')
+    if (coverMobileMedia) setIsShowOriginSizeMobileCover(validateFile(coverMobileMedia.type) === 'image')
   }, [coverMedia, coverMobileMedia])
 
   const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
@@ -128,14 +126,14 @@ const ProgramCoverForm: React.VFC<{
     const defaultUploadCoverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}`
     const uploadCoverUrl = !coverMedia
       ? coverDefaultUrl
-      : validateFile(coverMedia.name) === 'image'
+      : validateFile(coverMedia.type) === 'image'
       ? getImageSizedUrl(isUseOriginSizeCoverImage, coverMedia ? defaultUploadCoverUrl : coverDefaultUrl)
       : defaultUploadCoverUrl
 
     const defaultUploadMobileUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}`
     const uploadMobileUrl = !coverMobileMedia
       ? coverMobileUrl
-      : validateFile(coverMobileMedia.name) === 'image'
+      : validateFile(coverMobileMedia.type) === 'image'
       ? getImageSizedUrl(isUseOriginSizeCoverMobileImage, coverMobileMedia ? defaultUploadMobileUrl : coverMobileUrl)
       : defaultUploadMobileUrl
 
@@ -152,8 +150,8 @@ const ProgramCoverForm: React.VFC<{
         coverDefaultUrl: uploadCoverUrl,
         coverMobileUrl: uploadMobileUrl,
         coverThumbnailUrl: uploadThumbnailUrl,
-        coverType: coverMedia ? validateFile(coverMedia.name) : 'image',
-        mobileCoverType: coverMobileMedia ? validateFile(coverMobileMedia.name) : 'image',
+        coverType: coverMedia ? validateFile(coverMedia.type) : 'image',
+        mobileCoverType: coverMobileMedia ? validateFile(coverMobileMedia.type) : 'image',
       },
     })
       .then(() => {
@@ -210,7 +208,7 @@ const ProgramCoverForm: React.VFC<{
                 setIsUseOriginSizeCoverImage(false)
               }}
               customName={formatMessage(commonMessages.ui.uploadMedia)}
-              customImg={!isShowOriginSizeCover ? EmptyVideoCover : undefined}
+              customImg={coverMedia && validateFile(coverMedia.type) === 'video' ? EmptyVideoCover : undefined}
             />
             {isShowOriginSizeCover && (
               <Checkbox
@@ -244,7 +242,9 @@ const ProgramCoverForm: React.VFC<{
               initialCoverUrl={coverMobileUrl}
               onChange={file => setCoverMobileMedia(file)}
               customName={formatMessage(commonMessages.ui.uploadMedia)}
-              customImg={!isShowOriginSizeMobileCover ? EmptyVideoCover : undefined}
+              customImg={
+                coverMobileMedia && validateFile(coverMobileMedia.type) === 'video' ? EmptyVideoCover : undefined
+              }
             />
             {isShowOriginSizeMobileCover && (
               <Checkbox
