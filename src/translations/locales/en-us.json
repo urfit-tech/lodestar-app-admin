@@ -90,6 +90,7 @@
   "ProgramAdminPage.ProgramBasicForm.isIntroductionSectionVisible": "簡介章節",
   "ProgramAdminPage.ProgramBasicForm.isIssuesOpen": "問題討論",
   "ProgramAdminPage.ProgramBasicForm.languages": "顯示語系",
+  "ProgramAdminPage.ProgramBasicForm.programLayoutTemplate": "Switch Program Template",
   "ProgramAdminPage.ProgramBasicForm.locale": "當前台為指定語系時才會顯示，若不選擇全語系皆顯示",
   "ProgramAdminPage.ProgramBasicForm.programTitle": "課程名稱",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "控制購買前是否能看到所有章節內容名稱",

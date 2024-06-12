@@ -1,5 +1,5 @@
 import { Select } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useGetProgramLayoutTemplate } from '../../hooks/data'
 import { ProgramLayoutTemplateType } from '../../types/program'
@@ -26,21 +26,29 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
 
 export const ProgramLayoutTemplateSelect: React.FC<{
   value?: string
+  defaultLayoutTemplate?: ProgramLayoutTemplateType
   getProgramLayoutTemplateData?: React.MutableRefObject<ProgramLayoutTemplateType | undefined>
-}> = ({ value, getProgramLayoutTemplateData }) => {
+}> = ({ value, defaultLayoutTemplate, getProgramLayoutTemplateData }) => {
   const { loading, programLayoutTemplates } = useGetProgramLayoutTemplate()
+  defaultLayoutTemplate = defaultLayoutTemplate
+    ? defaultLayoutTemplate
+    : programLayoutTemplates.find(template => !template.moduleData)
+
+  useEffect(() => {
+    if (getProgramLayoutTemplateData && defaultLayoutTemplate) {
+      getProgramLayoutTemplateData.current = defaultLayoutTemplate
+    }
+  }, [])
 
   const handleChange = (selectId: string) => {
     const selectedTemplate = programLayoutTemplates.find(template => template.id === selectId)
     if (getProgramLayoutTemplateData && selectedTemplate) {
       getProgramLayoutTemplateData.current = selectedTemplate
-      return true
     }
-    return false
   }
 
   return (
-    <StyledSelect value={value} loading={loading} onChange={handleChange}>
+    <StyledSelect value={value} loading={loading} onChange={handleChange} defaultValue={defaultLayoutTemplate?.id}>
       {programLayoutTemplates.map(programLayoutTemplate => (
         <Select.Option key={programLayoutTemplate.id} value={programLayoutTemplate.id} style={{ borderRadius: '4px' }}>
           {programLayoutTemplate.name}

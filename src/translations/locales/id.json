@@ -90,6 +90,7 @@
   "ProgramAdminPage.ProgramBasicForm.isIntroductionSectionVisible": "Bagian Pendahuluan",
   "ProgramAdminPage.ProgramBasicForm.isIssuesOpen": "Diskusi Masalah",
   "ProgramAdminPage.ProgramBasicForm.languages": "Bahasa tampilan",
+  "ProgramAdminPage.ProgramBasicForm.programLayoutTemplate": "Ganti Template Program",
   "ProgramAdminPage.ProgramBasicForm.locale": "Hanya ditampilkan jika konsol saat ini adalah bahasa yang ditentukan, jika tidak pilih semua bahasa",
   "ProgramAdminPage.ProgramBasicForm.programTitle": "Judul Program",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "Mengontrol apakah semua nama konten bagian dapat dilihat sebelum membeli",

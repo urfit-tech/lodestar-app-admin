@@ -90,6 +90,7 @@
   "ProgramAdminPage.ProgramBasicForm.isIntroductionSectionVisible": "GIỚI THIỆU CHƯƠNG",
   "ProgramAdminPage.ProgramBasicForm.isIssuesOpen": "Thảo luận",
   "ProgramAdminPage.ProgramBasicForm.languages": "Hiển thị hệ thống",
+  "ProgramAdminPage.ProgramBasicForm.programLayoutTemplate": "Chuyển Đổi Mẫu Chương Trình",
   "ProgramAdminPage.ProgramBasicForm.locale": "Giai đoạn hiện tại sẽ được hiển thị khi hệ thống ngôn ngữ được chỉ định được hiển thị.",
   "ProgramAdminPage.ProgramBasicForm.programTitle": "Tên khóa học",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "Bạn có thể xem nội dung nội dung của tất cả các chương trước khi mua không",

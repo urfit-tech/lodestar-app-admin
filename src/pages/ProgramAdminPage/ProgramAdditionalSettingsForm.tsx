@@ -9,12 +9,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import {
-  LayoutTemplateModuleName,
-  LayoutTemplateModuleType,
-  ModuleDataProps,
-  ProgramLayoutTemplateConfigType,
-} from '../../types/program'
+import { LayoutTemplateModuleType, ModuleDataProps, ProgramLayoutTemplateConfigType } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -50,6 +45,12 @@ const ProgramAdditionalSettingsForm: React.FC<{
     hasura.UpdateProgramLayoutTemplateConfigData,
     hasura.UpdateProgramLayoutTemplateConfigDataVariables
   >(UpdateProgramLayoutTemplateConfigData)
+  // const [initValue, setInitValue] = useState<ModuleDataProps>()
+
+  // useEffect(() => {
+  //   setInitValue(getInitialValues())
+  //   console.log(initValue)
+  // }, [programLayoutTemplateConfig])
 
   if (!programLayoutTemplateConfig) {
     return <Skeleton active />
@@ -62,17 +63,17 @@ const ProgramAdditionalSettingsForm: React.FC<{
   const constructModuleData = (values: FieldProps) => {
     const moduleData: ModuleDataProps = {}
 
-    if (values && typeof values === 'object') {
+    if (values && typeof values === 'object' && LayoutTemplateModuleData) {
       typedObjectEntries(LayoutTemplateModuleData).forEach(([key, config]) => {
         let result = null
 
         switch (config?.type) {
           case LayoutTemplateModuleType.DATE:
-            result = values[key] ? values[key] : ''
+            result = values[key] ? values[key] : null
 
             break
           case LayoutTemplateModuleType.NUMBER:
-            result = values[key] ? values[key] : 0
+            result = values[key] ? values[key] : null
             break
 
           default:
@@ -127,33 +128,55 @@ const ProgramAdditionalSettingsForm: React.FC<{
     }
   }
 
+  const getInitialValues = () => {
+    const moduleData: ModuleDataProps = {}
+    if (!LayoutTemplateModuleData) return
+    typedObjectEntries(LayoutTemplateModuleData).forEach(([key, config]) => {
+      let result
+
+      switch (config?.type) {
+        case LayoutTemplateModuleType.NUMBER:
+          result = config.value ? config.value : null
+          break
+
+        case LayoutTemplateModuleType.DATE:
+          result = config.value ? moment(config.value) : null
+          break
+
+        default:
+          break
+      }
+
+      Object.defineProperty(moduleData, key, {
+        value: result,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      })
+    })
+
+    return moduleData
+  }
+
   return (
     <Form
       form={form}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      initialValues={{
-        [LayoutTemplateModuleName.EXPECTED_START_DATE]: LayoutTemplateModuleData?.expectedStartDate?.value
-          ? moment(LayoutTemplateModuleData.expectedStartDate.value)
-          : '',
-        [LayoutTemplateModuleName.EXPECTED_DURATION]: LayoutTemplateModuleData?.expectedDuration?.value ?? '',
-        [LayoutTemplateModuleName.EXPECTED_SECTIONS]: LayoutTemplateModuleData?.expectedSections?.value ?? '',
-        [LayoutTemplateModuleName.COMPLETED_RELEASE]: LayoutTemplateModuleData?.completeRelease?.value
-          ? moment(LayoutTemplateModuleData?.completeRelease.value)
-          : '',
-      }}
+      initialValues={getInitialValues()}
       onFinish={handleSubmit}
     >
-      {typedObjectEntries(LayoutTemplateModuleData).map(([key, moduleData]) => (
-        <Form.Item
-          key={moduleData?.id}
-          label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
-          name={key}
-        >
-          {renderModuleComponent(moduleData)}
-        </Form.Item>
-      ))}
+      {LayoutTemplateModuleData &&
+        typedObjectEntries(LayoutTemplateModuleData).map(([key, moduleData]) => (
+          <Form.Item
+            key={moduleData?.id}
+            label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
+            name={key}
+          >
+            {renderModuleComponent(moduleData)}
+          </Form.Item>
+        ))}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()} loading={loading}>

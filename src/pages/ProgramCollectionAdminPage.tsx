@@ -164,6 +164,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       moduleData: {
                         ...programLayoutTemplateData?.moduleData,
                       },
+                      isActive: true,
                     },
                   }))
                 programId && history.push(`/programs/${programId}`)
@@ -548,14 +549,37 @@ const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
   }
 `
 
-const InsertProgramLayoutTemplateConfig = gql`
-  mutation InsertProgramLayoutTemplateConfig($programId: uuid!, $programLayoutTemplateId: uuid!, $moduleData: jsonb!) {
+// const InsertProgramLayoutTemplateConfig = gql`
+//   mutation InsertProgramLayoutTemplateConfig($programId: uuid!, $programLayoutTemplateId: uuid!, $moduleData: jsonb!) {
+//     insert_program_layout_template_config(
+//       objects: {
+//         program_id: $programId
+//         program_layout_template_id: $programLayoutTemplateId
+//         module_data: $moduleData
+//       }
+//     ) {
+//       returning {
+//         id
+//       }
+//     }
+//   }
+// `
+
+export const InsertProgramLayoutTemplateConfig = gql`
+  mutation UpsertProgramLayoutTemplateConfig(
+    $programId: uuid!
+    $programLayoutTemplateId: uuid!
+    $moduleData: jsonb!
+    $isActive: Boolean
+  ) {
     insert_program_layout_template_config(
       objects: {
         program_id: $programId
         program_layout_template_id: $programLayoutTemplateId
         module_data: $moduleData
+        is_active: $isActive
       }
+      on_conflict: { constraint: program_template_config_pkey, update_columns: [is_active] }
     ) {
       returning {
         id

@@ -291,4 +291,5 @@ export type ProgramLayoutTemplateConfigType = {
   programLayoutTemplateId: string
   moduleData: ModuleDataProps
   isActive: boolean
+  ProgramLayoutTemplate?: ProgramLayoutTemplateType
 }

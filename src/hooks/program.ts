@@ -157,6 +157,11 @@ export const useProgram = (programId: string) => {
             program_layout_template_id
             module_data
             is_active
+            program_layout_template {
+              id
+              name
+              module_name
+            }
           }
         }
       }
@@ -287,6 +292,7 @@ export const useProgram = (programId: string) => {
           programLayoutTemplateId: config.program_layout_template_id,
           moduleData: config.module_data,
           isActive: config.is_active,
+          ProgramLayoutTemplate: config.program_layout_template,
         })) || [],
     }
   }, [data, error, loading])
