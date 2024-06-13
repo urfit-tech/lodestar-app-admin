@@ -96,7 +96,7 @@ const MemberContractCreationForm: React.FC<
                           fieldKey={[field.fieldKey, 'id']}
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                         >
-                          <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
+                          <Select<string> className="mr-3" style={{ width: '500px' }} defaultValue={products[0].id}>
                             {products.map(product => (
                               <Select.Option key={product.id} value={product.id}>
                                 {product.name}
