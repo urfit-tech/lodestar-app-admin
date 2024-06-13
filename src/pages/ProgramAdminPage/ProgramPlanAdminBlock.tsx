@@ -1,5 +1,6 @@
 import { Skeleton, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { Fragment } from 'react'
 import { useIntl } from 'react-intl'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
@@ -28,6 +29,9 @@ const ProgramPlanAdminBlock: React.FC<{
   const { enabledModules } = useApp()
   const { programPlanSorts, refetchProgramPlanSorts } = useProgramPlanSortCollection(program?.id || '')
   const { updatePositions } = useUpdateProgramPlanSortCollection()
+  const { currentUserRole } = useAuth()
+
+  const hasMembershipCardPermission = enabledModules.membership_card && currentUserRole === 'app-owner'
 
   if (!program) {
     return <Skeleton active />
@@ -61,7 +65,7 @@ const ProgramPlanAdminBlock: React.FC<{
             onRefetch={onRefetch}
           />
 
-          {enabledModules.membership_card && (
+          {hasMembershipCardPermission && (
             <MembershipPlanModal
               programId={program.id}
               renderTrigger={({ onOpen }) => (
@@ -99,15 +103,13 @@ const ProgramPlanAdminBlock: React.FC<{
       <div className="row">
         {program.plans.map(programPlan => (
           <Fragment key={programPlan.id}>
-            {!enabledModules.membership_card && programPlan.cardId ? null : (
-              <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
-                <ProgramSubscriptionPlanAdminCard
-                  programId={program.id}
-                  programPlan={programPlan}
-                  onRefetch={onRefetch}
-                />
-              </div>
-            )}
+            <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
+              <ProgramSubscriptionPlanAdminCard
+                programId={program.id}
+                programPlan={programPlan}
+                onRefetch={onRefetch}
+              />
+            </div>
           </Fragment>
         ))}
       </div>

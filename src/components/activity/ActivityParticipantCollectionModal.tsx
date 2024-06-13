@@ -1,4 +1,4 @@
-import { Button, Tabs } from 'antd'
+import { Button, Skeleton, Tabs } from 'antd'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -62,8 +62,6 @@ const ActivityParticipantCollectionModal: React.FC<
   }
 > = ({ activityId, ...props }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
-  const { sessions } = useActivitySessionParticipants(activityId)
 
   return (
     <AdminModal
@@ -78,74 +76,85 @@ const ActivityParticipantCollectionModal: React.FC<
       {...props}
     >
       <StyledTitle className="mb-3">{formatMessage(messages.participantsList)}</StyledTitle>
-
-      <Tabs>
-        {sessions.map(session => {
-          return (
-            <Tabs.TabPane key={session.id} tab={`${session.title} (${session.participants.length})`}>
-              <Button
-                type="primary"
-                className={`my-4 ${session.participants.length ? '' : 'd-none'}`}
-                onClick={() => {
-                  const data: string[][] = [
-                    [
-                      '',
-                      formatMessage(commonMessages.label.memberName),
-                      formatMessage(messages.ticketType),
-                      formatMessage(messages.attended),
-                      formatMessage(commonMessages.label.phone),
-                      formatMessage(commonMessages.label.email),
-                      formatMessage(commonMessages.label.orderLogId),
-                    ],
-                  ]
-                  session.participants.forEach((participant, index) => {
-                    data.push([
-                      `${index + 1}`.padStart(2, '0'),
-                      participant.name,
-                      participant.activityTicketTitle,
-                      participant.attended ? 'v' : '',
-                      participant.phone,
-                      participant.email,
-                      participant.orderLogId,
-                    ])
-                  })
-                  downloadCSV(`${session.title}.csv`, toCSV(data))
-                }}
-              >
-                {formatMessage(messages.downloadList)}
-              </Button>
-              <StyledBlock>
-                <StyledTable>
-                  <StyledRow>
-                    <StyledCell></StyledCell>
-                    <StyledCell>{formatMessage(commonMessages.label.name)}</StyledCell>
-                    <StyledCell>{formatMessage(messages.ticketType)}</StyledCell>
-                    {enabledModules.qrcode && <StyledCell>{formatMessage(messages.attended)}</StyledCell>}
-                    <StyledCell>{formatMessage(commonMessages.label.phone)}</StyledCell>
-                    <StyledCell>{formatMessage(commonMessages.label.email)}</StyledCell>
-                  </StyledRow>
-
-                  {session.participants.map((participant, index) => (
-                    <StyledRow key={participant.id}>
-                      <StyledCell>{`${index + 1}`.padStart(2, '0')}</StyledCell>
-                      <StyledCell>{participant.name}</StyledCell>
-                      <StyledCell>{participant.activityTicketTitle}</StyledCell>
-                      {enabledModules.qrcode && (
-                        <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
-                      )}
-                      <StyledCell>{participant.phone}</StyledCell>
-                      <StyledCell>{participant.email}</StyledCell>
-                    </StyledRow>
-                  ))}
-                </StyledTable>
-              </StyledBlock>
-            </Tabs.TabPane>
-          )
-        })}
-      </Tabs>
+      <ActivityParticipantCollectionTabs activityId={activityId} />
     </AdminModal>
   )
 }
+
+const ActivityParticipantCollectionTabs: React.VFC<{ activityId: string }> = ({ activityId }) => {
+  const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
+  const { sessions, loadingSessions } = useActivitySessionParticipants(activityId)
+
+  if (loadingSessions) return <Skeleton active />
+  return (
+    <Tabs>
+      {sessions.map(session => {
+        return (
+          <Tabs.TabPane key={session.id} tab={`${session.title} (${session.participants.length})`}>
+            <Button
+              type="primary"
+              className={`my-4 ${session.participants.length ? '' : 'd-none'}`}
+              onClick={() => {
+                const data: string[][] = [
+                  [
+                    '',
+                    formatMessage(commonMessages.label.memberName),
+                    formatMessage(messages.ticketType),
+                    formatMessage(messages.attended),
+                    formatMessage(commonMessages.label.phone),
+                    formatMessage(commonMessages.label.email),
+                    formatMessage(commonMessages.label.orderLogId),
+                  ],
+                ]
+                session.participants.forEach((participant, index) => {
+                  data.push([
+                    `${index + 1}`.padStart(2, '0'),
+                    participant.name,
+                    participant.activityTicketTitle,
+                    participant.attended ? 'v' : '',
+                    participant.phone,
+                    participant.email,
+                    participant.orderLogId,
+                  ])
+                })
+                downloadCSV(`${session.title}.csv`, toCSV(data))
+              }}
+            >
+              {formatMessage(messages.downloadList)}
+            </Button>
+            <StyledBlock>
+              <StyledTable>
+                <StyledRow>
+                  <StyledCell></StyledCell>
+                  <StyledCell>{formatMessage(commonMessages.label.name)}</StyledCell>
+                  <StyledCell>{formatMessage(messages.ticketType)}</StyledCell>
+                  {enabledModules.qrcode && <StyledCell>{formatMessage(messages.attended)}</StyledCell>}
+                  <StyledCell>{formatMessage(commonMessages.label.phone)}</StyledCell>
+                  <StyledCell>{formatMessage(commonMessages.label.email)}</StyledCell>
+                </StyledRow>
+
+                {session.participants.map((participant, index) => (
+                  <StyledRow key={participant.id}>
+                    <StyledCell>{`${index + 1}`.padStart(2, '0')}</StyledCell>
+                    <StyledCell>{participant.name}</StyledCell>
+                    <StyledCell>{participant.activityTicketTitle}</StyledCell>
+                    {enabledModules.qrcode && (
+                      <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
+                    )}
+                    <StyledCell>{participant.phone}</StyledCell>
+                    <StyledCell>{participant.email}</StyledCell>
+                  </StyledRow>
+                ))}
+              </StyledTable>
+            </StyledBlock>
+          </Tabs.TabPane>
+        )
+      })}
+    </Tabs>
+  )
+}
+
 const rawActivitySessionResDataSchema = yup.array().of(
   yup.object({
     id: yup.string().required(),
