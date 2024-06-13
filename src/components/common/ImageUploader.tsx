@@ -62,8 +62,7 @@ const ImageUploader: React.FC<{
   uploading?: boolean
   onChange?: (file: File) => void
   customName?: string
-  customImg?: string
-}> = ({ file, initialCoverUrl, uploading, customName, customImg, onChange }) => {
+}> = ({ file, initialCoverUrl, uploading, customName, onChange }) => {
   const { formatMessage } = useIntl()
   const [imgSrc, setImgSrc] = useState<string | null>(initialCoverUrl || null)
 
@@ -80,7 +79,7 @@ const ImageUploader: React.FC<{
 
   return (
     <StyledWrapper>
-      <CustomRatioImage width="224px" ratio={9 / 16} src={customImg || imgSrc || EmptyCover} shape="rounded" />
+      <CustomRatioImage width="224px" ratio={9 / 16} src={imgSrc || EmptyCover} shape="rounded" />
       <StyledMask className="d-flex justify-content-center align-items-center">
         <FileUploader
           renderTrigger={({ onClick }) => (
@@ -88,7 +87,7 @@ const ImageUploader: React.FC<{
               {customName || formatMessage(commonMessages.ui.uploadImage)}
             </StyledButton>
           )}
-          accept="image/*"
+          accept="image/*,video/*"
           onChange={([file]) => onChange?.(file)}
           fileList={file ? [file] : []}
         />

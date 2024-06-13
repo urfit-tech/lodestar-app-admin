@@ -6,7 +6,7 @@ import axios, { Canceler } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { isEmpty } from 'ramda'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
@@ -64,14 +64,11 @@ const ProgramCoverForm: React.VFC<{
   )
 
   const [coverMedia, setCoverMedia] = useState<File | null>(null)
-  const [coverMobileMedia, setCoverMobileMedia] = useState<File | null>(null)
+  const [coverMobileImage, setCoverMobileImage] = useState<File | null>(null)
   const [coverThumbnailImage, setCoverThumbnailImage] = useState<File | null>(null)
 
-  const [isShowOriginSizeCover, setIsShowOriginSizeCover] = useState(!isEmpty(coverDefaultUrl) && coverType === 'image')
-
-  useEffect(() => {
-    if (coverMedia) setIsShowOriginSizeCover(validateFile(coverMedia.type) === 'image')
-  }, [coverMedia, coverMobileMedia])
+  const isShowOriginSizeCover =
+    (!isEmpty(coverDefaultUrl) && coverType === 'image') || (coverMedia && validateFile(coverMedia.type) === 'image')
 
   const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
     isEmpty(coverDefaultUrl) ? false : !isImageUrlResized(coverDefaultUrl),
@@ -99,8 +96,8 @@ const ProgramCoverForm: React.VFC<{
           }),
         })
       }
-      if (coverMobileMedia) {
-        await uploadFile(`program_covers/${appId}/${programId}/${mobileCoverId}`, coverMobileMedia, authToken, {
+      if (coverMobileImage) {
+        await uploadFile(`program_covers/${appId}/${programId}/${mobileCoverId}`, coverMobileImage, authToken, {
           cancelToken: new axios.CancelToken(canceler => {
             uploadCanceler.current = canceler
           }),
@@ -127,11 +124,10 @@ const ProgramCoverForm: React.VFC<{
 
     const uploadMobileUrl = getImageSizedUrl(
       isUseOriginSizeCoverMobileImage,
-      coverMobileMedia
+      coverMobileImage
         ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}`
         : coverMobileUrl,
     )
-
     const uploadThumbnailUrl = getImageSizedUrl(
       isUseOriginSizeCoverThumbnailImage,
       coverThumbnailImage
@@ -146,12 +142,12 @@ const ProgramCoverForm: React.VFC<{
         coverMobileUrl: uploadMobileUrl,
         coverThumbnailUrl: uploadThumbnailUrl,
         coverType: coverMedia ? validateFile(coverMedia.type) : 'image',
-        mobileCoverType: coverMobileMedia ? validateFile(coverMobileMedia.type) : 'image',
+        mobileCoverType: coverMobileImage ? validateFile(coverMobileImage.type) : 'image',
       },
     })
       .then(() => {
         setCoverMedia(null)
-        setCoverMobileMedia(null)
+        setCoverMobileImage(null)
         setCoverThumbnailImage(null)
         onRefetch?.()
         message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
@@ -220,7 +216,11 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
               </StyledUploadWarning>
             )}
-            {coverDefaultUrl && <StyledUploadWarning className="ml-2">{'檔案已上傳'}</StyledUploadWarning>}
+            {!coverMedia && coverDefaultUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -233,27 +233,33 @@ const ProgramCoverForm: React.VFC<{
         >
           <div className="d-flex align-items-center">
             <ImageUploader
-              file={coverMobileMedia}
+              file={coverMobileImage}
               initialCoverUrl={coverMobileUrl}
-              onChange={file => setCoverMobileMedia(file)}
+              onChange={file => setCoverMobileImage(file)}
             />
 
-            <Checkbox
-              className="ml-2"
-              checked={isUseOriginSizeCoverMobileImage}
-              onChange={e => {
-                setIsUseOriginSizeCoverMobileImage(e.target.checked)
-              }}
-            >
-              {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
-            </Checkbox>
+            {(!isEmpty(coverMobileUrl) || coverMobileImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverMobileImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverMobileImage(e.target.checked)
+                }}
+              >
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
+              </Checkbox>
+            )}
 
-            {coverMobileMedia && (
+            {coverMobileImage && (
               <StyledUploadWarning className="ml-2">
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
               </StyledUploadWarning>
             )}
-            {coverMobileUrl && <StyledUploadWarning className="ml-2">{'檔案已上傳'}</StyledUploadWarning>}
+            {!coverMobileImage && coverMobileUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -294,7 +300,11 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
               </StyledUploadWarning>
             )}
-            {coverThumbnailUrl && <StyledUploadWarning className="ml-2">{'檔案已上傳'}</StyledUploadWarning>}
+            {!coverThumbnailUrl && coverThumbnailUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -303,7 +313,7 @@ const ProgramCoverForm: React.VFC<{
             className="mr-2"
             onClick={() => {
               setCoverMedia(null)
-              setCoverMobileMedia(null)
+              setCoverMobileImage(null)
               setCoverThumbnailImage(null)
               form.resetFields()
             }}
