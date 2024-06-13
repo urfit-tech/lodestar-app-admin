@@ -5,6 +5,7 @@ const MembershipCardPageMessages = {
     title: { id: 'membershipCardCollectionPage.title', defaultMessage: 'Membership Card Plans' },
     createCard: { id: 'membershipCardCollectionPage.createCard', defaultMessage: 'Create Membership Card' },
     year: { id: 'membershipCardCollection.period.year', defaultMessage: 'year' },
+    week: { id: 'membershipCardCollection.period.week', defaultMessage: 'week' },
     month: { id: 'membershipCardCollection.period.month', defaultMessage: 'month' },
     day: { id: 'membershipCardCollection.period.day', defaultMessage: 'day' },
     startToday: { id: 'membershipCardCollection.period.startToday', defaultMessage: 'effective immediately' },

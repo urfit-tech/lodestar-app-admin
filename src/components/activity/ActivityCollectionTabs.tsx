@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import { useCategoryCollection } from '../../hooks/activity'
 import useActivityCollection from '../../hooks/activity/useActivityCollection'
-import Activity from './Activity'
+import ActivityCard from './ActivityCard'
 
 const StyledButton = styled(Button)`
   && {
@@ -155,7 +155,7 @@ const ActivityCollectionTabs: React.FC<{
               ) : (
                 activities.map(activity => (
                   <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                    <Activity
+                    <ActivityCard
                       id={activity.id}
                       coverUrl={activity.coverUrl}
                       title={activity.title}

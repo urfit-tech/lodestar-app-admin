@@ -314,6 +314,8 @@ export const useMembershipCardCollection = (condition: hasura.GetMembershipCardC
       let periodTypeText = ''
       if (periodType === 'Y') {
         periodTypeText = formatMessage(MembershipCardPageMessages.page.year)
+      } else if (periodType === 'W') {
+        periodTypeText = formatMessage(MembershipCardPageMessages.page.week)
       } else if (periodType === 'M') {
         periodTypeText = formatMessage(MembershipCardPageMessages.page.month)
       } else if (periodType === 'D') {
