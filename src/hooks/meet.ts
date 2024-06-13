@@ -1,7 +1,43 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
-import { Meet } from '../types/meet'
+import { deleteZoomMeet, handleError } from '../helpers'
+import { Meet, OverlapMeets } from '../types/meet'
+
+export const GetOverlapMeets = gql`
+  query GetOverlapMeets($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+    meet(
+      where: {
+        app_id: { _eq: $appId }
+        started_at: { _lte: $endedAt }
+        ended_at: { _gte: $startedAt }
+        deleted_at: { _is_null: true }
+        meet_members: { deleted_at: { _is_null: true } }
+      }
+    ) {
+      id
+      target
+      host_member_id
+      service_id
+      meet_members {
+        id
+        member_id
+      }
+      gateway
+    }
+  }
+`
+
+export const GetMeetById = gql`
+  query GetMeetById($meetId: uuid!) {
+    meet_by_pk(id: $meetId) {
+      id
+      type
+      gateway
+    }
+  }
+`
 
 export const useOverlapMeets = (startedAt: Date, endedAt: Date) => {
   const { id: appId } = useApp()
@@ -73,36 +109,68 @@ export const useMutateMeetMember = () => {
   }
 }
 
-export const GetOverlapMeets = gql`
-  query GetOverlapMeets($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
-    meet(
-      where: {
-        app_id: { _eq: $appId }
-        started_at: { _lte: $endedAt }
-        ended_at: { _gte: $startedAt }
-        deleted_at: { _is_null: true }
-        meet_members: { deleted_at: { _is_null: true } }
-      }
-    ) {
-      id
-      target
-      host_member_id
-      service_id
-      meet_members {
-        id
-        member_id
-      }
-      gateway
-    }
-  }
-`
+export const useDeleteMeet = () => {
+  const { deleteGeneralMeet } = useMutateMeet()
+  const { deleteMeetMember } = useMutateMeetMember()
+  const { authToken } = useAuth()
 
-export const GetMeetById = gql`
-  query GetMeetById($meetId: uuid!) {
-    meet_by_pk(id: $meetId) {
-      id
-      type
-      gateway
+  const deleteMeet = async ({
+    memberTaskMeetId,
+    memberTaskMemberId,
+    memberTaskMeetingGateway,
+  }: {
+    memberTaskMeetId: string
+    memberTaskMemberId: string
+    memberTaskMeetingGateway: string
+  }) => {
+    await deleteMeetMember({ variables: { meetId: memberTaskMeetId, memberId: memberTaskMemberId } }).catch(error =>
+      handleError({ message: `delete meet member failed. error:${error}` }),
+    )
+    // The general meet is no need service id meet. e.g. jitsi
+    await deleteGeneralMeet({ variables: { meetId: memberTaskMeetId } }).catch(error =>
+      handleError({ message: `delete meet failed. error:${error}` }),
+    )
+    if (memberTaskMeetingGateway === 'zoom') {
+      await deleteZoomMeet(memberTaskMeetId, authToken).catch(handleError)
     }
   }
-`
+
+  return { deleteMeet }
+}
+
+export const useGetOverlapMeet = () => {
+  const apolloClient = useApolloClient()
+  const { id: appId } = useApp()
+  const getOverlapMeets = async ({ startedAt, endedAt }: { startedAt: string; endedAt: string }) => {
+    let overlapMeets: OverlapMeets = []
+    const { data: overlapMeetsData } = await apolloClient.query<
+      hasura.GetOverlapMeets,
+      hasura.GetOverlapMeetsVariables
+    >({
+      query: GetOverlapMeets,
+      variables: {
+        appId,
+        startedAt,
+        endedAt,
+      },
+      fetchPolicy: 'network-only',
+    })
+    overlapMeets =
+      overlapMeetsData?.meet.map(v => ({
+        id: v.id,
+        target: v.target,
+        hostMemberId: v.host_member_id,
+        serviceId: v.service_id,
+        meetMembers: v.meet_members.map(meetMember => ({
+          id: meetMember.id,
+          memberId: meetMember.member_id,
+        })),
+        meetingGateway: v.gateway,
+      })) || []
+
+    return {
+      overlapMeets,
+    }
+  }
+  return { getOverlapMeets }
+}
