@@ -199,7 +199,7 @@ const ProgramCoverForm: React.VFC<{
                 setIsUseOriginSizeCoverImage(false)
               }}
               customName={formatMessage(commonMessages.ui.uploadMedia)}
-              extraAcceptType="video/*"
+              accept="image/*, video/*"
             />
             {isShowOriginSizeCover && (
               <Checkbox
