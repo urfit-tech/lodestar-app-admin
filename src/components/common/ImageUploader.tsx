@@ -55,6 +55,8 @@ const StyledSpinBlock = styled.div`
   transition: all 0.6s;
   background: rgba(0, 0, 0, 0.7);
 `
+type BasicAccept = 'image/*'
+type ExtraAccept = 'video/*' | 'audio/*' | 'application/*' | 'application/pdf' | 'text/plain' | 'application/zip'
 
 const ImageUploader: React.FC<{
   file: File | null
@@ -62,9 +64,12 @@ const ImageUploader: React.FC<{
   uploading?: boolean
   onChange?: (file: File) => void
   customName?: string
-}> = ({ file, initialCoverUrl, uploading, customName, onChange }) => {
+  extraAcceptType?: ExtraAccept
+}> = ({ file, initialCoverUrl, uploading, customName, extraAcceptType, onChange }) => {
   const { formatMessage } = useIntl()
   const [imgSrc, setImgSrc] = useState<string | null>(initialCoverUrl || null)
+  const basicAccept: BasicAccept = 'image/*'
+  const acceptType = extraAcceptType ? `${basicAccept},${extraAcceptType}` : basicAccept
 
   useEffect(() => {
     if (file) {
@@ -87,7 +92,7 @@ const ImageUploader: React.FC<{
               {customName || formatMessage(commonMessages.ui.uploadImage)}
             </StyledButton>
           )}
-          accept="image/*,video/*"
+          accept={acceptType}
           onChange={([file]) => onChange?.(file)}
           fileList={file ? [file] : []}
         />
