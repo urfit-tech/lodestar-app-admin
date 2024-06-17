@@ -6,6 +6,7 @@ import { filter } from 'ramda'
 import React, { Suspense } from 'react'
 import { BrowserRouter, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { QueryParamProvider } from 'use-query-params'
+import LoadablePage from '../../LoadablePage'
 import LoadingPage from '../../pages/LoadingPage'
 import NotFoundPage from '../../pages/NotFoundPage'
 
@@ -656,7 +657,7 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
                     ) : !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
                       <Redirect to="/" />
                     ) : typeof routeProps.pageName === 'string' ? (
-                      React.createElement(React.lazy(() => import(`../../pages/${routeProps.pageName}`)))
+                      <LoadablePage pageName={routeProps.pageName} />
                     ) : (
                       routeProps.pageName
                     )
