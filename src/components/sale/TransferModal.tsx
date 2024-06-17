@@ -15,9 +15,12 @@ import {
 } from '@chakra-ui/react'
 import { Button } from 'antd'
 import { useState } from 'react'
+import { useIntl } from 'react-intl'
 import { useTransferManagers } from '../../hooks/member'
+import saleMessages from './translation'
 
 const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = ({ onManagerIdChange }) => {
+  const { formatMessage } = useIntl()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [searchValue, setSearchValue] = useState('')
   const [selectedManagerId, setSelectedManagerId] = useState('')
@@ -27,18 +30,18 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
     <>
       <Button className="mr-2" onClick={onOpen} aria-label="transfer">
         <Icon as={SwapOutlined} className="mr-1" />
-        <span>轉移</span>
+        <span>{formatMessage(saleMessages.TransferModal.transfer)}</span>
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>你要轉移此名單給哪個承辦編號？</ModalHeader>
+          <ModalHeader>{formatMessage(saleMessages.TransferModal.modalTitle)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box mb="2">
               <Input
-                placeholder="請輸入至少兩個關鍵字"
+                placeholder={formatMessage(saleMessages.TransferModal.inputPlaceHolder)}
                 onChange={value => {
                   setSearchValue(value.target.value.toLowerCase())
                 }}
@@ -47,7 +50,7 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
             <Box>
               <Select defaultValue="" onChange={value => setSelectedManagerId(value.target.value)}>
                 <option value="" disabled>
-                  請選擇承辦編號
+                  {formatMessage(saleMessages.TransferModal.pleaseSelectManager)}
                 </option>
                 {transferManagers
                   .filter(manager =>
@@ -68,7 +71,7 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
               type="primary"
               onClick={() => selectedManagerId !== '' && onManagerIdChange(selectedManagerId)}
             >
-              確認
+              {formatMessage(saleMessages.TransferModal.confirm)}
             </Button>
             <Button
               onClick={() => {
@@ -77,7 +80,7 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
                 onClose()
               }}
             >
-              取消
+              {formatMessage(saleMessages['*'].cancel)}
             </Button>
           </ModalFooter>
         </ModalContent>
