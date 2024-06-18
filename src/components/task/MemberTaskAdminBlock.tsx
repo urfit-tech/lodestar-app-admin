@@ -10,6 +10,7 @@ import moment from 'moment'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
+import { Box } from '@chakra-ui/react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -98,7 +99,9 @@ export const categoryColors: string[] = [
 
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
-}> = ({ memberId }) => {
+  localStorageMemberTaskDisplay?: string
+  localStorageMemberTaskFilter?: {}
+}> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
@@ -111,9 +114,9 @@ const MemberTaskAdminBlock: React.FC<{
     author?: string
     dueAt?: Date[]
     createdAt?: Date[]
-    status?: string
-  }>({})
-  const [display, setDisplay] = useState('table')
+    status?: MemberTaskProps['status']
+  }>(localStorageMemberTaskFilter || {})
+  const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -550,7 +553,9 @@ const MemberTaskAdminBlock: React.FC<{
       render: (text, record, index) =>
         record.executor ? (
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage src={record.executor.avatarUrl} size="28px" className="mr-2" />
+            <Box>
+              <AvatarImage src={record.executor.avatarUrl} size="28px" className="mr-2" />
+            </Box>
             <StyledName>{record.executor.name}</StyledName>
           </div>
         ) : null,
@@ -562,7 +567,9 @@ const MemberTaskAdminBlock: React.FC<{
       render: (text, record, index) =>
         record.author ? (
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage src={record.author?.avatarUrl} size="28px" className="mr-2" />
+            <Box>
+              <AvatarImage src={record.author?.avatarUrl} size="28px" className="mr-2" />
+            </Box>
             <StyledName>{record.author.name}</StyledName>
           </div>
         ) : null,
@@ -622,11 +629,13 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
-            onSelect={(value: MemberTaskProps['status']) => {
+            value={filter.status}
+            onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 status: value,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: value }))
               refetchMemberTasks()
             }}
             onClear={() => {
@@ -634,6 +643,7 @@ const MemberTaskAdminBlock: React.FC<{
                 ...filter,
                 status: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: undefined }))
             }}
           >
             <Select.Option value="pending">{formatMessage(memberMessages.status.statusPending)}</Select.Option>
@@ -647,17 +657,20 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
+            value={filter.executor}
             onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 executor: `${value}` || undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, executor: `${value}` || undefined }))
             }}
             onClear={() => {
               setFilter(filter => ({
                 ...filter,
                 executor: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, executor: undefined }))
             }}
           >
             {executors.map(executor => (
@@ -673,17 +686,20 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
+            value={filter.author}
             onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 author: `${value}` || undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, author: `${value}` || undefined }))
             }}
             onClear={() => {
               setFilter(filter => ({
                 ...filter,
                 author: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, author: undefined }))
             }}
           >
             {authors.map(author => (
@@ -695,8 +711,10 @@ const MemberTaskAdminBlock: React.FC<{
           <Button
             className="mb-3"
             onClick={() => {
+              const currentDisplay = display === 'table' ? 'calendar' : 'table'
               setFilter(filter => ({ executor: filter.executor, status: filter.status }))
-              setDisplay(display === 'table' ? 'calendar' : 'table')
+              setDisplay(currentDisplay)
+              localStorage.setItem('memberTaskDisplay', currentDisplay)
             }}
           >
             {display === 'table' ? formatMessage(messages.switchCalendar) : formatMessage(messages.switchTable)}
