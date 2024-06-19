@@ -12,9 +12,9 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { StyledTips } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
+import MediaUploader from '../../components/common/MediaUploader'
 import hasura from '../../hasura'
 import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import { Media } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
@@ -67,8 +67,11 @@ const ProgramCoverForm: React.VFC<{
   const [coverMobileImage, setCoverMobileImage] = useState<File | null>(null)
   const [coverThumbnailImage, setCoverThumbnailImage] = useState<File | null>(null)
 
-  const isShowOriginSizeCover =
-    (!isEmpty(coverDefaultUrl) && coverType === 'image') || (coverMedia && validateFile(coverMedia.type) === 'image')
+  const coverMediaType =
+    (!isEmpty(coverDefaultUrl) && !coverMedia && coverType === 'image') ||
+    (coverMedia && validateFile(coverMedia.type) === 'image')
+      ? 'image'
+      : 'video'
 
   const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
     isEmpty(coverDefaultUrl) ? false : !isImageUrlResized(coverDefaultUrl),
@@ -141,8 +144,8 @@ const ProgramCoverForm: React.VFC<{
         coverDefaultUrl: uploadCoverUrl,
         coverMobileUrl: uploadMobileUrl,
         coverThumbnailUrl: uploadThumbnailUrl,
-        coverType: coverMedia ? validateFile(coverMedia.type) : 'image',
-        mobileCoverType: coverMobileImage ? validateFile(coverMobileImage.type) : 'image',
+        coverType: coverMediaType === 'image' ? 'image' : 'video',
+        mobileCoverType: 'image',
       },
     })
       .then(() => {
@@ -191,17 +194,16 @@ const ProgramCoverForm: React.VFC<{
           }
         >
           <div className="d-flex align-items-center">
-            <ImageUploader
+            <MediaUploader
               file={coverMedia}
               initialCoverUrl={coverDefaultUrl}
               onChange={file => {
                 setCoverMedia(file)
                 setIsUseOriginSizeCoverImage(false)
               }}
-              customName={formatMessage(commonMessages.ui.uploadMedia)}
-              accept="image/*, video/*"
+              mediaType={coverMediaType}
             />
-            {isShowOriginSizeCover && (
+            {coverMediaType === 'image' && (
               <Checkbox
                 className="ml-2"
                 checked={isUseOriginSizeCoverImage}

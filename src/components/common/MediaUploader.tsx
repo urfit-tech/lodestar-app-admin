@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
+import VideoCover from '../../images/default/video-default.svg'
 import FileUploader from './FileUploader'
 import { CustomRatioImage } from './Image'
 
@@ -56,12 +57,14 @@ const StyledSpinBlock = styled.div`
   background: rgba(0, 0, 0, 0.7);
 `
 
-const ImageUploader: React.FC<{
+const MediaUploader: React.FC<{
   file: File | null
   initialCoverUrl?: string | null
   uploading?: boolean
   onChange?: (file: File) => void
-}> = ({ file, initialCoverUrl, uploading, onChange }) => {
+  staticImage?: string
+  mediaType: 'image' | 'video'
+}> = ({ file, initialCoverUrl, uploading, mediaType, onChange }) => {
   const { formatMessage } = useIntl()
   const [imgSrc, setImgSrc] = useState<string | null>(initialCoverUrl || null)
 
@@ -76,17 +79,19 @@ const ImageUploader: React.FC<{
     }
   }, [file])
 
+  const staticImage = mediaType === 'video' ? VideoCover : null
+
   return (
     <StyledWrapper>
-      <CustomRatioImage width="224px" ratio={9 / 16} src={imgSrc || EmptyCover} shape="rounded" />
+      <CustomRatioImage width="224px" ratio={9 / 16} src={staticImage || imgSrc || EmptyCover} shape="rounded" />
       <StyledMask className="d-flex justify-content-center align-items-center">
         <FileUploader
           renderTrigger={({ onClick }) => (
             <StyledButton icon={<UploadOutlined />} onClick={onClick}>
-              {formatMessage(commonMessages.ui.uploadImage)}
+              {formatMessage(commonMessages.ui.uploadMedia)}
             </StyledButton>
           )}
-          accept={'image/*'}
+          accept={'image/*, video/*'}
           onChange={([file]) => onChange?.(file)}
           fileList={file ? [file] : []}
         />
@@ -100,4 +105,4 @@ const ImageUploader: React.FC<{
   )
 }
 
-export default ImageUploader
+export default MediaUploader
