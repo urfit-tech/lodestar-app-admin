@@ -65,6 +65,12 @@ const MemberContractCreationForm: React.FC<
     const [certificationPath, setCertificationPath] = useState('')
     const contractDealerOptions: string[] =
       (settings['contract.dealer.options'] && JSON.parse(settings['contract.dealer.options'])) || []
+    const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
+
+    const matchProduct = (params: string, products: ContractInfo['products']) => {
+      if (params.length < 2) return setFilterProducts(products)
+      setFilterProducts(products.filter(product => product.name.toLowerCase().includes(params.toLowerCase())))
+    }
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
@@ -88,8 +94,18 @@ const MemberContractCreationForm: React.FC<
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                           initialValue={products[0].id}
                         >
-                          <Select<string> className="mr-3" style={{ width: '250px' }}>
-                            {products
+                          <Select<string>
+                            className="mr-3"
+                            style={{ width: '500px' }}
+                            showSearch
+                            allowClear
+                            filterOption={false}
+                            placeholder="請選擇項目 (搜尋請輸入至少兩個關鍵字)"
+                            onSearch={val => matchProduct(val, products)}
+                            onBlur={() => setFilterProducts(products)}
+                            onClear={() => setFilterProducts(products)}
+                          >
+                            {filterProducts
                               .filter(
                                 product =>
                                   appId !== 'sixdigital' || (appId === 'sixdigital' && product.name !== '服務展延券'),

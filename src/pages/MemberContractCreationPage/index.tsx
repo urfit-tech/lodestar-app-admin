@@ -114,6 +114,9 @@ type ContractInfo = {
   }[]
   coinExchangeRage: number
 }
+
+type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
+
 type ContractItem = {
   id: string
   type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount' | 'rebateDiscount'
@@ -431,6 +434,14 @@ const MemberContractCreationPage: React.VFC = () => {
       </div>
     </DefaultLayout>
   )
+}
+
+export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
+  if (['D', 'W', 'M', 'Y'].includes(type)) {
+    return type === 'M' ? (type as MomentPeriodType) : (type.toLowerCase() as MomentPeriodType)
+  }
+
+  return type as MomentPeriodType
 }
 
 const usePrivateTeachContractInfo = (
