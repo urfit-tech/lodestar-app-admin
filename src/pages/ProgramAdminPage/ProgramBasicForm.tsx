@@ -142,7 +142,10 @@ const ProgramBasicForm: React.FC<{
           label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}
           name="programLayoutTemplateId"
         >
-          <ProgramLayoutTemplateSelect programLayoutTemplates={programLayoutTemplates} />
+          <ProgramLayoutTemplateSelect
+            programLayoutTemplates={programLayoutTemplates}
+            defaultTemplate={defaultFixedTemplate}
+          />
         </Form.Item>
       )}
 
