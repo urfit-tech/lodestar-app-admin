@@ -41,7 +41,7 @@ const ProgramBasicForm: React.FC<{
   )
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
-  const { programLayoutTemplates } = useGetProgramLayoutTemplates()
+  const { programLayoutTemplates, defaultFixedTemplate } = useGetProgramLayoutTemplates()
   const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
 
   if (!program || loadingProduct) {
@@ -75,7 +75,7 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
-        programLayoutTemplateId: values.programLayoutTemplateId,
+        programLayoutTemplateId: values.programLayoutTemplateId ?? defaultFixedTemplate?.id,
         moduleData:
           programLayoutTemplates.find(template => template.id === values.programLayoutTemplateId)?.moduleData ?? {},
       },

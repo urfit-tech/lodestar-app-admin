@@ -68,10 +68,10 @@ const ProgramCoverForm: React.VFC<{
   const [coverThumbnailImage, setCoverThumbnailImage] = useState<File | null>(null)
 
   const coverMediaType =
-    (!isEmpty(coverDefaultUrl) && !coverMedia && coverType === 'image') ||
-    (coverMedia && validateFile(coverMedia.type) === 'image')
+    (!coverMedia && coverType === 'image') || (coverMedia && validateFile(coverMedia.type) === 'image')
       ? 'image'
       : 'video'
+  const isShowOriginSize = coverMediaType === 'image' && (coverMedia || coverDefaultUrl)
 
   const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
     isEmpty(coverDefaultUrl) ? false : !isImageUrlResized(coverDefaultUrl),
@@ -203,7 +203,7 @@ const ProgramCoverForm: React.VFC<{
               }}
               mediaType={coverMediaType}
             />
-            {coverMediaType === 'image' && (
+            {isShowOriginSize && (
               <Checkbox
                 className="ml-2"
                 checked={isUseOriginSizeCoverImage}
@@ -303,7 +303,7 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
               </StyledUploadWarning>
             )}
-            {!coverThumbnailUrl && coverThumbnailUrl && (
+            {!coverThumbnailImage && coverThumbnailUrl && (
               <StyledUploadWarning className="ml-2">
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
               </StyledUploadWarning>
