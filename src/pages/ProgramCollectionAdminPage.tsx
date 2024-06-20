@@ -49,10 +49,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
   const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
-  const [insertProgramLayoutTemplateConfig] = useMutation<
-    hasura.InsertProgramLayoutTemplateConfig,
-    hasura.InsertProgramLayoutTemplateConfigVariables
-  >(InsertProgramLayoutTemplateConfig)
+  const [insertProgramLayoutTemplateConfig] = useMutation(InsertProgramLayoutTemplateConfig)
 
   if (!permissions.PROGRAM_ADMIN && !permissions.PROGRAM_NORMAL) {
     return <ForbiddenPage />
@@ -167,6 +164,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       moduleData: {
                         ...programLayoutTemplateData?.moduleData,
                       },
+                      isActive: true,
                     },
                   }))
                 programId && history.push(`/programs/${programId}`)

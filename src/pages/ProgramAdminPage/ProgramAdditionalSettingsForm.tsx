@@ -9,13 +9,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import {
-  ExtractModuleDataValue,
-  LayoutTemplateModuleType,
-  ModuleDataProps,
-  ModuleDataType,
-  ProgramLayoutTemplateConfig,
-} from '../../types/program'
+import { LayoutTemplateModuleType, ModuleDataProps, ProgramLayoutTemplateConfigType } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -26,95 +20,22 @@ const StyledInputNumber = styled(InputNumber)`
   min-width: 100%;
 `
 
+type ExtractValue<T> = T extends infer V ? V : never
+
+type ExtractValueType<T> = T extends { value: infer V } ? V : never
+
+type ModuleDataType = {
+  [K in keyof ModuleDataProps]?: ExtractValueType<ModuleDataProps[K]>
+}
+
 type FieldProps = {} & ModuleDataType
 
-const typedObjectEntries = <T extends Record<string, any>>(obj: T) => {
+function typedObjectEntries<T extends Record<string, any>>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][]
 }
 
-const constructModuleData = (values: FieldProps, layoutTemplateModuleData: ModuleDataProps) => {
-  const moduleData: ModuleDataProps = {}
-
-  if (values && typeof values === 'object' && layoutTemplateModuleData) {
-    typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-      let result = null
-
-      switch (config?.type) {
-        case LayoutTemplateModuleType.DATE:
-          result = values[key] ? values[key] : null
-
-          break
-        case LayoutTemplateModuleType.NUMBER:
-          result = values[key] ? values[key] : null
-          break
-
-        default:
-          break
-      }
-
-      Object.defineProperty(moduleData, key, {
-        value: {
-          ...config,
-          value: result,
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      })
-    })
-  }
-
-  return moduleData
-}
-
-const getInitialValues = (layoutTemplateModuleData: ModuleDataProps | undefined) => {
-  const moduleData: ModuleDataProps = {}
-  if (!layoutTemplateModuleData) return
-  typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-    let result
-
-    switch (config?.type) {
-      case LayoutTemplateModuleType.NUMBER:
-        result = config.value ? config.value : null
-        break
-
-      case LayoutTemplateModuleType.DATE:
-        result = config.value ? moment(config.value) : null
-        break
-
-      default:
-        break
-    }
-
-    Object.defineProperty(moduleData, key, {
-      value: result,
-      writable: true,
-      enumerable: true,
-      configurable: true,
-    })
-  })
-
-  return moduleData
-}
-
-const renderModuleComponent = (moduleData: ExtractModuleDataValue<ModuleDataProps[keyof ModuleDataProps]>) => {
-  switch (moduleData?.type) {
-    case LayoutTemplateModuleType.NUMBER:
-      return <StyledInputNumber min={0} />
-    case LayoutTemplateModuleType.DATE:
-      return (
-        <StyledDatePicker
-          format="YYYY-MM-DD HH:mm"
-          showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-        />
-      )
-    default:
-      return null
-  }
-}
-
 const ProgramAdditionalSettingsForm: React.FC<{
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
+  programLayoutTemplateConfig?: ProgramLayoutTemplateConfigType[]
   onRefetch?: () => void
 }> = ({ programLayoutTemplateConfig, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -129,15 +50,51 @@ const ProgramAdditionalSettingsForm: React.FC<{
     return <Skeleton active />
   }
 
-  const layoutTemplateModuleData = programLayoutTemplateConfig.moduleData
-  const initialModuleData = getInitialValues(layoutTemplateModuleData)
+  const filteredLayoutTemplateModule = programLayoutTemplateConfig.filter(config => config.isActive)[0]
+  if (!filteredLayoutTemplateModule) return <></>
+
+  const LayoutTemplateModuleData = filteredLayoutTemplateModule.moduleData
+  const constructModuleData = (values: FieldProps) => {
+    const moduleData: ModuleDataProps = {}
+
+    if (values && typeof values === 'object' && LayoutTemplateModuleData) {
+      typedObjectEntries(LayoutTemplateModuleData).forEach(([key, config]) => {
+        let result = null
+
+        switch (config?.type) {
+          case LayoutTemplateModuleType.DATE:
+            result = values[key] ? values[key] : null
+
+            break
+          case LayoutTemplateModuleType.NUMBER:
+            result = values[key] ? values[key] : null
+            break
+
+          default:
+            break
+        }
+
+        Object.defineProperty(moduleData, key, {
+          value: {
+            ...config,
+            value: result,
+          },
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        })
+      })
+    }
+
+    return moduleData
+  }
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgramLayoutTemplateConfigIntro({
       variables: {
-        programLayoutTemplateConfigId: programLayoutTemplateConfig.id,
-        moduleData: constructModuleData(values, layoutTemplateModuleData),
+        programLayoutTemplateConfigId: filteredLayoutTemplateModule.id,
+        moduleData: constructModuleData(values),
       },
     })
       .then(() => {
@@ -148,27 +105,72 @@ const ProgramAdditionalSettingsForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
+  const renderModuleComponent = (moduleData: ExtractValue<ModuleDataProps[keyof ModuleDataProps]>) => {
+    switch (moduleData?.type) {
+      case LayoutTemplateModuleType.NUMBER:
+        return <StyledInputNumber min={0} key={moduleData.id} />
+      case LayoutTemplateModuleType.DATE:
+        return (
+          <StyledDatePicker
+            key={moduleData.id}
+            format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+          />
+        )
+      default:
+        return null
+    }
+  }
+
+  const getInitialValues = () => {
+    const moduleData: ModuleDataProps = {}
+    if (!LayoutTemplateModuleData) return
+    typedObjectEntries(LayoutTemplateModuleData).forEach(([key, config]) => {
+      let result
+
+      switch (config?.type) {
+        case LayoutTemplateModuleType.NUMBER:
+          result = config.value ? config.value : null
+          break
+
+        case LayoutTemplateModuleType.DATE:
+          result = config.value ? moment(config.value) : null
+          break
+
+        default:
+          break
+      }
+
+      Object.defineProperty(moduleData, key, {
+        value: result,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      })
+    })
+
+    return moduleData
+  }
+
   return (
     <Form
       form={form}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      initialValues={initialModuleData}
+      initialValues={getInitialValues()}
       onFinish={handleSubmit}
     >
-      {layoutTemplateModuleData &&
-        typedObjectEntries(layoutTemplateModuleData).map(([key, moduleData]) => {
-          return (
-            <Form.Item
-              key={moduleData?.id}
-              label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
-              name={key}
-            >
-              {renderModuleComponent(moduleData)}
-            </Form.Item>
-          )
-        })}
+      {LayoutTemplateModuleData &&
+        typedObjectEntries(LayoutTemplateModuleData).map(([key, moduleData]) => (
+          <Form.Item
+            key={moduleData?.id}
+            label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
+            name={key}
+          >
+            {renderModuleComponent(moduleData)}
+          </Form.Item>
+        ))}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()} loading={loading}>

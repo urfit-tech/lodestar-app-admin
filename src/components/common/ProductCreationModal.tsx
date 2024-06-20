@@ -3,14 +3,13 @@ import { Button, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
-import { useGetProgramLayoutTemplates } from '../../hooks/data'
 import { ClassType } from '../../types/general'
-import { ProgramLayoutTemplate } from '../../types/program'
+import { ProgramLayoutTemplateType } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
@@ -36,7 +35,6 @@ type FieldProps = {
   creatorId?: string
   isSubscription?: boolean
   merchandiseType: 'general-physical' | 'general-virtual' | 'customized-physical' | 'customized-virtual'
-  programLayoutTemplateId?: string
 }
 
 const ProductCreationModal: React.FC<
@@ -54,7 +52,7 @@ const ProductCreationModal: React.FC<
       isSubscription?: boolean
       isPhysical?: boolean
       isCustomized?: boolean
-      programLayoutTemplateData?: ProgramLayoutTemplate
+      programLayoutTemplateData?: ProgramLayoutTemplateType
     }) => Promise<any>
     allowedPermissions?: string[]
     creatorAppellation?: string
@@ -80,7 +78,7 @@ const ProductCreationModal: React.FC<
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
-  const { programLayoutTemplates, defaultFixedTemplate } = useGetProgramLayoutTemplates()
+  const programLayoutTemplateData = useRef<ProgramLayoutTemplateType | undefined>(undefined)
 
   const handleSubmit = () => {
     form
@@ -98,9 +96,7 @@ const ProductCreationModal: React.FC<
           isSubscription: withProgramType ? values.isSubscription : undefined,
           isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
-          programLayoutTemplateData: values.programLayoutTemplateId
-            ? programLayoutTemplates.filter(template => template.id === values.programLayoutTemplateId)[0]
-            : defaultFixedTemplate,
+          programLayoutTemplateData: programLayoutTemplateData.current,
         }).finally(() => setLoading(false))
       })
       .catch(handleError)
@@ -203,10 +199,7 @@ const ProductCreationModal: React.FC<
         )}
         {withProgramLayoutTemplateType && (
           <Form.Item label={formatMessage(commonMessages.label.selectTemplate)} name="programLayoutTemplateId">
-            <ProgramLayoutTemplateSelect
-              programLayoutTemplates={programLayoutTemplates}
-              defaultTemplate={defaultFixedTemplate}
-            />
+            <ProgramLayoutTemplateSelect getProgramLayoutTemplateData={programLayoutTemplateData} />
           </Form.Item>
         )}
       </Form>

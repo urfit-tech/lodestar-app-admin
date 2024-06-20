@@ -56,10 +56,6 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.ProgramCoverForm.notUploaded',
       defaultMessage: '*尚未上傳',
     },
-    uploaded: {
-      id: 'ProgramAdminPage.ProgramCoverForm.uploaded',
-      defaultMessage: 'The file has been uploaded',
-    },
   }),
   ProgramApprovalHistory: defineMessages({
     sentApproval: { id: 'ProgramAdminPage.ProgramApprovalHistory.sentApproval', defaultMessage: '{date} 送審' },
@@ -72,10 +68,7 @@ const ProgramAdminPageMessages = {
     category: { id: 'ProgramAdminPage.ProgramBasicForm.category', defaultMessage: '分類' },
     tag: { id: 'ProgramAdminPage.ProgramBasicForm.tag', defaultMessage: '標籤' },
     languages: { id: 'ProgramAdminPage.ProgramBasicForm.languages', defaultMessage: '顯示語系' },
-    programLayoutTemplate: {
-      id: 'ProgramAdminPage.ProgramBasicForm.programLayoutTemplate',
-      defaultMessage: 'Switch Program Template',
-    },
+    programLayoutTemplate:{id: 'ProgramAdminPage.ProgramBasicForm.programLayoutTemplate', defaultMessage: 'Switch Program Template'},
     locale: {
       id: 'ProgramAdminPage.ProgramBasicForm.locale',
       defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示',
@@ -103,14 +96,8 @@ const ProgramAdminPageMessages = {
     hide: { id: 'ProgramAdminPage.ProgramBasicForm.hide', defaultMessage: 'hide' },
   }),
   ProgramOtherForm: defineMessages({
-    expectedStartDate: {
-      id: 'ProgramAdminPage.ProgramOtherForm.expectedStartDate',
-      defaultMessage: 'Expected start date',
-    },
-    expectedDuration: {
-      id: 'ProgramAdminPage.ProgramOtherForm.expectedDuration',
-      defaultMessage: 'Expected duration(min)',
-    },
+    expectedStartDate: { id: 'ProgramAdminPage.ProgramOtherForm.expectedStartDate', defaultMessage: 'Expected start date' },
+    expectedDuration: { id: 'ProgramAdminPage.ProgramOtherForm.expectedDuration', defaultMessage: 'Expected duration(min)' },
     expectedSections: { id: 'ProgramAdminPage.ProgramOtherForm.expectedSections', defaultMessage: 'Expected sections' },
     completeRelease: { id: 'ProgramAdminPage.ProgramOtherForm.completeRelease', defaultMessage: 'Complete release' },
   }),

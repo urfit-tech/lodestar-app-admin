@@ -42,10 +42,9 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
-  const isShowProgramAdditionalSettingsForm =
-    Boolean(program?.programLayoutTemplateConfig?.moduleData) &&
-    !isEmpty(program?.programLayoutTemplateConfig?.moduleData) &&
-    enabledModules?.program_layout_template
+  const defaultModuleData = program?.programLayoutTemplateConfig?.filter(config => config.isActive === true)[0]
+    ?.moduleData
+  const isShowProgramAdditionalSettingsForm = Boolean(defaultModuleData) && !isEmpty(defaultModuleData)
 
   return (
     <>
@@ -103,10 +102,13 @@ const ProgramAdminPage: React.FC = () => {
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
-              {isShowProgramAdditionalSettingsForm ? (
+              {program && isShowProgramAdditionalSettingsForm ? (
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
-                  <ProgramAdditionalSettingsForm programLayoutTemplateConfig={program?.programLayoutTemplateConfig} />
+                  <ProgramAdditionalSettingsForm
+                    key={program?.programLayoutTemplateConfig?.filter(item => item.isActive)[0].id}
+                    programLayoutTemplateConfig={program?.programLayoutTemplateConfig}
+                  />
                 </AdminBlock>
               ) : null}
 

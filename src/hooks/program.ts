@@ -151,7 +151,7 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_configs(where: { program_id: { _eq: $programId }, is_active: { _eq: true } }) {
+          program_layout_template_configs(where: { program_id: { _eq: $programId } }) {
             id
             program_id
             program_layout_template_id
@@ -293,7 +293,7 @@ export const useProgram = (programId: string) => {
           moduleData: config.module_data,
           isActive: config.is_active,
           ProgramLayoutTemplate: config.program_layout_template,
-        }))[0] || [],
+        })) || [],
     }
   }, [data, error, loading])
   return {
