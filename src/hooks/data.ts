@@ -1377,10 +1377,10 @@ export const useGetProgramLayoutTemplate = () => {
 
       switch (value.type) {
         case LayoutTemplateModuleType.DATE:
-          defaultValue = null
+          defaultValue = ''
           break
         case LayoutTemplateModuleType.NUMBER:
-          defaultValue = null
+          defaultValue = 0
           break
         default:
           break

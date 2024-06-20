@@ -3,17 +3,16 @@ import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/form/CategorySelector'
 import LanguageSelector from '../../components/form/LanguageSelector'
-import { ProgramLayoutTemplateSelect } from '../../components/form/ProgramLayoutTemplateSelector'
 import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { useProductSku } from '../../hooks/data'
-import { ProgramAdminProps, ProgramLayoutTemplateType } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
@@ -40,10 +39,6 @@ const ProgramBasicForm: React.FC<{
   )
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
-  const currentProgramLayoutTemplate = program?.programLayoutTemplateConfig?.filter(
-    config => config.isActive === true,
-  )[0]?.ProgramLayoutTemplate
-  const programLayoutTemplateData = useRef<ProgramLayoutTemplateType | undefined>(undefined)
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -76,8 +71,6 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
-        programLayoutTemplateId: programLayoutTemplateData.current?.id,
-        moduleData: programLayoutTemplateData.current?.moduleData ?? {},
       },
     })
       .then(() => {
@@ -134,13 +127,6 @@ const ProgramBasicForm: React.FC<{
         className={enabledModules.locale ? '' : 'd-none'}
       >
         <LanguageSelector />
-      </Form.Item>
-
-      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}>
-        <ProgramLayoutTemplateSelect
-          getProgramLayoutTemplateData={programLayoutTemplateData}
-          defaultLayoutTemplate={currentProgramLayoutTemplate}
-        ></ProgramLayoutTemplateSelect>
       </Form.Item>
 
       <Form.Item
@@ -217,8 +203,6 @@ const UPDATE_PROGRAM_BASIC = gql`
     $programTags: [program_tag_insert_input!]!
     $displayHeader: Boolean
     $displayFooter: Boolean
-    $programLayoutTemplateId: uuid!
-    $moduleData: jsonb!
   ) {
     update_program(
       where: { id: { _eq: $programId } }
@@ -253,28 +237,6 @@ const UPDATE_PROGRAM_BASIC = gql`
       affected_rows
     }
     insert_program_tag(objects: $programTags) {
-      affected_rows
-    }
-
-    # update program_layout_template_config
-    update_program_layout_template_config(
-      where: { _and: [{ program_id: { _eq: $programId } }, { is_active: { _eq: true } }] }
-      _set: { is_active: false }
-    ) {
-      affected_rows
-    }
-    insert_program_layout_template_config(
-      objects: {
-        program_id: $programId
-        program_layout_template_id: $programLayoutTemplateId
-        module_data: $moduleData
-        is_active: true
-      }
-      on_conflict: {
-        constraint: program_layout_template_config_program_layout_template_id_progr
-        update_columns: [is_active]
-      }
-    ) {
       affected_rows
     }
   }

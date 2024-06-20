@@ -49,8 +49,6 @@ export type ProgramProps = {
   isEnrolledCountVisible: boolean
   displayHeader: boolean
   displayFooter: boolean
-  coverType: string
-  mobileCoverType: string
 }
 
 export type ProgramAdminProps = ProgramProps & {
@@ -238,8 +236,6 @@ export type Exam = {
   questionLibraries: QuestionLibrary[]
 }
 
-export type Media = 'video' | 'image'
-
 export enum LayoutTemplateModuleType {
   DATE = 'Date',
   NUMBER = 'Number',
@@ -291,5 +287,4 @@ export type ProgramLayoutTemplateConfigType = {
   programLayoutTemplateId: string
   moduleData: ModuleDataProps
   isActive: boolean
-  ProgramLayoutTemplate?: ProgramLayoutTemplateType
 }

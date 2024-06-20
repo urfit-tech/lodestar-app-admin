@@ -40,10 +40,6 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.ProgramCoverForm.defaultImageTips',
       defaultMessage: '建議圖片尺寸：1200*675px',
     },
-    defaultVideoTips: {
-      id: 'ProgramAdminPage.ProgramCoverForm.defaultVideoTips',
-      defaultMessage: '建議影片大小：200MB',
-    },
     thumbnailImageTips: {
       id: 'ProgramAdminPage.ProgramCoverForm.thumbnailImageTips',
       defaultMessage: '建議圖片尺寸：600*338px',
@@ -68,7 +64,6 @@ const ProgramAdminPageMessages = {
     category: { id: 'ProgramAdminPage.ProgramBasicForm.category', defaultMessage: '分類' },
     tag: { id: 'ProgramAdminPage.ProgramBasicForm.tag', defaultMessage: '標籤' },
     languages: { id: 'ProgramAdminPage.ProgramBasicForm.languages', defaultMessage: '顯示語系' },
-    programLayoutTemplate:{id: 'ProgramAdminPage.ProgramBasicForm.programLayoutTemplate', defaultMessage: 'Switch Program Template'},
     locale: {
       id: 'ProgramAdminPage.ProgramBasicForm.locale',
       defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示',
