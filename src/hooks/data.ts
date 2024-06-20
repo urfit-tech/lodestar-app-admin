@@ -13,12 +13,19 @@ import hasura from '../hasura'
 import { RangeValue } from 'rc-picker/lib/interface'
 import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
-import { LayoutTemplateModuleType, ModuleDataProps, ModuleNameProps, ProgramPlanPeriodType } from '../types/program'
+import {
+  LayoutTemplateModuleType,
+  ModuleDataProps,
+  ModuleNameProps,
+  ProgramLayoutTemplate,
+  ProgramPlanPeriodType,
+} from '../types/program'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import hooksMessages from './translation'
 import moment, { Moment } from 'moment'
 import { last, max, sum } from 'lodash'
+import { isEmpty } from 'ramda'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -1351,7 +1358,7 @@ export const useAppPlan = () => {
   }
 }
 
-export const useGetProgramLayoutTemplate = () => {
+export const useGetProgramLayoutTemplates = () => {
   const { loading, data, error, refetch } = useQuery<
     hasura.GetProgramLayoutTemplate,
     hasura.GetProgramLayoutTemplateVariables
@@ -1400,6 +1407,16 @@ export const useGetProgramLayoutTemplate = () => {
     return moduleData
   }
 
+  const isModuleDataAvailable = (moduleData: ModuleDataProps | undefined | null) => {
+    if (!moduleData) return false
+    return Boolean(moduleData) && !isEmpty(moduleData)
+  }
+
+  const getDefaultProgramLayoutTemplate = (layoutTemplates: ProgramLayoutTemplate[]) => {
+    if (!layoutTemplates.length) return
+    return layoutTemplates.filter(template => !isModuleDataAvailable(template.moduleData))[0]
+  }
+
   const layoutTemplates =
     loading || error || !data
       ? []
@@ -1412,7 +1429,7 @@ export const useGetProgramLayoutTemplate = () => {
   return {
     loading,
     programLayoutTemplates: layoutTemplates,
-    error,
+    defaultFixedTemplate: getDefaultProgramLayoutTemplate(layoutTemplates),
     refetch,
   }
 }
