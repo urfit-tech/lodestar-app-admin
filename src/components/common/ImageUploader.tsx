@@ -86,7 +86,7 @@ const ImageUploader: React.FC<{
               {formatMessage(commonMessages.ui.uploadImage)}
             </StyledButton>
           )}
-          accept="image/*"
+          accept={'image/*'}
           onChange={([file]) => onChange?.(file)}
           fileList={file ? [file] : []}
         />

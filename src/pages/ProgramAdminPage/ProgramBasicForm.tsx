@@ -8,10 +8,11 @@ import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/form/CategorySelector'
 import LanguageSelector from '../../components/form/LanguageSelector'
+import { ProgramLayoutTemplateSelect } from '../../components/form/ProgramLayoutTemplateSelector'
 import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { useProductSku } from '../../hooks/data'
+import { useGetProgramLayoutTemplates, useProductSku } from '../../hooks/data'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
@@ -25,6 +26,7 @@ type FieldProps = {
   isEnrolledCountVisible: boolean
   displayHeader: boolean
   displayFooter: boolean
+  programLayoutTemplateId: string
 }
 
 const ProgramBasicForm: React.FC<{
@@ -39,6 +41,8 @@ const ProgramBasicForm: React.FC<{
   )
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
+  const { programLayoutTemplates } = useGetProgramLayoutTemplates()
+  const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -71,6 +75,9 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
+        programLayoutTemplateId: values.programLayoutTemplateId,
+        moduleData:
+          programLayoutTemplates.find(template => template.id === values.programLayoutTemplateId)?.moduleData ?? {},
       },
     })
       .then(() => {
@@ -99,6 +106,7 @@ const ProgramBasicForm: React.FC<{
         isEnrolledCountVisible: program.isEnrolledCountVisible,
         displayHeader: program.displayHeader,
         displayFooter: program.displayFooter,
+        programLayoutTemplateId: currentProgramLayoutTemplateId,
       }}
       onFinish={handleSubmit}
     >
@@ -128,6 +136,15 @@ const ProgramBasicForm: React.FC<{
       >
         <LanguageSelector />
       </Form.Item>
+
+      {enabledModules?.program_layout_template && (
+        <Form.Item
+          label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}
+          name="programLayoutTemplateId"
+        >
+          <ProgramLayoutTemplateSelect programLayoutTemplates={programLayoutTemplates} />
+        </Form.Item>
+      )}
 
       <Form.Item
         label={
@@ -203,6 +220,8 @@ const UPDATE_PROGRAM_BASIC = gql`
     $programTags: [program_tag_insert_input!]!
     $displayHeader: Boolean
     $displayFooter: Boolean
+    $programLayoutTemplateId: uuid!
+    $moduleData: jsonb!
   ) {
     update_program(
       where: { id: { _eq: $programId } }
@@ -237,6 +256,28 @@ const UPDATE_PROGRAM_BASIC = gql`
       affected_rows
     }
     insert_program_tag(objects: $programTags) {
+      affected_rows
+    }
+
+    # update program_layout_template_config
+    update_program_layout_template_config(
+      where: { _and: [{ program_id: { _eq: $programId } }, { is_active: { _eq: true } }] }
+      _set: { is_active: false }
+    ) {
+      affected_rows
+    }
+    insert_program_layout_template_config(
+      objects: {
+        program_id: $programId
+        program_layout_template_id: $programLayoutTemplateId
+        module_data: $moduleData
+        is_active: true
+      }
+      on_conflict: {
+        constraint: program_layout_template_config_program_layout_template_id_progr
+        update_columns: [is_active]
+      }
+    ) {
       affected_rows
     }
   }

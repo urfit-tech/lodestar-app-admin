@@ -49,6 +49,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
   const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+  const [insertProgramLayoutTemplateConfig] = useMutation<
+    hasura.InsertProgramLayoutTemplateConfig,
+    hasura.InsertProgramLayoutTemplateConfigVariables
+  >(InsertProgramLayoutTemplateConfig)
 
   if (!permissions.PROGRAM_ADMIN && !permissions.PROGRAM_NORMAL) {
     return <ForbiddenPage />
@@ -139,7 +143,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
             categoryClassType="program"
             withCreatorSelector={currentUserRole === 'app-owner'}
             withProgramType
-            onCreate={({ title, categoryIds, creatorId }) =>
+            withProgramLayoutTemplateType={enabledModules?.program_layout_template}
+            onCreate={({ title, categoryIds, creatorId, programLayoutTemplateData }) =>
               insertProgram({
                 variables: {
                   ownerId: currentMemberId,
@@ -152,8 +157,18 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       position: index,
                     })) || [],
                 },
-              }).then(res => {
+              }).then(async res => {
                 const programId = res.data?.insert_program?.returning[0]?.id
+                programLayoutTemplateData?.id &&
+                  (await insertProgramLayoutTemplateConfig({
+                    variables: {
+                      programId,
+                      programLayoutTemplateId: programLayoutTemplateData?.id,
+                      moduleData: {
+                        ...programLayoutTemplateData?.moduleData,
+                      },
+                    },
+                  }))
                 programId && history.push(`/programs/${programId}`)
               })
             }
@@ -532,6 +547,22 @@ const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
   mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
     insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
       affected_rows
+    }
+  }
+`
+
+const InsertProgramLayoutTemplateConfig = gql`
+  mutation InsertProgramLayoutTemplateConfig($programId: uuid!, $programLayoutTemplateId: uuid!, $moduleData: jsonb!) {
+    insert_program_layout_template_config(
+      objects: {
+        program_id: $programId
+        program_layout_template_id: $programLayoutTemplateId
+        module_data: $moduleData
+      }
+    ) {
+      returning {
+        id
+      }
     }
   }
 `

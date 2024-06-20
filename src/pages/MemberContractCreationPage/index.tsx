@@ -318,7 +318,7 @@ const MemberContractCreationPage: React.VFC = () => {
   )
 }
 
-const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
+export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
   if (['D', 'W', 'M', 'Y'].includes(type)) {
     return type === 'M' ? (type as MomentPeriodType) : (type.toLowerCase() as MomentPeriodType)
   }

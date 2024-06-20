@@ -48,6 +48,12 @@ const MemberContractCreationForm: React.FC<
   }) => {
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
+    const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
+
+    const matchProduct = (params: string, products: ContractInfo['products']) => {
+      if (params.length < 2) return setFilterProducts(products)
+      setFilterProducts(products.filter(product => product.name.toLowerCase().includes(params.toLowerCase())))
+    }
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
@@ -96,9 +102,19 @@ const MemberContractCreationForm: React.FC<
                           fieldKey={[field.fieldKey, 'id']}
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                         >
-                          <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
-                            {products.map(product => (
-                              <Select.Option key={product.id} value={product.id}>
+                          <Select<string>
+                            className="mr-3"
+                            showSearch
+                            allowClear
+                            filterOption={false}
+                            style={{ width: '500px' }}
+                            placeholder="請選擇項目 (搜尋請輸入至少兩個關鍵字)"
+                            onSearch={val => matchProduct(val, products)}
+                            onBlur={() => setFilterProducts(products)}
+                            onClear={() => setFilterProducts(products)}
+                          >
+                            {filterProducts.map(product => (
+                              <Select.Option key={product.id} value={product.id} title={product.name}>
                                 {product.name}
                               </Select.Option>
                             ))}
