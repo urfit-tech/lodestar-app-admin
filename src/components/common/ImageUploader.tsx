@@ -61,7 +61,9 @@ const ImageUploader: React.FC<{
   initialCoverUrl?: string | null
   uploading?: boolean
   onChange?: (file: File) => void
-}> = ({ file, initialCoverUrl, uploading, onChange }) => {
+  customName?: string
+  accept?: string
+}> = ({ file, initialCoverUrl, uploading, customName, accept = 'image/*', onChange }) => {
   const { formatMessage } = useIntl()
   const [imgSrc, setImgSrc] = useState<string | null>(initialCoverUrl || null)
 
@@ -83,10 +85,10 @@ const ImageUploader: React.FC<{
         <FileUploader
           renderTrigger={({ onClick }) => (
             <StyledButton icon={<UploadOutlined />} onClick={onClick}>
-              {formatMessage(commonMessages.ui.uploadImage)}
+              {customName || formatMessage(commonMessages.ui.uploadImage)}
             </StyledButton>
           )}
-          accept={'image/*'}
+          accept={accept}
           onChange={([file]) => onChange?.(file)}
           fileList={file ? [file] : []}
         />
