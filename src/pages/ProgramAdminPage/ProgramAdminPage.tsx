@@ -1,6 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -41,7 +42,9 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
-  // const { programLayoutTemplateConfig, programLayoutTemplateConfigRefetch } = useProgramLayoutTemplateConfig(programId)
+  const defaultModuleData = program?.programLayoutTemplateConfig?.filter(config => config.isActive === true)[0]
+    ?.moduleData
+  const isShowProgramAdditionalSettingsForm = Boolean(defaultModuleData) && !isEmpty(defaultModuleData)
 
   return (
     <>
@@ -99,10 +102,13 @@ const ProgramAdminPage: React.FC = () => {
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
-              {program?.programLayoutTemplateConfig?.length ? (
+              {program && isShowProgramAdditionalSettingsForm ? (
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
-                  <ProgramAdditionalSettingsForm programLayoutTemplateConfig={program.programLayoutTemplateConfig} />
+                  <ProgramAdditionalSettingsForm
+                    key={program?.programLayoutTemplateConfig?.filter(item => item.isActive)[0].id}
+                    programLayoutTemplateConfig={program?.programLayoutTemplateConfig}
+                  />
                 </AdminBlock>
               ) : null}
 
@@ -120,6 +126,8 @@ const ProgramAdminPage: React.FC = () => {
                       coverDefaultUrl={program?.coverUrl || ''}
                       coverMobileUrl={program?.coverMobileUrl || ''}
                       coverThumbnailUrl={program?.coverThumbnailUrl || ''}
+                      coverType={program.coverType}
+                      mobileCoverType={program.mobileCoverType}
                       onRefetch={refetchProgram}
                     />
                   </>
