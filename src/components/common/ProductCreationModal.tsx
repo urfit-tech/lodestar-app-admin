@@ -3,17 +3,15 @@ import { Button, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
-import { ProgramLayoutTemplateType } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
-import { ProgramLayoutTemplateSelect } from '../form/ProgramLayoutTemplateSelector'
 
 const StyledLabel = styled.span`
   font-size: 16px;
@@ -44,7 +42,6 @@ const ProductCreationModal: React.FC<
     withCreatorSelector?: boolean
     withProgramType?: boolean
     withMerchandiseType?: boolean
-    withProgramLayoutTemplateType?: boolean
     onCreate?: (values: {
       title: string
       categoryIds?: string[]
@@ -52,7 +49,6 @@ const ProductCreationModal: React.FC<
       isSubscription?: boolean
       isPhysical?: boolean
       isCustomized?: boolean
-      programLayoutTemplateData?: ProgramLayoutTemplateType
     }) => Promise<any>
     allowedPermissions?: string[]
     creatorAppellation?: string
@@ -65,7 +61,6 @@ const ProductCreationModal: React.FC<
   withCreatorSelector,
   withProgramType,
   withMerchandiseType,
-  withProgramLayoutTemplateType,
   onCreate,
   allowedPermissions,
   creatorAppellation,
@@ -78,7 +73,6 @@ const ProductCreationModal: React.FC<
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
-  const programLayoutTemplateData = useRef<ProgramLayoutTemplateType | undefined>(undefined)
 
   const handleSubmit = () => {
     form
@@ -96,7 +90,6 @@ const ProductCreationModal: React.FC<
           isSubscription: withProgramType ? values.isSubscription : undefined,
           isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
-          programLayoutTemplateData: programLayoutTemplateData.current,
         }).finally(() => setLoading(false))
       })
       .catch(handleError)
@@ -195,11 +188,6 @@ const ProductCreationModal: React.FC<
                 </>
               )}
             </Radio.Group>
-          </Form.Item>
-        )}
-        {withProgramLayoutTemplateType && (
-          <Form.Item label={formatMessage(commonMessages.label.selectTemplate)} name="programLayoutTemplateId">
-            <ProgramLayoutTemplateSelect getProgramLayoutTemplateData={programLayoutTemplateData} />
           </Form.Item>
         )}
       </Form>

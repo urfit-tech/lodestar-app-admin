@@ -21,7 +21,6 @@ import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useMutateProgram, useProgram } from '../../hooks/program'
 import pageMessages from '../translation'
-import ProgramAdditionalSettingsForm from './ProgramAdditionalSettingsForm'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
 import ProgramCoverForm from './ProgramCoverForm'
@@ -41,7 +40,6 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
-  // const { programLayoutTemplateConfig, programLayoutTemplateConfigRefetch } = useProgramLayoutTemplateConfig(programId)
 
   return (
     <>
@@ -98,13 +96,6 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].basicSettings)}</AdminBlockTitle>
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
-
-              {program?.programLayoutTemplateConfig?.length ? (
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
-                  <ProgramAdditionalSettingsForm programLayoutTemplateConfig={program.programLayoutTemplateConfig} />
-                </AdminBlock>
-              ) : null}
 
               <AdminBlock>
                 {program?.id ? (

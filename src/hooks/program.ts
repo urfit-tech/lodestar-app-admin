@@ -149,13 +149,6 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_configs(where: { program_id: { _eq: $programId } }) {
-            id
-            program_id
-            program_layout_template_id
-            module_data
-            is_active
-          }
         }
       }
     `,
@@ -276,14 +269,6 @@ export const useProgram = (programId: string) => {
         description: programApproval.description || '',
         feedback: programApproval.feedback || '',
       })),
-      programLayoutTemplateConfig:
-        data?.program_by_pk.program_layout_template_configs.map(config => ({
-          id: config.id,
-          programId: config.program_id,
-          programLayoutTemplateId: config.program_layout_template_id,
-          moduleData: config.module_data,
-          isActive: config.is_active,
-        })) || [],
     }
   }, [data, error, loading])
   return {

@@ -12,7 +12,6 @@ const ProgramAdminPageMessages = {
     preview: { id: 'ProgramAdminPage.*.preview', defaultMessage: '預覽' },
     programContent: { id: 'ProgramAdminPage.*.programContent', defaultMessage: '課程內容' },
     programSettings: { id: 'ProgramAdminPage.*.programSettings', defaultMessage: '課程設定' },
-    otherSettings: { id: 'ProgramAdminPage.*.otherSettings', defaultMessage: 'Other settings' },
     basicSettings: { id: 'ProgramAdminPage.*.basicSettings', defaultMessage: '基本設定' },
     programIntroduction: { id: 'ProgramAdminPage.*.programIntroduction', defaultMessage: '課程介紹' },
     salesPlan: { id: 'ProgramAdminPage.*.salesPlan', defaultMessage: '銷售方案' },
@@ -89,12 +88,7 @@ const ProgramAdminPageMessages = {
     displayFooter: { id: 'ProgramAdminPage.ProgramBasicForm.displayFooter', defaultMessage: 'display footer' },
     display: { id: 'ProgramAdminPage.ProgramBasicForm.display', defaultMessage: 'display' },
     hide: { id: 'ProgramAdminPage.ProgramBasicForm.hide', defaultMessage: 'hide' },
-  }),
-  ProgramOtherForm: defineMessages({
-    expectedStartDate: { id: 'ProgramAdminPage.ProgramOtherForm.expectedStartDate', defaultMessage: 'Expected start date' },
-    expectedDuration: { id: 'ProgramAdminPage.ProgramOtherForm.expectedDuration', defaultMessage: 'Expected duration(min)' },
-    expectedSections: { id: 'ProgramAdminPage.ProgramOtherForm.expectedSections', defaultMessage: 'Expected sections' },
-    completeRelease: { id: 'ProgramAdminPage.ProgramOtherForm.completeRelease', defaultMessage: 'Complete release' },
+
   }),
   ProgramPlanAdminBlock: defineMessages({
     perpetualPlan: { id: 'ProgramAdminPage.ProgramPlanAdminBlock.perpetualPlan', defaultMessage: '永久方案' },
