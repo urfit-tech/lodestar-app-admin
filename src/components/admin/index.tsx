@@ -69,6 +69,7 @@ export const AdminBlock = styled.div`
   background: white;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  overflow: scroll;
 `
 export const AdminBlockTitle = styled.h2`
   margin-bottom: 2rem;

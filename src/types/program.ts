@@ -60,7 +60,7 @@ export type ProgramAdminProps = ProgramProps & {
   categories: Category[]
   tags: string[]
   approvals: ProgramApprovalProps[]
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfigType[]
+  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
 }
 
 export type ProgramContentSectionProps = {
@@ -279,17 +279,27 @@ export interface ModuleDataProps {
   [LayoutTemplateModuleName.COMPLETED_RELEASE]?: ModuleDataTemplate<Date, LayoutTemplateModuleType.DATE>
 }
 
-export type ProgramLayoutTemplateType = {
+export type ProgramLayoutTemplate = {
   id: string
   name: string
   moduleData?: ModuleDataProps | null
+  // ProgramLayoutTemplate?: object
 }
 
-export type ProgramLayoutTemplateConfigType = {
+export type ProgramLayoutTemplateConfig = {
   id: string
   programId: string
   programLayoutTemplateId: string
   moduleData: ModuleDataProps
   isActive: boolean
-  ProgramLayoutTemplate?: ProgramLayoutTemplateType
+  ProgramLayoutTemplate?: ProgramLayoutTemplate
 }
+
+export type ExtractModuleDataValue<T> = T extends infer V ? V : never
+
+export type ExtractModuleDataValueType<T> = T extends { value: infer V } ? V : never
+
+export type ModuleDataType = {
+  [K in keyof ModuleDataProps]?: ExtractModuleDataValueType<ModuleDataProps[K]>
+}
+
