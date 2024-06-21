@@ -304,7 +304,7 @@ const MemberTaskAdminBlock: React.FC<{
       dataIndex: 'meeting',
       title: formatMessage(memberMessages.label.meeting),
       render: (text, record, index) => (
-        <div>
+        <Box minWidth="40px">
           {(record.hasMeeting || record.meetingGateway) && (
             <Button
               type="primary"
@@ -342,7 +342,7 @@ const MemberTaskAdminBlock: React.FC<{
               )}
             </Button>
           )}
-        </div>
+        </Box>
       ),
     },
     {
@@ -350,11 +350,17 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.priority),
       render: (text, record, index) =>
         record.priority === 'high' ? (
-          <MemberTaskTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</MemberTaskTag>
+          </Box>
         ) : record.priority === 'medium' ? (
-          <MemberTaskTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</MemberTaskTag>
+          </Box>
         ) : (
-          <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
+          </Box>
         ),
       onCell: onCellClick,
       sorter: (a, b) => priorityLevel[a.priority] - priorityLevel[b.priority],
@@ -364,11 +370,17 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.status),
       render: (text, record, index) =>
         record.status === 'pending' ? (
-          <MemberTaskTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</MemberTaskTag>
+          </Box>
         ) : record.status === 'in-progress' ? (
-          <MemberTaskTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</MemberTaskTag>
+          </Box>
         ) : (
-          <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
+          </Box>
         ),
       onCell: onCellClick,
     },
@@ -377,7 +389,11 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.category),
       render: (text, record, index) => (
         <StyledCategory>
-          {record.category && <StyledCategoryDot color={categoryColorPairs[record.category?.id]} />}
+          {record.category && (
+            <Box>
+              <StyledCategoryDot color={categoryColorPairs[record.category?.id]} />
+            </Box>
+          )}
           {record.category?.name}
         </StyledCategory>
       ),
@@ -435,7 +451,9 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'dueAt',
       title: formatMessage(memberMessages.label.executeDate),
-      render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
+      render: (text, record, index) => (
+        <Box minWidth="100px">{record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''}</Box>
+      ),
       sorter: (a, b) => {
         // In descending order:
         // - If 'a.dueAt' is null, return 1 to prioritize 'a' before 'b'.
@@ -494,7 +512,9 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'createdAt',
       title: formatMessage(memberMessages.label.createdDate),
-      render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''),
+      render: (text, record, index) => (
+        <Box minWidth="100px">{record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''}</Box>
+      ),
       sorter: (a, b) => {
         if (a.createdAt === null) return 1
         if (b.createdAt === null) return -1
