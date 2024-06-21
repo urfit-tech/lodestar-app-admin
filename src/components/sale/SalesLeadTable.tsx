@@ -8,7 +8,6 @@ import {
   SearchOutlined,
   StarOutlined,
   StopOutlined,
-  SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -39,6 +38,7 @@ import JitsiDemoModal from './JitsiDemoModal'
 import ManagerListModal from './ManagerListModal'
 import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
+import TransferModal from './TransferModal'
 
 dayjs.extend(utc)
 
@@ -533,11 +533,6 @@ const SalesLeadTable: React.VFC<{
 
   const [managerId, setManagerId] = useState('')
   const businessAppId = useRef('')
-
-  const handleTransfer = async () => {
-    const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
-    managerId && setManagerId(managerId)
-  }
 
   const { data: memberAppId } = useQuery(GetMemberAppID, {
     variables: { managerId: managerId },
@@ -1052,9 +1047,7 @@ const SalesLeadTable: React.VFC<{
                   </Button>
                 </>
               )}
-              <Button icon={<SwapOutlined />} className="mr-2" onClick={handleTransfer}>
-                轉移
-              </Button>
+              <TransferModal onManagerIdChange={value => setManagerId(value)} />
             </div>
           </div>
         )}
