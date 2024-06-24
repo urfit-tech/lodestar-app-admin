@@ -27,7 +27,8 @@ const ReportPage: React.FC = () => {
   const { enabledModules, settings } = useApp()
   const { authToken, permissions, currentMemberId } = useAuth()
   const [isIframeLoading, setIframeLoading] = useState<boolean>(true)
-  const [iframeHeight, setIframeHeight] = useState(600)
+  const iframeHeightSetting = Number(settings['report.iframe_height']) || 600
+  const [iframeHeight, setIframeHeight] = useState(iframeHeightSetting)
   const { reportId } = useParams<{ reportId: string }>()
   const { report } = useReport(reportId)
   const { loading: loadingMemberPermissionGroups, memberPermissionGroups } = useMemberPermissionGroups(
