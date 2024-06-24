@@ -119,28 +119,23 @@ const ProductSelector: React.FC<{
     <TreeSelect
       value={value}
       onChange={selectedValue => {
-        const found =
-          (multiple &&
-            selectedValue
-              .map(v => {
-                const productType = (v.includes('_') ? v.slice(0, v.indexOf('_')) : v) as ProductType | 'CouponPlan'
-                const products = productSelections.find(({ productType: type }) => type === productType)!.products
-                return v.includes('_') ? products.find(({ id }) => v === id)! : products
-              })
-              .flat()) ||
-          []
+        const found = (multiple ? selectedValue : [selectedValue])
+          .map(v => {
+            const productType = (v.includes('_') ? v.slice(0, v.indexOf('_')) : v) as ProductType | 'CouponPlan'
+            const products = productSelections.find(({ productType: type }) => type === productType)!.products
+            return v.includes('_') ? products.find(({ id }) => v === id)! : products
+          })
+          .flat()
         onFullSelected?.(selectedValue.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat())
         onChange?.(
-          multiple
-            ? selectedValue
-                .map(
-                  v =>
-                    productSelections
-                      .find(productSelection => productSelection.productType === v)
-                      ?.products.map(product => product.id) || v,
-                )
-                .flat()
-            : selectedValue,
+          (multiple ? selectedValue : [selectedValue])
+            .map(
+              v =>
+                productSelections
+                  .find(productSelection => productSelection.productType === v)
+                  ?.products.map(product => product.id) || v,
+            )
+            .flat(),
         )
         onProductChange?.(found)
       }}
