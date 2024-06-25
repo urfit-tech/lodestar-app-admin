@@ -1,18 +1,44 @@
 import { defineMessages } from 'react-intl'
 
 const announcementMessages = {
-  announcementModal: defineMessages({
+  AnnouncementModal: defineMessages({
     announcement: {
-      id: 'announcement.announcementModal.announcement',
-      defaultMessage: '公告',
+      id: 'announcement.AnnouncementModal.announcement',
+      defaultMessage: 'Announcement',
     },
     remindLater: {
-      id: 'announcement.announcementModal.remindLater',
-      defaultMessage: '下次提醒',
+      id: 'announcement.AnnouncementModal.remindLater',
+      defaultMessage: 'Remind later',
     },
     iKnow: {
-      id: 'announcement.announcementModal.iKnow',
-      defaultMessage: '我知道了',
+      id: 'announcement.AnnouncementModal.iKnow',
+      defaultMessage: 'I know',
+    },
+  }),
+  AnnouncementBasicSettingsForm: defineMessages({
+    announcementTitle: {
+      id: 'announcement.AnnouncementModal.announcementTitle',
+      defaultMessage: 'Announcement title',
+    },
+    announcementContent: {
+      id: 'announcement.AnnouncementModal.announcementContent',
+      defaultMessage: 'Announcement content',
+    },
+    startTime: {
+      id: 'announcement.AnnouncementModal.startedTime',
+      defaultMessage: 'Start time',
+    },
+    endTime: {
+      id: 'announcement.AnnouncementModal.endTime',
+      defaultMessage: 'End time',
+    },
+    nextTimeRemindPeriod: {
+      id: 'announcement.AnnouncementModal.nextTimeRemindPeriod',
+      defaultMessage: 'Next time remind period',
+    },
+    isSiteWideAnnouncement: {
+      id: 'announcement.AnnouncementModal.isSiteWideAnnouncement',
+      defaultMessage: 'Is site-wide announcement',
     },
   }),
 }

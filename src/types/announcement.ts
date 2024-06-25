@@ -7,7 +7,7 @@ export type Announcement = {
   content: string | null
   remindPeriodType: PeriodType
   remindPeriodAmount: number
-  statedAt: Date | null
+  startedAt: Date | null
   endedAt: Date | null
   publishedAt: Date | null
   isUniversalDisplay: boolean
@@ -26,6 +26,7 @@ export type MemberAnnouncementStatus = {
   isDismissed: boolean
   createdAt: Date
   updatedAt: Date
+  member?: { id: string; name: string; email: string }
 }
 
 export type AnnouncementPage = { id: string; announcementId: number; path: string; createdAt: Date; updatedAt: Date }
