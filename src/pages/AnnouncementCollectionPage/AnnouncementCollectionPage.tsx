@@ -3,14 +3,16 @@ import { Button, Form, Input, Table } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
+import announcementMessages from '../../components/announcement/translations'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { handleError } from '../../helpers'
 import { errorMessages } from '../../helpers/translation'
@@ -29,10 +31,18 @@ const AnnouncementCollectionPage: React.FC = () => {
   const { enabledModules } = useApp()
   const { permissions } = useAuth()
   const { announcements, loading, error } = useAnnouncements()
+  const [announcementId, setAnnouncementId] = useState<string | null>(null)
+  const [visible, setVisible] = useState(false)
+
   const onCellClick = (announcement: Announcement) => {
     return {
       onClick: () => {
-        window.location.href = `${process.env.PUBLIC_URL}/announcements/${announcement.id}`
+        if (permissions.ANNOUNCEMENT_ADMIN) {
+          window.location.href = `${process.env.PUBLIC_URL}/announcements/${announcement.id}`
+        } else {
+          setAnnouncementId(announcement.id)
+          setVisible(true)
+        }
       },
     }
   }
@@ -83,6 +93,7 @@ const AnnouncementCollectionPage: React.FC = () => {
 
   if (!enabledModules.announcement) return <ForbiddenPage />
 
+  const previewAnnouncement = announcements.find(announcement => announcement.id === announcementId)
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -104,6 +115,13 @@ const AnnouncementCollectionPage: React.FC = () => {
           rowClassName="cursor-pointer"
           pagination={false}
         />
+        {previewAnnouncement && (
+          <AnnouncementPreviewModal
+            announcement={previewAnnouncement}
+            visible={visible}
+            onClose={() => setVisible(false)}
+          />
+        )}
       </AdminBlock>
     </AdminLayout>
   )
@@ -184,6 +202,25 @@ const AddNewAnnouncementModal: React.FC<{}> = ({ ...props }) => {
           <Input />
         </Form.Item>
       </Form>
+    </AdminModal>
+  )
+}
+
+const AnnouncementPreviewModal: React.FC<{
+  announcement: Announcement
+  visible: boolean
+  onClose: () => void
+}> = ({ announcement, visible, onClose }) => {
+  const { formatMessage } = useIntl()
+
+  return (
+    <AdminModal
+      visible={visible}
+      onCancel={onClose}
+      title={formatMessage(announcementMessages.AnnouncementModal.announcement)}
+      footer={null}
+    >
+      <BraftContent>{announcement.content}</BraftContent>
     </AdminModal>
   )
 }
