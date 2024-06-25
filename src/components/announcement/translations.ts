@@ -41,7 +41,7 @@ const announcementMessages = {
       defaultMessage: 'Is site-wide announcement',
     },
   }),
-  AnnouncementPageSettingsForm: defineMessages({
+  AnnouncementPathSettingsForm: defineMessages({
     addNewPath: {
       id: 'announcement.AnnouncementModal.addNewPath',
       defaultMessage: 'Add new path',

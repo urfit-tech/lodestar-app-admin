@@ -17,17 +17,17 @@ const StyledNewPathInput = styled.div`
 
 type FieldProps = { pathList: string[] }
 
-type AnnouncementPageSettingsFormProps = {
+type AnnouncementPathSettingsFormProps = {
   announcementPages: AnnouncementPage[]
   saveLoading: boolean
   onSave: (values: Pick<AnnouncementPage, 'announcementId' | 'path'>[]) => void
 }
 
-const AnnouncementPageSettingsForm = ({
+const AnnouncementPathSettingsForm = ({
   announcementPages,
   onSave,
   saveLoading,
-}: AnnouncementPageSettingsFormProps) => {
+}: AnnouncementPathSettingsFormProps) => {
   const { announcementId } = useParams<{ announcementId: string }>()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -48,7 +48,7 @@ const AnnouncementPageSettingsForm = ({
       initialValues={{ pathList: announcementPages.map(page => page.path) }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(announcementMessages.AnnouncementPageSettingsForm.path)} name="pathList">
+      <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
         <PathInput />
       </Form.Item>
 
@@ -103,10 +103,10 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
           }
         }}
       >
-        <span>{formatMessage(announcementMessages.AnnouncementPageSettingsForm.addNewPath)}</span>
+        <span>{formatMessage(announcementMessages.AnnouncementPathSettingsForm.addNewPath)}</span>
       </Button>
     </>
   )
 }
 
-export default AnnouncementPageSettingsForm
+export default AnnouncementPathSettingsForm

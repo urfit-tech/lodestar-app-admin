@@ -15,7 +15,7 @@ import {
 } from '../../components/admin'
 import AdminPublishBlock, { PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AnnouncementBasicSettingsForm from '../../components/announcement/AnnouncementBasicSettingsForm'
-import AnnouncementPageSettingsForm from '../../components/announcement/AnnouncementPageSettingsForm'
+import AnnouncementPathSettingsForm from '../../components/announcement/AnnouncementPathSettingsForm'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages } from '../../helpers/translation'
 import { useAnnouncement } from '../../hooks/announcement'
@@ -119,11 +119,11 @@ const AnnouncementPage: React.FC = () => {
               </AdminBlock>
             </div>
           </Tabs.TabPane>
-          <Tabs.TabPane key="page" tab={formatMessage(pageMessages.AnnouncementPage.pageSettings)}>
+          <Tabs.TabPane key="page" tab={formatMessage(pageMessages.AnnouncementPage.pathSettings)}>
             <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.pageSettings)}</AdminPaneTitle>
+              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.pathSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <AnnouncementPageSettingsForm
+                <AnnouncementPathSettingsForm
                   announcementPages={announcement.announcementPages}
                   saveLoading={upsertAnnouncementPagesLoading}
                   onSave={async data => {

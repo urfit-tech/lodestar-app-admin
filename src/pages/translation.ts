@@ -552,9 +552,9 @@ const pageMessages = {
       id: 'page.AnnouncementCollectionPage.publishSettings',
       defaultMessage: 'Public Settings',
     },
-    pageSettings: {
-      id: 'page.AnnouncementCollectionPage.pageSettings',
-      defaultMessage: 'Page Settings',
+    pathSettings: {
+      id: 'page.AnnouncementCollectionPage.pathSettings',
+      defaultMessage: 'Path Settings',
     },
   }),
 }
