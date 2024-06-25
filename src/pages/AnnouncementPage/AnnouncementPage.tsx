@@ -15,6 +15,7 @@ import {
 } from '../../components/admin'
 import AdminPublishBlock, { PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AnnouncementBasicSettingsForm from '../../components/announcement/AnnouncementBasicSettingsForm'
+import AnnouncementPageSettingsForm from '../../components/announcement/AnnouncementPageSettingsForm'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages } from '../../helpers/translation'
 import { useAnnouncement } from '../../hooks/announcement'
@@ -24,8 +25,16 @@ import pageMessages from '../translation'
 const AnnouncementPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { announcementId } = useParams<{ announcementId: string }>()
-  const { announcement, loading, error, updateAnnouncement, updateAnnouncementLoading } =
-    useAnnouncement(announcementId)
+  const {
+    announcement,
+    loading,
+    error,
+    updateAnnouncement,
+    updateAnnouncementLoading,
+    refetch,
+    upsertAnnouncementPages,
+    upsertAnnouncementPagesLoading,
+  } = useAnnouncement(announcementId)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const publishProps: { type: PublishStatus; title: string; onPublish: (event: PublishEvent) => void } = useMemo(() => {
@@ -37,9 +46,12 @@ const AnnouncementPage: React.FC = () => {
         : formatMessage(commonMessages.status.unpublished),
       onPublish: event => {
         announcement &&
-          updateAnnouncement({ variables: { id: announcement.id, data: { published_at: new Date() } } })
+          updateAnnouncement({
+            variables: { id: announcement.id, data: { published_at: isPublished ? null : new Date() } },
+          })
             .then(() => {
               event.onSuccess?.()
+              refetch()
             })
             .catch(error => event.onError?.(error))
             .finally(() => event.onFinally?.())
@@ -98,6 +110,32 @@ const AnnouncementPage: React.FC = () => {
                         },
                       })
                       message.success(formatMessage(pageMessages.AnnouncementPage.successfullySaved))
+                      refetch()
+                    } catch (error) {
+                      handleError(error)
+                    }
+                  }}
+                />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="page" tab={formatMessage(pageMessages.AnnouncementPage.pageSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.pageSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AnnouncementPageSettingsForm
+                  announcementPages={announcement.announcementPages}
+                  saveLoading={upsertAnnouncementPagesLoading}
+                  onSave={async data => {
+                    try {
+                      await upsertAnnouncementPages({
+                        variables: {
+                          id: announcementId,
+                          data: data.map(page => ({ announcement_id: page.announcementId, path: page.path })),
+                        },
+                      })
+                      message.success(formatMessage(pageMessages.AnnouncementPage.successfullySaved))
+                      refetch()
                     } catch (error) {
                       handleError(error)
                     }
@@ -114,8 +152,8 @@ const AnnouncementPage: React.FC = () => {
           </Tabs.TabPane> */}
           <Tabs.TabPane key="publish" tab={formatMessage(pageMessages.AnnouncementPage.publishSettings)}>
             <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.publishSettings)}</AdminPaneTitle>
                 <AdminPublishBlock {...publishProps} />
               </AdminBlock>
             </div>

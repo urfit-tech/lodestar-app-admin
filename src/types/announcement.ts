@@ -29,4 +29,4 @@ export type MemberAnnouncementStatus = {
   member?: { id: string; name: string; email: string }
 }
 
-export type AnnouncementPage = { id: string; announcementId: number; path: string; createdAt: Date; updatedAt: Date }
+export type AnnouncementPage = { id: string; announcementId: string; path: string; createdAt: Date; updatedAt: Date }

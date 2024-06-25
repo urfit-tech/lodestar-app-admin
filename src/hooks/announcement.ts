@@ -124,7 +124,7 @@ export const useAnnouncements = () => {
 export const useAnnouncement = (announcementId: string) => {
   const { authToken } = useAuth()
 
-  const { data, loading, error } = useQuery<hasura.GetAnnouncementById, hasura.GetAnnouncementByIdVariables>(
+  const { data, loading, error, refetch } = useQuery<hasura.GetAnnouncementById, hasura.GetAnnouncementByIdVariables>(
     GetAnnouncementById,
     { variables: { id: announcementId }, skip: !announcementId || !authToken },
   )
@@ -180,12 +180,20 @@ export const useAnnouncement = (announcementId: string) => {
     hasura.UpdateAnnouncementVariables
   >(UpdateAnnouncement, { variables: { id: announcementId } })
 
+  const [upsertAnnouncementPages, { loading: upsertAnnouncementPagesLoading }] = useMutation<
+    hasura.UpsertAnnouncementPages,
+    hasura.UpsertAnnouncementPagesVariables
+  >(UpsertAnnouncementPages)
+
   return {
     loading,
     error,
     announcement,
     updateAnnouncement,
     updateAnnouncementLoading,
+    refetch,
+    upsertAnnouncementPages,
+    upsertAnnouncementPagesLoading,
   }
 }
 
@@ -355,6 +363,20 @@ const UpdateAnnouncement = gql`
   mutation UpdateAnnouncement($id: uuid!, $data: announcement_set_input) {
     update_announcement_by_pk(pk_columns: { id: $id }, _set: $data) {
       id
+    }
+  }
+`
+
+const UpsertAnnouncementPages = gql`
+  mutation UpsertAnnouncementPages($id: uuid!, $data: [announcement_page_insert_input!]!) {
+    delete_announcement_page(where: { announcement_id: { _eq: $id } }) {
+      affected_rows
+    }
+    insert_announcement_page(
+      objects: $data
+      on_conflict: { constraint: announcement_page_path_announcement_id_key, update_columns: [path] }
+    ) {
+      affected_rows
     }
   }
 `
