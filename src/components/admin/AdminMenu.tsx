@@ -19,6 +19,7 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
 import {
+  AnnouncementIcon,
   BookIcon,
   CalendarAltIcon,
   CertificateIcon,
@@ -623,6 +624,12 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
           name: formatMessage(adminMessages.AdminMenu.taskCategory),
         },
       ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.announcement,
+      key: 'announcement_collection',
+      icon: () => <AnnouncementIcon />,
+      name: formatMessage(adminMessages.AdminMenu.announcementManagement),
     },
     {
       permissionIsAllowed:

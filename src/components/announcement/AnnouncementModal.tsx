@@ -5,7 +5,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useMemberAnnouncement } from '../../hooks/announcement'
+import { useMemberAnnouncements } from '../../hooks/announcement'
 import { periodTypeConverter } from '../../pages/MemberContractCreationPage'
 import { Announcement } from '../../types/announcement'
 import AdminModal from '../admin/AdminModal'
@@ -30,10 +30,16 @@ const AnnouncementModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [isVisible, setIsVisible] = React.useState(true)
-  const { announcements, loading, error, refetch, upsertMemberAnnouncementStatus } = useMemberAnnouncement()
+  const { announcements, loading, error, upsertMemberAnnouncementStatus, upsertMemberAnnouncementStatusLoading } =
+    useMemberAnnouncements()
+  const [removedAnnouncementId, setRemovedAnnouncementId] = React.useState<string | null>(null)
+
   const filteredAnnouncements = React.useMemo(
     () =>
       announcements.filter(announcement => {
+        if (announcement.id === removedAnnouncementId) {
+          return false
+        }
         if (!announcement.memberAnnouncementStatus[0]) {
           return true
         }
@@ -47,7 +53,7 @@ const AnnouncementModal: React.FC = () => {
           return true
         }
       }),
-    [announcements],
+    [announcements, removedAnnouncementId],
   )
   if (filteredAnnouncements.length === 0 || loading || error || !currentMemberId) {
     return null
@@ -65,7 +71,7 @@ const AnnouncementModal: React.FC = () => {
       },
     })
       .then(() => {
-        refetch()
+        setRemovedAnnouncementId(announcement.id)
       })
       .catch(err => {
         console.log(err)
@@ -82,7 +88,7 @@ const AnnouncementModal: React.FC = () => {
       },
     })
       .then(() => {
-        refetch()
+        setRemovedAnnouncementId(announcement.id)
       })
       .catch(err => {
         console.log(err)
@@ -97,7 +103,7 @@ const AnnouncementModal: React.FC = () => {
       onCancel={() => {
         setIsVisible(false)
       }}
-      title={formatMessage(announcementMessages.announcementModal.announcement)}
+      title={formatMessage(announcementMessages.AnnouncementModal.announcement)}
       maskClosable={false}
       footer={null}
     >
@@ -108,19 +114,23 @@ const AnnouncementModal: React.FC = () => {
             <StyledLine />
             <StyledFooter>
               <Button
+                loading={upsertMemberAnnouncementStatusLoading}
+                disabled={upsertMemberAnnouncementStatusLoading}
                 onClick={() => {
                   remindLater(announcement)
                 }}
               >
-                {formatMessage(announcementMessages.announcementModal.remindLater)}
+                {formatMessage(announcementMessages.AnnouncementModal.remindLater)}
               </Button>
               <Button
+                loading={upsertMemberAnnouncementStatusLoading}
+                disabled={upsertMemberAnnouncementStatusLoading}
                 type="primary"
                 onClick={() => {
                   dismiss(announcement)
                 }}
               >
-                {formatMessage(announcementMessages.announcementModal.iKnow)}
+                {formatMessage(announcementMessages.AnnouncementModal.iKnow)}
               </Button>
             </StyledFooter>
           </Tabs.TabPane>

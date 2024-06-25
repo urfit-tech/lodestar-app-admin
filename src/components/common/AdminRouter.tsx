@@ -575,6 +575,17 @@ export const routesProps = {
     pageName: 'MembershipCardAdminPage',
     authenticated: true,
   },
+  // announcement
+  announcement_collection: {
+    path: '/announcements',
+    pageName: 'AnnouncementCollectionPage',
+    authenticated: true,
+  },
+  announcement: {
+    path: '/announcements/:announcementId',
+    pageName: 'AnnouncementPage',
+    authenticated: true,
+  },
 
   // xuemi extra router
   // member_contract_collection: {

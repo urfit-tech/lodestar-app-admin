@@ -49,13 +49,13 @@ const adminMessages = {
     merchandiseCategory: { id: 'admin.AdminMenu.merchandiseCategory', defaultMessage: '商品分類' },
     shipping: { id: 'admin.AdminMenu.shipping', defaultMessage: '出貨管理' },
     promotionAdmin: { id: 'admin.AdminMenu.promotionAdmin', defaultMessage: '促銷管理' },
-    membershipCardAdmin: {id: 'admin.AdminMenu.membershipCardAdmin', defaultMessage: 'membership card plan'},
+    membershipCardAdmin: { id: 'admin.AdminMenu.membershipCardAdmin', defaultMessage: 'membership card plan' },
     vouchers: { id: 'admin.AdminMenu.voucherPlans', defaultMessage: '兌換方案' },
     voucherCategory: { id: 'admin.AdminMenu.voucherCategory', defaultMessage: 'voucher category' },
     creditAdmin: { id: 'admin.AdminMenu.creditAdmin', defaultMessage: '紅利折抵' },
     coinHistory: { id: 'admin.AdminMenu.coinHistory', defaultMessage: '代幣紀錄' },
     memberAdmin: { id: 'admin.AdminMenu.memberAdmin', defaultMessage: '會員管理' },
-    deleteMember: {id: 'admin.AdminMenu.deleteMember' , defaultMessage: '刪除會員'},
+    deleteMember: { id: 'admin.AdminMenu.deleteMember', defaultMessage: '刪除會員' },
     members: { id: 'admin.AdminMenu.members', defaultMessage: '會員列表' },
     permissionGroup: { id: 'admin.AdminMenu.permissionGroup', defaultMessage: '權限組' },
     memberCategory: { id: 'admin.AdminMenu.memberCategory', defaultMessage: '會員分類' },
@@ -87,6 +87,7 @@ const adminMessages = {
     gift: { id: 'admin.AdminMenu.giftPlans', defaultMessage: '贈品方案' },
     report: { id: 'admin.AdminMenu.report', defaultMessage: '報表分析' },
     tmpPassword: { id: 'admin.AdminMenu.tmpPassword', defaultMessage: 'Temporary Password Request' },
+    announcementManagement: { id: 'admin.AdminMenu.announcementManagement', defaultMessage: 'Announcement Management' },
   }),
 }
 export default adminMessages
