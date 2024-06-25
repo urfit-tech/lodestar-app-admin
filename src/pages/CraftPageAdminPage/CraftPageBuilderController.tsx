@@ -4,7 +4,7 @@ import { useEditor } from '@craftjs/core'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
@@ -12,18 +12,31 @@ import { Device } from '../../types/general'
 import pageMessages from '../translation'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 
-const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: () => void }> = ({
-  pageId,
-  onAppPageUpdate,
-}) => {
+const CraftPageBuilderController: React.FC<{
+  pageId: string
+  initialDevice?: Device | null
+  onAppPageUpdate?: () => void
+}> = ({ pageId, initialDevice, onAppPageUpdate }) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
+  const [isInitialDevice, setIsInitialDevice] = useState(false)
   const { device, onDeviceChange } = useContext(CraftPageBuilderContext)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { updateAppPage } = useMutateAppPage()
   const theme = useAppTheme()
   const toast = useToast()
+
+  useEffect(() => {
+    if (!isSaved) return
+    handleSave()
+  }, [isSaved])
+
+  if (!isInitialDevice) {
+    initialDevice && onDeviceChange?.(initialDevice)
+    setIsInitialDevice(true)
+  }
 
   const handleSave = () => {
     if (!currentMemberId) {
@@ -46,7 +59,11 @@ const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: (
         editor.actions.history.clear()
       })
       .catch(handleError)
-      .finally(() => setLoading(false))
+      .finally(() => {
+        onAppPageUpdate?.()
+        setIsSaved(false)
+        setLoading(false)
+      })
   }
 
   const handleDeviceChange = (device: Device) => {
@@ -70,8 +87,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: (
         className="mr-2"
         onClick={() => {
           handleDeviceChange('desktop')
-          handleSave()
-          onAppPageUpdate?.()
+          setIsSaved(true)
         }}
       />
       <TabletOutlined
@@ -80,8 +96,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: (
         className="mr-2"
         onClick={() => {
           handleDeviceChange('tablet')
-          handleSave()
-          onAppPageUpdate?.()
+          setIsSaved(true)
         }}
       />
       <MobileOutlined
@@ -90,8 +105,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: (
         className="mr-3"
         onClick={() => {
           handleDeviceChange('mobile')
-          handleSave()
-          onAppPageUpdate?.()
+          setIsSaved(true)
         }}
       />
 
