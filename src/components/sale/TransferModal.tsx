@@ -1,17 +1,17 @@
 import { SwapOutlined } from '@ant-design/icons'
 import {
+  Box,
+  Icon,
+  Input,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
-  Icon,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Select,
-  Input,
-  Box,
+  useDisclosure,
 } from '@chakra-ui/react'
 import { Button } from 'antd'
 import { useState } from 'react'
@@ -68,12 +68,6 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
           <ModalFooter>
             <Button
               className="mr-2"
-              type="primary"
-              onClick={() => selectedManagerId !== '' && onManagerIdChange(selectedManagerId)}
-            >
-              {formatMessage(saleMessages.TransferModal.confirm)}
-            </Button>
-            <Button
               onClick={() => {
                 setSearchValue('')
                 setSelectedManagerId('')
@@ -81,6 +75,9 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
               }}
             >
               {formatMessage(saleMessages['*'].cancel)}
+            </Button>
+            <Button type="primary" onClick={() => selectedManagerId !== '' && onManagerIdChange(selectedManagerId)}>
+              {formatMessage(saleMessages.TransferModal.confirm)}
             </Button>
           </ModalFooter>
         </ModalContent>
