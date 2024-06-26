@@ -1,10 +1,9 @@
-import { Button, Checkbox, DatePicker, Form, Input } from 'antd'
+import { Button, DatePicker, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
 import { PeriodType } from 'lodestar-app-element/src/types/data'
 import moment from 'moment'
-import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Announcement } from '../../types/announcement'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -17,7 +16,6 @@ type FieldProps = {
   period: { type: PeriodType; amount: number }
   startedAt: Date | null
   endedAt: Date | null
-  isUniversalDisplay: boolean
 }
 
 type AnnouncementBasicSettingsFormProps = {
@@ -25,14 +23,7 @@ type AnnouncementBasicSettingsFormProps = {
   onSave: (
     data: Pick<
       Announcement,
-      | 'id'
-      | 'title'
-      | 'content'
-      | 'remindPeriodAmount'
-      | 'remindPeriodType'
-      | 'startedAt'
-      | 'endedAt'
-      | 'isUniversalDisplay'
+      'id' | 'title' | 'content' | 'remindPeriodAmount' | 'remindPeriodType' | 'startedAt' | 'endedAt'
     >,
   ) => void
   saveLoading: boolean
@@ -41,7 +32,6 @@ type AnnouncementBasicSettingsFormProps = {
 const AnnouncementBasicSettingsForm = ({ announcement, onSave, saveLoading }: AnnouncementBasicSettingsFormProps) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [isChecked, setIsChecked] = useState(announcement.isUniversalDisplay)
 
   const handleSubmit = async () => {
     await form.validateFields()
@@ -54,7 +44,6 @@ const AnnouncementBasicSettingsForm = ({ announcement, onSave, saveLoading }: An
       endedAt: values.endedAt || null,
       remindPeriodAmount: values.period?.amount,
       remindPeriodType: values.period?.type,
-      isUniversalDisplay: isChecked,
     }
     onSave(updatedData)
   }
@@ -75,7 +64,6 @@ const AnnouncementBasicSettingsForm = ({ announcement, onSave, saveLoading }: An
         },
         startedAt: announcement.startedAt ? moment(announcement.startedAt) : null,
         endedAt: announcement.endedAt ? moment(announcement.endedAt) : null,
-        isUniversalDisplay: isChecked,
       }}
       onFinish={handleSubmit}
     >
@@ -103,17 +91,6 @@ const AnnouncementBasicSettingsForm = ({ announcement, onSave, saveLoading }: An
         name="period"
       >
         <PeriodSelector />
-      </Form.Item>
-      <Form.Item
-        label={formatMessage(announcementMessages.AnnouncementBasicSettingsForm.isSiteWideAnnouncement)}
-        name="isUniversalDisplay"
-      >
-        <Checkbox
-          checked={isChecked}
-          onChange={e => {
-            setIsChecked(e.target.checked)
-          }}
-        />
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>

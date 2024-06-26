@@ -105,7 +105,6 @@ const AnnouncementPage: React.FC = () => {
                             ended_at: data.endedAt,
                             remind_period_amount: data.remindPeriodAmount,
                             remind_period_type: data.remindPeriodType,
-                            is_universal_display: data.isUniversalDisplay,
                           },
                         },
                       })
@@ -119,19 +118,27 @@ const AnnouncementPage: React.FC = () => {
               </AdminBlock>
             </div>
           </Tabs.TabPane>
-          <Tabs.TabPane key="page" tab={formatMessage(pageMessages.AnnouncementPage.pathSettings)}>
+          <Tabs.TabPane key="page" tab={formatMessage(pageMessages.AnnouncementPage.displaySettings)}>
             <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.pathSettings)}</AdminPaneTitle>
+              <AdminPaneTitle>{formatMessage(pageMessages.AnnouncementPage.displaySettings)}</AdminPaneTitle>
               <AdminBlock>
                 <AnnouncementPathSettingsForm
-                  announcementPages={announcement.announcementPages}
+                  announcement={announcement}
                   saveLoading={upsertAnnouncementPagesLoading}
                   onSave={async data => {
                     try {
+                      await updateAnnouncement({
+                        variables: {
+                          id: data.id,
+                          data: {
+                            is_universal_display: data.isUniversalDisplay,
+                          },
+                        },
+                      })
                       await upsertAnnouncementPages({
                         variables: {
-                          id: announcementId,
-                          data: data.map(page => ({ announcement_id: page.announcementId, path: page.path })),
+                          id: data.id,
+                          data: data.path.map(path => ({ announcement_id: data.id, path })),
                         },
                       })
                       message.success(formatMessage(pageMessages.AnnouncementPage.successfullySaved))
