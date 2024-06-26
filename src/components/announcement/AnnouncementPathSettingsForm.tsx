@@ -1,11 +1,11 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Form, Input } from 'antd'
+import { Button, Checkbox, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { AnnouncementPage } from '../../types/announcement'
+import { Announcement } from '../../types/announcement'
 import announcementMessages from './translations'
 
 const StyledNewPathInput = styled.div`
@@ -15,27 +15,27 @@ const StyledNewPathInput = styled.div`
   gap: 12px;
 `
 
-type FieldProps = { pathList: string[] }
+type FieldProps = { pathList: string[]; isUniversalDisplay: boolean }
 
 type AnnouncementPathSettingsFormProps = {
-  announcementPages: AnnouncementPage[]
+  announcement: Announcement
   saveLoading: boolean
-  onSave: (values: Pick<AnnouncementPage, 'announcementId' | 'path'>[]) => void
+  onSave: (data: Pick<Announcement, 'id' | 'isUniversalDisplay'> & { path: string[] }) => void
 }
 
-const AnnouncementPathSettingsForm = ({
-  announcementPages,
-  onSave,
-  saveLoading,
-}: AnnouncementPathSettingsFormProps) => {
-  const { announcementId } = useParams<{ announcementId: string }>()
+const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: AnnouncementPathSettingsFormProps) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const [isChecked, setIsChecked] = useState(announcement.isUniversalDisplay)
 
   const handleSubmit = async () => {
     await form.validateFields()
     const values = form.getFieldsValue()
-    onSave(values.pathList.map(path => ({ announcementId, path })))
+    onSave({
+      id: announcement.id,
+      isUniversalDisplay: isChecked,
+      path: values.pathList,
+    })
   }
 
   return (
@@ -45,9 +45,20 @@ const AnnouncementPathSettingsForm = ({
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
-      initialValues={{ pathList: announcementPages.map(page => page.path) }}
+      initialValues={{ isUniversalDisplay: isChecked, pathList: announcement.announcementPages.map(page => page.path) }}
       onFinish={handleSubmit}
     >
+      <Form.Item
+        label={formatMessage(announcementMessages.AnnouncementBasicSettingsForm.isSiteWideAnnouncement)}
+        name="isUniversalDisplay"
+      >
+        <Checkbox
+          checked={isChecked}
+          onChange={e => {
+            setIsChecked(e.target.checked)
+          }}
+        />
+      </Form.Item>
       <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
         <PathInput />
       </Form.Item>
