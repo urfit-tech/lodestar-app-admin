@@ -10,6 +10,7 @@ import moment from 'moment'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
+import { Box } from '@chakra-ui/react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -98,7 +99,9 @@ export const categoryColors: string[] = [
 
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
-}> = ({ memberId }) => {
+  localStorageMemberTaskDisplay?: string
+  localStorageMemberTaskFilter?: {}
+}> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
@@ -111,9 +114,9 @@ const MemberTaskAdminBlock: React.FC<{
     author?: string
     dueAt?: Date[]
     createdAt?: Date[]
-    status?: string
-  }>({})
-  const [display, setDisplay] = useState('table')
+    status?: MemberTaskProps['status']
+  }>(localStorageMemberTaskFilter || {})
+  const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -301,7 +304,7 @@ const MemberTaskAdminBlock: React.FC<{
       dataIndex: 'meeting',
       title: formatMessage(memberMessages.label.meeting),
       render: (text, record, index) => (
-        <div>
+        <Box minWidth="40px">
           {(record.hasMeeting || record.meetingGateway) && (
             <Button
               type="primary"
@@ -339,7 +342,7 @@ const MemberTaskAdminBlock: React.FC<{
               )}
             </Button>
           )}
-        </div>
+        </Box>
       ),
     },
     {
@@ -347,11 +350,17 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.priority),
       render: (text, record, index) =>
         record.priority === 'high' ? (
-          <MemberTaskTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</MemberTaskTag>
+          </Box>
         ) : record.priority === 'medium' ? (
-          <MemberTaskTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</MemberTaskTag>
+          </Box>
         ) : (
-          <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
+          <Box minWidth="70px">
+            <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
+          </Box>
         ),
       onCell: onCellClick,
       sorter: (a, b) => priorityLevel[a.priority] - priorityLevel[b.priority],
@@ -361,11 +370,17 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.status),
       render: (text, record, index) =>
         record.status === 'pending' ? (
-          <MemberTaskTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</MemberTaskTag>
+          </Box>
         ) : record.status === 'in-progress' ? (
-          <MemberTaskTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</MemberTaskTag>
+          </Box>
         ) : (
-          <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
+          <Box minWidth="60px">
+            <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
+          </Box>
         ),
       onCell: onCellClick,
     },
@@ -374,7 +389,11 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.category),
       render: (text, record, index) => (
         <StyledCategory>
-          {record.category && <StyledCategoryDot color={categoryColorPairs[record.category?.id]} />}
+          {record.category && (
+            <Box>
+              <StyledCategoryDot color={categoryColorPairs[record.category?.id]} />
+            </Box>
+          )}
           {record.category?.name}
         </StyledCategory>
       ),
@@ -432,7 +451,9 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'dueAt',
       title: formatMessage(memberMessages.label.executeDate),
-      render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
+      render: (text, record, index) => (
+        <Box minWidth="100px">{record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''}</Box>
+      ),
       sorter: (a, b) => {
         // In descending order:
         // - If 'a.dueAt' is null, return 1 to prioritize 'a' before 'b'.
@@ -491,7 +512,9 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'createdAt',
       title: formatMessage(memberMessages.label.createdDate),
-      render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''),
+      render: (text, record, index) => (
+        <Box minWidth="100px">{record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD HH:mm') : ''}</Box>
+      ),
       sorter: (a, b) => {
         if (a.createdAt === null) return 1
         if (b.createdAt === null) return -1
@@ -550,7 +573,9 @@ const MemberTaskAdminBlock: React.FC<{
       render: (text, record, index) =>
         record.executor ? (
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage src={record.executor.avatarUrl} size="28px" className="mr-2" />
+            <Box>
+              <AvatarImage src={record.executor.avatarUrl} size="28px" className="mr-2" />
+            </Box>
             <StyledName>{record.executor.name}</StyledName>
           </div>
         ) : null,
@@ -562,7 +587,9 @@ const MemberTaskAdminBlock: React.FC<{
       render: (text, record, index) =>
         record.author ? (
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage src={record.author?.avatarUrl} size="28px" className="mr-2" />
+            <Box>
+              <AvatarImage src={record.author?.avatarUrl} size="28px" className="mr-2" />
+            </Box>
             <StyledName>{record.author.name}</StyledName>
           </div>
         ) : null,
@@ -622,11 +649,13 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
-            onSelect={(value: MemberTaskProps['status']) => {
+            value={filter.status}
+            onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 status: value,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: value }))
               refetchMemberTasks()
             }}
             onClear={() => {
@@ -634,6 +663,7 @@ const MemberTaskAdminBlock: React.FC<{
                 ...filter,
                 status: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: undefined }))
             }}
           >
             <Select.Option value="pending">{formatMessage(memberMessages.status.statusPending)}</Select.Option>
@@ -647,17 +677,20 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
+            value={filter.executor}
             onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 executor: `${value}` || undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, executor: `${value}` || undefined }))
             }}
             onClear={() => {
               setFilter(filter => ({
                 ...filter,
                 executor: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, executor: undefined }))
             }}
           >
             {executors.map(executor => (
@@ -673,17 +706,20 @@ const MemberTaskAdminBlock: React.FC<{
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
+            value={filter.author}
             onSelect={value => {
               setFilter(filter => ({
                 ...filter,
                 author: `${value}` || undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, author: `${value}` || undefined }))
             }}
             onClear={() => {
               setFilter(filter => ({
                 ...filter,
                 author: undefined,
               }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, author: undefined }))
             }}
           >
             {authors.map(author => (
@@ -695,8 +731,10 @@ const MemberTaskAdminBlock: React.FC<{
           <Button
             className="mb-3"
             onClick={() => {
+              const currentDisplay = display === 'table' ? 'calendar' : 'table'
               setFilter(filter => ({ executor: filter.executor, status: filter.status }))
-              setDisplay(display === 'table' ? 'calendar' : 'table')
+              setDisplay(currentDisplay)
+              localStorage.setItem('memberTaskDisplay', currentDisplay)
             }}
           >
             {display === 'table' ? formatMessage(messages.switchCalendar) : formatMessage(messages.switchTable)}

@@ -1151,3 +1151,32 @@ export const useMemberPermissionGroups = (memberId: string) => {
     error,
   }
 }
+
+export const useTransferManagers = () => {
+  const { loading, error, data } = useQuery<hasura.GetTransferManagers>(
+    gql`
+      query GetTransferManagers {
+        member(where: { member_permissions: { permission_id: { _in: ["SALES_LEAD_ADMIN", "SALES_LEAD_NORMAL"] } } }) {
+          id
+          email
+          name
+        }
+      }
+    `,{
+      
+    },
+  )
+
+  const transferManagers: { id: string; email: string; name: string }[] =
+    data?.member.map(v => ({
+      id: v.id || '',
+      email: v.email || '',
+      name: v.name || '',
+    })) || []
+
+  return {
+    loading,
+    error,
+    transferManagers,
+  }
+}

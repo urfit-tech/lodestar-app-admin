@@ -1,3 +1,4 @@
+import { Moment } from 'moment'
 import { Category } from './general'
 
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
@@ -198,6 +199,22 @@ export type MemberTaskProps = {
   } | null
 }
 
+export type MemberTaskAdminModalFieldProps = {
+  title: string
+  categoryId: string | null
+  memberId: string | null
+  executorId: string | null
+  priority: MemberTaskProps['priority']
+  status: MemberTaskProps['status']
+  dueAt: Moment | null
+  createdAt: Moment | null
+  description: string | null
+  hasMeeting: boolean
+  meetingHours: number
+  meetingGateway: 'jitsi' | 'zoom'
+  isPrivate: boolean
+}
+
 export type MemberNote = {
   id: string
   type: 'inbound' | 'outbound' | 'demo' | 'sms' | null
@@ -265,4 +282,10 @@ export type MemberCollectionProps = {
   recycledAt?: Date | null
 }
 
-export type ColumnProperty = { id: string; name: string; placeholder: string | undefined; isEditable: boolean; isRequired: boolean }
+export type ColumnProperty = {
+  id: string
+  name: string
+  placeholder: string | undefined
+  isEditable: boolean
+  isRequired: boolean
+}
