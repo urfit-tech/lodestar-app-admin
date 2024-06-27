@@ -1,4 +1,5 @@
 export type LeadProps = {
+  appId: string
   id: string
   name: string
   email: string
