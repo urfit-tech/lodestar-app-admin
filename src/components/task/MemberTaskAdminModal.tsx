@@ -51,12 +51,13 @@ const checkMeetingMember = ({
   formExecutorId: string
   formMemberId: string
 }) => {
+  let message = ''
   if (
     overlapMeets.filter(
       overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
     ).length > 0
   ) {
-    return handleError({ message: '此時段不可指派此執行人員' })
+    message = '此時段不可指派此執行人員'
   }
 
   if (
@@ -67,7 +68,10 @@ const checkMeetingMember = ({
         overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
     ).length > 0
   ) {
-    return handleError({ message: '此時段不可指派此學員' })
+    message = '此時段不可指派此學員'
+  }
+  return {
+    message,
   }
 }
 
@@ -171,12 +175,15 @@ const MemberTaskAdminModal: React.FC<
           toBeUsedServiceId = availableZoomServiceId
         }
 
-        checkMeetingMember({
+        const { message } = checkMeetingMember({
           overlapMeets,
           memberTaskId,
           formExecutorId,
           formMemberId,
         })
+        if (!!message) {
+          return handleError({ message })
+        }
       }
 
       try {
