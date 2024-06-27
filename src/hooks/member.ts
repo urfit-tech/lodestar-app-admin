@@ -131,6 +131,7 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
             is_valid
+            country_code
           }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
@@ -227,7 +228,7 @@ export const useMemberAdmin = (memberId: string) => {
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => ({
             isValid: v.is_valid,
-            phoneNumber: v.phone,
+            phoneNumber: `${v.country_code || ''},${v.phone || ''}`,
           })),
           lastRejectedNote: data.member_by_pk.member_notes[0]
             ? {
