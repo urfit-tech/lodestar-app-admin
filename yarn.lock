@@ -7459,6 +7459,11 @@ cosmiconfig@^7.0.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
+country-codes-list@^1.6.11:
+  version "1.6.11"
+  resolved "https://registry.yarnpkg.com/country-codes-list/-/country-codes-list-1.6.11.tgz#fd8241c9a833447677a1b8efdd0e1cd19a1fc176"
+  integrity sha512-MsHoJ83tGyv9tFspeI8yHBomiTH4rruHxdWhNWGG9d1ykXgLyawh/VykmYPH5KqduY+9Q2RUNlL2/KGkXJqANA==
+
 coupon-code@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/coupon-code/-/coupon-code-0.4.5.tgz#e8be0567125c8c87abd1da882c2f8a2f9005132a"
@@ -12281,6 +12286,11 @@ libphonenumber-js@1.9.34:
   version "1.9.34"
   resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.9.34.tgz#ddddc778a9b2f53c70500fcf10c9483596e3574f"
   integrity sha512-gHTNU9xTtVgSp30IDX/57W4pETMXDIYXFfwEOJVXiYosiY7Hc7ogJwlBjOqlCcU04X0aA8DT57hdwUC1sJBJnA==
+
+libphonenumber-js@^1.11.4:
+  version "1.11.4"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.4.tgz#e63fe553f45661b30bb10bb8c82c9cf2b22ec32a"
+  integrity sha512-F/R50HQuWWYcmU/esP5jrH5LiWYaN7DpN0a/99U8+mnGGtnx8kmRE+649dQh3v+CowXXZc8vpkf5AmYkO0AQ7Q==
 
 lie@3.1.1:
   version "3.1.1"

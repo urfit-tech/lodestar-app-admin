@@ -1,7 +1,9 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
+import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import countryCodes from 'country-codes-list'
+import { parsePhoneNumber } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -11,7 +13,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
@@ -34,10 +36,58 @@ type FieldProps = {
   email: string
   star: number
   phones: string[]
+  countryCodes: string[]
   categoryIds: string[]
   specialities: string[]
   tags?: string[]
   managerId?: string
+}
+
+interface PhoneData {
+  phones: string[]
+  countryCodes: string[]
+}
+
+interface CountryCodeData {
+  country: string
+  countryCode: string
+}
+
+const getAllCountryCodeData = () => {
+  const countryCodesObject = countryCodes.customList(
+    'countryCode' as any,
+    `{"country":"{countryCode}","countryCode":"+{countryCallingCode}"}`,
+  )
+  const result: CountryCodeData[] = []
+  Object.values(countryCodesObject).forEach(value => {
+    result.push(JSON.parse(value))
+  })
+
+  return result
+}
+
+const splitPhoneData = (phoneData: string[] = [], separator: string): PhoneData => {
+  const phones: string[] = []
+  const countryCodes: string[] = []
+
+  phoneData.forEach(data => {
+    if (!data) data = `${separator}`
+    const [countryCode, phone] = data.split(separator)
+    countryCodes.push(countryCode ?? '')
+    phones.push(phone ?? '')
+  })
+
+  return {
+    phones,
+    countryCodes,
+  }
+}
+
+const customPhoneNumber = (countryCode: string, phone: string) => {
+  if (countryCode === '+886' && phone.length === 9) {
+    return `0${phone}`
+  }
+  return phone
 }
 
 const MemberProfileBasicForm: React.FC<{
@@ -54,6 +104,22 @@ const MemberProfileBasicForm: React.FC<{
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
 
+  const validatePhoneData = (_: any, value: string[]) => {
+    const { phones, countryCodes } = splitPhoneData(value, ',')
+    const regex = /^[0-9]*$/
+
+    for (const index in value) {
+      if (value.length <= 1 && !phones[index].trim()) return Promise.resolve()
+      if (
+        !regex.test(phones[index]) ||
+        (value.length > 1 && !phones[index].trim()) ||
+        !parsePhoneNumber(`${countryCodes[index]}${phones[index]}`).isValid()
+      )
+        return Promise.reject(new Error(formatMessage(errorMessages.form.phoneFormat)))
+    }
+    return Promise.resolve()
+  }
+
   if (!memberAdmin) {
     return <Skeleton active />
   }
@@ -62,6 +128,7 @@ const MemberProfileBasicForm: React.FC<{
     try {
       setLoading(true)
       const values = await form.validateFields()
+      const { phones, countryCodes } = splitPhoneData(values.phones, ',')
       updateMemberProfileBasic({
         variables: {
           name: values?.name || memberAdmin.name,
@@ -72,13 +139,14 @@ const MemberProfileBasicForm: React.FC<{
           star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
           memberId: memberAdmin.id,
           phones: permissions['MEMBER_PHONE_ADMIN']
-            ? values.phones
+            ? phones
                 .filter((phone: string) => !!phone)
-                .map((phone: string) => {
+                .map((phone: string, index: number) => {
                   const findPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
                   return {
                     member_id: memberAdmin.id,
-                    phone,
+                    phone: customPhoneNumber(countryCodes[index], phone),
+                    country_code: countryCodes[index],
                     is_valid: findPhone?.isValid,
                   }
                 })
@@ -161,9 +229,15 @@ const MemberProfileBasicForm: React.FC<{
         <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
-        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phones">
-          <PhoneCollectionInput />
-        </Form.Item>
+        <div>
+          <Form.Item
+            label={formatMessage(commonMessages.label.phone)}
+            name="phones"
+            rules={[{ validator: validatePhoneData }]}
+          >
+            <PhoneCollectionInput />
+          </Form.Item>
+        </div>
       )}
       {permissions['MEMBER_STAR_ADMIN'] && (
         <Form.Item label={formatMessage(commonMessages.label.star)} name="star">
@@ -199,19 +273,21 @@ const PhoneCollectionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { phones, countryCodes } = splitPhoneData(value, ',')
   return (
     <>
-      {value?.map((phone, index) => (
-        <div className="mb-3 position-relative">
+      {value?.map((_, index) => (
+        <div className="mb-3 position-relative" key={index}>
           <Input
             key={index}
             className={'mr-3 mb-0'}
-            value={phone}
+            value={phones[index]}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, e.target.value.trim())
+              newValue.splice(index, 1, `${countryCodes[index]},${e.target.value.trim()}`)
               onChange && onChange(newValue)
             }}
+            addonBefore={<CountryCodeSelect value={value} index={index} onChange={onChange} />}
           />
           {index !== 0 && (
             <StyledCloseIcon
@@ -239,6 +315,38 @@ const PhoneCollectionInput: React.FC<{
       >
         {formatMessage(commonMessages.label.addPhones)}
       </Button>
+    </>
+  )
+}
+
+const CountryCodeSelect: React.FC<{
+  value: string[]
+  index: number
+  onChange?: (value: string[]) => void
+}> = ({ value, index, onChange }) => {
+  const { phones, countryCodes } = splitPhoneData(value, ',')
+  const allCountryCodeData = getAllCountryCodeData()
+
+  return (
+    <>
+      <Select
+        showSearch
+        style={{ minWidth: '120px' }}
+        key={`${index}${countryCodes[index]}`}
+        value={countryCodes[index]}
+        onChange={e => {
+          const newValue = [...value]
+          newValue.splice(index, 1, `${e},${phones[index]}`)
+          onChange && onChange(newValue)
+        }}
+      >
+        {allCountryCodeData?.map(data => (
+          <Select.Option
+            key={`${data.country}${data.countryCode}`}
+            value={data.countryCode}
+          >{`${data.country} (${data.countryCode})`}</Select.Option>
+        ))}
+      </Select>
     </>
   )
 }
