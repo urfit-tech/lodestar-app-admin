@@ -33,6 +33,7 @@ const formMessages = {
     customScript: { id: 'form.PermissionInput.customScript', defaultMessage: '自訂腳本' },
     report: { id: 'form.PermissionInput.report', defaultMessage: '報表分析' },
     certificate: { id: 'form.PermissionInput.certificate', defaultMessage: '證書' },
+    announcement: { id: 'form.PermissionInput.announcement', defaultMessage: '公告' },
   }),
   PermissionGroup: defineMessages({
     // backstage
@@ -420,6 +421,12 @@ const formMessages = {
     CERTIFICATE_ADMIN: {
       id: 'form.PermissionGroup.CERTIFICATE_ADMIN',
       defaultMessage: '證書管理',
+    },
+
+    // announcement
+    ANNOUNCEMENT_ADMIN: {
+      id: 'form.PermissionGroup.ANNOUNCEMENT_ADMIN',
+      defaultMessage: '公告管理',
     },
   }),
   GiftPlanInput: defineMessages({
