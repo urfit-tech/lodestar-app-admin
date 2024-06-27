@@ -8,10 +8,13 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
+import { useGetProgramLayoutTemplates } from '../../hooks/data'
 import { ClassType } from '../../types/general'
+import { ProgramLayoutTemplate } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
+import { ProgramLayoutTemplateSelect } from '../form/ProgramLayoutTemplateSelector'
 
 const StyledLabel = styled.span`
   font-size: 16px;
@@ -33,6 +36,7 @@ type FieldProps = {
   creatorId?: string
   isSubscription?: boolean
   merchandiseType: 'general-physical' | 'general-virtual' | 'customized-physical' | 'customized-virtual'
+  programLayoutTemplateId?: string
 }
 
 const ProductCreationModal: React.FC<
@@ -42,6 +46,7 @@ const ProductCreationModal: React.FC<
     withCreatorSelector?: boolean
     withProgramType?: boolean
     withMerchandiseType?: boolean
+    withProgramLayoutTemplateType?: boolean
     onCreate?: (values: {
       title: string
       categoryIds?: string[]
@@ -49,6 +54,7 @@ const ProductCreationModal: React.FC<
       isSubscription?: boolean
       isPhysical?: boolean
       isCustomized?: boolean
+      programLayoutTemplateData?: ProgramLayoutTemplate
     }) => Promise<any>
     allowedPermissions?: string[]
     creatorAppellation?: string
@@ -61,6 +67,7 @@ const ProductCreationModal: React.FC<
   withCreatorSelector,
   withProgramType,
   withMerchandiseType,
+  withProgramLayoutTemplateType,
   onCreate,
   allowedPermissions,
   creatorAppellation,
@@ -73,6 +80,7 @@ const ProductCreationModal: React.FC<
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
+  const { programLayoutTemplates, defaultFixedTemplate } = useGetProgramLayoutTemplates()
 
   const handleSubmit = () => {
     form
@@ -90,6 +98,9 @@ const ProductCreationModal: React.FC<
           isSubscription: withProgramType ? values.isSubscription : undefined,
           isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
+          programLayoutTemplateData: values.programLayoutTemplateId
+            ? programLayoutTemplates.filter(template => template.id === values.programLayoutTemplateId)[0]
+            : defaultFixedTemplate,
         }).finally(() => setLoading(false))
       })
       .catch(handleError)
@@ -188,6 +199,14 @@ const ProductCreationModal: React.FC<
                 </>
               )}
             </Radio.Group>
+          </Form.Item>
+        )}
+        {withProgramLayoutTemplateType && (
+          <Form.Item label={formatMessage(commonMessages.label.selectTemplate)} name="programLayoutTemplateId">
+            <ProgramLayoutTemplateSelect
+              programLayoutTemplates={programLayoutTemplates}
+              defaultTemplate={defaultFixedTemplate}
+            />
           </Form.Item>
         )}
       </Form>

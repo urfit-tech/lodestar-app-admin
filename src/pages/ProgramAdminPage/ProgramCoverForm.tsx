@@ -12,8 +12,10 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { StyledTips } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
+import MediaUploader from '../../components/common/MediaUploader'
 import hasura from '../../hasura'
 import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
+import { Media } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
@@ -35,13 +37,20 @@ const StyledUploadWarning = styled.div`
   height: 100%;
 `
 
+const validateFile = (fileType: string): Media => {
+  if (fileType.startsWith('video')) return 'video'
+  else return 'image'
+}
+
 const ProgramCoverForm: React.VFC<{
   programId: string | null
   coverDefaultUrl: string
   coverMobileUrl: string
   coverThumbnailUrl: string
+  coverType: string
+  mobileCoverType: string
   onRefetch?: () => void
-}> = ({ programId, coverDefaultUrl, coverMobileUrl, coverThumbnailUrl, onRefetch }) => {
+}> = ({ programId, coverDefaultUrl, coverMobileUrl, coverThumbnailUrl, coverType, mobileCoverType, onRefetch }) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
@@ -54,9 +63,15 @@ const ProgramCoverForm: React.VFC<{
     UPDATE_PROGRAM_COVER,
   )
 
-  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [coverMedia, setCoverMedia] = useState<File | null>(null)
   const [coverMobileImage, setCoverMobileImage] = useState<File | null>(null)
   const [coverThumbnailImage, setCoverThumbnailImage] = useState<File | null>(null)
+
+  const coverMediaType =
+    (!coverMedia && coverType === 'image') || (coverMedia && validateFile(coverMedia.type) === 'image')
+      ? 'image'
+      : 'video'
+  const isShowOriginSize = coverMediaType === 'image' && (coverMedia || coverDefaultUrl)
 
   const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
     isEmpty(coverDefaultUrl) ? false : !isImageUrlResized(coverDefaultUrl),
@@ -77,8 +92,8 @@ const ProgramCoverForm: React.VFC<{
     const thumbnailCoverId = uuid()
 
     try {
-      if (coverImage) {
-        await uploadFile(`program_covers/${appId}/${programId}/${defaultCoverId}`, coverImage, authToken, {
+      if (coverMedia) {
+        await uploadFile(`program_covers/${appId}/${programId}/${defaultCoverId}`, coverMedia, authToken, {
           cancelToken: new axios.CancelToken(canceler => {
             uploadCanceler.current = canceler
           }),
@@ -103,12 +118,13 @@ const ProgramCoverForm: React.VFC<{
       return error
     }
 
-    const uploadCoverUrl = getImageSizedUrl(
-      isUseOriginSizeCoverImage,
-      coverImage
-        ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}`
-        : coverDefaultUrl,
-    )
+    const defaultUploadCoverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}`
+    const uploadCoverUrl = !coverMedia
+      ? coverDefaultUrl
+      : validateFile(coverMedia.type) === 'image'
+      ? getImageSizedUrl(isUseOriginSizeCoverImage, coverMedia ? defaultUploadCoverUrl : coverDefaultUrl)
+      : defaultUploadCoverUrl
+
     const uploadMobileUrl = getImageSizedUrl(
       isUseOriginSizeCoverMobileImage,
       coverMobileImage
@@ -128,10 +144,12 @@ const ProgramCoverForm: React.VFC<{
         coverDefaultUrl: uploadCoverUrl,
         coverMobileUrl: uploadMobileUrl,
         coverThumbnailUrl: uploadThumbnailUrl,
+        coverType: coverMediaType === 'image' ? 'image' : 'video',
+        mobileCoverType: 'image',
       },
     })
       .then(() => {
-        setCoverImage(null)
+        setCoverMedia(null)
         setCoverMobileImage(null)
         setCoverThumbnailImage(null)
         onRefetch?.()
@@ -164,7 +182,10 @@ const ProgramCoverForm: React.VFC<{
               <Tooltip
                 placement="top"
                 title={
-                  <StyledTips>{formatMessage(ProgramAdminPageMessages.ProgramCoverForm.defaultImageTips)}</StyledTips>
+                  <>
+                    <StyledTips>{formatMessage(ProgramAdminPageMessages.ProgramCoverForm.defaultImageTips)}</StyledTips>
+                    <StyledTips>{formatMessage(ProgramAdminPageMessages.ProgramCoverForm.defaultVideoTips)}</StyledTips>
+                  </>
                 }
               >
                 <QuestionCircleFilled className="ml-2" />
@@ -173,15 +194,16 @@ const ProgramCoverForm: React.VFC<{
           }
         >
           <div className="d-flex align-items-center">
-            <ImageUploader
-              file={coverImage}
+            <MediaUploader
+              file={coverMedia}
               initialCoverUrl={coverDefaultUrl}
               onChange={file => {
-                setCoverImage(file)
+                setCoverMedia(file)
                 setIsUseOriginSizeCoverImage(false)
               }}
+              mediaType={coverMediaType}
             />
-            {(!isEmpty(coverDefaultUrl) || coverImage) && (
+            {isShowOriginSize && (
               <Checkbox
                 className="ml-2"
                 checked={isUseOriginSizeCoverImage}
@@ -192,9 +214,14 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
               </Checkbox>
             )}
-            {coverImage && (
+            {coverMedia && (
               <StyledUploadWarning className="ml-2">
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
+              </StyledUploadWarning>
+            )}
+            {!coverMedia && coverDefaultUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
               </StyledUploadWarning>
             )}
           </div>
@@ -213,6 +240,7 @@ const ProgramCoverForm: React.VFC<{
               initialCoverUrl={coverMobileUrl}
               onChange={file => setCoverMobileImage(file)}
             />
+
             {(!isEmpty(coverMobileUrl) || coverMobileImage) && (
               <Checkbox
                 className="ml-2"
@@ -224,9 +252,15 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
               </Checkbox>
             )}
+
             {coverMobileImage && (
               <StyledUploadWarning className="ml-2">
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
+              </StyledUploadWarning>
+            )}
+            {!coverMobileImage && coverMobileUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
               </StyledUploadWarning>
             )}
           </div>
@@ -269,6 +303,11 @@ const ProgramCoverForm: React.VFC<{
                 {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
               </StyledUploadWarning>
             )}
+            {!coverThumbnailImage && coverThumbnailUrl && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.uploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -276,7 +315,7 @@ const ProgramCoverForm: React.VFC<{
           <Button
             className="mr-2"
             onClick={() => {
-              setCoverImage(null)
+              setCoverMedia(null)
               setCoverMobileImage(null)
               setCoverThumbnailImage(null)
               form.resetFields()
@@ -299,10 +338,18 @@ const UPDATE_PROGRAM_COVER = gql`
     $coverDefaultUrl: String
     $coverMobileUrl: String
     $coverThumbnailUrl: String
+    $coverType: String!
+    $mobileCoverType: String!
   ) {
     update_program(
       where: { id: { _eq: $programId } }
-      _set: { cover_url: $coverDefaultUrl, cover_mobile_url: $coverMobileUrl, cover_thumbnail_url: $coverThumbnailUrl }
+      _set: {
+        cover_url: $coverDefaultUrl
+        cover_mobile_url: $coverMobileUrl
+        cover_thumbnail_url: $coverThumbnailUrl
+        cover_type: $coverType
+        mobile_cover_type: $mobileCoverType
+      }
     ) {
       affected_rows
     }

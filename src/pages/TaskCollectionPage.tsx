@@ -9,6 +9,9 @@ import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 
 const TaskCollectionPage: React.FC = () => {
+  const localStorageMemberTaskDisplay = localStorage.getItem('memberTaskDisplay') || undefined
+  const localStorageMemberTaskFilter = JSON.parse(localStorage.getItem('memberTaskFilter') || 'null')
+
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
 
@@ -23,7 +26,10 @@ const TaskCollectionPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.tasks)}</span>
       </AdminPageTitle>
 
-      <MemberTaskAdminBlock />
+      <MemberTaskAdminBlock
+        localStorageMemberTaskDisplay={localStorageMemberTaskDisplay}
+        localStorageMemberTaskFilter={localStorageMemberTaskFilter}
+      />
     </AdminLayout>
   )
 }
