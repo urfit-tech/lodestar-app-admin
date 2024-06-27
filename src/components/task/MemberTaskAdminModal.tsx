@@ -36,11 +36,6 @@ const StyledFormItemWrapper = styled.div`
     width: 100%;
   }
 `
-const MeetingButton = styled(Button)`
-  width: 100%;
-  border-radius: 4px;
-  justify-content: center;
-`
 
 const toMillisecond = (date: Date | null | undefined) => date && dayjs(date).toDate().getTime()
 const toFormat = (date: moment.Moment | null) => date?.format('YYYY-MM-DDTHH:mm:00Z')
@@ -56,12 +51,13 @@ const checkMeetingMember = ({
   formExecutorId: string
   formMemberId: string
 }) => {
+  let message = ''
   if (
     overlapMeets.filter(
       overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
     ).length > 0
   ) {
-    return handleError({ message: '此時段不可指派此執行人員' })
+    message = '此時段不可指派此執行人員'
   }
 
   if (
@@ -72,7 +68,10 @@ const checkMeetingMember = ({
         overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
     ).length > 0
   ) {
-    return handleError({ message: '此時段不可指派此學員' })
+    message = '此時段不可指派此學員'
+  }
+  return {
+    message,
   }
 }
 
@@ -177,12 +176,15 @@ const MemberTaskAdminModal: React.FC<
           toBeUsedServiceId = availableZoomServiceId
         }
 
-        checkMeetingMember({
+        const { message } = checkMeetingMember({
           overlapMeets,
           memberTaskId,
           formExecutorId,
           formMemberId,
         })
+        if (!!message) {
+          return handleError({ message })
+        }
       }
 
       try {
