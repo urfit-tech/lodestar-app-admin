@@ -61,6 +61,7 @@ const PermissionInput: React.FC<{
     salesManagement: settings['custom.permission_group.salesManagement'] === '1',
     report: !!enabledModules.report,
     certificate: !!enabledModules.certificate,
+    announcement: !!enabledModules.announcement,
   }
 
   return (
