@@ -1,6 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -21,6 +22,7 @@ import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useMutateProgram, useProgram } from '../../hooks/program'
 import pageMessages from '../translation'
+import ProgramAdditionalSettingsForm from './ProgramAdditionalSettingsForm'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
 import ProgramCoverForm from './ProgramCoverForm'
@@ -40,6 +42,10 @@ const ProgramAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
+  const isShowProgramAdditionalSettingsForm =
+    Boolean(program?.programLayoutTemplateConfig?.moduleData) &&
+    !isEmpty(program?.programLayoutTemplateConfig?.moduleData) &&
+    enabledModules?.program_layout_template
 
   return (
     <>
@@ -97,6 +103,13 @@ const ProgramAdminPage: React.FC = () => {
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
 
+              {isShowProgramAdditionalSettingsForm ? (
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
+                  <ProgramAdditionalSettingsForm programLayoutTemplateConfig={program?.programLayoutTemplateConfig} />
+                </AdminBlock>
+              ) : null}
+
               <AdminBlock>
                 {program?.id ? (
                   <>
@@ -111,6 +124,8 @@ const ProgramAdminPage: React.FC = () => {
                       coverDefaultUrl={program?.coverUrl || ''}
                       coverMobileUrl={program?.coverMobileUrl || ''}
                       coverThumbnailUrl={program?.coverThumbnailUrl || ''}
+                      coverType={program.coverType}
+                      mobileCoverType={program.mobileCoverType}
                       onRefetch={refetchProgram}
                     />
                   </>

@@ -525,6 +525,51 @@ const pageMessages = {
     tablet: { id: 'page.CraftPageBuilderController.tablet', defaultMessage: 'tablet' },
     mobile: { id: 'page.CraftPageBuilderController.mobile', defaultMessage: 'mobile' },
   }),
+  AnnouncementCollectionPage: defineMessages({
+    pageTitle: { id: 'page.AnnouncementCollectionPage.pageTitle', defaultMessage: 'Announcement Management' },
+    title: { id: 'page.AnnouncementCollectionPage.title', defaultMessage: 'announcement title' },
+    addAnnouncement: { id: 'page.AnnouncementCollectionPage.addAnnouncement', defaultMessage: 'Add Announcement' },
+    addFailed: { id: 'page.AnnouncementCollectionPage.addFailed', defaultMessage: 'Add Failed' },
+    createdTime: { id: 'page.AnnouncementCollectionPage.createdTime', defaultMessage: 'Created Time' },
+    periodOfAnnouncement: {
+      id: 'page.AnnouncementCollectionPage.periodOfAnnouncement',
+      defaultMessage: 'Period of announcement',
+    },
+    fromNowOn: {
+      id: 'page.AnnouncementCollectionPage.fromNowOn',
+      defaultMessage: 'From now on',
+    },
+    unlimitedDate: {
+      id: 'page.AnnouncementCollectionPage.unlimitedDate',
+      defaultMessage: 'Unlimited Date',
+    },
+  }),
+  AnnouncementPage: defineMessages({
+    announcementSettings: {
+      id: 'page.AnnouncementCollectionPage.announcementSettings',
+      defaultMessage: 'Announcement Settings',
+    },
+    readRecords: {
+      id: 'page.AnnouncementCollectionPage.readRecords',
+      defaultMessage: 'Read Records',
+    },
+    basicSettings: {
+      id: 'page.AnnouncementCollectionPage.basicSettings',
+      defaultMessage: 'Basic Settings',
+    },
+    successfullySaved: {
+      id: 'page.AnnouncementCollectionPage.successfullySaved',
+      defaultMessage: 'Successfully saved',
+    },
+    publishSettings: {
+      id: 'page.AnnouncementCollectionPage.publishSettings',
+      defaultMessage: 'Public Settings',
+    },
+    displaySettings: {
+      id: 'page.AnnouncementCollectionPage.displaySettings',
+      defaultMessage: 'Display Settings',
+    },
+  }),
 }
 
 export default pageMessages

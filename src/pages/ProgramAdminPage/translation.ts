@@ -12,6 +12,7 @@ const ProgramAdminPageMessages = {
     preview: { id: 'ProgramAdminPage.*.preview', defaultMessage: '預覽' },
     programContent: { id: 'ProgramAdminPage.*.programContent', defaultMessage: '課程內容' },
     programSettings: { id: 'ProgramAdminPage.*.programSettings', defaultMessage: '課程設定' },
+    otherSettings: { id: 'ProgramAdminPage.*.otherSettings', defaultMessage: 'Other settings' },
     basicSettings: { id: 'ProgramAdminPage.*.basicSettings', defaultMessage: '基本設定' },
     programIntroduction: { id: 'ProgramAdminPage.*.programIntroduction', defaultMessage: '課程介紹' },
     salesPlan: { id: 'ProgramAdminPage.*.salesPlan', defaultMessage: '銷售方案' },
@@ -39,6 +40,10 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.ProgramCoverForm.defaultImageTips',
       defaultMessage: '建議圖片尺寸：1200*675px',
     },
+    defaultVideoTips: {
+      id: 'ProgramAdminPage.ProgramCoverForm.defaultVideoTips',
+      defaultMessage: '建議影片大小：200MB',
+    },
     thumbnailImageTips: {
       id: 'ProgramAdminPage.ProgramCoverForm.thumbnailImageTips',
       defaultMessage: '建議圖片尺寸：600*338px',
@@ -50,6 +55,10 @@ const ProgramAdminPageMessages = {
     notUploaded: {
       id: 'ProgramAdminPage.ProgramCoverForm.notUploaded',
       defaultMessage: '*尚未上傳',
+    },
+    uploaded: {
+      id: 'ProgramAdminPage.ProgramCoverForm.uploaded',
+      defaultMessage: 'The file has been uploaded',
     },
   }),
   ProgramApprovalHistory: defineMessages({
@@ -63,6 +72,10 @@ const ProgramAdminPageMessages = {
     category: { id: 'ProgramAdminPage.ProgramBasicForm.category', defaultMessage: '分類' },
     tag: { id: 'ProgramAdminPage.ProgramBasicForm.tag', defaultMessage: '標籤' },
     languages: { id: 'ProgramAdminPage.ProgramBasicForm.languages', defaultMessage: '顯示語系' },
+    programLayoutTemplate: {
+      id: 'ProgramAdminPage.ProgramBasicForm.programLayoutTemplate',
+      defaultMessage: 'Switch Program Template',
+    },
     locale: {
       id: 'ProgramAdminPage.ProgramBasicForm.locale',
       defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示',
@@ -88,7 +101,18 @@ const ProgramAdminPageMessages = {
     displayFooter: { id: 'ProgramAdminPage.ProgramBasicForm.displayFooter', defaultMessage: 'display footer' },
     display: { id: 'ProgramAdminPage.ProgramBasicForm.display', defaultMessage: 'display' },
     hide: { id: 'ProgramAdminPage.ProgramBasicForm.hide', defaultMessage: 'hide' },
-
+  }),
+  ProgramOtherForm: defineMessages({
+    expectedStartDate: {
+      id: 'ProgramAdminPage.ProgramOtherForm.expectedStartDate',
+      defaultMessage: 'Expected start date',
+    },
+    expectedDuration: {
+      id: 'ProgramAdminPage.ProgramOtherForm.expectedDuration',
+      defaultMessage: 'Expected duration(min)',
+    },
+    expectedSections: { id: 'ProgramAdminPage.ProgramOtherForm.expectedSections', defaultMessage: 'Expected sections' },
+    completeRelease: { id: 'ProgramAdminPage.ProgramOtherForm.completeRelease', defaultMessage: 'Complete release' },
   }),
   ProgramPlanAdminBlock: defineMessages({
     perpetualPlan: { id: 'ProgramAdminPage.ProgramPlanAdminBlock.perpetualPlan', defaultMessage: '永久方案' },

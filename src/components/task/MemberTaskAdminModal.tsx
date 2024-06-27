@@ -1,5 +1,4 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/client'
 import { Stack, Text } from '@chakra-ui/react'
 import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Radio, Select } from 'antd'
 import Checkbox from 'antd/lib/checkbox/Checkbox'
@@ -8,19 +7,18 @@ import TextArea from 'antd/lib/input/TextArea'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
-import { deleteZoomMeet, handleError } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
-import { GetOverlapMeets, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { useDeleteMeet, useGetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
-import { GetService } from '../../hooks/service'
+import { useZoomServiceCheck } from '../../hooks/service'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import { Meet } from '../../types/meet'
-import { MemberTaskProps } from '../../types/member'
+import { OverlapMeets } from '../../types/meet'
+import { MemberTaskAdminModalFieldProps, MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
@@ -38,32 +36,44 @@ const StyledFormItemWrapper = styled.div`
     width: 100%;
   }
 `
-const MeetingButton = styled(Button)`
-  width: 100%;
-  border-radius: 4px;
-  justify-content: center;
-`
-
-type FieldProps = {
-  title: string
-  categoryId: string | null
-  memberId: string | null
-  executorId: string | null
-  priority: MemberTaskProps['priority']
-  status: MemberTaskProps['status']
-  dueAt: Moment | null
-  createdAt: Moment | null
-  description: string | null
-  hasMeeting: boolean
-  meetingHours: number
-  meetingGateway: 'jitsi' | 'zoom'
-  isPrivate: boolean
-}
-
-type OverlapMeets = Pick<Meet, 'id' | 'target' | 'hostMemberId' | 'serviceId' | 'meetMembers'>[]
 
 const toMillisecond = (date: Date | null | undefined) => date && dayjs(date).toDate().getTime()
 const toFormat = (date: moment.Moment | null) => date?.format('YYYY-MM-DDTHH:mm:00Z')
+
+const checkMeetingMember = ({
+  overlapMeets,
+  memberTaskId,
+  formExecutorId,
+  formMemberId,
+}: {
+  overlapMeets: OverlapMeets
+  memberTaskId: string | undefined
+  formExecutorId: string
+  formMemberId: string
+}) => {
+  let message = ''
+  if (
+    overlapMeets.filter(
+      overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
+    ).length > 0
+  ) {
+    message = '此時段不可指派此執行人員'
+  }
+
+  if (
+    overlapMeets.filter(
+      overlapMeet =>
+        overlapMeet.target !== memberTaskId &&
+        formMemberId &&
+        overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
+    ).length > 0
+  ) {
+    message = '此時段不可指派此學員'
+  }
+  return {
+    message,
+  }
+}
 
 const MemberTaskAdminModal: React.FC<
   {
@@ -75,201 +85,111 @@ const MemberTaskAdminModal: React.FC<
     afterClose?: () => void
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, afterClose, ...props }) => {
-  const apolloClient = useApolloClient()
-  const { authToken, currentMemberId, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<MemberTaskAdminModalFieldProps>()
   const { insertMemberTask, updateMemberTask, deleteMemberTask } = useMutateMemberTask()
-  const { insertMeet, deleteGeneralMeet } = useMutateMeet()
-  const { insertMeetMember, deleteMeetMember } = useMutateMeetMember()
+  const { insertMeet } = useMutateMeet()
+  const { insertMeetMember } = useMutateMeetMember()
+  const { deleteMeet } = useDeleteMeet()
+  const { getOverlapMeets } = useGetOverlapMeet()
+  const { zoomServiceCheck, invalidGateways, setInvalidGateways } = useZoomServiceCheck()
   const [loading, setLoading] = useState(false)
   const [meetingGateway, setMeetingGateWay] = useState<'zoom' | 'jitsi'>()
   const [hasMeeting, setHasMeeting] = useState(!!memberTask?.meetingGateway || memberTask?.hasMeeting || false)
-  const [invalidGateways, setInvalidGateways] = useState<string[]>([])
 
-  const getOverlapMeets = async ({ startedAt, endedAt }: { startedAt: string; endedAt: string }) => {
-    let overlapMeets: OverlapMeets = []
-    const { data: overlapMeetsData } = await apolloClient.query<
-      hasura.GetOverlapMeets,
-      hasura.GetOverlapMeetsVariables
-    >({
-      query: GetOverlapMeets,
-      variables: {
-        appId,
-        startedAt,
-        endedAt,
-      },
-      fetchPolicy: 'network-only',
-    })
-    overlapMeets =
-      overlapMeetsData?.meet.map(v => ({
-        id: v.id,
-        target: v.target,
-        hostMemberId: v.host_member_id,
-        serviceId: v.service_id,
-        meetMembers: v.meet_members.map(meetMember => ({
-          id: meetMember.id,
-          memberId: meetMember.member_id,
-        })),
-        meetingGateway: v.gateway,
-      })) || []
+  const handleSubmit = async (onSuccess?: () => void) => {
+    try {
+      await form.validateFields()
+      const formValues = form.getFieldsValue()
+      const {
+        memberId: formMemberId,
+        dueAt: formDueAt,
+        executorId: formExecutorId,
+        meetingHours: formMeetingHours,
+        meetingGateway: formMeetingGateway,
+        title: formTitle,
+        priority: formPriority,
+        categoryId: formCategoryId,
+        status: formStatus,
+        description: formDescription,
+        hasMeeting: formHasMeeting,
+        createdAt: formCreatedAt,
+        isPrivate: formIsPrivate,
+      } = formValues
 
-    return {
-      overlapMeets,
-    }
-  }
+      if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
 
-  const zoomServiceCheck = async ({ overlapMeets }: { overlapMeets: OverlapMeets }) => {
-    const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
-      query: GetService,
-      variables: {
-        appId,
-      },
-    })
-    const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
+      const memberTaskId = memberTask?.id
+      const memberTaskMeetId = memberTask?.meet?.id || null
+      const memberTaskMeetingGateway = memberTask?.meetingGateway
+      const memberTaskExecutorId = memberTask?.executor?.id
+      const memberTaskMemberId = memberTask?.member?.id
+      const memberTaskMeetingHours = memberTask?.meetingHours
+      const memberTaskDueAtTime = toMillisecond(memberTask?.dueAt)
+      const formDueAtTime = toMillisecond(formDueAt?.toDate())
+      const changeMeetingCondition =
+        memberTaskExecutorId !== formExecutorId ||
+        memberTaskMemberId !== formMemberId ||
+        memberTaskMeetingGateway !== formMeetingGateway ||
+        memberTaskDueAtTime !== formDueAtTime ||
+        memberTaskMeetingHours !== formMeetingHours
 
-    if (zoomServices.length === 0) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
-      return handleError({ message: '無zoom帳號' })
-    }
-    const zoomServiceIds = zoomServices.map(service => service.id)
-    const periodUsedServiceId = overlapMeets.map(meet => meet.serviceId)
-    const availableZoomServiceId = zoomServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
-    if (!availableZoomServiceId) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
-      return handleError({ message: '此時段無可用zoom帳號' })
-    } else {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom')])
-    }
-    return availableZoomServiceId
-  }
+      let toBeUsedServiceId: string | null = null
 
-  const deleteMeet = async ({
-    memberTaskMeetId,
-    memberTaskMemberId,
-    memberTaskMeetingGateway,
-  }: {
-    memberTaskMeetId: string
-    memberTaskMemberId: string
-    memberTaskMeetingGateway: string
-  }) => {
-    await deleteMeetMember({ variables: { meetId: memberTaskMeetId, memberId: memberTaskMemberId } }).catch(error =>
-      handleError({ message: `delete meet member failed. error:${error}` }),
-    )
-    // The general meet is no need service id meet. e.g. jitsi
-    await deleteGeneralMeet({ variables: { meetId: memberTaskMeetId } }).catch(error =>
-      handleError({ message: `delete meet failed. error:${error}` }),
-    )
-    if (memberTaskMeetingGateway === 'zoom') {
-      await deleteZoomMeet(memberTaskMeetId, authToken).catch(handleError)
-    }
-  }
-
-  const handleSubmit = (onSuccess?: () => void) => {
-    form
-      .validateFields()
-      .then(async () => {
-        const formValues = form.getFieldsValue()
-        const {
-          memberId: formMemberId,
-          dueAt: formDueAt,
-          executorId: formExecutorId,
-          meetingHours: formMeetingHours,
-          meetingGateway: formMeetingGateway,
-          title: formTitle,
-          priority: formPriority,
-          categoryId: formCategoryId,
-          status: formStatus,
-          description: formDescription,
-          hasMeeting: formHasMeeting,
-          createdAt: formCreatedAt,
-          isPrivate: formIsPrivate,
-        } = formValues
-
-        if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
-        const memberTaskId = memberTask?.id
-        const memberTaskMeetId = memberTask?.meet?.id || null
-        let toBeUsedServiceId: string | null = null
-        let updatedMeetId = memberTask?.meet?.id || null
-
-        if (hasMeeting) {
-          if (!formDueAt)
-            return handleError({
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(memberMessages.label.executeDate),
-              }),
-            })
-          if (!formExecutorId)
-            return handleError({
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(memberMessages.label.assign),
-              }),
-            })
-
-          const { overlapMeets } = await getOverlapMeets({
-            startedAt: formDueAt.toDate().toISOString(),
-            endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
-          })
-
-          if (enabledModules.meet_service && formMeetingGateway === 'zoom') {
-            const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
-            toBeUsedServiceId = availableZoomServiceId
-          }
-
-          if (
-            overlapMeets.filter(
-              overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
-            ).length > 0
-          ) {
-            return handleError({ message: '此時段不可指派此執行人員' })
-          }
-
-          if (
-            overlapMeets.filter(
-              overlapMeet =>
-                overlapMeet.target !== memberTaskId &&
-                formMemberId &&
-                overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
-            ).length > 0
-          ) {
-            return handleError({ message: '此時段不可指派此學員' })
-          }
-        }
-
-        if (memberTask && memberTaskMeetId) {
-          const {
-            executor: memberTaskExecutor,
-            member: memberTaskMember,
-            dueAt: memberTaskDueAt,
-            meetingGateway: memberTaskMeetingGateway,
-            meetingHours: memberTaskMeetingHours,
-          } = memberTask
-
-          const memberTaskExecutorId = memberTaskExecutor?.id
-          const memberTaskMemberId = memberTaskMember.id
-          const memberTaskDueAtTime = toMillisecond(memberTaskDueAt)
-          const formDueAtTime = toMillisecond(formDueAt?.toDate())
-
-          if (
-            !hasMeeting ||
-            (hasMeeting &&
-              (memberTaskDueAtTime !== formDueAtTime ||
-                memberTaskExecutorId !== formExecutorId ||
-                memberTaskMemberId !== formMemberId ||
-                memberTaskMeetingGateway !== formMeetingGateway ||
-                memberTaskMeetingHours !== formMeetingHours
-              ))
-          ) {
-            deleteMeet({
+      if (memberTaskMemberId && memberTaskMeetingGateway && memberTaskMeetId) {
+        if (!formHasMeeting || (formHasMeeting && changeMeetingCondition)) {
+          try {
+            await deleteMeet({
               memberTaskMeetId,
               memberTaskMemberId,
               memberTaskMeetingGateway,
             })
+          } catch (err) {
+            handleError(err)
           }
         }
+      }
 
-        await insertMemberTask({
+      if (formHasMeeting) {
+        if (!formDueAt)
+          return handleError({
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(memberMessages.label.executeDate),
+            }),
+          })
+        if (!formExecutorId)
+          return handleError({
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(memberMessages.label.assign),
+            }),
+          })
+
+        const { overlapMeets } = await getOverlapMeets({
+          startedAt: formDueAt.toDate().toISOString(),
+          endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
+        })
+
+        if (enabledModules.meet_service && formMeetingGateway === 'zoom' && changeMeetingCondition) {
+          const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
+          toBeUsedServiceId = availableZoomServiceId
+        }
+
+        const { message } = checkMeetingMember({
+          overlapMeets,
+          memberTaskId,
+          formExecutorId,
+          formMemberId,
+        })
+        if (!!message) {
+          return handleError({ message })
+        }
+      }
+
+      try {
+        setLoading(true)
+        const { data: insertMemberTaskData } = await insertMemberTask({
           variables: {
             data: {
               id: memberTaskId,
@@ -283,72 +203,73 @@ const MemberTaskAdminModal: React.FC<
               due_at: toFormat(formDueAt),
               description: formDescription,
               has_meeting: formHasMeeting,
-              meet_id: hasMeeting ? memberTask?.meet.id : null,
-              meeting_hours: hasMeeting ? formMeetingHours : 0,
-              meeting_gateway: hasMeeting ? formMeetingGateway ?? 'jitsi' : null,
+              meet_id: formHasMeeting ? memberTask?.meet.id : null,
+              meeting_hours: formHasMeeting ? formMeetingHours : 0,
+              meeting_gateway: formHasMeeting ? formMeetingGateway ?? 'jitsi' : null,
               created_at: toFormat(formCreatedAt),
               is_private: formIsPrivate,
             },
           },
-        }).then(async ({ data }) => {
-          if (hasMeeting) {
-            await insertMeet({
-              variables: {
-                meet: {
-                  started_at: toFormat(formDueAt),
-                  ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                  nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
-                  exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                  auto_recording: formMeetingGateway === 'zoom',
-                  target: memberTaskId ?? data?.insert_member_task_one?.id,
-                  type: 'memberTask',
-                  app_id: appId,
-                  host_member_id: formExecutorId,
-                  gateway: formMeetingGateway ?? 'jitsi',
-                  service_id: formMeetingGateway === 'zoom' ? toBeUsedServiceId : null,
-                  options: {},
-                },
-              },
-            })
-              .then(async ({ data }) => {
-                updatedMeetId = data?.insert_meet_one?.id
-                await insertMeetMember({
-                  variables: {
-                    meetMember: {
-                      meet_id: data?.insert_meet_one?.id,
-                      member_id: formMemberId,
-                    },
-                  },
-                }).catch(error => handleError({ message: `insert meet member failed. error:${error}` }))
-              })
-              .catch(error => handleError({ message: `insert meet failed. error:${error}` }))
-
-            if (!data?.insert_member_task_one?.id) return handleError({ message: 'can not get member task id' })
-
-            await updateMemberTask({
-              variables: {
-                memberTaskId: data?.insert_member_task_one?.id,
-                data: { meet_id: updatedMeetId },
-              },
-            }).catch(error => handleError({ message: `update member task meetId failed. error:${error}` }))
-          }
         })
 
-        onRefetch?.()
-        onSuccess?.()
-        if (!memberTask) {
-          form.resetFields() //reset field when using createTask button
-          setInvalidGateways([])
-          setHasMeeting(false)
+        if (formHasMeeting && changeMeetingCondition) {
+          const { data: insertMeetData } = await insertMeet({
+            variables: {
+              meet: {
+                started_at: toFormat(formDueAt),
+                ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
+                nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
+                exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
+                auto_recording: formMeetingGateway === 'zoom',
+                target: memberTaskId ?? insertMemberTaskData?.insert_member_task_one?.id,
+                type: 'memberTask',
+                app_id: appId,
+                host_member_id: formExecutorId,
+                gateway: formMeetingGateway ?? 'jitsi',
+                service_id: formMeetingGateway === 'zoom' ? toBeUsedServiceId : null,
+                options: {},
+              },
+            },
+          })
+
+          await insertMeetMember({
+            variables: {
+              meetMember: {
+                meet_id: insertMeetData?.insert_meet_one?.id,
+                member_id: formMemberId,
+              },
+            },
+          }).catch(error => handleError({ message: `insert meet member failed. error:${error}` }))
+
+          if (!insertMemberTaskData?.insert_member_task_one?.id)
+            return handleError({ message: 'can not get member task id' })
+
+          await updateMemberTask({
+            variables: {
+              memberTaskId: insertMemberTaskData?.insert_member_task_one?.id,
+              data: { meet_id: insertMeetData?.insert_meet_one?.id || memberTaskMeetId },
+            },
+          }).catch(error => handleError({ message: `update member task meetId failed. error:${error}` }))
         }
-      })
-      .catch(error => {
-        if (error?.errorFields) {
-          const errorMessages = error.errorFields.map((v: { errors: any[] }) => v.errors.toString()).join(' ,')
-          handleError({ message: errorMessages })
-        }
-      })
-      .finally(() => setLoading(false))
+      } catch (error) {
+        handleError({ message: 'error' })
+        setLoading(false)
+      }
+
+      onRefetch?.()
+      onSuccess?.()
+      if (!memberTask) {
+        form.resetFields() //reset field when using createTask button
+        setInvalidGateways([])
+        setHasMeeting(false)
+      }
+      setLoading(false)
+    } catch (error: any) {
+      if (error?.errorFields) {
+        const errorMessages = error.errorFields.map((v: { errors: any[] }) => v.errors.toString()).join(' ,')
+        handleError({ message: errorMessages })
+      }
+    }
   }
 
   const handleCancel = ({
@@ -604,7 +525,7 @@ const MemberTaskAdminModal: React.FC<
                 onChange={async () => {
                   const formValues = form.getFieldsValue()
                   const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
-                  if (hasMeeting && formDueAt && enabledModules.meet_service) {
+                  if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway !== 'zoom') {
                     const { overlapMeets } = await getOverlapMeets({
                       startedAt: formDueAt.toDate().toISOString(),
                       endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
@@ -646,7 +567,12 @@ const MemberTaskAdminModal: React.FC<
                       const formValues = form.getFieldsValue()
                       const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
                       setMeetingGateWay(e.target.value)
-                      if (hasMeeting && formDueAt && enabledModules.meet_service) {
+                      if (
+                        hasMeeting &&
+                        formDueAt &&
+                        enabledModules.meet_service &&
+                        memberTask?.meetingGateway !== 'zoom'
+                      ) {
                         const { overlapMeets } = await getOverlapMeets({
                           startedAt: formDueAt.toDate().toISOString(),
                           endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
