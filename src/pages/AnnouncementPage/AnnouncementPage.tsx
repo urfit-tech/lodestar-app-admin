@@ -1,5 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, message, Skeleton, Tabs } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useMemo } from 'react'
 import { useIntl } from 'react-intl'
@@ -24,6 +25,7 @@ import pageMessages from '../translation'
 
 const AnnouncementPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
   const { announcementId } = useParams<{ announcementId: string }>()
   const {
     announcement,
@@ -59,7 +61,7 @@ const AnnouncementPage: React.FC = () => {
     }
   }, [announcement])
 
-  if (error) return <ForbiddenPage />
+  if (error || !permissions.ANNOUNCEMENT_ADMIN) return <ForbiddenPage />
   if (!announcement || loading) return <Skeleton active />
 
   return (
