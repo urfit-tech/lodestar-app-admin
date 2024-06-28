@@ -476,15 +476,20 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       icon: () => <PhoneIcon />,
       name: '業務查詢',
       subMenuItems: [
-        {
-          permissionIsAllowed: true,
-          key: 'sales_status',
-          name: '即時戰況查詢',
-        },
+        // {
+        //   permissionIsAllowed: true,
+        //   key: 'sales_status',
+        //   name: '即時戰況查詢',
+        // },
         {
           permissionIsAllowed: true,
           key: 'chailease_lookup',
           name: `${settings['name']}報名表查詢`,
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'chailease_additional_lookup',
+          name: `${settings['name']}補件表查詢`,
         },
       ],
     },
