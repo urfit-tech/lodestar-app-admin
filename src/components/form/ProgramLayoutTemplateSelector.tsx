@@ -1,11 +1,15 @@
 import { Select } from 'antd'
 import React from 'react'
-import { ProgramLayoutTemplate } from '../../types/program'
+
+type ProgramLayoutTemplate = {
+  id: string
+  name: string
+}
 
 export const ProgramLayoutTemplateSelect: React.FC<{
   value?: string
   programLayoutTemplates: ProgramLayoutTemplate[]
-  defaultTemplate?: ProgramLayoutTemplate
+  defaultTemplate?: ProgramLayoutTemplate | null
   onChange?: (value: string) => void
 }> = ({ value, programLayoutTemplates, defaultTemplate, onChange }) => {
   return (
