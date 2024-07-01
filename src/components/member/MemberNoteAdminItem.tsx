@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, memberMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
@@ -23,6 +23,7 @@ import MemberNoteAdminModal from './MemberNoteAdminModal'
 import MemberNoteTranscriptModal from './MemberNoteTranscriptModal'
 import { Box, Spinner, Flex, Icon } from '@chakra-ui/react'
 import { WarningTwoIcon } from '@chakra-ui/icons'
+import memberMessages from './translation'
 
 const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
   display: flex;
@@ -105,7 +106,7 @@ const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteWithAttachment }> 
     <>
       {isModalOpen && (
         <Modal
-          title={formatMessage(memberMessages.label.attachment)}
+          title={formatMessage(memberMessages['*'].attachment)}
           visible={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
@@ -134,7 +135,9 @@ const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteWithAttachment }> 
       <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
         <Space>
           <Attachments />
-          {`${note.attachments && note.attachments.length} ${formatMessage(memberMessages.label.numberAttachment)}`}
+          {`${note.attachments && note.attachments.length} ${formatMessage(
+            memberMessages.MemberNoteTranscriptModal.numberAttachment,
+          )}`}
         </Space>
       </StyledStatus>
     </>
@@ -210,7 +213,7 @@ const MemberNoteAdminItem: React.FC<{
                   <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                 )}
                 {note.status === 'missed' && (
-                  <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
+                  <span className="ml-2">{formatMessage(memberMessages['*'].missed)}</span>
                 )}
               </StyledStatus>
             )}
@@ -222,14 +225,14 @@ const MemberNoteAdminItem: React.FC<{
                     <Box mr="1">
                       <Spinner />
                     </Box>
-                    <Box>逐字稿轉換中</Box>
+                    <Box>{formatMessage(memberMessages.MemberNoteTranscriptModal.pending)}</Box>
                   </Flex>
                 ) : validAudioAttachment?.options?.transcribeStatus === 'failed' ? (
                   <Flex justifyContent="space-between" alignItems="center">
                     <Box my="auto" mr="1">
                       <Icon as={WarningTwoIcon} />
                     </Box>
-                    <Box>逐字稿轉換失敗</Box>
+                    <Box>{formatMessage(memberMessages.MemberNoteTranscriptModal.failed)}</Box>
                   </Flex>
                 ) : note.status === 'answered' &&
                   (!note.transcript || validAudioAttachment?.options?.transcribeStatus === 'completed') ? (
@@ -282,7 +285,7 @@ const MemberNoteAdminItem: React.FC<{
                 </StyledMenuItem>
                 <StyledMenuItem>
                   <AdminModal
-                    title={formatMessage(memberMessages.label.deleteNote)}
+                    title={formatMessage(memberMessages.MemberNoteTranscriptModal.deleteNote)}
                     renderTrigger={({ setVisible }) => (
                       <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
                     )}
@@ -305,7 +308,7 @@ const MemberNoteAdminItem: React.FC<{
                     }
                   >
                     <StyledModalParagraph>
-                      {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
+                      {formatMessage(memberMessages.MemberNoteTranscriptModal.deleteMemberNoteConfirmation)}
                     </StyledModalParagraph>
                   </AdminModal>
                 </StyledMenuItem>
@@ -318,7 +321,7 @@ const MemberNoteAdminItem: React.FC<{
         ) : null}
       </div>
       <MemberNoteAdminModal
-        title={formatMessage(memberMessages.label.editNote)}
+        title={formatMessage(memberMessages['*'].editNote)}
         note={note}
         visible={modalVisible}
         onCancel={() => {
