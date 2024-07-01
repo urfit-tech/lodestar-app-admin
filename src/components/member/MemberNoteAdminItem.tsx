@@ -1,4 +1,4 @@
-import Icon, { MessageOutlined, MoreOutlined } from '@ant-design/icons'
+import { MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message, Modal, Space } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, memberMessages, merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
@@ -14,13 +14,15 @@ import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
 import { ReactComponent as Attachments } from '../../images/icon/memberNote-attachments.svg'
-import { ReactComponent as Note } from '../../images/icon/memberNote-note.svg'
 import { MemberNote } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { StyledModalParagraph } from '../common'
 import FileUploader from '../common/FileUploader'
 import { CustomRatioImage } from '../common/Image'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
+import MemberNoteTranscriptModal from './MemberNoteTranscriptModal'
+import { Box, Spinner, Flex, Icon } from '@chakra-ui/react'
+import { WarningTwoIcon } from '@chakra-ui/icons'
 
 const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
   display: flex;
@@ -31,10 +33,6 @@ const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
   cursor: ${props => props.cursor || 'auto'};
 `
 
-const StyledIcon = styled(Icon)<{ variant?: string | null }>`
-  ${props => props.variant === 'answered' && `color: var(--success);`}
-  ${props => props.variant === 'missed' && `color: var(--error);`}
-`
 const StyledMenuItem = styled(Menu.Item)`
   width: 100px;
   line-height: 36px;
@@ -82,7 +80,7 @@ const StyledCommentBlock = styled.div`
   margin-top: 16px;
 `
 
-type MemberNoteType = Pick<
+type MemberNoteWithAttachment = Pick<
   MemberNote,
   | 'id'
   | 'createdAt'
@@ -98,33 +96,7 @@ type MemberNoteType = Pick<
   | 'transcript'
 >
 
-const MemberNoteTranscriptButton: React.FC<{ transcript: string }> = ({ transcript }) => {
-  const { formatMessage } = useIntl()
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  return (
-    <>
-      {isModalOpen && (
-        <Modal
-          title={formatMessage(merchandiseMessages.label.transcript)}
-          visible={isModalOpen}
-          onCancel={() => setIsModalOpen(false)}
-          footer={null}
-        >
-          <div style={{ whiteSpace: 'pre-line' }}>{transcript}</div>
-        </Modal>
-      )}
-      <StyledStatus cursor={'pointer'} onClick={() => setIsModalOpen(true)}>
-        <Space>
-          <Note />
-          {formatMessage(merchandiseMessages.label.transcript)}
-        </Space>
-      </StyledStatus>
-    </>
-  )
-}
-
-const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteType }> = ({ note }) => {
+const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteWithAttachment }> = ({ note }) => {
   const { formatMessage } = useIntl()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [attachments, setAttachments] = useState<File[]>(note?.attachments?.map(attachment => attachment.data) || [])
@@ -171,9 +143,10 @@ const MemberNoteAttachmentsButton: React.FC<{ note: MemberNoteType }> = ({ note 
 
 const MemberNoteAdminItem: React.FC<{
   isActive?: boolean
-  note: MemberNoteType
+  note: MemberNoteWithAttachment
   onRefetch?: () => void
-}> = ({ isActive, note, onRefetch }) => {
+  onResetActiveMemberNoteId?: () => void
+}> = ({ isActive, note, onRefetch, onResetActiveMemberNoteId }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
@@ -190,6 +163,33 @@ const MemberNoteAdminItem: React.FC<{
     window.history.pushState({ path: newUrl }, '', newUrl)
   }
 
+  const validAudioAttachment = note.attachments?.find(
+    attachment =>
+      attachment.data?.type === 'audio/wav' &&
+      new Date(attachment.createdAt).getTime() > new Date('2024-01-01T00:00:00.000Z').getTime(),
+  )
+
+  const NoteStatusIcon = (status: string, type: string) => {
+    let color = ''
+    if (status === 'answered') {
+      color = 'var(--success)'
+    } else if (status === 'missed') {
+      color = 'var(--error)'
+    }
+    switch (type) {
+      case 'outbound':
+        return <Icon as={CallOutIcon} color={color} />
+      case 'inbound':
+        return <Icon as={CallInIcon} color={color} />
+      case 'demo':
+        return <Icon as={DemoIcon} color={color} />
+      case 'sms':
+        return <Icon as={MessageOutlined} color={color} />
+      default:
+        break
+    }
+  }
+
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
@@ -204,35 +204,51 @@ const MemberNoteAdminItem: React.FC<{
           <div className="d-flex align-items-center">
             <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
             {note.type && (
-              <>
-                <StyledStatus>
-                  <StyledIcon
-                    variant={note.status}
-                    component={() =>
-                      (note.type === 'outbound' && <CallOutIcon />) ||
-                      (note.type === 'inbound' && <CallInIcon />) ||
-                      (note.type === 'demo' && <DemoIcon />) ||
-                      (note.type === 'sms' && <MessageOutlined />) ||
-                      null
-                    }
-                  />
-                  {note.status === 'answered' && note.type !== 'sms' && (
-                    <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
-                  )}
-                  {note.status === 'missed' && (
-                    <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
-                  )}
-                </StyledStatus>
-              </>
+              <StyledStatus>
+                {note.status ? NoteStatusIcon(note.status, note.type) : null}
+                {note.status === 'answered' && note.type !== 'sms' && (
+                  <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
+                )}
+                {note.status === 'missed' && (
+                  <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
+                )}
+              </StyledStatus>
             )}
-            <>
-              {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && note.transcript && (
-                <MemberNoteTranscriptButton transcript={note.transcript} />
+
+            {permissions.VIEW_MEMBER_NOTE_TRANSCRIPT && validAudioAttachment?.id ? (
+              <Box ml="12px" borderLeft="1px solid #d8d8d8" p="0 12px">
+                {validAudioAttachment?.options?.transcribeStatus === 'pending' ? (
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Box mr="1">
+                      <Spinner />
+                    </Box>
+                    <Box>逐字稿轉換中</Box>
+                  </Flex>
+                ) : validAudioAttachment?.options?.transcribeStatus === 'failed' ? (
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Box my="auto" mr="1">
+                      <Icon as={WarningTwoIcon} />
+                    </Box>
+                    <Box>逐字稿轉換失敗</Box>
+                  </Flex>
+                ) : note.status === 'answered' &&
+                  (!note.transcript || validAudioAttachment?.options?.transcribeStatus === 'completed') ? (
+                  <MemberNoteTranscriptModal
+                    attachmentId={validAudioAttachment?.id}
+                    transcript={note.transcript}
+                    onRefetch={onRefetch}
+                  />
+                ) : null}
+              </Box>
+            ) : null}
+
+            {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
+              note.attachments &&
+              note.attachments?.length > 0 && (
+                <Box>
+                  <MemberNoteAttachmentsButton note={note} />
+                </Box>
               )}
-              {(permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN) &&
-                note.attachments &&
-                note.attachments?.length > 0 && <MemberNoteAttachmentsButton note={note} />}
-            </>
           </div>
 
           <StyledParagraph>{note.description}</StyledParagraph>
@@ -282,6 +298,7 @@ const MemberNoteAdminItem: React.FC<{
                       })
                         .then(() => {
                           message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                          onResetActiveMemberNoteId?.()
                           onRefetch?.()
                         })
                         .catch(handleError)

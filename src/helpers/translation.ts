@@ -1027,7 +1027,6 @@ export const merchandiseMessages = {
     sendByPost: { id: 'merchandise.label.sendByPost', defaultMessage: '郵寄' },
     other: { id: 'merchandise.label.other', defaultMessage: '其他' },
     comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
-    transcript: { id: 'merchandise.label.transcript', defaultMessage: 'Transcript' },
     selectContentCreator: { id: 'merchandise.label.selectContentCreator', defaultMessage: '選擇創作者' },
     memberShopTitle: { id: 'merchandise.label.memberShopTitle', defaultMessage: '商店名稱' },
     merchandiseType: { id: 'merchandise.label.merchandiseType', defaultMessage: '選擇商品類型' },
