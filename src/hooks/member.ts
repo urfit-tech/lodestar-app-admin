@@ -1162,10 +1162,20 @@ export const useTransferManagers = () => {
           name
         }
       }
-    `,{
-      
-    },
+    `,
+    {},
   )
+
+  const [transferLeads] = useMutation<hasura.TransferLeads, hasura.TransferLeadsVariables>(gql`
+    mutation TransferLeads($memberIds: [String!]!, $managerId: String!, $leadStatusCategoryId: uuid) {
+      update_member(
+        where: { id: { _in: $memberIds } }
+        _set: { manager_id: $managerId, lead_status_category_id: $leadStatusCategoryId }
+      ) {
+        affected_rows
+      }
+    }
+  `)
 
   const transferManagers: { id: string; email: string; name: string }[] =
     data?.member.map(v => ({
@@ -1178,5 +1188,6 @@ export const useTransferManagers = () => {
     loading,
     error,
     transferManagers,
+    transferLeads,
   }
 }

@@ -14,17 +14,94 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { Button } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useTransferManagers } from '../../hooks/member'
+import { useLeadStatusCategory } from '../../hooks/sales'
+import { LeadProps } from '../../types/sales'
 import saleMessages from './translation'
 
-const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = ({ onManagerIdChange }) => {
+const matchedMembers: LeadProps[] = []
+const nonMatchingMembers: LeadProps[] = []
+
+const TransferModal: React.FC<{
+  selectedRowLeads: LeadProps[]
+  selectedLeadStatusCategoryId?: string
+  listStatus: string
+  onRefetch: () => Promise<void>
+  onTransferFinish: () => void
+}> = ({ selectedRowLeads, listStatus, onRefetch, onTransferFinish, selectedLeadStatusCategoryId }) => {
+  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [searchValue, setSearchValue] = useState('')
   const [selectedManagerId, setSelectedManagerId] = useState('')
-  const { transferManagers } = useTransferManagers()
+  const { transferManagers, transferLeads } = useTransferManagers()
+  const { leadStatusCategories, addLeadStatusCategory } = useLeadStatusCategory(
+    selectedManagerId,
+    selectedLeadStatusCategoryId,
+  )
+
+  const handleTransfer = async (managerId: string) => {
+    if (managerId === '') return
+
+    for (const member of selectedRowLeads) {
+      if (member.appId === appId) {
+        matchedMembers.push(member)
+      } else {
+        nonMatchingMembers.push(member)
+      }
+    }
+
+    if (nonMatchingMembers.length !== 0) {
+      const alertMes = nonMatchingMembers
+        .map(info => `id: ${info.id}\napp_id: ${info.appId}\nname: ${info.name}\n\n`)
+        .join('')
+      alert(`移轉名單有誤: \n${alertMes}`)
+
+      return
+    }
+
+    if (matchedMembers.length > 0) {
+      try {
+        let leadStatusCategoryId = selectedLeadStatusCategoryId ? leadStatusCategories[0]?.id : null
+
+        if (!!selectedLeadStatusCategoryId && !leadStatusCategoryId) {
+          const { data: insertLeadStatusCategoryData } = await addLeadStatusCategory({
+            variables: {
+              memberId: managerId,
+              categoryId: selectedLeadStatusCategoryId,
+              status: listStatus,
+            },
+          })
+          leadStatusCategoryId = insertLeadStatusCategoryData?.insert_lead_status_category_one?.id
+        }
+
+        const { data } = await transferLeads({
+          variables: {
+            memberIds: matchedMembers.map(member => member.id),
+            leadStatusCategoryId,
+            managerId,
+          },
+        })
+
+        if (data?.update_member?.affected_rows) {
+          window.alert('已成功轉移此名單！')
+          onRefetch()
+        }
+      } catch (error: any) {
+        if (error.graphQLErrors) {
+          const graphqlErrors = error.graphQLErrors.map((graphqlError: any) => graphqlError.message)
+          window.alert(`轉移失敗(graphqlErrors)：${graphqlErrors.join(', ')}`)
+        } else {
+          window.alert(`轉移失敗：${error.message}`)
+        }
+      } finally {
+        onTransferFinish()
+      }
+    }
+  }
 
   return (
     <>
@@ -76,7 +153,7 @@ const TransferModal: React.FC<{ onManagerIdChange: (value: string) => void }> = 
             >
               {formatMessage(saleMessages['*'].cancel)}
             </Button>
-            <Button type="primary" onClick={() => selectedManagerId !== '' && onManagerIdChange(selectedManagerId)}>
+            <Button type="primary" onClick={() => handleTransfer(selectedManagerId)}>
               {formatMessage(saleMessages.TransferModal.confirm)}
             </Button>
           </ModalFooter>
