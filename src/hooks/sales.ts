@@ -274,7 +274,7 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
 export const useManagerLeads = (manager: Manager) => {
   const { id: appId } = useApp()
   const {
-    data: salesLeadMemberPhoneData,
+    data: salesLeadMemberData,
     error: errorMembers,
     loading: loadingMembers,
     refetch: refetchMembers,
@@ -347,6 +347,7 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'CONTACTED'
       : 'IDLED'
     return {
+      appId: v.app_id,
       id: v.id,
       star: v.star,
       name: v.name,
@@ -380,7 +381,7 @@ export const useManagerLeads = (manager: Manager) => {
   }
 
   const totalLeads: LeadProps[] = sortBy(prop('id'))(
-    salesLeadMemberPhoneData?.member.map(convertToLead)?.filter(notEmpty) || [],
+    salesLeadMemberData?.member.map(convertToLead)?.filter(notEmpty) || [],
   )
 
   return {
@@ -414,6 +415,7 @@ const GetSalesLeadMembers = gql`
         _or: [{ star: { _gte: -9999 } }, { star: { _is_null: true } }]
       }
     ) {
+      app_id
       id
       name
       email
@@ -453,21 +455,22 @@ const GetManagerWithMemberCount = gql`
   }
 `
 
-export const useLeadStatusCategory = (memberId: string) => {
+export const useLeadStatusCategory = (memberId: string, categoryId?: string) => {
   const { id: appId } = useApp()
 
   const { data, error, loading, refetch } = useQuery<
     hasura.GetLeadStatusCategory,
     hasura.GetLeadStatusCategoryVariables
-  >(GetLeadStatusCategory, { variables: { memberId }, skip: !memberId })
+  >(GetLeadStatusCategory, { variables: { memberId, categoryId }, skip: !memberId })
 
   const leadStatusCategories = useMemo(() => {
     return (
       data?.lead_status_category.map(v => ({
         id: v.id as string,
         memberId: v.member_id,
+        categoryId: v.category?.id || '',
         status: v.status,
-        listName: v.category?.name || '',
+        categoryName: v.category?.name || '',
       })) || []
     )
   }, [data])
@@ -557,8 +560,10 @@ export const useLeadStatusCategory = (memberId: string) => {
 }
 
 const GetLeadStatusCategory = gql`
-  query GetLeadStatusCategory($memberId: String!) {
-    lead_status_category(where: { member_id: { _eq: $memberId }, status: { _eq: "FOLLOWED" } }) {
+  query GetLeadStatusCategory($memberId: String!, $categoryId: String) {
+    lead_status_category(
+      where: { member_id: { _eq: $memberId }, category_id: { _eq: $categoryId }, status: { _eq: "FOLLOWED" } }
+    ) {
       id
       member_id
       status
