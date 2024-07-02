@@ -1,4 +1,4 @@
-import { Checkbox, Collapse, Input, } from 'antd'
+import { Checkbox, Collapse, Input } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
@@ -13,8 +13,8 @@ import {
   StyledCollapsePanel,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
-import ImageBackgroundStyleInput from '../inputs/ImageBackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
+import ImageBackgroundStyleInput from '../inputs/ImageBackgroundStyleInput'
 import SizeStyleInput from '../inputs/SizeStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import craftMessages from '../translation'
@@ -30,24 +30,41 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   const { device } = useContext(CraftPageBuilderContext)
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
-  const [isImageAutoHeight, setIsImageAutoHeight] = useState(props.customStyle?.isImageAutoHeight === 'true' ? true : false)
-  const [isFullScreenImage, setIsFullScreenImage] = useState(props.customStyle?.isFullScreenImage === 'true' ? true : false)
-  const [imgWidth, setImgWidth] = useState(props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0)
-  const [imgHeight, setImgHeight] = useState(props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0)
-  const [imgWidthUnit, setImgWidthUnit] = useState<Unit>(extractSizeUnit(props.customStyle?.width?.toString()) as Unit || 'px')
-  const [imgHeightUnit, setImgHeightUnit] = useState<Unit>(extractSizeUnit(props.customStyle?.height?.toString()) as Unit || 'px')
+  const [isImageAutoHeight, setIsImageAutoHeight] = useState(
+    props.customStyle?.isImageAutoHeight === 'true' ? true : false,
+  )
+  const [isFullScreenImage, setIsFullScreenImage] = useState(
+    props.customStyle?.isFullScreenImage === 'true' ? true : false,
+  )
+  const [imgWidth, setImgWidth] = useState(
+    props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0,
+  )
+  const [imgHeight, setImgHeight] = useState(
+    props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0,
+  )
+  const [imgWidthUnit, setImgWidthUnit] = useState<Unit>(
+    (extractSizeUnit(props.customStyle?.width?.toString()) as Unit) || 'px',
+  )
+  const [imgHeightUnit, setImgHeightUnit] = useState<Unit>(
+    (extractSizeUnit(props.customStyle?.height?.toString()) as Unit) || 'px',
+  )
   const [aspectRatio, setAspectRatio] = useState(0)
 
   useEffect(() => {
     setImgWidth(props.customStyle?.width ? extractSizeNumber(props.customStyle?.width.toString()) || 0 : 0)
     setImgHeight(props.customStyle?.height ? extractSizeNumber(props.customStyle?.height.toString()) || 0 : 0)
-    setImgWidthUnit(extractSizeUnit(props.customStyle?.width?.toString()) as Unit || 'px')
-    setImgHeightUnit(extractSizeUnit(props.customStyle?.height?.toString()) as Unit || 'px')
+    setImgWidthUnit((extractSizeUnit(props.customStyle?.width?.toString()) as Unit) || 'px')
+    setImgHeightUnit((extractSizeUnit(props.customStyle?.height?.toString()) as Unit) || 'px')
     setIsImageAutoHeight(props.customStyle?.isImageAutoHeight === 'true' ? true : false)
-    setIsFullScreenImage(props.customStyle?.isFullScreenImage === 'true' ? true : false)
-    setAspectRatio(Number(((typeof props?.width === 'number' ? props?.width : extractSizeNumber(props?.width)) / (typeof props?.height === 'number' ? props?.height : extractSizeNumber(props?.height))).toFixed(2)))
+    setAspectRatio(
+      Number(
+        (
+          (typeof props?.width === 'number' ? props?.width : extractSizeNumber(props?.width)) /
+          (typeof props?.height === 'number' ? props?.height : extractSizeNumber(props?.height))
+        ).toFixed(2),
+      ),
+    )
   }, [props.customStyle, device, props?.width, props?.height])
-
 
   const handleChange = () => {
     form.validateFields()
@@ -82,7 +99,12 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
       />
       <Form.Item>
         <Checkbox
-          disabled={!(extractSizeUnit(props.customStyle?.width?.toString()) === 'px' && extractSizeUnit(props.customStyle?.height?.toString()) === 'px')}
+          disabled={
+            !(
+              extractSizeUnit(props.customStyle?.width?.toString()) === 'px' &&
+              extractSizeUnit(props.customStyle?.height?.toString()) === 'px'
+            )
+          }
           checked={isImageAutoHeight}
           onChange={e => {
             setIsImageAutoHeight(!isImageAutoHeight)
@@ -104,7 +126,6 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
 
       <Form.Item>
         <Checkbox
-          disabled={!(extractSizeUnit(props.customStyle?.width?.toString()) === '%' && extractSizeUnit(props.customStyle?.height?.toString()) === '%')}
           checked={isFullScreenImage}
           onChange={e => {
             setIsFullScreenImage(!isFullScreenImage)
@@ -114,8 +135,8 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
                 ...props.customStyle,
                 isFullScreenImage: e.target.checked ? 'true' : 'false',
                 isImageAutoHeight: e.target.checked ? 'false' : props.customStyle?.isImageAutoHeight,
-                width: e.target.checked ? '100%' : `${imgWidth}%` || '100%',
-                height: e.target.checked ? '100%' : `${imgHeight}%` || '100%',
+                width: e.target.checked ? '100%' : `${imgWidth}${imgWidthUnit}` || '100%',
+                height: e.target.checked ? '100%' : `${imgHeight}${imgHeightUnit}` || '100%',
               },
             })
           }}
@@ -137,10 +158,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
         />
       </Form.Item>
       <Form.Item>
-        <ImageBackgroundStyleInput
-          props={props}
-          onPropsChange={onPropsChange}
-        />
+        <ImageBackgroundStyleInput props={props} onPropsChange={onPropsChange} />
       </Form.Item>
 
       <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
@@ -169,7 +187,7 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
-    </Form >
+    </Form>
   )
 }
 
