@@ -14,6 +14,9 @@ import { AdminBlock } from '../admin'
 import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
+import { AiOutlineRedo } from 'react-icons/ai'
+import { IconButton } from '@chakra-ui/react'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 
 const SearchBlock = styled.div`
   position: absolute;
@@ -42,6 +45,7 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
 
 const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
   const [activeMemberNoteId, setActiveMemberNoteId] = useQueryParam('id', StringParam)
+  const theme = useAppTheme()
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
@@ -102,6 +106,19 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             .catch(handleError)
         }
       />
+      <IconButton
+        ml="3"
+        w="45px"
+        h="45px"
+        aria-label="refresh"
+        icon={<AiOutlineRedo />}
+        variant="outline"
+        color={theme.colors.primary[500]}
+        onClick={() => {
+          refetchMemberAdmin()
+          refetchNotes()
+        }}
+      />
       <AdminBlock className="mt-4">
         {notes.length === 0 ? (
           <EmptyAdminBlock>
@@ -116,8 +133,8 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               onRefetch={() => {
                 refetchMemberAdmin()
                 refetchNotes()
-                setActiveMemberNoteId(undefined)
               }}
+              onResetActiveMemberNoteId={() => setActiveMemberNoteId(undefined)}
             />
           ))
         )}

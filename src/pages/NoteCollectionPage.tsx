@@ -113,8 +113,10 @@ export type NoteAdmin = {
   note: string | null
   attachments: {
     id: string
+    type: string | null
     data: any
     options: any
+    createdAt: Date
   }[]
 }
 const NoteCollectionPage: React.FC = () => {
@@ -615,13 +617,10 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (
-  orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
-  filters?: FiltersProps,
-) => {
+const useMemberNotesAdmin = (orderBy: hasura.GetMemberNotesAdminVariables['orderBy'], filters?: FiltersProps) => {
   const { currentMemberId, currentUserRole, permissions } = useAuth()
 
-  const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
+  const condition: hasura.GetMemberNotesAdminVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -680,11 +679,11 @@ const useMemberNotesAdmin = (
     },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_MEMBER_NOTES_ADMIN_XUEMI,
-    hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables
+    hasura.GetMemberNotesAdmin,
+    hasura.GetMemberNotesAdminVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN_XUEMI($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+      query GetMemberNotesAdmin($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
         category(where: { member_categories: {} }) {
           id
           name
@@ -763,6 +762,11 @@ const useMemberNotesAdmin = (
             attachment_id
             data
             options
+            created_at
+            attachment {
+              id
+              type
+            }
           }
         }
       }
@@ -824,6 +828,8 @@ const useMemberNotesAdmin = (
       note: v.note || null,
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
+        type: u.attachment?.type || null,
+        createdAt: u.created_at,
         data: u.data,
         options: u.options,
       })),
