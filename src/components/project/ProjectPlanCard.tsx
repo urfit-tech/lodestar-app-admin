@@ -119,6 +119,7 @@ const ProjectPlanCard: React.FC<
                 listPrice={projectPlan.listPrice}
                 salePrice={isOnSale ? projectPlan.salePrice : undefined}
                 downPrice={projectPlan.discountDownPrice || undefined}
+                currencyId={projectPlan.currencyId}
                 periodAmount={1}
                 periodType={projectPlan.periodType as ProjectPlanPeriodType}
                 variant="full-detail"
