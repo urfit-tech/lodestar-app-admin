@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
+import { Device } from '../types/general'
 
 export type AppPageProps = {
   id: string
@@ -59,10 +60,14 @@ export const useAppPage = (pageId: string) => {
       }
     : null
 
+  const initialDevice: Device | null =
+    (data?.app_page_by_pk && data?.app_page_by_pk.craft_data?.ROOT?.custom?.device) || null
+
   return {
     refetchAppPage: refetch,
     loadingAppPage: loading,
     errorAppPage: error,
+    initialDevice,
     appPage,
   }
 }
@@ -160,7 +165,7 @@ export const useMutateAppPage = () => {
     title: string
     editorId: string
     craftData: { [key: string]: any } | null
-    options: { [key: string]: any } 
+    options: { [key: string]: any }
   }) => {
     return insertAppPageHandler({
       variables: { appId, ...values },

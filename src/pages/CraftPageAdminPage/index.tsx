@@ -23,7 +23,7 @@ const CraftPageAdminPage: React.VFC = () => {
   const { pageId } = useParams<{ pageId: string }>()
   const { host } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { appPage, loadingAppPage, errorAppPage, refetchAppPage } = useAppPage(pageId)
+  const { appPage, initialDevice, loadingAppPage, errorAppPage, refetchAppPage } = useAppPage(pageId)
   const resolver = useResolver()
 
   if (!appPage || loadingAppPage || errorAppPage) {
@@ -44,7 +44,11 @@ const CraftPageAdminPage: React.VFC = () => {
 
           <div className="d-flex align-items-center">
             {(!activeKey || activeKey === 'editor') && (
-              <CraftPageBuilderController pageId={pageId} onAppPageUpdate={refetchAppPage} />
+              <CraftPageBuilderController
+                pageId={pageId}
+                initialDevice={initialDevice}
+                onAppPageUpdate={refetchAppPage}
+              />
             )}
             <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" borderRadius="0.25rem">
