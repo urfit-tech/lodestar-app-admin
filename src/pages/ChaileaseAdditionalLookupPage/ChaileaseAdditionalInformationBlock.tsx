@@ -1,7 +1,6 @@
 import { Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock } from '../../components/admin'
@@ -47,50 +46,6 @@ const ChaileaseAdditionalInformationBlock: React.FC<{ email: string }> = ({ emai
   const { authToken } = useAuth()
   const { id: appId } = useApp()
   const { loadingMember, errorMember, member } = useMemberMetadataByEmailAndKey(email, 'additionalProfile')
-  const [attachmentsLink, setAttachmentsLink] = useState<{
-    cardImageLink?: string
-    bankBookImageLink?: string
-    credentialImageLink?: string
-    fileLinks?: { name: string; link: string }[]
-  }>({})
-
-  useEffect(() => {
-    if (member?.metadata?.additionalProfile?.cardImageId) {
-      const { additionalProfile } = member.metadata
-      const getLink = async () => {
-        const cardImageLink = await getFileDownloadableLink(
-          `chailease/additional_form/${appId}/${additionalProfile?.cardImageId}`,
-          authToken,
-        )
-        const bankBookImageLink = await getFileDownloadableLink(
-          `chailease/additional_form/${appId}/${additionalProfile?.bankBookImageId}`,
-          authToken,
-        )
-        const credentialImageLink = await getFileDownloadableLink(
-          `chailease/additional_form/${appId}/${additionalProfile?.credentialImageId}`,
-          authToken,
-        )
-        const fileLinks: { name: string; link: string }[] = await Promise.all(
-          additionalProfile?.fileIds.map(async (fileId: string) => {
-            const link = await getFileDownloadableLink(`chailease/additional_form/${appId}/${fileId}`, authToken)
-            return {
-              name: fileId,
-              link,
-            }
-          }),
-        )
-        setAttachmentsLink({
-          cardImageLink,
-          bankBookImageLink,
-          credentialImageLink,
-          fileLinks,
-        })
-      }
-      getLink()
-    } else {
-      setAttachmentsLink({})
-    }
-  }, [email, member?.metadata, authToken, appId])
 
   if (loadingMember) {
     return <Skeleton active />
@@ -124,60 +79,92 @@ const ChaileaseAdditionalInformationBlock: React.FC<{ email: string }> = ({ emai
       <div>
         <StyledLabel>文件</StyledLabel>
         <StyledInfoBlock>
-          {additionalProfile?.cardImageId && (
+          {additionalProfile?.card?.imageId && (
             <StyledInfoItem>
               <p>學生證、工作證、軍公教證</p>
               <FileItem
-                fileName={`${additionalProfile.cardImageId}`}
-                onDownload={() =>
-                  downloadFile(`${additionalProfile.cardImageId}`, {
-                    url: attachmentsLink?.cardImageLink,
+                fileName={`${additionalProfile.card.fileName}`}
+                onDownload={async () => {
+                  const cardImageLink = await getFileDownloadableLink(
+                    `chailease/additional_form/${appId}/${additionalProfile?.card.imageId}`,
+                    authToken,
+                  )
+                  await downloadFile(`${additionalProfile.card.fileName}`, {
+                    url: cardImageLink,
                   })
-                }
+                }}
               />
             </StyledInfoItem>
           )}
-          {additionalProfile?.credentialImageId && (
-            <StyledInfoItem>
-              <p>存摺封面</p>
-              <FileItem
-                fileName={`${additionalProfile.credentialImageId}`}
-                onDownload={() =>
-                  downloadFile(`${additionalProfile.credentialImageId}`, {
-                    url: attachmentsLink?.credentialImageLink,
-                  })
-                }
-              />
-            </StyledInfoItem>
-          )}
-          {additionalProfile?.bankBookImageId && (
+          {additionalProfile?.credential?.imageId && (
             <StyledInfoItem>
               <p>勞保、在職證明、在學證明、畢業證書</p>
               <FileItem
-                fileName={`${additionalProfile.bankBookImageId}`}
-                onDownload={() =>
-                  downloadFile(`${additionalProfile.bankBookImageId}`, {
-                    url: attachmentsLink?.bankBookImageLink,
+                fileName={`${additionalProfile.credential.fileName}`}
+                onDownload={async () => {
+                  const credentialImageLink = await getFileDownloadableLink(
+                    `chailease/additional_form/${appId}/${additionalProfile?.credential.imageId}`,
+                    authToken,
+                  )
+                  await downloadFile(`${additionalProfile.credential.fileName}`, {
+                    url: credentialImageLink,
                   })
-                }
+                }}
               />
             </StyledInfoItem>
           )}
-          {attachmentsLink?.fileLinks?.length !== 0 && (
+          {additionalProfile?.bankBook?.imageId && (
+            <StyledInfoItem>
+              <p>存摺封面</p>
+              <FileItem
+                fileName={`${additionalProfile.bankBook.fileName}`}
+                onDownload={async () => {
+                  const bankBookImageLink = await getFileDownloadableLink(
+                    `chailease/additional_form/${appId}/${additionalProfile?.bankBook.imageId}`,
+                    authToken,
+                  )
+                  await downloadFile(`${additionalProfile.bankBook.fileName}`, {
+                    url: bankBookImageLink,
+                  })
+                }}
+              />
+            </StyledInfoItem>
+          )}
+          {additionalProfile?.bankBook?.imageId && (
+            <StyledInfoItem>
+              <p>存摺封面</p>
+              <FileItem
+                fileName={`${additionalProfile.bankBook.fileName}`}
+                onDownload={async () => {
+                  const bankBookImageLink = await getFileDownloadableLink(
+                    `chailease/additional_form/${appId}/${additionalProfile?.bankBook.imageId}`,
+                    authToken,
+                  )
+                  await downloadFile(`${additionalProfile.bankBook.fileName}`, {
+                    url: bankBookImageLink,
+                  })
+                }}
+              />
+            </StyledInfoItem>
+          )}
+          {additionalProfile?.fileImages.length !== 0 && (
             <StyledInfoItem>
               <p>財力證明電子對帳單、交易明細</p>
               <StyledFileItem>
-                {attachmentsLink?.fileLinks &&
-                  attachmentsLink.fileLinks.map(fileLink => (
-                    <FileItem
-                      fileName={`${fileLink.name}`}
-                      onDownload={() =>
-                        downloadFile(`${fileLink.name}`, {
-                          url: fileLink.link,
-                        })
-                      }
-                    />
-                  ))}
+                {additionalProfile.fileImages.map((fileImage: { imageId: string; fileName: string }) => (
+                  <FileItem
+                    fileName={`${fileImage.fileName}`}
+                    onDownload={async () => {
+                      const fileImageLink = await getFileDownloadableLink(
+                        `chailease/additional_form/${appId}/${fileImage.imageId}`,
+                        authToken,
+                      )
+                      await downloadFile(`${fileImage.fileName}`, {
+                        url: fileImageLink,
+                      })
+                    }}
+                  />
+                ))}
               </StyledFileItem>
             </StyledInfoItem>
           )}
