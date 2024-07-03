@@ -428,6 +428,10 @@ const formMessages = {
       id: 'form.PermissionGroup.ANNOUNCEMENT_ADMIN',
       defaultMessage: '公告管理',
     },
+    ANNOUNCEMENT_VIEW: {
+      id: 'form.PermissionGroup.ANNOUNCEMENT_VIEW',
+      defaultMessage: '檢視公告',
+    },
   }),
   GiftPlanInput: defineMessages({
     pleaseSelectAGiftPlan: { id: 'form.GiftPlanInput.pleaseSelectAGiftPlan', message: '請選擇一個贈品方案' },
