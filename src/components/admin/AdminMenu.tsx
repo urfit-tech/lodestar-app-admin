@@ -626,7 +626,9 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.announcement && Boolean(permissions.ANNOUNCEMENT_ADMIN),
+      permissionIsAllowed:
+        !!enabledModules.announcement &&
+        (Boolean(permissions.ANNOUNCEMENT_ADMIN) || Boolean(permissions.ANNOUNCEMENT_VIEW)),
       key: 'announcement_collection',
       icon: () => <AnnouncementIcon />,
       name: formatMessage(adminMessages.AdminMenu.announcementManagement),

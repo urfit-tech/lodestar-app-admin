@@ -91,7 +91,8 @@ const AnnouncementCollectionPage: React.FC = () => {
     },
   ]
 
-  if (!enabledModules.announcement) return <ForbiddenPage />
+  if (!enabledModules.announcement && !permissions.ANNOUNCEMENT_ADMIN && !permissions.ANNOUNCEMENT_VIEW)
+    return <ForbiddenPage />
 
   const previewAnnouncement = announcements.find(announcement => announcement.id === announcementId)
   return (
