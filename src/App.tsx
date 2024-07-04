@@ -6,6 +6,7 @@ import './App.scss'
 import Application from './Application'
 import { StyledMenu } from './components/admin/AdminMenu'
 import AdvertisingAudiencePage from './pages/AdvertisingAudiencePage'
+import ChaileaseAdditionalLookupPage from './pages/ChaileaseAdditionalLookupPage/index'
 import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
 import CustomScriptsPage from './pages/CustomScriptsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
@@ -171,6 +172,11 @@ const App: React.FC<{
         chailease_lookup: {
           path: '/chailease-lookup',
           pageName: <ChaileaseLookupPage />,
+          authenticated: true,
+        },
+        chailease_additional_lookup: {
+          path: '/chailease-additional-lookup',
+          pageName: <ChaileaseAdditionalLookupPage />,
           authenticated: true,
         },
         custom_scripts: {

@@ -1,7 +1,4 @@
-import { useQuery } from '@apollo/client'
 import { Button, Divider, Skeleton } from 'antd'
-import gql from 'graphql-tag'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -9,9 +6,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock } from '../../components/admin'
 import FileItem from '../../components/common/FileItem'
-import hasura from '../../hasura'
 import { downloadFile, getFileDownloadableLink } from '../../helpers/index'
 import { commonMessages, errorMessages, salesMessages } from '../../helpers/translation'
+import { useMemberMetadataByEmailAndKey } from '../../hooks/member'
 import ChaileaseApplyModal from './ChaileaseApplyModal'
 import MemberDataAdminModal from './MemberDataAdminModal'
 
@@ -59,7 +56,7 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
     ownSignature?: string
     contactSignature?: string
   }>({})
-  const { loadingMember, errorMember, member, refetchMember } = useMember(email)
+  const { loadingMember, errorMember, member, refetchMember } = useMemberMetadataByEmailAndKey(email, 'profile')
 
   useEffect(() => {
     if (member?.metadata?.profile?.imageId) {
@@ -305,61 +302,6 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
       </div>
     </AdminBlock>
   )
-}
-
-const useMember = (email: string) => {
-  const { id: appId } = useApp()
-  const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBERS_BY_EMAIL, hasura.GET_MEMBERS_BY_EMAILVariables>(
-    gql`
-      query GET_MEMBERS_BY_EMAIL($appId: String!, $email: String!) {
-        member(
-          where: { email: { _eq: $email }, app_id: { _eq: $appId }, metadata: { _has_key: "profile" } }
-          limit: 1
-        ) {
-          id
-          name
-          email
-          metadata
-          created_at
-          member_phones {
-            phone
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        appId,
-        email,
-      },
-    },
-  )
-
-  const member: {
-    id: string
-    name: string
-    email: string
-    phones: string[]
-    createdAt: Date
-    metadata: any
-  } | null =
-    loading || error || !data
-      ? null
-      : data.member.map(v => ({
-          id: v.id,
-          name: v.name,
-          email: v.email,
-          phones: v.member_phones.map(w => w.phone),
-          createdAt: new Date(v.created_at),
-          metadata: v.metadata,
-        }))[0]
-
-  return {
-    loadingMember: loading,
-    errorMember: error,
-    member,
-    refetchMember: refetch,
-  }
 }
 
 export default ChaileaseInformationBlock
