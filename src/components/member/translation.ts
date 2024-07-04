@@ -18,20 +18,20 @@ const memberMessages = {
     failed: { id: 'member.MemberNoteTranscriptModal.failed', defaultMessage: 'transcript failed' },
     transcriptText1: {
       id: 'member.MemberNoteTranscriptModal.transcriptText1',
-      defaultMessage: '確定要轉換為逐字稿嗎?',
+      defaultMessage: 'Are you sure you want to transcript to verbatim?',
     },
     transcriptText2: {
       id: 'member.MemberNoteTranscriptModal.transcriptText2',
-      defaultMessage: '執行後將會需要一些時間進行轉換',
+      defaultMessage: 'It will take some time to transcript after execution',
     },
     transcriptError: {
       id: 'member.MemberNoteTranscriptModal.transcriptError',
-      defaultMessage: '逐字稿轉換失敗',
+      defaultMessage: 'transcript failed',
     },
     deleteNote: { id: 'member.MemberNoteTranscriptModal.deleteNote', defaultMessage: 'Delete Note' },
     deleteMemberNoteConfirmation: {
       id: 'member.MemberNoteTranscriptModal.deleteMemberNoteConfirmation',
-      defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+      defaultMessage: 'Once deleted, the note cannot be recovered. Are you sure you want to delete it?',
     },
   }),
   MemberNoteAdminModal: defineMessages({
