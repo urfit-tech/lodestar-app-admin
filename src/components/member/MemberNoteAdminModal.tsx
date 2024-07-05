@@ -6,12 +6,12 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { MemberNote, NoteAdminProps } from '../../types/member'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import FileUploader from '../common/FileUploader'
 import { CustomRatioImage } from '../common/Image'
+import memberMessages from './translation'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -126,7 +126,7 @@ const MemberNoteAdminModal: React.FC<
               resetModal()
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(memberMessages['*'].cancel)}
           </Button>
           <Button
             loading={isSubmitting}
@@ -135,7 +135,7 @@ const MemberNoteAdminModal: React.FC<
               handleSubmit(() => setVisible(false))
             }}
           >
-            {formatMessage(commonMessages.ui.save)}
+            {formatMessage(memberMessages['*'].save)}
           </Button>
         </>
       )}
@@ -165,12 +165,18 @@ const MemberNoteAdminModal: React.FC<
           setStatus(values.status)
         }}
       >
-        <Form.Item name="type" label={formatMessage(memberMessages.label.callType)} initialValue={note?.type || ''}>
+        <Form.Item
+          name="type"
+          label={formatMessage(memberMessages.MemberNoteAdminModal.callType)}
+          initialValue={note?.type || ''}
+        >
           <Radio.Group>
-            <Radio value="">{formatMessage(memberMessages.status.null)}</Radio>
-            <Radio value="outbound">{formatMessage(memberMessages.status.outbound)}</Radio>
-            <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
-            {enabledModules.member_note_demo && <Radio value="demo">{formatMessage(memberMessages.status.demo)}</Radio>}
+            <Radio value="">{formatMessage(memberMessages.MemberNoteAdminModal.null)}</Radio>
+            <Radio value="outbound">{formatMessage(memberMessages.MemberNoteAdminModal.outbound)}</Radio>
+            <Radio value="inbound">{formatMessage(memberMessages.MemberNoteAdminModal.inbound)}</Radio>
+            {enabledModules.member_note_demo && (
+              <Radio value="demo">{formatMessage(memberMessages.MemberNoteAdminModal.demo)}</Radio>
+            )}
           </Radio.Group>
         </Form.Item>
 
@@ -178,12 +184,14 @@ const MemberNoteAdminModal: React.FC<
           <div className="col-5">
             <Form.Item
               name="status"
-              label={formatMessage(memberMessages.label.status)}
+              label={formatMessage(memberMessages['*'].status)}
               initialValue={note?.status || 'answered'}
             >
               <Select>
-                <Select.Option value="answered">{formatMessage(memberMessages.status.answered)}</Select.Option>
-                <Select.Option value="missed">{formatMessage(memberMessages.status.missed)}</Select.Option>
+                <Select.Option value="answered">
+                  {formatMessage(memberMessages.MemberNoteAdminModal.answered)}
+                </Select.Option>
+                <Select.Option value="missed">{formatMessage(memberMessages['*'].missed)}</Select.Option>
               </Select>
             </Form.Item>
           </div>
@@ -192,7 +200,7 @@ const MemberNoteAdminModal: React.FC<
             <div className="col-7">
               <Form.Item
                 name="duration"
-                label={formatMessage(memberMessages.label.duration)}
+                label={formatMessage(memberMessages.MemberNoteAdminModal.duration)}
                 initialValue={
                   note?.duration
                     ? moment(moment().startOf('day').seconds(note.duration), 'HH:mm:ss')
@@ -205,7 +213,7 @@ const MemberNoteAdminModal: React.FC<
           )}
 
           <div className="col-12">
-            <Form.Item label={formatMessage(memberMessages.label.attachment)}>
+            <Form.Item label={formatMessage(memberMessages['*'].attachment)}>
               <FileUploader
                 multiple
                 showUploadList
@@ -229,7 +237,7 @@ const MemberNoteAdminModal: React.FC<
         </div>
 
         <Form.Item
-          label={formatMessage(memberMessages.label.description)}
+          label={formatMessage(memberMessages['*'].description)}
           name="description"
           initialValue={note?.description}
         >
@@ -237,7 +245,7 @@ const MemberNoteAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item
-          label={formatMessage(memberMessages.label.noteForPermission)}
+          label={formatMessage(memberMessages.MemberNoteAdminModal.noteForPermission)}
           name="note"
           initialValue={note?.note}
           className={permissions.MEMBER_NOTE_VIEW_EDIT ? '' : 'd-none'}
