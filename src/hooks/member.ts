@@ -228,7 +228,8 @@ export const useMemberAdmin = (memberId: string) => {
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => ({
             isValid: v.is_valid,
-            phoneNumber: `${v.country_code || ''},${v.phone || ''}`,
+            phoneNumber: v.phone,
+            countryCode: v?.country_code || '',
           })),
           lastRejectedNote: data.member_by_pk.member_notes[0]
             ? {

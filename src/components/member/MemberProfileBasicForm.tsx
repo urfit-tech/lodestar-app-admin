@@ -1,9 +1,9 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
+import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
 import countryCodes from 'country-codes-list'
-import { parsePhoneNumber } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -13,11 +13,12 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
+import memberMessages from './translations'
 
 const StyledCloseIcon = styled.div`
   position: absolute;
@@ -83,13 +84,6 @@ const splitPhoneData = (phoneData: string[] = [], separator: string): PhoneData 
   }
 }
 
-const customPhoneNumber = (countryCode: string, phone: string) => {
-  if (countryCode === '+886' && phone.length === 9) {
-    return `0${phone}`
-  }
-  return phone
-}
-
 const MemberProfileBasicForm: React.FC<{
   memberAdmin: MemberAdminProps | null
   onRefetch?: () => void
@@ -103,22 +97,6 @@ const MemberProfileBasicForm: React.FC<{
     hasura.UPDATE_MEMBER_PROFILE_BASICVariables
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
-
-  const validatePhoneData = (_: any, value: string[]) => {
-    const { phones, countryCodes } = splitPhoneData(value, ',')
-    const regex = /^[0-9]*$/
-
-    for (const index in value) {
-      if (value.length <= 1 && !phones[index].trim()) return Promise.resolve()
-      if (
-        !regex.test(phones[index]) ||
-        (value.length > 1 && !phones[index].trim()) ||
-        !parsePhoneNumber(`${countryCodes[index]}${phones[index]}`).isValid()
-      )
-        return Promise.reject(new Error(formatMessage(errorMessages.form.phoneFormat)))
-    }
-    return Promise.resolve()
-  }
 
   if (!memberAdmin) {
     return <Skeleton active />
@@ -139,20 +117,21 @@ const MemberProfileBasicForm: React.FC<{
           star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
           memberId: memberAdmin.id,
           phones: permissions['MEMBER_PHONE_ADMIN']
-            ? phones
-                .filter((phone: string) => !!phone)
-                .map((phone: string, index: number) => {
-                  const findPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
-                  return {
-                    member_id: memberAdmin.id,
-                    phone: customPhoneNumber(countryCodes[index], phone),
-                    country_code: countryCodes[index],
-                    is_valid: findPhone?.isValid,
-                  }
-                })
-            : memberAdmin.phones.map(phone => ({
+            ? phones.map((phone: string, index: number) => ({
                 member_id: memberAdmin.id,
-                phone: phone.phoneNumber,
+                phone,
+                country_code: countryCodes[index],
+                international_phone: `+${countryCodes[index]}${phone}`,
+                is_valid: Boolean(memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid),
+              }))
+            : phones.map((phone: string, index: number) => ({
+                member_id: memberAdmin.id,
+                phone,
+                country_code: memberAdmin.phones[index].countryCode,
+                international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
+                  ? `+${memberAdmin.phones[index].countryCode}${memberAdmin.phones[index].phoneNumber}`
+                  : null,
+                is_valid: Boolean(memberAdmin.phones[index].isValid),
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
@@ -184,7 +163,7 @@ const MemberProfileBasicForm: React.FC<{
         })
         .catch(handleError)
         .finally(() => setLoading(false))
-    } catch {
+    } catch (error) {
       setLoading(false)
     }
   }
@@ -203,7 +182,9 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
+        phones: memberAdmin.phones.length
+          ? memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
+          : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -229,15 +210,37 @@ const MemberProfileBasicForm: React.FC<{
         <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
-        <div>
-          <Form.Item
-            label={formatMessage(commonMessages.label.phone)}
-            name="phones"
-            rules={[{ validator: validatePhoneData }]}
-          >
-            <PhoneCollectionInput />
-          </Form.Item>
-        </div>
+        <Form.Item
+          className="mb-4"
+          label={formatMessage(commonMessages.label.phone)}
+          name="phones"
+          rules={[
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
+              validator: (_: RuleObject, values: string[]) => {
+                const { phones } = splitPhoneData(values, ',')
+                return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
+              },
+            },
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
+              validator: (_: RuleObject, values: string[]) => {
+                const { phones } = splitPhoneData(values, ',')
+                const regex = /^[0-9]*$/
+                return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
+              },
+            },
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
+              validator: (_: RuleObject, values: string[]) => {
+                const { countryCodes } = splitPhoneData(values, ',')
+                return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
+              },
+            },
+          ]}
+        >
+          <PhoneCollectionInput />
+        </Form.Item>
       )}
       {permissions['MEMBER_STAR_ADMIN'] && (
         <Form.Item label={formatMessage(commonMessages.label.star)} name="star">
@@ -277,7 +280,7 @@ const PhoneCollectionInput: React.FC<{
   return (
     <>
       {value?.map((_, index) => (
-        <div className="mb-3 position-relative" key={index}>
+        <div className="mb-2 position-relative" key={index}>
           <Input
             key={index}
             className={'mr-3 mb-0'}

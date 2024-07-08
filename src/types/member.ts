@@ -99,6 +99,7 @@ export type MemberAdminProps = {
   phones: {
     isValid: boolean
     phoneNumber: string
+    countryCode: string
   }[]
   categories: Category[]
   permissionIds: string[]
