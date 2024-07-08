@@ -1700,7 +1700,7 @@
   "member.MemberNoteTranscriptModal.failed": "逐字稿轉換失敗",
   "member.MemberNoteTranscriptModal.numberAttachment": "個附件",
   "member.MemberNoteTranscriptModal.pending": "逐字稿轉換中",
-  "member.MemberNoteTranscriptModal.transcript": "Transcript",
+  "member.MemberNoteTranscriptModal.transcript": "逐字稿",
   "member.MemberNoteTranscriptModal.transcriptError": "逐字稿轉換失敗",
   "member.MemberNoteTranscriptModal.transcriptText1": "確定要轉換為逐字稿嗎?",
   "member.MemberNoteTranscriptModal.transcriptText2": "執行後將會需要一些時間進行轉換",
