@@ -10,11 +10,12 @@ import CategorySelector from '../../components/form/CategorySelector'
 import LanguageSelector from '../../components/form/LanguageSelector'
 import { ProgramLayoutTemplateSelect } from '../../components/form/ProgramLayoutTemplateSelector'
 import TagSelector from '../../components/form/TagSelector'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { useGetProgramLayoutTemplates, useProductSku } from '../../hooks/data'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
+
+export const DEFAULT_TEMPLATE = 'default-template'
 
 type FieldProps = {
   title: string
@@ -36,13 +37,13 @@ const ProgramBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
-  const [updateProgramBasic] = useMutation<hasura.UPDATE_PROGRAM_BASIC, hasura.UPDATE_PROGRAM_BASICVariables>(
-    UPDATE_PROGRAM_BASIC,
-  )
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
-  const { programLayoutTemplates, defaultFixedTemplate } = useGetProgramLayoutTemplates()
+  const { programLayoutTemplates } = useGetProgramLayoutTemplates()
   const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
+  const [updateProgramBasic] = useMutation(UPDATE_PROGRAM_BASIC)
+  const [deactivateOtherTemplates] = useMutation(DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES)
+  const [activateTemplate] = useMutation(ACTIVATE_PROGRAM_LAYOUT_TEMPLATE)
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -50,6 +51,7 @@ const ProgramBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
+
     updateProgramBasic({
       variables: {
         programId: program.id,
@@ -75,11 +77,31 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
-        programLayoutTemplateId: values.programLayoutTemplateId ?? defaultFixedTemplate?.id,
-        moduleData:
-          programLayoutTemplates.find(template => template.id === values.programLayoutTemplateId)?.moduleData ?? {},
       },
     })
+      .then(() => {
+        const excludeTemplateId =
+          values?.programLayoutTemplateId === DEFAULT_TEMPLATE ? null : values?.programLayoutTemplateId
+
+        if (values?.programLayoutTemplateId) {
+          return deactivateOtherTemplates({
+            variables: {
+              programId: program.id,
+              excludeTemplateId,
+            },
+          })
+        }
+      })
+      .then(() => {
+        if (values?.programLayoutTemplateId && values.programLayoutTemplateId !== DEFAULT_TEMPLATE) {
+          return activateTemplate({
+            variables: {
+              programId: program.id,
+              programLayoutTemplateId: values.programLayoutTemplateId,
+            },
+          })
+        }
+      })
       .then(() => {
         message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
         refetchProduct()
@@ -142,10 +164,7 @@ const ProgramBasicForm: React.FC<{
           label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLayoutTemplate)}
           name="programLayoutTemplateId"
         >
-          <ProgramLayoutTemplateSelect
-            programLayoutTemplates={programLayoutTemplates}
-            defaultTemplate={defaultFixedTemplate}
-          />
+          <ProgramLayoutTemplateSelect programLayoutTemplates={programLayoutTemplates} />
         </Form.Item>
       )}
 
@@ -223,8 +242,6 @@ const UPDATE_PROGRAM_BASIC = gql`
     $programTags: [program_tag_insert_input!]!
     $displayHeader: Boolean
     $displayFooter: Boolean
-    $programLayoutTemplateId: uuid!
-    $moduleData: jsonb!
   ) {
     update_program(
       where: { id: { _eq: $programId } }
@@ -261,21 +278,30 @@ const UPDATE_PROGRAM_BASIC = gql`
     insert_program_tag(objects: $programTags) {
       affected_rows
     }
+  }
+`
 
-    # update program_layout_template_config
+const DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES = gql`
+  mutation DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES($programId: uuid!, $excludeTemplateId: uuid) {
     update_program_layout_template_config(
-      where: { _and: [{ program_id: { _eq: $programId } }, { is_active: { _eq: true } }] }
+      where: {
+        program_id: { _eq: $programId }
+        _or: [
+          { program_layout_template_id: { _neq: $excludeTemplateId } }
+          { program_layout_template_id: { _is_null: true } }
+        ]
+      }
       _set: { is_active: false }
     ) {
       affected_rows
     }
+  }
+`
+
+const ACTIVATE_PROGRAM_LAYOUT_TEMPLATE = gql`
+  mutation ACTIVATE_PROGRAM_LAYOUT_TEMPLATE($programId: uuid!, $programLayoutTemplateId: uuid!) {
     insert_program_layout_template_config(
-      objects: {
-        program_id: $programId
-        program_layout_template_id: $programLayoutTemplateId
-        module_data: $moduleData
-        is_active: true
-      }
+      objects: { program_id: $programId, program_layout_template_id: $programLayoutTemplateId, is_active: true }
       on_conflict: {
         constraint: program_layout_template_config_program_layout_template_id_progr
         update_columns: [is_active]

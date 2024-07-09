@@ -281,10 +281,12 @@ export interface ModuleDataProps {
 }
 
 export type ProgramLayoutTemplate = {
-  id: string
-  name: string
-  moduleData?: ModuleDataProps | null
-  // ProgramLayoutTemplate?: object
+  id: string,
+  customAttribute: {
+    id: string
+    name: string
+    type: string
+  }[]
 }
 
 export type ProgramLayoutTemplateConfig = {
@@ -293,7 +295,7 @@ export type ProgramLayoutTemplateConfig = {
   programLayoutTemplateId: string
   moduleData: ModuleDataProps
   isActive: boolean
-  ProgramLayoutTemplate?: ProgramLayoutTemplate
+  ProgramLayoutTemplate?: ProgramLayoutTemplate | null
 }
 
 export type ExtractModuleDataValue<T> = T extends infer V ? V : never

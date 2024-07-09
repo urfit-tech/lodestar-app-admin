@@ -1407,16 +1407,6 @@ export const useGetProgramLayoutTemplates = () => {
     return moduleData
   }
 
-  const isModuleDataAvailable = (moduleData: ModuleDataProps | undefined | null) => {
-    if (!moduleData) return false
-    return Boolean(moduleData) && !isEmpty(moduleData)
-  }
-
-  const getDefaultProgramLayoutTemplate = (layoutTemplates: ProgramLayoutTemplate[]) => {
-    if (!layoutTemplates.length) return
-    return layoutTemplates.filter(template => !isModuleDataAvailable(template.moduleData))[0]
-  }
-
   const layoutTemplates =
     loading || error || !data
       ? []
@@ -1429,7 +1419,6 @@ export const useGetProgramLayoutTemplates = () => {
   return {
     loading,
     programLayoutTemplates: layoutTemplates,
-    defaultFixedTemplate: getDefaultProgramLayoutTemplate(layoutTemplates),
     refetch,
   }
 }

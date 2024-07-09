@@ -144,7 +144,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
             withCreatorSelector={currentUserRole === 'app-owner'}
             withProgramType
             withProgramLayoutTemplateType={enabledModules?.program_layout_template}
-            onCreate={({ title, categoryIds, creatorId, programLayoutTemplateData }) =>
+            onCreate={({ title, categoryIds, creatorId, programLayoutTemplateId }) =>
               insertProgram({
                 variables: {
                   ownerId: currentMemberId,
@@ -159,14 +159,12 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 },
               }).then(async res => {
                 const programId = res.data?.insert_program?.returning[0]?.id
-                programLayoutTemplateData?.id &&
+                programLayoutTemplateId &&
                   (await insertProgramLayoutTemplateConfig({
                     variables: {
                       programId,
-                      programLayoutTemplateId: programLayoutTemplateData?.id,
-                      moduleData: {
-                        ...programLayoutTemplateData?.moduleData,
-                      },
+                      programLayoutTemplateId: programLayoutTemplateId,
+                      moduleData: null,
                     },
                   }))
                 programId && history.push(`/programs/${programId}`)

@@ -297,7 +297,14 @@ export const useProgram = (programId: string) => {
           programLayoutTemplateId: config.program_layout_template_id,
           moduleData: config.module_data,
           isActive: config.is_active,
-          ProgramLayoutTemplate: config.program_layout_template,
+          ProgramLayoutTemplate: {
+            id: config.program_layout_template.id,
+            customAttribute: config.program_layout_template.module_name?.map((value: {id: string , name: string, type: string}) => ({
+              id: value?.id,
+              name: value?.name,
+              type: value?.type
+            }))
+          },
         }))[0] || [],
     }
   }, [data, error, loading])
