@@ -1695,7 +1695,7 @@
   "member.MemberNoteTranscriptModal.deleteNote": "Hapus catatan",
   "member.MemberNoteTranscriptModal.failed": "Konversi kata demi kata gagal",
   "member.MemberNoteTranscriptModal.numberAttachment": "lampiran",
-  "member.MemberNoteTranscriptModal.pending": "Mengonversi naskah kata demi kata",
+  "member.MemberNoteTranscriptModal.pending": "Transkripsi sedang berlangsung, harap tunggu dan segarkan untuk memeriksa.",
   "member.MemberNoteTranscriptModal.transcript": "Salinan",
   "member.MemberNoteTranscriptModal.transcriptError": "Konversi kata demi kata gagal",
   "member.MemberNoteTranscriptModal.transcriptText1": "Apakah Anda yakin ingin mengonversi ke kata demi kata?",
