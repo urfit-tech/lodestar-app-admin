@@ -19,6 +19,7 @@ import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
 import memberMessages from './translations'
+import { CountryCode, parsePhoneNumber } from 'libphonenumber-js'
 
 const StyledCloseIcon = styled.div`
   position: absolute;
@@ -43,33 +44,24 @@ type FieldProps = {
   tags?: string[]
   managerId?: string
 }
-
-interface PhoneData {
-  phones: string[]
-  countryCodes: string[]
-}
-
 interface CountryCodeData {
-  country: string
-  countryCode: string
+  countryCode: CountryCode
+  countryCallingCode: string
 }
 
 const getAllCountryCodeData = () => {
   const countryCodesObject = countryCodes.customList(
     'countryCode' as any,
-    `{"country":"{countryCode}","countryCode":"+{countryCallingCode}"}`,
+    `{"countryCode":"{countryCode}", "countryCallingCode":"+{countryCallingCode}"}`,
   )
   const result: CountryCodeData[] = []
-  Object.values(countryCodesObject).forEach(value => {
-    result.push(JSON.parse(value))
-  })
-
+  Object.values(countryCodesObject).forEach(value => result.push(JSON.parse(value)))
   return result
 }
 
-const splitPhoneData = (phoneData: string[] = [], separator: string): PhoneData => {
-  const phones: string[] = []
+const splitPhoneData = (phoneData: string[] = [], separator: string): { phones: string[]; countryCodes: string[] } => {
   const countryCodes: string[] = []
+  const phones: string[] = []
 
   phoneData.forEach(data => {
     if (!data) data = `${separator}`
@@ -92,6 +84,7 @@ const MemberProfileBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { currentUserRole, permissions } = useAuth()
   const { enabledModules } = useApp()
+
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
     hasura.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -121,7 +114,8 @@ const MemberProfileBasicForm: React.FC<{
                 member_id: memberAdmin.id,
                 phone,
                 country_code: countryCodes[index],
-                international_phone: `+${countryCodes[index]}${phone}`,
+                international_phone:
+                  parsePhoneNumber(phone, countryCodes[index] as CountryCode)?.formatInternational() || null,
                 is_valid: Boolean(memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid),
               }))
             : phones.map((phone: string, index: number) => ({
@@ -129,7 +123,10 @@ const MemberProfileBasicForm: React.FC<{
                 phone,
                 country_code: memberAdmin.phones[index].countryCode,
                 international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
-                  ? `+${memberAdmin.phones[index].countryCode}${memberAdmin.phones[index].phoneNumber}`
+                  ? parsePhoneNumber(
+                      memberAdmin.phones[index].phoneNumber,
+                      countryCodes[index] as CountryCode,
+                    )?.formatInternational() || null
                   : null,
                 is_valid: Boolean(memberAdmin.phones[index].isValid),
               })),
@@ -164,6 +161,8 @@ const MemberProfileBasicForm: React.FC<{
         .catch(handleError)
         .finally(() => setLoading(false))
     } catch (error) {
+      process.env.NODE_ENV === 'development' ?? console.error(error)
+    } finally {
       setLoading(false)
     }
   }
@@ -276,7 +275,8 @@ const PhoneCollectionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { phones, countryCodes } = splitPhoneData(value, ',')
+  const { countryCodes, phones } = splitPhoneData(value, ',')
+
   return (
     <>
       {value?.map((_, index) => (
@@ -328,7 +328,7 @@ const CountryCodeSelect: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, index, onChange }) => {
   const { phones, countryCodes } = splitPhoneData(value, ',')
-  const allCountryCodeData = getAllCountryCodeData()
+  const allCountryCodeData: CountryCodeData[] = getAllCountryCodeData()
 
   return (
     <>
@@ -345,9 +345,9 @@ const CountryCodeSelect: React.FC<{
       >
         {allCountryCodeData?.map(data => (
           <Select.Option
-            key={`${data.country}${data.countryCode}`}
+            key={`${data.countryCode}${data.countryCallingCode}`}
             value={data.countryCode}
-          >{`${data.country} (${data.countryCode})`}</Select.Option>
+          >{`${data.countryCode} (${data.countryCallingCode})`}</Select.Option>
         ))}
       </Select>
     </>
