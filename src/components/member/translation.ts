@@ -14,7 +14,7 @@ const memberMessages = {
   MemberNoteTranscriptModal: defineMessages({
     numberAttachment: { id: 'member.MemberNoteTranscriptModal.numberAttachment', defaultMessage: 'Call Attachment(s)' },
     transcript: { id: 'member.MemberNoteTranscriptModal.transcript', defaultMessage: 'Transcript' },
-    pending: { id: 'member.MemberNoteTranscriptModal.pending', defaultMessage: 'transcribing' },
+    pending: { id: 'member.MemberNoteTranscriptModal.pending', defaultMessage: 'Transcription in progress, please wait and refresh to check.' },
     failed: { id: 'member.MemberNoteTranscriptModal.failed', defaultMessage: 'transcript failed' },
     transcriptText1: {
       id: 'member.MemberNoteTranscriptModal.transcriptText1',

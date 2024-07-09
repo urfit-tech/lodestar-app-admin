@@ -1695,7 +1695,7 @@
   "member.MemberNoteTranscriptModal.deleteNote": "xóa ghi chú đó không?",
   "member.MemberNoteTranscriptModal.failed": "Chuyển đổi nguyên văn không thành công",
   "member.MemberNoteTranscriptModal.numberAttachment": "tệp đính kèm",
-  "member.MemberNoteTranscriptModal.pending": "Chuyển đổi nguyên văn bản thảo",
+  "member.MemberNoteTranscriptModal.pending": "Đang sao chép, vui lòng đợi và làm mới để kiểm tra.",
   "member.MemberNoteTranscriptModal.transcript": "Bảng điểm",
   "member.MemberNoteTranscriptModal.transcriptError": "Chuyển đổi nguyên văn không thành công",
   "member.MemberNoteTranscriptModal.transcriptText1": "Bạn có chắc chắn muốn chuyển đổi sang nguyên văn không?",
