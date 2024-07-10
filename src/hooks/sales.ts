@@ -588,7 +588,10 @@ const UpsertCategory = gql`
 
 const AddLeadStatusCategory = gql`
   mutation AddLeadStatusCategory($memberId: String!, $status: String!, $categoryId: String!) {
-    insert_lead_status_category_one(object: { member_id: $memberId, status: $status, category_id: $categoryId }) {
+    insert_lead_status_category_one(
+      object: { member_id: $memberId, status: $status, category_id: $categoryId }
+      on_conflict: { constraint: lead_status_category_member_id_category_id_key }
+    ) {
       id
     }
   }
