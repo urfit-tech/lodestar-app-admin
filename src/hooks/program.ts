@@ -716,13 +716,31 @@ export const useMutateProgramContent = () => {
   >(
     gql`
       mutation DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM($programContentId: uuid!, $examId: uuid!) {
-        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+        delete_program_content_plan(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_audio(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
+        delete_program_content_log(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          affected_rows
+        }
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
         delete_exam(where: { id: { _eq: $examId } }) {

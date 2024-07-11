@@ -4,7 +4,7 @@ import { useEditor } from '@craftjs/core'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
@@ -59,6 +59,9 @@ const CraftPageBuilderController: React.FC<{ pageId: string; onAppPageUpdate?: (
     }
     onDeviceChange?.(device)
   }
+  useEffect(() => {
+    if (editor.nodes['ROOT']?.data?.custom?.device) handleDeviceChange(device)
+  }, [device, editor.nodes['ROOT']?.data?.custom?.device])
 
   const activeColor = theme['@primary-color'] || '#4C5B8F'
   const inactiveColor = 'var(--gray)'

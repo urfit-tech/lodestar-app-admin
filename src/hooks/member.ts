@@ -334,7 +334,12 @@ export const useMemberNotesAdmin = (
           member_note_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
+            created_at
             options
+            attachment {
+              id
+              type
+            }
           }
         }
       }
@@ -380,7 +385,9 @@ export const useMemberNotesAdmin = (
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
         data: u.data,
+        type: u.attachment?.type || '',
         options: u.options,
+        createdAt: new Date(u.created_at),
       })),
       metadata: v.metadata,
     })) || []
@@ -1162,10 +1169,20 @@ export const useTransferManagers = () => {
           name
         }
       }
-    `,{
-      
-    },
+    `,
+    {},
   )
+
+  const [transferLeads] = useMutation<hasura.TransferLeads, hasura.TransferLeadsVariables>(gql`
+    mutation TransferLeads($memberIds: [String!]!, $managerId: String!, $leadStatusCategoryId: uuid) {
+      update_member(
+        where: { id: { _in: $memberIds } }
+        _set: { manager_id: $managerId, lead_status_category_id: $leadStatusCategoryId }
+      ) {
+        affected_rows
+      }
+    }
+  `)
 
   const transferManagers: { id: string; email: string; name: string }[] =
     data?.member.map(v => ({
@@ -1178,5 +1195,6 @@ export const useTransferManagers = () => {
     loading,
     error,
     transferManagers,
+    transferLeads,
   }
 }

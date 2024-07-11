@@ -241,8 +241,10 @@ export type MemberNote = {
   }
   attachments?: {
     id: string
+    type: string | null
     data: any
     options: any
+    createdAt: Date
   }[]
 }
 
