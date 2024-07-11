@@ -1,16 +1,15 @@
-import { EditOutlined, MoreOutlined, QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Skeleton, Tooltip } from 'antd'
+import { MoreOutlined, QuestionCircleFilled } from '@ant-design/icons'
+import { gql, useMutation } from '@apollo/client'
+import { Flex } from '@chakra-ui/react'
+import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { gql } from '@apollo/client'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import programMessages from './translation'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
@@ -21,6 +20,7 @@ import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
+import programMessages from './translation'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -53,40 +53,6 @@ type FieldProps = {
   difficulty: number
   isCoverRequired: boolean
   planIds: string[]
-}
-
-const PracticeAdminModal: React.FC<{
-  programId: string
-  programContent: ProgramContentProps
-  onRefetch?: () => void
-}> = ({ programId, programContent, onRefetch }) => {
-  const [visible, setVisible] = useState(false)
-  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
-
-  if (loadingProgramContentBody) return <Skeleton active />
-
-  return (
-    <>
-      <EditOutlined onClick={() => setVisible(true)} />
-
-      <Modal
-        width="70vw"
-        footer={null}
-        maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
-        maskClosable={false}
-        closable={false}
-        visible={visible}
-      >
-        <PracticeForm
-          programId={programId}
-          programContent={programContent}
-          programContentBody={programContentBody}
-          onRefetch={() => onRefetch?.()}
-          onCancel={() => setVisible(false)}
-        />
-      </Modal>
-    </>
-  )
 }
 
 const PracticeForm: React.FC<{
@@ -194,44 +160,52 @@ const PracticeForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="d-flex align-items-center">
+      <Flex
+        alignItems={{ base: 'flex-end', md: 'center' }}
+        justifyContent="space-between"
+        marginBottom="16px"
+        flexDirection={{ base: 'column-reverse', md: 'row' }}
+      >
+        <Flex flexWrap="wrap">
           {programContent.displayMode && (
             <DisplayModeSelector contentType="practice" displayMode={programContent.displayMode} />
           )}
+          <Flex flexWrap="wrap">
+            <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
+              <Checkbox>
+                {formatMessage(messages.displayPrivate)}
+                <Tooltip
+                  placement="right"
+                  title={
+                    <StyledTips>{formatMessage(programMessages.PracticeAdminModal.practicePrivateTips)}</StyledTips>
+                  }
+                  style={{ position: 'relative' }}
+                >
+                  <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
+                </Tooltip>
+              </Checkbox>
+            </Form.Item>
 
-          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
-            <Checkbox>
-              {formatMessage(messages.displayPrivate)}
-              <Tooltip
-                placement="right"
-                title={<StyledTips>{formatMessage(programMessages.PracticeAdminModal.practicePrivateTips)}</StyledTips>}
-                style={{ position: 'relative' }}
-              >
-                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
-              </Tooltip>
-            </Checkbox>
-          </Form.Item>
+            <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3 mb-0">
+              <Checkbox>
+                {formatMessage(messages.coverRequired)}
+                <Tooltip
+                  placement="right"
+                  title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}
+                  style={{ position: 'relative' }}
+                >
+                  <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
+                </Tooltip>
+              </Checkbox>
+            </Form.Item>
 
-          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3 mb-0">
-            <Checkbox>
-              {formatMessage(messages.coverRequired)}
-              <Tooltip
-                placement="right"
-                title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}
-                style={{ position: 'relative' }}
-              >
-                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
-              </Tooltip>
-            </Checkbox>
-          </Form.Item>
+            <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
+              <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+            </Form.Item>
+          </Flex>
+        </Flex>
 
-          <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-            <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
-          </Form.Item>
-        </div>
-
-        <div>
+        <Flex alignItems="center" marginBottom={{ base: '12px', md: '0' }}>
           <Button
             disabled={isSubmitting}
             onClick={() => {
@@ -265,8 +239,8 @@ const PracticeForm: React.FC<{
           >
             <MoreOutlined />
           </Dropdown>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       <StyledTitle className="mb-3">{formatMessage(programMessages.PracticeAdminModal.practice)}</StyledTitle>
 
@@ -348,5 +322,24 @@ const UPDATE_PRACTICE = gql`
     }
   }
 `
+const PracticeAdminModalBlock: React.FC<{
+  programId: string
+  programContent: ProgramContentProps
+  onRefetch?: () => void
+  onClose: () => void
+}> = ({ programId, programContent, onRefetch, onClose }) => {
+  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
 
-export default PracticeAdminModal
+  if (loadingProgramContentBody) return <Skeleton active />
+  return (
+    <PracticeForm
+      programId={programId}
+      programContent={programContent}
+      programContentBody={programContentBody}
+      onRefetch={() => onRefetch?.()}
+      onCancel={() => onClose()}
+    />
+  )
+}
+
+export default PracticeAdminModalBlock

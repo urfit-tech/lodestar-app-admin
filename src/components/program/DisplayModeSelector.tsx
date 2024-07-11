@@ -1,3 +1,4 @@
+import { Flex } from '@chakra-ui/react'
 import { DatePicker, Form, Select } from 'antd'
 import moment from 'moment'
 import { useState } from 'react'
@@ -14,8 +15,8 @@ const DisplayModeSelector: React.VFC<{
   const [currentOption, setCurrentOption] = useState<DisplayMode>(displayMode)
 
   return (
-    <>
-      <Form.Item name="displayMode" className="mb-0 mr-2">
+    <Flex flexWrap="wrap" gridGap="2">
+      <Form.Item name="displayMode" className="mb-0">
         <Select style={{ width: '120px' }} onChange={(v: DisplayMode) => setCurrentOption(v)}>
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
@@ -55,7 +56,7 @@ const DisplayModeSelector: React.VFC<{
           />
         </Form.Item>
       )}
-    </>
+    </Flex>
   )
 }
 

@@ -1,5 +1,5 @@
 import Icon, { EditOutlined, MoreOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
-import { Box } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -50,6 +50,8 @@ import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
+import ExerciseAdminModalBlock from './ExerciseAdminModalBlock'
+import PracticeAdminModalBlock from './PracticeAdminModalBlock'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
 import type { NavItem } from 'epubjs/types/navigation'
@@ -397,7 +399,21 @@ const ProgramContentAdminModal: React.FC<{
         visible={visible}
       >
         <>
-          {programContent && (
+          {programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
+            <ExerciseAdminModalBlock
+              programId={programId}
+              programContent={programContent}
+              onRefetch={onRefetch}
+              onClose={() => setVisible(false)}
+            />
+          ) : programContent.programContentType === 'practice' ? (
+            <PracticeAdminModalBlock
+              programId={programId}
+              programContent={programContent}
+              onRefetch={onRefetch}
+              onClose={() => setVisible(false)}
+            />
+          ) : (
             <Form
               form={form}
               layout="vertical"
@@ -427,9 +443,14 @@ const ProgramContentAdminModal: React.FC<{
               }}
               onFinish={handleSubmit}
             >
-              <div className="d-flex align-items-center justify-content-between mb-4">
-                <div className="d-flex align-items-center">
-                  <Form.Item name="contentBodyType" className="mb-0 mr-2">
+              <Flex
+                alignItems={{ base: 'flex-end', md: 'center' }}
+                justifyContent="space-between"
+                marginBottom="16px"
+                flexDirection={{ base: 'column-reverse', md: 'row' }}
+              >
+                <Flex flexWrap="wrap" gridGap="2">
+                  <Form.Item name="contentBodyType" className="mb-0">
                     <Select
                       onChange={v => {
                         if (typeof v === 'string') {
@@ -449,16 +470,17 @@ const ProgramContentAdminModal: React.FC<{
                   {programContent.displayMode && (
                     <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
                   )}
+                  <Flex flexWrap="wrap">
+                    <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
+                      <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+                    </Form.Item>
+                    <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
+                      <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
+                    </Form.Item>
+                  </Flex>
+                </Flex>
 
-                  <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                    <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
-                  </Form.Item>
-                  <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
-                    <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
-                  </Form.Item>
-                </div>
-
-                <div className="d-flex align-items-center">
+                <Flex alignItems="center" marginBottom={{ base: '12px', md: '0' }}>
                   <Button
                     disabled={loading}
                     onClick={() => {
@@ -494,8 +516,8 @@ const ProgramContentAdminModal: React.FC<{
                   >
                     <MoreOutlined />
                   </Dropdown>
-                </div>
-              </div>
+                </Flex>
+              </Flex>
 
               <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
                 <Input />
@@ -644,34 +666,36 @@ const ProgramContentAdminModal: React.FC<{
               )}
 
               {enabledModules.ebook && contentType === 'ebook' ? (
-                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
-                  <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
-                    {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
-                  </Box>
-                  <FileUploader
-                    renderTrigger={({ onClick }) => (
-                      <>
-                        <Button icon={<UploadOutlined />} onClick={onClick}>
-                          {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
-                        </Button>
-                        {isUploadFailed.audio && (
-                          <span className="ml-2">
-                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                          </span>
-                        )}
-                      </>
-                    )}
-                    showUploadList
-                    multiple={false}
-                    accept=".epub"
-                    fileList={ebookFile ? [ebookFile] : []}
-                    uploadProgress={uploadProgress}
-                    failedUploadFiles={failedUploadFiles}
-                    downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
-                    onChange={files => files && setEbookFile(files[0])}
-                  />
-                </Form.Item>
+                <>
+                  <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
+                    <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
+                      {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
+                    </Box>
+                    <FileUploader
+                      renderTrigger={({ onClick }) => (
+                        <>
+                          <Button icon={<UploadOutlined />} onClick={onClick}>
+                            {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
+                          </Button>
+                          {isUploadFailed.audio && (
+                            <span className="ml-2">
+                              <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                              <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                            </span>
+                          )}
+                        </>
+                      )}
+                      showUploadList
+                      multiple={false}
+                      accept=".epub"
+                      fileList={ebookFile ? [ebookFile] : []}
+                      uploadProgress={uploadProgress}
+                      failedUploadFiles={failedUploadFiles}
+                      downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
+                      onChange={files => files && setEbookFile(files[0])}
+                    />
+                  </Form.Item>
+                </>
               ) : null}
 
               {enabledModules.program_content_material && contentType !== 'ebook' ? (
