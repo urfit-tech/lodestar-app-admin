@@ -23,6 +23,7 @@ import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 interface MenuItem {
   role: string | null
@@ -334,7 +335,12 @@ export const useMemberNotesAdmin = (
           member_note_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
+            created_at
             options
+            attachment {
+              id
+              type
+            }
           }
         }
       }
@@ -380,7 +386,9 @@ export const useMemberNotesAdmin = (
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
         data: u.data,
+        type: u.attachment?.type || '',
         options: u.options,
+        createdAt: new Date(u.created_at),
       })),
       metadata: v.metadata,
     })) || []
@@ -1162,10 +1170,20 @@ export const useTransferManagers = () => {
           name
         }
       }
-    `,{
-      
-    },
+    `,
+    {},
   )
+
+  const [transferLeads] = useMutation<hasura.TransferLeads, hasura.TransferLeadsVariables>(gql`
+    mutation TransferLeads($memberIds: [String!]!, $managerId: String!, $leadStatusCategoryId: uuid) {
+      update_member(
+        where: { id: { _in: $memberIds } }
+        _set: { manager_id: $managerId, lead_status_category_id: $leadStatusCategoryId }
+      ) {
+        affected_rows
+      }
+    }
+  `)
 
   const transferManagers: { id: string; email: string; name: string }[] =
     data?.member.map(v => ({
@@ -1178,5 +1196,62 @@ export const useTransferManagers = () => {
     loading,
     error,
     transferManagers,
+    transferLeads,
+  }
+}
+
+export const useMemberMetadataByEmailAndKey = (email: string, metadataKey: string) => {
+  const { id: appId } = useApp()
+  const { loading, data, error, refetch } = useQuery<hasura.GetMemberByEmail, hasura.GetMemberByEmailVariables>(
+    gql`
+      query GetMemberByEmail($appId: String!, $email: String!, $metadataKey: String) {
+        member(
+          where: { email: { _eq: $email }, app_id: { _eq: $appId }, metadata: { _has_key: $metadataKey } }
+          limit: 1
+        ) {
+          id
+          name
+          email
+          metadata
+          created_at
+          member_phones {
+            phone
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        appId,
+        email,
+        metadataKey,
+      },
+    },
+  )
+
+  const member: {
+    id: string
+    name: string
+    email: string
+    phones: string[]
+    createdAt: Date
+    metadata: any
+  } | null =
+    loading || error || !data
+      ? null
+      : data.member.map(v => ({
+          id: v.id,
+          name: v.name,
+          email: v.email,
+          phones: v.member_phones.map(w => w.phone),
+          createdAt: new Date(v.created_at),
+          metadata: v.metadata,
+        }))[0]
+
+  return {
+    loadingMember: loading,
+    errorMember: error,
+    member,
+    refetchMember: refetch,
   }
 }

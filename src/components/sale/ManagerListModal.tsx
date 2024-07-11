@@ -16,7 +16,8 @@ const ManagerListModal: React.VFC<{
     id: any
     memberId: string
     status: string
-    listName: string
+    categoryName: string
+    categoryId: string
   }[]
   leads: LeadProps[]
 }> = ({ visible, handleClose, handleManagerLeadStatusCategory, leadStatusCategories, leads }) => {
@@ -26,7 +27,7 @@ const ManagerListModal: React.VFC<{
       id: string
       memberId: string
       status: string
-      listName: string
+      categoryName: string
     }[]
   >(leadStatusCategories)
 
@@ -89,7 +90,7 @@ const ManagerListModal: React.VFC<{
               <span className="ml-2">({leads.filter(lead => lead.leadStatusCategoryId === c.id).length}筆)</span>
             </StyledInputTitle>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <Input value={c.listName} disabled />
+              <Input value={c.categoryName} disabled />
               <TrashOIcon
                 className="cursor-pointer ml-4"
                 onClick={() => {

@@ -31,6 +31,12 @@ export const StyledLine = styled.div`
   margin: 2px 0;
 `
 
+type SelectedLeadStatusCategory = {
+  id: string
+  categoryName: string
+  categoryId: string
+}
+
 const SalesLeadManagerSelectorStatus = () => {
   const { permissions } = useAuth()
   if (
@@ -51,6 +57,7 @@ const SalesLeadPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
+  const [selectedLeadStatusCategory, setSelectedLeadStatusCategory] = useState<SelectedLeadStatusCategory | null>(null)
 
   const manager =
     managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
@@ -72,7 +79,10 @@ const SalesLeadPage: React.VFC = () => {
             <MemberSelector
               members={managers}
               value={manager.id}
-              onChange={value => typeof value === 'string' && setManagerId(value)}
+              onChange={value => {
+                typeof value === 'string' && setManagerId(value)
+                setSelectedLeadStatusCategory(null)
+              }}
             />
           </StyledManagerBlock>
         ) : currentMember ? (
@@ -80,7 +90,15 @@ const SalesLeadPage: React.VFC = () => {
         ) : null}
       </div>
       {manager ? (
-        <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />
+        <SalesLeadTabs
+          activeKey={activeKey}
+          manager={manager}
+          onActiveKeyChanged={setActiveKey}
+          selectedLeadStatusCategory={selectedLeadStatusCategory}
+          onSelectedLeadStatusCategoryChange={selectedLeadStatusCategory =>
+            setSelectedLeadStatusCategory(selectedLeadStatusCategory)
+          }
+        />
       ) : (
         <Skeleton active />
       )}
@@ -91,14 +109,14 @@ const SalesLeadPage: React.VFC = () => {
 const SalesLeadTabs: React.VFC<{
   manager: Manager
   activeKey: string
+  selectedLeadStatusCategory: SelectedLeadStatusCategory | null
   onActiveKeyChanged: (activeKey: string) => void
-}> = ({ activeKey, manager, onActiveKeyChanged }) => {
+  onSelectedLeadStatusCategoryChange: (selectedLeadStatusCategory: SelectedLeadStatusCategory | null) => void
+}> = ({ activeKey, manager, onActiveKeyChanged, selectedLeadStatusCategory, onSelectedLeadStatusCategoryChange }) => {
   const [refetchLoading, setRefetchLoading] = useState(true)
   const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
   const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
-  const [selectedLeadStatusCategory, setSelectedLeadStatusCategory] = useState<{ id: string; name: string } | null>(
-    null,
-  )
+
   const { formatMessage } = useIntl()
   const {
     refetch,
@@ -119,6 +137,7 @@ const SalesLeadTabs: React.VFC<{
   const [isOpenAddListModal, setIsOpenAddListModal] = useState(false)
   const [isOpenManagerListModal, setIsOpenManagerListModal] = useState(false)
   const [listStatus, setListStatus] = useState<LeadStatus>('FOLLOWED')
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const {
     leadStatusCategories,
     refetchLeadStatusCategory,
@@ -158,6 +177,7 @@ const SalesLeadTabs: React.VFC<{
         tabBarExtraContent={
           <Button
             onClick={async () => {
+              await await refetchLeadStatusCategory()
               await refetchMembers?.()
               await refetch?.()
             }}
@@ -174,23 +194,31 @@ const SalesLeadTabs: React.VFC<{
                 <Menu>
                   <Menu.Item
                     onClick={() => {
-                      setSelectedLeadStatusCategory(null)
+                      onSelectedLeadStatusCategoryChange(null)
+                      setSelectedRowKeys([])
                     }}
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
                     {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
                     <span>({followedLeads.filter(lead => !lead.leadStatusCategoryId).length})</span>
                   </Menu.Item>
-                  {leadStatusCategories.map(category => (
+                  {leadStatusCategories.map(leadStatusCategory => (
                     <Menu.Item
-                      key={category.id}
+                      key={leadStatusCategory.id}
                       onClick={() => {
-                        setSelectedLeadStatusCategory({ id: category.id, name: category.listName })
+                        onSelectedLeadStatusCategoryChange({
+                          id: leadStatusCategory.id,
+                          categoryName: leadStatusCategory.categoryName,
+                          categoryId: leadStatusCategory.categoryId,
+                        })
+                        setSelectedRowKeys([])
                       }}
                     >
-                      {selectedLeadStatusCategory?.id === category.id && <CheckOutlined className="mr-1" />}
-                      {category.listName}
-                      <span>({followedLeads.filter(lead => category.id === lead.leadStatusCategoryId).length})</span>
+                      {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}
+                      {leadStatusCategory.categoryName}
+                      <span>
+                        ({followedLeads.filter(lead => leadStatusCategory.id === lead.leadStatusCategoryId).length})
+                      </span>
                     </Menu.Item>
                   ))}
                   <StyledLine />
@@ -205,7 +233,12 @@ const SalesLeadTabs: React.VFC<{
                 </Menu>
               }
             >
-              <Center onClick={() => setContactedTabState(null)}>
+              <Center
+                onClick={() => {
+                  setContactedTabState(null)
+                  setSelectedRowKeys([])
+                }}
+              >
                 {formatMessage(salesMessages.followedLead)}
                 <span>({refetchLoading ? <Spin size="small" /> : followedLeads.length})</span>
                 <DownOutlined className="mr-0 ml-1" />
@@ -213,33 +246,42 @@ const SalesLeadTabs: React.VFC<{
             </Dropdown>
           }
         >
-          <SalesLeadTable
-            title={`${
-              selectedLeadStatusCategory?.name ||
-              formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)
-            }(${followLeadStatusCategoryLists.length})`}
-            variant="followed"
-            manager={manager}
-            leads={followLeadStatusCategoryLists}
-            onRefetch={async () => {
-              await refetchMembers?.()
-              await refetch?.()
-            }}
-            isLoading={refetchLoading}
-            followedLeads={followedLeads}
-          />
+          {activeKey === 'followed' && (
+            <SalesLeadTable
+              title={`${
+                selectedLeadStatusCategory?.categoryName ||
+                formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)
+              }(${followLeadStatusCategoryLists.length})`}
+              variant="followed"
+              manager={manager}
+              selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
+              leads={followLeadStatusCategoryLists}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              isLoading={refetchLoading}
+              followedLeads={followedLeads}
+            />
+          )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
           key="total"
           tab={
-            <div>
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
               {formatMessage(salesMessages.totalLead)}
               <span>({refetchLoading ? <Spin size="small" /> : totalLeads.length})</span>
             </div>
           }
         >
-          {
+          {activeKey === 'total' && (
             <SalesLeadTable
               manager={manager}
               leads={totalLeads}
@@ -249,20 +291,26 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
-          }
+          )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
           key="idled"
           tab={
-            <div>
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
               {formatMessage(salesMessages.idledLead)}
               <span>({refetchLoading ? <Spin size="small" /> : idledLeads.length})</span>
             </div>
           }
         >
-          {
+          {activeKey === 'idled' && (
             <SalesLeadTable
               manager={manager}
               leads={idledLeads}
@@ -272,8 +320,10 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
-          }
+          )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
@@ -282,14 +332,24 @@ const SalesLeadTabs: React.VFC<{
             <Dropdown
               overlay={
                 <Menu>
-                  <Menu.Item onClick={() => setContactedTabState('contacted')}>
+                  <Menu.Item
+                    onClick={() => {
+                      setContactedTabState('contacted')
+                      setSelectedRowKeys([])
+                    }}
+                  >
                     <Center>
                       {'contacted' === contactedTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.contactedLead)}
                       <span>({contactedLeads.length})</span>
                     </Center>
                   </Menu.Item>
-                  <Menu.Item onClick={() => setContactedTabState('answered')}>
+                  <Menu.Item
+                    onClick={() => {
+                      setContactedTabState('answered')
+                      setSelectedRowKeys([])
+                    }}
+                  >
                     <Center>
                       {'answered' === contactedTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.answeredLeads)}
@@ -299,7 +359,12 @@ const SalesLeadTabs: React.VFC<{
                 </Menu>
               }
             >
-              <Center onClick={() => setContactedTabState(null)}>
+              <Center
+                onClick={() => {
+                  setContactedTabState(null)
+                  setSelectedRowKeys([])
+                }}
+              >
                 {formatMessage(salesMessages.calledLead)}
                 <span>({refetchLoading ? <Spin size="small" /> : contactedLeads.length + answeredLeads.length})</span>
                 <DownOutlined className="mr-0 ml-1" />
@@ -307,7 +372,7 @@ const SalesLeadTabs: React.VFC<{
             </Dropdown>
           }
         >
-          {null === contactedTabState && (
+          {null === contactedTabState && activeKey === 'called' && (
             <SalesLeadTable
               manager={manager}
               leads={[...contactedLeads, ...answeredLeads]}
@@ -317,6 +382,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
           {'contacted' === contactedTabState && (
@@ -329,6 +396,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
           {'answered' === contactedTabState && (
@@ -341,6 +410,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
         </Tabs.TabPane>
@@ -351,15 +422,25 @@ const SalesLeadTabs: React.VFC<{
             <Dropdown
               overlay={
                 <Menu>
-                  <Menu.Item onClick={() => setDemoTabState('invited')}>
+                  <Menu.Item
+                    onClick={() => {
+                      setDemoTabState('invited')
+                      setSelectedRowKeys([])
+                    }}
+                  >
                     <Center>
                       {'invited' === demoTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.invitedLead)}
                       <span>({invitedLeads.length})</span>
                     </Center>
                   </Menu.Item>
-                  <Menu.Item onClick={() => setDemoTabState('presented')}>
-                    <Center>
+                  <Menu.Item
+                    onClick={() => {
+                      setDemoTabState('presented')
+                      setSelectedRowKeys([])
+                    }}
+                  >
+                    <Center onClick={() => setSelectedRowKeys([])}>
                       {'presented' === demoTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.presentedLead)}
                       <span>({presentedLeads.length})</span>
@@ -368,7 +449,12 @@ const SalesLeadTabs: React.VFC<{
                 </Menu>
               }
             >
-              <Center onClick={() => setDemoTabState(null)}>
+              <Center
+                onClick={() => {
+                  setDemoTabState(null)
+                  setSelectedRowKeys([])
+                }}
+              >
                 {formatMessage(salesMessages.demoReservation)}
                 <span>({refetchLoading ? <Spin size="small" /> : invitedLeads.length + presentedLeads.length})</span>
                 <DownOutlined className="mr-0 ml-1" />
@@ -376,7 +462,7 @@ const SalesLeadTabs: React.VFC<{
             </Dropdown>
           }
         >
-          {null === demoTabState && (
+          {null === demoTabState && activeKey === 'demo' && (
             <SalesLeadTable
               manager={manager}
               leads={[...invitedLeads, ...presentedLeads]}
@@ -386,6 +472,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
           {'invited' === demoTabState && (
@@ -398,6 +486,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
           {'presented' === demoTabState && (
@@ -410,6 +500,8 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
           )}
         </Tabs.TabPane>
@@ -417,13 +509,17 @@ const SalesLeadTabs: React.VFC<{
         <Tabs.TabPane
           key="completed"
           tab={
-            <div>
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
               {formatMessage(salesMessages.completedLead)}
               <span>({refetchLoading ? <Spin size="small" /> : completedLeads.length})</span>
             </div>
           }
         >
-          {
+          {activeKey === 'completed' && (
             <SalesLeadTable
               variant="completed"
               manager={manager}
@@ -434,20 +530,26 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
-          }
+          )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
           key="signed"
           tab={
-            <div>
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
               {formatMessage(salesMessages.signedLead)}
               <span>({refetchLoading ? <Spin size="small" /> : signedLeads.length})</span>
             </div>
           }
         >
-          {
+          {activeKey === 'signed' && (
             <SalesLeadTable
               manager={manager}
               leads={signedLeads}
@@ -457,21 +559,27 @@ const SalesLeadTabs: React.VFC<{
               }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
             />
-          }
+          )}
         </Tabs.TabPane>
 
         {closedLeads.length > 0 && (
           <Tabs.TabPane
             key="closed"
             tab={
-              <div>
+              <div
+                onClick={() => {
+                  setSelectedRowKeys([])
+                }}
+              >
                 {formatMessage(salesMessages.closedLead)}
                 <span>({refetchLoading ? <Spin size="small" /> : closedLeads.length})</span>
               </div>
             }
           >
-            {
+            {activeKey === 'closed' && (
               <SalesLeadTable
                 manager={manager}
                 leads={closedLeads}
@@ -481,8 +589,10 @@ const SalesLeadTabs: React.VFC<{
                 }}
                 isLoading={refetchLoading}
                 followedLeads={followedLeads}
+                selectedRowKeys={selectedRowKeys}
+                onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               />
-            }
+            )}
           </Tabs.TabPane>
         )}
       </Tabs>
@@ -500,7 +610,7 @@ const SalesLeadTabs: React.VFC<{
               await refetchLeadStatusCategory()
               await refetchMembers?.()
               await refetch?.()
-              setSelectedLeadStatusCategory(null)
+              onSelectedLeadStatusCategoryChange(null)
             },
             err => {
               console.log(err)
@@ -525,7 +635,7 @@ const SalesLeadTabs: React.VFC<{
                   await refetchLeadStatusCategory()
                   await refetchMembers?.()
                   await refetch?.()
-                  setSelectedLeadStatusCategory(null)
+                  onSelectedLeadStatusCategoryChange(null)
                 },
                 err => {
                   console.log(err)

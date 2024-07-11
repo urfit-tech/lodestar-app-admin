@@ -10,7 +10,7 @@ import {
   StopOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
@@ -19,7 +19,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { uniq } from 'ramda'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -87,14 +87,27 @@ const SalesLeadTable: React.VFC<{
   onRefetch: () => Promise<void>
   title?: string
   followedLeads: LeadProps[]
-}> = ({ variant, manager, leads, onRefetch, isLoading, title, followedLeads }) => {
+  selectedLeadStatusCategoryId?: string
+  selectedRowKeys: React.Key[]
+  onSelectChange: (newSelectedRowKeys: React.Key[]) => void
+}> = ({
+  variant,
+  manager,
+  leads,
+  onRefetch,
+  isLoading,
+  title,
+  followedLeads,
+  selectedLeadStatusCategoryId,
+  selectedRowKeys,
+  onSelectChange,
+}) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { permissions, authToken } = useAuth()
 
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
-  const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
   const uploadAttachments = useUploadAttachments()
 
@@ -109,7 +122,6 @@ const SalesLeadTable: React.VFC<{
     memberNote?: string
     status?: string
   }>({})
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const { properties } = useProperty()
@@ -148,10 +160,6 @@ const SalesLeadTable: React.VFC<{
   const handleOpenManagerListModal = (status: LeadStatus) => {
     setIsOpenManagerListModal(true)
     setListStatus(status)
-  }
-
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys)
   }
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<LeadProps> = onSetFilter => ({
@@ -529,78 +537,6 @@ const SalesLeadTable: React.VFC<{
 
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
-  const [managerId, setManagerId] = useState('')
-  const businessAppId = useRef('')
-
-  const { data: memberAppId } = useQuery(GetMemberAppID, {
-    variables: { managerId: managerId },
-    skip: managerId === '',
-  })
-
-  const { data: managerAppIds } = useQuery(GetManagerAppIDList, {
-    variables: { managerIds: selectedRowKeys },
-    skip: selectedRowKeys.length === 0,
-  })
-
-  useEffect(() => {
-    if (memberAppId == null || managerId === '') return
-    const matchedAppIds: Record<string, string>[] = []
-    const nonMatchingAppIds: Record<string, string>[] = []
-
-    businessAppId.current = memberAppId?.member[0]?.app_id
-    if (businessAppId.current == null) {
-      alert(`此會員不存在: ${managerId}`)
-      setManagerId('')
-      return
-    }
-
-    for (const managerId of managerAppIds.member) {
-      if (managerId.app_id === businessAppId.current) {
-        matchedAppIds.push(managerId)
-      } else {
-        nonMatchingAppIds.push(managerId)
-      }
-    }
-
-    if (nonMatchingAppIds.length !== 0) {
-      const alertMes = nonMatchingAppIds
-        .map(info => `id: ${info.id}\napp_id: ${info.app_id}\nname: ${info.name}\n\n`)
-        .join('')
-      alert(`移轉名單有誤: \n${alertMes}`)
-
-      setManagerId('')
-      return
-    }
-
-    if (matchedAppIds.length > 0) {
-      const _handleTransfer = async () => {
-        try {
-          const { data } = await transferLeads({
-            variables: { memberIds: matchedAppIds.map(rowKey => rowKey.id.toString()), managerId },
-          })
-
-          if (data?.update_member?.affected_rows) {
-            window.alert('已成功轉移此名單！')
-            onRefetch()
-          }
-        } catch (error: any) {
-          if (error.graphQLErrors) {
-            const graphqlErrors = error.graphQLErrors.map((graphqlError: any) => graphqlError.message)
-            window.alert(`轉移失敗(graphqlErrors)：${graphqlErrors.join(', ')}`)
-          } else {
-            window.alert(`轉移失敗：${error.message}`)
-          }
-        } finally {
-          setManagerId('')
-          setSelectedRowKeys([])
-        }
-      }
-
-      _handleTransfer()
-      return
-    }
-  }, [managerAppIds, managerId, memberAppId, onRefetch, transferLeads])
-
   return (
     <StyledAdminCard>
       {selectedMember && (
@@ -728,7 +664,7 @@ const SalesLeadTable: React.VFC<{
                               ) {
                                 message.success('已成功收錄！')
                                 onRefetch()
-                                setSelectedRowKeys([])
+                                onSelectChange([])
                               } else {
                                 message.error('系統錯誤')
                               }
@@ -738,11 +674,11 @@ const SalesLeadTable: React.VFC<{
                       >
                         {formatMessage(salesMessages.moveTo) + formatMessage(salesMessages.followedLead)}
                       </Menu.Item>
-                      {leadStatusCategories.map(category => (
+                      {leadStatusCategories.map(leadStatusCategory => (
                         <Menu.Item
-                          key={category.id}
+                          key={leadStatusCategory.id}
                           onClick={() => {
-                            if (window.confirm(`確定收藏這些名單到${category.listName}？`)) {
+                            if (window.confirm(`確定收藏這些名單到${leadStatusCategory.categoryName}？`)) {
                               updateLeads({
                                 variables: {
                                   updateLeads: selectedRowLeads.map(lead => ({
@@ -757,7 +693,7 @@ const SalesLeadTable: React.VFC<{
                                       closed_at: lead.closedAt,
                                       excluded_at: lead.excludedAt,
                                       recycled_at: lead.recycledAt,
-                                      lead_status_category_id: category.id,
+                                      lead_status_category_id: leadStatusCategory.id,
                                     },
                                   })),
                                 },
@@ -769,7 +705,7 @@ const SalesLeadTable: React.VFC<{
                                 ) {
                                   message.success('已成功收錄！')
                                   onRefetch()
-                                  setSelectedRowKeys([])
+                                  onSelectChange([])
                                 } else {
                                   message.error('系統錯誤')
                                 }
@@ -777,7 +713,7 @@ const SalesLeadTable: React.VFC<{
                             }
                           }}
                         >
-                          {formatMessage(salesMessages.moveTo)} {category.listName}
+                          {formatMessage(salesMessages.moveTo)} {leadStatusCategory.categoryName}
                         </Menu.Item>
                       ))}
                       <StyledLine />
@@ -829,7 +765,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已成功取消收藏！')
                           onRefetch()
-                          setSelectedRowKeys([])
+                          onSelectChange([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -870,7 +806,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已成功完成此名單！')
                           onRefetch()
-                          setSelectedRowKeys([])
+                          onSelectChange([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -911,7 +847,7 @@ const SalesLeadTable: React.VFC<{
                         ) {
                           message.success('已取消已完成名單！')
                           onRefetch()
-                          setSelectedRowKeys([])
+                          onSelectChange([])
                         } else {
                           message.error('系統錯誤')
                         }
@@ -939,11 +875,12 @@ const SalesLeadTable: React.VFC<{
                                 _set: {
                                   manager_id: null,
                                   star: lead.star,
-                                  followed_at: lead.followedAt,
+                                  followed_at: null,
                                   completed_at: lead.completedAt,
                                   closed_at: lead.closedAt,
                                   excluded_at: lead.excludedAt,
                                   recycled_at: dayjs().utc().toISOString(),
+                                  lead_status_category_id: null,
                                 },
                               })),
                             },
@@ -954,7 +891,7 @@ const SalesLeadTable: React.VFC<{
                             ) {
                               message.success('已成功回收此名單！')
                               onRefetch()
-                              setSelectedRowKeys([])
+                              onSelectChange([])
                             } else {
                               message.error('系統錯誤')
                             }
@@ -979,11 +916,12 @@ const SalesLeadTable: React.VFC<{
                               _set: {
                                 manager_id: null,
                                 star: -999,
-                                followed_at: lead.followedAt,
+                                followed_at: null,
                                 completed_at: lead.completedAt,
                                 closed_at: dayjs().utc().toISOString(),
                                 excluded_at: lead.excludedAt,
                                 recycled_at: lead.recycledAt,
+                                lead_status_category_id: null,
                               },
                             })),
                           },
@@ -994,7 +932,7 @@ const SalesLeadTable: React.VFC<{
                           ) {
                             message.success('已成功拒絕此名單！')
                             onRefetch()
-                            setSelectedRowKeys([])
+                            onSelectChange([])
                           } else {
                             message.error('系統錯誤')
                           }
@@ -1018,11 +956,12 @@ const SalesLeadTable: React.VFC<{
                               _set: {
                                 manager_id: null,
                                 star: -9999,
-                                followed_at: lead.followedAt,
+                                followed_at: null,
                                 completed_at: lead.completedAt,
                                 closed_at: lead.closedAt,
                                 excluded_at: dayjs().utc().toISOString(),
                                 recycled_at: lead.recycledAt,
+                                lead_status_category_id: null,
                               },
                             })),
                           },
@@ -1033,7 +972,7 @@ const SalesLeadTable: React.VFC<{
                           ) {
                             message.success('已成功刪除此名單！')
                             onRefetch()
-                            setSelectedRowKeys([])
+                            onSelectChange([])
                           } else {
                             message.error('系統錯誤')
                           }
@@ -1045,7 +984,13 @@ const SalesLeadTable: React.VFC<{
                   </Button>
                 </>
               )}
-              <TransferModal onManagerIdChange={value => setManagerId(value)} />
+              <TransferModal
+                selectedRowLeads={selectedRowLeads}
+                selectedLeadStatusCategoryId={selectedLeadStatusCategoryId}
+                listStatus={listStatus}
+                onRefetch={onRefetch}
+                onTransferFinish={() => onSelectChange([])}
+              />
             </div>
           </div>
         )}
@@ -1054,7 +999,6 @@ const SalesLeadTable: React.VFC<{
           rowSelection={{
             selectedRowKeys,
             onChange: onSelectChange,
-            preserveSelectedRowKeys: true,
           }}
           loading={isLoading}
           rowClassName={lead => lead.notified && 'notified'}
@@ -1153,32 +1097,6 @@ const UPDATE_LEADS = gql`
   mutation UPDATE_LEADS($updateLeads: [member_updates!]!) {
     update_member_many(updates: $updateLeads) {
       affected_rows
-    }
-  }
-`
-
-const TRANSFER_LEADS = gql`
-  mutation TRANSFER_LEADS($memberIds: [String!]!, $managerId: String!) {
-    update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
-      affected_rows
-    }
-  }
-`
-
-const GetMemberAppID = gql`
-  query GetMemberAppID($managerId: String!) {
-    member(where: { id: { _eq: $managerId } }) {
-      app_id
-    }
-  }
-`
-
-const GetManagerAppIDList = gql`
-  query GetManagerAppIDList($managerIds: [String!]) {
-    member(where: { id: { _in: $managerIds } }) {
-      id
-      app_id
-      name
     }
   }
 `
