@@ -106,7 +106,10 @@ const ProgramAdminPage: React.FC = () => {
               {isShowProgramAdditionalSettingsForm ? (
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].otherSettings)}</AdminBlockTitle>
-                  <ProgramAdditionalSettingsForm programLayoutTemplateConfig={program?.programLayoutTemplateConfig} />
+                  <ProgramAdditionalSettingsForm
+                    programId={program?.id as string}
+                    programLayoutTemplateConfigId={program?.programLayoutTemplateConfig?.id as string}
+                  />
                 </AdminBlock>
               ) : null}
 

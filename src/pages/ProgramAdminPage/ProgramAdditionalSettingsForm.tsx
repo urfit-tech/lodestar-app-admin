@@ -1,21 +1,12 @@
-import { gql, useMutation } from '@apollo/client'
-import { Button, DatePicker, Form, InputNumber, message, Skeleton } from 'antd'
+import { Button, DatePicker, Form, InputNumber, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
-import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
-import {
-  ExtractModuleDataValue,
-  LayoutTemplateModuleType,
-  ModuleDataProps,
-  ModuleDataType,
-  ProgramLayoutTemplateConfig,
-} from '../../types/program'
+import useProgramLayoutTemplate from '../../hooks/programLayoutTemplate'
+import { ModuleDataType } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -28,80 +19,11 @@ const StyledInputNumber = styled(InputNumber)`
 
 type FieldProps = {} & ModuleDataType
 
-const typedObjectEntries = <T extends Record<string, any>>(obj: T) => {
-  return Object.entries(obj) as [keyof T, T[keyof T]][]
-}
-
-const constructModuleData = (values: FieldProps, layoutTemplateModuleData: ModuleDataProps) => {
-  const moduleData: ModuleDataProps = {}
-
-  if (values && typeof values === 'object' && layoutTemplateModuleData) {
-    typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-      let result = null
-
-      switch (config?.type) {
-        case LayoutTemplateModuleType.DATE:
-          result = values[key] ? values[key] : null
-
-          break
-        case LayoutTemplateModuleType.NUMBER:
-          result = values[key] ? values[key] : null
-          break
-
-        default:
-          break
-      }
-
-      Object.defineProperty(moduleData, key, {
-        value: {
-          ...config,
-          value: result,
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      })
-    })
-  }
-
-  return moduleData
-}
-
-const getInitialValues = (layoutTemplateModuleData: ModuleDataProps | undefined) => {
-  const moduleData: ModuleDataProps = {}
-  if (!layoutTemplateModuleData) return
-  typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-    let result
-
-    switch (config?.type) {
-      case LayoutTemplateModuleType.NUMBER:
-        result = config.value ? config.value : null
-        break
-
-      case LayoutTemplateModuleType.DATE:
-        result = config.value ? moment(config.value) : null
-        break
-
-      default:
-        break
-    }
-
-    Object.defineProperty(moduleData, key, {
-      value: result,
-      writable: true,
-      enumerable: true,
-      configurable: true,
-    })
-  })
-
-  return moduleData
-}
-
-const renderModuleComponent = (moduleData: ExtractModuleDataValue<ModuleDataProps[keyof ModuleDataProps]>) => {
-  switch (moduleData?.type) {
-    case LayoutTemplateModuleType.NUMBER:
+const renderModuleComponent = (type: 'NUMBER' | 'DATE') => {
+  switch (type) {
+    case 'NUMBER':
       return <StyledInputNumber min={0} />
-    case LayoutTemplateModuleType.DATE:
+    case 'DATE':
       return (
         <StyledDatePicker
           format="YYYY-MM-DD HH:mm"
@@ -114,38 +36,38 @@ const renderModuleComponent = (moduleData: ExtractModuleDataValue<ModuleDataProp
 }
 
 const ProgramAdditionalSettingsForm: React.FC<{
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
+  programId: string
+  programLayoutTemplateConfigId: string
   onRefetch?: () => void
-}> = ({ programLayoutTemplateConfig, onRefetch }) => {
+}> = ({ programId, programLayoutTemplateConfigId, onRefetch }) => {
+  console.log(programLayoutTemplateConfigId)
+  const { layoutTemplateLoading, error, customAttributesDefinitions, customAttributesFormValue } =
+    useProgramLayoutTemplate(programLayoutTemplateConfigId)
+
+  console.log(customAttributesDefinitions, customAttributesFormValue)
+
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [updateProgramLayoutTemplateConfigIntro] = useMutation<
-    hasura.UpdateProgramLayoutTemplateConfigData,
-    hasura.UpdateProgramLayoutTemplateConfigDataVariables
-  >(UpdateProgramLayoutTemplateConfigData)
 
-  if (!programLayoutTemplateConfig) {
+  if (!programLayoutTemplateConfigId) {
     return <Skeleton active />
   }
 
-  const layoutTemplateModuleData = programLayoutTemplateConfig.moduleData
-  const initialModuleData = getInitialValues(layoutTemplateModuleData)
-
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    updateProgramLayoutTemplateConfigIntro({
-      variables: {
-        programLayoutTemplateConfigId: programLayoutTemplateConfig.id,
-        moduleData: constructModuleData(values, layoutTemplateModuleData),
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+    //   updateProgramLayoutTemplateConfigIntro({
+    //     variables: {
+    //       programLayoutTemplateConfigId: programLayoutTemplateConfig.id,
+    //       moduleData: constructModuleData(values, layoutTemplateModuleData),
+    //     },
+    //   })
+    //     .then(() => {
+    //       message.success(formatMessage(commonMessages.event.successfullySaved))
+    //       onRefetch?.()
+    //     })
+    //     .catch(handleError)
+    //     .finally(() => setLoading(false))
   }
 
   return (
@@ -154,18 +76,14 @@ const ProgramAdditionalSettingsForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      initialValues={initialModuleData}
       onFinish={handleSubmit}
     >
-      {layoutTemplateModuleData &&
-        typedObjectEntries(layoutTemplateModuleData).map(([key, moduleData]) => {
+      {customAttributesDefinitions &&
+        customAttributesDefinitions?.customAttributes.map(v => {
+          const attrType: 'NUMBER' | 'DATE' = v.type === 'NUMBER' ? 'NUMBER' : 'DATE'
           return (
-            <Form.Item
-              key={moduleData?.id}
-              label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
-              name={key}
-            >
-              {renderModuleComponent(moduleData)}
+            <Form.Item key={v.id} label={v.name} name={v.name}>
+              {renderModuleComponent(attrType)}
             </Form.Item>
           )
         })}
@@ -181,16 +99,5 @@ const ProgramAdditionalSettingsForm: React.FC<{
     </Form>
   )
 }
-
-const UpdateProgramLayoutTemplateConfigData = gql`
-  mutation UpdateProgramLayoutTemplateConfigData($programLayoutTemplateConfigId: uuid!, $moduleData: jsonb!) {
-    update_program_layout_template_config(
-      where: { id: { _eq: $programLayoutTemplateConfigId } }
-      _set: { module_data: $moduleData }
-    ) {
-      affected_rows
-    }
-  }
-`
 
 export default ProgramAdditionalSettingsForm
