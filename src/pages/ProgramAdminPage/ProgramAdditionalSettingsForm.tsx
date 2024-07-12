@@ -1,11 +1,11 @@
-import { Button, DatePicker, Form, InputNumber, Skeleton } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import useProgramLayoutTemplate from '../../hooks/programLayoutTemplate'
+import { useProgramLayoutTemplate, useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
 import { ModuleDataType } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
@@ -17,19 +17,26 @@ const StyledInputNumber = styled(InputNumber)`
   min-width: 100%;
 `
 
+const StyledInputText = styled(Input)`
+  min-width: 100%;
+`
+
 type FieldProps = {} & ModuleDataType
 
-const renderModuleComponent = (type: 'NUMBER' | 'DATE') => {
+const renderModuleComponent = (type: 'Number' | 'Date' | 'Text') => {
+  console.log(type)
   switch (type) {
-    case 'NUMBER':
+    case 'Number':
       return <StyledInputNumber min={0} />
-    case 'DATE':
+    case 'Date':
       return (
         <StyledDatePicker
           format="YYYY-MM-DD HH:mm"
           showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
         />
       )
+    case 'Text':
+      return <StyledInputText />
     default:
       return null
   }
@@ -40,34 +47,33 @@ const ProgramAdditionalSettingsForm: React.FC<{
   programLayoutTemplateConfigId: string
   onRefetch?: () => void
 }> = ({ programId, programLayoutTemplateConfigId, onRefetch }) => {
-  console.log(programLayoutTemplateConfigId)
   const { layoutTemplateLoading, error, customAttributesDefinitions, customAttributesFormValue } =
     useProgramLayoutTemplate(programLayoutTemplateConfigId)
 
-  console.log(customAttributesDefinitions, customAttributesFormValue)
+  const { updateCustomAttributesValue } = useUpdateCustomAttributeFormValue(programId, programLayoutTemplateConfigId)
 
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (customAttributesFormValue) {
+      console.log(JSON.stringify(customAttributesFormValue.customAttributeValue))
+      form.setFieldsValue(customAttributesFormValue.customAttributeValue)
+    }
+  }, [customAttributesFormValue, form])
+
   if (!programLayoutTemplateConfigId) {
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: FieldProps) => {
+  const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    //   updateProgramLayoutTemplateConfigIntro({
-    //     variables: {
-    //       programLayoutTemplateConfigId: programLayoutTemplateConfig.id,
-    //       moduleData: constructModuleData(values, layoutTemplateModuleData),
-    //     },
-    //   })
-    //     .then(() => {
-    //       message.success(formatMessage(commonMessages.event.successfullySaved))
-    //       onRefetch?.()
-    //     })
-    //     .catch(handleError)
-    //     .finally(() => setLoading(false))
+    await updateCustomAttributesValue(values)
+    setLoading(false)
+    if (onRefetch) {
+      onRefetch()
+    }
   }
 
   return (
@@ -79,11 +85,10 @@ const ProgramAdditionalSettingsForm: React.FC<{
       onFinish={handleSubmit}
     >
       {customAttributesDefinitions &&
-        customAttributesDefinitions?.customAttributes.map(v => {
-          const attrType: 'NUMBER' | 'DATE' = v.type === 'NUMBER' ? 'NUMBER' : 'DATE'
+        customAttributesDefinitions.customAttributes.map(v => {
           return (
-            <Form.Item key={v.id} label={v.name} name={v.name}>
-              {renderModuleComponent(attrType)}
+            <Form.Item key={v.id} label={v.name} name={v.id}>
+              {renderModuleComponent(v.type)}
             </Form.Item>
           )
         })}
