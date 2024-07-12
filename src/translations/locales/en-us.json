@@ -2384,6 +2384,7 @@
   "program.ProgramContentAdminModal.deleteContentWarning": "你確定要刪除此內容？此動作無法還原",
   "program.ProgramContentAdminModal.duration": "內容時長（分鐘）",
   "program.ProgramContentAdminModal.ebookFile": "電子書檔案",
+  "program.ProgramContentAdminModal.ebookTrialPercentageSetting": "Trial Percentage Setting",
   "program.ProgramContentAdminModal.uploadCaption": "上傳字幕",
   "program.ProgramContentAdminModal.uploadEbookFileTips": "只接受符合 EPUB 3 格式檔案",
   "program.ProgramContentAdminModal.uploadFile": "上傳檔案",

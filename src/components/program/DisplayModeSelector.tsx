@@ -1,7 +1,6 @@
 import { Flex } from '@chakra-ui/react'
 import { DatePicker, Form, Select } from 'antd'
 import moment from 'moment'
-import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import programMessages from './translation'
 
@@ -10,14 +9,14 @@ export type DisplayMode = 'conceal' | 'trial' | 'loginToTrial' | 'payToWatch'
 const DisplayModeSelector: React.VFC<{
   contentType: string | null
   displayMode: DisplayMode
-}> = ({ contentType, displayMode }) => {
+  onDisplayModeChange: (displayMode: DisplayMode) => void
+}> = ({ contentType, displayMode, onDisplayModeChange }) => {
   const { formatMessage } = useIntl()
-  const [currentOption, setCurrentOption] = useState<DisplayMode>(displayMode)
 
   return (
     <Flex flexWrap="wrap" gridGap="2">
       <Form.Item name="displayMode" className="mb-0">
-        <Select style={{ width: '120px' }} onChange={(v: DisplayMode) => setCurrentOption(v)}>
+        <Select style={{ width: '120px' }} onChange={(v: DisplayMode) => onDisplayModeChange(v)}>
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </Select.Option>
@@ -48,7 +47,7 @@ const DisplayModeSelector: React.VFC<{
           </Select.Option>
         </Select>
       </Form.Item>
-      {currentOption === 'payToWatch' && (
+      {displayMode === 'payToWatch' && (
         <Form.Item name="publishedAt" className="mb-0 mr-2">
           <DatePicker
             format="YYYY-MM-DD HH:mm"

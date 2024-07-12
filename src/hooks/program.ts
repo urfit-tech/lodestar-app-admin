@@ -97,6 +97,7 @@ export const useProgram = (programId: string) => {
               program_content_ebook {
                 id
                 data
+                trial_percentage
               }
             }
           }
@@ -236,7 +237,11 @@ export const useProgram = (programId: string) => {
             data: pca.data,
           })),
           ebook: pc.program_content_ebook
-            ? { id: pc.program_content_ebook.id, data: pc.program_content_ebook.data }
+            ? {
+                id: pc.program_content_ebook.id,
+                data: pc.program_content_ebook.data,
+                trialPercentage: pc.program_content_ebook.trial_percentage,
+              }
             : null,
         })),
         collapsed_status: pcs.collapsed_status || false,
