@@ -1,12 +1,12 @@
 import { Button, DatePicker, Form, Input, InputNumber, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
-import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import moment, { MomentInput } from 'moment'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useProgramLayoutTemplate, useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
-import { ModuleDataType } from '../../types/program'
+import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
+import { ModuleDataType, ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -21,47 +21,92 @@ const StyledInputText = styled(Input)`
   min-width: 100%;
 `
 
-type FieldProps = {} & ModuleDataType
+interface RenderStrategy {
+  render(): JSX.Element | null
+}
 
-const renderModuleComponent = (type: 'Number' | 'Date' | 'Text') => {
-  console.log(type)
-  switch (type) {
-    case 'Number':
-      return <StyledInputNumber min={0} />
-    case 'Date':
-      return (
-        <StyledDatePicker
-          format="YYYY-MM-DD HH:mm"
-          showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-        />
-      )
-    case 'Text':
-      return <StyledInputText />
-    default:
-      return null
+class NumberStrategy implements RenderStrategy {
+  render() {
+    return <StyledInputNumber min={0} />
   }
 }
+
+class DateStrategy implements RenderStrategy {
+  render() {
+    return (
+      <StyledDatePicker
+        format="YYYY-MM-DD HH:mm"
+        showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+      />
+    )
+  }
+}
+
+class TextStrategy implements RenderStrategy {
+  render() {
+    return <StyledInputText />
+  }
+}
+
+class TextEditorStrategy implements RenderStrategy {
+  render() {
+    return null
+  }
+}
+
+class RenderStrategyContext {
+  private strategyMap: Record<string, RenderStrategy> = {
+    Number: new NumberStrategy(),
+    Date: new DateStrategy(),
+    Text: new TextStrategy(),
+    TextEditor: new TextEditorStrategy(),
+  }
+
+  public renderModuleComponent(type: string): JSX.Element | null {
+    const strategy = this.strategyMap[type]
+    return strategy ? strategy.render() : null
+  }
+}
+
+type FieldProps = {} & ModuleDataType
 
 const ProgramAdditionalSettingsForm: React.FC<{
   programId: string
   programLayoutTemplateConfigId: string
+  program: ProgramAdminProps | null
   onRefetch?: () => void
-}> = ({ programId, programLayoutTemplateConfigId, onRefetch }) => {
-  const { layoutTemplateLoading, error, customAttributesDefinitions, customAttributesFormValue } =
-    useProgramLayoutTemplate(programLayoutTemplateConfigId)
+}> = ({ programId, programLayoutTemplateConfigId, program, onRefetch }) => {
+  const customAttrDefination = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
+    id: 'notFoundCustomAttr',
+    customAttribute: null,
+  }
+
+  const renderContext = new RenderStrategyContext()
+
+  const isMomentInput = (value: any): value is MomentInput => {
+    return moment(value).isValid()
+  }
+
+  const customAttributesValue = program?.programLayoutTemplateConfig?.moduleData
+    ? {
+        id: program?.programLayoutTemplateConfig?.id,
+        customAttributeValue: Object.fromEntries(
+          Object.entries(program?.programLayoutTemplateConfig?.moduleData).map(([key, value]) => {
+            const attributeDefinition = customAttrDefination?.customAttribute?.find(attr => attr.id === key)
+            if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
+              return [key, moment(value)]
+            }
+            return [key, value]
+          }),
+        ),
+      }
+    : null
 
   const { updateCustomAttributesValue } = useUpdateCustomAttributeFormValue(programId, programLayoutTemplateConfigId)
 
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (customAttributesFormValue) {
-      console.log(JSON.stringify(customAttributesFormValue.customAttributeValue))
-      form.setFieldsValue(customAttributesFormValue.customAttributeValue)
-    }
-  }, [customAttributesFormValue, form])
 
   if (!programLayoutTemplateConfigId) {
     return <Skeleton active />
@@ -83,12 +128,13 @@ const ProgramAdditionalSettingsForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       onFinish={handleSubmit}
+      initialValues={customAttributesValue?.customAttributeValue}
     >
-      {customAttributesDefinitions &&
-        customAttributesDefinitions.customAttributes.map(v => {
+      {customAttrDefination &&
+        customAttrDefination.customAttribute?.map(v => {
           return (
             <Form.Item key={v.id} label={v.name} name={v.id}>
-              {renderModuleComponent(v.type)}
+              {renderContext.renderModuleComponent(v.type)}
             </Form.Item>
           )
         })}

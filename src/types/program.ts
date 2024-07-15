@@ -285,7 +285,7 @@ export type ProgramLayoutTemplate = {
   customAttribute: {
     id: string
     name: string
-    type: string
+    type: "Number" | "Date" | "Text" | 'TextEditor'
   }[]
 }
 
