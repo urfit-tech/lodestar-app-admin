@@ -17,6 +17,7 @@ import ProgramAdminCard from '../components/program/ProgramAdminCard'
 import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, programMessages } from '../helpers/translation'
+import { useActivatedTemplateForProgram } from '../hooks/programLayoutTemplate'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../types/program'
 import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
@@ -53,6 +54,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     hasura.InsertProgramLayoutTemplateConfig,
     hasura.InsertProgramLayoutTemplateConfigVariables
   >(InsertProgramLayoutTemplateConfig)
+  const { activatedTemplateForProgram } = useActivatedTemplateForProgram()
 
   if (!permissions.PROGRAM_ADMIN && !permissions.PROGRAM_NORMAL) {
     return <ForbiddenPage />
@@ -159,14 +161,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 },
               }).then(async res => {
                 const programId = res.data?.insert_program?.returning[0]?.id
-                programLayoutTemplateId &&
-                  (await insertProgramLayoutTemplateConfig({
-                    variables: {
-                      programId,
-                      programLayoutTemplateId: programLayoutTemplateId,
-                      moduleData: null,
-                    },
-                  }))
+                programLayoutTemplateId && (await activatedTemplateForProgram(programId, programLayoutTemplateId))
                 programId && history.push(`/programs/${programId}`)
               })
             }

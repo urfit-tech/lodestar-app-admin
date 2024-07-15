@@ -100,6 +100,7 @@ export const useActivatedTemplateForProgram = () => {
           programId,
           programLayoutTemplateId,
         },
+        fetchPolicy: 'network-only',
       });
   
       const existConfigId = data?.program_layout_template_config?.[0]?.id;
