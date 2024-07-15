@@ -12,7 +12,6 @@ export const ProgramLayoutTemplateSelect: React.FC<{
   programLayoutTemplates: ProgramLayoutTemplate[]
   onChange?: (value: string) => void
 }> = ({ value, programLayoutTemplates, onChange }) => {
-  console.log('ProgramLayoutTemplateSelect', value)
   const defaultTemplate = {
     id: DEFAULT_TEMPLATE,
     name: '標準版型-sys',

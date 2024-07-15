@@ -12,6 +12,7 @@ import { ProgramLayoutTemplateSelect } from '../../components/form/ProgramLayout
 import TagSelector from '../../components/form/TagSelector'
 import { handleError } from '../../helpers'
 import { useGetProgramLayoutTemplates, useProductSku } from '../../hooks/data'
+import { useActivatedTemplateForProgram } from '../../hooks/programLayoutTemplate'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
@@ -42,8 +43,8 @@ const ProgramBasicForm: React.FC<{
   const { programLayoutTemplates } = useGetProgramLayoutTemplates()
   const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
   const [updateProgramBasic] = useMutation(UPDATE_PROGRAM_BASIC)
-  const [deactivateOtherTemplates] = useMutation(DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES)
-  const [activateTemplate] = useMutation(ACTIVATE_PROGRAM_LAYOUT_TEMPLATE)
+  // const [activateTemplateForProgram] = useMutation(ActivateTemplateForProgram)
+  const { activatedTemplateForProgram } = useActivatedTemplateForProgram()
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -79,30 +80,12 @@ const ProgramBasicForm: React.FC<{
         displayFooter: values.displayFooter,
       },
     })
-      .then(() => {
-        const excludeTemplateId =
+      .then(async () => {
+        const activateCourseTemplateId =
           values?.programLayoutTemplateId === DEFAULT_TEMPLATE ? null : values?.programLayoutTemplateId
 
-        if (values?.programLayoutTemplateId) {
-          return deactivateOtherTemplates({
-            variables: {
-              programId: program.id,
-              excludeTemplateId,
-            },
-          })
-        }
-      })
-      .then(() => {
-        if (values?.programLayoutTemplateId && values.programLayoutTemplateId !== DEFAULT_TEMPLATE) {
-          return activateTemplate({
-            variables: {
-              programId: program.id,
-              programLayoutTemplateId: values.programLayoutTemplateId,
-            },
-          })
-        }
-      })
-      .then(() => {
+        await activatedTemplateForProgram(program.id, activateCourseTemplateId)
+
         message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
         refetchProduct()
         onRefetch?.()
@@ -276,37 +259,6 @@ const UPDATE_PROGRAM_BASIC = gql`
       affected_rows
     }
     insert_program_tag(objects: $programTags) {
-      affected_rows
-    }
-  }
-`
-
-const DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES = gql`
-  mutation DEACTIVATE_OTHER_PROGRAM_LAYOUT_TEMPLATES($programId: uuid!, $excludeTemplateId: uuid) {
-    update_program_layout_template_config(
-      where: {
-        program_id: { _eq: $programId }
-        _or: [
-          { program_layout_template_id: { _neq: $excludeTemplateId } }
-          { program_layout_template_id: { _is_null: true } }
-        ]
-      }
-      _set: { is_active: false }
-    ) {
-      affected_rows
-    }
-  }
-`
-
-const ACTIVATE_PROGRAM_LAYOUT_TEMPLATE = gql`
-  mutation ACTIVATE_PROGRAM_LAYOUT_TEMPLATE($programId: uuid!, $programLayoutTemplateId: uuid!) {
-    insert_program_layout_template_config(
-      objects: { program_id: $programId, program_layout_template_id: $programLayoutTemplateId, is_active: true }
-      on_conflict: {
-        constraint: program_layout_template_config_program_layout_template_id_progr
-        update_columns: [is_active]
-      }
-    ) {
       affected_rows
     }
   }

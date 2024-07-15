@@ -43,7 +43,7 @@ const ProgramAdminPage: React.FC = () => {
   const { program, refetchProgram } = useProgram(programId)
   const { updateProgramMetaTag } = useMutateProgram()
   const isShowProgramAdditionalSettingsForm =
-    Boolean(program?.programLayoutTemplateConfig?.isActive) &&
+    program?.programLayoutTemplateConfig &&
     !isEmpty(program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.customAttribute) &&
     enabledModules?.program_layout_template
 

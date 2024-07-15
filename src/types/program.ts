@@ -60,7 +60,7 @@ export type ProgramAdminProps = ProgramProps & {
   categories: Category[]
   tags: string[]
   approvals: ProgramApprovalProps[]
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
+  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig | null
 }
 
 export type ProgramContentSectionProps = {
@@ -294,7 +294,6 @@ export type ProgramLayoutTemplateConfig = {
   programId: string
   programLayoutTemplateId: string
   moduleData: ModuleDataProps
-  isActive: boolean
   ProgramLayoutTemplate?: ProgramLayoutTemplate | null
 }
 
