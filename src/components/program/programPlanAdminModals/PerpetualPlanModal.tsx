@@ -87,6 +87,8 @@ const PerpetualPlan: React.FC<
           isCountdownTimerVisible: !!values.sale?.isTimerVisible,
           groupBuyingPeople: values.groupBuyingPeople,
           isParticipantsVisible: values.isParticipantsVisible,
+          prefix: values.sale?.prefix || '',
+          suffix: values.sale?.suffix || '',
         },
       })
       const programPlanId = upsertProgramPlanData?.insert_program_plan?.returning?.[0].id
@@ -189,6 +191,8 @@ const PerpetualPlan: React.FC<
                 price: programPlan.salePrice,
                 soldAt: programPlan.soldAt,
                 isTimerVisible: !!programPlan?.isCountdownTimerVisible,
+                prefix: programPlan.prefix || '',
+                suffix: programPlan.suffix || '',
               }
             : null,
           type: programPlan?.type || 3,

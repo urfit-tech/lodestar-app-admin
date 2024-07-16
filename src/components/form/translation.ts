@@ -464,5 +464,9 @@ const formMessages = {
       defaultMessage: '客製虛擬商品規格',
     },
   }),
+  SaleInput: defineMessages({
+    prefix: { id: 'form.SaleInput.prefix', defaultMessage: '前綴' },
+    suffix: { id: 'form.SaleInput.suffix', defaultMessage: '後綴' },
+  })
 }
 export default formMessages

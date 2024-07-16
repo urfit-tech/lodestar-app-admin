@@ -260,6 +260,28 @@ const UPDATE_PROGRAM_BASIC = gql`
     insert_program_tag(objects: $programTags) {
       affected_rows
     }
+
+    # update program_layout_template_config
+    update_program_layout_template_config(
+      where: { _and: [{ program_id: { _eq: $programId } }, { is_active: { _eq: true } }] }
+      _set: { is_active: false }
+    ) {
+      affected_rows
+    }
+    insert_program_layout_template_config(
+      objects: {
+        program_id: $programId
+        program_layout_template_id: $programLayoutTemplateId
+        module_data: $moduleData
+        is_active: true
+      }
+      on_conflict: {
+        constraint: unique_program_layout_template_id_program_id
+        update_columns: [is_active]
+      }
+    ) {
+      affected_rows
+    }
   }
 `
 

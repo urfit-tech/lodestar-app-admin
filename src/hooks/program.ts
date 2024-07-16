@@ -131,6 +131,8 @@ export const useProgram = (programId: string) => {
             group_buying_people
             is_participants_visible
             card_id
+            prefix
+            suffix
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -275,6 +277,8 @@ export const useProgram = (programId: string) => {
         groupBuyingPeople: programPlan.group_buying_people,
         isParticipantsVisible: programPlan.is_participants_visible,
         cardId: programPlan.card_id,
+        prefix: programPlan?.prefix || null,
+        suffix: programPlan?.suffix || null,
       })),
       categories: data.program_by_pk.program_categories.map(programCategory => ({
         id: programCategory.category.id,

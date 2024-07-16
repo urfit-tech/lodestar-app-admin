@@ -1,11 +1,13 @@
 import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Checkbox, DatePicker, Form } from 'antd'
+import { Checkbox, DatePicker, Form, Input } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import CurrencyInput from './CurrencyInput'
+import formMessages from './translation'
 
 const messages = defineMessages({
   label: { id: 'common.label.timerVisible', defaultMessage: '顯示倒數計時器' },
@@ -19,6 +21,8 @@ export type SaleProps = {
   price: number
   soldAt: Date | null
   isTimerVisible?: boolean
+  prefix?: string
+  suffix?: string
 } | null
 
 const SaleInput: React.FC<{
@@ -29,6 +33,7 @@ const SaleInput: React.FC<{
   withTimer?: boolean
 }> = ({ value, onChange, currencyId, noPrice, withTimer }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules, settings } = useApp()
   const [active, setActive] = useState(!!value?.soldAt)
   const [isTimerVisible, setIsTimerVisible] = useState(!!value?.isTimerVisible)
 
@@ -110,6 +115,36 @@ const SaleInput: React.FC<{
             </Checkbox>
           </Form.Item>
         )}
+        {enabledModules.program_layout_template && settings['program.layout_template_circumfix.enabled'] ? (
+          <>
+            <Form.Item label={formatMessage(formMessages.SaleInput.prefix)}>
+              <Input
+                value={value?.prefix}
+                onChange={v =>
+                  onChange?.({
+                    ...value,
+                    price: value?.price || 0,
+                    soldAt: value?.soldAt || null,
+                    prefix: v.target.value,
+                  })
+                }
+              />
+            </Form.Item>
+            <Form.Item label={formatMessage(formMessages.SaleInput.suffix)}>
+              <Input
+                value={value?.suffix}
+                onChange={v =>
+                  onChange?.({
+                    ...value,
+                    price: value?.price || 0,
+                    soldAt: value?.soldAt || null,
+                    suffix: v.target.value,
+                  })
+                }
+              />
+            </Form.Item>
+          </>
+        ) : null}
       </div>
     </div>
   )
