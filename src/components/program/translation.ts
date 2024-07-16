@@ -3,13 +3,14 @@ import { defineMessages } from 'react-intl'
 const programMessages = {
   '*': defineMessages({
     save: { id: 'program.*.save', defaultMessage: '儲存' },
-    cancel: { id: 'program.*.cancel', defaultMessage: '取消' },
+    cancel: { id: 'program.*.cancel', defaultMessage: 'cancel' },
+    confirm: { id: 'program.*.confirm', defaultMessage: 'confirm' },
     isRequired: { id: 'program.*.isRequired', defaultMessage: '*此欄位必填' },
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
     notifyUpdate: { id: 'program.*.notifyUpdate', defaultMessage: '通知內容更新' },
     pinnedStatus: { id: 'program.*.pinnedStatus', defaultMessage: '釘選' },
-    successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
+    successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: 'saved successfully' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
     contentPlan: { id: 'program.*.contentPlan', defaultMessage: 'Content Plan' },
@@ -240,6 +241,9 @@ const programMessages = {
       defaultMessage: 'Program exercise',
     },
   }),
+  PerpetualPlanModal: {
+    perpetualPlan: { id: 'program.PerpetualPlanModal.perpetualPlan', defaultMessage: 'perpetualPlan' },
+  },
 }
 
 export default programMessages

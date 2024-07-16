@@ -467,6 +467,10 @@ const formMessages = {
   SaleInput: defineMessages({
     prefix: { id: 'form.SaleInput.prefix', defaultMessage: '前綴' },
     suffix: { id: 'form.SaleInput.suffix', defaultMessage: '後綴' },
+    countdownTimerVisible: { id: 'form.SaleInput.countdownTimerVisible', defaultMessage: '顯示倒數計時器' },
+    salePrice: { id: 'form.SaleInput.salePrice', defaultMessage: '優惠價' },
+    salePriceEndTime: { id: 'form.SaleInput.salePriceEndTime', defaultMessage: '優惠截止日期' },
+    outdated: { id: 'form.SaleInput.outdated', defaultMessage: '已過期' },
   })
 }
 export default formMessages

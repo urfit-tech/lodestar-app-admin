@@ -3,20 +3,14 @@ import { Checkbox, DatePicker, Form, Input } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
 import CurrencyInput from './CurrencyInput'
 import formMessages from './translation'
-
-const messages = defineMessages({
-  label: { id: 'common.label.timerVisible', defaultMessage: '顯示倒數計時器' },
-})
 
 const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
 `
-
 export type SaleProps = {
   price: number
   soldAt: Date | null
@@ -55,7 +49,7 @@ const SaleInput: React.FC<{
           )
         }}
       >
-        {formatMessage(commonMessages.label.salePrice)}
+        {formatMessage(formMessages.SaleInput.salePrice)}
       </Checkbox>
 
       <div className={active ? 'pl-3' : 'd-none'}>
@@ -80,7 +74,7 @@ const SaleInput: React.FC<{
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
             showToday={false}
-            placeholder={formatMessage(commonMessages.label.salePriceEndTime)}
+            placeholder={formatMessage(formMessages.SaleInput.salePriceEndTime)}
             value={value?.soldAt ? moment(value.soldAt) : null}
             onChange={date =>
               onChange &&
@@ -95,7 +89,7 @@ const SaleInput: React.FC<{
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
           <Form.Item className="d-inline-block mb-0">
             <StyledIcon className="mr-1" />
-            <span>{formatMessage(commonMessages.status.outdated)}</span>
+            <span>{formatMessage(formMessages.SaleInput.outdated)}</span>
           </Form.Item>
         ) : null}
         {withTimer && (
@@ -111,7 +105,7 @@ const SaleInput: React.FC<{
                 })
               }}
             >
-              {formatMessage(messages.label)}
+              {formatMessage(formMessages.SaleInput.countdownTimerVisible)}
             </Checkbox>
           </Form.Item>
         )}

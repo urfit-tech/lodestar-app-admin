@@ -9,13 +9,13 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import { handleError } from '../../../helpers'
-import { commonMessages } from '../../../helpers/translation'
 import { useMutateProductLevel } from '../../../hooks/data'
 import { useUpsertProgramPlan } from '../../../hooks/programPlan'
 import { ProductGiftPlan } from '../../../types/giftPlan'
 import { ProgramPlan } from '../../../types/program'
 import { PerpetualFieldProps } from '../../../types/programPlan'
 import AdminModal, { AdminModalProps } from '../../admin/AdminModal'
+import programMessages from '../translation'
 import {
   CurrencyItem,
   GiftItem,
@@ -121,7 +121,7 @@ const PerpetualPlan: React.FC<
         })
       }
       setLoading(false)
-      message.success(formatMessage(commonMessages.event.successfullySaved))
+      message.success(formatMessage(programMessages['*'].successfullySaved))
       onSuccess()
       onProductGiftPlanRefetch?.()
       onRefetch?.()
@@ -133,7 +133,7 @@ const PerpetualPlan: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.perpetualPlan)}
+      title={formatMessage(programMessages.PerpetualPlanModal.perpetualPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -145,7 +145,7 @@ const PerpetualPlan: React.FC<
               setIsOpen?.(false)
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(programMessages['*'].cancel)}
           </Button>
           <Button
             type="primary"
@@ -157,7 +157,7 @@ const PerpetualPlan: React.FC<
               })
             }
           >
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(programMessages['*'].confirm)}
           </Button>
         </>
       )}
