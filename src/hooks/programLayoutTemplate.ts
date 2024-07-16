@@ -21,10 +21,10 @@ const UpdateTemplateCustomAttributeFormValue = gql`
 
 
 const UpdateTemplateForProgram = gql`
-  mutation updateTemplateForProgram($programId: uuid, $program_layout_template_config_id: uuid) {
+  mutation updateTemplateForProgram($programId: uuid, $activated_layout_template_config_id: uuid) {
     update_program(
       where: { id: { _eq: $programId } }
-      _set: { program_layout_template_config_id: $program_layout_template_config_id }
+      _set: { activated_layout_template_config_id: $activated_layout_template_config_id }
     ) {
       affected_rows
     }
@@ -87,7 +87,7 @@ export const useActivatedTemplateForProgram = () => {
       await updateTemplateForProgram({
         variables: {
           programId,
-          program_layout_template_config_id: null,
+          activated_layout_template_config_id: null,
         },
       });
       return { success: true, configId: null };
@@ -123,7 +123,7 @@ export const useActivatedTemplateForProgram = () => {
       await updateTemplateForProgram({
         variables: {
           programId,
-          program_layout_template_config_id: configId,
+          activated_layout_template_config_id: configId,
         },
       });
   
