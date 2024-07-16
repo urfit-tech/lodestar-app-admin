@@ -243,7 +243,7 @@ export type Media = 'video' | 'image'
 
 export type ProgramLayoutTemplate = {
   id: string
-  customAttribute: {
+  customAttributes: {
     id: string
     name: string
     type: 'Number' | 'Date' | 'Text' | 'TextEditor'

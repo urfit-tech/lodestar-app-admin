@@ -78,7 +78,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
 }> = ({ programId, programLayoutTemplateConfigId, program, onRefetch }) => {
   const customAttrDefinition = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
     id: 'notFoundCustomAttr',
-    customAttribute: null,
+    customAttributes: null,
   }
 
   const renderContext = new RenderStrategyContext()
@@ -92,7 +92,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
         id: program?.programLayoutTemplateConfig?.id,
         customAttributeValue: Object.fromEntries(
           Object.entries(program?.programLayoutTemplateConfig?.moduleData).map(([key, value]) => {
-            const attributeDefinition = customAttrDefinition?.customAttribute?.find(attr => attr.id === key)
+            const attributeDefinition = customAttrDefinition?.customAttributes?.find(attr => attr.id === key)
             if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
               return [key, moment(value)]
             }
@@ -131,7 +131,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
       initialValues={customAttributesValue?.customAttributeValue}
     >
       {customAttrDefinition &&
-        customAttrDefinition.customAttribute?.map(v => {
+        customAttrDefinition.customAttributes?.map(v => {
           return (
             <Form.Item key={v.id} label={v.name} name={v.id}>
               {renderContext.renderModuleComponent(v.type)}

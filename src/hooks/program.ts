@@ -297,7 +297,7 @@ export const useProgram = (programId: string) => {
         moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
         ProgramLayoutTemplate: {
           id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
-          customAttribute: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map((value: {id:string, name: string, type: string}) => ({
+          customAttributes: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map((value: {id:string, name: string, type: string}) => ({
             id: value?.id,
             name: value?.name,
             type: value?.type
