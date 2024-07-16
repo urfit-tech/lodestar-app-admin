@@ -116,6 +116,7 @@ type FieldProps = {
   displayMode: DisplayMode
   contentBodyType: string
   pinnedStatus: boolean
+  trialPercentage: number
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'
@@ -127,7 +128,7 @@ const ProgramContentAdminModal: React.FC<{
 }> = ({ programId, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
   const { authToken, currentMemberId } = useAuth()
 
   const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
@@ -136,6 +137,7 @@ const ProgramContentAdminModal: React.FC<{
   const { insertAttachment } = useMutateAttachment()
   const {
     insertProgramContentEbook,
+    updateProgramContentEbook,
     deleteProgramContentEbook,
     deleteProgramContentEbookToc,
     deleteProgramContentEbookTocProgress,
@@ -154,6 +156,7 @@ const ProgramContentAdminModal: React.FC<{
   }>({ status: 'idle', source: 'youtube' })
 
   const [loading, setLoading] = useState(false)
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent.displayMode)
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [audioFiles, setAudioFiles] = useState<File[]>(programContent.audios.map(v => v.data) || [])
   const [ebookFile, setEbookFile] = useState<File | null>(programContent.ebook?.data || null)
@@ -168,6 +171,9 @@ const ProgramContentAdminModal: React.FC<{
     [key: string]: number
   }>({})
   const [contentType, setContentType] = useState<string>(programContent.programContentType || 'video')
+
+  const isTrial = displayMode === 'trial' || displayMode === 'loginToTrial'
+  const ebookTrialPercentageSetting = settings['ebook.trial.percentage']
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
@@ -281,10 +287,15 @@ const ProgramContentAdminModal: React.FC<{
                 size: newEbookFile.size,
                 lastModified: newEbookFile.lastModified,
               },
+              trial_percentage: values.trialPercentage,
               program_content_ebook_tocs: { data: convert(toc) },
             },
           },
         }).catch(handleError)
+      } else if (values.trialPercentage) {
+        updateProgramContentEbook({
+          variables: { programContentId: programContent.id, trialPercentage: values.trialPercentage },
+        })
       }
     }
 
@@ -403,15 +414,25 @@ const ProgramContentAdminModal: React.FC<{
             <ExerciseAdminModalBlock
               programId={programId}
               programContent={programContent}
+              displayMode={displayMode}
+              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
               onRefetch={onRefetch}
-              onClose={() => setVisible(false)}
+              onClose={() => {
+                setVisible(false)
+                setDisplayMode(programContent.displayMode)
+              }}
             />
           ) : programContent.programContentType === 'practice' ? (
             <PracticeAdminModalBlock
               programId={programId}
               programContent={programContent}
+              displayMode={displayMode}
+              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
               onRefetch={onRefetch}
-              onClose={() => setVisible(false)}
+              onClose={() => {
+                setVisible(false)
+                setDisplayMode(programContent.displayMode)
+              }}
             />
           ) : (
             <Form
@@ -435,6 +456,7 @@ const ProgramContentAdminModal: React.FC<{
                 contentBodyType: programContent.programContentType,
                 ebookFile: programContent.ebook?.data || null,
                 pinnedStatus: programContent.pinned_status,
+                trialPercentage: programContent.ebook?.trialPercentage || Number(ebookTrialPercentageSetting),
               }}
               onValuesChange={(values: Partial<FieldProps>) => {
                 form.setFieldsValue({
@@ -468,7 +490,11 @@ const ProgramContentAdminModal: React.FC<{
                   </Form.Item>
 
                   {programContent.displayMode && (
-                    <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
+                    <DisplayModeSelector
+                      contentType={contentType}
+                      displayMode={displayMode}
+                      onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                    />
                   )}
                   <Flex flexWrap="wrap">
                     <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
@@ -486,6 +512,7 @@ const ProgramContentAdminModal: React.FC<{
                     onClick={() => {
                       setVisible(false)
                       form.resetFields()
+                      setDisplayMode(programContent.displayMode)
                     }}
                     className="mr-2"
                   >
@@ -695,6 +722,14 @@ const ProgramContentAdminModal: React.FC<{
                       onChange={files => files && setEbookFile(files[0])}
                     />
                   </Form.Item>
+                  {!!ebookFile && !!isTrial && (
+                    <Form.Item
+                      label={formatMessage(programMessages.ProgramContentAdminModal.ebookTrialPercentageSetting)}
+                      name="trialPercentage"
+                    >
+                      <InputNumber min={0} max={100} formatter={v => `${v}%`} width="200px" />
+                    </Form.Item>
+                  )}
                 </>
               ) : null}
 

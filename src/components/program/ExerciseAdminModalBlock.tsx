@@ -12,7 +12,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
 import { Exam, ExamTimeUnit, ProgramContentProps } from '../../types/program'
-import DisplayModeSelector from './DisplayModeSelector'
+import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ExamBasicForm from './ExamBasicForm'
 import ExamQuestionSettingForm from './ExamQuestionSettingForm'
 import programMessages from './translation'
@@ -244,9 +244,11 @@ const UPDATE_EXAM_PROGRAM_CONTENT = gql`
 const ExerciseAdminModalBlock: React.FC<{
   programId: string
   programContent: ProgramContentProps
+  displayMode: DisplayMode
+  onDisplayModeChange: (displayMode: DisplayMode) => void
   onRefetch?: () => void
   onClose: () => void
-}> = ({ programId, programContent, onRefetch, onClose }) => {
+}> = ({ programId, programContent, displayMode, onDisplayModeChange, onRefetch, onClose }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { deleteProgramContentExerciseAndExam } = useMutateProgramContent()
@@ -545,9 +547,13 @@ const ExerciseAdminModalBlock: React.FC<{
         marginBottom="16px"
         flexDirection={{ base: 'column-reverse', md: 'row' }}
       >
-        <Flex flexWrap="wrap">
+        <Flex flexWrap="wrap" gridGap="2">
           {programContent.displayMode && (
-            <DisplayModeSelector contentType="exam" displayMode={programContent.displayMode} />
+            <DisplayModeSelector
+              contentType="exam"
+              displayMode={displayMode}
+              onDisplayModeChange={onDisplayModeChange}
+            />
           )}
           <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>

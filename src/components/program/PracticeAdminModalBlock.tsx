@@ -18,7 +18,7 @@ import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
-import DisplayModeSelector from './DisplayModeSelector'
+import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
 
@@ -59,9 +59,11 @@ const PracticeForm: React.FC<{
   programId: string
   programContent: ProgramContentProps
   programContentBody: ProgramContentBody
+  displayMode: DisplayMode
+  onDisplayModeChange: (displayMode: DisplayMode) => void
   onRefetch?: () => void
   onCancel?: () => void
-}> = ({ programId, programContent, programContentBody, onRefetch, onCancel }) => {
+}> = ({ programId, programContent, programContentBody, displayMode, onDisplayModeChange, onRefetch, onCancel }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const uploadAttachments = useUploadAttachments()
@@ -166,9 +168,13 @@ const PracticeForm: React.FC<{
         marginBottom="16px"
         flexDirection={{ base: 'column-reverse', md: 'row' }}
       >
-        <Flex flexWrap="wrap">
+        <Flex flexWrap="wrap" gridGap="2">
           {programContent.displayMode && (
-            <DisplayModeSelector contentType="practice" displayMode={programContent.displayMode} />
+            <DisplayModeSelector
+              contentType="practice"
+              displayMode={displayMode}
+              onDisplayModeChange={onDisplayModeChange}
+            />
           )}
           <Flex flexWrap="wrap">
             <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
@@ -325,9 +331,11 @@ const UPDATE_PRACTICE = gql`
 const PracticeAdminModalBlock: React.FC<{
   programId: string
   programContent: ProgramContentProps
+  displayMode: DisplayMode
+  onDisplayModeChange: (displayMode: DisplayMode) => void
   onRefetch?: () => void
   onClose: () => void
-}> = ({ programId, programContent, onRefetch, onClose }) => {
+}> = ({ programId, programContent, displayMode, onDisplayModeChange, onRefetch, onClose }) => {
   const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
 
   if (loadingProgramContentBody) return <Skeleton active />
@@ -336,6 +344,8 @@ const PracticeAdminModalBlock: React.FC<{
       programId={programId}
       programContent={programContent}
       programContentBody={programContentBody}
+      displayMode={displayMode}
+      onDisplayModeChange={onDisplayModeChange}
       onRefetch={() => onRefetch?.()}
       onCancel={() => onClose()}
     />
