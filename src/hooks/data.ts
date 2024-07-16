@@ -13,10 +13,6 @@ import hasura from '../hasura'
 import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import {
-  LayoutTemplateModuleType,
-  ModuleDataProps,
-  ModuleNameProps,
-  ProgramLayoutTemplate,
   ProgramPlanPeriodType,
 } from '../types/program'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
@@ -1374,62 +1370,17 @@ export const useGetProgramLayoutTemplates = () => {
     `,
   )
 
-  const constructModuleData = (moduleName: ModuleNameProps | undefined): ModuleDataProps | undefined => {
-    if (!moduleName) return
-    const moduleData: ModuleDataProps = {}
-
-    Object.entries(moduleName).forEach(([_, value]) => {
-      let { name, ...rest } = value
-      let defaultValue = null
-
-      switch (value.type) {
-        case LayoutTemplateModuleType.DATE:
-          defaultValue = null
-          break
-        case LayoutTemplateModuleType.NUMBER:
-          defaultValue = null
-          break
-        default:
-          break
-      }
-
-      Object.defineProperty(moduleData, name, {
-        value: {
-          value: defaultValue,
-          ...rest,
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      })
-    })
-
-    return moduleData
-  }
-
-  const isModuleDataAvailable = (moduleData: ModuleDataProps | undefined | null) => {
-    if (!moduleData) return false
-    return Boolean(moduleData) && !isEmpty(moduleData)
-  }
-
-  const getDefaultProgramLayoutTemplate = (layoutTemplates: ProgramLayoutTemplate[]) => {
-    if (!layoutTemplates.length) return
-    return layoutTemplates.filter(template => !isModuleDataAvailable(template.moduleData))[0]
-  }
-
   const layoutTemplates =
     loading || error || !data
       ? []
       : data.program_layout_template.map(layoutTemplate => ({
           id: layoutTemplate.id,
           name: layoutTemplate.name || '',
-          moduleData: constructModuleData(layoutTemplate?.module_name),
         }))
 
   return {
     loading,
     programLayoutTemplates: layoutTemplates,
-    defaultFixedTemplate: getDefaultProgramLayoutTemplate(layoutTemplates),
     refetch,
   }
 }

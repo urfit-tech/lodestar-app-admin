@@ -1,21 +1,12 @@
-import { gql, useMutation } from '@apollo/client'
-import { Button, DatePicker, Form, InputNumber, message, Skeleton } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
-import moment from 'moment'
+import moment, { MomentInput } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
-import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
-import {
-  ExtractModuleDataValue,
-  LayoutTemplateModuleType,
-  ModuleDataProps,
-  ModuleDataType,
-  ProgramLayoutTemplateConfig,
-} from '../../types/program'
+import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -26,126 +17,108 @@ const StyledInputNumber = styled(InputNumber)`
   min-width: 100%;
 `
 
-type FieldProps = {} & ModuleDataType
+const StyledInputText = styled(Input)`
+  min-width: 100%;
+`
 
-const typedObjectEntries = <T extends Record<string, any>>(obj: T) => {
-  return Object.entries(obj) as [keyof T, T[keyof T]][]
+interface RenderStrategy {
+  render(): JSX.Element | null
 }
 
-const constructModuleData = (values: FieldProps, layoutTemplateModuleData: ModuleDataProps) => {
-  const moduleData: ModuleDataProps = {}
-
-  if (values && typeof values === 'object' && layoutTemplateModuleData) {
-    typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-      let result = null
-
-      switch (config?.type) {
-        case LayoutTemplateModuleType.DATE:
-          result = values[key] ? values[key] : null
-
-          break
-        case LayoutTemplateModuleType.NUMBER:
-          result = values[key] ? values[key] : null
-          break
-
-        default:
-          break
-      }
-
-      Object.defineProperty(moduleData, key, {
-        value: {
-          ...config,
-          value: result,
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      })
-    })
-  }
-
-  return moduleData
-}
-
-const getInitialValues = (layoutTemplateModuleData: ModuleDataProps | undefined) => {
-  const moduleData: ModuleDataProps = {}
-  if (!layoutTemplateModuleData) return
-  typedObjectEntries(layoutTemplateModuleData).forEach(([key, config]) => {
-    let result
-
-    switch (config?.type) {
-      case LayoutTemplateModuleType.NUMBER:
-        result = config.value ? config.value : null
-        break
-
-      case LayoutTemplateModuleType.DATE:
-        result = config.value ? moment(config.value) : null
-        break
-
-      default:
-        break
-    }
-
-    Object.defineProperty(moduleData, key, {
-      value: result,
-      writable: true,
-      enumerable: true,
-      configurable: true,
-    })
-  })
-
-  return moduleData
-}
-
-const renderModuleComponent = (moduleData: ExtractModuleDataValue<ModuleDataProps[keyof ModuleDataProps]>) => {
-  switch (moduleData?.type) {
-    case LayoutTemplateModuleType.NUMBER:
-      return <StyledInputNumber min={0} />
-    case LayoutTemplateModuleType.DATE:
-      return (
-        <StyledDatePicker
-          format="YYYY-MM-DD HH:mm"
-          showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-        />
-      )
-    default:
-      return null
+class NumberStrategy implements RenderStrategy {
+  render() {
+    return <StyledInputNumber min={0} />
   }
 }
+
+class DateStrategy implements RenderStrategy {
+  render() {
+    return (
+      <StyledDatePicker
+        format="YYYY-MM-DD HH:mm"
+        showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+      />
+    )
+  }
+}
+
+class TextStrategy implements RenderStrategy {
+  render() {
+    return <StyledInputText />
+  }
+}
+
+class TextEditorStrategy implements RenderStrategy {
+  render() {
+    return null
+  }
+}
+
+class RenderStrategyContext {
+  private strategyMap: Record<string, RenderStrategy> = {
+    Number: new NumberStrategy(),
+    Date: new DateStrategy(),
+    Text: new TextStrategy(),
+    TextEditor: new TextEditorStrategy(),
+  }
+
+  public renderModuleComponent(type: string): JSX.Element | null {
+    const strategy = this.strategyMap[type]
+    return strategy ? strategy.render() : null
+  }
+}
+
+type FieldProps = {}
 
 const ProgramAdditionalSettingsForm: React.FC<{
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
+  programId: string
+  programLayoutTemplateConfigId: string
+  program: ProgramAdminProps | null
   onRefetch?: () => void
-}> = ({ programLayoutTemplateConfig, onRefetch }) => {
+}> = ({ programId, programLayoutTemplateConfigId, program, onRefetch }) => {
+  const customAttrDefinition = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
+    id: 'notFoundCustomAttr',
+    customAttributes: null,
+  }
+
+  const renderContext = new RenderStrategyContext()
+
+  const isMomentInput = (value: any): value is MomentInput => {
+    return moment(value).isValid()
+  }
+
+  const customAttributesValue = program?.programLayoutTemplateConfig?.moduleData
+    ? {
+        id: program?.programLayoutTemplateConfig?.id,
+        customAttributeValue: Object.fromEntries(
+          Object.entries(program?.programLayoutTemplateConfig?.moduleData).map(([key, value]) => {
+            const attributeDefinition = customAttrDefinition?.customAttributes?.find(attr => attr.id === key)
+            if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
+              return [key, moment(value)]
+            }
+            return [key, value]
+          }),
+        ),
+      }
+    : null
+
+  const { updateCustomAttributesValue } = useUpdateCustomAttributeFormValue(programId, programLayoutTemplateConfigId)
+
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [updateProgramLayoutTemplateConfigIntro] = useMutation<
-    hasura.UpdateProgramLayoutTemplateConfigData,
-    hasura.UpdateProgramLayoutTemplateConfigDataVariables
-  >(UpdateProgramLayoutTemplateConfigData)
 
-  if (!programLayoutTemplateConfig) {
+  if (!programLayoutTemplateConfigId) {
     return <Skeleton active />
   }
 
-  const layoutTemplateModuleData = programLayoutTemplateConfig.moduleData
-  const initialModuleData = getInitialValues(layoutTemplateModuleData)
-
-  const handleSubmit = (values: FieldProps) => {
+  const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    updateProgramLayoutTemplateConfigIntro({
-      variables: {
-        programLayoutTemplateConfigId: programLayoutTemplateConfig.id,
-        moduleData: constructModuleData(values, layoutTemplateModuleData),
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+    await updateCustomAttributesValue(values)
+    setLoading(false)
+    if (onRefetch) {
+      onRefetch()
+    }
   }
 
   return (
@@ -154,18 +127,14 @@ const ProgramAdditionalSettingsForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      initialValues={initialModuleData}
       onFinish={handleSubmit}
+      initialValues={customAttributesValue?.customAttributeValue}
     >
-      {layoutTemplateModuleData &&
-        typedObjectEntries(layoutTemplateModuleData).map(([key, moduleData]) => {
+      {customAttrDefinition &&
+        customAttrDefinition.customAttributes?.map(v => {
           return (
-            <Form.Item
-              key={moduleData?.id}
-              label={formatMessage(ProgramAdminPageMessages.ProgramOtherForm[key])}
-              name={key}
-            >
-              {renderModuleComponent(moduleData)}
+            <Form.Item key={v.id} label={v.name} name={v.id}>
+              {renderContext.renderModuleComponent(v.type)}
             </Form.Item>
           )
         })}
@@ -181,16 +150,5 @@ const ProgramAdditionalSettingsForm: React.FC<{
     </Form>
   )
 }
-
-const UpdateProgramLayoutTemplateConfigData = gql`
-  mutation UpdateProgramLayoutTemplateConfigData($programLayoutTemplateConfigId: uuid!, $moduleData: jsonb!) {
-    update_program_layout_template_config(
-      where: { id: { _eq: $programLayoutTemplateConfigId } }
-      _set: { module_data: $moduleData }
-    ) {
-      affected_rows
-    }
-  }
-`
 
 export default ProgramAdditionalSettingsForm
