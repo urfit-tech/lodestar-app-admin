@@ -119,6 +119,7 @@ export type ProgramContentProps = {
   ebook: {
     id: string
     data: any
+    trialPercentage: number
   } | null
   programContentBodyData: any
   displayMode: DisplayMode
@@ -302,4 +303,3 @@ export type ExtractModuleDataValueType<T> = T extends { value: infer V } ? V : n
 export type ModuleDataType = {
   [K in keyof ModuleDataProps]?: ExtractModuleDataValueType<ModuleDataProps[K]>
 }
-
