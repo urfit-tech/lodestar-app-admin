@@ -152,7 +152,7 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_configs(where: { program_id: { _eq: $programId }, is_active: { _eq: true } }) {
+          program_layout_template_config{
             id
             program_id
             program_layout_template_id
@@ -167,7 +167,7 @@ export const useProgram = (programId: string) => {
         }
       }
     `,
-    { variables: { programId }, fetchPolicy: 'no-cache' },
+    { variables: { programId }, fetchPolicy: 'network-only' },
   )
 
   const program: ProgramAdminProps | null = useMemo(() => {
@@ -290,15 +290,20 @@ export const useProgram = (programId: string) => {
         description: programApproval.description || '',
         feedback: programApproval.feedback || '',
       })),
-      programLayoutTemplateConfig:
-        data?.program_by_pk.program_layout_template_configs.map(config => ({
-          id: config.id,
-          programId: config.program_id,
-          programLayoutTemplateId: config.program_layout_template_id,
-          moduleData: config.module_data,
-          isActive: config.is_active,
-          ProgramLayoutTemplate: config.program_layout_template,
-        }))[0] || [],
+      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id ? {
+        id: data?.program_by_pk?.program_layout_template_config?.id,
+        programId: data?.program_by_pk?.program_layout_template_config?.program_id,
+        programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
+        moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
+        ProgramLayoutTemplate: {
+          id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
+          customAttributes: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map((value: {id:string, name: string, type: string}) => ({
+            id: value?.id,
+            name: value?.name,
+            type: value?.type
+          }))
+        }
+      } : null
     }
   }, [data, error, loading])
   return {
