@@ -1,5 +1,5 @@
 import Icon, { EditOutlined, MoreOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
-import { Box } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -50,6 +50,8 @@ import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
+import ExerciseAdminModalBlock from './ExerciseAdminModalBlock'
+import PracticeAdminModalBlock from './PracticeAdminModalBlock'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
 import type { NavItem } from 'epubjs/types/navigation'
@@ -114,6 +116,7 @@ type FieldProps = {
   displayMode: DisplayMode
   contentBodyType: string
   pinnedStatus: boolean
+  trialPercentage: number
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'
@@ -125,7 +128,7 @@ const ProgramContentAdminModal: React.FC<{
 }> = ({ programId, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
   const { authToken, currentMemberId } = useAuth()
 
   const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
@@ -134,6 +137,7 @@ const ProgramContentAdminModal: React.FC<{
   const { insertAttachment } = useMutateAttachment()
   const {
     insertProgramContentEbook,
+    updateProgramContentEbook,
     deleteProgramContentEbook,
     deleteProgramContentEbookToc,
     deleteProgramContentEbookTocProgress,
@@ -152,6 +156,7 @@ const ProgramContentAdminModal: React.FC<{
   }>({ status: 'idle', source: 'youtube' })
 
   const [loading, setLoading] = useState(false)
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent.displayMode)
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [audioFiles, setAudioFiles] = useState<File[]>(programContent.audios.map(v => v.data) || [])
   const [ebookFile, setEbookFile] = useState<File | null>(programContent.ebook?.data || null)
@@ -166,6 +171,9 @@ const ProgramContentAdminModal: React.FC<{
     [key: string]: number
   }>({})
   const [contentType, setContentType] = useState<string>(programContent.programContentType || 'video')
+
+  const isTrial = displayMode === 'trial' || displayMode === 'loginToTrial'
+  const ebookTrialPercentageSetting = settings['ebook.trial.percentage']
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
@@ -279,10 +287,15 @@ const ProgramContentAdminModal: React.FC<{
                 size: newEbookFile.size,
                 lastModified: newEbookFile.lastModified,
               },
+              trial_percentage: values.trialPercentage,
               program_content_ebook_tocs: { data: convert(toc) },
             },
           },
         }).catch(handleError)
+      } else if (values.trialPercentage) {
+        updateProgramContentEbook({
+          variables: { programContentId: programContent.id, trialPercentage: values.trialPercentage },
+        })
       }
     }
 
@@ -397,7 +410,31 @@ const ProgramContentAdminModal: React.FC<{
         visible={visible}
       >
         <>
-          {programContent && (
+          {programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
+            <ExerciseAdminModalBlock
+              programId={programId}
+              programContent={programContent}
+              displayMode={displayMode}
+              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+              onRefetch={onRefetch}
+              onClose={() => {
+                setVisible(false)
+                setDisplayMode(programContent.displayMode)
+              }}
+            />
+          ) : programContent.programContentType === 'practice' ? (
+            <PracticeAdminModalBlock
+              programId={programId}
+              programContent={programContent}
+              displayMode={displayMode}
+              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+              onRefetch={onRefetch}
+              onClose={() => {
+                setVisible(false)
+                setDisplayMode(programContent.displayMode)
+              }}
+            />
+          ) : (
             <Form
               form={form}
               layout="vertical"
@@ -419,6 +456,7 @@ const ProgramContentAdminModal: React.FC<{
                 contentBodyType: programContent.programContentType,
                 ebookFile: programContent.ebook?.data || null,
                 pinnedStatus: programContent.pinned_status,
+                trialPercentage: programContent.ebook?.trialPercentage || Number(ebookTrialPercentageSetting),
               }}
               onValuesChange={(values: Partial<FieldProps>) => {
                 form.setFieldsValue({
@@ -427,9 +465,14 @@ const ProgramContentAdminModal: React.FC<{
               }}
               onFinish={handleSubmit}
             >
-              <div className="d-flex align-items-center justify-content-between mb-4">
-                <div className="d-flex align-items-center">
-                  <Form.Item name="contentBodyType" className="mb-0 mr-2">
+              <Flex
+                alignItems={{ base: 'flex-end', md: 'center' }}
+                justifyContent="space-between"
+                marginBottom="16px"
+                flexDirection={{ base: 'column-reverse', md: 'row' }}
+              >
+                <Flex flexWrap="wrap" gridGap="2">
+                  <Form.Item name="contentBodyType" className="mb-0">
                     <Select
                       onChange={v => {
                         if (typeof v === 'string') {
@@ -447,23 +490,29 @@ const ProgramContentAdminModal: React.FC<{
                   </Form.Item>
 
                   {programContent.displayMode && (
-                    <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
+                    <DisplayModeSelector
+                      contentType={contentType}
+                      displayMode={displayMode}
+                      onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                    />
                   )}
+                  <Flex flexWrap="wrap">
+                    <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
+                      <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+                    </Form.Item>
+                    <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
+                      <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
+                    </Form.Item>
+                  </Flex>
+                </Flex>
 
-                  <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                    <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
-                  </Form.Item>
-                  <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
-                    <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
-                  </Form.Item>
-                </div>
-
-                <div className="d-flex align-items-center">
+                <Flex alignItems="center" marginBottom={{ base: '12px', md: '0' }}>
                   <Button
                     disabled={loading}
                     onClick={() => {
                       setVisible(false)
                       form.resetFields()
+                      setDisplayMode(programContent.displayMode)
                     }}
                     className="mr-2"
                   >
@@ -494,8 +543,8 @@ const ProgramContentAdminModal: React.FC<{
                   >
                     <MoreOutlined />
                   </Dropdown>
-                </div>
-              </div>
+                </Flex>
+              </Flex>
 
               <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
                 <Input />
@@ -644,34 +693,44 @@ const ProgramContentAdminModal: React.FC<{
               )}
 
               {enabledModules.ebook && contentType === 'ebook' ? (
-                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
-                  <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
-                    {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
-                  </Box>
-                  <FileUploader
-                    renderTrigger={({ onClick }) => (
-                      <>
-                        <Button icon={<UploadOutlined />} onClick={onClick}>
-                          {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
-                        </Button>
-                        {isUploadFailed.audio && (
-                          <span className="ml-2">
-                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                          </span>
-                        )}
-                      </>
-                    )}
-                    showUploadList
-                    multiple={false}
-                    accept=".epub"
-                    fileList={ebookFile ? [ebookFile] : []}
-                    uploadProgress={uploadProgress}
-                    failedUploadFiles={failedUploadFiles}
-                    downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
-                    onChange={files => files && setEbookFile(files[0])}
-                  />
-                </Form.Item>
+                <>
+                  <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
+                    <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
+                      {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
+                    </Box>
+                    <FileUploader
+                      renderTrigger={({ onClick }) => (
+                        <>
+                          <Button icon={<UploadOutlined />} onClick={onClick}>
+                            {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
+                          </Button>
+                          {isUploadFailed.audio && (
+                            <span className="ml-2">
+                              <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                              <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                            </span>
+                          )}
+                        </>
+                      )}
+                      showUploadList
+                      multiple={false}
+                      accept=".epub"
+                      fileList={ebookFile ? [ebookFile] : []}
+                      uploadProgress={uploadProgress}
+                      failedUploadFiles={failedUploadFiles}
+                      downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
+                      onChange={files => files && setEbookFile(files[0])}
+                    />
+                  </Form.Item>
+                  {!!ebookFile && !!isTrial && (
+                    <Form.Item
+                      label={formatMessage(programMessages.ProgramContentAdminModal.ebookTrialPercentageSetting)}
+                      name="trialPercentage"
+                    >
+                      <InputNumber min={0} max={100} formatter={v => `${v}%`} width="200px" />
+                    </Form.Item>
+                  )}
+                </>
               ) : null}
 
               {enabledModules.program_content_material && contentType !== 'ebook' ? (

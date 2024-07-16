@@ -102,6 +102,10 @@ const programMessages = {
       id: 'program.ProgramContentAdminModal.uploadEbookFileTips',
       defaultMessage: '只接受符合 EPUB 3 格式檔案',
     },
+    ebookTrialPercentageSetting: {
+      id: 'program.ProgramContentAdminModal.ebookTrialPercentageSetting',
+      defaultMessage: 'Trial Percentage Setting',
+    },
     audioFileTips: {
       id: 'program.ProgramContentAdminModal.audioFileTips',
       defaultMessage: 'Accept format: .mp3\nFile size: 250MB',
