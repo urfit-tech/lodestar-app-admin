@@ -43,7 +43,6 @@ const ProgramBasicForm: React.FC<{
   const { programLayoutTemplates } = useGetProgramLayoutTemplates()
   const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
   const [updateProgramBasic] = useMutation(UPDATE_PROGRAM_BASIC)
-  // const [activateTemplateForProgram] = useMutation(ActivateTemplateForProgram)
   const { activatedTemplateForProgram } = useActivatedTemplateForProgram()
 
   if (!program || loadingProduct) {
