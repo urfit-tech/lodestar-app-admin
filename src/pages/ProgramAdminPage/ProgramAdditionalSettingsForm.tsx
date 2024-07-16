@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
-import { ModuleDataType, ProgramAdminProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
 
 const StyledDatePicker = styled(DatePicker)<DatePickerProps>`
@@ -68,7 +68,7 @@ class RenderStrategyContext {
   }
 }
 
-type FieldProps = {} & ModuleDataType
+type FieldProps = {}
 
 const ProgramAdditionalSettingsForm: React.FC<{
   programId: string
@@ -76,7 +76,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ programId, programLayoutTemplateConfigId, program, onRefetch }) => {
-  const customAttrDefination = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
+  const customAttrDefinition = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
     id: 'notFoundCustomAttr',
     customAttribute: null,
   }
@@ -92,7 +92,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
         id: program?.programLayoutTemplateConfig?.id,
         customAttributeValue: Object.fromEntries(
           Object.entries(program?.programLayoutTemplateConfig?.moduleData).map(([key, value]) => {
-            const attributeDefinition = customAttrDefination?.customAttribute?.find(attr => attr.id === key)
+            const attributeDefinition = customAttrDefinition?.customAttribute?.find(attr => attr.id === key)
             if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
               return [key, moment(value)]
             }
@@ -130,8 +130,8 @@ const ProgramAdditionalSettingsForm: React.FC<{
       onFinish={handleSubmit}
       initialValues={customAttributesValue?.customAttributeValue}
     >
-      {customAttrDefination &&
-        customAttrDefination.customAttribute?.map(v => {
+      {customAttrDefinition &&
+        customAttrDefinition.customAttribute?.map(v => {
           return (
             <Form.Item key={v.id} label={v.name} name={v.id}>
               {renderContext.renderModuleComponent(v.type)}
