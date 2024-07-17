@@ -247,6 +247,7 @@ export type ProgramLayoutTemplate = {
     id: string
     name: string
     type: 'Number' | 'Date' | 'Text' | 'TextEditor'
+    options?: any
   }[]
 }
 
