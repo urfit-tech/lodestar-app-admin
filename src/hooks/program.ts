@@ -157,7 +157,6 @@ export const useProgram = (programId: string) => {
             program_id
             program_layout_template_id
             module_data
-            is_active
             program_layout_template {
               id
               name

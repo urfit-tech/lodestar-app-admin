@@ -10,7 +10,6 @@ const UpdateTemplateCustomAttributeFormValue = gql`
       where: {
         program_id: { _eq: $programId },
         id: { _eq: $programLayoutTemplateConfigId },
-        is_active: { _eq: true }
       },
       _set: { module_data: $moduleData }
     ) {
