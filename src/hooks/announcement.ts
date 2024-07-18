@@ -24,12 +24,30 @@ export const useMemberAnnouncements = () => {
   >(UpsertMemberAnnouncementStatus)
 
   const announcements: Announcement[] =
-    data?.announcement
-      .filter(
-        announcement =>
-          announcement.is_universal_display === true ||
-          announcement.announcement_pages.filter(page => path.includes(page.path)).length > 0,
-      )
+    data?.announcement.filter(announcement => {
+      const includesPath = announcement.announcement_pages.some(page => {
+        const isContainsPattern = (pagePath: string) => pagePath.endsWith('*');
+
+        const matchesContainsPattern = (currentPagePath: string, pagePathPattern: string) => {
+          const regexPattern = new RegExp(`^.*${pagePathPattern.replace('*', '.*')}$`);
+          return regexPattern.test(currentPagePath);
+        };
+        
+        const matchesExactPattern = (currentPagePath: string, pagePathPattern: string) => {
+          const pathWithoutAdmin = currentPagePath.replace(/^\/admin/, '');
+          return pathWithoutAdmin === pagePathPattern;
+        };
+
+        const pagePath = page.path;
+      
+        if (isContainsPattern(pagePath)) {
+          return matchesContainsPattern(path, pagePath);
+        }
+        return matchesExactPattern(path, pagePath);
+      });
+    
+      return announcement.is_universal_display === true || includesPath;
+    })
       .map(announcement => ({
         id: announcement.id,
         appId: announcement.app_id,
