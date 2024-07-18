@@ -1,8 +1,8 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Form, Input } from 'antd'
+import { Button, Checkbox, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { Announcement } from '../../types/announcement'
@@ -59,6 +59,7 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
           }}
         />
       </Form.Item>
+
       <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
         <PathInput />
       </Form.Item>
@@ -75,24 +76,58 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
   )
 }
 
-const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => void }> = ({ value, onChange }) => {
+const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => void }> = ({ value = [], onChange }) => {
   const { formatMessage } = useIntl()
+  const [radioValues, setRadioValues] = useState<string[]>(
+    value?.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch')) || [],
+  )
+
+  const handleRadioChange = (index: number, e: any) => {
+    const newRadioValues = [...radioValues]
+    const newValue = [...value]
+    newRadioValues[index] = e.target.value
+    if (e.target.value === 'contains' && !newValue[index].includes('*')) {
+      newValue[index] += '*'
+    } else if (e.target.value === 'exactMatch') {
+      newValue[index] = newValue[index].replace('*', '')
+    }
+    setRadioValues(newRadioValues)
+    onChange && onChange(newValue)
+  }
+
+  useEffect(() => {
+    const initialRadioValues = value.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch'))
+    setRadioValues(initialRadioValues)
+  }, [value])
 
   return (
     <>
-      {value?.map((phone, index) => (
-        <div className="mb-3 position-relative">
+      {value?.map((path, index) => (
+        <div className="mb-3 position-relative" key={index}>
           <StyledNewPathInput>
-            <Input
-              key={index}
-              className={'mr-3 mb-0'}
-              value={phone}
-              onChange={e => {
-                const newValue = [...value]
-                newValue.splice(index, 1, e.target.value.trim())
-                onChange && onChange(newValue)
-              }}
-            />
+            <Input.Group compact style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Radio.Group
+                onChange={e => handleRadioChange(index, e)}
+                value={radioValues[index]}
+                style={{ display: 'flex', gap: '10px' }}
+              >
+                <Radio value="contains">
+                  {formatMessage(announcementMessages.AnnouncementPathSettingsForm.contains)}
+                </Radio>
+                <Radio value="exactMatch">
+                  {formatMessage(announcementMessages.AnnouncementPathSettingsForm.exactMatch)}
+                </Radio>
+              </Radio.Group>
+              <Input
+                className={'mr-3 mb-0'}
+                value={path}
+                onChange={e => {
+                  const newValue = [...value]
+                  newValue.splice(index, 1, e.target.value.trim())
+                  onChange && onChange(newValue)
+                }}
+              />
+            </Input.Group>
             <CloseOutlined
               onClick={() => {
                 const newValue = [...value]
@@ -107,11 +142,10 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
         icon={<PlusOutlined />}
         type="link"
         onClick={() => {
-          if (value) {
-            const newValue = [...value]
-            newValue.splice(newValue.length, 0, '')
-            onChange && onChange(newValue)
-          }
+          const newValue = [...(value || ''), '']
+          const newRadioValues = [...radioValues, 'contains']
+          setRadioValues(newRadioValues)
+          onChange && onChange(newValue)
         }}
       >
         <span>{formatMessage(announcementMessages.AnnouncementPathSettingsForm.addNewPath)}</span>
