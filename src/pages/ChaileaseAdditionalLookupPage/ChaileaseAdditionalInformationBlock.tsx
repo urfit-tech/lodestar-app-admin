@@ -28,8 +28,9 @@ const StyledInfoBlock = styled.div`
 `
 const StyledInfoItem = styled.div`
   display: flex;
+  margin-bottom: 10px;
   p {
-    width: 20%;
+    width: 30%;
   }
 `
 
@@ -108,23 +109,6 @@ const ChaileaseAdditionalInformationBlock: React.FC<{ email: string }> = ({ emai
                   )
                   await downloadFile(`${additionalProfile.credential.fileName}`, {
                     url: credentialImageLink,
-                  })
-                }}
-              />
-            </StyledInfoItem>
-          )}
-          {additionalProfile?.bankBook?.imageId && (
-            <StyledInfoItem>
-              <p>存摺封面</p>
-              <FileItem
-                fileName={`${additionalProfile.bankBook.fileName}`}
-                onDownload={async () => {
-                  const bankBookImageLink = await getFileDownloadableLink(
-                    `chailease/additional_form/${appId}/${additionalProfile?.bankBook.imageId}`,
-                    authToken,
-                  )
-                  await downloadFile(`${additionalProfile.bankBook.fileName}`, {
-                    url: bankBookImageLink,
                   })
                 }}
               />
