@@ -4,11 +4,25 @@ import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 
+type ExtendedPeriodType = PeriodType | 'H' | 'm'
+
+const defaultOptions: ExtendedPeriodType[] = ['D', 'W', 'M', 'Y']
+
 const PeriodSelector: React.FC<{
-  value?: { type: PeriodType; amount: number }
-  onChange?: (value: { type: PeriodType; amount: number }) => void
-}> = ({ value, onChange }) => {
+  value?: { type: ExtendedPeriodType; amount: number }
+  onChange?: (value: { type: ExtendedPeriodType; amount: number }) => void
+  options?: ExtendedPeriodType[]
+}> = ({ value, onChange, options = defaultOptions }) => {
   const { formatMessage } = useIntl()
+
+  const optionTextMap: Record<ExtendedPeriodType, string> = {
+    H: formatMessage(commonMessages.unit.hour),
+    m: formatMessage(commonMessages.unit.minute),
+    D: formatMessage(commonMessages.unit.day),
+    W: formatMessage(commonMessages.unit.week),
+    M: formatMessage(commonMessages.unit.month),
+    Y: formatMessage(commonMessages.unit.year),
+  }
 
   return (
     <div>
@@ -22,13 +36,14 @@ const PeriodSelector: React.FC<{
           />
           <Select
             value={value.type}
-            onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
+            onChange={(type: ExtendedPeriodType) => onChange && onChange({ ...value, type })}
             style={{ width: '90px' }}
           >
-            <Select.Option value="D">{formatMessage(commonMessages.unit.day)}</Select.Option>
-            <Select.Option value="W">{formatMessage(commonMessages.unit.week)}</Select.Option>
-            <Select.Option value="M">{formatMessage(commonMessages.unit.month)}</Select.Option>
-            <Select.Option value="Y">{formatMessage(commonMessages.unit.year)}</Select.Option>
+            {options.map(option => (
+              <Select.Option key={option} value={option}>
+                {optionTextMap[option]}
+              </Select.Option>
+            ))}
           </Select>
         </div>
       )}

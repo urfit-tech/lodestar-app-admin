@@ -90,7 +90,7 @@ const AnnouncementBasicSettingsForm = ({ announcement, onSave, saveLoading }: An
         label={formatMessage(announcementMessages.AnnouncementBasicSettingsForm.nextTimeRemindPeriod)}
         name="period"
       >
-        <PeriodSelector />
+        <PeriodSelector options={['m', 'H', 'D', 'W', 'M', 'Y']} />
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
