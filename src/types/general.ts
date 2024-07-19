@@ -34,7 +34,7 @@ export type IssueProps = {
   issueInstructorIds?: string[]
 }
 
-export type PeriodType = 'D' | 'W' | 'M' | 'Y'
+export type PeriodType = 'H' | 'm' |'D' | 'W' | 'M' | 'Y'
 
 export type ProductInventoryStatusProps = {
   buyableQuantity: number

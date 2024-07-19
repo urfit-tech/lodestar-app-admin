@@ -4,18 +4,16 @@ import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 
-type ExtendedPeriodType = PeriodType | 'H' | 'm'
-
-const defaultOptions: ExtendedPeriodType[] = ['D', 'W', 'M', 'Y']
+const defaultOptions: PeriodType[] = ['D', 'W', 'M', 'Y']
 
 const PeriodSelector: React.FC<{
-  value?: { type: ExtendedPeriodType; amount: number }
-  onChange?: (value: { type: ExtendedPeriodType; amount: number }) => void
-  options?: ExtendedPeriodType[]
+  value?: { type: PeriodType; amount: number }
+  onChange?: (value: { type: PeriodType; amount: number }) => void
+  options?: PeriodType[]
 }> = ({ value, onChange, options = defaultOptions }) => {
   const { formatMessage } = useIntl()
 
-  const optionTextMap: Record<ExtendedPeriodType, string> = {
+  const optionTextMap: Record<PeriodType, string> = {
     H: formatMessage(commonMessages.unit.hour),
     m: formatMessage(commonMessages.unit.minute),
     D: formatMessage(commonMessages.unit.day),
@@ -36,7 +34,7 @@ const PeriodSelector: React.FC<{
           />
           <Select
             value={value.type}
-            onChange={(type: ExtendedPeriodType) => onChange && onChange({ ...value, type })}
+            onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
             style={{ width: '90px' }}
           >
             {options.map(option => (
