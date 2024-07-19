@@ -444,7 +444,7 @@ const MemberTaskAdminModal: React.FC<
                 }),
               ]}
             >
-              <AllMemberSelector />
+              <AllMemberSelector allowedPermissions={['BACKSTAGE_ENTER']} />
             </Form.Item>
           </div>
         </div>
