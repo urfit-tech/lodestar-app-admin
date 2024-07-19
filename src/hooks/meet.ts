@@ -10,8 +10,8 @@ export const GetOverlapMeets = gql`
     meet(
       where: {
         app_id: { _eq: $appId }
-        started_at: { _lte: $endedAt }
-        ended_at: { _gte: $startedAt }
+        started_at: { _lt: $endedAt }
+        ended_at: { _gt: $startedAt }
         deleted_at: { _is_null: true }
         meet_members: { deleted_at: { _is_null: true } }
       }
