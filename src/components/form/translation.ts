@@ -464,5 +464,18 @@ const formMessages = {
       defaultMessage: '客製虛擬商品規格',
     },
   }),
+  SaleInput: defineMessages({
+    salePricePrefix: { id: 'form.SaleInput.salePricePrefix', defaultMessage: '優惠價前綴詞' },
+    salePriceSuffix: { id: 'form.SaleInput.salePriceSuffix', defaultMessage: '優惠價後綴詞' },
+    countdownTimerVisible: { id: 'form.SaleInput.countdownTimerVisible', defaultMessage: '顯示倒數計時器' },
+    salePrice: { id: 'form.SaleInput.salePrice', defaultMessage: '優惠價' },
+    salePriceCircumfix: {
+      id: 'form.SaleInput.salePriceCircumfix',
+      defaultMessage: '優惠價前後綴詞',
+    },
+    salePriceEndTime: { id: 'form.SaleInput.salePriceEndTime', defaultMessage: '優惠截止日期' },
+    outdated: { id: 'form.SaleInput.outdated', defaultMessage: '已過期' },
+    priceDescription: { id: 'form.SaleInput.priceDescription', defaultMessage: '價格描述' },
+  }),
 }
 export default formMessages
