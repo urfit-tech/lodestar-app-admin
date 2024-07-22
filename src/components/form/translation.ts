@@ -465,17 +465,17 @@ const formMessages = {
     },
   }),
   SaleInput: defineMessages({
-    salePricePrefix: { id: 'form.SaleInput.salePricePrefix', defaultMessage: '優惠價前綴詞' },
-    salePriceSuffix: { id: 'form.SaleInput.salePriceSuffix', defaultMessage: '優惠價後綴詞' },
-    countdownTimerVisible: { id: 'form.SaleInput.countdownTimerVisible', defaultMessage: '顯示倒數計時器' },
-    salePrice: { id: 'form.SaleInput.salePrice', defaultMessage: '優惠價' },
+    salePricePrefix: { id: 'form.SaleInput.salePricePrefix', defaultMessage: 'Sale price prefix' },
+    salePriceSuffix: { id: 'form.SaleInput.salePriceSuffix', defaultMessage: 'Sale price suffix' },
+    countdownTimerVisible: { id: 'form.SaleInput.countdownTimerVisible', defaultMessage: 'Show countdown timer' },
+    salePrice: { id: 'form.SaleInput.salePrice', defaultMessage: 'Sale price' },
     salePriceCircumfix: {
       id: 'form.SaleInput.salePriceCircumfix',
-      defaultMessage: '優惠價前後綴詞',
+      defaultMessage: 'Sale price prefix and suffix',
     },
-    salePriceEndTime: { id: 'form.SaleInput.salePriceEndTime', defaultMessage: '優惠截止日期' },
-    outdated: { id: 'form.SaleInput.outdated', defaultMessage: '已過期' },
-    priceDescription: { id: 'form.SaleInput.priceDescription', defaultMessage: '價格描述' },
+    salePriceEndTime: { id: 'form.SaleInput.salePriceEndTime', defaultMessage: 'Discount expiration date' },
+    outdated: { id: 'form.SaleInput.outdated', defaultMessage: 'Expired' },
+    priceDescription: { id: 'form.SaleInput.priceDescription', defaultMessage: 'Price description' },
   }),
 }
 export default formMessages

@@ -3,8 +3,8 @@ import { defineMessages } from 'react-intl'
 const programMessages = {
   '*': defineMessages({
     save: { id: 'program.*.save', defaultMessage: '儲存' },
-    cancel: { id: 'program.*.cancel', defaultMessage: 'cancel' },
-    confirm: { id: 'program.*.confirm', defaultMessage: 'confirm' },
+    cancel: { id: 'program.*.cancel', defaultMessage: '取消' },
+    confirm: { id: 'program.*.confirm', defaultMessage: '確認' },
     isRequired: { id: 'program.*.isRequired', defaultMessage: '*此欄位必填' },
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
@@ -21,8 +21,8 @@ const programMessages = {
     contentTitle: { id: 'program.*.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.*.description', defaultMessage: '內容' },
     uploadAudioFile: { id: 'program.*.uploadAudioFile', defaultMessage: 'Upload audio file' },
-    perpetualPlan: { id: 'program.*.perpetualPlan', defaultMessage: 'perpetualPlan' },
-    periodPlan: { id: 'program.*.periodPlan', defaultMessage: 'periodPlan' },
+    perpetualPlan: { id: 'program.*.perpetualPlan', defaultMessage: '永久方案' },
+    periodPlan: { id: 'program.*.periodPlan', defaultMessage: '限時方案' },
   }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },
