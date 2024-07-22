@@ -1,7 +1,10 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, message, Skeleton } from 'antd'
+import { IconButton } from '@chakra-ui/react'
+import { Button, Input, message } from 'antd'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
+import { AiOutlineRedo } from 'react-icons/ai'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -14,9 +17,6 @@ import { AdminBlock } from '../admin'
 import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
-import { AiOutlineRedo } from 'react-icons/ai'
-import { IconButton } from '@chakra-ui/react'
-import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 
 const SearchBlock = styled.div`
   position: absolute;
@@ -59,9 +59,9 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
 
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
-    return <Skeleton active />
-  }
+  // if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
+  //   return <Skeleton active />
+  // }
 
   return (
     <>
