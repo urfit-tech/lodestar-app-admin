@@ -4,12 +4,13 @@ const programMessages = {
   '*': defineMessages({
     save: { id: 'program.*.save', defaultMessage: '儲存' },
     cancel: { id: 'program.*.cancel', defaultMessage: '取消' },
+    confirm: { id: 'program.*.confirm', defaultMessage: '確認' },
     isRequired: { id: 'program.*.isRequired', defaultMessage: '*此欄位必填' },
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
     notifyUpdate: { id: 'program.*.notifyUpdate', defaultMessage: '通知內容更新' },
     pinnedStatus: { id: 'program.*.pinnedStatus', defaultMessage: '釘選' },
-    successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
+    successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: 'saved successfully' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
     contentPlan: { id: 'program.*.contentPlan', defaultMessage: 'Content Plan' },
@@ -20,6 +21,8 @@ const programMessages = {
     contentTitle: { id: 'program.*.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.*.description', defaultMessage: '內容' },
     uploadAudioFile: { id: 'program.*.uploadAudioFile', defaultMessage: 'Upload audio file' },
+    perpetualPlan: { id: 'program.*.perpetualPlan', defaultMessage: '永久方案' },
+    periodPlan: { id: 'program.*.periodPlan', defaultMessage: '限時方案' },
   }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },
@@ -240,6 +243,17 @@ const programMessages = {
       defaultMessage: 'Program exercise',
     },
   }),
+  PriceDescriptionItem: {
+    priceDescription: {
+      id: 'program.PriceDescriptionItem.priceDescription',
+      defaultMessage: 'Price description',
+    },
+  },
+  ListPriceItem: {
+    listPriceCircumfix: { id: 'program.ListPriceItem.listPriceCircumfix', defaultMessage: '定價前後綴詞' },
+    listPricePrefix: { id: 'program.ListPriceItem.listPricePrefix', defaultMessage: '定價前綴詞' },
+    listPriceSuffix: { id: 'program.ListPriceItem.listPriceSuffix', defaultMessage: '定價後綴詞' },
+  },
 }
 
 export default programMessages

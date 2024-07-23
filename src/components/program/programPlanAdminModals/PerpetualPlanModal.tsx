@@ -9,13 +9,13 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import { handleError } from '../../../helpers'
-import { commonMessages } from '../../../helpers/translation'
 import { useMutateProductLevel } from '../../../hooks/data'
 import { useUpsertProgramPlan } from '../../../hooks/programPlan'
 import { ProductGiftPlan } from '../../../types/giftPlan'
 import { ProgramPlan } from '../../../types/program'
-import { PerpetualFieldProps } from '../../../types/programPlan'
+import { PerpetualField } from '../../../types/programPlan'
 import AdminModal, { AdminModalProps } from '../../admin/AdminModal'
+import programMessages from '../translation'
 import {
   CurrencyItem,
   GiftItem,
@@ -28,6 +28,8 @@ import {
   PublishItem,
   SaleItem,
   TitleItem,
+  ListPriceCircumfixItem,
+  PriceDescriptionItem,
 } from './formItem'
 
 const PerpetualPlan: React.FC<
@@ -56,8 +58,8 @@ const PerpetualPlan: React.FC<
   ...modalProps
 }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<PerpetualFieldProps>()
-  const { enabledModules } = useApp()
+  const [form] = useForm<PerpetualField>()
+  const { enabledModules, settings } = useApp()
   const { upsertProgramPlan } = useUpsertProgramPlan()
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
   const { updateProductLevel } = useMutateProductLevel()
@@ -87,6 +89,11 @@ const PerpetualPlan: React.FC<
           isCountdownTimerVisible: !!values.sale?.isTimerVisible,
           groupBuyingPeople: values.groupBuyingPeople,
           isParticipantsVisible: values.isParticipantsVisible,
+          listPricePrefix: values.listPriceCircumfix?.listPricePrefix,
+          listPriceSuffix: values.listPriceCircumfix?.listPriceSuffix,
+          salePricePrefix: values.sale?.salePricePrefix || '',
+          salePriceSuffix: values.sale?.salePriceSuffix || '',
+          priceDescription: values?.priceDescription ? values.priceDescription.toHTML() : null,
         },
       })
       const programPlanId = upsertProgramPlanData?.insert_program_plan?.returning?.[0].id
@@ -118,20 +125,21 @@ const PerpetualPlan: React.FC<
           },
         })
       }
-      setLoading(false)
-      message.success(formatMessage(commonMessages.event.successfullySaved))
-      onSuccess()
+      message.success(formatMessage(programMessages['*'].successfullySaved))
       onProductGiftPlanRefetch?.()
       onRefetch?.()
+      onSuccess()
       form.resetFields()
     } catch (err) {
       console.log(err)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.perpetualPlan)}
+      title={formatMessage(programMessages['*'].perpetualPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -143,7 +151,7 @@ const PerpetualPlan: React.FC<
               setIsOpen?.(false)
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(programMessages['*'].cancel)}
           </Button>
           <Button
             type="primary"
@@ -155,7 +163,7 @@ const PerpetualPlan: React.FC<
               })
             }
           >
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(programMessages['*'].confirm)}
           </Button>
         </>
       )}
@@ -184,11 +192,17 @@ const PerpetualPlan: React.FC<
           isParticipantsVisible: !!programPlan?.isParticipantsVisible,
           currencyId: programPlan?.currencyId,
           listPrice: programPlan?.listPrice || 0,
+          listPriceCircumfix: {
+            listPricePrefix: programPlan?.listPricePrefix || null,
+            listPriceSuffix: programPlan?.listPriceSuffix || null,
+          },
           sale: programPlan?.soldAt
             ? {
                 price: programPlan.salePrice,
                 soldAt: programPlan.soldAt,
                 isTimerVisible: !!programPlan?.isCountdownTimerVisible,
+                salePricePrefix: programPlan?.salePricePrefix || '',
+                salePriceSuffix: programPlan?.salePriceSuffix || '',
               }
             : null,
           type: programPlan?.type || 3,
@@ -199,6 +213,7 @@ const PerpetualPlan: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : null,
           giftPlanEndedAt: productGiftPlan?.endedAt ? moment(productGiftPlan.endedAt) : null,
+          priceDescription: BraftEditor.createEditorState(programPlan?.priceDescription),
         }}
       >
         <TitleItem name="title" />
@@ -208,9 +223,15 @@ const PerpetualPlan: React.FC<
         <GiftItem name="hasGiftPlan" />
         <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
-        <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
+        <ListPriceItem name="listPrice" />
+        {settings['program.layout_template_circumfix.enabled'] ? (
+          <ListPriceCircumfixItem name="listPriceCircumfix" />
+        ) : null}
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />
         <GroupBuyItem name="groupBuyingPeople" />
+        {settings['program.layout_template_price_description.enabled'] ? (
+          <PriceDescriptionItem name="priceDescription" />
+        ) : null}
         <PlanDescriptionItem name="description" />
       </Form>
     </AdminModal>
