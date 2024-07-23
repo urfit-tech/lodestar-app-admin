@@ -246,13 +246,36 @@ export type Exam = {
 
 export type Media = 'video' | 'image'
 
+type ControlType =
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'strike-through'
+  | 'strike-through'
+  | 'font-family'
+  | 'list-ul'
+  | 'list-ol'
+interface TextEditorOptionType {
+  controls: ControlType[]
+}
+
+type BaseField<T extends string, O = any> = {
+  id: string
+  name: string
+  type: T
+  options: O
+}
+
+type NumberField = BaseField<'Number'>
+type DateField = BaseField<'Date'>
+type TextField = BaseField<'Text'>
+type TextEditorField = BaseField<'TextEditor', TextEditorOptionType>
+
+type customAttributeFields = NumberField | DateField | TextField | TextEditorField
+
 export type ProgramLayoutTemplate = {
   id: string
-  customAttributes: {
-    id: string
-    name: string
-    type: 'Number' | 'Date' | 'Text' | 'TextEditor'
-  }[]
+  customAttributes: customAttributeFields[]
 }
 
 export type ProgramLayoutTemplateConfig = {
