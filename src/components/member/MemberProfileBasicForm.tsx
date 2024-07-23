@@ -1,7 +1,9 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
+import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
+import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
+import countryCodes from 'country-codes-list'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -16,6 +18,8 @@ import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
+import memberMessages from './translations'
+import { CountryCode, parsePhoneNumber } from 'libphonenumber-js'
 
 const StyledCloseIcon = styled.div`
   position: absolute;
@@ -34,10 +38,42 @@ type FieldProps = {
   email: string
   star: number
   phones: string[]
+  countryCodes: string[]
   categoryIds: string[]
   specialities: string[]
   tags?: string[]
   managerId?: string
+}
+interface CountryCodeData {
+  countryCode: CountryCode
+  countryCallingCode: string
+}
+
+const getAllCountryCodeData = () => {
+  const countryCodesObject = countryCodes.customList(
+    'countryCode' as any,
+    `{"countryCode":"{countryCode}", "countryCallingCode":"+{countryCallingCode}"}`,
+  )
+  const result: CountryCodeData[] = []
+  Object.values(countryCodesObject).forEach(value => result.push(JSON.parse(value)))
+  return result
+}
+
+const splitPhoneData = (phoneData: string[] = [], separator: string): { phones: string[]; countryCodes: string[] } => {
+  const countryCodes: string[] = []
+  const phones: string[] = []
+
+  phoneData.forEach(data => {
+    if (!data) data = `${separator}`
+    const [countryCode, phone] = data.split(separator)
+    countryCodes.push(countryCode ?? '')
+    phones.push(phone ?? '')
+  })
+
+  return {
+    phones,
+    countryCodes,
+  }
 }
 
 const MemberProfileBasicForm: React.FC<{
@@ -48,6 +84,7 @@ const MemberProfileBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { currentUserRole, permissions } = useAuth()
   const { enabledModules } = useApp()
+
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
     hasura.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -62,6 +99,7 @@ const MemberProfileBasicForm: React.FC<{
     try {
       setLoading(true)
       const values = await form.validateFields()
+      const { phones, countryCodes } = splitPhoneData(values.phones, ',')
       updateMemberProfileBasic({
         variables: {
           name: values?.name || memberAdmin.name,
@@ -72,19 +110,25 @@ const MemberProfileBasicForm: React.FC<{
           star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
           memberId: memberAdmin.id,
           phones: permissions['MEMBER_PHONE_ADMIN']
-            ? values.phones
-                .filter((phone: string) => !!phone)
-                .map((phone: string) => {
-                  const findPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
-                  return {
-                    member_id: memberAdmin.id,
-                    phone,
-                    is_valid: findPhone?.isValid,
-                  }
-                })
-            : memberAdmin.phones.map(phone => ({
+            ? phones.map((phone: string, index: number) => ({
                 member_id: memberAdmin.id,
-                phone: phone.phoneNumber,
+                phone,
+                country_code: countryCodes[index],
+                international_phone:
+                  parsePhoneNumber(phone, countryCodes[index] as CountryCode)?.formatInternational() || null,
+                is_valid: Boolean(memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid),
+              }))
+            : phones.map((phone: string, index: number) => ({
+                member_id: memberAdmin.id,
+                phone,
+                country_code: memberAdmin.phones[index].countryCode,
+                international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
+                  ? parsePhoneNumber(
+                      memberAdmin.phones[index].phoneNumber,
+                      countryCodes[index] as CountryCode,
+                    )?.formatInternational() || null
+                  : null,
+                is_valid: Boolean(memberAdmin.phones[index].isValid),
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
@@ -116,7 +160,9 @@ const MemberProfileBasicForm: React.FC<{
         })
         .catch(handleError)
         .finally(() => setLoading(false))
-    } catch {
+    } catch (error) {
+      process.env.NODE_ENV === 'development' ?? console.error(error)
+    } finally {
       setLoading(false)
     }
   }
@@ -135,7 +181,9 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
+        phones: memberAdmin.phones.length
+          ? memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
+          : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -161,7 +209,35 @@ const MemberProfileBasicForm: React.FC<{
         <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
-        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phones">
+        <Form.Item
+          className="mb-4"
+          label={formatMessage(commonMessages.label.phone)}
+          name="phones"
+          rules={[
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
+              validator: (_: RuleObject, values: string[]) => {
+                const { phones } = splitPhoneData(values, ',')
+                return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
+              },
+            },
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
+              validator: (_: RuleObject, values: string[]) => {
+                const { phones } = splitPhoneData(values, ',')
+                const regex = /^[0-9]*$/
+                return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
+              },
+            },
+            {
+              message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
+              validator: (_: RuleObject, values: string[]) => {
+                const { countryCodes } = splitPhoneData(values, ',')
+                return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
+              },
+            },
+          ]}
+        >
           <PhoneCollectionInput />
         </Form.Item>
       )}
@@ -199,19 +275,22 @@ const PhoneCollectionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { countryCodes, phones } = splitPhoneData(value, ',')
+
   return (
     <>
-      {value?.map((phone, index) => (
-        <div className="mb-3 position-relative">
+      {value?.map((_, index) => (
+        <div className="mb-2 position-relative" key={index}>
           <Input
             key={index}
             className={'mr-3 mb-0'}
-            value={phone}
+            value={phones[index]}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, e.target.value.trim())
+              newValue.splice(index, 1, `${countryCodes[index]},${e.target.value.trim()}`)
               onChange && onChange(newValue)
             }}
+            addonBefore={<CountryCodeSelect value={value} index={index} onChange={onChange} />}
           />
           {index !== 0 && (
             <StyledCloseIcon
@@ -239,6 +318,38 @@ const PhoneCollectionInput: React.FC<{
       >
         {formatMessage(commonMessages.label.addPhones)}
       </Button>
+    </>
+  )
+}
+
+const CountryCodeSelect: React.FC<{
+  value: string[]
+  index: number
+  onChange?: (value: string[]) => void
+}> = ({ value, index, onChange }) => {
+  const { phones, countryCodes } = splitPhoneData(value, ',')
+  const allCountryCodeData: CountryCodeData[] = getAllCountryCodeData()
+
+  return (
+    <>
+      <Select
+        showSearch
+        style={{ minWidth: '120px' }}
+        key={`${index}${countryCodes[index]}`}
+        value={countryCodes[index]}
+        onChange={e => {
+          const newValue = [...value]
+          newValue.splice(index, 1, `${e},${phones[index]}`)
+          onChange && onChange(newValue)
+        }}
+      >
+        {allCountryCodeData?.map(data => (
+          <Select.Option
+            key={`${data.countryCode}${data.countryCallingCode}`}
+            value={data.countryCode}
+          >{`${data.countryCode} (${data.countryCallingCode})`}</Select.Option>
+        ))}
+      </Select>
     </>
   )
 }
