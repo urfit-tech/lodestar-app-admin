@@ -401,9 +401,13 @@ export const useMemberNotesAdmin = (
     }
   }, [data])
 
+  const hasMoreNotes = useMemo(() => {
+    return (data?.member_note_aggregate.aggregate?.count || 0) > offset + limit;
+  }, [data?.member_note_aggregate.aggregate?.count, offset, limit]);
+
   const loadMoreNotes = () => {
-    if ((data?.member_note_aggregate.aggregate?.count || 0) <= offset + limit) {
-      return Promise.resolve()
+    if (!hasMoreNotes) {
+      return Promise.resolve();
     }
 
     return fetchMore({
@@ -433,6 +437,7 @@ export const useMemberNotesAdmin = (
     notes,
     refetchNotes: refetch,
     loadMoreNotes,
+    hasMoreNotes,
   }
 }
 

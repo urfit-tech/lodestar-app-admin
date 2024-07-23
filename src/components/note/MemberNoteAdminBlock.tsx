@@ -1,6 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { IconButton } from '@chakra-ui/react'
-import { Button, Input, message } from 'antd'
+import { Button, Input, message, Skeleton } from 'antd'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -49,7 +49,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
-  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
+  const { hasMoreNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
     { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
     searchText,
@@ -59,9 +59,9 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
 
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  // if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
-  //   return <Skeleton active />
-  // }
+  if (!currentMemberId || errorNotes || !memberAdmin) {
+    return <Skeleton active />
+  }
 
   return (
     <>
@@ -139,7 +139,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           ))
         )}
 
-        {loadMoreNotes && (
+        {hasMoreNotes && (
           <Button
             onClick={() => {
               setLoading(true)
