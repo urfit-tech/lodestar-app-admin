@@ -309,10 +309,11 @@ export const useProgram = (programId: string) => {
               id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
               customAttributes:
                 data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map(
-                  (value: { id: string; name: string; type: string }) => ({
+                  (value: { id: string; name: string; type: string; options?: any }) => ({
                     id: value?.id,
                     name: value?.name,
                     type: value?.type,
+                    options: value?.options,
                   }),
                 ),
             },
