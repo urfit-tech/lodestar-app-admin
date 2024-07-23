@@ -31,6 +31,12 @@ export const StyledLine = styled.div`
   margin: 2px 0;
 `
 
+type SelectedLeadStatusCategory = {
+  id: string
+  categoryName: string
+  categoryId: string
+}
+
 const SalesLeadManagerSelectorStatus = () => {
   const { permissions } = useAuth()
   if (
@@ -51,6 +57,7 @@ const SalesLeadPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
+  const [selectedLeadStatusCategory, setSelectedLeadStatusCategory] = useState<SelectedLeadStatusCategory | null>(null)
 
   const manager =
     managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
@@ -72,7 +79,10 @@ const SalesLeadPage: React.VFC = () => {
             <MemberSelector
               members={managers}
               value={manager.id}
-              onChange={value => typeof value === 'string' && setManagerId(value)}
+              onChange={value => {
+                typeof value === 'string' && setManagerId(value)
+                setSelectedLeadStatusCategory(null)
+              }}
             />
           </StyledManagerBlock>
         ) : currentMember ? (
@@ -80,7 +90,15 @@ const SalesLeadPage: React.VFC = () => {
         ) : null}
       </div>
       {manager ? (
-        <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />
+        <SalesLeadTabs
+          activeKey={activeKey}
+          manager={manager}
+          onActiveKeyChanged={setActiveKey}
+          selectedLeadStatusCategory={selectedLeadStatusCategory}
+          onSelectedLeadStatusCategoryChange={selectedLeadStatusCategory =>
+            setSelectedLeadStatusCategory(selectedLeadStatusCategory)
+          }
+        />
       ) : (
         <Skeleton active />
       )}
@@ -91,16 +109,14 @@ const SalesLeadPage: React.VFC = () => {
 const SalesLeadTabs: React.VFC<{
   manager: Manager
   activeKey: string
+  selectedLeadStatusCategory: SelectedLeadStatusCategory | null
   onActiveKeyChanged: (activeKey: string) => void
-}> = ({ activeKey, manager, onActiveKeyChanged }) => {
+  onSelectedLeadStatusCategoryChange: (selectedLeadStatusCategory: SelectedLeadStatusCategory | null) => void
+}> = ({ activeKey, manager, onActiveKeyChanged, selectedLeadStatusCategory, onSelectedLeadStatusCategoryChange }) => {
   const [refetchLoading, setRefetchLoading] = useState(true)
   const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
   const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
-  const [selectedLeadStatusCategory, setSelectedLeadStatusCategory] = useState<{
-    id: string
-    categoryName: string
-    categoryId: string
-  } | null>(null)
+
   const { formatMessage } = useIntl()
   const {
     refetch,
@@ -161,6 +177,7 @@ const SalesLeadTabs: React.VFC<{
         tabBarExtraContent={
           <Button
             onClick={async () => {
+              await await refetchLeadStatusCategory()
               await refetchMembers?.()
               await refetch?.()
             }}
@@ -177,7 +194,7 @@ const SalesLeadTabs: React.VFC<{
                 <Menu>
                   <Menu.Item
                     onClick={() => {
-                      setSelectedLeadStatusCategory(null)
+                      onSelectedLeadStatusCategoryChange(null)
                       setSelectedRowKeys([])
                     }}
                   >
@@ -189,7 +206,7 @@ const SalesLeadTabs: React.VFC<{
                     <Menu.Item
                       key={leadStatusCategory.id}
                       onClick={() => {
-                        setSelectedLeadStatusCategory({
+                        onSelectedLeadStatusCategoryChange({
                           id: leadStatusCategory.id,
                           categoryName: leadStatusCategory.categoryName,
                           categoryId: leadStatusCategory.categoryId,
@@ -593,7 +610,7 @@ const SalesLeadTabs: React.VFC<{
               await refetchLeadStatusCategory()
               await refetchMembers?.()
               await refetch?.()
-              setSelectedLeadStatusCategory(null)
+              onSelectedLeadStatusCategoryChange(null)
             },
             err => {
               console.log(err)
@@ -618,7 +635,7 @@ const SalesLeadTabs: React.VFC<{
                   await refetchLeadStatusCategory()
                   await refetchMembers?.()
                   await refetch?.()
-                  setSelectedLeadStatusCategory(null)
+                  onSelectedLeadStatusCategoryChange(null)
                 },
                 err => {
                   console.log(err)

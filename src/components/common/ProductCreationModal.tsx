@@ -10,7 +10,6 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import { useGetProgramLayoutTemplates } from '../../hooks/data'
 import { ClassType } from '../../types/general'
-import { ProgramLayoutTemplate } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
@@ -54,7 +53,7 @@ const ProductCreationModal: React.FC<
       isSubscription?: boolean
       isPhysical?: boolean
       isCustomized?: boolean
-      programLayoutTemplateData?: ProgramLayoutTemplate
+      programLayoutTemplateId?: string | null
     }) => Promise<any>
     allowedPermissions?: string[]
     creatorAppellation?: string
@@ -80,7 +79,7 @@ const ProductCreationModal: React.FC<
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
-  const { programLayoutTemplates, defaultFixedTemplate } = useGetProgramLayoutTemplates()
+  const { programLayoutTemplates } = useGetProgramLayoutTemplates()
 
   const handleSubmit = () => {
     form
@@ -98,9 +97,7 @@ const ProductCreationModal: React.FC<
           isSubscription: withProgramType ? values.isSubscription : undefined,
           isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
-          programLayoutTemplateData: values.programLayoutTemplateId
-            ? programLayoutTemplates.filter(template => template.id === values.programLayoutTemplateId)[0]
-            : defaultFixedTemplate,
+          programLayoutTemplateId: values.programLayoutTemplateId ?? null,
         }).finally(() => setLoading(false))
       })
       .catch(handleError)
@@ -203,10 +200,7 @@ const ProductCreationModal: React.FC<
         )}
         {withProgramLayoutTemplateType && (
           <Form.Item label={formatMessage(commonMessages.label.selectTemplate)} name="programLayoutTemplateId">
-            <ProgramLayoutTemplateSelect
-              programLayoutTemplates={programLayoutTemplates}
-              defaultTemplate={defaultFixedTemplate}
-            />
+            <ProgramLayoutTemplateSelect programLayoutTemplates={programLayoutTemplates} />
           </Form.Item>
         )}
       </Form>

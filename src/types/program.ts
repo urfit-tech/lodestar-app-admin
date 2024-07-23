@@ -60,7 +60,7 @@ export type ProgramAdminProps = ProgramProps & {
   categories: Category[]
   tags: string[]
   approvals: ProgramApprovalProps[]
-  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig
+  programLayoutTemplateConfig?: ProgramLayoutTemplateConfig | null
 }
 
 export type ProgramContentSectionProps = {
@@ -119,6 +119,7 @@ export type ProgramContentProps = {
   ebook: {
     id: string
     data: any
+    trialPercentage: number
   } | null
   programContentBodyData: any
   displayMode: DisplayMode
@@ -161,6 +162,11 @@ export type ProgramPlan = {
   groupBuyingPeople?: number | null
   isParticipantsVisible: boolean
   cardId?: string
+  listPricePrefix: string | null
+  listPriceSuffix: string | null
+  salePricePrefix: string | null
+  salePriceSuffix: string | null
+  priceDescription: string | null
 }
 
 export type ProgramRoleProps = {
@@ -240,66 +246,42 @@ export type Exam = {
 
 export type Media = 'video' | 'image'
 
-export enum LayoutTemplateModuleType {
-  DATE = 'Date',
-  NUMBER = 'Number',
+type ControlType =
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'strike-through'
+  | 'strike-through'
+  | 'font-family'
+  | 'list-ul'
+  | 'list-ol'
+interface TextEditorOptionType {
+  controls: ControlType[]
 }
 
-export enum LayoutTemplateModuleName {
-  EXPECTED_START_DATE = 'expectedStartDate',
-  EXPECTED_DURATION = 'expectedDuration',
-  EXPECTED_SECTIONS = 'expectedSections',
-  COMPLETED_RELEASE = 'completeRelease',
-}
-
-interface BaseModuleProps<T> {
+type BaseField<T extends string, O = any> = {
   id: string
+  name: string
   type: T
+  options: O
 }
 
-interface ModuleNameTemplate<N, T> extends BaseModuleProps<T> {
-  name: N
-}
+type NumberField = BaseField<'Number'>
+type DateField = BaseField<'Date'>
+type TextField = BaseField<'Text'>
+type TextEditorField = BaseField<'TextEditor', TextEditorOptionType>
 
-interface ModuleDataTemplate<V, T> extends BaseModuleProps<T> {
-  value: V
-}
-
-export type ModuleNameProps = Array<
-  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_START_DATE, LayoutTemplateModuleType.DATE>
-  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_DURATION, LayoutTemplateModuleType.NUMBER>
-  | ModuleNameTemplate<LayoutTemplateModuleName.EXPECTED_SECTIONS, LayoutTemplateModuleType.NUMBER>
-  | ModuleNameTemplate<LayoutTemplateModuleName.COMPLETED_RELEASE, LayoutTemplateModuleType.DATE>
->
-
-export interface ModuleDataProps {
-  [LayoutTemplateModuleName.EXPECTED_START_DATE]?: ModuleDataTemplate<Date, LayoutTemplateModuleType.DATE>
-  [LayoutTemplateModuleName.EXPECTED_DURATION]?: ModuleDataTemplate<Number, LayoutTemplateModuleType.NUMBER>
-  [LayoutTemplateModuleName.EXPECTED_SECTIONS]?: ModuleDataTemplate<Number, LayoutTemplateModuleType.NUMBER>
-  [LayoutTemplateModuleName.COMPLETED_RELEASE]?: ModuleDataTemplate<Date, LayoutTemplateModuleType.DATE>
-}
+type customAttributeFields = NumberField | DateField | TextField | TextEditorField
 
 export type ProgramLayoutTemplate = {
   id: string
-  name: string
-  moduleData?: ModuleDataProps | null
-  // ProgramLayoutTemplate?: object
+  customAttributes: customAttributeFields[]
 }
 
 export type ProgramLayoutTemplateConfig = {
   id: string
   programId: string
   programLayoutTemplateId: string
-  moduleData: ModuleDataProps
-  isActive: boolean
-  ProgramLayoutTemplate?: ProgramLayoutTemplate
+  moduleData: Record<string, any>
+  ProgramLayoutTemplate?: ProgramLayoutTemplate | null
 }
-
-export type ExtractModuleDataValue<T> = T extends infer V ? V : never
-
-export type ExtractModuleDataValueType<T> = T extends { value: infer V } ? V : never
-
-export type ModuleDataType = {
-  [K in keyof ModuleDataProps]?: ExtractModuleDataValueType<ModuleDataProps[K]>
-}
-

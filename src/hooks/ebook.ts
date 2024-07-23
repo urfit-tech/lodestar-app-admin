@@ -11,10 +11,22 @@ export const useMutateProgramContentEbook = () => {
         insert_program_content_ebook_one(object: $programContentEbook) {
           program_content_id
           data
+          trial_percentage
         }
       }
     `,
   )
+
+  const [updateProgramContentEbook] = useMutation(gql`
+    mutation UpdateProgramContentEBook($programContentId: uuid!, $trialPercentage: Int) {
+      update_program_content_ebook(
+        where: { program_content_id: { _eq: $programContentId } }
+        _set: { trial_percentage: $trialPercentage }
+      ) {
+        affected_rows
+      }
+    }
+  `)
 
   const [deleteProgramContentEbook] = useMutation<
     hasura.DeleteProgramContentEbook,
@@ -53,6 +65,7 @@ export const useMutateProgramContentEbook = () => {
 
   return {
     insertProgramContentEbook,
+    updateProgramContentEbook,
     deleteProgramContentEbook,
     deleteProgramContentEbookToc,
     deleteProgramContentEbookTocProgress,

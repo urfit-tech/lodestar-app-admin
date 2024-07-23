@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Form, InputNumber, Skeleton, Tag } from 'antd'
-import { gql } from '@apollo/client'
 import { flatten, sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -8,7 +7,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { QuestionLibrary } from '../../types/program'
 import TreeTransfer from '../common/TreeTransfer'
-import { QuestionExam } from './ExerciseAdminModal'
+import { QuestionExam } from './ExerciseAdminModalBlock'
 import programMessages from './translation'
 
 const StyledLabel = styled.div`

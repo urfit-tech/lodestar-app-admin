@@ -97,6 +97,7 @@ export const useProgram = (programId: string) => {
               program_content_ebook {
                 id
                 data
+                trial_percentage
               }
             }
           }
@@ -130,6 +131,11 @@ export const useProgram = (programId: string) => {
             group_buying_people
             is_participants_visible
             card_id
+            list_price_prefix
+            list_price_suffix
+            sale_price_prefix
+            sale_price_suffix
+            price_description
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -151,12 +157,11 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_configs(where: { program_id: { _eq: $programId }, is_active: { _eq: true } }) {
+          program_layout_template_config {
             id
             program_id
             program_layout_template_id
             module_data
-            is_active
             program_layout_template {
               id
               name
@@ -166,7 +171,7 @@ export const useProgram = (programId: string) => {
         }
       }
     `,
-    { variables: { programId }, fetchPolicy: 'no-cache' },
+    { variables: { programId }, fetchPolicy: 'network-only' },
   )
 
   const program: ProgramAdminProps | null = useMemo(() => {
@@ -236,7 +241,11 @@ export const useProgram = (programId: string) => {
             data: pca.data,
           })),
           ebook: pc.program_content_ebook
-            ? { id: pc.program_content_ebook.id, data: pc.program_content_ebook.data }
+            ? {
+                id: pc.program_content_ebook.id,
+                data: pc.program_content_ebook.data,
+                trialPercentage: pc.program_content_ebook.trial_percentage,
+              }
             : null,
         })),
         collapsed_status: pcs.collapsed_status || false,
@@ -271,6 +280,11 @@ export const useProgram = (programId: string) => {
         groupBuyingPeople: programPlan.group_buying_people,
         isParticipantsVisible: programPlan.is_participants_visible,
         cardId: programPlan.card_id,
+        listPricePrefix: programPlan.list_price_prefix || null,
+        listPriceSuffix: programPlan.list_price_suffix || null,
+        salePricePrefix: programPlan.sale_price_prefix || null,
+        salePriceSuffix: programPlan.sale_price_suffix || null,
+        priceDescription: programPlan.price_description || null,
       })),
       categories: data.program_by_pk.program_categories.map(programCategory => ({
         id: programCategory.category.id,
@@ -285,15 +299,26 @@ export const useProgram = (programId: string) => {
         description: programApproval.description || '',
         feedback: programApproval.feedback || '',
       })),
-      programLayoutTemplateConfig:
-        data?.program_by_pk.program_layout_template_configs.map(config => ({
-          id: config.id,
-          programId: config.program_id,
-          programLayoutTemplateId: config.program_layout_template_id,
-          moduleData: config.module_data,
-          isActive: config.is_active,
-          ProgramLayoutTemplate: config.program_layout_template,
-        }))[0] || [],
+      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id
+        ? {
+            id: data?.program_by_pk?.program_layout_template_config?.id,
+            programId: data?.program_by_pk?.program_layout_template_config?.program_id,
+            programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
+            moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
+            ProgramLayoutTemplate: {
+              id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
+              customAttributes:
+                data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map(
+                  (value: { id: string; name: string; type: string; options?: any }) => ({
+                    id: value?.id,
+                    name: value?.name,
+                    type: value?.type,
+                    options: value?.options,
+                  }),
+                ),
+            },
+          }
+        : null,
     }
   }, [data, error, loading])
   return {
@@ -716,13 +741,31 @@ export const useMutateProgramContent = () => {
   >(
     gql`
       mutation DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM($programContentId: uuid!, $examId: uuid!) {
-        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+        delete_program_content_plan(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_audio(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
+        delete_program_content_log(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          affected_rows
+        }
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
         delete_exam(where: { id: { _eq: $examId } }) {

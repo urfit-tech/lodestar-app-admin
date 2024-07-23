@@ -14,16 +14,12 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { Button } from 'antd'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useTransferManagers } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { LeadProps } from '../../types/sales'
 import saleMessages from './translation'
-
-const matchedMembers: LeadProps[] = []
-const nonMatchingMembers: LeadProps[] = []
 
 const TransferModal: React.FC<{
   selectedRowLeads: LeadProps[]
@@ -32,7 +28,6 @@ const TransferModal: React.FC<{
   onRefetch: () => Promise<void>
   onTransferFinish: () => void
 }> = ({ selectedRowLeads, listStatus, onRefetch, onTransferFinish, selectedLeadStatusCategoryId }) => {
-  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [searchValue, setSearchValue] = useState('')
@@ -46,24 +41,7 @@ const TransferModal: React.FC<{
   const handleTransfer = async (managerId: string) => {
     if (managerId === '') return
 
-    for (const member of selectedRowLeads) {
-      if (member.appId === appId) {
-        matchedMembers.push(member)
-      } else {
-        nonMatchingMembers.push(member)
-      }
-    }
-
-    if (nonMatchingMembers.length !== 0) {
-      const alertMes = nonMatchingMembers
-        .map(info => `id: ${info.id}\napp_id: ${info.appId}\nname: ${info.name}\n\n`)
-        .join('')
-      alert(`移轉名單有誤: \n${alertMes}`)
-
-      return
-    }
-
-    if (matchedMembers.length > 0) {
+    if (selectedRowLeads.length > 0) {
       try {
         let leadStatusCategoryId = selectedLeadStatusCategoryId ? leadStatusCategories[0]?.id : null
 
@@ -80,7 +58,7 @@ const TransferModal: React.FC<{
 
         const { data } = await transferLeads({
           variables: {
-            memberIds: matchedMembers.map(member => member.id),
+            memberIds: selectedRowLeads.map(member => member.id),
             leadStatusCategoryId,
             managerId,
           },
