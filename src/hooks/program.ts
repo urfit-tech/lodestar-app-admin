@@ -131,6 +131,11 @@ export const useProgram = (programId: string) => {
             group_buying_people
             is_participants_visible
             card_id
+            list_price_prefix
+            list_price_suffix
+            sale_price_prefix
+            sale_price_suffix
+            price_description
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -152,7 +157,7 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_config{
+          program_layout_template_config {
             id
             program_id
             program_layout_template_id
@@ -275,6 +280,11 @@ export const useProgram = (programId: string) => {
         groupBuyingPeople: programPlan.group_buying_people,
         isParticipantsVisible: programPlan.is_participants_visible,
         cardId: programPlan.card_id,
+        listPricePrefix: programPlan.list_price_prefix || null,
+        listPriceSuffix: programPlan.list_price_suffix || null,
+        salePricePrefix: programPlan.sale_price_prefix || null,
+        salePriceSuffix: programPlan.sale_price_suffix || null,
+        priceDescription: programPlan.price_description || null,
       })),
       categories: data.program_by_pk.program_categories.map(programCategory => ({
         id: programCategory.category.id,
@@ -289,20 +299,25 @@ export const useProgram = (programId: string) => {
         description: programApproval.description || '',
         feedback: programApproval.feedback || '',
       })),
-      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id ? {
-        id: data?.program_by_pk?.program_layout_template_config?.id,
-        programId: data?.program_by_pk?.program_layout_template_config?.program_id,
-        programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
-        moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
-        ProgramLayoutTemplate: {
-          id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
-          customAttributes: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map((value: {id:string, name: string, type: string}) => ({
-            id: value?.id,
-            name: value?.name,
-            type: value?.type
-          }))
-        }
-      } : null
+      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id
+        ? {
+            id: data?.program_by_pk?.program_layout_template_config?.id,
+            programId: data?.program_by_pk?.program_layout_template_config?.program_id,
+            programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
+            moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
+            ProgramLayoutTemplate: {
+              id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
+              customAttributes:
+                data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map(
+                  (value: { id: string; name: string; type: string }) => ({
+                    id: value?.id,
+                    name: value?.name,
+                    type: value?.type,
+                  }),
+                ),
+            },
+          }
+        : null,
     }
   }, [data, error, loading])
   return {
