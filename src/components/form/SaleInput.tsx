@@ -1,15 +1,12 @@
 import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Checkbox, DatePicker, Form } from 'antd'
+import { Checkbox, DatePicker, Form, Input } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
 import CurrencyInput from './CurrencyInput'
-
-const messages = defineMessages({
-  label: { id: 'common.label.timerVisible', defaultMessage: '顯示倒數計時器' },
-})
+import formMessages from './translation'
 
 const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
@@ -19,6 +16,8 @@ export type SaleProps = {
   price: number
   soldAt: Date | null
   isTimerVisible?: boolean
+  salePricePrefix?: string
+  salePriceSuffix?: string
 } | null
 
 const SaleInput: React.FC<{
@@ -29,16 +28,22 @@ const SaleInput: React.FC<{
   withTimer?: boolean
 }> = ({ value, onChange, currencyId, noPrice, withTimer }) => {
   const { formatMessage } = useIntl()
-  const [active, setActive] = useState(!!value?.soldAt)
+  const { settings } = useApp()
+  const [salePriceActive, setSalePriceActive] = useState(!!value?.soldAt)
+  const [salePriceCircumfixActive, setSalePriceCircumfixActive] = useState(
+    salePriceActive &&
+      (Boolean(value?.salePricePrefix && value?.salePricePrefix !== '') ||
+        Boolean(value?.salePriceSuffix && value.salePriceSuffix !== '')),
+  )
   const [isTimerVisible, setIsTimerVisible] = useState(!!value?.isTimerVisible)
 
   return (
     <div>
       <Checkbox
-        checked={active}
+        checked={salePriceActive}
         className="mb-2"
         onChange={e => {
-          setActive(e.target.checked)
+          setSalePriceActive(e.target.checked)
           onChange?.(
             e.target.checked
               ? {
@@ -50,10 +55,10 @@ const SaleInput: React.FC<{
           )
         }}
       >
-        {formatMessage(commonMessages.label.salePrice)}
+        {formatMessage(formMessages.SaleInput.salePrice)}
       </Checkbox>
 
-      <div className={active ? 'pl-3' : 'd-none'}>
+      <div className={salePriceActive ? 'pl-3' : 'd-none'}>
         {!noPrice && (
           <Form.Item className="d-inline-block mb-0 mr-3">
             <CurrencyInput
@@ -75,7 +80,7 @@ const SaleInput: React.FC<{
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
             showToday={false}
-            placeholder={formatMessage(commonMessages.label.salePriceEndTime)}
+            placeholder={formatMessage(formMessages.SaleInput.salePriceEndTime)}
             value={value?.soldAt ? moment(value.soldAt) : null}
             onChange={date =>
               onChange &&
@@ -90,7 +95,7 @@ const SaleInput: React.FC<{
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
           <Form.Item className="d-inline-block mb-0">
             <StyledIcon className="mr-1" />
-            <span>{formatMessage(commonMessages.status.outdated)}</span>
+            <span>{formatMessage(formMessages.SaleInput.outdated)}</span>
           </Form.Item>
         ) : null}
         {withTimer && (
@@ -106,10 +111,53 @@ const SaleInput: React.FC<{
                 })
               }}
             >
-              {formatMessage(messages.label)}
+              {formatMessage(formMessages.SaleInput.countdownTimerVisible)}
             </Checkbox>
           </Form.Item>
         )}
+        {settings['program.layout_template_circumfix.enabled'] ? (
+          <div>
+            <Checkbox
+              checked={salePriceCircumfixActive}
+              className="mb-2"
+              onChange={e => {
+                setSalePriceCircumfixActive(e.target.checked)
+              }}
+            >
+              {formatMessage(formMessages.SaleInput.salePriceCircumfix)}
+            </Checkbox>
+            {salePriceCircumfixActive ? (
+              <>
+                <Form.Item label={formatMessage(formMessages.SaleInput.salePricePrefix)}>
+                  <Input
+                    value={value?.salePricePrefix}
+                    onChange={v =>
+                      onChange?.({
+                        ...value,
+                        price: value?.price || 0,
+                        soldAt: value?.soldAt || null,
+                        salePricePrefix: v.target.value,
+                      })
+                    }
+                  />
+                </Form.Item>
+                <Form.Item label={formatMessage(formMessages.SaleInput.salePriceSuffix)}>
+                  <Input
+                    value={value?.salePriceSuffix}
+                    onChange={v =>
+                      onChange?.({
+                        ...value,
+                        price: value?.price || 0,
+                        soldAt: value?.soldAt || null,
+                        salePriceSuffix: v.target.value,
+                      })
+                    }
+                  />
+                </Form.Item>
+              </>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   )

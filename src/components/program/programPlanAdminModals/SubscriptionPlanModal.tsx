@@ -20,11 +20,13 @@ import {
   CurrencyItem,
   DiscountDownPriceItem,
   GiftItem,
+  ListPriceCircumfixItem,
   ListPriceItem,
   ParticipantsItem,
   PeriodItem,
   PermissionItem,
   PlanDescriptionItem,
+  PriceDescriptionItem,
   ProductLevelItem,
   ProgramExpirationNoticeItem,
   PublishItem,
@@ -59,7 +61,7 @@ const SubscriptionPlanModal: React.FC<
 }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<SubscriptionFieldProps>()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { upsertProgramPlan } = useUpsertProgramPlan()
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
   const { updateProductLevel } = useMutateProductLevel()
@@ -99,6 +101,11 @@ const SubscriptionPlanModal: React.FC<
           publishedAt: values.isPublished ? new Date() : null,
           isCountdownTimerVisible: !!values.sale?.isTimerVisible,
           isParticipantsVisible: values.isParticipantsVisible,
+          listPricePrefix: values.listPriceCircumfix?.listPricePrefix,
+          listPriceSuffix: values.listPriceCircumfix?.listPriceSuffix,
+          salePricePrefix: values.sale?.salePricePrefix || '',
+          salePriceSuffix: values.sale?.salePriceSuffix || '',
+          priceDescription: values?.priceDescription ? values.priceDescription.toHTML() : null,
         },
       })
       const programPlanId = upsertProgramPlanData?.insert_program_plan?.returning?.[0].id
@@ -130,14 +137,16 @@ const SubscriptionPlanModal: React.FC<
           },
         })
       }
-      setLoading(false)
+
       message.success(formatMessage(commonMessages.event.successfullySaved))
       onSuccess()
       onProductGiftPlanRefetch?.()
-      onRefetch?.()
       form.resetFields()
+      onRefetch?.()
     } catch (err) {
       console.log(err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -196,11 +205,17 @@ const SubscriptionPlanModal: React.FC<
           isParticipantsVisible: !!programPlan?.isParticipantsVisible,
           currencyId: programPlan?.currencyId,
           listPrice: programPlan?.listPrice || 0,
+          listPriceCircumfix: {
+            listPricePrefix: programPlan?.listPricePrefix || null,
+            listPriceSuffix: programPlan?.listPriceSuffix || null,
+          },
           sale: programPlan?.soldAt
             ? {
                 price: programPlan.salePrice,
                 soldAt: programPlan.soldAt,
                 isTimerVisible: !!programPlan?.isCountdownTimerVisible,
+                salePricePrefix: programPlan?.salePricePrefix || '',
+                salePriceSuffix: programPlan?.salePriceSuffix || '',
               }
             : null,
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
@@ -213,6 +228,7 @@ const SubscriptionPlanModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : null,
           giftPlanEndedAt: productGiftPlan?.endedAt ? moment(productGiftPlan.endedAt) : null,
+          priceDescription: BraftEditor.createEditorState(programPlan?.priceDescription),
         }}
       >
         <TitleItem name="title" />
@@ -228,7 +244,10 @@ const SubscriptionPlanModal: React.FC<
         />
         <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
-        <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
+        <ListPriceItem name="listPrice" />
+        {settings['program.layout_template_circumfix.enabled'] ? (
+          <ListPriceCircumfixItem name="listPriceCircumfix" />
+        ) : null}
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />
         <DiscountDownPriceItem
           name="discountDownPrice"
@@ -236,6 +255,9 @@ const SubscriptionPlanModal: React.FC<
           ProgramPlanCurrencyId={currencyId}
           onChange={e => setWithDiscountDownPrice(e.target.checked)}
         />
+        {settings['program.layout_template_price_description.enabled'] ? (
+          <PriceDescriptionItem name="priceDescription" />
+        ) : null}
         <PlanDescriptionItem name="description" />
       </Form>
     </AdminModal>

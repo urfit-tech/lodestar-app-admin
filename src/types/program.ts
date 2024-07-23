@@ -184,6 +184,11 @@ export type ProgramPlan = {
   groupBuyingPeople?: number | null
   isParticipantsVisible: boolean
   cardId?: string
+  listPricePrefix: string | null
+  listPriceSuffix: string | null
+  salePricePrefix: string | null
+  salePriceSuffix: string | null
+  priceDescription: string | null
 }
 
 export type ProgramRoleProps = {

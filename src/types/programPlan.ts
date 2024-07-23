@@ -2,6 +2,7 @@ import { EditorState } from 'braft-editor'
 import { Moment } from 'moment'
 import { AdminModalProps } from '../components/admin/AdminModal'
 import { SaleProps } from '../components/form/SaleInput'
+import { ListPriceCircumfix } from '../components/program/programPlanAdminModals/formItem/ListPriceCircumfixItem'
 import { PeriodType } from './general'
 import { ProductGiftPlan } from './giftPlan'
 import { ProgramPlan } from './program'
@@ -18,7 +19,7 @@ export type MembershipPlanModalFieldProps = {
   cardId: string
 }
 
-export type PerpetualFieldProps = {
+export type PerpetualField = {
   title: string
   isPublished: boolean
   isParticipantsVisible: boolean
@@ -35,6 +36,8 @@ export type PerpetualFieldProps = {
   giftPlanStartedAt?: Moment | null
   giftPlanEndedAt?: Moment | null
   productLevel?: number
+  listPriceCircumfix?: ListPriceCircumfix
+  priceDescription?: EditorState | null
 }
 
 export type PeriodFieldProps = {
@@ -55,6 +58,8 @@ export type PeriodFieldProps = {
   giftPlanStartedAt?: Moment | null
   giftPlanEndedAt?: Moment | null
   productLevel?: number
+  listPriceCircumfix?: ListPriceCircumfix
+  priceDescription?: EditorState | null
 }
 
 export type SubscriptionFieldProps = {
@@ -76,6 +81,8 @@ export type SubscriptionFieldProps = {
   giftPlanStartedAt?: Moment | null
   giftPlanEndedAt?: Moment | null
   productLevel?: number
+  listPriceCircumfix?: ListPriceCircumfix
+  priceDescription?: EditorState | null
 }
 
 export type MembershipPlanModalProps = Omit<AdminModalProps, 'renderTrigger'> & {
