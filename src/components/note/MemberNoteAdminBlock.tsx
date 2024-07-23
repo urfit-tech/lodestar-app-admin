@@ -49,7 +49,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
-  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
+  const { loadingNotes, hasMoreNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
     { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
     searchText,
@@ -59,7 +59,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
 
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
+  if ((loadingNotes && notes.length === 0) || !currentMemberId || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
@@ -139,7 +139,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           ))
         )}
 
-        {loadMoreNotes && (
+        {hasMoreNotes && (
           <Button
             onClick={() => {
               setLoading(true)

@@ -228,7 +228,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GetAppointmentPlanCollection
     data?.appointment_plan.map(appointmentPlan => ({
       id: appointmentPlan.id,
       creator: {
-        id: appointmentPlan.creator_id,
+        id: appointmentPlan.creator_id || '',
         avatarUrl: appointmentPlan.creator?.picture_url || null,
         name: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
         abstract: appointmentPlan.creator?.abstract || null,

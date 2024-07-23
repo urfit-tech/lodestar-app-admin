@@ -127,7 +127,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
             : null,
           supportLocales: data?.appointment_plan_by_pk.support_locales || [],
           currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
-          creatorId: data?.appointment_plan_by_pk.creator_id,
+          creatorId: data?.appointment_plan_by_pk.creator_id || '',
           isPrivate: data?.appointment_plan_by_pk.is_private,
         }
       : null
