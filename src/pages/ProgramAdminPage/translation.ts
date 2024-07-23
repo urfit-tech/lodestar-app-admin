@@ -254,6 +254,36 @@ const ProgramAdminPageMessages = {
       defaultMessage: '內容排序',
     },
   }),
+  ProgramAdditionalSettingsForm: defineMessages({
+    expectedSections: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections',
+      defaultMessage: 'Expected sections',
+    },
+    completeRelease: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.completeRelease',
+      defaultMessage: 'Complete release',
+    },
+    expectedStartDate: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate',
+      defaultMessage: 'Expected start date',
+    },
+    expectedDuration: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration',
+      defaultMessage: 'Expected duration(min)',
+    },
+    bookSubTitle: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.bookSubTitle',
+      defaultMessage: 'Book Sub Title',
+    },
+    bookInformation: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.bookInformation',
+      defaultMessage: 'Book Information',
+    },
+    contentInformation: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.contentInformation',
+      defaultMessage: 'Content Information',
+    },
+  }),
 }
 
 export default ProgramAdminPageMessages
