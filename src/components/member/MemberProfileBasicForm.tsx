@@ -330,8 +330,16 @@ const CountryCodeSelect: React.FC<{
   const { phones, countryCodes } = splitPhoneData(value, ',')
   const allCountryCodeData: CountryCodeData[] = getAllCountryCodeData()
 
+  const StyledSelect = styled.div`
+    .ant-select-selection-search,
+    .ant-select-selection-search-input,
+    .ant-select-selection-item {
+      color: #4a4a4a !important;
+    }
+  `
+
   return (
-    <>
+    <StyledSelect>
       <Select
         showSearch
         style={{ minWidth: '120px' }}
@@ -340,8 +348,9 @@ const CountryCodeSelect: React.FC<{
         onChange={e => {
           const newValue = [...value]
           newValue.splice(index, 1, `${e},${phones[index]}`)
-          onChange && onChange(newValue)
+          onChange?.(newValue)
         }}
+        filterOption={(input, option) => option?.children.toLowerCase().includes(input.toLowerCase())}
       >
         {allCountryCodeData?.map(data => (
           <Select.Option
@@ -350,7 +359,7 @@ const CountryCodeSelect: React.FC<{
           >{`${data.countryCode} (${data.countryCallingCode})`}</Select.Option>
         ))}
       </Select>
-    </>
+    </StyledSelect>
   )
 }
 
