@@ -116,7 +116,7 @@ const MemberProfileBasicForm: React.FC<{
                 country_code: countryCodes[index],
                 international_phone:
                   parsePhoneNumber(phone, countryCodes[index] as CountryCode)?.formatInternational() || null,
-                is_valid: Boolean(memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid),
+                is_valid: memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid,
               }))
             : phones.map((phone: string, index: number) => ({
                 member_id: memberAdmin.id,
@@ -128,7 +128,6 @@ const MemberProfileBasicForm: React.FC<{
                       countryCodes[index] as CountryCode,
                     )?.formatInternational() || null
                   : null,
-                is_valid: Boolean(memberAdmin.phones[index].isValid),
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
