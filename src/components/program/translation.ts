@@ -243,17 +243,17 @@ const programMessages = {
       defaultMessage: 'Program exercise',
     },
   }),
-  PriceDescriptionItem: {
+  PriceDescriptionItem: defineMessages({
     priceDescription: {
       id: 'program.PriceDescriptionItem.priceDescription',
       defaultMessage: 'Price description',
     },
-  },
-  ListPriceItem: {
+  }),
+  ListPriceItem: defineMessages({
     listPriceCircumfix: { id: 'program.ListPriceItem.listPriceCircumfix', defaultMessage: '定價前後綴詞' },
     listPricePrefix: { id: 'program.ListPriceItem.listPricePrefix', defaultMessage: '定價前綴詞' },
     listPriceSuffix: { id: 'program.ListPriceItem.listPriceSuffix', defaultMessage: '定價後綴詞' },
-  },
+  }),
 }
 
 export default programMessages
