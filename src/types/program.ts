@@ -1,3 +1,4 @@
+import { ControlType } from 'braft-editor'
 import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
 import { DisplayMode } from '../components/program/DisplayModeSelector'
 import { Attachment, Category, MetaTag } from './general'
@@ -245,16 +246,6 @@ export type Exam = {
 }
 
 export type Media = 'video' | 'image'
-
-type ControlType =
-  | 'bold'
-  | 'italic'
-  | 'underline'
-  | 'strike-through'
-  | 'strike-through'
-  | 'font-family'
-  | 'list-ul'
-  | 'list-ol'
 interface TextEditorOptionType {
   controls: ControlType[]
 }

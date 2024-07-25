@@ -1,6 +1,6 @@
 import { Form } from 'antd'
+import StyledBraftEditor from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useIntl } from 'react-intl'
-import AdminBraftEditor from '../../../form/AdminBraftEditor'
 import programMessages from '../../translation'
 
 interface PlanDescriptionProps {
@@ -14,7 +14,9 @@ const PriceDescriptionItem: React.FC<PlanDescriptionProps> = ({ label, name }) =
 
   return (
     <Form.Item label={_label} name={name}>
-      <AdminBraftEditor variant="short" />
+      <StyledBraftEditor
+        controls={['bold', 'italic', 'underline', 'strike-through', 'remove-styles', 'separator', 'media']}
+      />
     </Form.Item>
   )
 }
