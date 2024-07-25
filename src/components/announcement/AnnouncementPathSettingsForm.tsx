@@ -34,7 +34,7 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
     onSave({
       id: announcement.id,
       isUniversalDisplay: isChecked,
-      path: values.pathList,
+      path: isChecked ? [] : values.pathList,
     })
   }
 
@@ -45,7 +45,10 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
-      initialValues={{ isUniversalDisplay: isChecked, pathList: announcement.announcementPages.map(page => page.path) }}
+      initialValues={{
+        isUniversalDisplay: isChecked,
+        pathList: announcement.announcementPages.map(page => page.path),
+      }}
       onFinish={handleSubmit}
     >
       <Form.Item
@@ -56,16 +59,27 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
           checked={isChecked}
           onChange={e => {
             setIsChecked(e.target.checked)
+            if (e.target.checked) {
+              form.setFieldsValue({ pathList: [] })
+            }
           }}
         />
       </Form.Item>
 
-      <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
-        <PathInput />
-      </Form.Item>
+      {!isChecked && (
+        <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
+          <PathInput />
+        </Form.Item>
+      )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button className="mr-2" onClick={() => form.resetFields()}>
+        <Button
+          className="mr-2"
+          onClick={() => {
+            form.resetFields()
+            setIsChecked(announcement.isUniversalDisplay)
+          }}
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={saveLoading}>
