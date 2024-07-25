@@ -127,7 +127,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
             })
             getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
-                const memberIds = data?.member.map(m => m.id)
+                const memberIds = data?.member.map(m => m.id) || []
                 updateLeadManager({
                   variables: {
                     memberIds,
@@ -882,7 +882,7 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
 }
 
 const UpdateLeadManager = gql`
-  mutation UpdateLeadManager($memberIds: [String!], $updated: member_set_input) {
+  mutation UpdateLeadManager($memberIds: [String!]!, $updated: member_set_input) {
     update_member(where: { id: { _in: $memberIds } }, _set: $updated) {
       affected_rows
     }
