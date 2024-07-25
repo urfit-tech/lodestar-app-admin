@@ -260,10 +260,7 @@ const MemberContractCreationBlock: React.FC<{
       </StyledOrder>
 
       {memberContractUrl ? (
-        <>
-          <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
-          <Alert message="付款連結" description={memberContractUrl + '/deal'} type="success" showIcon />
-        </>
+        <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
       ) : (
         <Button size="large" block type="primary" onClick={handleMemberContractCreate}>
           產生合約
