@@ -152,7 +152,7 @@ export const useProgram = (programId: string) => {
             description
             feedback
           }
-          program_layout_template_config{
+          program_layout_template_config {
             id
             program_id
             program_layout_template_id
@@ -290,20 +290,26 @@ export const useProgram = (programId: string) => {
         description: programApproval.description || '',
         feedback: programApproval.feedback || '',
       })),
-      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id ? {
-        id: data?.program_by_pk?.program_layout_template_config?.id,
-        programId: data?.program_by_pk?.program_layout_template_config?.program_id,
-        programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
-        moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
-        ProgramLayoutTemplate: {
-          id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
-          customAttributes: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name.map((value: {id:string, name: string, type: string}) => ({
-            id: value?.id,
-            name: value?.name,
-            type: value?.type
-          }))
-        }
-      } : null
+      programLayoutTemplateConfig: data?.program_by_pk?.program_layout_template_config?.id
+        ? {
+            id: data?.program_by_pk?.program_layout_template_config?.id,
+            programId: data?.program_by_pk?.program_layout_template_config?.program_id,
+            programLayoutTemplateId: data?.program_by_pk?.program_layout_template_config?.program_layout_template_id,
+            moduleData: data?.program_by_pk?.program_layout_template_config?.module_data,
+            ProgramLayoutTemplate: {
+              id: data?.program_by_pk?.program_layout_template_config?.program_layout_template?.id,
+              customAttributes:
+                data?.program_by_pk?.program_layout_template_config?.program_layout_template?.module_name?.map(
+                  (value: { id: string; name: string; type: string; options?: any }) => ({
+                    id: value?.id,
+                    name: value?.name,
+                    type: value?.type,
+                    options: value?.options,
+                  }),
+                ) || [],
+            },
+          }
+        : null,
     }
   }, [data, error, loading])
   return {
