@@ -50,6 +50,14 @@ const announcementMessages = {
       id: 'announcement.AnnouncementModal.path',
       defaultMessage: 'Path',
     },
+    contains: {
+      id: 'announcement.AnnouncementModal.contains',
+      defaultMessage: 'contains'
+    },
+    exactMatch: {
+      id: 'announcement.AnnouncementModal.exactMatch',
+      defaultMessage: 'exactMatch'
+    }
   }),
 }
 

@@ -1,5 +1,5 @@
 import { AreaChartOutlined, FileAddOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Table } from 'antd'
+import { Button, Form, Input, Table, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
@@ -7,10 +7,10 @@ import { BraftContent } from 'lodestar-app-element/src/components/common/StyledB
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { AdminBlock, AdminPageTitle } from '../../components/admin'
+import { AdminPageTitle } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import announcementMessages from '../../components/announcement/translations'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -26,13 +26,37 @@ const StyledTitle = styled.span`
   font-weight: bold;
 `
 
-const AnnouncementCollectionPage: React.FC = () => {
+export const AdminPageBlock = styled.div`
+  overflow: auto;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+`
+
+type AnnouncementCounts = {
+  published: number
+  draft: number
+}
+
+type TabContent = {
+  key: keyof AnnouncementCounts
+  tab: string
+  condition: (announcement: Announcement) => boolean
+  permissionIsAllowed: boolean
+}
+
+const AnnouncementCollectionTabs: React.FC<{
+  announcements: Announcement[]
+  loading: boolean
+  permissions: {
+    ANNOUNCEMENT_ADMIN: boolean
+    ANNOUNCEMENT_VIEW: boolean
+  }
+  setAnnouncementId: (id: string) => void
+  setVisible: (visible: boolean) => void
+}> = ({ announcements, loading, permissions, setAnnouncementId, setVisible }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
-  const { permissions } = useAuth()
-  const { announcements, loading, error } = useAnnouncements()
-  const [announcementId, setAnnouncementId] = useState<string | null>(null)
-  const [visible, setVisible] = useState(false)
 
   const onCellClick = (announcement: Announcement) => {
     return {
@@ -51,8 +75,8 @@ const AnnouncementCollectionPage: React.FC = () => {
     {
       dataIndex: 'title',
       width: '30%',
-      title: `${formatMessage(pageMessages.AnnouncementCollectionPage.title)}`,
-      render: (text, record, index) => (
+      title: formatMessage(pageMessages.AnnouncementCollectionPage.title),
+      render: (_, record) => (
         <div>
           <StyledTitle className="mr-2">{record.title}</StyledTitle>
         </div>
@@ -62,8 +86,8 @@ const AnnouncementCollectionPage: React.FC = () => {
     {
       dataIndex: 'created_at',
       width: '40%',
-      title: `${formatMessage(pageMessages.AnnouncementCollectionPage.periodOfAnnouncement)}`,
-      render: (text, record, index) => (
+      title: formatMessage(pageMessages.AnnouncementCollectionPage.periodOfAnnouncement),
+      render: (_, record) => (
         <div>
           <StyledTitle className="mr-2">
             {record.startedAt
@@ -81,8 +105,8 @@ const AnnouncementCollectionPage: React.FC = () => {
     {
       dataIndex: 'created_at',
       width: '30%',
-      title: `${formatMessage(pageMessages.AnnouncementCollectionPage.createdTime)}`,
-      render: (text, record, index) => (
+      title: formatMessage(pageMessages.AnnouncementCollectionPage.createdTime),
+      render: (_, record) => (
         <div>
           <StyledTitle className="mr-2">{dayjs(record.createdAt).format('YYYY-MM-DD')}</StyledTitle>
         </div>
@@ -91,39 +115,95 @@ const AnnouncementCollectionPage: React.FC = () => {
     },
   ]
 
-  if (!enabledModules.announcement && !permissions.ANNOUNCEMENT_ADMIN && !permissions.ANNOUNCEMENT_VIEW)
+  const counts = useMemo<AnnouncementCounts>(() => {
+    if (!announcements) return { published: 0, draft: 0 }
+    return {
+      published: announcements.filter(a => a.publishedAt).length,
+      draft: announcements.filter(a => !a.publishedAt).length,
+    }
+  }, [announcements])
+
+  const tabContents: TabContent[] = [
+    {
+      key: 'published',
+      tab: formatMessage(pageMessages.AnnouncementCollectionPage.publishedTab),
+      condition: (announcement: Announcement) => !!announcement.publishedAt,
+      permissionIsAllowed: permissions.ANNOUNCEMENT_ADMIN || permissions.ANNOUNCEMENT_VIEW,
+    },
+    {
+      key: 'draft',
+      tab: formatMessage(pageMessages.AnnouncementCollectionPage.draftTab),
+      condition: (announcement: Announcement) => !announcement.publishedAt,
+      permissionIsAllowed: permissions.ANNOUNCEMENT_ADMIN,
+    },
+  ]
+
+  return (
+    <Tabs defaultActiveKey="published">
+      {tabContents
+        .filter(v => v.permissionIsAllowed)
+        .map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${counts[tabContent.key]})`}>
+            <AdminPageBlock>
+              <Table
+                columns={columns}
+                dataSource={announcements.filter(tabContent.condition)}
+                rowKey="id"
+                loading={loading}
+                showSorterTooltip={false}
+                rowClassName="cursor-pointer"
+                pagination={false}
+              />
+            </AdminPageBlock>
+          </Tabs.TabPane>
+        ))}
+    </Tabs>
+  )
+}
+
+const AnnouncementCollectionPage: React.FC = () => {
+  const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
+  const { permissions } = useAuth()
+  const { announcements, loading } = useAnnouncements()
+  const [announcementId, setAnnouncementId] = useState<string | null>(null)
+  const [visible, setVisible] = useState(false)
+
+  if (!enabledModules.announcement && !permissions.ANNOUNCEMENT_ADMIN && !permissions.ANNOUNCEMENT_VIEW) {
     return <ForbiddenPage />
+  }
 
   const previewAnnouncement = announcements.find(announcement => announcement.id === announcementId)
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <AreaChartOutlined className="mr-3" />
         <span>{formatMessage(pageMessages.AnnouncementCollectionPage.pageTitle)}</span>
       </AdminPageTitle>
-      {permissions.ANNOUNCEMENT_ADMIN ? (
+      {permissions.ANNOUNCEMENT_ADMIN && (
         <div className="d-flex align-item-center justify-content-between mb-4">
           <AddNewAnnouncementModal />
         </div>
-      ) : null}
-      <AdminBlock>
-        <Table
-          columns={columns}
-          dataSource={announcements}
-          rowKey="id"
-          loading={loading}
-          showSorterTooltip={false}
-          rowClassName="cursor-pointer"
-          pagination={false}
+      )}
+      <AnnouncementCollectionTabs
+        announcements={announcements}
+        loading={loading}
+        permissions={{
+          ANNOUNCEMENT_ADMIN: permissions.ANNOUNCEMENT_ADMIN ?? false,
+          ANNOUNCEMENT_VIEW: permissions.ANNOUNCEMENT_VIEW ?? false,
+        }}
+        setAnnouncementId={setAnnouncementId}
+        setVisible={setVisible}
+      />
+
+      {previewAnnouncement && (
+        <AnnouncementPreviewModal
+          announcement={previewAnnouncement}
+          visible={visible}
+          onClose={() => setVisible(false)}
         />
-        {previewAnnouncement && (
-          <AnnouncementPreviewModal
-            announcement={previewAnnouncement}
-            visible={visible}
-            onClose={() => setVisible(false)}
-          />
-        )}
-      </AdminBlock>
+      )}
     </AdminLayout>
   )
 }
@@ -132,7 +212,7 @@ type FieldProps = {
   title: string
 }
 
-const AddNewAnnouncementModal: React.FC<{}> = ({ ...props }) => {
+const AddNewAnnouncementModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { currentMemberId } = useAuth()
@@ -155,13 +235,14 @@ const AddNewAnnouncementModal: React.FC<{}> = ({ ...props }) => {
         },
       })
       if (!result.data) {
-        throw formatMessage(pageMessages.AnnouncementCollectionPage.addFailed)
+        throw new Error(formatMessage(pageMessages.AnnouncementCollectionPage.addFailed))
       }
       window.location.href = `${process.env.PUBLIC_URL}/announcements/${result.data.insert_announcement?.returning[0].id}`
     } catch (error) {
       handleError(error)
     }
   }
+
   return (
     <AdminModal
       footer={null}
@@ -172,20 +253,14 @@ const AddNewAnnouncementModal: React.FC<{}> = ({ ...props }) => {
       )}
       renderFooter={({ setVisible }) => (
         <>
-          <Button
-            className="mr-2"
-            onClick={e => {
-              setVisible(false)
-            }}
-          >
+          <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={insertAnnouncementsLoading} onClick={() => handleSubmit()}>
+          <Button type="primary" loading={insertAnnouncementsLoading} onClick={handleSubmit}>
             {formatMessage(commonMessages.button.add)}
           </Button>
         </>
       )}
-      {...props}
     >
       <Form form={form} layout="vertical" colon={false} hideRequiredMark>
         <Form.Item
