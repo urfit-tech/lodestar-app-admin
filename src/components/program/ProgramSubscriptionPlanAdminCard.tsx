@@ -66,9 +66,20 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
   const { permissions, currentUserRole } = useAuth()
-  const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
+  const {
+    salePrice,
+    listPrice,
+    discountDownPrice,
+    periodType,
+    periodAmount,
+    currencyId,
+    listPricePrefix,
+    listPriceSuffix,
+    salePricePrefix,
+    salePriceSuffix,
+  } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
   const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
   const { productChannelInfo, refetchProductChannelInfo } = useProductChannelInfo(
@@ -162,6 +173,11 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
               periodType={periodType as ProgramPlanPeriodType}
               currencyId={currencyId}
               variant="full-detail"
+              affix={
+                settings['program.layout_template_circumfix.enabled']
+                  ? { listPricePrefix, listPriceSuffix, salePricePrefix, salePriceSuffix }
+                  : undefined
+              }
             />
             {!!enabledModules.gift &&
               (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)) &&
