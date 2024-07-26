@@ -1,4 +1,5 @@
-import { PeriodType } from "./general"
+import { PeriodType } from "lodestar-app-element/src/types/data"
+
 
 
 export type Announcement = {

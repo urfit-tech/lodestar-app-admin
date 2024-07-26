@@ -2,7 +2,7 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { Announcement } from '../../types/announcement'
@@ -92,27 +92,24 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
 
 const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => void }> = ({ value = [], onChange }) => {
   const { formatMessage } = useIntl()
-  const [radioValues, setRadioValues] = useState<string[]>(
-    value?.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch')) || [],
-  )
+
+  const getInitialPathMatchTypes = (paths: string[]) =>
+    paths.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch'))
+
+  const [pathMatchTypes, setPathMatchTypes] = useState<string[]>(() => getInitialPathMatchTypes(value))
 
   const handleRadioChange = (index: number, e: any) => {
-    const newRadioValues = [...radioValues]
-    const newValue = [...value]
-    newRadioValues[index] = e.target.value
-    if (e.target.value === 'contains' && !newValue[index].includes('*')) {
-      newValue[index] += '*'
+    const updatedPathMatchTypes = [...pathMatchTypes]
+    const updatedPaths = [...value]
+    updatedPathMatchTypes[index] = e.target.value
+    if (e.target.value === 'contains' && !updatedPaths[index].includes('*')) {
+      updatedPaths[index] += '*'
     } else if (e.target.value === 'exactMatch') {
-      newValue[index] = newValue[index].replace('*', '')
+      updatedPaths[index] = updatedPaths[index].replace('*', '')
     }
-    setRadioValues(newRadioValues)
-    onChange && onChange(newValue)
+    setPathMatchTypes(updatedPathMatchTypes)
+    onChange && onChange(updatedPaths)
   }
-
-  useEffect(() => {
-    const initialRadioValues = value.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch'))
-    setRadioValues(initialRadioValues)
-  }, [value])
 
   return (
     <>
@@ -122,7 +119,7 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
             <Input.Group compact style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <Radio.Group
                 onChange={e => handleRadioChange(index, e)}
-                value={radioValues[index]}
+                value={pathMatchTypes[index]}
                 style={{ display: 'flex', gap: '10px' }}
               >
                 <Radio value="contains">
@@ -136,17 +133,17 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
                 className={'mr-3 mb-0'}
                 value={path}
                 onChange={e => {
-                  const newValue = [...value]
-                  newValue.splice(index, 1, e.target.value.trim())
-                  onChange && onChange(newValue)
+                  const updatedPaths = [...value]
+                  updatedPaths.splice(index, 1, e.target.value.trim())
+                  onChange && onChange(updatedPaths)
                 }}
               />
             </Input.Group>
             <CloseOutlined
               onClick={() => {
-                const newValue = [...value]
-                newValue.splice(index, 1)
-                onChange && onChange(newValue)
+                const pathsAfterDeletion = [...value]
+                pathsAfterDeletion.splice(index, 1)
+                onChange && onChange(pathsAfterDeletion)
               }}
             />
           </StyledNewPathInput>
@@ -156,10 +153,10 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
         icon={<PlusOutlined />}
         type="link"
         onClick={() => {
-          const newValue = [...(value || ''), '']
-          const newRadioValues = [...radioValues, 'contains']
-          setRadioValues(newRadioValues)
-          onChange && onChange(newValue)
+          const newPaths = [...value, '']
+          const newPathMatchTypes = [...pathMatchTypes, 'exactMatch']
+          setPathMatchTypes(newPathMatchTypes)
+          onChange && onChange(newPaths)
         }}
       >
         <span>{formatMessage(announcementMessages.AnnouncementPathSettingsForm.addNewPath)}</span>
