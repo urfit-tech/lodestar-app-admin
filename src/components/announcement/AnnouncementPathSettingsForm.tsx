@@ -101,12 +101,15 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
   const handleRadioChange = (index: number, e: any) => {
     const updatedPathMatchTypes = [...pathMatchTypes]
     const updatedPaths = [...value]
-    updatedPathMatchTypes[index] = e.target.value
-    if (e.target.value === 'contains' && !updatedPaths[index].includes('*')) {
+    const newMatchType = e.target.value
+
+    updatedPathMatchTypes[index] = newMatchType
+    if (newMatchType === 'contains' && !updatedPaths[index].includes('*')) {
       updatedPaths[index] += '*'
-    } else if (e.target.value === 'exactMatch') {
-      updatedPaths[index] = updatedPaths[index].replace('*', '')
+    } else if (newMatchType === 'exactMatch') {
+      updatedPaths[index] = updatedPaths[index].replace(/\*$/, '')
     }
+
     setPathMatchTypes(updatedPathMatchTypes)
     onChange && onChange(updatedPaths)
   }
@@ -134,7 +137,7 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
                 value={path}
                 onChange={e => {
                   const updatedPaths = [...value]
-                  updatedPaths.splice(index, 1, e.target.value.trim())
+                  updatedPaths[index] = e.target.value.trim()
                   onChange && onChange(updatedPaths)
                 }}
               />
@@ -164,5 +167,4 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
     </>
   )
 }
-
 export default AnnouncementPathSettingsForm
