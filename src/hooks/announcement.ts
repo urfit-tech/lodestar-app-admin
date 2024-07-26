@@ -23,62 +23,63 @@ export const useMemberAnnouncements = () => {
     hasura.UpsertMemberAnnouncementStatusVariables
   >(UpsertMemberAnnouncementStatus)
 
-  const announcements: Announcement[] =
-    data?.announcement.filter(announcement => {
-      const includesPath = announcement.announcement_pages.some(page => {
-        const isContainsPattern = (pagePath: string) => pagePath.endsWith('*');
+  const announcements: Announcement[] = data?.announcement
+  .filter(announcement => {
+    const includesPath = announcement.announcement_pages.some(page => {
+      const containsWildcard = (path: string) => path.includes('*');
 
-        const matchesContainsPattern = (currentPagePath: string, pagePathPattern: string) => {
-          const regexPattern = new RegExp(`^.*${pagePathPattern.replace('*', '.*')}$`);
-          return regexPattern.test(currentPagePath);
-        };
-        
-        const matchesExactPattern = (currentPagePath: string, pagePathPattern: string) => {
-          const pathWithoutAdmin = currentPagePath.replace(/^\/admin/, '');
-          return pathWithoutAdmin === pagePathPattern;
-        };
+      const matchesWildcardPattern = (currentPath: string, pattern: string) => {
+        const regexPattern = new RegExp(`^.*${pattern.replace(/\*/g, '.*')}$`);
+        return regexPattern.test(currentPath);
+      };
 
-        const pagePath = page.path;
-      
-        if (isContainsPattern(pagePath)) {
-          return matchesContainsPattern(path, pagePath);
-        }
-        return matchesExactPattern(path, pagePath);
-      });
-    
-      return announcement.is_universal_display === true || includesPath;
-    })
-      .map(announcement => ({
-        id: announcement.id,
-        appId: announcement.app_id,
-        title: announcement.title,
-        content: announcement.content || '',
-        remindPeriodType: (announcement.remind_period_type as PeriodType) || 'D', // Default to 24 hours
-        remindPeriodAmount: announcement.remind_period_amount || 1, // Default to 24 hours
-        startedAt: announcement.started_at ? dayjs(announcement.started_at).toDate() : null,
-        endedAt: announcement.ended_at ? dayjs(announcement.ended_at).toDate() : null,
-        publishedAt: announcement.published_at ? dayjs(announcement.published_at).toDate() : null,
-        isUniversalDisplay: announcement.is_universal_display,
-        createdAt: dayjs(announcement.created_at).toDate(),
-        updatedAt: dayjs(announcement.updated_at).toDate(),
-        announcementPages: announcement.announcement_pages.map(page => ({
-          id: page.id,
-          announcementId: page.announcement_id,
-          path: page.path,
-          createdAt: dayjs(page.created_at).toDate(),
-          updatedAt: dayjs(page.updated_at).toDate(),
-        })),
-        memberAnnouncementStatus: announcement.member_announcement_status.map(status => ({
-          id: status.id,
-          announcementId: status.announcement_id,
-          memberId: status.member_id,
-          readAt: status.read_at ? dayjs(status.read_at).toDate() : null,
-          remindAt: status.remind_at ? dayjs(status.remind_at).toDate() : null,
-          isDismissed: status.is_dismissed,
-          createdAt: dayjs(status.created_at).toDate(),
-          updatedAt: dayjs(status.updated_at).toDate(),
-        })),
-      })) || []
+      const matchesExactPath = (currentPath: string, exactPath: string) => {
+        const pathWithoutAdmin = currentPath.replace(/^\/admin/, '');
+        return pathWithoutAdmin === exactPath;
+      };
+
+      const pagePath = page.path;
+
+      if (containsWildcard(pagePath)) {
+        return matchesWildcardPattern(path, pagePath);
+      }
+      return matchesExactPath(path, pagePath);
+    });
+
+    return announcement.is_universal_display === true || includesPath;
+  })
+  .map(announcement => ({
+    id: announcement.id,
+    appId: announcement.app_id,
+    title: announcement.title,
+    content: announcement.content || '',
+    remindPeriodType: (announcement.remind_period_type as PeriodType) || 'D', // Default to 24 hours
+    remindPeriodAmount: announcement.remind_period_amount || 1, // Default to 24 hours
+    startedAt: announcement.started_at ? dayjs(announcement.started_at).toDate() : null,
+    endedAt: announcement.ended_at ? dayjs(announcement.ended_at).toDate() : null,
+    publishedAt: announcement.published_at ? dayjs(announcement.published_at).toDate() : null,
+    isUniversalDisplay: announcement.is_universal_display,
+    createdAt: dayjs(announcement.created_at).toDate(),
+    updatedAt: dayjs(announcement.updated_at).toDate(),
+    announcementPages: announcement.announcement_pages.map(page => ({
+      id: page.id,
+      announcementId: page.announcement_id,
+      path: page.path,
+      createdAt: dayjs(page.created_at).toDate(),
+      updatedAt: dayjs(page.updated_at).toDate(),
+    })),
+    memberAnnouncementStatus: announcement.member_announcement_status.map(status => ({
+      id: status.id,
+      announcementId: status.announcement_id,
+      memberId: status.member_id,
+      readAt: status.read_at ? dayjs(status.read_at).toDate() : null,
+      remindAt: status.remind_at ? dayjs(status.remind_at).toDate() : null,
+      isDismissed: status.is_dismissed,
+      createdAt: dayjs(status.created_at).toDate(),
+      updatedAt: dayjs(status.updated_at).toDate(),
+    })),
+  })) || [];
+
 
   return {
     loading,
