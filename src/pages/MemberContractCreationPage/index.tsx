@@ -15,7 +15,7 @@ import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
-const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'] as const
+const paymentMethods = ['藍新', '匯款', '現金', 'Paypal'] as const
 const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30] as const
 const periodTypeByDay: { [key: string]: number } = { D: 1, W: 7, M: 30, Y: 365 }
 
