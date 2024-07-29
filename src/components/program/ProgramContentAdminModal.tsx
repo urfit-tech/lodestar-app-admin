@@ -41,9 +41,8 @@ import {
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContentEbook } from '../../hooks/ebook'
-import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentActions, useProgramContent } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import { ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AttachmentSelector, { AttachmentSelectorValue } from '../common/AttachmentSelector'
 import FileUploader from '../common/FileUploader'
@@ -123,17 +122,19 @@ type VideoPipeline = 'attachment' | 'externalLink'
 
 const ProgramContentAdminModal: React.FC<{
   programId: string
-  programContent: ProgramContentProps
-  onRefetch?: () => void
-}> = ({ programId, programContent, onRefetch }) => {
+  programContentId: string
+}> = ({ programId, programContentId }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules, settings } = useApp()
   const { authToken, currentMemberId } = useAuth()
-
-  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+  const {
+    loading: loadingProgramContent,
+    programContent,
+    refetch: refetchProgramContent,
+  } = useProgramContent(programContentId)
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
-  const { updatePlans, updateMaterials, updateVideos, updateAudios } = useProgramContentActions(programContent.id)
+  const { updatePlans, updateMaterials, updateVideos, updateAudios } = useProgramContentActions(programContentId)
   const { insertAttachment } = useMutateAttachment()
   const {
     insertProgramContentEbook,
@@ -156,10 +157,12 @@ const ProgramContentAdminModal: React.FC<{
   }>({ status: 'idle', source: 'youtube' })
 
   const [loading, setLoading] = useState(false)
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent.displayMode)
-  const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
-  const [audioFiles, setAudioFiles] = useState<File[]>(programContent.audios.map(v => v.data) || [])
-  const [ebookFile, setEbookFile] = useState<File | null>(programContent.ebook?.data || null)
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent?.displayMode || 'conceal')
+  const [materialFiles, setMaterialFiles] = useState<File[]>(
+    programContent?.programContentMaterials?.map(v => v.data) || [],
+  )
+  const [audioFiles, setAudioFiles] = useState<File[]>(programContent?.audios?.map(v => v.data) || [])
+  const [ebookFile, setEbookFile] = useState<File | null>(programContent?.ebook?.data || null)
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
     caption?: boolean
@@ -170,7 +173,7 @@ const ProgramContentAdminModal: React.FC<{
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number
   }>({})
-  const [contentType, setContentType] = useState<string>(programContent.programContentType || 'video')
+  const [contentType, setContentType] = useState<string>(programContent?.programContentType || 'video')
 
   const isTrial = displayMode === 'trial' || displayMode === 'loginToTrial'
   const ebookTrialPercentageSetting = settings['ebook.trial.percentage']
@@ -190,12 +193,12 @@ const ProgramContentAdminModal: React.FC<{
 
     const uploadError: typeof isUploadFailed = {}
 
-    let updatedProgramContentBodyId = programContentBody.id
+    let updatedProgramContentBodyId = programContent?.programContentBody.id
 
     // upload audio files
     const newAudioFiles = audioFiles.filter(
       file =>
-        !programContent.audios.some(
+        !programContent?.audios?.some(
           audio => audio.data.name === file.name && audio.data.lastModified === file.lastModified,
         ),
     )
@@ -203,7 +206,7 @@ const ProgramContentAdminModal: React.FC<{
     if (contentType === 'audio') {
       if (newAudioFiles.length > 0) {
         for (const file of newAudioFiles) {
-          await uploadFile(`audios/${appId}/${programId}/${programContent.id}`, file, authToken, {
+          await uploadFile(`audios/${appId}/${programId}/${programContentId}`, file, authToken, {
             cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
             onUploadProgress: ({ loaded, total }) => {
               setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
@@ -221,13 +224,13 @@ const ProgramContentAdminModal: React.FC<{
     // upload materials when material is not empty and content type is video or text or audio
     const newMaterialFiles = materialFiles.filter(
       file =>
-        !programContentBody.materials.some(
+        !programContent?.programContentMaterials.some(
           material => material.data.name === file.name && material.data.lastModified === file.lastModified,
         ),
     )
     if (newMaterialFiles.length && (contentType === 'video' || contentType === 'text' || contentType === 'audio')) {
       for (const file of newMaterialFiles) {
-        await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, {
+        await uploadFile(`materials/${appId}/${programContentId}_${file.name}`, file, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
@@ -240,22 +243,22 @@ const ProgramContentAdminModal: React.FC<{
     }
     setIsUploadFailed(uploadError)
 
-    const newEbookFile = ebookFile?.lastModified !== programContent.ebook?.data?.lastModified ? ebookFile : null
+    const newEbookFile = ebookFile?.lastModified !== programContent?.ebook?.data?.lastModified ? ebookFile : null
 
     if (
       enabledModules.ebook &&
-      ((programContent.programContentType !== 'ebook' && contentType === 'ebook') ||
-        (programContent.programContentType === 'ebook' && contentType !== 'ebook') ||
+      ((programContent?.programContentType !== 'ebook' && contentType === 'ebook') ||
+        (programContent?.programContentType === 'ebook' && contentType !== 'ebook') ||
         !ebookFile)
     ) {
-      deleteProgramContentEbookTocProgress({ variables: { programContentId: programContent.id } }).catch(handleError)
-      deleteProgramContentEbookToc({ variables: { programContentId: programContent.id } }).catch(handleError)
-      deleteProgramContentEbook({ variables: { programContentId: programContent.id } }).catch(handleError)
+      deleteProgramContentEbookTocProgress({ variables: { programContentId } }).catch(handleError)
+      deleteProgramContentEbookToc({ variables: { programContentId: programContentId } }).catch(handleError)
+      deleteProgramContentEbook({ variables: { programContentId: programContentId } }).catch(handleError)
     }
 
     if (enabledModules.ebook && contentType === 'ebook') {
       if (newEbookFile) {
-        await uploadFileV2(`${programContent.id}.epub`, newEbookFile, 'ebook', authToken, appId, {
+        await uploadFileV2(`${programContentId}.epub`, newEbookFile, 'ebook', authToken, appId, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [newEbookFile.name]: Math.floor((loaded / total) * 100) }))
@@ -280,7 +283,7 @@ const ProgramContentAdminModal: React.FC<{
         insertProgramContentEbook({
           variables: {
             programContentEbook: {
-              program_content_id: programContent.id,
+              program_content_id: programContentId,
               data: {
                 name: newEbookFile.name,
                 type: newEbookFile.type,
@@ -294,7 +297,7 @@ const ProgramContentAdminModal: React.FC<{
         }).catch(handleError)
       } else if (values.trialPercentage) {
         updateProgramContentEbook({
-          variables: { programContentId: programContent.id, trialPercentage: values.trialPercentage },
+          variables: { programContentId: programContentId, trialPercentage: values.trialPercentage },
         })
       }
     }
@@ -303,7 +306,7 @@ const ProgramContentAdminModal: React.FC<{
     try {
       await updateProgramContent({
         variables: {
-          programContentId: programContent.id,
+          programContentId: programContentId,
           price: null,
           title: values.title || '',
           duration: values.contentBodyType === 'audio' ? audioDuration : values.duration,
@@ -327,7 +330,7 @@ const ProgramContentAdminModal: React.FC<{
               {
                 id: attachmentId,
                 type: 'ProgramContent',
-                target: programContent.id,
+                target: programContentId,
                 app_id: appId,
                 author_id: currentMemberId,
                 name: externalVideoInfo.title || '',
@@ -348,7 +351,7 @@ const ProgramContentAdminModal: React.FC<{
       }
       await updateProgramContentBody({
         variables: {
-          programContentId: programContent.id,
+          programContentId: programContentId,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           type: values.contentBodyType,
           data: {},
@@ -378,7 +381,7 @@ const ProgramContentAdminModal: React.FC<{
     }
 
     //init and reset form
-    onRefetch?.()
+    refetchProgramContent?.()
     setVisible(false)
     setVideoPipeline('attachment')
     setExternalVideoInfo({ status: 'idle' })
@@ -386,16 +389,10 @@ const ProgramContentAdminModal: React.FC<{
   }
 
   useEffect(() => {
-    if (!loadingProgramContentBody && programContentBody.materials.length) {
-      setMaterialFiles(programContentBody.materials.map(v => v.data))
-    }
-  }, [programContentBody, loadingProgramContentBody])
-
-  useEffect(() => {
     programContent?.videos?.length && form.setFieldsValue({ videoAttachment: last(programContent.videos) })
   }, [form, programContent?.videos])
 
-  if (loadingProgramContentBody) return <Skeleton active />
+  if (loadingProgramContent) return <Skeleton active />
 
   return (
     <>
@@ -410,299 +407,261 @@ const ProgramContentAdminModal: React.FC<{
         visible={visible}
       >
         <>
-          {programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
-            <ExerciseAdminModalBlock
-              programId={programId}
-              programContent={programContent}
-              displayMode={displayMode}
-              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
-              onRefetch={onRefetch}
-              onClose={() => {
-                setVisible(false)
-                setDisplayMode(programContent.displayMode)
-              }}
-            />
-          ) : programContent.programContentType === 'practice' ? (
-            <PracticeAdminModalBlock
-              programId={programId}
-              programContent={programContent}
-              displayMode={displayMode}
-              onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
-              onRefetch={onRefetch}
-              onClose={() => {
-                setVisible(false)
-                setDisplayMode(programContent.displayMode)
-              }}
-            />
-          ) : (
-            <Form
-              form={form}
-              layout="vertical"
-              initialValues={{
-                videoAttachment: last(programContent.videos),
-                publishedAt: programContent.publishedAt
-                  ? moment(programContent.publishedAt)
-                  : moment().startOf('minute'),
-                isNotifyUpdate: programContent.isNotifyUpdate,
-                title: programContent.title || '',
-                planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
-                duration: programContent.duration || 0,
-                video: programContentBody.data?.video,
-                texttrack: programContentBody.data?.texttrack,
-                description: BraftEditor.createEditorState(programContentBody.description),
-                videoPipeline: 'attachment',
-                selectedSource: 'youtube',
-                displayMode: programContent.displayMode,
-                contentBodyType: programContent.programContentType,
-                ebookFile: programContent.ebook?.data || null,
-                pinnedStatus: programContent.pinned_status,
-                trialPercentage: programContent.ebook?.trialPercentage || Number(ebookTrialPercentageSetting),
-              }}
-              onValuesChange={(values: Partial<FieldProps>) => {
-                form.setFieldsValue({
-                  duration: values.videoAttachment?.duration || form.getFieldValue('duration') || 0,
-                })
-              }}
-              onFinish={handleSubmit}
-            >
-              <Flex
-                alignItems={{ base: 'flex-end', md: 'center' }}
-                justifyContent="space-between"
-                marginBottom="16px"
-                flexDirection={{ base: 'column-reverse', md: 'row' }}
+          {programContent &&
+            (programContent?.programContentType === 'exercise' || programContent?.programContentType === 'exam' ? (
+              <ExerciseAdminModalBlock
+                programId={programId}
+                programContent={programContent}
+                displayMode={displayMode}
+                onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                onRefetch={refetchProgramContent}
+                onClose={() => {
+                  setVisible(false)
+                  setDisplayMode(programContent.displayMode)
+                }}
+              />
+            ) : programContent?.programContentType === 'practice' ? (
+              <PracticeAdminModalBlock
+                programId={programId}
+                programContent={programContent}
+                displayMode={displayMode}
+                onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                onRefetch={refetchProgramContent}
+                onClose={() => {
+                  setVisible(false)
+                  setDisplayMode(programContent.displayMode)
+                }}
+              />
+            ) : (
+              <Form
+                form={form}
+                layout="vertical"
+                initialValues={{
+                  videoAttachment: last(programContent.videos),
+                  publishedAt: programContent.publishedAt
+                    ? moment(programContent.publishedAt)
+                    : moment().startOf('minute'),
+                  isNotifyUpdate: programContent.isNotifyUpdate,
+                  title: programContent.title || '',
+                  planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
+                  duration: programContent.duration || 0,
+                  video: programContent.videos,
+                  texttrack: programContent.programContentBody?.data?.texttrack,
+                  description: BraftEditor.createEditorState(programContent.programContentBody.description),
+                  videoPipeline: 'attachment',
+                  selectedSource: 'youtube',
+                  displayMode: programContent.displayMode,
+                  contentBodyType: programContent.programContentType,
+                  ebookFile: programContent.ebook?.data || null,
+                  pinnedStatus: programContent.pinned_status,
+                  trialPercentage: programContent.ebook?.trialPercentage || Number(ebookTrialPercentageSetting),
+                }}
+                onValuesChange={(values: Partial<FieldProps>) => {
+                  form.setFieldsValue({
+                    duration: values.videoAttachment?.duration || form.getFieldValue('duration') || 0,
+                  })
+                }}
+                onFinish={handleSubmit}
               >
-                <Flex flexWrap="wrap" gridGap="2">
-                  <Form.Item name="contentBodyType" className="mb-0">
-                    <Select
-                      onChange={v => {
-                        if (typeof v === 'string') {
-                          setContentType(v)
-                        }
-                      }}
-                    >
-                      <Select.Option value="video">{formatMessage(programMessages['*'].videoContent)}</Select.Option>
-                      <Select.Option value="text">{formatMessage(programMessages['*'].articleContent)}</Select.Option>
-                      <Select.Option value="audio">{formatMessage(programMessages['*'].audioContent)}</Select.Option>
-                      {enabledModules.ebook ? (
-                        <Select.Option value="ebook">{formatMessage(programMessages['*'].ebook)}</Select.Option>
-                      ) : null}
-                    </Select>
-                  </Form.Item>
+                <Flex
+                  alignItems={{ base: 'flex-end', md: 'center' }}
+                  justifyContent="space-between"
+                  marginBottom="16px"
+                  flexDirection={{ base: 'column-reverse', md: 'row' }}
+                >
+                  <Flex flexWrap="wrap" gridGap="2">
+                    <Form.Item name="contentBodyType" className="mb-0">
+                      <Select
+                        onChange={v => {
+                          if (typeof v === 'string') {
+                            setContentType(v)
+                          }
+                        }}
+                      >
+                        <Select.Option value="video">{formatMessage(programMessages['*'].videoContent)}</Select.Option>
+                        <Select.Option value="text">{formatMessage(programMessages['*'].articleContent)}</Select.Option>
+                        <Select.Option value="audio">{formatMessage(programMessages['*'].audioContent)}</Select.Option>
+                        {enabledModules.ebook ? (
+                          <Select.Option value="ebook">{formatMessage(programMessages['*'].ebook)}</Select.Option>
+                        ) : null}
+                      </Select>
+                    </Form.Item>
 
-                  {programContent.displayMode && (
-                    <DisplayModeSelector
-                      contentType={contentType}
-                      displayMode={displayMode}
-                      onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
-                    />
-                  )}
-                  <Flex flexWrap="wrap">
-                    <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                      <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
-                    </Form.Item>
-                    <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
-                      <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
-                    </Form.Item>
+                    {programContent.displayMode && (
+                      <DisplayModeSelector
+                        contentType={contentType}
+                        displayMode={displayMode}
+                        onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                      />
+                    )}
+                    <Flex flexWrap="wrap">
+                      <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
+                        <Checkbox>{formatMessage(programMessages['*'].notifyUpdate)}</Checkbox>
+                      </Form.Item>
+                      <Form.Item name="pinnedStatus" valuePropName="checked" className="mb-0">
+                        <Checkbox>{formatMessage(programMessages['*'].pinnedStatus)}</Checkbox>
+                      </Form.Item>
+                    </Flex>
+                  </Flex>
+
+                  <Flex alignItems="center" marginBottom={{ base: '12px', md: '0' }}>
+                    <Button
+                      disabled={loading}
+                      onClick={() => {
+                        form.resetFields()
+                        setDisplayMode(programContent.displayMode)
+                        setVisible(false)
+                      }}
+                      className="mr-2"
+                    >
+                      {formatMessage(commonMessages.ui.cancel)}
+                    </Button>
+                    <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
+                      {formatMessage(commonMessages.ui.save)}
+                    </Button>
+                    <Dropdown
+                      trigger={['click']}
+                      placement="bottomRight"
+                      overlay={
+                        <Menu>
+                          <Menu.Item
+                            onClick={() =>
+                              window.confirm(
+                                formatMessage(programMessages.ProgramContentAdminModal.deleteContentWarning),
+                              ) &&
+                              deleteProgramContent({ variables: { programContentId: programContentId } })
+                                .then(() => refetchProgramContent())
+                                .catch(handleError)
+                            }
+                          >
+                            {formatMessage(programMessages['*'].deleteContent)}
+                          </Menu.Item>
+                        </Menu>
+                      }
+                    >
+                      <MoreOutlined />
+                    </Dropdown>
                   </Flex>
                 </Flex>
 
-                <Flex alignItems="center" marginBottom={{ base: '12px', md: '0' }}>
-                  <Button
-                    disabled={loading}
-                    onClick={() => {
-                      setVisible(false)
-                      form.resetFields()
-                      setDisplayMode(programContent.displayMode)
-                    }}
-                    className="mr-2"
-                  >
-                    {formatMessage(commonMessages.ui.cancel)}
-                  </Button>
-                  <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
-                    {formatMessage(commonMessages.ui.save)}
-                  </Button>
-                  <Dropdown
-                    trigger={['click']}
-                    placement="bottomRight"
-                    overlay={
-                      <Menu>
-                        <Menu.Item
-                          onClick={() =>
-                            window.confirm(
-                              formatMessage(programMessages.ProgramContentAdminModal.deleteContentWarning),
-                            ) &&
-                            deleteProgramContent({ variables: { programContentId: programContent.id } })
-                              .then(() => onRefetch?.())
-                              .catch(handleError)
-                          }
-                        >
-                          {formatMessage(programMessages['*'].deleteContent)}
-                        </Menu.Item>
-                      </Menu>
-                    }
-                  >
-                    <MoreOutlined />
-                  </Dropdown>
-                </Flex>
-              </Flex>
+                <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
+                  <Input />
+                </Form.Item>
+                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)} name="planIds">
+                  <ProgramPlanSelector
+                    programId={programId}
+                    placeholder={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)}
+                  />
+                </Form.Item>
 
-              <Form.Item label={formatMessage(programMessages['*'].contentTitle)} name="title">
-                <Input />
-              </Form.Item>
-              <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)} name="planIds">
-                <ProgramPlanSelector
-                  programId={programId}
-                  placeholder={formatMessage(programMessages.ProgramContentAdminModal.contentPlan)}
-                />
-              </Form.Item>
-
-              {contentType === 'video' ? (
-                enabledModules.program_content_external_file ? (
-                  <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
-                    <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
-                      <div className={`d-flex align-items-center mb-3`}>
-                        <StyledRadio value="attachment">{formatMessage(commonMessages.menu.mediaLibrary)}</StyledRadio>
-                        <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
-                          <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
-                            <AttachmentSelector contentType="video/*" />
-                          </Form.Item>
-                        </div>
-                      </div>
-
-                      <div className="d-flex align-items-center">
-                        <StyledRadio value="externalLink">
-                          {formatMessage(commonMessages.label.externalLink)}
-                        </StyledRadio>
-                        <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
-                          <div className="d-lg-flex align-items-center">
-                            <Form.Item name="selectedSource" noStyle>
-                              <Select
-                                style={{ width: '110px' }}
-                                onChange={value =>
-                                  setExternalVideoInfo({
-                                    status: externalVideoInfo.status,
-                                    source: value.toString(),
-                                  })
-                                }
-                              >
-                                <Select.Option key="youtube" value="youtube">
-                                  YouTube
-                                </Select.Option>
-                              </Select>
+                {contentType === 'video' ? (
+                  enabledModules.program_content_external_file ? (
+                    <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
+                      <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
+                        <div className={`d-flex align-items-center mb-3`}>
+                          <StyledRadio value="attachment">
+                            {formatMessage(commonMessages.menu.mediaLibrary)}
+                          </StyledRadio>
+                          <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
+                            <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
+                              <AttachmentSelector contentType="video/*" />
                             </Form.Item>
-                            <Form.Item name="externalLink" className="mb-0">
-                              <StyledInput
-                                status={externalVideoInfo?.status}
-                                placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
-                                onChange={async e => {
-                                  const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
-                                  const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
-                                  const res = await axios.get(`https://noembed.com/embed?url=${url}`)
-                                  if (e.target.value === '') {
-                                    setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
-                                  } else if (e.target.value !== '' && res.data.error) {
-                                    setExternalVideoInfo({
-                                      status: 'error',
-                                      source: externalVideoInfo.source,
-                                      url: e.target.value,
-                                    })
-                                  } else if (id && url) {
-                                    form.setFieldsValue({ externalLink: url })
-                                    setExternalVideoInfo({
-                                      id: id,
-                                      status: 'success',
-                                      source: externalVideoInfo.source,
-                                      thumbnailUrl: res.data?.thumbnail_url || null,
-                                      url: e.target.value,
-                                      title: res.data?.title || '',
-                                    })
-                                  }
-                                }}
-                              />
-                            </Form.Item>
-
-                            {externalVideoInfo?.status === 'error' ? (
-                              <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
-                            ) : externalVideoInfo?.status === 'success' ? (
-                              <StyledExternalLinkTitle>
-                                <span>{externalVideoInfo.title}</span>
-                              </StyledExternalLinkTitle>
-                            ) : null}
                           </div>
                         </div>
-                      </div>
-                    </Radio.Group>
-                  </Form.Item>
-                ) : (
-                  <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
-                    <AttachmentSelector contentType="video/*" />
-                  </Form.Item>
-                )
-              ) : null}
 
-              {contentType === 'audio' ? (
-                <Form.Item
-                  label={
-                    <span className="d-flex align-items-center">
-                      {formatMessage(programMessages.ProgramContentAdminModal.audioFile)}
-                      <Tooltip
-                        title={
-                          <StyledTips>
-                            {formatMessage(programMessages.ProgramContentAdminModal.audioFileTips)}
-                          </StyledTips>
-                        }
-                      >
-                        <QuestionCircleFilled className="ml-2" />
-                      </Tooltip>
-                    </span>
-                  }
-                >
-                  <FileUploader
-                    renderTrigger={({ onClick }) => (
-                      <>
-                        <Button icon={<UploadOutlined />} onClick={onClick}>
-                          {formatMessage(programMessages['*'].uploadAudioFile)}
-                        </Button>
-                        {isUploadFailed.audio && (
-                          <span className="ml-2">
-                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                          </span>
-                        )}
-                      </>
-                    )}
-                    showUploadList
-                    accept=".mp3"
-                    fileList={audioFiles}
-                    uploadProgress={uploadProgress}
-                    failedUploadFiles={failedUploadFiles}
-                    downloadableLink={file => `audios/${appId}/${programId}/${programContent.id}`}
-                    onChange={files => setAudioFiles(files)}
-                  />
-                </Form.Item>
-              ) : null}
+                        <div className="d-flex align-items-center">
+                          <StyledRadio value="externalLink">
+                            {formatMessage(commonMessages.label.externalLink)}
+                          </StyledRadio>
+                          <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
+                            <div className="d-lg-flex align-items-center">
+                              <Form.Item name="selectedSource" noStyle>
+                                <Select
+                                  style={{ width: '110px' }}
+                                  onChange={value =>
+                                    setExternalVideoInfo({
+                                      status: externalVideoInfo.status,
+                                      source: value.toString(),
+                                    })
+                                  }
+                                >
+                                  <Select.Option key="youtube" value="youtube">
+                                    YouTube
+                                  </Select.Option>
+                                </Select>
+                              </Form.Item>
+                              <Form.Item name="externalLink" className="mb-0">
+                                <StyledInput
+                                  status={externalVideoInfo?.status}
+                                  placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
+                                  onChange={async e => {
+                                    const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
+                                    const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
+                                    const res = await axios.get(`https://noembed.com/embed?url=${url}`)
+                                    if (e.target.value === '') {
+                                      setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
+                                    } else if (e.target.value !== '' && res.data.error) {
+                                      setExternalVideoInfo({
+                                        status: 'error',
+                                        source: externalVideoInfo.source,
+                                        url: e.target.value,
+                                      })
+                                    } else if (id && url) {
+                                      form.setFieldsValue({ externalLink: url })
+                                      setExternalVideoInfo({
+                                        id: id,
+                                        status: 'success',
+                                        source: externalVideoInfo.source,
+                                        thumbnailUrl: res.data?.thumbnail_url || null,
+                                        url: e.target.value,
+                                        title: res.data?.title || '',
+                                      })
+                                    }
+                                  }}
+                                />
+                              </Form.Item>
 
-              {(contentType === 'video' || contentType === 'audio') && (
-                <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.duration)} name="duration">
-                  <InputNumber
-                    min={0}
-                    formatter={v => Math.ceil(Number(v) / 60).toString()}
-                    parser={v => Number(v) * 60}
-                  />
-                </Form.Item>
-              )}
+                              {externalVideoInfo?.status === 'error' ? (
+                                <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
+                              ) : externalVideoInfo?.status === 'success' ? (
+                                <StyledExternalLinkTitle>
+                                  <span>{externalVideoInfo.title}</span>
+                                </StyledExternalLinkTitle>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      </Radio.Group>
+                    </Form.Item>
+                  ) : (
+                    <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
+                      <AttachmentSelector contentType="video/*" />
+                    </Form.Item>
+                  )
+                ) : null}
 
-              {enabledModules.ebook && contentType === 'ebook' ? (
-                <>
-                  <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
-                    <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
-                      {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
-                    </Box>
+                {contentType === 'audio' ? (
+                  <Form.Item
+                    label={
+                      <span className="d-flex align-items-center">
+                        {formatMessage(programMessages.ProgramContentAdminModal.audioFile)}
+                        <Tooltip
+                          title={
+                            <StyledTips>
+                              {formatMessage(programMessages.ProgramContentAdminModal.audioFileTips)}
+                            </StyledTips>
+                          }
+                        >
+                          <QuestionCircleFilled className="ml-2" />
+                        </Tooltip>
+                      </span>
+                    }
+                  >
                     <FileUploader
                       renderTrigger={({ onClick }) => (
                         <>
                           <Button icon={<UploadOutlined />} onClick={onClick}>
-                            {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
+                            {formatMessage(programMessages['*'].uploadAudioFile)}
                           </Button>
                           {isUploadFailed.audio && (
                             <span className="ml-2">
@@ -713,60 +672,101 @@ const ProgramContentAdminModal: React.FC<{
                         </>
                       )}
                       showUploadList
-                      multiple={false}
-                      accept=".epub"
-                      fileList={ebookFile ? [ebookFile] : []}
+                      accept=".mp3"
+                      fileList={audioFiles}
                       uploadProgress={uploadProgress}
                       failedUploadFiles={failedUploadFiles}
-                      downloadableLinkV2={{ key: `${programContent.id}.epub`, prefix: 'ebook' }}
-                      onChange={files => files && setEbookFile(files[0])}
+                      downloadableLink={file => `audios/${appId}/${programId}/${programContentId}`}
+                      onChange={files => setAudioFiles(files)}
                     />
                   </Form.Item>
-                  {!!ebookFile && !!isTrial && (
-                    <Form.Item
-                      label={formatMessage(programMessages.ProgramContentAdminModal.ebookTrialPercentageSetting)}
-                      name="trialPercentage"
-                    >
-                      <InputNumber min={0} max={100} formatter={v => `${v}%`} width="200px" />
-                    </Form.Item>
-                  )}
-                </>
-              ) : null}
+                ) : null}
 
-              {enabledModules.program_content_material && contentType !== 'ebook' ? (
-                <Form.Item label={formatMessage(commonMessages.label.material)}>
-                  <FileUploader
-                    renderTrigger={({ onClick }) => (
-                      <>
-                        <Button icon={<UploadOutlined />} onClick={onClick}>
-                          {formatMessage(commonMessages.ui.selectFile)}
-                        </Button>
-                        {isUploadFailed.materials && (
-                          <span className="ml-2">
-                            <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
-                            <span>{formatMessage(commonMessages.event.failedUpload)}</span>
-                          </span>
+                {(contentType === 'video' || contentType === 'audio') && (
+                  <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.duration)} name="duration">
+                    <InputNumber
+                      min={0}
+                      formatter={v => Math.ceil(Number(v) / 60).toString()}
+                      parser={v => Number(v) * 60}
+                    />
+                  </Form.Item>
+                )}
+
+                {enabledModules.ebook && contentType === 'ebook' ? (
+                  <>
+                    <Form.Item label={formatMessage(programMessages.ProgramContentAdminModal.ebookFile)}>
+                      <Box fontSize="14px" color="#9b9b9b" fontWeight="500" mt="4px" mb="20px">
+                        {formatMessage(programMessages.ProgramContentAdminModal.uploadEbookFileTips)}
+                      </Box>
+                      <FileUploader
+                        renderTrigger={({ onClick }) => (
+                          <>
+                            <Button icon={<UploadOutlined />} onClick={onClick}>
+                              {formatMessage(programMessages.ProgramContentAdminModal.uploadFile)}
+                            </Button>
+                            {isUploadFailed.audio && (
+                              <span className="ml-2">
+                                <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                                <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                              </span>
+                            )}
+                          </>
                         )}
-                      </>
+                        showUploadList
+                        multiple={false}
+                        accept=".epub"
+                        fileList={ebookFile ? [ebookFile] : []}
+                        uploadProgress={uploadProgress}
+                        failedUploadFiles={failedUploadFiles}
+                        downloadableLinkV2={{ key: `${programContentId}.epub`, prefix: 'ebook' }}
+                        onChange={files => files && setEbookFile(files[0])}
+                      />
+                    </Form.Item>
+                    {!!ebookFile && !!isTrial && (
+                      <Form.Item
+                        label={formatMessage(programMessages.ProgramContentAdminModal.ebookTrialPercentageSetting)}
+                        name="trialPercentage"
+                      >
+                        <InputNumber min={0} max={100} formatter={v => `${v}%`} width="200px" />
+                      </Form.Item>
                     )}
-                    multiple
-                    showUploadList
-                    fileList={materialFiles}
-                    uploadProgress={uploadProgress}
-                    failedUploadFiles={failedUploadFiles}
-                    downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
-                    onChange={files => setMaterialFiles(files)}
-                  />
-                </Form.Item>
-              ) : null}
+                  </>
+                ) : null}
 
-              {contentType !== 'ebook' ? (
-                <Form.Item label={formatMessage(programMessages['*'].description)} name="description">
-                  <AdminBraftEditor />
-                </Form.Item>
-              ) : null}
-            </Form>
-          )}
+                {enabledModules.program_content_material && contentType !== 'ebook' ? (
+                  <Form.Item label={formatMessage(commonMessages.label.material)}>
+                    <FileUploader
+                      renderTrigger={({ onClick }) => (
+                        <>
+                          <Button icon={<UploadOutlined />} onClick={onClick}>
+                            {formatMessage(commonMessages.ui.selectFile)}
+                          </Button>
+                          {isUploadFailed.materials && (
+                            <span className="ml-2">
+                              <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                              <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                            </span>
+                          )}
+                        </>
+                      )}
+                      multiple
+                      showUploadList
+                      fileList={materialFiles}
+                      uploadProgress={uploadProgress}
+                      failedUploadFiles={failedUploadFiles}
+                      downloadableLink={file => `materials/${appId}/${programContentId}_${file.name}`}
+                      onChange={files => setMaterialFiles(files)}
+                    />
+                  </Form.Item>
+                ) : null}
+
+                {contentType !== 'ebook' ? (
+                  <Form.Item label={formatMessage(programMessages['*'].description)} name="description">
+                    <AdminBraftEditor />
+                  </Form.Item>
+                ) : null}
+              </Form>
+            ))}
         </>
       </Modal>
     </>
