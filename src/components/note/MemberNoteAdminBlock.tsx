@@ -1,7 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { IconButton } from '@chakra-ui/react'
 import { Button, Input, message, Skeleton } from 'antd'
-import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { AiOutlineRedo } from 'react-icons/ai'
@@ -45,7 +44,6 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
 
 const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
   const [activeMemberNoteId, setActiveMemberNoteId] = useQueryParam('id', StringParam)
-  const theme = useAppTheme()
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
@@ -54,12 +52,13 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
     { member: memberId },
     searchText,
   )
-  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { loadingMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
 
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  if ((loadingNotes && notes.length === 0) || !currentMemberId || errorNotes || !memberAdmin) {
+
+  if (loadingMemberAdmin || loadingNotes || !currentMemberId || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
@@ -113,7 +112,6 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
         aria-label="refresh"
         icon={<AiOutlineRedo />}
         variant="outline"
-        color={theme.colors.primary[500]}
         onClick={() => {
           refetchMemberAdmin()
           refetchNotes()

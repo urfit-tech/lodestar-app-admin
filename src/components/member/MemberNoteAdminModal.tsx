@@ -96,9 +96,12 @@ const MemberNoteAdminModal: React.FC<
       note: values.note || '',
       attachments,
     })
-      .then(() => onSuccess())
-      .finally(() => {
+      .then(() => {
         setIsSubmitting(false)
+        onSuccess()
+      })
+      .catch(e => console.error(e))
+      .finally(() => {
         form.resetFields()
       })
   }
