@@ -105,7 +105,9 @@ const MemberNoteTranscriptModal: React.FC<{ attachmentId: string; transcript: st
         <StyledStatus cursor={'pointer'} onClick={onOpen}>
           <Space>
             <Icon as={Note} />
-            {formatMessage(memberMessages.MemberNoteTranscriptModal.transcript)}
+            {transcript
+              ? formatMessage(memberMessages.MemberNoteTranscriptModal.transcript)
+              : formatMessage(memberMessages.MemberNoteTranscriptModal.transformTranscript)}
           </Space>
         </StyledStatus>
       </>
