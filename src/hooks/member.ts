@@ -132,6 +132,7 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
             is_valid
+            country_code
           }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
@@ -199,72 +200,70 @@ export const useMemberAdmin = (memberId: string) => {
         noAgreedContract: boolean
         permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
       })
-    | null =
-    loading || error || !data || !data.member_by_pk
-      ? null
-      : {
-          id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk.picture_url || null,
-          username: data.member_by_pk.username,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          star: data.member_by_pk.star,
-          role: data.member_by_pk.role as UserRole,
-          title: data.member_by_pk.title || '',
-          description: data.member_by_pk.description || '',
-          abstract: data.member_by_pk.abstract || '',
-          createdAt: new Date(data.member_by_pk.created_at),
-          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
-          assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
-          manager: data.member_by_pk.manager
-            ? {
-                id: data.member_by_pk.manager.id,
-                email: data.member_by_pk.manager.email,
-                name: data.member_by_pk.manager.name,
-                avatarUrl: data.member_by_pk.manager.picture_url || null,
-              }
-            : null,
-          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => ({
-            isValid: v.is_valid,
-            phoneNumber: v.phone,
-          })),
-          lastRejectedNote: data.member_by_pk.member_notes[0]
-            ? {
-                author: {
-                  name: data.member_by_pk.member_notes[0].author.name,
-                },
-                description: data.member_by_pk.member_notes[0].description || '',
-                rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
-              }
-            : null,
-          noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
-          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: Math.max(
+    | null = data?.member_by_pk
+    ? {
+        id: data.member_by_pk.id,
+        avatarUrl: data.member_by_pk.picture_url || null,
+        username: data.member_by_pk.username,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        star: data.member_by_pk.star,
+        role: data.member_by_pk.role as UserRole,
+        title: data.member_by_pk.title || '',
+        description: data.member_by_pk.description || '',
+        abstract: data.member_by_pk.abstract || '',
+        createdAt: new Date(data.member_by_pk.created_at),
+        loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+        assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
+        manager: data.member_by_pk.manager
+          ? {
+              id: data.member_by_pk.manager.id,
+              email: data.member_by_pk.manager.email,
+              name: data.member_by_pk.manager.name,
+              avatarUrl: data.member_by_pk.manager.picture_url || null,
+            }
+          : null,
+        tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+        phones: data.member_by_pk.member_phones.map(v => ({
+          isValid: v.is_valid,
+          phoneNumber: v.phone,
+          countryCode: v?.country_code || '',
+        })),
+        lastRejectedNote: data.member_by_pk.member_notes[0]
+          ? {
+              author: {
+                name: data.member_by_pk.member_notes[0].author.name,
+              },
+              description: data.member_by_pk.member_notes[0].description || '',
+              rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
+            }
+          : null,
+        noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
+        permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
+        consumption: Math.max(
+          sum(
+            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          ) -
             sum(
               data.member_by_pk.order_logs.map(
-                orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0,
+                orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
               ),
-            ) -
-              sum(
-                data.member_by_pk.order_logs.map(
-                  orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
-                ),
-              ),
-          ),
-          coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
-          categories: data.member_by_pk.member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-          permissionGroups: data.member_by_pk.member_permission_groups.map(v => ({
-            id: v.permission_group.id,
-            name: v.permission_group.name,
-          })),
-          lastMemberNoteAnswered: data.member_by_pk.last_member_note_answered,
-          lastMemberNoteCalled: data.member_by_pk.last_member_note_called,
-        }
+            ),
+        ),
+        coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
+        categories: data.member_by_pk.member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+        permissionGroups: data.member_by_pk.member_permission_groups.map(v => ({
+          id: v.permission_group.id,
+          name: v.permission_group.name,
+        })),
+        lastMemberNoteAnswered: data.member_by_pk.last_member_note_answered,
+        lastMemberNoteCalled: data.member_by_pk.last_member_note_called,
+      }
+    : null
 
   return {
     loadingMemberAdmin: loading,
@@ -273,7 +272,6 @@ export const useMemberAdmin = (memberId: string) => {
     refetchMemberAdmin: refetch,
   }
 }
-
 
 export const useMemberNotesAdmin = (
   orderBy: hasura.member_note_order_by,
@@ -398,17 +396,21 @@ export const useMemberNotesAdmin = (
         })),
         metadata: v.metadata,
       }))
-      setNotes(prevNotes => [...prevNotes, ...newNotes])
+      setNotes(prevNotes => {
+        const existingIds = new Set(prevNotes.map(note => note.id))
+        const filteredNewNotes = newNotes.filter(note => !existingIds.has(note.id))
+        return [...prevNotes, ...filteredNewNotes].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      })
     }
   }, [data])
 
   const hasMoreNotes = useMemo(() => {
-    return (data?.member_note_aggregate.aggregate?.count || 0) > offset + limit;
-  }, [data?.member_note_aggregate.aggregate?.count, offset, limit]);
+    return (data?.member_note_aggregate.aggregate?.count || 0) > offset + limit
+  }, [data?.member_note_aggregate.aggregate?.count, offset, limit])
 
   const loadMoreNotes = () => {
     if (!hasMoreNotes) {
-      return Promise.resolve();
+      return Promise.resolve()
     }
 
     return fetchMore({
@@ -441,10 +443,6 @@ export const useMemberNotesAdmin = (
     hasMoreNotes,
   }
 }
-
-
-
-
 
 export const useMutateMemberNote = () => {
   const [insertMemberNote] = useMutation<hasura.INSERT_MEMBER_NOTE, hasura.INSERT_MEMBER_NOTEVariables>(gql`
