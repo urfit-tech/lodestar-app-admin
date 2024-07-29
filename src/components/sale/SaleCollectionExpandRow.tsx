@@ -6,7 +6,7 @@ import utc from 'dayjs/plugin/utc'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -40,6 +40,10 @@ const SaleCollectionExpandRow = ({
   const { settings } = useApp()
   const { currentUserRole, permissions } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
+  const [showInvoice, setShowInvoice] = useState(false)
+  const receiptRef1 = useRef<HTMLDivElement | null>(null)
+  const receiptRef2 = useRef<HTMLDivElement | null>(null)
+  const receiptRef3 = useRef<HTMLDivElement | null>(null)
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -59,6 +63,36 @@ const SaleCollectionExpandRow = ({
     orderDiscounts,
     refetchExpandRowOrderProduct,
   } = useOrderLogExpandRow(orderLogId)
+
+  const handlePrint = () => {
+    setShowInvoice(true)
+
+    setTimeout(() => {
+      const printContents = window.document.getElementById('print-content')?.innerHTML
+      const WinPrint = window.open('', '', 'width=900,height=650')
+      WinPrint?.document.write('<html><head><title>Print</title>')
+      WinPrint?.document.write('<style>')
+      WinPrint?.document.write(`
+        body {
+        margin:0;
+        padding:0;}
+      @media print {
+        .page-break {
+          page-break-before: always;
+        }
+      }
+    `)
+      WinPrint?.document.write('</style></head><body>')
+      WinPrint?.document.write(printContents || '')
+      WinPrint?.document.write('</body></html>')
+
+      WinPrint?.document.close()
+      WinPrint?.focus()
+      WinPrint?.print()
+      WinPrint?.close()
+      setShowInvoice(false)
+    }, 500)
+  }
 
   return (
     <div>
@@ -232,7 +266,6 @@ const SaleCollectionExpandRow = ({
             </Button>
           )}
         />
-
         {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' && (
           <ModifyOrderStatusModal
             orderLogId={orderLogId}
@@ -242,7 +275,6 @@ const SaleCollectionExpandRow = ({
             onRefetch={onRefetchOrderLog}
           />
         )}
-
         {currentUserRole === 'app-owner' &&
           orderProducts.some(v =>
             ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.type),
@@ -262,10 +294,45 @@ const SaleCollectionExpandRow = ({
               onRefetch={refetchExpandRowOrderProduct}
             />
           ))}
+
+        <Button
+          onClick={() => {
+            handlePrint()
+          }}
+        >
+          列印發票
+        </Button>
+        {showInvoice && (
+          <div id="print-content" style={{ display: 'none' }}>
+            <div className="no-break">
+              <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
+            </div>
+            <div className="page-break"></div>
+            <div className="no-break">
+              <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
+            </div>
+            <div className="page-break"></div>
+            <div className="no-break">
+              <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
 }
+const Receipt = React.forwardRef<HTMLDivElement, { template: string }>((props, ref) => {
+  const { template } = props
+  return (
+    <div className="receipt" ref={ref as any}>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: template,
+        }}
+      />
+    </div>
+  )
+})
 
 const ModifyOrderDeliveredModal: React.VFC<{
   orderProduct: {
