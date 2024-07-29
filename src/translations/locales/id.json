@@ -1716,6 +1716,7 @@
   "member.MemberNoteTranscriptModal.failed": "Konversi kata demi kata gagal",
   "member.MemberNoteTranscriptModal.numberAttachment": "lampiran",
   "member.MemberNoteTranscriptModal.pending": "Mengonversi naskah kata demi kata",
+  "member.MemberNoteTranscriptModal.transformTranscript": "Konversi kata demi kata",
   "member.MemberNoteTranscriptModal.transcript": "Salinan",
   "member.MemberNoteTranscriptModal.transcriptError": "Konversi kata demi kata gagal",
   "member.MemberNoteTranscriptModal.transcriptText1": "Apakah Anda yakin ingin mengonversi ke kata demi kata?",
