@@ -1,5 +1,6 @@
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Divider, message, Skeleton, Switch } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -44,6 +45,7 @@ const SaleCollectionExpandRow = ({
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
   const receiptRef2 = useRef<HTMLDivElement | null>(null)
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
+  const [posResponse, setPosResponse] = useState('')
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -94,6 +96,104 @@ const SaleCollectionExpandRow = ({
     }, 500)
   }
 
+  // 計算LRC（異或所有數據字節和ETX，STX不包括）
+  const calculateLRC = (data: any) => {
+    let lrc = 0
+    for (let i = 0; i < data.length; i++) {
+      lrc ^= data.charCodeAt(i)
+    }
+    return String.fromCharCode(lrc)
+  }
+  // 構建消息
+  const createMessage = (data: any) => {
+    const STX = String.fromCharCode(0x02)
+    const ETX = String.fromCharCode(0x03)
+    const lrc = calculateLRC(data + ETX)
+    return `${STX}${data}${ETX}${lrc}`
+  }
+
+  const handleCardReaderSerialport = async () => {
+    if (settings['pos_serialport.browser.enable'] === '1') {
+      let port: any
+      let writer: any
+      let reader
+      const encoder = new TextEncoder()
+      const decoder = new TextDecoder()
+      // 發送消息並等待回應
+      const sendMessage = async (message: string) => {
+        if (!writer) {
+          writer = port.writable.getWriter()
+        }
+        await writer.write(encoder.encode(message))
+        console.log('Message sent: ', message)
+      }
+
+      // 讀取循環
+      const readLoop = async () => {
+        reader = port.readable.getReader()
+        try {
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) {
+              console.log('Reader has been canceled')
+              break
+            }
+            const decodedValue = decoder.decode(value)
+            console.log('Received data: ', decodedValue)
+            if (decodedValue.length >= 400) {
+              setPosResponse(decodedValue)
+              break
+            }
+          }
+        } catch (error) {
+          console.error('Read error:', error)
+        } finally {
+          reader.releaseLock()
+        }
+      }
+
+      // 連接到串口
+      try {
+        port = await (navigator as any).serial.requestPort()
+        await port.open({ baudRate: 9600 })
+        console.log('Serial port opened')
+        readLoop()
+        // 存儲連接狀態
+      } catch (error) {
+        console.error('Connection failed:', error)
+      }
+
+      try {
+        const requestData =
+          'I.......01N...............................000000000100200630124550.............................................' +
+          '....SN0001PN0001000001.................................................................................................' +
+          '...........................................................................................................................................' +
+          '...............................'
+        const requestMessage = createMessage(requestData)
+        await sendMessage(requestMessage)
+      } catch (error) {
+        console.error('Send Message failed:', error)
+      }
+    } else {
+      if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
+        return alert('target url or path not found')
+      }
+      axios
+        .post(settings['pos_serialport.target_url'], {
+          message:
+            'I160407.01N03000002493817******1213.......000000000100200630124550093224....' +
+            '00006601000081.....13995512..........................................................................................' +
+            '...................02000002....................................493817YqcxU1MBel2x/jPwK3M+9P03' +
+            'vgABsTGUeVLYDsm/vSM=........123.........................................................................' +
+            '..........0',
+          path: settings['pos_serialport.target_path'],
+        })
+        .then(res => {
+          console.log(res.data)
+          setPosResponse(res.data)
+        })
+    }
+  }
   return (
     <div>
       {loadingExpandRowOrderProduct ? (
@@ -317,6 +417,15 @@ const SaleCollectionExpandRow = ({
             </div>
           </div>
         )}
+
+        <Button
+          className="ml-2"
+          onClick={() => {
+            handleCardReaderSerialport()
+          }}
+        >
+          實體刷卡
+        </Button>
       </div>
     </div>
   )
