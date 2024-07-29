@@ -38,7 +38,7 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { settings, enabledModules } = useApp()
   const { currentUserRole, permissions } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
   const [showInvoice, setShowInvoice] = useState(false)
@@ -394,38 +394,42 @@ const SaleCollectionExpandRow = ({
               onRefetch={refetchExpandRowOrderProduct}
             />
           ))}
-
-        <Button
-          onClick={() => {
-            handlePrint()
-          }}
-        >
-          列印發票
-        </Button>
-        {showInvoice && (
-          <div id="print-content" style={{ display: 'none' }}>
-            <div className="no-break">
-              <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
-            </div>
-            <div className="page-break"></div>
-            <div className="no-break">
-              <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
-            </div>
-            <div className="page-break"></div>
-            <div className="no-break">
-              <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
-            </div>
-          </div>
+        {enabledModules.invoice_printer && (
+          <>
+            <Button
+              onClick={() => {
+                handlePrint()
+              }}
+            >
+              列印發票
+            </Button>
+            {showInvoice && (
+              <div id="print-content" style={{ display: 'none' }}>
+                <div className="no-break">
+                  <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
+                </div>
+                <div className="page-break"></div>
+                <div className="no-break">
+                  <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
+                </div>
+                <div className="page-break"></div>
+                <div className="no-break">
+                  <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
+                </div>
+              </div>
+            )}
+          </>
         )}
-
-        <Button
-          className="ml-2"
-          onClick={() => {
-            handleCardReaderSerialport()
-          }}
-        >
-          實體刷卡
-        </Button>
+        {enabledModules.card_reader && (
+          <Button
+            className="ml-2"
+            onClick={() => {
+              handleCardReaderSerialport()
+            }}
+          >
+            實體刷卡
+          </Button>
+        )}
       </div>
     </div>
   )
