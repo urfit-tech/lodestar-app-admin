@@ -1716,6 +1716,7 @@
   "member.MemberNoteTranscriptModal.failed": "逐字稿轉換失敗",
   "member.MemberNoteTranscriptModal.numberAttachment": "call attachment(s)",
   "member.MemberNoteTranscriptModal.pending": "Transcription in progress, please wait and refresh to check.",
+  "member.MemberNoteTranscriptModal.transformTranscript": "Transform Transcript",
   "member.MemberNoteTranscriptModal.transcript": "transcript",
   "member.MemberNoteTranscriptModal.transcriptError": "transcript failed",
   "member.MemberNoteTranscriptModal.transcriptText1": "Are you sure you want to transcript to verbatim?",

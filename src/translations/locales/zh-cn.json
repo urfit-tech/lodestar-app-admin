@@ -1716,6 +1716,7 @@
   "member.MemberNoteTranscriptModal.failed": "逐字稿转换失败",
   "member.MemberNoteTranscriptModal.numberAttachment": "个附件",
   "member.MemberNoteTranscriptModal.pending": "逐字稿转档中，请稍候并重整检查",
+  "member.MemberNoteTranscriptModal.transformTranscript": "转换逐字稿",
   "member.MemberNoteTranscriptModal.transcript": "逐字稿",
   "member.MemberNoteTranscriptModal.transcriptError": "逐字稿转换失败",
   "member.MemberNoteTranscriptModal.transcriptText1": "确定要转换为逐字稿吗?",
