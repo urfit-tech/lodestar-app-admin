@@ -327,7 +327,7 @@ export const useMemberNotesAdmin = (
             count
           }
         }
-        member_note(where: $condition, order_by: $orderBy, limit: 10) {
+        member_note(where: $condition, order_by: $orderBy, offset: $offset, limit: $limit) {
           id
           created_at
           type
@@ -440,6 +440,7 @@ export const useMemberNotesAdmin = (
     notes,
     refetchNotes: refetch,
     loadMoreNotes,
+    hasMoreNotes,
   }
 }
 
