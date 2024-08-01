@@ -109,6 +109,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
         ml="3"
         w="45px"
         h="45px"
+        _hover={{}}
         aria-label="refresh"
         icon={<AiOutlineRedo />}
         variant="outline"

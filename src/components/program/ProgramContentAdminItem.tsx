@@ -13,8 +13,6 @@ import PinIcon from '../../images/icon/pin-v-2.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import { ProgramContentProps } from '../../types/program'
-import ExerciseAdminModal from './ExerciseAdminModal'
-import PracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 import programMessages from './translation'
 
@@ -157,14 +155,7 @@ const ProgramContentAdminItem: React.FC<{
               )
             : null}
 
-          {programContent.programContentType === 'practice' ? (
-            <PracticeAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-          ) : // TODO: remove exercise
-          programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
-            <ExerciseAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-          ) : (
-            <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
-          )}
+          <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
         </div>
       </div>
     </div>

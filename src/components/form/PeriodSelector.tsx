@@ -1,8 +1,8 @@
 import { InputNumber, Select } from 'antd'
+import { PeriodType } from 'lodestar-app-element/src/types/data'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { PeriodType } from '../../types/general'
 
 const PeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }
