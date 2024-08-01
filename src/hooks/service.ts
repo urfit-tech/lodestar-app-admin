@@ -5,9 +5,19 @@ import { Service } from '../types/service'
 import { useState } from 'react'
 import { handleError } from '../helpers'
 import { OverlapMeets } from '../types/meet'
+import { MeetingGateway } from '../types/member'
 
 export const GetService = gql`
-  query GetService($appId: String!) {
+  query GetService($appId: String!, $gateway: String!) {
+    service(where: { app_id: { _eq: $appId }, gateway: { _eq: $gateway } }) {
+      id
+      gateway
+    }
+  }
+`
+
+export const GetAllService = gql`
+  query GetAllService($appId: String!) {
     service(where: { app_id: { _eq: $appId } }) {
       id
       gateway
@@ -15,41 +25,43 @@ export const GetService = gql`
   }
 `
 
-export const useZoomServiceCheck = () => {
+export const useServiceCheck = () => {
   const apolloClient = useApolloClient()
   const { id: appId } = useApp()
   const [invalidGateways, setInvalidGateways] = useState<string[]>([])
 
-  const zoomServiceCheck = async ({ overlapMeets }: { overlapMeets: OverlapMeets }) => {
+  const serviceCheck = async (overlapMeets: OverlapMeets, gateway: MeetingGateway) => {
     const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
       query: GetService,
       variables: {
         appId,
+        gateway,
       },
     })
-    const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
+    const services = serviceData.service.filter(service => service.gateway === gateway)
 
-    if (zoomServices.length === 0) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
-      return handleError({ message: '無zoom帳號' })
+    if (services.length === 0) {
+      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
+      return handleError({ message: `無${gateway}帳號` })
     }
-    const zoomServiceIds = zoomServices.map(service => service.id)
+    const serviceIds = services.map(service => service.id)
     const periodUsedServiceId = overlapMeets.map(meet => meet.serviceId)
-    const availableZoomServiceId = zoomServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
-    if (!availableZoomServiceId) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
-      return handleError({ message: '此時段無可用zoom帳號' })
+    const availableServiceId = serviceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
+    if (!availableServiceId) {
+      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
+      return handleError({ message: `此時段無可用${gateway}帳號` })
     } else {
-      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom')])
+      setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
     }
-    return availableZoomServiceId
+    return availableServiceId
   }
-  return { zoomServiceCheck, invalidGateways, setInvalidGateways }
+
+  return { serviceCheck, invalidGateways, setInvalidGateways }
 }
 
 export const useService = () => {
   const { id: appId } = useApp()
-  const { loading, data } = useQuery<hasura.GetService, hasura.GetServiceVariables>(GetService, {
+  const { loading, data } = useQuery<hasura.GetAllService, hasura.GetAllServiceVariables>(GetAllService, {
     variables: { appId },
   })
   const services: Service[] =

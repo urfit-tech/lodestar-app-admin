@@ -15,10 +15,10 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
 import { useDeleteMeet, useGetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
-import { useZoomServiceCheck } from '../../hooks/service'
+import { useServiceCheck } from '../../hooks/service'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { OverlapMeets } from '../../types/meet'
-import { MemberTaskAdminModalFieldProps, MemberTaskProps } from '../../types/member'
+import { MeetingGateway, MemberTaskAdminModalFieldProps, MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
@@ -93,9 +93,9 @@ const MemberTaskAdminModal: React.FC<
   const { insertMeetMember } = useMutateMeetMember()
   const { deleteMeet } = useDeleteMeet()
   const { getOverlapMeets } = useGetOverlapMeet()
-  const { zoomServiceCheck, invalidGateways, setInvalidGateways } = useZoomServiceCheck()
   const [loading, setLoading] = useState(false)
-  const [meetingGateway, setMeetingGateWay] = useState<'zoom' | 'jitsi'>()
+  const [meetingGateway, setMeetingGateWay] = useState<MeetingGateway>()
+  const { serviceCheck, invalidGateways, setInvalidGateways } = useServiceCheck()
   const [hasMeeting, setHasMeeting] = useState(!!memberTask?.meetingGateway || memberTask?.hasMeeting || false)
 
   const handleSubmit = async (onSuccess?: () => void) => {
@@ -171,8 +171,8 @@ const MemberTaskAdminModal: React.FC<
         })
 
         if (enabledModules.meet_service && formMeetingGateway === 'zoom' && changeMeetingCondition) {
-          const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
-          toBeUsedServiceId = availableZoomServiceId
+          const availableServiceId = await serviceCheck(overlapMeets, formMeetingGateway)
+          toBeUsedServiceId = availableServiceId
         }
 
         const { message } = checkMeetingMember({
@@ -219,13 +219,14 @@ const MemberTaskAdminModal: React.FC<
                 ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
                 nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
                 exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                auto_recording: formMeetingGateway === 'zoom',
+                auto_recording: formMeetingGateway === 'zoom' || formMeetingGateway === 'google-meet',
                 target: memberTaskId ?? insertMemberTaskData?.insert_member_task_one?.id,
                 type: 'memberTask',
                 app_id: appId,
                 host_member_id: formExecutorId,
                 gateway: formMeetingGateway ?? 'jitsi',
-                service_id: formMeetingGateway === 'zoom' ? toBeUsedServiceId : null,
+                service_id:
+                  formMeetingGateway === 'zoom' || formMeetingGateway === 'google-meet' ? toBeUsedServiceId : null,
                 options: {},
               },
             },
@@ -297,7 +298,11 @@ const MemberTaskAdminModal: React.FC<
             type="primary"
             loading={loading}
             onClick={() => handleSubmit(() => setVisible(false))}
-            disabled={hasMeeting && invalidGateways.includes('zoom') && meetingGateway === 'zoom'}
+            disabled={
+              hasMeeting &&
+              ((invalidGateways.includes('zoom') && meetingGateway === 'zoom') ||
+                (invalidGateways.includes('google-meet') && meetingGateway === 'google-meet'))
+            }
           >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
@@ -524,12 +529,12 @@ const MemberTaskAdminModal: React.FC<
                 onChange={async () => {
                   const formValues = form.getFieldsValue()
                   const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
-                  if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway !== 'zoom') {
+                  if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway) {
                     const { overlapMeets } = await getOverlapMeets({
                       startedAt: formDueAt.toDate().toISOString(),
                       endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
                     })
-                    await zoomServiceCheck({ overlapMeets })
+                    await serviceCheck(overlapMeets, memberTask?.meetingGateway)
                   }
                 }}
               />
@@ -560,23 +565,36 @@ const MemberTaskAdminModal: React.FC<
               <Radio.Group>
                 <Stack direction="row">
                   <Radio
+                    value="google-meet"
+                    disabled={invalidGateways.includes('google-meet')}
+                    onChange={async e => {
+                      const formValues = form.getFieldsValue()
+                      const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
+                      setMeetingGateWay(e.target.value)
+                      if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway) {
+                        const { overlapMeets } = await getOverlapMeets({
+                          startedAt: formDueAt.toDate().toISOString(),
+                          endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
+                        })
+                        await serviceCheck(overlapMeets, memberTask?.meetingGateway)
+                      }
+                    }}
+                  >
+                    Google Meet
+                  </Radio>
+                  <Radio
                     value="zoom"
                     disabled={invalidGateways.includes('zoom')}
                     onChange={async e => {
                       const formValues = form.getFieldsValue()
                       const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
                       setMeetingGateWay(e.target.value)
-                      if (
-                        hasMeeting &&
-                        formDueAt &&
-                        enabledModules.meet_service &&
-                        memberTask?.meetingGateway !== 'zoom'
-                      ) {
+                      if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway) {
                         const { overlapMeets } = await getOverlapMeets({
                           startedAt: formDueAt.toDate().toISOString(),
                           endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
                         })
-                        await zoomServiceCheck({ overlapMeets })
+                        await serviceCheck(overlapMeets, memberTask?.meetingGateway)
                       }
                     }}
                   >

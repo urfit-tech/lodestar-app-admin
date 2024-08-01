@@ -5,6 +5,7 @@ import moment, { Moment } from 'moment'
 import queryString from 'query-string'
 import { css, FlattenSimpleInterpolation } from 'styled-components'
 import { BREAK_POINT } from '../components/common/Responsive'
+import { MeetingGateway } from '../types/member'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -469,6 +470,7 @@ export const updateMeeting = async (
   meetingHours: number,
   appId: string,
   authToken: string | null,
+  meetingGateway: MeetingGateway,
 ) => {
   if (!meetId) return
   try {
@@ -477,7 +479,7 @@ export const updateMeeting = async (
       {
         name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
         autoRecording: true,
-        service: 'zoom',
+        service: meetingGateway,
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
         expAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
         startedAt: meetingStartedAt?.toDate(),
@@ -508,13 +510,14 @@ export const createMeeting = async (
   meetingHours: number,
   appId: string,
   authToken: string | null,
+  meetingGateway: MeetingGateway,
 ) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
       {
         autoRecording: true,
-        service: 'zoom',
+        service: meetingGateway,
         nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
         expAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
         startedAt: meetingStartedAt?.toDate(),

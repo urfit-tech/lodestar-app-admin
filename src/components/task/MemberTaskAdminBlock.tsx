@@ -230,7 +230,7 @@ const MemberTaskAdminBlock: React.FC<{
       .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
       .replace('MEMBER_NAME', hostMemberName)
 
-    // jitsi or zoom
+    // jitsi or zoom or google-meet
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
       query: GetMeetById,
       variables: { meetId },
@@ -239,9 +239,12 @@ const MemberTaskAdminBlock: React.FC<{
     if (!isCurrentTimeInMeetingPeriod) {
       return message.error('非會議時間')
     }
-    let startUrl
-    if (enabledModules.meet_service && data.meet_by_pk?.gateway === 'zoom') {
-      // create zoom meeting than get startUrl
+    if (enabledModules.meet_service && data.meet_by_pk?.gateway === 'jitsi') {
+      // module meet_service not enabled, default jitsi
+      window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
+    } else {
+      let startUrl
+      // create meeting than get startUrl
       try {
         const { data: createMeetData } = await axios.post(
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -252,7 +255,7 @@ const MemberTaskAdminBlock: React.FC<{
             autoRecording: true,
             nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
             expAt: endedAt,
-            service: 'zoom',
+            service: data.meet_by_pk?.gateway,
             target: memberTaskId,
             hostMemberId: currentMemberId,
             type: `${data.meet_by_pk?.type}`,
@@ -271,12 +274,7 @@ const MemberTaskAdminBlock: React.FC<{
         window.open(startUrl, '_blank')
       } else {
         window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
-        // setJitsiModalVisible(true)
       }
-    } else {
-      // module meet_service not enabled, default jitsi
-      window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
-      // setJitsiModalVisible(true)
     }
   }
 
