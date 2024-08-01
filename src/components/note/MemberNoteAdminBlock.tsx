@@ -47,7 +47,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
-  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
+  const { loadingNotes, hasMoreNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
     { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
     searchText,
@@ -109,6 +109,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
         ml="3"
         w="45px"
         h="45px"
+        _hover={{}}
         aria-label="refresh"
         icon={<AiOutlineRedo />}
         variant="outline"
@@ -137,7 +138,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           ))
         )}
 
-        {loadMoreNotes && (
+        {hasMoreNotes && (
           <Button
             onClick={() => {
               setLoading(true)

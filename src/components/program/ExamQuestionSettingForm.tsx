@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { QuestionLibrary } from '../../types/program'
 import TreeTransfer from '../common/TreeTransfer'
-import { QuestionExam } from './ExerciseAdminModal'
+import { QuestionExam } from './ExerciseAdminModalBlock'
 import programMessages from './translation'
 
 const StyledLabel = styled.div`
