@@ -155,7 +155,7 @@ const ProgramContentAdminItem: React.FC<{
               )
             : null}
 
-          <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
+          <ProgramContentAdminModal programId={programId} programContentId={programContent.id} />
         </div>
       </div>
     </div>

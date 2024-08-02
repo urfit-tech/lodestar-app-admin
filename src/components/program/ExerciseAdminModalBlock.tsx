@@ -8,10 +8,11 @@ import { flatten } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { DeepPick } from 'ts-deep-pick'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
-import { Exam, ExamTimeUnit, ProgramContentProps } from '../../types/program'
+import { Exam, ExamTimeUnit, ProgramContent } from '../../types/program'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ExamBasicForm from './ExamBasicForm'
 import ExamQuestionSettingForm from './ExamQuestionSettingForm'
@@ -243,7 +244,8 @@ const UPDATE_EXAM_PROGRAM_CONTENT = gql`
 
 const ExerciseAdminModalBlock: React.FC<{
   programId: string
-  programContent: ProgramContentProps
+  programContent: DeepPick<ProgramContent, '!videos'> &
+    DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   displayMode: DisplayMode
   onDisplayModeChange: (displayMode: DisplayMode) => void
   onRefetch?: () => void
