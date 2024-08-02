@@ -2,7 +2,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, message, Skeleton, Tabs } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -17,6 +17,7 @@ import {
 import AdminPublishBlock, { PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AnnouncementBasicSettingsForm from '../../components/announcement/AnnouncementBasicSettingsForm'
 import AnnouncementPathSettingsForm from '../../components/announcement/AnnouncementPathSettingsForm'
+import { AnnouncementPreviewModal } from '../../components/announcement/AnnouncementPreviewModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages } from '../../helpers/translation'
 import { useAnnouncement } from '../../hooks/announcement'
@@ -38,6 +39,7 @@ const AnnouncementPage: React.FC = () => {
     upsertAnnouncementPagesLoading,
   } = useAnnouncement(announcementId)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const [visible, setVisible] = useState(false)
 
   const publishProps: { type: PublishStatus; title: string; onPublish: (event: PublishEvent) => void } = useMemo(() => {
     const isPublished = !!announcement?.publishedAt
@@ -74,6 +76,14 @@ const AnnouncementPage: React.FC = () => {
         </Link>
 
         <AdminHeaderTitle>{announcement?.title || ''}</AdminHeaderTitle>
+
+        <Button
+          onClick={() => {
+            setVisible(true)
+          }}
+        >
+          {formatMessage(commonMessages.ui.preview)}
+        </Button>
       </AdminHeader>
       <StyledLayoutContent variant="gray">
         <Tabs
@@ -168,6 +178,10 @@ const AnnouncementPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         </Tabs>
+
+        {announcement && (
+          <AnnouncementPreviewModal announcement={announcement} visible={visible} onClose={() => setVisible(false)} />
+        )}
       </StyledLayoutContent>
     </>
   )
