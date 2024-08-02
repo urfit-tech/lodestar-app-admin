@@ -3,7 +3,6 @@ import { Button, Form, Input, Table, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
-import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
@@ -12,7 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
-import announcementMessages from '../../components/announcement/translations'
+import { AnnouncementPreviewModal } from '../../components/announcement/AnnouncementPreviewModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { handleError } from '../../helpers'
 import { errorMessages } from '../../helpers/translation'
@@ -278,25 +277,6 @@ const AddNewAnnouncementModal: React.FC = () => {
           <Input />
         </Form.Item>
       </Form>
-    </AdminModal>
-  )
-}
-
-const AnnouncementPreviewModal: React.FC<{
-  announcement: Announcement
-  visible: boolean
-  onClose: () => void
-}> = ({ announcement, visible, onClose }) => {
-  const { formatMessage } = useIntl()
-
-  return (
-    <AdminModal
-      visible={visible}
-      onCancel={onClose}
-      title={formatMessage(announcementMessages.AnnouncementModal.announcement)}
-      footer={null}
-    >
-      <BraftContent>{announcement.content}</BraftContent>
     </AdminModal>
   )
 }
