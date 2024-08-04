@@ -1,4 +1,4 @@
-import { Button, Checkbox, DatePicker, Descriptions, Form, Input, Select, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Descriptions, Form, Input, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import moment from 'moment'
 import { last } from 'ramda'
@@ -47,6 +47,7 @@ const MemberContractCreationForm: React.FC<
     const [certificationPath, setCertificationPath] = useState('')
     const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
     const [quantity, setQuantity] = useState(1)
+    const [tabKey, setTabKey] = useState('中文')
 
     const matchProduct = (params: string, products: ContractInfo['products']) => {
       if (params.length < 2) return setFilterProducts(products)
@@ -55,13 +56,98 @@ const MemberContractCreationForm: React.FC<
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
+        <AdminBlockTitle>產品清單</AdminBlockTitle>
+        <Tabs
+          className="mb-5"
+          defaultActiveKey="中文"
+          onTabClick={key => {
+            setTabKey(key)
+          }}
+        >
+          {['中文', '外文', '師資班', '方言'].map(k => (
+            <Tabs.TabPane key={k} tab={k}>
+              <div style={{ padding: '8px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24 }}>
+                  {['註冊費', '學費', '教材', '活動', 'B/G訂單', '其他'].map(v => (
+                    <Button key={v} type={v === '學費' ? 'primary' : undefined}>
+                      {v}
+                    </Button>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    backgroundColor: '#f6f6f6',
+                    padding: '12px 24px',
+                  }}
+                >
+                  {[
+                    { title: '項目', options: ['標準時數'] },
+                    { title: '海內/外', options: ['海內'] },
+                    { title: '上課方式', options: ['內課'] },
+                    { title: '班型', options: ['個人班'] },
+                    { title: '週頻率', options: ['10'] },
+                    { title: '總堂數', options: ['120'] },
+                  ].map(v => (
+                    <div key={v.title} style={{ width: 110 }}>
+                      {v.title}
+                      <Select defaultValue={v.options[0]} style={{ width: 110 }}>
+                        {v.options.map(d => (
+                          <Select.Option key={d} value={d}>
+                            {d}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </div>
+                  ))}
+                  <div style={{ whiteSpace: 'nowrap' }}>
+                    <div>單價/堂</div>
+                    <div style={{ width: 110, height: 45, display: 'flex', alignItems: 'center' }}>650</div>
+                  </div>
+                  <Button>+ 新增項目</Button>
+                </div>
+              </div>
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+
+        <AdminBlockTitle>訂單內容</AdminBlockTitle>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            border: '1px solid #ececec',
+            padding: '12px 8px',
+            borderRadius: 8,
+            marginBottom: 24,
+          }}
+        >
+          <div>中文_學費_標準時數_海內_內課_個人_每週10堂以上_超過60堂</div>
+          <div>
+            <QuantityInput
+              value={quantity}
+              min={1}
+              onChange={value => {
+                setQuantity(Number(value))
+              }}
+            />
+          </div>
+          <div>$78,000</div>
+          <div>
+            <AiOutlineClose />
+          </div>
+        </div>
+
         <Descriptions title="合約內容" column={2} bordered className="mb-5">
           <Descriptions.Item label="合約項目" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
               <Select<string>>
                 {contracts.map(v => (
                   <Select.Option key={v.id} value={v.id}>
-                    {v.name} ({v.description})
+                    一般標準合約（中文）：C/BIP
                   </Select.Option>
                 ))}
               </Select>
@@ -69,10 +155,10 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
           <Descriptions.Item label="合約效期" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item className="mb-0" name="periodType" rules={[{ required: true, message: '請選擇效期' }]}>
-              <Select<string>>
+              <Select<string> defaultValue="依據訂單內容">
                 {['依據訂單內容'].map(v => (
                   <Select.Option key={v} value={v}>
-                    {v}
+                    依據訂單內容
                   </Select.Option>
                 ))}
               </Select>
@@ -91,6 +177,7 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="結束時間" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item name="productStartedAt" noStyle>
               <DatePicker
+                defaultValue={moment().add(1, 'y')}
                 disabledDate={date =>
                   date.isBefore(moment().add(1, 'day').startOf('day')) ||
                   date.isAfter(moment().add(14, 'day').startOf('day'))
@@ -100,65 +187,10 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
         </Descriptions>
 
-        <AdminBlockTitle>產品清單</AdminBlockTitle>
-
-        <AdminBlockTitle>訂單內容</AdminBlockTitle>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid #ececec',
-            padding: '12px 8px',
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        >
-          <Typography.Paragraph ellipsis={{ rows: 2 }}>
-            中文_學費_標準時數_海內_內課_個人_每週10堂以上_超過60堂
-          </Typography.Paragraph>
-          <div>
-            <QuantityInput
-              value={quantity}
-              min={1}
-              onChange={value => {
-                setQuantity(Number(value))
-              }}
-            />
-          </div>
-          {/* {((productType === 'ProjectPlan' && isLimited === true) || productType === 'MerchandiseSpec') &&
-          buyableQuantity === 0 ? (
-            <StyledInventoryBlock className="d-flex align-items-center">
-              <Icon as={ExclamationCircleIcon} className="mr-2" />
-              <span>{formatMessage(commonMessages.button.soldOut)}</span>
-            </StyledInventoryBlock>
-          ) : (
-            <>
-              <StyledMeta className="mr-2 d-none d-md-block">
-                <ProductTypeLabel productType={productType} />
-              </StyledMeta>
-              <StyledMeta>
-                {
-                  <PriceLabel
-                    variant="inline"
-                    currencyId={currencyId}
-                    listPrice={(listPrice || 0) * pluralProductQuantity}
-                    salePrice={isOnSale ? (salePrice || 0) * pluralProductQuantity : undefined}
-                  />
-                }
-              </StyledMeta>
-            </>
-          )} */}
-          <div>$78,000</div>
-          <div>
-            <AiOutlineClose />
-          </div>
-        </div>
-
         <Descriptions title="付款方式" column={2} bordered className="mb-5">
           <Descriptions.Item label="金流渠道">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string>>
+              <Select<string> defaultValue="藍新">
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
@@ -170,7 +202,7 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item label="收款單位">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string>>
+              <Select<string> defaultValue="中華語文">
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
@@ -182,7 +214,7 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item label="付款模式">
             <Form.Item className="mb-2" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string>>
+              <Select<string> defaultValue="全額付清">
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
