@@ -2,7 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { IconButton } from '@chakra-ui/react'
 import { Button, Input, message, Skeleton } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { AiOutlineRedo } from 'react-icons/ai'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -16,6 +16,7 @@ import { AdminBlock } from '../admin'
 import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
+import noteMessages from './translation'
 
 const SearchBlock = styled.div`
   position: absolute;
@@ -46,15 +47,16 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const [activeMemberNoteId, setActiveMemberNoteId] = useQueryParam('id', StringParam)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-
-  const { loadingNotes, hasMoreNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
+  const currentIndex = useRef(0)
+  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes, noteAggregate } = useMemberNotesAdmin(
+    currentIndex,
     { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
     searchText,
   )
   const { loadingMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
-
+  const [modalVisible, setModalVisible] = useState(false)
   const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
 
@@ -65,9 +67,11 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   return (
     <>
       <MemberNoteAdminModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
         title={formatMessage(memberMessages.label.createMemberNote)}
-        renderTrigger={({ setVisible }) => (
-          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+        renderTrigger={() => (
+          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setModalVisible(true)}>
             {formatMessage(memberMessages.label.createMemberNote)}
           </Button>
         )}
@@ -101,6 +105,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               message.success(formatMessage(commonMessages.event.successfullyCreated))
               refetchMemberAdmin()
               refetchNotes()
+              setModalVisible(false)
             })
             .catch(handleError)
         }
@@ -116,6 +121,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
         onClick={() => {
           refetchMemberAdmin()
           refetchNotes()
+          message.info(formatMessage(noteMessages.MemberNoteAdminBlock.successfullyRefreshed))
         }}
       />
       <AdminBlock className="mt-4">
@@ -138,7 +144,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           ))
         )}
 
-        {hasMoreNotes && (
+        {noteAggregate > currentIndex.current ? (
           <Button
             onClick={() => {
               setLoading(true)
@@ -148,7 +154,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
           >
             {formatMessage(commonMessages.ui.showMore)}
           </Button>
-        )}
+        ) : null}
       </AdminBlock>
     </>
   )
