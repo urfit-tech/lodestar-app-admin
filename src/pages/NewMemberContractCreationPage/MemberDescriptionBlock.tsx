@@ -1,4 +1,4 @@
-import { Alert, Descriptions, Tag } from 'antd'
+import { Descriptions } from 'antd'
 import React, { memo } from 'react'
 import { ContractInfo } from '.'
 
@@ -24,9 +24,9 @@ const MemberDescriptionBlock: React.FC<{
         >
           <Descriptions.Item label="學員姓名">{member.name}</Descriptions.Item>
           <Descriptions.Item label="學員信箱">{member.email}</Descriptions.Item>
-          <Descriptions.Item label="學員電話">
+          {/* <Descriptions.Item label="學員電話">
             {member.phone ? <Tag>{member.phone}</Tag> : <Alert type="error" message="未設定" />}
-          </Descriptions.Item>
+          </Descriptions.Item> */}
         </Descriptions>
       </div>
     )
