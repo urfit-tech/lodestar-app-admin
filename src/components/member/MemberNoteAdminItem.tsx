@@ -161,7 +161,7 @@ const MemberNoteAdminItem: React.FC<{
       : false,
   )
 
-  const removeAdminPath = () => {
+  const removeMemberNoteIdQueryParam = () => {
     const newUrl = `${window.location.pathname}`
     window.history.pushState({ path: newUrl }, '', newUrl)
   }
@@ -212,9 +212,7 @@ const MemberNoteAdminItem: React.FC<{
                 {note.status === 'answered' && note.type !== 'sms' && (
                   <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                 )}
-                {note.status === 'missed' && (
-                  <span className="ml-2">{formatMessage(memberMessages['*'].missed)}</span>
-                )}
+                {note.status === 'missed' && <span className="ml-2">{formatMessage(memberMessages['*'].missed)}</span>}
               </StyledStatus>
             )}
 
@@ -325,8 +323,8 @@ const MemberNoteAdminItem: React.FC<{
         note={note}
         visible={modalVisible}
         onCancel={() => {
-          removeAdminPath()
           setModalVisible(false)
+          removeMemberNoteIdQueryParam()
         }}
         onSubmit={async ({ type, status, duration, description, attachments, note: memberNote_note }) => {
           if (permissions.MEMBER_NOTE_ADMIN || permissions.EDIT_DELETE_ALL_MEMBER_NOTE) {
@@ -367,14 +365,16 @@ const MemberNoteAdminItem: React.FC<{
                 await uploadAttachments('MemberNote', memberNoteId, newAttachments)
               }
               message.success(formatMessage(commonMessages.event.successfullyEdited))
-              onRefetch?.()
             } catch (error) {
               return handleError(error)
+            } finally {
+              onRefetch?.()
+              setModalVisible(false)
             }
           } else {
             return Promise.resolve()
           }
-          removeAdminPath()
+          removeMemberNoteIdQueryParam()
         }}
       />
     </div>
