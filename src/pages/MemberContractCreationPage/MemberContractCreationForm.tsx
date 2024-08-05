@@ -1,12 +1,15 @@
-import { Button, Checkbox, DatePicker, Descriptions, Form, Input, Select, Tabs } from 'antd'
+import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import moment from 'moment'
 import { last } from 'ramda'
 import React, { memo, useState } from 'react'
-import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
-import { ContractInfo, FieldProps, paymentMethods } from '.'
+import { ContractInfo, FieldProps, installmentPlans, paymentMethods } from '.'
 import { AdminBlockTitle } from '../../components/admin'
+import PeriodSelector from '../../components/form/PeriodSelector'
+import CertificationUploader from './CertificationUploader'
+import ReferralMemberSelector from './ReferralMemberSelector'
 
 const StyledFieldLabel = styled.div`
   font-size: 14px;
@@ -46,8 +49,6 @@ const MemberContractCreationForm: React.FC<
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
     const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
-    const [quantity, setQuantity] = useState(1)
-    const [tabKey, setTabKey] = useState('中文')
 
     const matchProduct = (params: string, products: ContractInfo['products']) => {
       if (params.length < 2) return setFilterProducts(products)
@@ -56,141 +57,158 @@ const MemberContractCreationForm: React.FC<
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
-        <AdminBlockTitle>產品清單</AdminBlockTitle>
-        <Tabs
-          className="mb-5"
-          defaultActiveKey="中文"
-          onTabClick={key => {
-            setTabKey(key)
-          }}
-        >
-          {['中文', '外文', '師資班', '方言'].map(k => (
-            <Tabs.TabPane key={k} tab={k}>
-              <div style={{ padding: '8px 16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24 }}>
-                  {['註冊費', '學費', '教材', '活動', 'B/G訂單', '其他'].map(v => (
-                    <Button key={v} type={v === '學費' ? 'primary' : undefined}>
-                      {v}
-                    </Button>
-                  ))}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    backgroundColor: '#f6f6f6',
-                    padding: '12px 24px',
-                  }}
-                >
-                  {[
-                    { title: '項目', options: ['標準時數'] },
-                    { title: '海內/外', options: ['海內'] },
-                    { title: '上課方式', options: ['內課'] },
-                    { title: '班型', options: ['個人班'] },
-                    { title: '週頻率', options: ['10'] },
-                    { title: '總堂數', options: ['120'] },
-                  ].map(v => (
-                    <div key={v.title} style={{ width: 110 }}>
-                      {v.title}
-                      <Select defaultValue={v.options[0]} style={{ width: 110 }}>
-                        {v.options.map(d => (
-                          <Select.Option key={d} value={d}>
-                            {d}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </div>
-                  ))}
-                  <div style={{ whiteSpace: 'nowrap' }}>
-                    <div>單價/堂</div>
-                    <div style={{ width: 110, height: 45, display: 'flex', alignItems: 'center' }}>650</div>
-                  </div>
-                  <Button>+ 新增項目</Button>
-                </div>
-              </div>
-            </Tabs.TabPane>
-          ))}
-        </Tabs>
-
-        <AdminBlockTitle>訂單內容</AdminBlockTitle>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid #ececec',
-            padding: '12px 8px',
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        >
-          <div>中文_學費_標準時數_海內_內課_個人_每週10堂以上_超過60堂</div>
-          <div>
-            <QuantityInput
-              value={quantity}
-              min={1}
-              onChange={value => {
-                setQuantity(Number(value))
-              }}
-            />
-          </div>
-          <div>$78,000</div>
-          <div>
-            <AiOutlineClose />
-          </div>
-        </div>
-
-        <Descriptions title="合約內容" column={2} bordered className="mb-5">
-          <Descriptions.Item label="合約項目" style={{ whiteSpace: 'nowrap' }}>
+        <Descriptions title="合約期間" column={1} bordered className="mb-5">
+          <Descriptions.Item label="合約項目">
             <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
               <Select<string>>
                 {contracts.map(v => (
                   <Select.Option key={v.id} value={v.id}>
-                    一般標準合約（中文）：C/BIP
+                    {v.name} ({v.description})
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>
-          <Descriptions.Item label="合約效期" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item className="mb-0" name="periodType" rules={[{ required: true, message: '請選擇效期' }]}>
-              <Select<string> defaultValue="依據訂單內容">
-                {['依據訂單內容'].map(v => (
-                  <Select.Option key={v} value={v}>
-                    依據訂單內容
-                  </Select.Option>
-                ))}
-              </Select>
+
+          <Descriptions.Item label="合約效期">
+            <Form.Item className="mb-0" name="period" rules={[{ required: true, message: '請選擇合約效期' }]}>
+              <PeriodSelector onChange={() => form?.setFieldsValue({ contractProducts: [] })} />
             </Form.Item>
           </Descriptions.Item>
-          <Descriptions.Item label="開始時間" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item name="productStartedAt" noStyle>
-              <DatePicker
-                disabledDate={date =>
-                  date.isBefore(moment().add(1, 'day').startOf('day')) ||
-                  date.isAfter(moment().add(14, 'day').startOf('day'))
-                }
-              />
-            </Form.Item>
-          </Descriptions.Item>
-          <Descriptions.Item label="結束時間" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item name="productStartedAt" noStyle>
-              <DatePicker
-                defaultValue={moment().add(1, 'y')}
-                disabledDate={date =>
-                  date.isBefore(moment().add(1, 'day').startOf('day')) ||
-                  date.isAfter(moment().add(14, 'day').startOf('day'))
-                }
-              />
-            </Form.Item>
+
+          <Descriptions.Item label="服務開始日">{moment(startedAt).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
+
+          <Descriptions.Item label="服務結束日">
+            {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
           </Descriptions.Item>
         </Descriptions>
 
-        <Descriptions title="付款方式" column={2} bordered className="mb-5">
-          <Descriptions.Item label="金流渠道">
+        <div className="mb-5">
+          <AdminBlockTitle>合約內容</AdminBlockTitle>
+          <Form.List initialValue={[{ amount: 1 }]} name="contractProducts">
+            {(fields, { add, remove }) => {
+              return (
+                <>
+                  {fields.map((field, index) => {
+                    const contractProduct = products.find(
+                      product => contractProducts && product.id === contractProducts[index]?.id,
+                    )
+
+                    return (
+                      <div key={field.key} className="d-flex align-items-center justify-content-start">
+                        <Form.Item
+                          name={[field.name, 'id']}
+                          rules={[{ required: true, message: '請選擇合約' }]}
+                          fieldKey={[field.fieldKey, 'id']}
+                          label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
+                        >
+                          <Select<string>
+                            className="mr-3"
+                            showSearch
+                            allowClear
+                            filterOption={false}
+                            style={{ width: '500px' }}
+                            placeholder="請選擇項目 (搜尋請輸入至少兩個關鍵字)"
+                            onSearch={val => matchProduct(val, products)}
+                            onBlur={() => setFilterProducts(products)}
+                            onClear={() => setFilterProducts(products)}
+                          >
+                            {filterProducts.map(product => (
+                              <Select.Option key={product.id} value={product.id} title={product.name}>
+                                {product.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+
+                        <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
+                          <StyledPriceField>
+                            {contractProduct?.name === '業師諮詢' && isAppointmentOnly
+                              ? contractProduct?.price
+                              : contractProduct?.addonPrice || contractProduct?.price || 0}
+                          </StyledPriceField>
+                        </Form.Item>
+
+                        <Form.Item
+                          name={[field.name, 'amount']}
+                          fieldKey={[field.fieldKey, 'amount']}
+                          label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
+                        >
+                          <InputNumber min={1} className="mr-3" />
+                        </Form.Item>
+
+                        {fields.length > 1 && (
+                          <div className={index === 0 ? 'mt-2' : 'mb-4'}>
+                            <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                  <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
+                    新增項目
+                  </Button>
+                </>
+              )
+            }}
+          </Form.List>
+        </div>
+
+        <Descriptions column={1} bordered className="mb-5">
+          <Descriptions.Item label="學員身份" className="m-0">
+            <div className="d-flex align-items-center">
+              <Form.Item name="identity" noStyle>
+                <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                  <Radio value="normal">一般</Radio>
+                  <Radio value="student">學生</Radio>
+                </Radio.Group>
+              </Form.Item>
+
+              <Form.Item name="certification" noStyle>
+                {identity === 'student' && (
+                  <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+                )}
+              </Form.Item>
+
+              {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
+            </div>
+          </Descriptions.Item>
+
+          <Descriptions.Item label="介紹人">
+            <Form.Item name="referralMemberId" noStyle>
+              <ReferralMemberSelector />
+            </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item label="訂金">
+            <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
+              <Checkbox>扣除訂金 $1000</Checkbox>
+            </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item label="鑑賞期">
+            <div className="d-flex align-items-center">
+              <div className="flex-shrink-0">
+                <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
+                  <Checkbox>使用鑑賞期</Checkbox>
+                </Form.Item>
+              </div>
+              <div className="flex-grow-1 ml-2">
+                <Form.Item name="productStartedAt" noStyle>
+                  <DatePicker
+                    disabledDate={date =>
+                      date.isBefore(moment().add(1, 'day').startOf('day')) ||
+                      date.isAfter(moment().add(14, 'day').startOf('day'))
+                    }
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </Descriptions.Item>
+        </Descriptions>
+
+        <Descriptions title="付款方式" bordered className="mb-5">
+          <Descriptions.Item label="付款方式">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="藍新">
+              <Select<string> style={{ width: 120 }}>
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
@@ -200,31 +218,78 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="收款單位">
-            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="中華語文">
-                {paymentMethods.map((payment: string) => (
-                  <Select.Option key={payment} value={payment}>
-                    {payment}
+          <Descriptions.Item label="分期期數">
+            <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
+              <Select<string> style={{ width: 120 }}>
+                {installmentPlans.map(installmentPlan => (
+                  <Select.Option key={installmentPlan} value={installmentPlan}>
+                    {installmentPlan}
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="付款模式">
-            <Form.Item className="mb-2" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="全額付清">
-                {paymentMethods.map((payment: string) => (
-                  <Select.Option key={payment} value={payment}>
-                    {payment}
-                  </Select.Option>
-                ))}
-              </Select>
+          <Descriptions.Item label="金流編號">
+            <Form.Item className="mb-0" name="paymentNumber">
+              <Input />
             </Form.Item>
-            <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
-              <Checkbox>是否訂金</Checkbox>
-            </Form.Item>
+          </Descriptions.Item>
+
+          <Descriptions.Item label="承辦人 / 分潤" span={3}>
+            <Space align="center" className="d-flex mb-3">
+              <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
+                <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
+                  {sales.map(member => (
+                    <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
+                      {member.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="orderExecutorRatio">
+                <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+              </Form.Item>
+            </Space>
+
+            <Form.List name="orderExecutors">
+              {(fields, { add, remove }) => (
+                <div>
+                  {fields.map(field => (
+                    <Space key={field.key} align="center" className="d-flex mb-3">
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'memberId']}
+                        fieldKey={[field.fieldKey, 'memberId']}
+                        rules={[{ required: true, message: '請填寫承辦人' }]}
+                      >
+                        <Select<string>
+                          showSearch
+                          placeholder="承辦人"
+                          style={{ width: '150px' }}
+                          optionFilterProp="label"
+                        >
+                          {sales.map(member => (
+                            <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
+                              {member.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']}>
+                        <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                      </Form.Item>
+                      <MinusCircleOutlined className="mb-4" onClick={() => remove(field.name)} />
+                    </Space>
+                  ))}
+
+                  <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
+                    <PlusOutlined /> 加入
+                  </Button>
+                </div>
+              )}
+            </Form.List>
           </Descriptions.Item>
         </Descriptions>
       </Form>
@@ -239,58 +304,5 @@ const MemberContractCreationForm: React.FC<
     )
   },
 )
-
-const StyledInputGroup = styled(Input.Group)`
-  && {
-    width: auto;
-    input {
-      width: 5rem;
-      text-align: center;
-    }
-  }
-`
-const QuantityInput: React.VFC<{
-  value?: number
-  min?: number
-  max?: number
-  remainQuantity?: number
-  onChange?: (value: number | undefined) => void
-}> = ({ value = 0, min = -Infinity, max = Infinity, remainQuantity, onChange }) => {
-  const [inputValue, setInputValue] = useState(`${value}`)
-
-  return (
-    <StyledInputGroup compact>
-      <Button
-        icon="-"
-        onClick={() => {
-          const result = value - 1 <= min ? min : value - 1
-          onChange && onChange(result)
-          setInputValue(`${result}`)
-        }}
-        disabled={min === value || remainQuantity === 0}
-      />
-      <Input
-        value={inputValue}
-        onChange={e => setInputValue(e.target.value)}
-        onBlur={e => {
-          const newValue = Number.isSafeInteger(parseInt(e.target.value)) ? parseInt(e.target.value) : value
-          const result = newValue <= min ? min : newValue >= max ? max : newValue
-
-          onChange && onChange(result)
-          setInputValue(`${result}`)
-        }}
-      />
-      <Button
-        icon="+"
-        onClick={() => {
-          const result = value + 1 >= max ? max : value + 1
-          onChange && onChange(result)
-          setInputValue(`${result}`)
-        }}
-        disabled={max === value || remainQuantity === 0}
-      />
-    </StyledInputGroup>
-  )
-}
 
 export default MemberContractCreationForm
