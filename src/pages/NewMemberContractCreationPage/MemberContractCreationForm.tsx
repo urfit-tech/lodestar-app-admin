@@ -1,5 +1,6 @@
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import moment from 'moment'
 import React, { memo, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
@@ -15,6 +16,12 @@ const PRODUCT_CATEGORIES = [
   // 'B/G訂單',
   '其他',
 ] as const
+
+const calculateEndedAt = (startedAt: Date, weeks: number) => {
+  console.log(startedAt)
+
+  return moment(startedAt).add(weeks + 2, 'weeks')
+}
 
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
@@ -370,6 +377,14 @@ const MemberContractCreationForm: React.FC<
                         price,
                         totalPrice: price * (categories.productCategory === '學費' ? totalAmount : 1),
                       })
+
+                      categories.productCategory === '學費' &&
+                        form?.setFieldsValue({
+                          endedAt: calculateEndedAt(
+                            form.getFieldValue('startedAt'),
+                            Math.ceil(totalAmount / weeklyBatch),
+                          ),
+                        })
                     }}
                   >
                     + 新增項目
@@ -474,7 +489,7 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="結帳公司">
-            <Form.Item className="mb-0" name="company" rules={[{ required: true, message: '請選擇結帳公司' }]}>
+            <Form.Item className="mb-0" name="paymentCompany" rules={[{ required: true, message: '請選擇結帳公司' }]}>
               <Select<string>>
                 {[
                   '中華語文 - 70560259',
