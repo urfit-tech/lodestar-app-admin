@@ -149,7 +149,7 @@ const MemberContractCreationForm: React.FC<
                             setCategories({ ...categories, item: value })
                           }}
                         >
-                          {['標準時數', '客製時數'].map(d => (
+                          {['標準時數', '客製時數', '套裝項目'].map(d => (
                             <Select.Option key={d} value={d}>
                               {d}
                             </Select.Option>
@@ -158,8 +158,12 @@ const MemberContractCreationForm: React.FC<
                       </div>
                       {[
                         { id: 'abroad', title: '海內/外', options: ['海內', '海外'] },
-                        { id: 'classType', title: '上課方式', options: ['內課', '外課'] },
-                        { id: 'class', title: '班型', options: ['個人班', '自組班'] },
+                        { id: 'classType', title: '上課方式', options: ['內課', '外課', '線上課'] },
+                        {
+                          id: 'class',
+                          title: '班型',
+                          options: ['個人班', '自組班', '團體班', '2人班', '3-5人班', '6-10人班', '2-10人班'],
+                        },
                       ].map(v => (
                         <div key={v.title} style={{ width: 110 }}>
                           {v.title}
