@@ -53,6 +53,7 @@ const MemberContractCreationBlock: React.FC<{
           invoice: {
             name: member.name,
             email: member.email,
+            skipIssueInvoice: fieldValue.paymentMode === '暫收款後開發票',
           },
           price: totalPrice,
           orderId,
@@ -71,13 +72,27 @@ const MemberContractCreationBlock: React.FC<{
               delivered_at: new Date(),
             }
           }),
-          paymentNo: moment().format('YYYYMMDDHHmmss'),
           paymentOptions: {
-            paymentMethod: fieldValue.paymentMethod,
+            paymentGateway: fieldValue.paymentMethod.includes('藍新') ? 'spgateway' : 'physical',
+            paymentMethod:
+              fieldValue.paymentMethod === '藍新-信用卡'
+                ? 'credit'
+                : fieldValue.paymentMethod === '藍新-匯款'
+                ? 'vacc'
+                : fieldValue.paymentMethod === '現金'
+                ? 'cash'
+                : fieldValue.paymentMethod === '銀行匯款'
+                ? 'bankTransfer'
+                : fieldValue.paymentMethod === '遠刷'
+                ? 'physicalRemoteCredit'
+                : fieldValue.paymentMethod === '手刷'
+                ? 'physicalCredit'
+                : 'unknown',
+            paymentMode: fieldValue.paymentMode,
           },
           totalCount: selectedProducts.reduce((sum, product) => sum + product.amount, 0),
         },
-        options: {},
+        options: { company: fieldValue.company },
       },
     })
       .then(({ data }) => {

@@ -14,7 +14,7 @@ import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
 const paymentMethods = ['藍新-信用卡', '藍新-匯款', '銀行匯款', '現金', '遠刷', '手刷'] as const
-const paymentModes = ['全額付清', '訂金+尾款'] as const
+const paymentModes = ['全額付清', '訂金+尾款', '暫收款後開發票'] as const
 
 type FieldProps = {
   contractId: string
@@ -29,7 +29,7 @@ type FieldProps = {
   paymentMode: typeof paymentModes[number]
   startedAt: Date
   endedAt: Date
-  permissionGroupId: string
+  company: string
 }
 
 type ContractInfo = {
@@ -75,7 +75,11 @@ export type ContractItem = {
   coins: number
   amount: number
 }
+const calculateEndedAt = (startedAt: Date, weeks: number) => {
+  console.log(startedAt)
 
+  return moment(startedAt).add(weeks + 2, 'weeks')
+}
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
@@ -111,7 +115,6 @@ const MemberContractCreationPage: React.VFC = () => {
               endedAt: moment().add(1, 'y'),
               paymentMethod: paymentMethods[0],
               paymentMode: paymentModes[0],
-              permissionGroupId: '',
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
@@ -121,6 +124,8 @@ const MemberContractCreationPage: React.VFC = () => {
             sales={sales}
             selectedProducts={selectedProducts}
             onChangeSelectedProducts={product => {
+              console.log(product)
+
               setSelectedProducts(prev => {
                 const existingProductIndex = prev.findIndex(p => p.id === product.id)
                 if (existingProductIndex !== -1) {

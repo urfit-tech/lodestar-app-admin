@@ -174,6 +174,7 @@ const MemberContractCreationForm: React.FC<
                       <div style={{ width: 110, marginRight: 8 }}>
                         週頻率
                         <InputNumber
+                          min={1}
                           value={weeklyBatch}
                           onChange={e => {
                             setWeeklyBatch(Number(e))
@@ -183,6 +184,7 @@ const MemberContractCreationForm: React.FC<
                       <div style={{ width: 110, marginRight: 8 }}>
                         總堂數
                         <InputNumber
+                          min={1}
                           value={totalAmount}
                           onChange={e => {
                             setTotalAmount(Number(e))
@@ -359,6 +361,7 @@ const MemberContractCreationForm: React.FC<
                     </div>
                   )}
                   <Button
+                    disabled={filterProducts.length === 0}
                     onClick={() => {
                       const price = filterProducts[0]?.options.isCustomPrice ? customPrice : filterProducts[0].price
                       onChangeSelectedProducts({
@@ -471,7 +474,7 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="結帳公司">
-            <Form.Item className="mb-0" name="paymentCompany" rules={[{ required: true, message: '請選擇結帳公司' }]}>
+            <Form.Item className="mb-0" name="company" rules={[{ required: true, message: '請選擇結帳公司' }]}>
               <Select<string>>
                 {[
                   '中華語文 - 70560259',

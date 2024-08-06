@@ -1,6 +1,6 @@
 import Icon, { DownOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
-import { Button, Divider, Dropdown, Menu, message, Skeleton, Switch } from 'antd'
+import { Button, Divider, message, Skeleton, Switch } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -39,7 +39,7 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings, enabledModules } = useApp()
+  const { settings, enabledModules, id: appId } = useApp()
   const { currentUserRole, permissions } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
   const [showInvoice, setShowInvoice] = useState(false)
@@ -113,7 +113,7 @@ const SaleCollectionExpandRow = ({
     return `${STX}${data}${ETX}${lrc}`
   }
 
-  const handleCardReaderSerialport = async () => {
+  const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string) => {
     if (settings['pos_serialport.browser.enable'] === '1') {
       let port: any
       let writer: any
@@ -180,14 +180,10 @@ const SaleCollectionExpandRow = ({
         return alert('target url or path not found')
       }
       axios
-        .post(settings['pos_serialport.target_url'], {
-          message:
-            'I160407.01N03000002493817******1213.......000000000100200630124550093224....' +
-            '00006601000081.....13995512..........................................................................................' +
-            '...................02000002....................................493817YqcxU1MBel2x/jPwK3M+9P03' +
-            'vgABsTGUeVLYDsm/vSM=........123.........................................................................' +
-            '..........0',
-          path: settings['pos_serialport.target_path'],
+        .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
+          price,
+          orderId,
+          paymentNo,
         })
         .then(res => {
           console.log(res.data)
@@ -267,7 +263,7 @@ const SaleCollectionExpandRow = ({
                 <StyledRowWrapper key={orderProduct.id} isDelivered={!!orderProduct.deliveredAt}>
                   <div className="row">
                     <div className="col-2">
-                      <TokenTypeLabel tokenType="GiftPlan" />
+                      <TokenTypeLabel tokenType="contract" />
                     </div>
                     <div className="col-7">
                       <span>{orderProduct.name}</span>
@@ -397,7 +393,8 @@ const SaleCollectionExpandRow = ({
           ))}
         {enabledModules.invoice_printer &&
           (orderStatus === 'SUCCESS' || orderStatus === 'PARTIAL_PAID') &&
-          paymentLogs.length > 0 && (
+          paymentLogs.length > 0 &&
+          paymentLogs.filter(p => !!p.invoiceIssuedAt).length > 0 && (
             <>
               <Button
                 onClick={() => {
@@ -424,21 +421,17 @@ const SaleCollectionExpandRow = ({
             </>
           )}
         {enabledModules.card_reader &&
-          (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') && (
-            <Dropdown
-              className="ml-2"
-              overlay={
-                <Menu onClick={handleCardReaderSerialport}>
-                  <Menu.Item key="spgateway">手刷</Menu.Item>
-                  <Menu.Item key="remote">遠刷</Menu.Item>
-                </Menu>
+          (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
+          (paymentLogs[0].method === 'physicalCredit' || paymentLogs[0].method === 'physicalRemoteCredit') && (
+            <Button
+              style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+              onClick={() =>
+                handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[paymentLogs.length].no)
               }
             >
-              <Button style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div>實體刷卡</div>
-                <Icon component={() => <DownOutlined />} />
-              </Button>
-            </Dropdown>
+              <div>{paymentLogs[0].method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
+              <Icon component={() => <DownOutlined />} />
+            </Button>
           )}
       </div>
     </div>
