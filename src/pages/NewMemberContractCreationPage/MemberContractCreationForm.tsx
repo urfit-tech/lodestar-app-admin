@@ -364,9 +364,9 @@ const MemberContractCreationForm: React.FC<
                       const price = filterProducts[0]?.options.isCustomPrice ? customPrice : filterProducts[0].price
                       onChangeSelectedProducts({
                         id: filterProducts[0].id,
-                        amount: totalAmount,
+                        amount: categories.productCategory === '學費' ? totalAmount : 1,
                         price,
-                        totalPrice: price * totalAmount,
+                        totalPrice: price * (categories.productCategory === '學費' ? totalAmount : 1),
                       })
                     }}
                   >
