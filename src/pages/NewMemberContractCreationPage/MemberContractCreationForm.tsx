@@ -1,6 +1,5 @@
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
-import moment from 'moment'
 import React, { memo, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
@@ -448,22 +447,12 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
           <Descriptions.Item label="開始時間" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item name="startedAt" noStyle>
-              <DatePicker
-                disabledDate={date =>
-                  date.isBefore(moment().add(1, 'day').startOf('day')) ||
-                  date.isAfter(moment().add(14, 'day').startOf('day'))
-                }
-              />
+              <DatePicker />
             </Form.Item>
           </Descriptions.Item>
           <Descriptions.Item label="結束時間" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item name="endedAt" noStyle>
-              <DatePicker
-                disabledDate={date =>
-                  date.isBefore(moment().add(1, 'day').startOf('day')) ||
-                  date.isAfter(moment().add(14, 'day').startOf('day'))
-                }
-              />
+              <DatePicker />
             </Form.Item>
           </Descriptions.Item>
         </Descriptions>
