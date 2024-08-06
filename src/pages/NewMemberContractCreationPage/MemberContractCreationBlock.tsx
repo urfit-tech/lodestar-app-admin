@@ -45,7 +45,7 @@ const MemberContractCreationBlock: React.FC<{
       variables: {
         memberId: member.id,
         contractId: fieldValue.contractId,
-        startedAt: fieldValue.startedAt,
+        startedAt: moment(fieldValue.startedAt).add(1, 'days'),
         endedAt: fieldValue.endedAt,
         authorId: fieldValue.executorId,
         values: {
