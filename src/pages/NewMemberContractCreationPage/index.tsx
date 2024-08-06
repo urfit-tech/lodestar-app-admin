@@ -1,54 +1,35 @@
 import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import moment, { Moment } from 'moment'
-import { sum, uniqBy } from 'ramda'
+import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
 import { PeriodType } from '../../types/general'
 import LoadingPage from '../LoadingPage'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
-const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'] as const
-const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30] as const
-const periodTypeByDay: { [key: string]: number } = { D: 1, W: 7, M: 30, Y: 365 }
+const paymentMethods = ['藍新-信用卡', '藍新-匯款', '銀行匯款', '現金', '遠刷', '手刷'] as const
+const paymentModes = ['全額付清', '訂金+尾款'] as const
 
 type FieldProps = {
   contractId: string
-  withCreatorId: boolean
-  orderExecutorRatio: number
-  identity: 'normal' | 'student'
-  certification?: {
-    file: {
-      name: string
-    }
-  }
-  selectedProjectPlanId?: string | null
-  period: { type: PeriodType; amount: number }
-  selectedGiftDays?: 0 | 7 | 14
-  contractProducts?: {
+  executorId: string
+  products: {
     id: string
     amount: number
+    price: number
+    totalPrice: number
   }[]
-  creatorId?: string | null
-  referralMemberId?: string
-  paymentMethod?: typeof paymentMethods[number]
-  installmentPlan?: typeof installmentPlans[number]
-  paymentNumber?: string
-  orderExecutorId?: string
-  orderExecutors?: {
-    memberId?: string
-    ratio?: number
-  }[]
-  hasDeposit?: boolean[]
-  withProductStartedAt: boolean
-  productStartedAt: Moment
+  paymentMethod: typeof paymentMethods[number]
+  paymentMode: typeof paymentModes[number]
+  startedAt: Date
+  endedAt: Date
+  permissionGroupId: string
 }
 
 type ContractInfo = {
@@ -56,15 +37,7 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    phone: string
-    properties: {
-      id: string
-      propertyId: string
-      value: string
-      name: string
-    }[]
-  } | null
-  properties: { id: string; name: string; placeholder: string | null }[]
+  }
   contracts: {
     id: string
     name: string
@@ -73,22 +46,22 @@ type ContractInfo = {
   }[]
   products: {
     id: string
-    name: string
+    productId: string
+    title: string
     price: number
-    addonPrice: number | null
-    appointments: number
-    coins: number
-    periodAmount: number
-    periodType: PeriodType | null
-  }[]
-  appointmentPlanCreators: {
-    id: string | null
-    name: string | null
+    options: {
+      categories: string[]
+      isCustomPrice?: boolean
+      isCustomTotalAmount?: boolean
+      isCustomWeeklyBatch?: boolean
+      totalAmount?: { max?: number; min?: number }
+      weeklyBatch?: { max?: number; min?: number }
+    }
   }[]
   sales: {
     id: string
     name: string
-    username: string
+    email: string
   }[]
 }
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
@@ -107,210 +80,74 @@ const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
-  const fieldValue = form.getFieldsValue()
-
-  const { member, products, properties, contracts, appointmentPlanCreators, sales, ...contractInfoStatus } =
-    useContractInfo(appId, memberId)
-
+  const { info, error, loading } = useContractInfo(appId, memberId)
+  const [selectedProducts, setSelectedProducts] = useState<
+    {
+      id: string
+      amount: number
+      price: number
+      totalPrice: number
+    }[]
+  >([])
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
-  const [, setReRender] = useState(0)
-  const [startedAt, setStartedAt] = useState(moment().add(1, 'days').startOf('day').toDate())
-  const [period, setPeriod] = useState<{ type: PeriodType; amount: number }>({ type: 'Y', amount: 1 })
+  const [_, setReRender] = useState(0)
 
-  if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
+  if (loading || !!error || !info) {
     return <LoadingPage />
   }
 
-  // calculate contract items results
-  const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
-  const selectedMainProducts = selectedProducts.filter(contractProduct =>
-    products.find(product => product.id === contractProduct.id && product.price),
-  )
-  const isAppointmentOnly =
-    selectedMainProducts.length === 1 &&
-    products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
-
-  // calculate contract products
-  const contractProducts: ContractItem[] = selectedProducts
-    .map(contractProduct => {
-      const product = products.find(product => product.id === contractProduct.id)
-      if (!product) {
-        return null
-      }
-      const productType: 'mainProduct' | 'addonProduct' =
-        product.name === '業師諮詢' && isAppointmentOnly
-          ? 'mainProduct'
-          : product.addonPrice
-          ? 'addonProduct'
-          : 'mainProduct'
-
-      return {
-        id: contractProduct.id,
-        name: product.name,
-        type: productType,
-        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
-        appointments:
-          productType === 'mainProduct' && fieldValue?.identity === 'student'
-            ? product.appointments / 2
-            : product.appointments,
-        coins: product.coins,
-        amount: contractProduct.amount,
-      }
-    })
-    .filter(notEmpty)
-  const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  // const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
-  const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
-  const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
-
-  // calculate contract discounts
-  const contractDiscounts: ContractItem[] = []
-  const discountAmount = {
-    referral: 0,
-    deposit: -1000,
-    studentPromotion: 0,
-    groupPromotion: 0,
-  }
-
-  if (fieldValue.referralMemberId) {
-    discountAmount['referral'] = 2000 * -1
-  }
-
-  discountAmount['groupPromotion'] =
-    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
-      discountAmount['referral'] * mainProducts.length +
-      discountAmount['studentPromotion']) *
-    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
-
-  if (discountAmount['referral']) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['referral'],
-      type: 'referralDiscount',
-      name: '被介紹人折抵',
-      price: discountAmount['referral'],
-      appointments: 0,
-      coins: 0,
-      amount: mainProducts.length,
-    })
-  }
-  if (discountAmount['studentPromotion']) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['student'],
-      type: 'promotionDiscount',
-      name: '學生方案',
-      price: discountAmount['studentPromotion'],
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
-  }
-  if (Math.ceil(discountAmount['groupPromotion'])) {
-    const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
-      price: Math.ceil(discountAmount['groupPromotion']),
-      type: 'promotionDiscount',
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    }
-
-    if (mainProducts.length === 2) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['tenPercentOff'],
-        name: '任選兩件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length === 3) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['fifteenPercentOff'],
-        name: '任選三件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length >= 4) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['twentyPercentOff'],
-        name: '任選四件折抵',
-        ...promotionDiscount,
-      })
-    }
-  }
-  if (fieldValue.hasDeposit) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['deposit'],
-      type: 'depositDiscount',
-      name: '扣除訂金',
-      price: discountAmount['deposit'],
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
-  }
-  const endedAt =
-    startedAt && period
-      ? moment(startedAt)
-          .add(period?.amount || 0, period?.type ? periodTypeConverter(period.type) : 'y')
-          .toDate()
-      : null
-
-  const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
+  const { member, products, contracts, sales } = info
 
   return (
     <DefaultLayout>
       <div className="container py-5">
         <AdminBlock>
-          <MemberDescriptionBlock member={member} properties={properties} memberBlockRef={memberBlockRef} />
+          <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
           <MemberContractCreationForm
             form={form}
             initialValues={{
               contractId: contracts[0].id,
-              withCreatorId: false,
-              orderExecutorRatio: 1,
-              identity: 'normal',
-              period,
-              withProductStartedAt: false,
-              productStartedAt: moment(startedAt),
+              startedAt: moment(),
+              endedAt: moment().add(1, 'y'),
+              paymentMethod: paymentMethods[0],
+              paymentMode: paymentModes[0],
+              permissionGroupId: '',
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
-              setStartedAt(
-                values.withProductStartedAt
-                  ? values.productStartedAt.toDate()
-                  : moment().add(1, 'days').startOf('day').toDate(),
-              )
-              setPeriod(values.period ? values.period : period)
             }}
-            memberId={memberId}
-            startedAt={startedAt}
-            endedAt={endedAt}
-            contractProducts={selectedProducts}
-            isAppointmentOnly={isAppointmentOnly}
-            products={products.filter(
-              product =>
-                product.periodType === null ||
-                product.periodAmount === null ||
-                (product.periodAmount === period.amount && product.periodType === period.type) ||
-                periodTypeByDay[product.periodType] * product.periodAmount <=
-                  periodTypeByDay[period.type] * period.amount,
-            )}
+            products={products}
             contracts={contracts}
             sales={sales}
-            appointmentPlanCreators={appointmentPlanCreators}
-            totalPrice={totalPrice}
+            selectedProducts={selectedProducts}
+            onChangeSelectedProducts={product => {
+              setSelectedProducts(prev => {
+                const existingProductIndex = prev.findIndex(p => p.id === product.id)
+                if (existingProductIndex !== -1) {
+                  const updatedProducts = [...prev]
+                  const existingProduct = updatedProducts[existingProductIndex]
+
+                  updatedProducts[existingProductIndex] = {
+                    ...existingProduct,
+                    amount: existingProduct.amount + product.amount,
+                    totalPrice: (existingProduct.amount + product.amount) * existingProduct.price,
+                  }
+                  return updatedProducts
+                } else {
+                  return [...prev, product]
+                }
+              })
+            }}
+            deleteSelectedProduct={productId =>
+              setSelectedProducts(prev => prev.filter(product => product.id !== productId))
+            }
           />
 
           <MemberContractCreationBlock
             form={form}
             member={member}
             contracts={contracts}
-            startedAt={startedAt}
-            endedAt={endedAt}
             selectedProducts={selectedProducts}
-            memberBlockRef={memberBlockRef}
-            contractProducts={contractProducts}
-            contractDiscounts={contractDiscounts}
-            totalPrice={totalPrice}
-            totalCoins={totalCoins}
           />
         </AdminBlock>
       </div>
@@ -327,30 +164,16 @@ export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type 
 }
 
 const useContractInfo = (appId: string, memberId: string) => {
-  const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
+  const { loading, error, data } = useQuery<
+    hasura.GET_CONTRACT_INFO_WITH_PRODUCTS,
+    hasura.GET_CONTRACT_INFO_WITH_PRODUCTSVariables
+  >(
     gql`
-      query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
+      query GET_CONTRACT_INFO_WITH_PRODUCTS($appId: String!, $memberId: String!) {
         member_by_pk(id: $memberId) {
           id
           name
           email
-          member_phones {
-            id
-            phone
-          }
-          member_properties {
-            id
-            value
-            property {
-              id
-              name
-            }
-          }
-        }
-        property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
-          id
-          name
-          placeholder
         }
         contract(
           where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
@@ -361,30 +184,24 @@ const useContractInfo = (appId: string, memberId: string) => {
           description
           options
         }
-        project_plan(
-          where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
-          order_by: [{ position: asc_nulls_last }, { title: asc }]
-        ) {
+        appointment_plan(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
           id
           title
-          list_price
+          price
           options
-          period_amount
-          period_type
         }
-        appointment_plan(distinct_on: [creator_id]) {
+        token(where: { app_id: { _eq: $appId }, type: { _eq: "contract" } }) {
           id
-          creator {
-            id
-            name
-          }
+          title
+          price
+          options
         }
         sales: member(
           where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
         ) {
           id
           name
-          username
+          email
         }
       }
     `,
@@ -393,75 +210,67 @@ const useContractInfo = (appId: string, memberId: string) => {
         appId,
         memberId,
       },
+      skip: !appId || !memberId,
     },
   )
 
-  const info: ContractInfo = {
-    member: null,
-    properties: [],
-    contracts: [],
-    products: [],
-    appointmentPlanCreators: [],
-    sales: [],
-  }
-
-  if (!loading && !error && data) {
-    info.member = data.member_by_pk
+  const info: ContractInfo | null =
+    data && data.member_by_pk && data.appointment_plan && data.contract && data.sales && data.token
       ? {
-          id: data.member_by_pk.id,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          phone: data.member_by_pk.member_phones[0]?.phone,
-          properties: data.member_by_pk.member_properties.map(v => ({
-            id: v.id,
-            value: v.value,
-            propertyId: v.property.id,
-            name: v.property.name,
+          member: {
+            id: data.member_by_pk.id,
+            name: data.member_by_pk.name,
+            email: data.member_by_pk.email,
+          },
+          contracts: data.contract.map(c => ({
+            id: c.id,
+            name: c.name,
+            options: c.options,
+            description: c.description,
           })),
+          products: data.appointment_plan
+            .map(v => ({
+              id: v.id,
+              title: v.title,
+              price: v.price,
+              options: {
+                categories: v.options?.categories || [],
+                isCustomPrice: v.options?.is_custom_price,
+                isCustomTotalAmount: v.options?.is_custom_total_amount,
+                isCustomWeeklyBatch: v.options?.is_custom_weekly_batch,
+                totalAmount: v.options?.total_amount,
+                weeklyBatch: v.options?.weekly_batch,
+              },
+              productId: 'AppointmentPlan_' + v.id,
+            }))
+            .concat(
+              data.token.map(v => ({
+                id: v.id,
+                title: v.title,
+                price: v.price,
+                options: {
+                  categories: v.options?.categories || [],
+                  isCustomPrice: v.options?.is_custom_price,
+                  isCustomTotalAmount: v.options?.is_custom_total_amount,
+                  isCustomWeeklyBatch: v.options?.is_custom_weekly_batch,
+                  totalAmount: v.options?.total_amount,
+                  weeklyBatch: v.options?.weekly_batch,
+                },
+                productId: 'Token_' + v.id,
+              })),
+            ),
+          sales: data.sales,
         }
       : null
-    info.properties = data.property.map(p => ({
-      id: p.id,
-      name: p.name,
-      placeholder: p.placeholder || null,
-    }))
-    info.contracts = data.contract.map(c => ({
-      id: c.id,
-      name: c.name,
-      options: c.options,
-      description: c.description,
-    }))
-    info.products = data.project_plan.map(v => ({
-      id: v.id,
-      name: v.title || '',
-      price: v.list_price,
-      addonPrice: v.options?.addonPrice || 0,
-      appointments: v.options?.appointments || 0,
-      coins: v.options?.coins || 0,
-      periodAmount: v.period_amount || 0,
-      periodType: v.period_type as PeriodType | null,
-    }))
-    info.appointmentPlanCreators = data.appointment_plan
-      .map(v =>
-        v.creator
-          ? {
-              id: v.creator.id || null,
-              name: v.creator.name || null,
-            }
-          : null,
-      )
-      .filter(notEmpty)
-    info.sales = data.sales.filter(notEmpty)
-  }
 
   return {
     loading,
     error,
-    ...info,
+    info,
   }
 }
 
 export type { ContractInfo, FieldProps }
-export { paymentMethods, installmentPlans }
+export { paymentMethods }
 
 export default MemberContractCreationPage

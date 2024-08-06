@@ -1,5 +1,6 @@
+import Icon, { DownOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
-import { Button, Divider, message, Skeleton, Switch } from 'antd'
+import { Button, Divider, Dropdown, Menu, message, Skeleton, Switch } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -394,42 +395,51 @@ const SaleCollectionExpandRow = ({
               onRefetch={refetchExpandRowOrderProduct}
             />
           ))}
-        {enabledModules.invoice_printer && (
-          <>
-            <Button
-              onClick={() => {
-                handlePrint()
-              }}
+        {enabledModules.invoice_printer &&
+          (orderStatus === 'SUCCESS' || orderStatus === 'PARTIAL_PAID') &&
+          paymentLogs.length > 0 && (
+            <>
+              <Button
+                onClick={() => {
+                  handlePrint()
+                }}
+              >
+                列印發票
+              </Button>
+              {showInvoice && (
+                <div id="print-content" style={{ display: 'none' }}>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
+                  </div>
+                  <div className="page-break"></div>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
+                  </div>
+                  <div className="page-break"></div>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        {enabledModules.card_reader &&
+          (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') && (
+            <Dropdown
+              className="ml-2"
+              overlay={
+                <Menu onClick={handleCardReaderSerialport}>
+                  <Menu.Item key="spgateway">手刷</Menu.Item>
+                  <Menu.Item key="remote">遠刷</Menu.Item>
+                </Menu>
+              }
             >
-              列印發票
-            </Button>
-            {showInvoice && (
-              <div id="print-content" style={{ display: 'none' }}>
-                <div className="no-break">
-                  <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
-                </div>
-                <div className="page-break"></div>
-                <div className="no-break">
-                  <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
-                </div>
-                <div className="page-break"></div>
-                <div className="no-break">
-                  <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
-                </div>
-              </div>
-            )}
-          </>
-        )}
-        {enabledModules.card_reader && (
-          <Button
-            className="ml-2"
-            onClick={() => {
-              handleCardReaderSerialport()
-            }}
-          >
-            實體刷卡
-          </Button>
-        )}
+              <Button style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div>實體刷卡</div>
+                <Icon component={() => <DownOutlined />} />
+              </Button>
+            </Dropdown>
+          )}
       </div>
     </div>
   )
