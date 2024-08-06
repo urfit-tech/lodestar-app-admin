@@ -35,6 +35,7 @@ const MemberContractCreationForm: React.FC<
       totalPrice: number
     }) => void
     deleteSelectedProduct: (id: string) => void
+    adjustSelectedProductAmount: (id: string, amount: number) => void
   }
 > = memo(
   ({
@@ -45,6 +46,7 @@ const MemberContractCreationForm: React.FC<
     selectedProducts,
     onChangeSelectedProducts,
     deleteSelectedProduct,
+    adjustSelectedProductAmount,
     ...formProps
   }) => {
     const [categories, setCategories] = useState<{
@@ -406,7 +408,7 @@ const MemberContractCreationForm: React.FC<
                       value={v.amount}
                       min={1}
                       onChange={value => {
-                        // onChangeSelectedProducts({})
+                        adjustSelectedProductAmount(v.id, value || 1)
                       }}
                     />
                   </div>

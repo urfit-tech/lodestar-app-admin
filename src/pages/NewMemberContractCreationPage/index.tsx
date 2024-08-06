@@ -141,6 +141,19 @@ const MemberContractCreationPage: React.VFC = () => {
             deleteSelectedProduct={productId =>
               setSelectedProducts(prev => prev.filter(product => product.id !== productId))
             }
+            adjustSelectedProductAmount={(productId, amount) =>
+              setSelectedProducts(prev =>
+                prev.map(product =>
+                  product.id === productId
+                    ? {
+                        ...product,
+                        amount,
+                        totalPrice: product.price * amount,
+                      }
+                    : product,
+                ),
+              )
+            }
           />
 
           <MemberContractCreationBlock
