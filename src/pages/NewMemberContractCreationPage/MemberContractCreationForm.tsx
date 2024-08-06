@@ -1,75 +1,116 @@
-import { Button, Checkbox, DatePicker, Descriptions, Form, Input, Select, Tabs } from 'antd'
+import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import moment from 'moment'
-import { last } from 'ramda'
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps, paymentMethods } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 
-const StyledFieldLabel = styled.div`
-  font-size: 14px;
-`
-const StyledPriceField = styled.div`
-  width: 150px;
-`
+const LANGUAGES = ['中文', '外文', '師資班', '方言'] as const
+const PRODUCT_CATEGORIES = [
+  '註冊費',
+  '學費',
+  '教材',
+  '活動',
+  // 'B/G訂單',
+  '其他',
+] as const
 
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
-    startedAt: Date
-    endedAt: Date | null
     products: ContractInfo['products']
-    contractProducts: NonNullable<FieldProps['contractProducts']>
-    appointmentPlanCreators: ContractInfo['appointmentPlanCreators']
-    memberId: string
-    isAppointmentOnly: boolean
     sales: ContractInfo['sales']
-    totalPrice: number
+    selectedProducts: {
+      id: string
+      amount: number
+      price: number
+      totalPrice: number
+    }[]
+    onChangeSelectedProducts: (selectedProduct: {
+      id: string
+      amount: number
+      price: number
+      totalPrice: number
+    }) => void
+    deleteSelectedProduct: (id: string) => void
   }
 > = memo(
   ({
     contracts,
-    startedAt,
-    endedAt,
     products,
-    contractProducts,
-    appointmentPlanCreators,
-    memberId,
-    isAppointmentOnly,
     sales,
-    totalPrice,
     form,
+    selectedProducts,
+    onChangeSelectedProducts,
+    deleteSelectedProduct,
     ...formProps
   }) => {
-    const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
-    const [certificationPath, setCertificationPath] = useState('')
-    const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
-    const [quantity, setQuantity] = useState(1)
-    const [tabKey, setTabKey] = useState('中文')
+    const [categories, setCategories] = useState<{
+      language: typeof LANGUAGES[number]
+      productCategory: typeof PRODUCT_CATEGORIES[number]
+      item: string
+      abroad: '海內' | '海外'
+      classType: '內課' | '外課'
+      class: '個人' | '自組' | '團體'
+    }>({
+      language: '中文',
+      productCategory: '學費',
+      item: '標準時數',
+      abroad: '海內',
+      classType: '內課',
+      class: '個人',
+    })
 
-    const matchProduct = (params: string, products: ContractInfo['products']) => {
-      if (params.length < 2) return setFilterProducts(products)
-      setFilterProducts(products.filter(product => product.name.toLowerCase().includes(params.toLowerCase())))
-    }
+    const [weeklyBatch, setWeeklyBatch] = useState(10)
+    const [totalAmount, setTotalAmount] = useState(61)
+    const [customPrice, setCustomPrice] = useState(0)
+
+    const filterProducts = products.filter(product => {
+      const productOptions = product.options
+
+      const categoryMatch =
+        categories.productCategory !== '學費'
+          ? [categories.language, categories.productCategory].every(item => productOptions.categories.includes(item))
+          : Object.values(categories).every(item => productOptions.categories.includes(item))
+
+      if (productOptions.isCustomPrice || categories.productCategory !== '學費') {
+        return categoryMatch
+      }
+      const totalAmountMatch =
+        (!productOptions?.totalAmount?.min || totalAmount >= productOptions?.totalAmount?.min) &&
+        (!productOptions?.totalAmount?.max || totalAmount <= productOptions?.totalAmount?.max)
+
+      const weeklyBatchMatch =
+        (!productOptions?.weeklyBatch?.min || weeklyBatch >= productOptions?.weeklyBatch?.min) &&
+        (!productOptions?.weeklyBatch?.max || weeklyBatch <= productOptions?.weeklyBatch?.max)
+
+      return categoryMatch && totalAmountMatch && weeklyBatchMatch
+    })
+    console.log(filterProducts)
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
         <Tabs
           className="mb-5"
-          defaultActiveKey="中文"
           onTabClick={key => {
-            setTabKey(key)
+            setCategories({ ...categories, language: key as typeof LANGUAGES[number] })
           }}
         >
-          {['中文', '外文', '師資班', '方言'].map(k => (
+          {LANGUAGES.map(k => (
             <Tabs.TabPane key={k} tab={k}>
               <div style={{ padding: '8px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24 }}>
-                  {['註冊費', '學費', '教材', '活動', 'B/G訂單', '其他'].map(v => (
-                    <Button key={v} type={v === '學費' ? 'primary' : undefined}>
+                  {PRODUCT_CATEGORIES.map(v => (
+                    <Button
+                      key={v}
+                      type={v === categories?.productCategory ? 'primary' : undefined}
+                      onClick={() => {
+                        setCategories({ ...categories, productCategory: v as typeof PRODUCT_CATEGORIES[number] })
+                      }}
+                    >
                       {v}
                     </Button>
                   ))}
@@ -78,35 +119,257 @@ const MemberContractCreationForm: React.FC<
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
+                    justifyContent: 'space-between',
                     backgroundColor: '#f6f6f6',
                     padding: '12px 24px',
                   }}
                 >
-                  {[
-                    { title: '項目', options: ['標準時數'] },
-                    { title: '海內/外', options: ['海內'] },
-                    { title: '上課方式', options: ['內課'] },
-                    { title: '班型', options: ['個人班'] },
-                    { title: '週頻率', options: ['10'] },
-                    { title: '總堂數', options: ['120'] },
-                  ].map(v => (
-                    <div key={v.title} style={{ width: 110 }}>
-                      {v.title}
-                      <Select defaultValue={v.options[0]} style={{ width: 110 }}>
-                        {v.options.map(d => (
-                          <Select.Option key={d} value={d}>
-                            {d}
-                          </Select.Option>
-                        ))}
-                      </Select>
+                  {categories.productCategory === '學費' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      <div style={{ width: 110 }}>
+                        項目
+                        <Select
+                          defaultValue={'標準時數'}
+                          style={{ width: 110 }}
+                          onChange={value => {
+                            setCategories({ ...categories, item: value })
+                          }}
+                        >
+                          {['標準時數', '客製時數'].map(d => (
+                            <Select.Option key={d} value={d}>
+                              {d}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      {[
+                        { id: 'abroad', title: '海內/外', options: ['海內', '海外'] },
+                        { id: 'classType', title: '上課方式', options: ['內課', '外課'] },
+                        { id: 'class', title: '班型', options: ['個人班', '自組班'] },
+                      ].map(v => (
+                        <div key={v.title} style={{ width: 110 }}>
+                          {v.title}
+                          <Select
+                            defaultValue={v.options[0]}
+                            style={{ width: 110 }}
+                            onChange={value => {
+                              setCategories({ ...categories, [v.id]: value })
+                            }}
+                          >
+                            {v.options.map(d => (
+                              <Select.Option key={d} value={d}>
+                                {d}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </div>
+                      ))}
+                      <div style={{ width: 110, marginRight: 8 }}>
+                        週頻率
+                        <InputNumber
+                          value={weeklyBatch}
+                          onChange={e => {
+                            setWeeklyBatch(Number(e))
+                          }}
+                        />
+                      </div>
+                      <div style={{ width: 110, marginRight: 8 }}>
+                        總堂數
+                        <InputNumber
+                          value={totalAmount}
+                          onChange={e => {
+                            setTotalAmount(Number(e))
+                          }}
+                        />
+                      </div>
+                      <div style={{ whiteSpace: 'nowrap', width: 110 }}>
+                        <div>單價/堂</div>
+                        {filterProducts[0]?.options.isCustomPrice ? (
+                          <InputNumber
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
+                        ) : (
+                          <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
+                            {filterProducts[0]?.price}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  ))}
-                  <div style={{ whiteSpace: 'nowrap' }}>
-                    <div>單價/堂</div>
-                    <div style={{ width: 110, height: 45, display: 'flex', alignItems: 'center' }}>650</div>
-                  </div>
-                  <Button>+ 新增項目</Button>
+                  )}
+
+                  {categories.productCategory === '註冊費' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 8,
+                        width: '100%',
+                      }}
+                    >
+                      <div style={{ width: 110 }}>
+                        項目
+                        <Select defaultValue={'註冊費'} style={{ width: 110 }}>
+                          {['註冊費'].map(d => (
+                            <Select.Option key={d} value={d}>
+                              {d}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div style={{ width: 110, whiteSpace: 'nowrap' }}>
+                        <div>單價</div>
+                        {filterProducts[0]?.options.isCustomPrice ? (
+                          <InputNumber
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
+                        ) : (
+                          <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
+                            {filterProducts[0]?.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {categories.productCategory === '教材' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 8,
+                        width: '100%',
+                      }}
+                    >
+                      <div style={{ width: 110 }}>
+                        項目
+                        <Select defaultValue={'NPC新實用華語/漢語'} style={{ width: 110 }}>
+                          {['NPC新實用華語/漢語', 'NICD新中級華語/漢語', '(A5版) 商用會話'].map(d => (
+                            <Select.Option key={d} value={d}>
+                              {d}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div style={{ width: 110, whiteSpace: 'nowrap' }}>
+                        <div>單價</div>
+                        {filterProducts[0]?.options.isCustomPrice ? (
+                          <InputNumber
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
+                        ) : (
+                          <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
+                            {filterProducts[0]?.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {categories.productCategory === '活動' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 8,
+                        width: '100%',
+                      }}
+                    >
+                      <div style={{ width: 110 }}>
+                        項目
+                        <Select defaultValue={'移地教學'} style={{ width: 110 }}>
+                          {['移地教學'].map(d => (
+                            <Select.Option key={d} value={d}>
+                              {d}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div style={{ width: 110, whiteSpace: 'nowrap' }}>
+                        <div>單價</div>
+                        {filterProducts[0]?.options.isCustomPrice ? (
+                          <InputNumber
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
+                        ) : (
+                          <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
+                            {filterProducts[0]?.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {categories.productCategory === '其他' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 8,
+                        width: '100%',
+                      }}
+                    >
+                      <div style={{ width: 110 }}>
+                        項目
+                        <Select defaultValue={'其他收入'} style={{ width: 110 }}>
+                          {['其他收入', '外購教材：當代中文課程'].map(d => (
+                            <Select.Option key={d} value={d}>
+                              {d}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div style={{ width: 110, whiteSpace: 'nowrap' }}>
+                        <div>單價</div>
+                        {filterProducts[0]?.options.isCustomPrice ? (
+                          <InputNumber
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
+                        ) : (
+                          <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
+                            {filterProducts[0]?.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <Button
+                    onClick={() => {
+                      const price = filterProducts[0]?.options.isCustomPrice ? customPrice : filterProducts[0].price
+                      onChangeSelectedProducts({
+                        id: filterProducts[0].id,
+                        amount: totalAmount,
+                        price,
+                        totalPrice: price * totalAmount,
+                      })
+                    }}
+                  >
+                    + 新增項目
+                  </Button>
                 </div>
               </div>
             </Tabs.TabPane>
@@ -114,58 +377,75 @@ const MemberContractCreationForm: React.FC<
         </Tabs>
 
         <AdminBlockTitle>訂單內容</AdminBlockTitle>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid #ececec',
-            padding: '12px 8px',
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        >
-          <div>中文_學費_標準時數_海內_內課_個人_每週10堂以上_超過60堂</div>
-          <div>
-            <QuantityInput
-              value={quantity}
-              min={1}
-              onChange={value => {
-                setQuantity(Number(value))
-              }}
-            />
-          </div>
-          <div>$78,000</div>
-          <div>
-            <AiOutlineClose />
-          </div>
-        </div>
+        <div style={{ border: '1px solid #ececec', padding: '12px 8px', marginBottom: 24 }}>
+          {selectedProducts.map(v => {
+            const p = products.find(p => p.id === v.id)
+            if (!p) return null
+            return (
+              <div
+                key={v.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
 
+                  borderRadius: 8,
+                  marginBottom: 16,
+                }}
+              >
+                <div>{p.title}</div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 40,
+                  }}
+                >
+                  <div>
+                    <QuantityInput
+                      value={v.amount}
+                      min={1}
+                      onChange={value => {
+                        // onChangeSelectedProducts({})
+                      }}
+                    />
+                  </div>
+                  <div style={{ minWidth: 110, textAlign: 'right' }}>${v.totalPrice.toLocaleString()}</div>
+                  <div>
+                    <AiOutlineClose
+                      onClick={() => {
+                        deleteSelectedProduct(v.id)
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
         <Descriptions title="合約內容" column={2} bordered className="mb-5">
           <Descriptions.Item label="合約項目" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
               <Select<string>>
                 {contracts.map(v => (
                   <Select.Option key={v.id} value={v.id}>
-                    一般標準合約（中文）：C/BIP
+                    {v.name}
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>
           <Descriptions.Item label="合約效期" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item className="mb-0" name="periodType" rules={[{ required: true, message: '請選擇效期' }]}>
-              <Select<string> defaultValue="依據訂單內容">
-                {['依據訂單內容'].map(v => (
-                  <Select.Option key={v} value={v}>
-                    依據訂單內容
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
+            <Select<string> defaultValue="依據訂單內容">
+              {['依據訂單內容'].map(v => (
+                <Select.Option key={v} value={v}>
+                  依據訂單內容
+                </Select.Option>
+              ))}
+            </Select>
           </Descriptions.Item>
           <Descriptions.Item label="開始時間" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item name="productStartedAt" noStyle>
+            <Form.Item name="startedAt" noStyle>
               <DatePicker
                 disabledDate={date =>
                   date.isBefore(moment().add(1, 'day').startOf('day')) ||
@@ -175,9 +455,8 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
           <Descriptions.Item label="結束時間" style={{ whiteSpace: 'nowrap' }}>
-            <Form.Item name="productStartedAt" noStyle>
+            <Form.Item name="endedAt" noStyle>
               <DatePicker
-                defaultValue={moment().add(1, 'y')}
                 disabledDate={date =>
                   date.isBefore(moment().add(1, 'day').startOf('day')) ||
                   date.isAfter(moment().add(14, 'day').startOf('day'))
@@ -188,9 +467,9 @@ const MemberContractCreationForm: React.FC<
         </Descriptions>
 
         <Descriptions title="付款方式" column={2} bordered className="mb-5">
-          <Descriptions.Item label="金流渠道">
-            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="藍新">
+          <Descriptions.Item label="結帳管道">
+            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇結帳管道' }]}>
+              <Select<string>>
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
@@ -200,10 +479,15 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="收款單位">
-            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="中華語文">
-                {paymentMethods.map((payment: string) => (
+          <Descriptions.Item label="結帳公司">
+            <Form.Item className="mb-0" name="paymentCompany" rules={[{ required: true, message: '請選擇結帳公司' }]}>
+              <Select<string>>
+                {[
+                  '中華語文 - 70560259',
+                  '靈呱 - 42307734',
+                  '附設臺北市私立中華語文 - 42379477',
+                  '基金會 - 20084864',
+                ].map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
                   </Select.Option>
@@ -213,29 +497,30 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="付款模式">
-            <Form.Item className="mb-2" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> defaultValue="全額付清">
-                {paymentMethods.map((payment: string) => (
+            <Form.Item className="mb-2" name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
+              <Select<string>>
+                {['全額付清', '訂金+尾款', '暫收款後開發票'].map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
-              <Checkbox>是否訂金</Checkbox>
+          </Descriptions.Item>
+
+          <Descriptions.Item label="執行人員">
+            <Form.Item className="mb-0" name="executorId" rules={[{ required: true, message: '請選擇執行人員' }]}>
+              <Select<string>>
+                {sales.map(m => (
+                  <Select.Option key={m.id} value={m.id}>
+                    {m.name}( {m.email} )
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Descriptions.Item>
         </Descriptions>
       </Form>
-    )
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.endedAt?.getTime() === nextProps.endedAt?.getTime() &&
-      prevProps.isAppointmentOnly === nextProps.isAppointmentOnly &&
-      prevProps.contractProducts.length === nextProps.contractProducts.length &&
-      last(prevProps.contractProducts)?.id === last(nextProps.contractProducts)?.id
     )
   },
 )
@@ -257,7 +542,9 @@ const QuantityInput: React.VFC<{
   onChange?: (value: number | undefined) => void
 }> = ({ value = 0, min = -Infinity, max = Infinity, remainQuantity, onChange }) => {
   const [inputValue, setInputValue] = useState(`${value}`)
-
+  useEffect(() => {
+    setInputValue(`${value}`)
+  }, [value])
   return (
     <StyledInputGroup compact>
       <Button
