@@ -15,10 +15,10 @@ const StyledOrder = styled.div`
 
 const MemberContractCreationBlock: React.FC<{
   member: NonNullable<ContractInfo['member']>
-  contracts: ContractInfo['contracts']
   selectedProducts: NonNullable<FieldProps['products']>
   form: FormInstance<FieldProps>
-}> = ({ member, form, selectedProducts }) => {
+  products: ContractInfo['products']
+}> = ({ member, form, selectedProducts, products }) => {
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
     CREATE_MEMBER_CONTRACT,
   )
@@ -59,7 +59,18 @@ const MemberContractCreationBlock: React.FC<{
           orderOptions: {
             recognizePerformance: totalPrice,
           },
-          orderProducts: selectedProducts,
+          orderProducts: selectedProducts.map(v => {
+            const p = products.find(p => p.id === v.id)
+            return {
+              name: p?.title,
+              price: v.totalPrice,
+              started_at: moment(fieldValue.startedAt).add(1, 'days'),
+              ended_at: fieldValue.endedAt,
+              product_id: p?.productId,
+              options: { quantity: v.amount },
+              delivered_at: new Date(),
+            }
+          }),
           paymentNo: moment().format('YYYYMMDDHHmmss'),
           paymentOptions: {
             paymentMethod: fieldValue.paymentMethod,
