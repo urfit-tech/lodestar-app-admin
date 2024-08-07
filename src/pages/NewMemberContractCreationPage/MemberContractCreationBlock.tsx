@@ -29,8 +29,36 @@ const MemberContractCreationBlock: React.FC<{
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
 
   const handleMemberContractCreate = async () => {
+    if (!fieldValue.contractId) {
+      message.warn('請選擇合約')
+      return
+    }
+    if (!fieldValue.executorId) {
+      message.warn('請選擇執行人員')
+      return
+    }
     if (!fieldValue.paymentMethod) {
-      message.warn('請選擇付款方式')
+      message.warn('請選擇結帳管道')
+      return
+    }
+    if (!fieldValue.paymentMode) {
+      message.warn('請選擇付款模式')
+      return
+    }
+    if (!fieldValue.company) {
+      message.warn('請選擇結帳公司')
+      return
+    }
+    if (selectedProducts.length === 0) {
+      message.warn('請選擇至少一種產品')
+      return
+    }
+    if (!fieldValue.startedAt) {
+      message.warn('請選擇開始時間')
+      return
+    }
+    if (!fieldValue.endedAt) {
+      message.warn('請選擇結束時間')
       return
     }
 
@@ -89,6 +117,13 @@ const MemberContractCreationBlock: React.FC<{
                 ? 'physicalCredit'
                 : 'unknown',
             paymentMode: fieldValue.paymentMode,
+            installmentPlans:
+              fieldValue.paymentMode === '訂金+尾款'
+                ? [
+                    { price: Math.ceil(totalPrice * 0.1), index: 0 },
+                    { price: totalPrice - Math.ceil(totalPrice * 0.1), index: 1 },
+                  ]
+                : undefined,
           },
           totalCount: selectedProducts.reduce((sum, product) => sum + product.amount, 0),
         },

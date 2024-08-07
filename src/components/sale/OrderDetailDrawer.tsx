@@ -150,7 +150,7 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} />}
+            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} order={orderLog} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

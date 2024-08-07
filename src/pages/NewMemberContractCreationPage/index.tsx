@@ -75,11 +75,7 @@ export type ContractItem = {
   coins: number
   amount: number
 }
-const calculateEndedAt = (startedAt: Date, weeks: number) => {
-  console.log(startedAt)
 
-  return moment(startedAt).add(weeks + 2, 'weeks')
-}
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
@@ -124,8 +120,6 @@ const MemberContractCreationPage: React.VFC = () => {
             sales={sales}
             selectedProducts={selectedProducts}
             onChangeSelectedProducts={product => {
-              console.log(product)
-
               setSelectedProducts(prev => {
                 const existingProductIndex = prev.findIndex(p => p.id === product.id)
                 if (existingProductIndex !== -1) {
@@ -289,6 +283,6 @@ const useContractInfo = (appId: string, memberId: string) => {
 }
 
 export type { ContractInfo, FieldProps }
-export { paymentMethods }
+export { paymentMethods, paymentModes }
 
 export default MemberContractCreationPage

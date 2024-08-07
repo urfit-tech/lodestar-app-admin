@@ -1,10 +1,11 @@
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import { sum } from 'lodash'
 import moment from 'moment'
 import React, { memo, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
-import { ContractInfo, FieldProps, paymentMethods } from '.'
+import { ContractInfo, FieldProps, paymentMethods, paymentModes } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 
 const LANGUAGES = ['中文', '外文', '師資班', '方言'] as const
@@ -493,7 +494,7 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="結帳公司">
-            <Form.Item className="mb-0" name="paymentCompany" rules={[{ required: true, message: '請選擇結帳公司' }]}>
+            <Form.Item className="mb-0" name="company" rules={[{ required: true, message: '請選擇結帳公司' }]}>
               <Select<string>>
                 {[
                   '中華語文 - 70560259',
@@ -512,11 +513,13 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="付款模式">
             <Form.Item className="mb-2" name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
               <Select<string>>
-                {['全額付清', '訂金+尾款', '暫收款後開發票'].map((payment: string) => (
-                  <Select.Option key={payment} value={payment}>
-                    {payment}
-                  </Select.Option>
-                ))}
+                {paymentModes
+                  .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode === '訂金+尾款'))
+                  .map((payment: string) => (
+                    <Select.Option key={payment} value={payment}>
+                      {payment}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>
