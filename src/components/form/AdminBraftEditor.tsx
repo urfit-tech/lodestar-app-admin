@@ -6,7 +6,7 @@ import React from 'react'
 import { v4 as uuid } from 'uuid'
 import { uploadFile } from '../../helpers'
 
-const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
+export const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
   if (context === 'braft-editor') {
     languages['zh-hant'].controls.normal = '內文'
     languages['zh-hant'].controls.fontSize = '字級'
@@ -110,9 +110,10 @@ const controls: {
 const AdminBraftEditor: React.FC<{
   variant?: AdminBraftVariant
   value?: EditorState
+  customControls?: ControlType[]
   onChange?: (editorState: EditorState) => void
   onBlur?: () => void
-}> = ({ variant, value, onChange, onBlur }) => {
+}> = ({ variant, value, customControls, onChange, onBlur }) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
@@ -123,7 +124,7 @@ const AdminBraftEditor: React.FC<{
       onBlur={onBlur}
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
-      controls={controls[variant || 'default']}
+      controls={customControls ?? controls[variant || 'default']}
       media={{ uploadFn: createUploadFn(appId, authToken) }}
       imageControls={variant === 'question' ? ['remove'] : undefined}
       imageResizable={variant === 'question' ? false : undefined}
