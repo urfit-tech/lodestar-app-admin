@@ -31,14 +31,14 @@ const StyledInfoMessage = styled.div`
   width: 65%;
 `
 
-const PaymentCard: React.FC<{ payments: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt'>[] }> = ({
-  payments,
-}) => {
+const PaymentCard: React.FC<{
+  payments: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options'>[]
+}> = ({ payments }) => {
   const { formatMessage } = useIntl()
 
   return (
     <>
-      {payments.map(payment => {
+      {payments.map((payment, index) => {
         const contentList = [
           { title: formatMessage(saleMessages.PaymentCard.paymentStatus), message: payment.status, isRender: true },
           {
@@ -64,6 +64,12 @@ const PaymentCard: React.FC<{ payments: Pick<PaymentLog, 'no' | 'status' | 'pric
                     <StyledInfoMessage className="column">{row.message}</StyledInfoMessage>
                   </div>
                 ) : null,
+              )}
+              {!!payment.options?.bankCode && (
+                <div className="row mb-2 justify-content-between">
+                  <StyledInfoTitle className="column">銀行後五碼</StyledInfoTitle>
+                  <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
+                </div>
               )}
             </div>
           </StyledCard>
