@@ -426,9 +426,7 @@ const SaleCollectionExpandRow = ({
           (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
             <Button
               style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-              onClick={() =>
-                handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[paymentLogs.length].no)
-              }
+              onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
             >
               <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
               <Icon component={() => <DownOutlined />} />
