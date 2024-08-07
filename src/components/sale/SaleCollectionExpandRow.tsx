@@ -366,7 +366,7 @@ const SaleCollectionExpandRow = ({
             onClick={() =>
               axios
                 .put(
-                  `${process.env.REACT_APP_API_BASE_ROOT}/payment/bank-code/${
+                  `${process.env.REACT_APP_API_BASE_ROOT}/payment/invoice/${
                     paymentLogs.filter(p => p.status === 'SUCCESS')[0].no
                   }`,
                   { skipIssueInvoice: false },
