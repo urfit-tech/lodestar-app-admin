@@ -186,8 +186,16 @@ const SaleCollectionExpandRow = ({
           paymentNo,
         })
         .then(res => {
-          console.log(res.data)
-          setPosResponse(res.data)
+          console.log({ data: res.data })
+
+          if (res.data.message === 'success') {
+            message.success('付款成功，請重整確認訂單狀態')
+          }
+        })
+        .catch(err => {
+          console.log({ err })
+
+          message.error(`付款失敗，原因：${err.response.data.message.split('Internal Server Error: ')[1]}`)
         })
     }
   }
