@@ -514,7 +514,7 @@ const MemberContractCreationForm: React.FC<
             <Form.Item className="mb-2" name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
               <Select<string>>
                 {paymentModes
-                  .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode === '訂金+尾款'))
+                  .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
                       {payment}
