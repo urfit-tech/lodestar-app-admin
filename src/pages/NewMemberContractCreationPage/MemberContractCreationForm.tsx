@@ -162,7 +162,7 @@ const MemberContractCreationForm: React.FC<
                         {
                           id: 'class',
                           title: '班型',
-                          options: ['個人班', '自組班', '團體班', '2人班', '3-5人班', '6-10人班', '2-10人班'],
+                          options: ['個人', '自組', '團體', '2人', '3-5人', '6-10人', '2-10人'],
                         },
                       ].map(v => (
                         <div key={v.title} style={{ width: 110 }}>
