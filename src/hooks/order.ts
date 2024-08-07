@@ -339,6 +339,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
           status
           method
           invoice_issued_at
+          invoice_options
         }
       }
     `,
@@ -402,6 +403,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
       gateway: p.gateway,
       method: p.method,
       invoiceIssuedAt: p.invoice_issued_at,
+      invoiceOptions: p.invoice_options,
     })) || []
 
   const orderDiscounts =

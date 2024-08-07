@@ -1,4 +1,3 @@
-import Icon, { DownOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Divider, message, Skeleton, Switch } from 'antd'
 import axios from 'axios'
@@ -40,7 +39,7 @@ const SaleCollectionExpandRow = ({
 }) => {
   const { formatMessage } = useIntl()
   const { settings, enabledModules, id: appId } = useApp()
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
   const [showInvoice, setShowInvoice] = useState(false)
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
@@ -97,107 +96,29 @@ const SaleCollectionExpandRow = ({
     }, 500)
   }
 
-  // 計算LRC（異或所有數據字節和ETX，STX不包括）
-  const calculateLRC = (data: any) => {
-    let lrc = 0
-    for (let i = 0; i < data.length; i++) {
-      lrc ^= data.charCodeAt(i)
-    }
-    return String.fromCharCode(lrc)
-  }
-  // 構建消息
-  const createMessage = (data: any) => {
-    const STX = String.fromCharCode(0x02)
-    const ETX = String.fromCharCode(0x03)
-    const lrc = calculateLRC(data + ETX)
-    return `${STX}${data}${ETX}${lrc}`
-  }
-
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string) => {
-    if (settings['pos_serialport.browser.enable'] === '1') {
-      let port: any
-      let writer: any
-      let reader
-      const encoder = new TextEncoder()
-      const decoder = new TextDecoder()
-      // 發送消息並等待回應
-      const sendMessage = async (message: string) => {
-        if (!writer) {
-          writer = port.writable.getWriter()
-        }
-        await writer.write(encoder.encode(message))
-        console.log('Message sent: ', message)
-      }
-
-      // 讀取循環
-      const readLoop = async () => {
-        reader = port.readable.getReader()
-        try {
-          while (true) {
-            const { value, done } = await reader.read()
-            if (done) {
-              console.log('Reader has been canceled')
-              break
-            }
-            const decodedValue = decoder.decode(value)
-            console.log('Received data: ', decodedValue)
-            if (decodedValue.length >= 400) {
-              setPosResponse(decodedValue)
-              break
-            }
-          }
-        } catch (error) {
-          console.error('Read error:', error)
-        } finally {
-          reader.releaseLock()
-        }
-      }
-
-      // 連接到串口
-      try {
-        port = await (navigator as any).serial.requestPort()
-        await port.open({ baudRate: 9600 })
-        console.log('Serial port opened')
-        readLoop()
-        // 存儲連接狀態
-      } catch (error) {
-        console.error('Connection failed:', error)
-      }
-
-      try {
-        const requestData =
-          'I.......01N...............................000000000100200630124550.............................................' +
-          '....SN0001PN0001000001.................................................................................................' +
-          '...........................................................................................................................................' +
-          '...............................'
-        const requestMessage = createMessage(requestData)
-        await sendMessage(requestMessage)
-      } catch (error) {
-        console.error('Send Message failed:', error)
-      }
-    } else {
-      if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
-        return alert('target url or path not found')
-      }
-      axios
-        .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
-          price,
-          orderId,
-          paymentNo,
-        })
-        .then(res => {
-          console.log({ data: res.data })
-
-          if (res.data.message === 'success') {
-            message.success('付款成功，請重整確認訂單狀態')
-          }
-        })
-        .catch(err => {
-          console.log({ err })
-
-          message.error(`付款失敗，原因：${err.response.data.message.split('Internal Server Error: ')[1]}`)
-        })
+    if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
+      return alert('target url or path not found')
     }
+    axios
+      .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
+        price,
+        orderId,
+        paymentNo,
+      })
+      .then(res => {
+        if (res.data.message === 'success') {
+          message.success('付款成功，請重整確認訂單狀態')
+        }
+      })
+      .catch(err => {
+        console.log({ err })
+        message.error(
+          `付款失敗，原因：${
+            err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
+          }`,
+        )
+      })
   }
   return (
     <div>
@@ -437,9 +358,35 @@ const SaleCollectionExpandRow = ({
               onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
             >
               <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
-              <Icon component={() => <DownOutlined />} />
             </Button>
           )}
+        {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
+          <Button
+            style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+            onClick={() =>
+              axios
+                .put(
+                  `${process.env.REACT_APP_API_BASE_ROOT}/payment/bank-code/${
+                    paymentLogs.filter(p => p.status === 'SUCCESS')[0].no
+                  }`,
+                  { skipIssueInvoice: false },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${authToken}`,
+                    },
+                  },
+                )
+                .then(r => {
+                  if (r.data.code === 'SUCCESS') {
+                    message.success('已觸發補開，請稍後五分鐘等待發票自動開立')
+                  }
+                })
+                .catch(handleError)
+            }
+          >
+            <div>補開發票</div>
+          </Button>
+        )}
       </div>
     </div>
   )
