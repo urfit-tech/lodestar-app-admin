@@ -4,6 +4,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { sum } from 'lodash'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -38,8 +39,8 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings, enabledModules } = useApp()
-  const { currentUserRole, permissions } = useAuth()
+  const { settings, enabledModules, id: appId } = useApp()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
   const [showInvoice, setShowInvoice] = useState(false)
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
@@ -96,103 +97,29 @@ const SaleCollectionExpandRow = ({
     }, 500)
   }
 
-  // 計算LRC（異或所有數據字節和ETX，STX不包括）
-  const calculateLRC = (data: any) => {
-    let lrc = 0
-    for (let i = 0; i < data.length; i++) {
-      lrc ^= data.charCodeAt(i)
+  const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string) => {
+    if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
+      return alert('target url or path not found')
     }
-    return String.fromCharCode(lrc)
-  }
-  // 構建消息
-  const createMessage = (data: any) => {
-    const STX = String.fromCharCode(0x02)
-    const ETX = String.fromCharCode(0x03)
-    const lrc = calculateLRC(data + ETX)
-    return `${STX}${data}${ETX}${lrc}`
-  }
-
-  const handleCardReaderSerialport = async () => {
-    if (settings['pos_serialport.browser.enable'] === '1') {
-      let port: any
-      let writer: any
-      let reader
-      const encoder = new TextEncoder()
-      const decoder = new TextDecoder()
-      // 發送消息並等待回應
-      const sendMessage = async (message: string) => {
-        if (!writer) {
-          writer = port.writable.getWriter()
+    axios
+      .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
+        price,
+        orderId,
+        paymentNo,
+      })
+      .then(res => {
+        if (res.data.message === 'success') {
+          message.success('付款成功，請重整確認訂單狀態')
         }
-        await writer.write(encoder.encode(message))
-        console.log('Message sent: ', message)
-      }
-
-      // 讀取循環
-      const readLoop = async () => {
-        reader = port.readable.getReader()
-        try {
-          while (true) {
-            const { value, done } = await reader.read()
-            if (done) {
-              console.log('Reader has been canceled')
-              break
-            }
-            const decodedValue = decoder.decode(value)
-            console.log('Received data: ', decodedValue)
-            if (decodedValue.length >= 400) {
-              setPosResponse(decodedValue)
-              break
-            }
-          }
-        } catch (error) {
-          console.error('Read error:', error)
-        } finally {
-          reader.releaseLock()
-        }
-      }
-
-      // 連接到串口
-      try {
-        port = await (navigator as any).serial.requestPort()
-        await port.open({ baudRate: 9600 })
-        console.log('Serial port opened')
-        readLoop()
-        // 存儲連接狀態
-      } catch (error) {
-        console.error('Connection failed:', error)
-      }
-
-      try {
-        const requestData =
-          'I.......01N...............................000000000100200630124550.............................................' +
-          '....SN0001PN0001000001.................................................................................................' +
-          '...........................................................................................................................................' +
-          '...............................'
-        const requestMessage = createMessage(requestData)
-        await sendMessage(requestMessage)
-      } catch (error) {
-        console.error('Send Message failed:', error)
-      }
-    } else {
-      if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
-        return alert('target url or path not found')
-      }
-      axios
-        .post(settings['pos_serialport.target_url'], {
-          message:
-            'I160407.01N03000002493817******1213.......000000000100200630124550093224....' +
-            '00006601000081.....13995512..........................................................................................' +
-            '...................02000002....................................493817YqcxU1MBel2x/jPwK3M+9P03' +
-            'vgABsTGUeVLYDsm/vSM=........123.........................................................................' +
-            '..........0',
-          path: settings['pos_serialport.target_path'],
-        })
-        .then(res => {
-          console.log(res.data)
-          setPosResponse(res.data)
-        })
-    }
+      })
+      .catch(err => {
+        console.log({ err })
+        message.error(
+          `付款失敗，原因：${
+            err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
+          }`,
+        )
+      })
   }
   return (
     <div>
@@ -266,7 +193,7 @@ const SaleCollectionExpandRow = ({
                 <StyledRowWrapper key={orderProduct.id} isDelivered={!!orderProduct.deliveredAt}>
                   <div className="row">
                     <div className="col-2">
-                      <TokenTypeLabel tokenType="GiftPlan" />
+                      <TokenTypeLabel tokenType="contract" />
                     </div>
                     <div className="col-7">
                       <span>{orderProduct.name}</span>
@@ -371,7 +298,11 @@ const SaleCollectionExpandRow = ({
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
             paymentLogs={paymentLogs}
-            defaultPrice={totalPrice}
+            defaultPrice={
+              totalPrice -
+              sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) +
+              -sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
+            }
             onRefetch={onRefetchOrderLog}
           />
         )}
@@ -394,40 +325,71 @@ const SaleCollectionExpandRow = ({
               onRefetch={refetchExpandRowOrderProduct}
             />
           ))}
-        {enabledModules.invoice_printer && (
-          <>
+        {enabledModules.invoice_printer &&
+          (orderStatus === 'SUCCESS' || orderStatus === 'PARTIAL_PAID') &&
+          paymentLogs.length > 0 &&
+          paymentLogs.filter(p => !!p.invoiceIssuedAt).length > 0 && (
+            <>
+              <Button
+                onClick={() => {
+                  handlePrint()
+                }}
+              >
+                列印發票
+              </Button>
+              {showInvoice && (
+                <div id="print-content" style={{ display: 'none' }}>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
+                  </div>
+                  <div className="page-break"></div>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
+                  </div>
+                  <div className="page-break"></div>
+                  <div className="no-break">
+                    <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        {enabledModules.card_reader &&
+          paymentLogs.length > 0 &&
+          (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
+          (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
             <Button
-              onClick={() => {
-                handlePrint()
-              }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+              onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
             >
-              列印發票
+              <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
             </Button>
-            {showInvoice && (
-              <div id="print-content" style={{ display: 'none' }}>
-                <div className="no-break">
-                  <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
-                </div>
-                <div className="page-break"></div>
-                <div className="no-break">
-                  <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
-                </div>
-                <div className="page-break"></div>
-                <div className="no-break">
-                  <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
-                </div>
-              </div>
-            )}
-          </>
-        )}
-        {enabledModules.card_reader && (
+          )}
+        {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
           <Button
-            className="ml-2"
-            onClick={() => {
-              handleCardReaderSerialport()
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+            onClick={() =>
+              axios
+                .put(
+                  `${process.env.REACT_APP_API_BASE_ROOT}/payment/invoice/${
+                    paymentLogs.filter(p => p.status === 'SUCCESS')[0].no
+                  }`,
+                  { skipIssueInvoice: false },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${authToken}`,
+                    },
+                  },
+                )
+                .then(r => {
+                  if (r.data.code === 'SUCCESS') {
+                    message.success('已觸發補開，請稍後五分鐘等待發票自動開立')
+                  }
+                })
+                .catch(handleError)
+            }
           >
-            實體刷卡
+            <div>補開發票</div>
           </Button>
         )}
       </div>
