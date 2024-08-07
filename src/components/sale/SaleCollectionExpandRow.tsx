@@ -421,15 +421,16 @@ const SaleCollectionExpandRow = ({
             </>
           )}
         {enabledModules.card_reader &&
+          paymentLogs.length > 0 &&
           (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
-          (paymentLogs[0].method === 'physicalCredit' || paymentLogs[0].method === 'physicalRemoteCredit') && (
+          (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
             <Button
               style={{ display: 'flex', alignItems: 'center', gap: 4 }}
               onClick={() =>
                 handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[paymentLogs.length].no)
               }
             >
-              <div>{paymentLogs[0].method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
+              <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
               <Icon component={() => <DownOutlined />} />
             </Button>
           )}
