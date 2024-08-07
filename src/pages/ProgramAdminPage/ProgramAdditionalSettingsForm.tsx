@@ -1,12 +1,12 @@
 import { Button, DatePicker, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
-import { EditorState } from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import moment, { MomentInput } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import { handleError } from '../../helpers'
 import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
 import { ProgramAdminProps } from '../../types/program'
@@ -53,7 +53,7 @@ class TextStrategy implements RenderStrategy {
 
 class TextEditorStrategy implements RenderStrategy {
   render(options: any): JSX.Element | null {
-    return <BraftEditor controls={options?.controls} />
+    return <AdminBraftEditor customControls={options?.controls} />
   }
 }
 

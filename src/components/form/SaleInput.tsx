@@ -36,7 +36,7 @@ const SaleInput: React.FC<{
         Boolean(value?.salePriceSuffix && value.salePriceSuffix !== '')),
   )
   const [isTimerVisible, setIsTimerVisible] = useState(!!value?.isTimerVisible)
-  
+
   return (
     <div>
       <Checkbox
@@ -117,15 +117,24 @@ const SaleInput: React.FC<{
         )}
         {settings['program.layout_template_circumfix.enabled'] ? (
           <div>
-            <Checkbox
-              checked={salePriceCircumfixActive}
-              className="mb-2"
-              onChange={e => {
-                setSalePriceCircumfixActive(e.target.checked)
-              }}
-            >
-              {formatMessage(formMessages.SaleInput.salePriceCircumfix)}
-            </Checkbox>
+            <Form.Item>
+              <Checkbox
+                checked={salePriceCircumfixActive}
+                className="mb-2"
+                onChange={e => {
+                  setSalePriceCircumfixActive(e.target.checked)
+                  onChange?.({
+                    ...value,
+                    price: value?.price || 0,
+                    soldAt: value?.soldAt || null,
+                    salePricePrefix: undefined,
+                    salePriceSuffix: undefined,
+                  })
+                }}
+              >
+                {formatMessage(formMessages.SaleInput.salePriceCircumfix)}
+              </Checkbox>
+            </Form.Item>
             {salePriceCircumfixActive ? (
               <>
                 <Form.Item label={formatMessage(formMessages.SaleInput.salePricePrefix)}>
