@@ -2,14 +2,14 @@ import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tab
 import { FormProps } from 'antd/lib/form/Form'
 import { sum } from 'lodash'
 import moment from 'moment'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps, paymentMethods, paymentModes } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 
 const LANGUAGES = ['中文', '外文', '師資班', '方言'] as const
-const PRODUCT_CATEGORIES = [
+const PRODUCT_CATEGORy = [
   '註冊費',
   '學費',
   '教材',
@@ -18,9 +18,226 @@ const PRODUCT_CATEGORIES = [
   '其他',
 ] as const
 
-const calculateEndedAt = (startedAt: Date, weeks: number) => {
-  console.log(startedAt)
+const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
+  {
+    language: '中文',
+    products: [
+      {
+        title: '註冊費',
+      },
+      {
+        title: '學費',
+        programType: [{ title: '標準時數' }, { title: '套裝項目' }, { title: '客製時數' }],
+        classMode: [{ title: '內課' }, { title: '外課' }, { title: '線上課' }],
+        classType: [
+          { title: '個人班' },
+          { title: '自組班' },
+          { title: '團體班' },
+          { title: '2-10人班' },
+          { title: '2人班' },
+          { title: '3-5人班' },
+          { title: '6-10人班' },
+        ],
+        locationType: [{ title: '海內' }, { title: '海外' }],
+        onceSessions: [
+          {
+            title: '1',
+          },
+          {
+            title: '3',
+          },
+          {
+            title: '4',
+          },
+          {
+            title: '6',
+          },
+          {
+            title: '9',
+          },
+          {
+            title: '10',
+          },
+          {
+            title: '12',
+          },
+          {
+            title: '15',
+          },
+          {
+            title: '16',
+          },
+          {
+            title: '24',
+          },
+          {
+            title: '36',
+          },
+          {
+            title: '39',
+          },
+          {
+            title: '40',
+          },
+          {
+            title: '52',
+          },
+          {
+            title: '60',
+          },
+          {
+            title: '78',
+          },
+          {
+            title: '117',
+          },
+          {
+            title: '130',
+          },
+          {
+            title: '195',
+          },
+        ],
+      },
+      {
+        title: '教材',
+        projects: [
+          { title: '(A5版) 商用會話' },
+          { title: '(A5版) 日常會話' },
+          { title: 'NICD新中級華語/漢語' },
+          { title: 'NPC新實用華語/漢語' },
+          { title: 'NRC新華文/漢語讀本' },
+          { title: '兩岸遊' },
+          { title: '商務漢語會話' },
+          { title: '圖畫故事' },
+          { title: '外國人三分鐘漢語演講' },
+          { title: '宗教' },
+          { title: '漢語文言文選讀' },
+          { title: '焦點新聞' },
+          { title: '生活華語' },
+          { title: '發音' },
+          { title: '銀行與證券投資' },
+        ],
+      },
+      {
+        title: 'BG訂單',
+        projects: [
+          { title: 'AIT_2人班' },
+          { title: 'AIT_3-5人班' },
+          { title: 'AIT_6-10人班' },
+          { title: 'AIT_個人班' },
+          { title: '外交學院' },
+        ],
+      },
+      {
+        title: '活動',
+        projects: [{ title: '移地教學' }],
+      },
+      {
+        title: '其他',
+        projects: [
+          { title: '其他收入' },
+          { title: '外購教材：HELLO華語' },
+          { title: '外購教材：HSK 標準教程' },
+          { title: '外購教材：其他台灣用書' },
+          { title: '外購教材：其他大陸用書' },
+          { title: '外購教材：各行各業說中文' },
+          { title: '外購教材：學華語向前走' },
+          { title: '外購教材：康軒國語' },
+          { title: '外購教材：新實用漢語課本' },
+          { title: '外購教材：新版實用視聽華語' },
+          { title: '外購教材：時代華語' },
+          { title: '外購教材：當代中文課程' },
+          { title: '外購教材：遠東' },
+        ],
+      },
+    ],
+  },
+  {
+    language: '外文',
+    products: [
+      {
+        title: '註冊費',
+      },
+      {
+        title: '學費',
+        languageType: [
+          { title: '德文' },
+          { title: '日文' },
+          { title: '法文' },
+          { title: '英文' },
+          { title: '西文' },
+          { title: '韓文' },
+        ],
+        programType: [{ title: '標準時數' }, { title: '套裝項目' }, { title: '客製時數' }],
+        classMode: [{ title: '內課' }, { title: '外課' }, { title: '線上課' }],
+        classType: [
+          { title: '個人班' },
+          { title: '團體班' },
+          { title: '2人班' },
+          { title: '3-5人班' },
+          { title: '自組2-5人' },
+          { title: '自組3-10人' },
+        ],
+        locationType: [{ title: '海內' }],
+      },
+      {
+        title: 'BG訂單',
+        projects: [{ title: '再興' }, { title: '幼華' }, { title: '聖心' }],
+      },
+      {
+        title: '其他',
+        projects: [{ title: '其他收入' }],
+      },
+    ],
+  },
+  {
+    language: '師資班',
+    products: [
+      {
+        title: '註冊費',
+      },
+      {
+        title: '學費',
+        programType: [{ title: '套裝項目' }],
+        classMode: [{ title: '內課' }],
+        classType: [{ title: '團體班' }],
+        locationType: [{ title: '海內' }],
+        onceSessions: [{ title: '26' }],
+      },
+      {
+        title: '其他',
+        projects: [{ title: '其他收入' }],
+      },
+    ],
+  },
+  {
+    language: '方言',
+    products: [
+      {
+        title: '註冊費',
+      },
+      {
+        title: '學費',
+        languageType: [{ title: '台語' }, { title: '粵語' }],
+        programType: [{ title: '客製時數' }],
+        classMode: [{ title: '內課' }, { title: '外課' }, { title: '線上課' }],
+        classType: [{ title: '個人班' }, { title: '自組班' }],
+        locationType: [{ title: '海內' }],
+      },
+      {
+        title: '教材',
+        projects: [{ title: '台語' }, { title: '粵語' }],
+      },
+      {
+        title: '其他',
+        projects: [{ title: '其他收入' }],
+      },
+    ],
+  },
+]
 
+const calculateEndedAt = (startedAt: Date, weeks: number) => {
   return moment(startedAt).add(weeks + 2, 'weeks')
 }
 
@@ -56,71 +273,128 @@ const MemberContractCreationForm: React.FC<
     adjustSelectedProductAmount,
     ...formProps
   }) => {
-    const [categories, setCategories] = useState<{
-      language: typeof LANGUAGES[number]
-      productCategory: typeof PRODUCT_CATEGORIES[number]
-      item: string
-      abroad: '海內' | '海外'
-      classType: '內課' | '外課'
-      class: '個人' | '自組' | '團體'
+    const [category, setCategory] = useState<{
+      language: string
+      product: string
+      programType?: string
+      classMode?: string
+      classType?: string
+      locationType?: string
+      languageType?: string
+      onceSessions?: string
+      project?: string
     }>({
       language: '中文',
-      productCategory: '學費',
-      item: '標準時數',
-      abroad: '海內',
-      classType: '內課',
-      class: '個人',
+      product: '學費',
+      programType: '標準時數',
+      classMode: '內課',
+      classType: '個人班',
+      locationType: '海內',
     })
+
+    const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
+    const options = productOptions?.find((v: any) => v.title === category.product)
 
     const [weeklyBatch, setWeeklyBatch] = useState(10)
-    const [totalAmount, setTotalAmount] = useState(61)
+    const [totalAmount, setTotalAmount] = useState(60)
     const [customPrice, setCustomPrice] = useState(0)
 
-    const filterProducts = products.filter(product => {
-      const productOptions = product.options
+    const filterProducts = useMemo(() => {
+      return products.filter(product => {
+        if (product.options.language !== category.language) {
+          return false
+        }
 
-      const categoryMatch =
-        categories.productCategory !== '學費'
-          ? [categories.language, categories.productCategory].every(item => productOptions.categories.includes(item))
-          : Object.values(categories).every(item => productOptions.categories.includes(item))
+        if (category.product !== '學費') {
+          if (product.options.product !== category.product) {
+            return false
+          }
 
-      if (productOptions.isCustomPrice || categories.productCategory !== '學費') {
-        return categoryMatch
-      }
-      const totalAmountMatch =
-        (!productOptions?.totalAmount?.min || totalAmount >= productOptions?.totalAmount?.min) &&
-        (!productOptions?.totalAmount?.max || totalAmount <= productOptions?.totalAmount?.max)
+          if (product.options.project !== category.project) {
+            return false
+          }
 
-      const weeklyBatchMatch =
-        (!productOptions?.weeklyBatch?.min || weeklyBatch >= productOptions?.weeklyBatch?.min) &&
-        (!productOptions?.weeklyBatch?.max || weeklyBatch <= productOptions?.weeklyBatch?.max)
+          return true
+        } else {
+          if (
+            (product.options.language === '方言' || product.options.language === '外文') &&
+            product.options.languageType !== category.languageType
+          ) {
+            return false
+          }
 
-      return categoryMatch && totalAmountMatch && weeklyBatchMatch
-    })
+          if (product.options.programType !== category.programType) {
+            return false
+          }
+
+          if (product.options.classMode !== category.classMode) {
+            return false
+          }
+
+          if (product.options.classType !== category.classType) {
+            return false
+          }
+
+          if (product.options.locationType !== category.locationType) {
+            return false
+          }
+
+          if (
+            product.options.programType === '套裝項目' &&
+            product.options.onceSessions &&
+            product.options.onceSessions !== category.onceSessions
+          ) {
+            return false
+          }
+
+          const totalAmountMatch =
+            (!product.options.totalSessions?.min || totalAmount >= product.options.totalSessions?.min) &&
+            (!product.options.totalSessions?.max || totalAmount <= product.options.totalSessions?.max)
+
+          const weeklyBatchMatch =
+            (!product.options.weeklyFrequency?.min || weeklyBatch >= product.options.weeklyFrequency?.min) &&
+            (!product.options.weeklyFrequency?.max || weeklyBatch <= product.options.weeklyFrequency?.max)
+
+          if (product.options.isCustomPrice) {
+            return true
+          }
+
+          if (!totalAmountMatch || !weeklyBatchMatch) {
+            return false
+          }
+
+          return true
+        }
+      })
+    }, [category])
+
     console.log(filterProducts)
-
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
         <Tabs
           className="mb-5"
           onTabClick={key => {
-            setCategories({ ...categories, language: key as typeof LANGUAGES[number] })
+            setCategory({ language: key, product: category.product, programType: category.programType })
           }}
         >
-          {LANGUAGES.map(k => (
-            <Tabs.TabPane key={k} tab={k}>
+          {CUSTOM_PRODUCT_OPTIONS_CONFIG.map((k, index) => (
+            <Tabs.TabPane key={k.language} tab={k.language}>
               <div style={{ padding: '8px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24 }}>
-                  {PRODUCT_CATEGORIES.map(v => (
+                  {k.products.map(v => (
                     <Button
-                      key={v}
-                      type={v === categories?.productCategory ? 'primary' : undefined}
+                      key={v.title}
+                      type={v.title === category?.product ? 'primary' : undefined}
                       onClick={() => {
-                        setCategories({ ...categories, productCategory: v as typeof PRODUCT_CATEGORIES[number] })
+                        setCategory({
+                          language: category.language,
+                          product: v.title,
+                          programType: category.programType,
+                        })
                       }}
                     >
-                      {v}
+                      {v.title}
                     </Button>
                   ))}
                 </div>
@@ -133,7 +407,7 @@ const MemberContractCreationForm: React.FC<
                     padding: '12px 24px',
                   }}
                 >
-                  {categories.productCategory === '學費' && (
+                  {category.product === '學費' && (
                     <div
                       style={{
                         display: 'flex',
@@ -144,40 +418,41 @@ const MemberContractCreationForm: React.FC<
                       <div style={{ width: 110 }}>
                         項目
                         <Select
-                          defaultValue={'標準時數'}
+                          defaultValue={category.programType}
+                          value={category.programType}
                           style={{ width: 110 }}
                           onChange={value => {
-                            setCategories({ ...categories, item: value })
+                            setCategory({ ...category, programType: value })
                           }}
                         >
-                          {['標準時數', '客製時數', '套裝項目'].map(d => (
-                            <Select.Option key={d} value={d}>
-                              {d}
+                          {options.programType.map((d: { title: string }) => (
+                            <Select.Option key={d.title} value={d.title}>
+                              {d.title}
                             </Select.Option>
                           ))}
                         </Select>
                       </div>
                       {[
-                        { id: 'abroad', title: '海內/外', options: ['海內', '海外'] },
-                        { id: 'classType', title: '上課方式', options: ['內課', '外課', '線上課'] },
+                        { id: 'locationType', title: '海內/外', options: options.locationType },
+                        { id: 'classMode', title: '上課方式', options: options.classMode },
                         {
-                          id: 'class',
+                          id: 'classType',
                           title: '班型',
-                          options: ['個人', '自組', '團體', '2人', '3-5人', '6-10人', '2-10人'],
+                          options: options.classType,
                         },
                       ].map(v => (
                         <div key={v.title} style={{ width: 110 }}>
                           {v.title}
                           <Select
-                            defaultValue={v.options[0]}
+                            defaultValue={v.options[0]?.title}
                             style={{ width: 110 }}
                             onChange={value => {
-                              setCategories({ ...categories, [v.id]: value })
+                              setCategory({ ...category, [v.id]: value })
                             }}
                           >
-                            {v.options.map(d => (
-                              <Select.Option key={d} value={d}>
-                                {d}
+                            {v.options.map((d: { title: string }) => (
+                              <Select.Option key={d.title} value={d.title}>
+                                {d.title}
                               </Select.Option>
                             ))}
                           </Select>
@@ -221,7 +496,7 @@ const MemberContractCreationForm: React.FC<
                     </div>
                   )}
 
-                  {categories.productCategory === '註冊費' && (
+                  {category.product === '註冊費' && (
                     <div
                       style={{
                         display: 'flex',
@@ -259,7 +534,7 @@ const MemberContractCreationForm: React.FC<
                     </div>
                   )}
 
-                  {categories.productCategory === '教材' && (
+                  {category.product !== '學費' && category.product !== '註冊費' && (
                     <div
                       style={{
                         display: 'flex',
@@ -269,12 +544,34 @@ const MemberContractCreationForm: React.FC<
                         width: '100%',
                       }}
                     >
-                      <div style={{ width: 110 }}>
+                      <div style={{ width: 200 }}>
                         項目
-                        <Select defaultValue={'NPC新實用華語/漢語'} style={{ width: 110 }}>
-                          {['NPC新實用華語/漢語', 'NICD新中級華語/漢語', '(A5版) 商用會話'].map(d => (
-                            <Select.Option key={d} value={d}>
-                              {d}
+                        <Select
+                          defaultValue={options?.projects[0].title}
+                          style={{ width: 200 }}
+                          value={category.project}
+                          onChange={value => {
+                            setCategory({
+                              language: category.language,
+                              product: category.product,
+                              project: value,
+                              programType: category.programType,
+                            })
+                          }}
+                        >
+                          {options?.projects.map((d: { title: string }) => (
+                            <Select.Option key={d.title} value={d.title}>
+                              {d.title}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div style={{ width: 500 }}>
+                        品項
+                        <Select style={{ width: 500 }}>
+                          {filterProducts.map((d: { title: string }) => (
+                            <Select.Option key={d.title} value={d.title}>
+                              {d.title}
                             </Select.Option>
                           ))}
                         </Select>
@@ -297,7 +594,7 @@ const MemberContractCreationForm: React.FC<
                     </div>
                   )}
 
-                  {categories.productCategory === '活動' && (
+                  {/* {category.product === '活動' && (
                     <div
                       style={{
                         display: 'flex',
@@ -310,7 +607,7 @@ const MemberContractCreationForm: React.FC<
                       <div style={{ width: 110 }}>
                         項目
                         <Select defaultValue={'移地教學'} style={{ width: 110 }}>
-                          {['移地教學'].map(d => (
+                          {options.projects.map(d => (
                             <Select.Option key={d} value={d}>
                               {d}
                             </Select.Option>
@@ -333,9 +630,9 @@ const MemberContractCreationForm: React.FC<
                         )}
                       </div>
                     </div>
-                  )}
+                  )} */}
 
-                  {categories.productCategory === '其他' && (
+                  {/* {category.product === '其他' && (
                     <div
                       style={{
                         display: 'flex',
@@ -371,19 +668,19 @@ const MemberContractCreationForm: React.FC<
                         )}
                       </div>
                     </div>
-                  )}
+                  )} */}
                   <Button
                     disabled={filterProducts.length === 0}
                     onClick={() => {
                       const price = filterProducts[0]?.options.isCustomPrice ? customPrice : filterProducts[0].price
                       onChangeSelectedProducts({
                         id: filterProducts[0].id,
-                        amount: categories.productCategory === '學費' ? totalAmount : 1,
+                        amount: category.product === '學費' ? totalAmount : 1,
                         price,
-                        totalPrice: price * (categories.productCategory === '學費' ? totalAmount : 1),
+                        totalPrice: price * (category.product === '學費' ? totalAmount : 1),
                       })
 
-                      categories.productCategory === '學費' &&
+                      category.product === '學費' &&
                         form?.setFieldsValue({
                           endedAt: calculateEndedAt(
                             form.getFieldValue('startedAt'),
