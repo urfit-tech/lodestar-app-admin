@@ -51,12 +51,24 @@ type ContractInfo = {
     title: string
     price: number
     options: {
-      categories: string[]
+      language: string
+      product: string
+      programType?: string
+      classMode?: string
+      classType?: string
+      locationType?: string
+      onceSessions?: string
+      languageType?: string
+      project?: string
       isCustomPrice?: boolean
-      isCustomTotalAmount?: boolean
-      isCustomWeeklyBatch?: boolean
-      totalAmount?: { max?: number; min?: number }
-      weeklyBatch?: { max?: number; min?: number }
+      weeklyFrequency: {
+        max?: number
+        min?: number
+      }
+      totalSessions?: {
+        max?: number
+        min?: number
+      }
     }
   }[]
 }
@@ -245,12 +257,17 @@ const useContractInfo = (appId: string, memberId: string) => {
               title: v.title,
               price: v.price,
               options: {
-                categories: v.options?.categories || [],
-                isCustomPrice: v.options?.is_custom_price,
-                isCustomTotalAmount: v.options?.is_custom_total_amount,
-                isCustomWeeklyBatch: v.options?.is_custom_weekly_batch,
-                totalAmount: v.options?.total_amount,
-                weeklyBatch: v.options?.weekly_batch,
+                language: v.options.language,
+                product: v.options.product,
+                programType: v.options.program_type,
+                classMode: v.options.class_mode,
+                classType: v.options.class_type,
+                locationType: v.options.location_type,
+                onceSessions: v.options.once_sessions,
+                languageType: v.options.language_type,
+                project: v.options.project,
+                weeklyFrequency: v.options.weekly_frequency,
+                totalSessions: v.options.total_sessions,
               },
               productId: 'AppointmentPlan_' + v.id,
             }))
@@ -260,12 +277,17 @@ const useContractInfo = (appId: string, memberId: string) => {
                 title: v.title,
                 price: v.price,
                 options: {
-                  categories: v.options?.categories || [],
-                  isCustomPrice: v.options?.is_custom_price,
-                  isCustomTotalAmount: v.options?.is_custom_total_amount,
-                  isCustomWeeklyBatch: v.options?.is_custom_weekly_batch,
-                  totalAmount: v.options?.total_amount,
-                  weeklyBatch: v.options?.weekly_batch,
+                  language: v.options.language,
+                  product: v.options.product,
+                  programType: v.options.program_type,
+                  classMode: v.options.class_mode,
+                  classType: v.options.class_type,
+                  locationType: v.options.location_type,
+                  onceSessions: v.options.once_sessions,
+                  languageType: v.options.language_type,
+                  project: v.options.project,
+                  weeklyFrequency: v.options.weekly_frequency,
+                  totalSessions: v.options.total_sessions,
                 },
                 productId: 'Token_' + v.id,
               })),
