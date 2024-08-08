@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -58,12 +59,15 @@ type ContractInfo = {
       weeklyBatch?: { max?: number; min?: number }
     }
   }[]
+}
+type ContractSales = {
   sales: {
     id: string
     name: string
     email: string
   }[]
 }
+
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
 export type ContractItem = {
@@ -81,6 +85,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
   const { info, error, loading } = useContractInfo(appId, memberId)
+  const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<
     {
       id: string
@@ -96,7 +101,7 @@ const MemberContractCreationPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  const { member, products, contracts, sales } = info
+  const { member, products, contracts } = info
 
   return (
     <DefaultLayout>
@@ -117,7 +122,7 @@ const MemberContractCreationPage: React.VFC = () => {
             }}
             products={products}
             contracts={contracts}
-            sales={sales}
+            sales={sales?.sales || []}
             selectedProducts={selectedProducts}
             onChangeSelectedProducts={product => {
               setSelectedProducts(prev => {
@@ -176,6 +181,7 @@ export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type 
 }
 
 const useContractInfo = (appId: string, memberId: string) => {
+  const { authToken } = useAuth()
   const { loading, error, data } = useQuery<
     hasura.GET_CONTRACT_INFO_WITH_PRODUCTS,
     hasura.GET_CONTRACT_INFO_WITH_PRODUCTSVariables
@@ -208,13 +214,6 @@ const useContractInfo = (appId: string, memberId: string) => {
           price
           options
         }
-        sales: member(
-          where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
-        ) {
-          id
-          name
-          email
-        }
       }
     `,
     {
@@ -222,12 +221,12 @@ const useContractInfo = (appId: string, memberId: string) => {
         appId,
         memberId,
       },
-      skip: !appId || !memberId,
+      skip: !appId || !memberId || !authToken,
     },
   )
 
   const info: ContractInfo | null =
-    data && data.member_by_pk && data.appointment_plan && data.contract && data.sales && data.token
+    data && data.member_by_pk && data.appointment_plan && data.contract && data.token
       ? {
           member: {
             id: data.member_by_pk.id,
@@ -271,7 +270,6 @@ const useContractInfo = (appId: string, memberId: string) => {
                 productId: 'Token_' + v.id,
               })),
             ),
-          sales: data.sales,
         }
       : null
 
@@ -281,8 +279,47 @@ const useContractInfo = (appId: string, memberId: string) => {
     info,
   }
 }
+const useContractSales = (appId: string) => {
+  const { authToken } = useAuth()
+  const { loading, error, data } = useQuery<hasura.GetContractSales, hasura.GetContractSalesVariables>(
+    gql`
+      query GetContractSales($appId: String!) {
+        sales: member(
+          where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
+        ) {
+          id
+          name
+          email
+        }
+      }
+    `,
+    {
+      variables: {
+        appId,
+      },
+      skip: !appId || !authToken,
+    },
+  )
 
-export type { ContractInfo, FieldProps }
+  const sales: ContractSales | null =
+    data && data.sales
+      ? {
+          sales: data.sales.map(s => ({
+            id: s.id,
+            name: s.name,
+            email: s.email,
+          })),
+        }
+      : null
+
+  return {
+    loading,
+    error,
+    sales,
+  }
+}
+
+export type { ContractInfo, FieldProps, ContractSales }
 export { paymentMethods, paymentModes }
 
 export default MemberContractCreationPage

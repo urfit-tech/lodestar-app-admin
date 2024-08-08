@@ -47,6 +47,7 @@ const SaleCollectionExpandRow = ({
   const receiptRef2 = useRef<HTMLDivElement | null>(null)
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
   const [posResponse, setPosResponse] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -101,6 +102,7 @@ const SaleCollectionExpandRow = ({
     if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
       return alert('target url or path not found')
     }
+    setLoading(true)
     axios
       .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
         price,
@@ -119,6 +121,9 @@ const SaleCollectionExpandRow = ({
             err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
           }`,
         )
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }
   return (
@@ -359,6 +364,8 @@ const SaleCollectionExpandRow = ({
           (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
           (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
             <Button
+              disabled={loading}
+              loading={loading}
               style={{ display: 'flex', alignItems: 'center', gap: 4 }}
               onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
             >
@@ -368,7 +375,8 @@ const SaleCollectionExpandRow = ({
         {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
           <Button
             style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-            onClick={() =>
+            onClick={() => {
+              setLoading(true)
               axios
                 .put(
                   `${process.env.REACT_APP_API_BASE_ROOT}/payment/invoice/${
@@ -387,7 +395,8 @@ const SaleCollectionExpandRow = ({
                   }
                 })
                 .catch(handleError)
-            }
+                .finally(() => setLoading(false))
+            }}
           >
             <div>補開發票</div>
           </Button>

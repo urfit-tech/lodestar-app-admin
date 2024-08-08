@@ -5,7 +5,7 @@ import moment from 'moment'
 import React, { memo, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
-import { ContractInfo, FieldProps, paymentMethods, paymentModes } from '.'
+import { ContractInfo, ContractSales, FieldProps, paymentMethods, paymentModes } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 
 const LANGUAGES = ['中文', '外文', '師資班', '方言'] as const
@@ -28,7 +28,7 @@ const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
     products: ContractInfo['products']
-    sales: ContractInfo['sales']
+    sales: ContractSales['sales']
     selectedProducts: {
       id: string
       amount: number
