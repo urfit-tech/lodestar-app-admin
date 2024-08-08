@@ -25,6 +25,11 @@ const ListPriceCircumfixBlock: React.FC<{
         className="mb-2"
         onChange={e => {
           setListPriceCircumfixActive(e.target.checked)
+          onChange?.({
+            ...value,
+            listPricePrefix: undefined,
+            listPriceSuffix: undefined,
+          })
         }}
       >
         {formatMessage(programMessages.ListPriceItem.listPriceCircumfix)}

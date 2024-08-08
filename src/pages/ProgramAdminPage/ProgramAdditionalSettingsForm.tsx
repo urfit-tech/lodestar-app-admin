@@ -6,6 +6,7 @@ import moment, { MomentInput } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import { handleError } from '../../helpers'
 import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
 import { ProgramAdminProps } from '../../types/program'
@@ -52,7 +53,7 @@ class TextStrategy implements RenderStrategy {
 
 class TextEditorStrategy implements RenderStrategy {
   render(options: any): JSX.Element | null {
-    return <BraftEditor controls={options?.controls} />
+    return <AdminBraftEditor customControls={options?.controls} />
   }
 }
 
