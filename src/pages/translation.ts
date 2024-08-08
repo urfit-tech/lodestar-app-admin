@@ -543,6 +543,14 @@ const pageMessages = {
       id: 'page.AnnouncementCollectionPage.unlimitedDate',
       defaultMessage: 'Unlimited Date',
     },
+    draftTab: {
+      id: 'page.AnnouncementCollectionPage.draftTab',
+      defaultMessage: 'draft'
+    },
+    publishedTab: {
+      id: 'page.AnnouncementCollectionPage.publishedTab',
+      defaultMessage: 'published'
+    }
   }),
   AnnouncementPage: defineMessages({
     announcementSettings: {
