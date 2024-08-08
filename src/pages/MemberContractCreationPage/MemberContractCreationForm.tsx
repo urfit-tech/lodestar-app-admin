@@ -47,7 +47,7 @@ const MemberContractCreationForm: React.FC<
     ...formProps
   }) => {
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
-    const [certificationPath, setCertificationPath] = useState('') 
+    const [certificationPath, setCertificationPath] = useState('')
     const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
 
     const matchProduct = (params: string, products: ContractInfo['products']) => {

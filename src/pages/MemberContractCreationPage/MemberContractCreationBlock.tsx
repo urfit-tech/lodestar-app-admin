@@ -243,28 +243,24 @@ const MemberContractCreationBlock: React.FC<{
         ))}
 
         <div className="row mb-2">
+          <div className="col-9 text-right">訂金</div>
+
+          <div className="col-3 text-right">$7,800</div>
+        </div>
+        <div className="row mb-2">
+          <div className="col-9 text-right">尾款</div>
+
+          <div className="col-3 text-right">$70,200</div>
+        </div>
+        <div className="row mb-2">
           <strong className="col-6 text-right">合計</strong>
 
-          <div className="col-6 text-right">
-            <StyledTotal>{formatCurrency(totalPrice)}</StyledTotal>
-            {totalCoins ? (
-              <StyledTotal>
-                {totalCoins} {settings['coin.unit']}
-              </StyledTotal>
-            ) : (
-              ''
-            )}
-          </div>
+          <div className="col-6 text-right">$78,000</div>
         </div>
       </StyledOrder>
 
       {memberContractUrl ? (
-        <>
-          <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
-          {fieldValue.paymentMethod !== '現金' && (
-            <Alert message="付款連結" description={memberContractUrl + '/deal'} type="success" showIcon />
-          )}
-        </>
+        <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
       ) : (
         <Button size="large" block type="primary" onClick={handleMemberContractCreate}>
           產生合約

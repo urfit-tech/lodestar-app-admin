@@ -21,6 +21,7 @@ const saleMessages = {
       id: 'sale.SaleCollectionAdminCard.calculatingTotalCount',
       defaultMessage: '計算總筆數中',
     },
+    successfullyRefreshed: { id: 'note.MemberNoteAdminBlock.successfullyRefreshed', defaultMessage: '資料已更新' },
   }),
   SaleCollectionExpandRow: defineMessages({
     productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: '到期' },
@@ -188,8 +189,14 @@ const saleMessages = {
   }),
   TransferModal: defineMessages({
     transfer: { id: 'sale.TransferModal.transfer', defaultMessage: 'transfer' },
-    modalTitle: { id: 'sale.TransferModal.modalTitle', defaultMessage: 'To which manager do you want to transfer this list?' },
-    inputPlaceHolder: { id: 'sale.TransferModal.inputPlaceHolder', defaultMessage: 'Please enter at least two keywords' },
+    modalTitle: {
+      id: 'sale.TransferModal.modalTitle',
+      defaultMessage: 'To which manager do you want to transfer this list?',
+    },
+    inputPlaceHolder: {
+      id: 'sale.TransferModal.inputPlaceHolder',
+      defaultMessage: 'Please enter at least two keywords',
+    },
     pleaseSelectManager: { id: 'sale.TransferModal.pleaseSelectManager', defaultMessage: 'Please select the manager' },
     confirm: { id: 'sale.TransferModal.confirm', defaultMessage: 'confirm' },
   }),

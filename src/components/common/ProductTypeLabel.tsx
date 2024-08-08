@@ -36,6 +36,8 @@ const ProductTypeLabel: React.FC<{ productType?: string }> = ({ productType }) =
       return <>{formatMessage(commonMessages.product.appointmentPlan)}</>
     case 'Estimator':
       return <>{formatMessage(commonMessages.product.estimator)}</>
+    case 'Token':
+      return <></>
     default:
       return <>{formatMessage(commonMessages.product.unknownType)}</>
   }

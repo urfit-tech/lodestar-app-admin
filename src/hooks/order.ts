@@ -337,6 +337,9 @@ export const useOrderLogExpandRow = (orderId: string) => {
           gateway
           price
           status
+          method
+          invoice_issued_at
+          invoice_options
         }
       }
     `,
@@ -396,6 +399,11 @@ export const useOrderLogExpandRow = (orderId: string) => {
     paymentLogByOrderIdData?.payment_log.map(p => ({
       status: p.status,
       price: p.price,
+      no: p.no,
+      gateway: p.gateway,
+      method: p.method,
+      invoiceIssuedAt: p.invoice_issued_at,
+      invoiceOptions: p.invoice_options,
     })) || []
 
   const orderDiscounts =
