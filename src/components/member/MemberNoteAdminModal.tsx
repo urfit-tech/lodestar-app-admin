@@ -80,7 +80,7 @@ const MemberNoteAdminModal: React.FC<
     form.resetFields()
   }
 
-  const handleSubmit = async (onSuccess: () => void) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true)
 
     const values = await form.validateFields().catch(() => {})
@@ -98,12 +98,8 @@ const MemberNoteAdminModal: React.FC<
     })
       .then(() => {
         setIsSubmitting(false)
-        onSuccess()
       })
       .catch(e => console.error(e))
-      .finally(() => {
-        form.resetFields()
-      })
   }
   const resetUrlSearch = () => {
     const currentUrl = new URL(window.location.href)
@@ -118,26 +114,19 @@ const MemberNoteAdminModal: React.FC<
         onCancel?.(e)
         resetUrlSearch()
       }}
-      renderFooter={({ setVisible }) => (
+      renderFooter={() => (
         <>
           <Button
             className="mr-2"
             onClick={e => {
               onCancel?.(e)
               resetUrlSearch()
-              setVisible(false)
               resetModal()
             }}
           >
             {formatMessage(memberMessages['*'].cancel)}
           </Button>
-          <Button
-            loading={isSubmitting}
-            type="primary"
-            onClick={() => {
-              handleSubmit(() => setVisible(false))
-            }}
-          >
+          <Button loading={isSubmitting} type="primary" onClick={() => handleSubmit()}>
             {formatMessage(memberMessages['*'].save)}
           </Button>
         </>

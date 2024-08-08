@@ -274,34 +274,20 @@ export const useMemberAdmin = (memberId: string) => {
 }
 
 export const useMemberNotesAdmin = (
+  currentIndex: React.MutableRefObject<number>,
   orderBy: hasura.member_note_order_by,
   filters?: {
     member?: string
   },
   keyword?: string,
 ) => {
-  const [offset, setOffset] = useState(0)
-  const [notes, setNotes] = useState<Pick<
-    MemberNote,
-    | 'id'
-    | 'createdAt'
-    | 'type'
-    | 'status'
-    | 'author'
-    | 'member'
-    | 'duration'
-    | 'description'
-    | 'note'
-    | 'attachments'
-    | 'metadata'
-    | 'transcript'
-  >[]>([])
+  const { permissions, currentMemberId } = useAuth()
   const limit = 10
 
   const splittedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
     [key as keyof Partial<hasura.member_note_order_by>]: value,
   }))
-  const { permissions, currentMemberId } = useAuth()
+
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
     author:
@@ -330,6 +316,7 @@ export const useMemberNotesAdmin = (
         member_note(where: $condition, order_by: $orderBy, offset: $offset, limit: $limit) {
           id
           created_at
+          updated_at
           type
           status
           metadata
@@ -362,69 +349,53 @@ export const useMemberNotesAdmin = (
         }
       }
     `,
-    { variables: { condition, orderBy: splittedOrderBy, offset, limit } },
+    { variables: { condition, orderBy: splittedOrderBy, offset: 0, limit } },
   )
 
-  useEffect(() => {
-    if (data) {
-      const newNotes = data.member_note.map(v => ({
-        id: v.id,
-        createdAt: new Date(v.created_at),
-        type: v.type as NoteAdminProps['type'],
-        status: v.status || null,
-        transcript: v.transcript || null,
-        author: {
-          id: v.author.id,
-          pictureUrl: v.author.picture_url || null,
-          name: v.author.name,
-        },
-        member: {
-          id: v.member?.id || '',
-          pictureUrl: v.member?.picture_url || '',
-          name: v.member?.name || v.member?.username || '',
-          email: v.member?.email || '',
-        },
-        duration: v.duration || 0,
-        description: v.description || null,
-        note: v.note || '',
-        attachments: v.member_note_attachments.map(u => ({
-          id: u.attachment_id,
-          data: u.data,
-          type: u.attachment?.type || '',
-          options: u.options,
-          createdAt: new Date(u.created_at),
-        })),
-        metadata: v.metadata,
-      }))
-      setNotes(prevNotes => {
-        const existingIds = new Set(prevNotes.map(note => note.id))
-        const filteredNewNotes = newNotes.filter(note => !existingIds.has(note.id))
-        return [...prevNotes, ...filteredNewNotes].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      })
-    }
-  }, [data])
+  const notes =
+    data?.member_note.map(v => ({
+      id: v.id,
+      createdAt: new Date(v.created_at),
+      type: v.type as NoteAdminProps['type'],
+      status: v.status || null,
+      transcript: v.transcript || null,
+      author: {
+        id: v.author.id,
+        pictureUrl: v.author.picture_url || null,
+        name: v.author.name,
+      },
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+      },
+      duration: v.duration || 0,
+      description: v.description || null,
+      note: v.note || '',
+      attachments: v.member_note_attachments.map(u => ({
+        id: u.attachment_id,
+        data: u.data,
+        type: u.attachment?.type || '',
+        options: u.options,
+        createdAt: new Date(u.created_at),
+      })),
+      metadata: v.metadata,
+    })) || []
 
-  const hasMoreNotes = useMemo(() => {
-    return (data?.member_note_aggregate.aggregate?.count || 0) > offset + limit
-  }, [data?.member_note_aggregate.aggregate?.count, offset, limit])
-
-  const loadMoreNotes = () => {
-    if (!hasMoreNotes) {
-      return Promise.resolve()
-    }
-
-    return fetchMore({
+  const loadMoreNotes = () =>
+    fetchMore({
       variables: {
         orderBy: splittedOrderBy,
         condition,
-        offset: offset + limit,
+        offset: 10 + currentIndex.current,
         limit,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        setOffset(offset + limit)
+        currentIndex.current += limit
         return {
           ...prev,
           member_note_aggregate: fetchMoreResult?.member_note_aggregate,
@@ -432,7 +403,6 @@ export const useMemberNotesAdmin = (
         }
       },
     })
-  }
 
   return {
     loadingNotes: loading,
@@ -440,7 +410,7 @@ export const useMemberNotesAdmin = (
     notes,
     refetchNotes: refetch,
     loadMoreNotes,
-    hasMoreNotes,
+    noteAggregate: data?.member_note_aggregate.aggregate?.count || 0,
   }
 }
 
