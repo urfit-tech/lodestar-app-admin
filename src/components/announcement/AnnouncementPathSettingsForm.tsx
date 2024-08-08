@@ -1,5 +1,5 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Form, Input } from 'antd'
+import { Button, Checkbox, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { commonMessages } from 'lodestar-app-element/src/helpers/translation'
 import { useState } from 'react'
@@ -34,7 +34,7 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
     onSave({
       id: announcement.id,
       isUniversalDisplay: isChecked,
-      path: values.pathList,
+      path: isChecked ? [] : values.pathList,
     })
   }
 
@@ -45,7 +45,10 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
-      initialValues={{ isUniversalDisplay: isChecked, pathList: announcement.announcementPages.map(page => page.path) }}
+      initialValues={{
+        isUniversalDisplay: isChecked,
+        pathList: announcement.announcementPages.map(page => page.path),
+      }}
       onFinish={handleSubmit}
     >
       <Form.Item
@@ -56,15 +59,27 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
           checked={isChecked}
           onChange={e => {
             setIsChecked(e.target.checked)
+            if (e.target.checked) {
+              form.setFieldsValue({ pathList: [] })
+            }
           }}
         />
       </Form.Item>
-      <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
-        <PathInput />
-      </Form.Item>
+
+      {!isChecked && (
+        <Form.Item label={formatMessage(announcementMessages.AnnouncementPathSettingsForm.path)} name="pathList">
+          <PathInput />
+        </Form.Item>
+      )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button className="mr-2" onClick={() => form.resetFields()}>
+        <Button
+          className="mr-2"
+          onClick={() => {
+            form.resetFields()
+            setIsChecked(announcement.isUniversalDisplay)
+          }}
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={saveLoading}>
@@ -75,29 +90,63 @@ const AnnouncementPathSettingsForm = ({ announcement, onSave, saveLoading }: Ann
   )
 }
 
-const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => void }> = ({ value, onChange }) => {
+const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => void }> = ({ value = [], onChange }) => {
   const { formatMessage } = useIntl()
+
+  const getInitialPathMatchTypes = (paths: string[]) =>
+    paths.map(path => (path.endsWith('*') ? 'contains' : 'exactMatch'))
+
+  const [pathMatchTypes, setPathMatchTypes] = useState<string[]>(() => getInitialPathMatchTypes(value))
+
+  const handleRadioChange = (index: number, e: any) => {
+    const updatedPathMatchTypes = [...pathMatchTypes]
+    const updatedPaths = [...value]
+    const newMatchType = e.target.value
+
+    updatedPathMatchTypes[index] = newMatchType
+    if (newMatchType === 'contains' && !updatedPaths[index].includes('*')) {
+      updatedPaths[index] += '*'
+    } else if (newMatchType === 'exactMatch') {
+      updatedPaths[index] = updatedPaths[index].replace(/\*$/, '')
+    }
+
+    setPathMatchTypes(updatedPathMatchTypes)
+    onChange && onChange(updatedPaths)
+  }
 
   return (
     <>
-      {value?.map((phone, index) => (
-        <div className="mb-3 position-relative">
+      {value?.map((path, index) => (
+        <div className="mb-3 position-relative" key={index}>
           <StyledNewPathInput>
-            <Input
-              key={index}
-              className={'mr-3 mb-0'}
-              value={phone}
-              onChange={e => {
-                const newValue = [...value]
-                newValue.splice(index, 1, e.target.value.trim())
-                onChange && onChange(newValue)
-              }}
-            />
+            <Input.Group compact style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Radio.Group
+                onChange={e => handleRadioChange(index, e)}
+                value={pathMatchTypes[index]}
+                style={{ display: 'flex', gap: '10px' }}
+              >
+                <Radio value="contains">
+                  {formatMessage(announcementMessages.AnnouncementPathSettingsForm.contains)}
+                </Radio>
+                <Radio value="exactMatch">
+                  {formatMessage(announcementMessages.AnnouncementPathSettingsForm.exactMatch)}
+                </Radio>
+              </Radio.Group>
+              <Input
+                className={'mr-3 mb-0'}
+                value={path}
+                onChange={e => {
+                  const updatedPaths = [...value]
+                  updatedPaths[index] = e.target.value.trim()
+                  onChange && onChange(updatedPaths)
+                }}
+              />
+            </Input.Group>
             <CloseOutlined
               onClick={() => {
-                const newValue = [...value]
-                newValue.splice(index, 1)
-                onChange && onChange(newValue)
+                const pathsAfterDeletion = [...value]
+                pathsAfterDeletion.splice(index, 1)
+                onChange && onChange(pathsAfterDeletion)
               }}
             />
           </StyledNewPathInput>
@@ -107,11 +156,10 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
         icon={<PlusOutlined />}
         type="link"
         onClick={() => {
-          if (value) {
-            const newValue = [...value]
-            newValue.splice(newValue.length, 0, '')
-            onChange && onChange(newValue)
-          }
+          const newPaths = [...value, '']
+          const newPathMatchTypes = [...pathMatchTypes, 'exactMatch']
+          setPathMatchTypes(newPathMatchTypes)
+          onChange && onChange(newPaths)
         }}
       >
         <span>{formatMessage(announcementMessages.AnnouncementPathSettingsForm.addNewPath)}</span>
@@ -119,5 +167,4 @@ const PathInput: React.FC<{ value?: string[]; onChange?: (value: string[]) => vo
     </>
   )
 }
-
 export default AnnouncementPathSettingsForm
