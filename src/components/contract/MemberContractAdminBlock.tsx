@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Card, message, Skeleton } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -47,6 +48,7 @@ const MemberContractAdminBlock: React.FC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
+  const { settings } = useApp()
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
@@ -101,7 +103,15 @@ const MemberContractAdminBlock: React.FC<{
   }
   return (
     <div className="container">
-      <a href={`/admin/members/${memberId}/new-contract`} target="_blank" rel="noopener noreferrer">
+      <a
+        href={
+          settings['contract_page.v2.enabled'] === '1'
+            ? `/admin/members/${memberId}/contract/create`
+            : `/admin/members/${memberId}/new-contract`
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <Button type="primary" className="mb-5">
           {formatMessage(commonMessages.ui.createContract)}
         </Button>

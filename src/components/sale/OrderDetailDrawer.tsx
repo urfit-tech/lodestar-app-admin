@@ -1,21 +1,21 @@
 import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
+import { Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
+import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
 import OrderCard from './OrderCard'
 import OrderOtherInfoCard from './OrderOtherInfoCard'
 import PaymentCard from './PaymentCard'
 import saleMessages from './translation'
-import hasura from '../../hasura'
-import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
-import { sum } from 'ramda'
-import { Skeleton } from 'antd'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
@@ -150,7 +150,7 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} />}
+            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} order={orderLog} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -200,6 +200,7 @@ const useOrderDetail = (orderLogId: string | null) => {
           paid_at
           method
           custom_no
+          options
         }
         order_executor(where: { order_id: { _eq: $orderLogId } }) {
           id
@@ -286,13 +287,14 @@ const useOrderDetail = (orderLogId: string | null) => {
     sharingNote: sharingCodeData?.sharing_code?.map(v => v.code).join(', ') || '',
   }
 
-  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt'>[] =
+  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options'>[] =
     orderDetailData?.payment_log.map(v => ({
       no: v.no,
       status: v.status || '',
       price: v.price,
       gateway: v.gateway || '',
       paidAt: v.paid_at,
+      options: v.options,
     })) || []
 
   return {
