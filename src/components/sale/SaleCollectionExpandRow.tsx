@@ -298,7 +298,7 @@ const SaleCollectionExpandRow = ({
             </Button>
           )}
         />
-        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' && (
+        {settings['feature.modify_order_status.enabled'] === '1' && (
           <ModifyOrderStatusModal
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
