@@ -290,7 +290,9 @@ const MemberContractCreationForm: React.FC<
       classMode: '內課',
       classType: '個人班',
       locationType: '海內',
+      languageType: '英文',
     })
+    console.log(category)
 
     const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
     const options = productOptions?.find((v: any) => v.title === category.product)
@@ -298,6 +300,7 @@ const MemberContractCreationForm: React.FC<
     const [weeklyBatch, setWeeklyBatch] = useState(10)
     const [totalAmount, setTotalAmount] = useState(60)
     const [customPrice, setCustomPrice] = useState(0)
+    console.log(products)
 
     const filterProducts = useMemo(() => {
       return products.filter(product => {
@@ -342,7 +345,7 @@ const MemberContractCreationForm: React.FC<
           if (
             product.options.programType === '套裝項目' &&
             product.options.onceSessions &&
-            product.options.onceSessions !== category.onceSessions
+            product.options.onceSessions !== totalAmount
           ) {
             return false
           }
@@ -366,7 +369,7 @@ const MemberContractCreationForm: React.FC<
           return true
         }
       })
-    }, [category])
+    }, [category, weeklyBatch, totalAmount])
 
     console.log(filterProducts)
     return (
@@ -375,7 +378,15 @@ const MemberContractCreationForm: React.FC<
         <Tabs
           className="mb-5"
           onTabClick={key => {
-            setCategory({ language: key, product: category.product, programType: category.programType })
+            setCategory({
+              language: key,
+              product: category.product || '學費',
+              programType: category.programType || '標準時數',
+              classMode: category.classMode || '內課',
+              classType: category.classType || '個人班',
+              locationType: category.locationType || '海內',
+              languageType: category.languageType || '英文',
+            })
           }}
         >
           {CUSTOM_PRODUCT_OPTIONS_CONFIG.map((k, index) => (
@@ -390,7 +401,11 @@ const MemberContractCreationForm: React.FC<
                         setCategory({
                           language: category.language,
                           product: v.title,
-                          programType: category.programType,
+                          programType: category.programType || '標準時數',
+                          classMode: category.classMode || '內課',
+                          classType: category.classType || '個人班',
+                          locationType: category.locationType || '海內',
+                          languageType: category.languageType || '英文',
                         })
                       }}
                     >
@@ -415,6 +430,24 @@ const MemberContractCreationForm: React.FC<
                         gap: 8,
                       }}
                     >
+                      {(category.language === '方言' || category.language === '外文') && (
+                        <div style={{ width: 110 }}>
+                          語言
+                          <Select
+                            value={category.languageType}
+                            style={{ width: 110 }}
+                            onChange={value => {
+                              setCategory({ ...category, languageType: value })
+                            }}
+                          >
+                            {options.languageType.map((d: { title: string }) => (
+                              <Select.Option key={d.title} value={d.title}>
+                                {d.title}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </div>
+                      )}
                       <div style={{ width: 110 }}>
                         項目
                         <Select

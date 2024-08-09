@@ -57,7 +57,7 @@ type ContractInfo = {
       classMode?: string
       classType?: string
       locationType?: string
-      onceSessions?: string
+      onceSessions?: number
       languageType?: string
       project?: string
       isCustomPrice?: boolean
