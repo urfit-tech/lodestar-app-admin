@@ -80,11 +80,11 @@ const PaymentCard: React.FC<{
                     <StyledInfoTitle className="column">款項</StyledInfoTitle>
                     <StyledInfoMessage className="column">
                       {order.options?.installmentPlans?.length === 2
-                        ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0].index === 0
+                        ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 0
                           ? '訂金'
                           : '尾款'
                         : `${
-                            order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0].index + 1
+                            order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index + 1
                           } 期`}
                     </StyledInfoMessage>
                   </div>
