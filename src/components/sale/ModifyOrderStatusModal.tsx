@@ -34,6 +34,8 @@ const ModifyOrderStatusModal: React.VFC<{
   paymentLogs: {
     price: number
     status: string | null | undefined
+    gateway?: string | null
+    method?: string | null
   }[]
   defaultPrice?: number
   onRefetch?: (status: string) => void
@@ -64,6 +66,8 @@ const ModifyOrderStatusModal: React.VFC<{
             price: values.price,
             gateway: 'lodestar',
             options: {
+              gateway: paymentLogs[0]?.gateway || 'lodestar',
+              method: paymentLogs[0].method,
               authorId: currentMemberId,
             },
             paid_at: paidAt,
