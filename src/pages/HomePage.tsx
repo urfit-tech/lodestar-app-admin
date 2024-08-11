@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
       message.error(formatMessage(messages.deniedRolePermission))
       logout?.()
     } else {
-      history.push(`/settings`)
+      history.push(settings['admin.general_member.redirect'] || `/settings`)
     }
   }, [
     currentMemberId,

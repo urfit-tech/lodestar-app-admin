@@ -1,22 +1,16 @@
+import { gql, useQuery } from '@apollo/client'
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import { sum } from 'lodash'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps, paymentMethods, paymentModes } from '.'
 import { AdminBlockTitle } from '../../components/admin'
-
-const LANGUAGES = ['中文', '外文', '師資班', '方言'] as const
-const PRODUCT_CATEGORy = [
-  '註冊費',
-  '學費',
-  '教材',
-  '活動',
-  // 'B/G訂單',
-  '其他',
-] as const
+import hasura from '../../hasura'
 
 const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
   {
@@ -237,6 +231,12 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
   },
 ]
 
+type PaymentCompany = {
+  permissionGroupId: string
+  name: string
+  companies: string[]
+}
+
 const calculateEndedAt = (startedAt: Date, weeks: number) => {
   return moment(startedAt).add(weeks + 2, 'weeks')
 }
@@ -273,6 +273,36 @@ const MemberContractCreationForm: React.FC<
     adjustSelectedProductAmount,
     ...formProps
   }) => {
+    const { id: appId } = useApp()
+    const { currentMemberId, authToken, currentUserRole } = useAuth()
+    const { data: memberPermissionGroups } = useQuery<
+      hasura.GetMemberPermissionGroup,
+      hasura.GetMemberPermissionGroupVariables
+    >(
+      gql`
+        query GetMemberPermissionGroup($memberId: String!) {
+          member_permission_group(where: { member_id: { _eq: $memberId } }) {
+            permission_group_id
+          }
+        }
+      `,
+      { variables: { memberId: currentMemberId || '' }, skip: !currentMemberId || !authToken },
+    )
+
+    const { data: appSettings } = useQuery<hasura.GetCustomSetting, hasura.GetCustomSettingVariables>(
+      gql`
+        query GetCustomSetting($appId: String!) {
+          app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "custom" } }) {
+            value
+          }
+        }
+      `,
+      { variables: { appId }, skip: !authToken || !appId },
+    )
+
+    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(appSettings?.app_setting[0]?.value || '{}')
+    console.log(customSetting)
+
     const [category, setCategory] = useState<{
       language: string
       product: string
@@ -790,13 +820,7 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
           <Descriptions.Item label="合約效期" style={{ whiteSpace: 'nowrap' }}>
-            <Select<string> defaultValue="依據訂單內容">
-              {['依據訂單內容'].map(v => (
-                <Select.Option key={v} value={v}>
-                  依據訂單內容
-                </Select.Option>
-              ))}
-            </Select>
+            依據訂單內容
           </Descriptions.Item>
           <Descriptions.Item label="開始時間" style={{ whiteSpace: 'nowrap' }}>
             <Form.Item name="startedAt" noStyle>
@@ -813,7 +837,7 @@ const MemberContractCreationForm: React.FC<
         <Descriptions title="付款方式" column={2} bordered className="mb-5">
           <Descriptions.Item label="結帳管道">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇結帳管道' }]}>
-              <Select<string>>
+              <Select<string> style={{ minWidth: 160 }}>
                 {paymentMethods.map((payment: string) => (
                   <Select.Option key={payment} value={payment}>
                     {payment}
@@ -825,17 +849,22 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item label="結帳公司">
             <Form.Item className="mb-0" name="company" rules={[{ required: true, message: '請選擇結帳公司' }]}>
-              <Select<string>>
-                {[
-                  '中華語文 - 70560259',
-                  '靈呱 - 42307734',
-                  '附設臺北市私立中華語文 - 42379477',
-                  '基金會 - 20084864',
-                ].map((payment: string) => (
-                  <Select.Option key={payment} value={payment}>
-                    {payment}
-                  </Select.Option>
-                ))}
+              <Select<string> style={{ minWidth: 250 }}>
+                {customSetting?.paymentCompanies
+                  ?.filter(
+                    company =>
+                      currentUserRole === 'app-owner' ||
+                      !!memberPermissionGroups?.member_permission_group
+                        .map(g => g.permission_group_id)
+                        .includes(company.permissionGroupId),
+                  )
+                  .map(company => company.companies)
+                  .flat()
+                  .map(company => (
+                    <Select.Option key={company} value={company}>
+                      {company}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>
@@ -857,11 +886,22 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="執行人員">
             <Form.Item className="mb-0" name="executorId" rules={[{ required: true, message: '請選擇執行人員' }]}>
               <Select<string>>
-                {sales.map(m => (
-                  <Select.Option key={m.id} value={m.id}>
-                    {m.name}( {m.email} )
-                  </Select.Option>
-                ))}
+                {sales
+                  .filter(
+                    s =>
+                      currentUserRole === 'app-owner' ||
+                      s.permissionGroups.filter(
+                        group =>
+                          !!memberPermissionGroups?.member_permission_group
+                            .map(g => g.permission_group_id)
+                            .includes(group),
+                      ).length > 0,
+                  )
+                  .map(m => (
+                    <Select.Option key={m.id} value={m.id}>
+                      {m.name}( {m.email} )
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>

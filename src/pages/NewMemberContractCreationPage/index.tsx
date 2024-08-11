@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
-import { PeriodType } from '../../types/general'
 import LoadingPage from '../LoadingPage'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
@@ -77,24 +76,14 @@ type ContractSales = {
     id: string
     name: string
     email: string
+    permissionGroups: string[]
   }[]
-}
-
-type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
-
-export type ContractItem = {
-  id: string
-  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount' | 'rebateDiscount'
-  name: string
-  price: number
-  appointments: number
-  coins: number
-  amount: number
 }
 
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
+  const { currentMemberId, currentUserRole, authToken } = useAuth()
   const [form] = useForm<FieldProps>()
   const { info, error, loading } = useContractInfo(appId, memberId)
   const { sales } = useContractSales(appId)
@@ -182,14 +171,6 @@ const MemberContractCreationPage: React.VFC = () => {
       </div>
     </DefaultLayout>
   )
-}
-
-export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
-  if (['D', 'W', 'M', 'Y'].includes(type)) {
-    return type === 'M' ? (type as MomentPeriodType) : (type.toLowerCase() as MomentPeriodType)
-  }
-
-  return type as MomentPeriodType
 }
 
 const useContractInfo = (appId: string, memberId: string) => {
@@ -312,6 +293,9 @@ const useContractSales = (appId: string) => {
           id
           name
           email
+          member_permission_groups {
+            permission_group_id
+          }
         }
       }
     `,
@@ -330,6 +314,7 @@ const useContractSales = (appId: string) => {
             id: s.id,
             name: s.name,
             email: s.email,
+            permissionGroups: s.member_permission_groups.map(v => v.permission_group_id),
           })),
         }
       : null

@@ -124,6 +124,7 @@ const SaleCollectionExpandRow = ({
       })
       .finally(() => {
         setLoading(false)
+        refetchExpandRowOrderProduct()
       })
   }
   return (
