@@ -90,8 +90,30 @@ export type ProgramContent = {
     options: any
   }[]
   videos: Attachment[]
-  programContentBodyData: any
+  displayMode: DisplayMode
+  programContentBody: {
+    id: string
+    type: string | null
+    description: string | null
+    data: any
+    target: string | null
+  }
+  programContentMaterials: {
+    id: string
+    data: any
+  }[]
   pinned_status: boolean
+  audios:
+    | {
+        id: string
+        data: any
+      }[]
+    | null
+  ebook: {
+    id: string
+    data: any
+    trialPercentage: number
+  } | null
 }
 
 export type ProgramContentProps = {
@@ -121,7 +143,7 @@ export type ProgramContentProps = {
     data: any
     trialPercentage: number
   } | null
-  programContentBodyData: any
+  programContentBody: any
   displayMode: DisplayMode
 }
 
