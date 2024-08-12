@@ -13,7 +13,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
-import { ProgramContentBody, ProgramContentProps } from '../../types/program'
+import { ProgramContent, ProgramContentBody } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
@@ -21,6 +21,7 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
+import { DeepPick } from 'ts-deep-pick'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -57,7 +58,8 @@ type FieldProps = {
 
 const PracticeForm: React.FC<{
   programId: string
-  programContent: ProgramContentProps
+  programContent: DeepPick<ProgramContent, '!videos'> &
+    DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   programContentBody: ProgramContentBody
   displayMode: DisplayMode
   onDisplayModeChange: (displayMode: DisplayMode) => void
@@ -330,7 +332,8 @@ const UPDATE_PRACTICE = gql`
 `
 const PracticeAdminModalBlock: React.FC<{
   programId: string
-  programContent: ProgramContentProps
+  programContent: DeepPick<ProgramContent, '!videos'> &
+    DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   displayMode: DisplayMode
   onDisplayModeChange: (displayMode: DisplayMode) => void
   onRefetch?: () => void
