@@ -297,18 +297,9 @@ const MemberTaskAdminModal: React.FC<
   const handleMeetingGateway = async (currentMeetingGateway: MeetingGateway, startedAt: Date, endedAt: Date) => {
     const defaultServiceGateways = Array.from(new Set(services.map(service => service.gateway)))
     const validGateways = await getValidGatewaysWithinTimeRange({ startedAt, endedAt })
-    if (validGateways.includes('currentMeetingGateway')) {
-      form.setFieldsValue({ meetingGateway: currentMeetingGateway })
-    } else if (validGateways.some(validGateway => validGateway === 'google-meet')) {
-      form.setFieldsValue({ meetingGateway: 'google-meet' })
-    } else if (
-      !validGateways.find(validGateway => validGateway === 'google-meet') &&
-      validGateways.find(validGateway => validGateway === 'zoom')
-    ) {
-      form.setFieldsValue({ meetingGateway: 'zoom' })
-    } else {
-      form.setFieldsValue({ meetingGateway: 'jitsi' })
-    }
+    const gatewayPriority: MeetingGateway[] = [currentMeetingGateway, 'google-meet', 'zoom', 'jitsi']
+    const selectedGateway = gatewayPriority.find(gateway => validGateways.includes(gateway)) || 'jitsi'
+    form.setFieldsValue({ meetingGateway: selectedGateway })
     setInvalidGateways(
       defaultServiceGateways.filter(
         defaultServiceGateway => !validGateways.some(validGateway => validGateway === defaultServiceGateway),
