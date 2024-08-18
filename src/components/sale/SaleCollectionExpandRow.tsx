@@ -46,7 +46,10 @@ const SaleCollectionExpandRow = ({
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
   const receiptRef2 = useRef<HTMLDivElement | null>(null)
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
-  const [posResponse, setPosResponse] = useState('')
+  const [cardReaderResponse, setCardReaderResponse] = useState<{
+    status: 'success' | 'failed'
+    message: string
+  } | null>(null)
   const [loading, setLoading] = useState(false)
 
   const orderLogId = record.id
@@ -98,35 +101,6 @@ const SaleCollectionExpandRow = ({
     }, 500)
   }
 
-  const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string) => {
-    if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
-      return alert('target url or path not found')
-    }
-    setLoading(true)
-    axios
-      .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
-        price,
-        orderId,
-        paymentNo,
-      })
-      .then(res => {
-        if (res.data.message === 'success') {
-          message.success('付款成功，請重整確認訂單狀態')
-        }
-      })
-      .catch(err => {
-        console.log({ err })
-        message.error(
-          `付款失敗，原因：${
-            err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
-          }`,
-        )
-      })
-      .finally(() => {
-        setLoading(false)
-        refetchExpandRowOrderProduct()
-      })
-  }
   return (
     <div>
       {loadingExpandRowOrderProduct ? (
@@ -238,10 +212,10 @@ const SaleCollectionExpandRow = ({
               {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] ? (
                 <div>承辦人：{orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}</div>
               ) : null}
-              {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? <div>付款方式：{paymentMethod}</div> : null}
-              {orderLog.expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
+              {/* {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? <div>付款方式：{paymentMethod}</div> : null} */}
+              {/* {orderLog.expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
                 <div>付款期限：{dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD')}</div>
-              )}
+              )} */}
             </div>
 
             <div className="col-9">
@@ -298,9 +272,18 @@ const SaleCollectionExpandRow = ({
               {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
             </Button>
           )}
+          onRefetch={() => {
+            onRefetchOrderLog?.()
+            refetchExpandRowOrderProduct()
+          }}
         />
-        {settings['feature.modify_order_status.enabled'] === '1' && (
+        {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
           <ModifyOrderStatusModal
+            renderTrigger={({ setVisible }) => (
+              <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
+                變更訂單狀態
+              </Button>
+            )}
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
             paymentLogs={paymentLogs}
@@ -360,21 +343,11 @@ const SaleCollectionExpandRow = ({
               )}
             </>
           )}
-        {enabledModules.card_reader &&
-          paymentLogs.length > 0 &&
-          (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
-          (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
-            <Button
-              disabled={loading}
-              loading={loading}
-              style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-              onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
-            >
-              <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
-            </Button>
-          )}
+
         {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
           <Button
+            disabled={loading}
+            loading={loading}
             style={{ display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => {
               setLoading(true)

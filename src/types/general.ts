@@ -95,6 +95,7 @@ export type OrderLog = {
     country?: string
     countryCode?: string
     installmentPlans?: { price: number; index: number }[]
+    paymentMode?: string
   }
   invoiceOptions?: InvoiceProps
   invoiceIssuedAt?: Date

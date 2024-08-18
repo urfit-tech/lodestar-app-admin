@@ -42,7 +42,8 @@ const OrderDetailDrawer: React.FC<{
   orderLogId: string | null
   onClose: () => void
   renderTrigger?: React.FC
-}> = ({ orderLogId, onClose, renderTrigger }) => {
+  onRefetch?: () => void
+}> = ({ orderLogId, onClose, renderTrigger, onRefetch }) => {
   const { formatMessage } = useIntl()
   const isOpen = Boolean(orderLogId)
 
@@ -56,6 +57,7 @@ const OrderDetailDrawer: React.FC<{
     totalPrice,
     orderExecutors,
     paymentLogs,
+    orderDetailRefetch,
   } = useOrderDetail(orderLogId)
 
   return (
@@ -150,7 +152,19 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} order={orderLog} />}
+            {loadingOrderDetail ? (
+              <Skeleton />
+            ) : (
+              <PaymentCard
+                payments={paymentLogs}
+                order={orderLog}
+                onRefetch={() => {
+                  onRefetch?.()
+                  orderDetailRefetch()
+                }}
+                onClose={onClose}
+              />
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -163,6 +177,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     loading: loadingOrderDetail,
     error: errorOrderDetail,
     data: orderDetailData,
+    refetch: orderDetailRefetch,
   } = useQuery<hasura.GetOrderDetail, hasura.GetOrderDetailVariables>(
     gql`
       query GetOrderDetail($orderLogId: String!) {
@@ -287,7 +302,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     sharingNote: sharingCodeData?.sharing_code?.map(v => v.code).join(', ') || '',
   }
 
-  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options'>[] =
+  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method'>[] =
     orderDetailData?.payment_log.map(v => ({
       no: v.no,
       status: v.status || '',
@@ -295,6 +310,7 @@ const useOrderDetail = (orderLogId: string | null) => {
       gateway: v.gateway || '',
       paidAt: v.paid_at,
       options: v.options,
+      method: v.method || '',
     })) || []
 
   return {
@@ -309,6 +325,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     totalPrice,
     orderExecutors,
     paymentLogs,
+    orderDetailRefetch,
   }
 }
 
