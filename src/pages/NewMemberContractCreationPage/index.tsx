@@ -320,6 +320,7 @@ const useContractProducts = (appId: string) => {
                 project: v.options.project,
                 weeklyFrequency: v.options.weekly_frequency,
                 totalSessions: v.options.total_sessions,
+                isCustomPrice: v.options.isCustomPrice,
               },
               productId: 'AppointmentPlan_' + v.id,
             }))
@@ -340,6 +341,7 @@ const useContractProducts = (appId: string) => {
                   project: v.options.project,
                   weeklyFrequency: v.options.weekly_frequency,
                   totalSessions: v.options.total_sessions,
+                  isCustomPrice: v.options.isCustomPrice,
                 },
                 productId: 'Token_' + v.id,
               })),

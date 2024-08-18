@@ -38,60 +38,79 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         onceSessions: [
           {
             title: '1',
+            week: '1',
           },
           {
             title: '3',
+            week: '1',
           },
           {
             title: '4',
+            week: '1',
           },
           {
             title: '6',
+            week: '1',
           },
           {
             title: '9',
+            week: '1',
           },
           {
             title: '10',
+            week: '1',
           },
           {
             title: '12',
+            week: '4',
           },
           {
             title: '15',
+            week: '1',
           },
           {
             title: '16',
+            week: '4',
           },
           {
             title: '24',
+            week: '4',
           },
           {
             title: '36',
+            week: '4',
           },
           {
             title: '39',
+            week: '13',
           },
           {
             title: '40',
+            week: '4',
           },
           {
             title: '52',
+            week: '13',
           },
           {
             title: '60',
+            week: '4',
           },
           {
             title: '78',
+            week: '13',
           },
           {
             title: '117',
+            week: '13',
           },
           {
             title: '130',
+            week: '13',
           },
           {
             title: '195',
+            week: '13',
           },
         ],
       },
@@ -199,7 +218,10 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         classMode: [{ title: '內課' }],
         classType: [{ title: '團體班' }],
         locationType: [{ title: '海內' }],
-        onceSessions: [{ title: '26' }],
+        onceSessions: [
+          { title: '26', week: '2' },
+          { title: '26', week: '5' },
+        ],
       },
       {
         title: '其他',
@@ -331,7 +353,6 @@ const MemberContractCreationForm: React.FC<
       classMode: '內課',
       classType: '個人班',
       locationType: '海內',
-      languageType: '英文',
     })
 
     const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
@@ -422,15 +443,51 @@ const MemberContractCreationForm: React.FC<
           <Tabs
             className="mb-5"
             onTabClick={key => {
-              setCategory({
-                language: key,
-                product: category.product || '學費',
-                programType: category.programType || '標準時數',
-                classMode: category.classMode || '內課',
-                classType: category.classType || '個人班',
-                locationType: category.locationType || '海內',
-                languageType: category.languageType || '英文',
-              })
+              setCategory(
+                key === '中文'
+                  ? {
+                      language: key,
+                      product: '學費',
+                      programType: '標準時數',
+                      classMode: '內課',
+                      classType: '個人班',
+                      locationType: '海內',
+                    }
+                  : key === '外文'
+                  ? {
+                      language: key,
+                      product: '學費',
+                      programType: '標準時數',
+                      classMode: '內課',
+                      classType: '個人班',
+                      locationType: '海內',
+                      languageType: '英文',
+                    }
+                  : key === '師資班'
+                  ? {
+                      language: key,
+                      product: '學費',
+                      programType: '套裝項目',
+                      classMode: '內課',
+                      classType: '團體班',
+                      locationType: '海內',
+                    }
+                  : key === '方言'
+                  ? {
+                      language: key,
+                      product: '學費',
+                      programType: '客製時數',
+                      classMode: '內課',
+                      classType: '個人班',
+                      locationType: '海內',
+                      languageType: '台語',
+                    }
+                  : category,
+              )
+              setWeeklyBatch(key === '中文' ? 10 : key === '外文' ? 4 : key === '師資班' ? 5 : key === '方言' ? 10 : 10)
+              setTotalAmount(
+                key === '中文' ? 60 : key === '外文' ? 10 : key === '師資班' ? 26 : key === '方言' ? 60 : 60,
+              )
             }}
           >
             {CUSTOM_PRODUCT_OPTIONS_CONFIG.map((k, index) => (
@@ -450,6 +507,15 @@ const MemberContractCreationForm: React.FC<
                             classType: category.classType || '個人班',
                             locationType: category.locationType || '海內',
                             languageType: category.languageType || '英文',
+                            project:
+                              (v.title !== '註冊費' &&
+                                v.title !== '學費' &&
+                                (
+                                  CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
+                                    p => p.language === (category as { language: string }).language,
+                                  ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
+                                )?.products.find(p => p.title === v.title)?.projects[0]?.title) ||
+                              '',
                           })
                         }}
                       >
@@ -537,28 +603,73 @@ const MemberContractCreationForm: React.FC<
                         ))}
                         <div style={{ width: 110, marginRight: 8 }}>
                           週頻率
-                          <InputNumber
-                            min={1}
-                            value={weeklyBatch}
-                            onChange={e => {
-                              setWeeklyBatch(Number(e))
-                            }}
-                          />
+                          {category.language !== '外文' && category.programType === '套裝項目' ? (
+                            category.language === '中文' ? (
+                              <div>{weeklyBatch}</div>
+                            ) : (
+                              <Select
+                                defaultValue={options.onceSessions?.[0]?.week}
+                                style={{ width: 110 }}
+                                onChange={value => {
+                                  setWeeklyBatch(Number(value))
+                                }}
+                              >
+                                {(options.onceSessions || []).map((d: { week: string }) => (
+                                  <Select.Option key={d.week} value={d.week}>
+                                    {d.week}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            )
+                          ) : (
+                            <InputNumber
+                              min={1}
+                              value={weeklyBatch}
+                              onChange={e => {
+                                setWeeklyBatch(Number(e))
+                              }}
+                            />
+                          )}
                         </div>
                         <div style={{ width: 110, marginRight: 8 }}>
                           總堂數
-                          <InputNumber
-                            min={1}
-                            value={totalAmount}
-                            onChange={e => {
-                              setTotalAmount(Number(e))
-                            }}
-                          />
+                          {category.language !== '外文' && category.programType === '套裝項目' ? (
+                            <Select
+                              defaultValue={options.onceSessions?.[0]?.title}
+                              style={{ width: 110 }}
+                              onChange={value => {
+                                setTotalAmount(Number(value))
+                                category.language === '中文' &&
+                                  setWeeklyBatch(
+                                    options.onceSessions?.find(
+                                      (v: { title: string }) => v.title === String(totalAmount),
+                                    )?.week,
+                                  )
+                              }}
+                            >
+                              {(category.language === '師資班' ? [{ title: '26' }] : options.onceSessions || []).map(
+                                (d: { title: string }) => (
+                                  <Select.Option key={d.title} value={d.title}>
+                                    {d.title}
+                                  </Select.Option>
+                                ),
+                              )}
+                            </Select>
+                          ) : (
+                            <InputNumber
+                              min={1}
+                              value={totalAmount}
+                              onChange={e => {
+                                setTotalAmount(Number(e))
+                              }}
+                            />
+                          )}
                         </div>
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>單價/堂</div>
                           {filterProducts[0]?.options.isCustomPrice ? (
                             <InputNumber
+                              min={calculateMinPrice(category, weeklyBatch, totalAmount)}
                               value={customPrice}
                               onChange={e => {
                                 setCustomPrice(Number(e))
@@ -954,4 +1065,185 @@ const QuantityInput: React.VFC<{
   )
 }
 
+const calculateMinPrice = (
+  category: {
+    language: string
+    product: string
+    programType?: string
+    classMode?: string
+    classType?: string
+    locationType?: string
+    languageType?: string
+    onceSessions?: string
+    project?: string
+  },
+  weeklyBatch: number,
+  totalAmount: number,
+) => {
+  return category.language === '中文' &&
+    category.programType === '客製時數' &&
+    category.classType === '個人班' &&
+    category.classMode === '內課' &&
+    category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? 850
+      : weeklyBatch >= 2 && weeklyBatch <= 9
+      ? totalAmount < 60
+        ? 800
+        : 750
+      : weeklyBatch >= 10
+      ? totalAmount < 60
+        ? 700
+        : 650
+      : 0
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '自組班' &&
+      category.classMode === '內課' &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? 550
+      : weeklyBatch >= 2 && weeklyBatch <= 4
+      ? totalAmount < 60
+        ? 500
+        : 470
+      : weeklyBatch >= 5
+      ? totalAmount < 60
+        ? 450
+        : 420
+      : 0
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '個人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 950
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '2人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 1400
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '3-5人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 2000
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '6-10人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 3000
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '個人班' &&
+      category.classMode === '線上課' &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? 850
+      : weeklyBatch >= 2 && weeklyBatch <= 9
+      ? totalAmount < 60
+        ? 800
+        : 750
+      : weeklyBatch >= 10
+      ? totalAmount < 60
+        ? 700
+        : 650
+      : 0
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '自組班' &&
+      category.classMode === '線上課' &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? 550
+      : weeklyBatch >= 2 && weeklyBatch <= 4
+      ? totalAmount < 60
+        ? 500
+        : 470
+      : weeklyBatch >= 5
+      ? totalAmount < 60
+        ? 450
+        : 420
+      : 0
+    : category.language === '中文' &&
+      category.programType === '客製時數' &&
+      category.classType === '個人班' &&
+      category.classMode === '線上課' &&
+      category.locationType === '海外'
+    ? Math.ceil(totalAmount / weeklyBatch) * 7 === 1
+      ? 550
+      : weeklyBatch >= 2 && weeklyBatch <= 4
+      ? totalAmount < 60
+        ? 500
+        : 470
+      : weeklyBatch >= 5
+      ? totalAmount < 60
+        ? 450
+        : 420
+      : 0
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '個人班' &&
+      (category.classMode === '內課' || category.classMode === '線上課') &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? totalAmount < 10
+        ? 1200
+        : 1100
+      : weeklyBatch >= 2 && weeklyBatch <= 3 && totalAmount >= 10
+      ? 1050
+      : weeklyBatch >= 4 && totalAmount >= 10
+      ? 980
+      : 0
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '自組班' &&
+      (category.classMode === '內課' || category.classMode === '線上課') &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? totalAmount < 10
+        ? 800
+        : 660
+      : weeklyBatch >= 2 && weeklyBatch <= 3 && totalAmount >= 10
+      ? 630
+      : weeklyBatch >= 4 && totalAmount >= 10
+      ? 590
+      : 0
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '團體班' &&
+      (category.classMode === '內課' || category.classMode === '線上課') &&
+      category.locationType === '海內'
+    ? weeklyBatch === 1
+      ? totalAmount < 10
+        ? 600
+        : 550
+      : weeklyBatch >= 2 && weeklyBatch <= 3 && totalAmount >= 10
+      ? 500
+      : weeklyBatch >= 4 && totalAmount >= 10
+      ? 460
+      : 0
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '個人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 1500
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '2人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 1800
+    : category.language === '外文' &&
+      category.programType === '客製時數' &&
+      category.classType === '3-5人班' &&
+      category.classMode === '外課' &&
+      category.locationType === '海內'
+    ? 1800
+    : 0
+}
 export default MemberContractCreationForm
