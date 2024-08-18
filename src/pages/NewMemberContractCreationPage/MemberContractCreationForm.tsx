@@ -1,3 +1,4 @@
+import { PlusOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Skeleton, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
@@ -263,6 +264,9 @@ const MemberContractCreationForm: React.FC<
     }) => void
     deleteSelectedProduct: (id: string) => void
     adjustSelectedProductAmount: (id: string, amount: number) => void
+    installments: { index: number; price: number }[]
+    updateInstallmentPrice: (index: number, price: number) => void
+    addNewInstallment: (installment: { index: number; price: number }) => void
   }
 > = memo(
   ({
@@ -274,8 +278,13 @@ const MemberContractCreationForm: React.FC<
     onChangeSelectedProducts,
     deleteSelectedProduct,
     adjustSelectedProductAmount,
+    installments,
+    updateInstallmentPrice,
+    addNewInstallment,
     ...formProps
   }) => {
+    const fieldValue = form?.getFieldsValue()
+
     const { id: appId } = useApp()
     const { currentMemberId, authToken, currentUserRole } = useAuth()
     const { data: memberPermissionGroups } = useQuery<
@@ -400,6 +409,7 @@ const MemberContractCreationForm: React.FC<
         }
       })
     }, [category, weeklyBatch, totalAmount, products])
+
     console.log({ category })
     console.log({ products })
     console.log({ filterProducts })
@@ -793,6 +803,38 @@ const MemberContractCreationForm: React.FC<
               </Select>
             </Form.Item>
           </Descriptions.Item>
+          {['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue?.paymentMode || '') && (
+            <Descriptions.Item span={2} label="自訂分期">
+              <div>總金額：{sum(selectedProducts.map(p => p.totalPrice)).toLocaleString()}</div>
+              {installments.map(installment => (
+                <div
+                  key={installment.index}
+                  style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}
+                >
+                  <div>{installment.index === 1 ? '頭期' : `${installment.index}期`}</div>
+
+                  <InputNumber
+                    min={0}
+                    max={
+                      sum(selectedProducts.map(p => p.totalPrice)) -
+                      sum(installments.filter(v => v.index !== installment.index).map(i => i.price))
+                    }
+                    value={installment.price}
+                    onChange={value => updateInstallmentPrice(installment.index, Number(value))}
+                  />
+                  {installment.index === installments.length && (
+                    <Button
+                      icon={<PlusOutlined />}
+                      type="link"
+                      onClick={() => {
+                        addNewInstallment({ index: installment.index + 1, price: 0 })
+                      }}
+                    ></Button>
+                  )}
+                </div>
+              ))}
+            </Descriptions.Item>
+          )}
 
           <Descriptions.Item label="統一編號">
             <Form.Item className="mb-0" name="unifiedNumber">

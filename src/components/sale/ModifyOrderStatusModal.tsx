@@ -39,13 +39,23 @@ const ModifyOrderStatusModal: React.VFC<{
   }[]
   defaultPrice?: number
   onRefetch?: (status: string) => void
-}> = ({ orderLogId, defaultOrderStatus, paymentLogs, defaultPrice = 0, onRefetch }) => {
+  hideRefund?: boolean
+  renderTrigger?: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => React.ReactElement
+  targetPaymentNo?: string
+}> = ({
+  orderLogId,
+  defaultOrderStatus,
+  paymentLogs,
+  defaultPrice = 0,
+  onRefetch,
+  hideRefund,
+  renderTrigger,
+  targetPaymentNo,
+}) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
-  const [insertPaymentLog] = useMutation<hasura.INSERT_PAYMENT_LOG, hasura.INSERT_PAYMENT_LOGVariables>(
-    INSERT_PAYMENT_LOG,
-  )
+  const [upsertPaymentLog] = useMutation<hasura.UpsertPaymentLog, hasura.UpsertPaymentLogVariables>(UpsertPaymentLog)
   const [updateOrderLogStatus] = useMutation<hasura.UPDATE_ORDER_LOG_STATUS, hasura.UPDATE_ORDER_LOG_STATUSVariables>(
     UPDATE_ORDER_LOG_STATUS,
   )
@@ -57,11 +67,11 @@ const ModifyOrderStatusModal: React.VFC<{
       const values = await form.validateFields()
       const paymentStatus = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
       const paidAt = values.paidAt.toISOString(true)
-      await insertPaymentLog({
+      await upsertPaymentLog({
         variables: {
           data: {
             order_id: orderLogId,
-            no: `${Date.now()}`,
+            no: targetPaymentNo || `${Date.now()}`,
             status: paymentStatus,
             price: values.price,
             gateway: 'lodestar',
@@ -76,11 +86,12 @@ const ModifyOrderStatusModal: React.VFC<{
       })
 
       paymentLogs.push({ status: paymentStatus, price: values.price })
-      const totalAmount = defaultPrice
+      const totalAmount = sum(paymentLogs.map(p => p.price))
       const hasRefundPayment = paymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
       const paidAmount = sum(paymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
       const refundAmount = sum(paymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
       let orderStatus = defaultOrderStatus
+
       if (totalAmount <= 0 || paidAmount - refundAmount >= totalAmount) {
         orderStatus = 'SUCCESS'
       } else if (hasRefundPayment && paidAmount <= refundAmount) {
@@ -108,11 +119,7 @@ const ModifyOrderStatusModal: React.VFC<{
 
   return (
     <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
-          {formatMessage(messages.modifyOrderStatus)}
-        </Button>
-      )}
+      renderTrigger={renderTrigger}
       title={formatMessage(messages.modifyOrderStatus)}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -141,7 +148,7 @@ const ModifyOrderStatusModal: React.VFC<{
             <Form.Item label={formatMessage(orderMessages.label.orderLogStatus)} name="type">
               <Select<string>>
                 <Select.Option value="paid">{formatMessage(messages.hasPaid)}</Select.Option>
-                <Select.Option value="refunded">{formatMessage(messages.hasRefunded)}</Select.Option>
+                {!hideRefund && <Select.Option value="refunded">{formatMessage(messages.hasRefunded)}</Select.Option>}
               </Select>
             </Form.Item>
           </div>
@@ -189,6 +196,16 @@ const ModifyOrderStatusModal: React.VFC<{
 const INSERT_PAYMENT_LOG = gql`
   mutation INSERT_PAYMENT_LOG($data: payment_log_insert_input!) {
     insert_payment_log_one(object: $data) {
+      no
+    }
+  }
+`
+const UpsertPaymentLog = gql`
+  mutation UpsertPaymentLog($data: payment_log_insert_input!) {
+    insert_payment_log_one(
+      object: $data
+      on_conflict: { constraint: payment_log_no_key, update_columns: [status, paid_at, options] }
+    ) {
       no
     }
   }

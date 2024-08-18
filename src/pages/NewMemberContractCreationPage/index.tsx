@@ -14,7 +14,15 @@ import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
 const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡'] as const
-const paymentModes = ['全額付清', '訂金+尾款', '暫收款後開發票'] as const
+const paymentModes = [
+  '全額付清',
+  '訂金+尾款',
+  '暫收款後開發票',
+  '先上課後月結實支實付',
+  '先上課後月結固定金額',
+  '課前頭款+自訂分期',
+  '開課後自訂分期',
+] as const
 
 type FieldProps = {
   contractId: string
@@ -104,6 +112,25 @@ const MemberContractCreationPage: React.VFC = () => {
       productId: string
     }[]
   >([])
+  const [installments, setInstallments] = useState([
+    {
+      index: 1,
+      price: 0,
+    },
+  ])
+
+  const updateInstallmentPrice = (index: number, price: number) => {
+    setInstallments(prevInstallments =>
+      prevInstallments.map(installment => (installment.index === index ? { ...installment, price } : installment)),
+    )
+  }
+  const addNewInstallment = (newInstallment: { index: number; price: number }) => {
+    setInstallments(prevInstallments => [...prevInstallments, newInstallment])
+  }
+
+  const removeInstallment = (index: number) => {
+    setInstallments(prevInstallments => prevInstallments.filter(installment => installment.index !== index))
+  }
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [_, setReRender] = useState(0)
 
@@ -169,6 +196,9 @@ const MemberContractCreationPage: React.VFC = () => {
                 ),
               )
             }
+            installments={installments}
+            updateInstallmentPrice={updateInstallmentPrice}
+            addNewInstallment={addNewInstallment}
           />
 
           <MemberContractCreationBlock
@@ -177,6 +207,7 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products?.products || []}
             selectedProducts={selectedProducts}
             contracts={contracts}
+            installments={installments}
           />
         </AdminBlock>
       </div>
