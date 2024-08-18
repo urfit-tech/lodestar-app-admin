@@ -25,7 +25,8 @@ const MemberContractCreationBlock: React.FC<{
   form: FormInstance<FieldProps>
   products: ContractProduct['products']
   contracts: ContractInfo['contracts']
-}> = ({ member, form, selectedProducts, products, contracts }) => {
+  installments: { price: number; index: number }[]
+}> = ({ member, form, selectedProducts, products, contracts, installments }) => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
@@ -74,6 +75,14 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
+    if (
+      installments.length > 1 &&
+      selectedProducts.reduce((sum, product) => sum + product.totalPrice, 0) !== sum(installments.map(v => v.price))
+    ) {
+      message.warn('請確認分期總金額是否正確')
+      return
+    }
+
     if (!window.confirm('請確認合約是否正確？')) {
       return
     }
@@ -104,6 +113,8 @@ const MemberContractCreationBlock: React.FC<{
             { price: Math.ceil(totalPrice * 0.1), index: 0 },
             { price: totalPrice - Math.ceil(totalPrice * 0.1), index: 1 },
           ]
+        : ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode)
+        ? installments
         : undefined
 
     const paymentMode = fieldValue.paymentMode
