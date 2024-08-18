@@ -6,14 +6,14 @@ import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
-import DefaultLayout from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
 import LoadingPage from '../LoadingPage'
+import ContractLayout from './ContractLayout'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
-const paymentMethods = ['藍新-信用卡', '藍新-匯款', '銀行匯款', '現金', '遠刷', '手刷'] as const
+const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡'] as const
 const paymentModes = ['全額付清', '訂金+尾款', '暫收款後開發票'] as const
 
 type FieldProps = {
@@ -24,9 +24,12 @@ type FieldProps = {
     amount: number
     price: number
     totalPrice: number
+    productId: string
   }[]
   paymentMethod: typeof paymentMethods[number]
   paymentMode: typeof paymentModes[number]
+  unifiedNumber: string
+  invoiceComment: string
   startedAt: Date
   endedAt: Date
   company: string
@@ -37,6 +40,7 @@ type ContractInfo = {
     id: string
     name: string
     email: string
+    paymentComment?: string
   }
   contracts: {
     id: string
@@ -44,6 +48,9 @@ type ContractInfo = {
     options: any
     description: string
   }[]
+}
+
+type ContractProduct = {
   products: {
     id: string
     productId: string
@@ -71,6 +78,7 @@ type ContractInfo = {
     }
   }[]
 }
+
 type ContractSales = {
   sales: {
     id: string
@@ -83,9 +91,9 @@ type ContractSales = {
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
-  const { currentMemberId, currentUserRole, authToken } = useAuth()
   const [form] = useForm<FieldProps>()
   const { info, error, loading } = useContractInfo(appId, memberId)
+  const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<
     {
@@ -93,6 +101,7 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: number
       price: number
       totalPrice: number
+      productId: string
     }[]
   >([])
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
@@ -102,10 +111,11 @@ const MemberContractCreationPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  const { member, products, contracts } = info
+  const { member, contracts } = info
+  console.log({ selectedProducts })
 
   return (
-    <DefaultLayout>
+    <ContractLayout memberId={member.id}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -121,7 +131,7 @@ const MemberContractCreationPage: React.VFC = () => {
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
             }}
-            products={products}
+            products={products?.products || []}
             contracts={contracts}
             sales={sales?.sales || []}
             selectedProducts={selectedProducts}
@@ -164,27 +174,28 @@ const MemberContractCreationPage: React.VFC = () => {
           <MemberContractCreationBlock
             form={form}
             member={member}
-            products={products}
+            products={products?.products || []}
             selectedProducts={selectedProducts}
+            contracts={contracts}
           />
         </AdminBlock>
       </div>
-    </DefaultLayout>
+    </ContractLayout>
   )
 }
 
 const useContractInfo = (appId: string, memberId: string) => {
   const { authToken } = useAuth()
-  const { loading, error, data } = useQuery<
-    hasura.GET_CONTRACT_INFO_WITH_PRODUCTS,
-    hasura.GET_CONTRACT_INFO_WITH_PRODUCTSVariables
-  >(
+  const { loading, error, data } = useQuery<hasura.GetContractInfo, hasura.GetContractInfoVariables>(
     gql`
-      query GET_CONTRACT_INFO_WITH_PRODUCTS($appId: String!, $memberId: String!) {
+      query GetContractInfo($appId: String!, $memberId: String!) {
         member_by_pk(id: $memberId) {
           id
           name
           email
+          member_properties(where: { property: { name: { _eq: "付款備註" } } }) {
+            value
+          }
         }
         contract(
           where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
@@ -195,6 +206,47 @@ const useContractInfo = (appId: string, memberId: string) => {
           description
           options
         }
+      }
+    `,
+    {
+      variables: {
+        appId,
+        memberId,
+      },
+      skip: !appId || !memberId || !authToken,
+    },
+  )
+
+  const info: ContractInfo | null =
+    data && data.member_by_pk && data.contract
+      ? {
+          member: {
+            id: data.member_by_pk.id,
+            name: data.member_by_pk.name,
+            email: data.member_by_pk.email,
+            paymentComment: data.member_by_pk.member_properties[0]?.value,
+          },
+          contracts: data.contract.map(c => ({
+            id: c.id,
+            name: c.name,
+            options: c.options,
+            description: c.description,
+          })),
+        }
+      : null
+
+  return {
+    loading,
+    error,
+    info,
+  }
+}
+
+const useContractProducts = (appId: string) => {
+  const { authToken } = useAuth()
+  const { loading, error, data } = useQuery<hasura.GetContractProducts, hasura.GetContractProductsVariables>(
+    gql`
+      query GetContractProducts($appId: String!) {
         appointment_plan(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
           id
           title
@@ -212,26 +264,14 @@ const useContractInfo = (appId: string, memberId: string) => {
     {
       variables: {
         appId,
-        memberId,
       },
-      skip: !appId || !memberId || !authToken,
+      skip: !appId || !authToken,
     },
   )
 
-  const info: ContractInfo | null =
-    data && data.member_by_pk && data.appointment_plan && data.contract && data.token
+  const products: ContractProduct | null =
+    data && data.appointment_plan && data.token
       ? {
-          member: {
-            id: data.member_by_pk.id,
-            name: data.member_by_pk.name,
-            email: data.member_by_pk.email,
-          },
-          contracts: data.contract.map(c => ({
-            id: c.id,
-            name: c.name,
-            options: c.options,
-            description: c.description,
-          })),
           products: data.appointment_plan
             .map(v => ({
               id: v.id,
@@ -279,7 +319,7 @@ const useContractInfo = (appId: string, memberId: string) => {
   return {
     loading,
     error,
-    info,
+    products,
   }
 }
 const useContractSales = (appId: string) => {
@@ -326,7 +366,7 @@ const useContractSales = (appId: string) => {
   }
 }
 
-export type { ContractInfo, FieldProps, ContractSales }
+export type { ContractInfo, FieldProps, ContractSales, ContractProduct }
 export { paymentMethods, paymentModes }
 
 export default MemberContractCreationPage
