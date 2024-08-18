@@ -57,7 +57,8 @@ const StyledCell = styled.div`
 
 const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
-}> = ({ memberId }) => {
+  isShowRefetchButton?: boolean
+}> = ({ memberId, isShowRefetchButton }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions } = useAuth()
 
@@ -231,19 +232,21 @@ const SaleCollectionAdminCard: React.VFC<{
   return (
     <AdminCard>
       <StyledContainer>
-        <IconButton
-          ml="3"
-          w="45px"
-          h="45px"
-          _hover={{}}
-          aria-label="refresh"
-          icon={<AiOutlineRedo />}
-          variant="outline"
-          onClick={async () => {
-            await Promise.all([refetchOrderLogPreviewCollection(), refetchOrderLogAggregate()])
-            message.info(formatMessage(saleMessages.SaleCollectionAdminCard.successfullyRefreshed))
-          }}
-        />
+        {isShowRefetchButton && (
+          <IconButton
+            ml="3"
+            w="45px"
+            h="45px"
+            _hover={{}}
+            aria-label="refresh"
+            icon={<AiOutlineRedo />}
+            variant="outline"
+            onClick={async () => {
+              await Promise.all([refetchOrderLogPreviewCollection(), refetchOrderLogAggregate()])
+              message.info(formatMessage(saleMessages.SaleCollectionAdminCard.successfullyRefreshed))
+            }}
+          />
+        )}
         <div className="d-flex justify-content-end">
           <Typography.Text type="secondary">
             {loadingOrderLogAggregate ? (

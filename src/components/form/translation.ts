@@ -51,6 +51,10 @@ const formMessages = {
       id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY',
       defaultMessage: '調整會員訂單權益功能',
     },
+    MODIFY_MEMBER_ORDER_STATUS: {
+      id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_STATUS',
+      defaultMessage: '調整會員訂單狀態功能',
+    },
 
     // program
     PROGRAM_ADMIN: { id: 'form.PermissionGroup.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },

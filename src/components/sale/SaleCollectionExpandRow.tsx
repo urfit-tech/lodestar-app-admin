@@ -46,7 +46,10 @@ const SaleCollectionExpandRow = ({
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
   const receiptRef2 = useRef<HTMLDivElement | null>(null)
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
-  const [posResponse, setPosResponse] = useState('')
+  const [cardReaderResponse, setCardReaderResponse] = useState<{
+    status: 'success' | 'failed'
+    message: string
+  } | null>(null)
   const [loading, setLoading] = useState(false)
 
   const orderLogId = record.id
@@ -111,16 +114,17 @@ const SaleCollectionExpandRow = ({
       })
       .then(res => {
         if (res.data.message === 'success') {
-          message.success('付款成功，請重整確認訂單狀態')
+          setCardReaderResponse({ status: 'success', message: '付款成功，請重整確認訂單狀態' })
         }
       })
       .catch(err => {
         console.log({ err })
-        message.error(
-          `付款失敗，原因：${
+        setCardReaderResponse({
+          status: 'failed',
+          message: `付款失敗，原因：${
             err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
           }`,
-        )
+        })
       })
       .finally(() => {
         setLoading(false)
@@ -299,7 +303,7 @@ const SaleCollectionExpandRow = ({
             </Button>
           )}
         />
-        {settings['feature.modify_order_status.enabled'] === '1' && (
+        {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
           <ModifyOrderStatusModal
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
@@ -363,14 +367,14 @@ const SaleCollectionExpandRow = ({
         {enabledModules.card_reader &&
           paymentLogs.length > 0 &&
           (orderStatus === 'UNPAID' || orderStatus === 'PAYING' || orderStatus === 'PARTIAL_PAID') &&
-          (paymentLogs[0]?.method === 'physicalCredit' || paymentLogs[0]?.method === 'physicalRemoteCredit') && (
+          paymentLogs[0]?.gateway === 'physical' && (
             <Button
               disabled={loading}
               loading={loading}
               style={{ display: 'flex', alignItems: 'center', gap: 4 }}
               onClick={() => handleCardReaderSerialport(record.totalPrice, orderLogId, paymentLogs[0].no)}
             >
-              <div>{paymentLogs[0]?.method === 'physicalCredit' ? '手刷' : '遠刷'}</div>
+              <div>實體刷卡</div>
             </Button>
           )}
         {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
@@ -403,6 +407,19 @@ const SaleCollectionExpandRow = ({
           </Button>
         )}
       </div>
+
+      <AdminModal
+        visible={!!cardReaderResponse}
+        title="實體刷卡結果"
+        footer={null}
+        onCancel={() => {
+          setCardReaderResponse(null)
+        }}
+      >
+        <div>
+          <div>{cardReaderResponse?.message}</div>
+        </div>
+      </AdminModal>
     </div>
   )
 }
