@@ -519,6 +519,7 @@ const MemberContractCreationForm: React.FC<
                                     ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
                                   )?.products.find(p => p.title === v.title)?.projects[0]?.title
                                 : undefined,
+                            name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
                           })
                         }}
                       >
@@ -530,7 +531,6 @@ const MemberContractCreationForm: React.FC<
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
                       backgroundColor: '#f6f6f6',
                       padding: '12px 24px',
                     }}
@@ -541,6 +541,7 @@ const MemberContractCreationForm: React.FC<
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
+                          flexWrap: 'wrap',
                         }}
                       >
                         {(category.language === '方言' || category.language === '外文') && (
@@ -668,6 +669,25 @@ const MemberContractCreationForm: React.FC<
                             />
                           )}
                         </div>
+                        {/* <div style={{ width: 500 }}>
+                          品項
+                          <Select
+                            style={{ width: 500 }}
+                            value={category.name}
+                            onChange={value => {
+                              setCategory({
+                                ...category,
+                                name: value.toString(),
+                              })
+                            }}
+                          >
+                            {filterProducts.map((d: { title: string }) => (
+                              <Select.Option key={d.title} value={d.title}>
+                                {d.title}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </div> */}
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>單價/堂</div>
                           {selectedProduct?.options.isCustomPrice ? (
@@ -804,7 +824,10 @@ const MemberContractCreationForm: React.FC<
                             id: selectedProduct.id,
                             amount: category.product === '學費' ? totalAmount : 1,
                             price,
-                            totalPrice: price * (category.product === '學費' ? totalAmount : 1),
+                            totalPrice:
+                              category.programType === '套裝項目'
+                                ? price
+                                : price * (category.product === '學費' ? totalAmount : 1),
                             productId: selectedProduct.productId,
                           })
 
