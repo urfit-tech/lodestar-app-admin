@@ -125,7 +125,8 @@ type VideoPipeline = 'attachment' | 'externalLink'
 const ProgramContentAdminModal: React.FC<{
   programId: string
   programContentId: string
-}> = ({ programId, programContentId }) => {
+  onRefetch?: () => void
+}> = ({ programId, programContentId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules, settings } = useApp()
@@ -161,7 +162,8 @@ const ProgramContentAdminModal: React.FC<{
       | (DeepPick<ProgramContent, '!videos'> &
           DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>)
       | null
-  }> = ({ programContent }) => {
+    onRefetch?: () => void
+  }> = ({ programContent, onRefetch }) => {
     const [loading, setLoading] = useState(false)
     const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent?.displayMode || 'conceal')
     const [contentType, setContentType] = useState<string>(programContent?.programContentType || 'video')
@@ -401,6 +403,7 @@ const ProgramContentAdminModal: React.FC<{
       setVideoPipeline('attachment')
       setExternalVideoInfo({ status: 'idle' })
       setLoading(false)
+      onRefetch?.()
     }
 
     return (
@@ -537,18 +540,21 @@ const ProgramContentAdminModal: React.FC<{
                       <Dropdown
                         trigger={['click', 'hover']}
                         placement="bottomRight"
-                        overlayStyle={{ zIndex: 1000 }}
+                        overlayStyle={{ zIndex: 9999 }}
                         overlay={
                           <Menu>
                             <Menu.Item
-                              onClick={() =>
+                              onClick={() => {
                                 window.confirm(
                                   formatMessage(programMessages.ProgramContentAdminModal.deleteContentWarning),
                                 ) &&
-                                deleteProgramContent({ variables: { programContentId: programContentId } })
-                                  .then(() => refetchProgramContent())
-                                  .catch(handleError)
-                              }
+                                  deleteProgramContent({ variables: { programContentId: programContentId } })
+                                    .then(() => {
+                                      refetchProgramContent()
+                                      onRefetch?.()
+                                    })
+                                    .catch(err => handleError(err))
+                              }}
                             >
                               {formatMessage(programMessages['*'].deleteContent)}
                             </Menu.Item>
@@ -789,7 +795,7 @@ const ProgramContentAdminModal: React.FC<{
     )
   }
 
-  return <ProgramContentAdminBlock programContent={programContent} />
+  return <ProgramContentAdminBlock programContent={programContent} onRefetch={onRefetch} />
 }
 
 export default ProgramContentAdminModal
