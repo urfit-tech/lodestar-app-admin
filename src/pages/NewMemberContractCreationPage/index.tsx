@@ -49,6 +49,7 @@ type ContractInfo = {
     name: string
     email: string
     paymentComment?: string
+    isBG?: boolean // business or government
   }
   contracts: {
     id: string
@@ -110,6 +111,7 @@ const MemberContractCreationPage: React.VFC = () => {
       price: number
       totalPrice: number
       productId: string
+      title: string
     }[]
   >([])
   const [installments, setInstallments] = useState([
@@ -142,7 +144,7 @@ const MemberContractCreationPage: React.VFC = () => {
   console.log({ selectedProducts })
 
   return (
-    <ContractLayout memberId={member.id}>
+    <ContractLayout memberId={member.id} isBG={member.isBG}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -199,6 +201,7 @@ const MemberContractCreationPage: React.VFC = () => {
             installments={installments}
             updateInstallmentPrice={updateInstallmentPrice}
             addNewInstallment={addNewInstallment}
+            member={member}
           />
 
           <MemberContractCreationBlock
@@ -226,6 +229,11 @@ const useContractInfo = (appId: string, memberId: string) => {
           email
           member_properties(where: { property: { name: { _eq: "付款備註" } } }) {
             value
+          }
+          member_categories {
+            category {
+              name
+            }
           }
         }
         contract(
@@ -256,6 +264,9 @@ const useContractInfo = (appId: string, memberId: string) => {
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
             paymentComment: data.member_by_pk.member_properties[0]?.value,
+            isBG:
+              data.member_by_pk.member_categories.filter(v => v.category.name === 'B' || v.category.name === 'G')
+                .length > 0,
           },
           contracts: data.contract.map(c => ({
             id: c.id,

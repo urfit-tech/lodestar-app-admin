@@ -41,7 +41,7 @@ const MemberContractCreationBlock: React.FC<{
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
 
   const handleMemberContractCreate = async () => {
-    const isContract = selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
+    const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
     if (isContract && !fieldValue.contractId) {
       message.warn('請選擇合約')
       return
@@ -106,6 +106,8 @@ const MemberContractCreationBlock: React.FC<{
     const options = {
       company: fieldValue.company,
       language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
+      contractId: fieldValue.contractId,
+      isBG: member.isBG,
     }
     const installmentPlans =
       fieldValue.paymentMode === '訂金+尾款'
@@ -166,6 +168,11 @@ const MemberContractCreationBlock: React.FC<{
         .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
         .finally(() => setLoading(false))
     } else {
+      let productOptions: { [key: string]: any } = {}
+
+      selectedProducts.forEach(p => {
+        productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
+      })
       await axios
         .post(
           `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
@@ -176,6 +183,7 @@ const MemberContractCreationBlock: React.FC<{
             memberId: member.id,
             options: {
               ...options,
+              ...productOptions,
               installmentPlans,
               paymentMode,
             },
