@@ -346,6 +346,7 @@ const MemberContractCreationForm: React.FC<
       languageType?: string
       onceSessions?: string
       project?: string
+      name?: string
     }>({
       language: '中文',
       product: '學費',
@@ -353,6 +354,7 @@ const MemberContractCreationForm: React.FC<
       classMode: '內課',
       classType: '個人班',
       locationType: '海內',
+      name: '中文_學費_標準時數_海內_內課_個人班_每週10堂以上_60堂以上',
     })
 
     const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
@@ -431,6 +433,8 @@ const MemberContractCreationForm: React.FC<
       })
     }, [category, weeklyBatch, totalAmount, products])
 
+    const selectedProduct = filterProducts.find(p => p.title === category.name)
+
     console.log({ category })
     console.log({ products })
     console.log({ filterProducts })
@@ -508,14 +512,13 @@ const MemberContractCreationForm: React.FC<
                             locationType: category.locationType || '海內',
                             languageType: category.languageType || '英文',
                             project:
-                              (v.title !== '註冊費' &&
-                                v.title !== '學費' &&
-                                (
-                                  CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
-                                    p => p.language === (category as { language: string }).language,
-                                  ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
-                                )?.products.find(p => p.title === v.title)?.projects[0]?.title) ||
-                              '',
+                              v.title !== '註冊費' && v.title !== '學費'
+                                ? (
+                                    CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
+                                      p => p.language === (category as { language: string }).language,
+                                    ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
+                                  )?.products.find(p => p.title === v.title)?.projects[0]?.title
+                                : undefined,
                           })
                         }}
                       >
@@ -667,7 +670,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>單價/堂</div>
-                          {filterProducts[0]?.options.isCustomPrice ? (
+                          {selectedProduct?.options.isCustomPrice ? (
                             <InputNumber
                               min={calculateMinPrice(category, weeklyBatch, totalAmount)}
                               value={customPrice}
@@ -677,7 +680,7 @@ const MemberContractCreationForm: React.FC<
                             />
                           ) : (
                             <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
-                              {filterProducts[0]?.price}
+                              {selectedProduct?.price}
                             </div>
                           )}
                         </div>
@@ -695,7 +698,7 @@ const MemberContractCreationForm: React.FC<
                         }}
                       >
                         <div style={{ width: 110 }}>
-                          項目
+                          品項
                           <Select defaultValue={'註冊費'} style={{ width: 110 }}>
                             {['註冊費'].map(d => (
                               <Select.Option key={d} value={d}>
@@ -706,7 +709,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {filterProducts[0]?.options.isCustomPrice ? (
+                          {selectedProduct?.options.isCustomPrice ? (
                             <InputNumber
                               value={customPrice}
                               onChange={e => {
@@ -715,7 +718,7 @@ const MemberContractCreationForm: React.FC<
                             />
                           ) : (
                             <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
-                              {filterProducts[0]?.price}
+                              {selectedProduct?.price}
                             </div>
                           )}
                         </div>
@@ -740,10 +743,9 @@ const MemberContractCreationForm: React.FC<
                             value={category.project}
                             onChange={value => {
                               setCategory({
-                                language: category.language,
-                                product: category.product,
+                                ...category,
                                 project: value,
-                                programType: category.programType,
+                                name: undefined,
                               })
                             }}
                           >
@@ -756,7 +758,16 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 500 }}>
                           品項
-                          <Select style={{ width: 500 }}>
+                          <Select
+                            style={{ width: 500 }}
+                            value={category.name}
+                            onChange={value => {
+                              setCategory({
+                                ...category,
+                                name: value.toString(),
+                              })
+                            }}
+                          >
                             {filterProducts.map((d: { title: string }) => (
                               <Select.Option key={d.title} value={d.title}>
                                 {d.title}
@@ -766,7 +777,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {filterProducts[0]?.options.isCustomPrice ? (
+                          {selectedProduct?.options.isCustomPrice ? (
                             <InputNumber
                               value={customPrice}
                               onChange={e => {
@@ -775,7 +786,7 @@ const MemberContractCreationForm: React.FC<
                             />
                           ) : (
                             <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
-                              {filterProducts[0]?.price}
+                              {filterProducts.find(p => p.title === category.name)?.price}
                             </div>
                           )}
                         </div>
@@ -785,22 +796,26 @@ const MemberContractCreationForm: React.FC<
                     <Button
                       disabled={filterProducts.length === 0}
                       onClick={() => {
-                        const price = filterProducts[0]?.options.isCustomPrice ? customPrice : filterProducts[0].price
-                        onChangeSelectedProducts({
-                          id: filterProducts[0].id,
-                          amount: category.product === '學費' ? totalAmount : 1,
-                          price,
-                          totalPrice: price * (category.product === '學費' ? totalAmount : 1),
-                          productId: filterProducts[0].productId,
-                        })
-
-                        category.product === '學費' &&
-                          form?.setFieldsValue({
-                            endedAt: calculateEndedAt(
-                              form.getFieldValue('startedAt'),
-                              Math.ceil(totalAmount / weeklyBatch),
-                            ),
+                        if (selectedProduct) {
+                          const price = filterProducts.find(p => p.title === category.name)?.options.isCustomPrice
+                            ? customPrice
+                            : selectedProduct.price
+                          onChangeSelectedProducts({
+                            id: selectedProduct.id,
+                            amount: category.product === '學費' ? totalAmount : 1,
+                            price,
+                            totalPrice: price * (category.product === '學費' ? totalAmount : 1),
+                            productId: selectedProduct.productId,
                           })
+
+                          category.product === '學費' &&
+                            form?.setFieldsValue({
+                              endedAt: calculateEndedAt(
+                                form.getFieldValue('startedAt'),
+                                Math.ceil(totalAmount / weeklyBatch),
+                              ),
+                            })
+                        }
                       }}
                     >
                       + 新增項目
