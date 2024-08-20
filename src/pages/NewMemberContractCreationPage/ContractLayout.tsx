@@ -14,7 +14,7 @@ const ContractLayout: React.FC<{ memberId: string; isBG?: boolean }> = ({ member
           </Button>
         </Link>
 
-        <a href={`/members/${memberId}/order`} rel="noopener noreferrer">
+        <a href={`/admin/members/${memberId}/order`} rel="noopener noreferrer">
           <Button>會員訂單紀錄</Button>
         </a>
       </AdminHeader>
