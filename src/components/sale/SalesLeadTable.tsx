@@ -103,7 +103,7 @@ const SalesLeadTable: React.VFC<{
   onSelectChange,
 }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
   const { authToken } = useAuth()
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
@@ -151,6 +151,9 @@ const SalesLeadTable: React.VFC<{
     handleAddLeadStatusCategory,
     handleManagerLeadStatusCategory,
   } = useLeadStatusCategory(manager.id)
+
+  const settingDefaultPageSize = settings['sale_lead.sale_lead_table.default_page_size']
+  const settingPageSizeOptions = settings['sale_lead.sale_lead_table.page_size_options']
 
   const handleOpenAddListModal = (status: LeadStatus) => {
     setIsOpenAddListModal(true)
@@ -1004,7 +1007,20 @@ const SalesLeadTable: React.VFC<{
           rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
-          pagination={{ defaultPageSize: 100, pageSizeOptions: ['20', '50', '100', '300', '500', '1000'] }}
+          pagination={{
+            defaultPageSize: settingDefaultPageSize
+              ? Number(settingDefaultPageSize)
+              : settingPageSizeOptions
+              ? settingPageSizeOptions.split(',').length > 0
+                ? Number(settingPageSizeOptions.split(',')[0])
+                : 100
+              : 100,
+            pageSizeOptions: settingPageSizeOptions
+              ? settingPageSizeOptions.split(',').length > 0
+                ? settingPageSizeOptions.split(',')
+                : ['20', '50', '100', '300', '500', '1000']
+              : ['20', '50', '100', '300', '500', '1000'],
+          }}
           className="mb-3"
         />
       </TableWrapper>
