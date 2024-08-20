@@ -1,6 +1,18 @@
 import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Skeleton, Tabs } from 'antd'
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Descriptions,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Select,
+  Skeleton,
+  Tabs,
+} from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -528,6 +540,8 @@ const MemberContractCreationForm: React.FC<
               setTotalAmount(
                 key === '中文' ? 60 : key === '外文' ? 10 : key === '師資班' ? 26 : key === '方言' ? 60 : 60,
               )
+              setNewProductName('')
+              setCustomPrice(0)
             }}
           >
             {CUSTOM_PRODUCT_OPTIONS_CONFIG.map((k, index) => (
@@ -557,6 +571,8 @@ const MemberContractCreationForm: React.FC<
                                 : undefined,
                             name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
                           })
+                          setCustomPrice(0)
+                          setTotalAmount(0)
                         }}
                       >
                         {v.title}
@@ -951,7 +967,10 @@ const MemberContractCreationForm: React.FC<
                       disabled={(!member.isBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
                       loading={loading}
                       onClick={() => {
-                        if (category.product === '學費' && member.isBG && !!newProductName) {
+                        if (category.product === '學費' && member.isBG) {
+                          if (!newProductName) {
+                            return message.error('請輸入自訂產品命名字')
+                          }
                           setLoading(true)
                           insertAppointmentPlan({
                             variables: {
@@ -961,7 +980,7 @@ const MemberContractCreationForm: React.FC<
                                 duration: 0,
                                 published_at: new Date(),
                                 app_id: appId,
-                                options: { isBG: true },
+                                options: { isBG: true, language: category.language, product: category.product },
                               },
                             },
                           })
@@ -985,9 +1004,10 @@ const MemberContractCreationForm: React.FC<
                               setLoading(false)
                             })
                         } else if (selectedProduct) {
-                          const price = filterProducts.find(p => p.title === category.name)?.options.isCustomPrice
-                            ? customPrice
-                            : selectedProduct.price
+                          const price =
+                            filterProducts.find(p => p.title === category.name)?.options.isCustomPrice || member.isBG
+                              ? customPrice
+                              : selectedProduct.price
                           onChangeSelectedProducts({
                             id: selectedProduct.id,
                             amount: category.product === '學費' ? totalAmount : 1,
@@ -1107,13 +1127,13 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="付款模式">
-            <Form.Item className="mb-2" name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
+            <Form.Item name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
               <Select<string>>
                 {paymentModes
                   .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
-                      (member.isBG && !['訂金+尾款', '暫收款後開發票'].includes(mode)) ||
+                      (member.isBG && !['訂金+尾款'].includes(mode)) ||
                       (!member.isBG &&
                         ![
                           '先上課後月結實支實付',
@@ -1128,6 +1148,15 @@ const MemberContractCreationForm: React.FC<
                     </Select.Option>
                   ))}
               </Select>
+            </Form.Item>
+            <Form.Item name="skipIssueInvoice">
+              <Checkbox
+                onChange={e => {
+                  form?.setFieldsValue({ skipIssueInvoice: e.target.checked })
+                }}
+              >
+                後開發票
+              </Checkbox>
             </Form.Item>
           </Descriptions.Item>
           {['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue?.paymentMode || '') && (

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 
-const ContractLayout: React.FC<{ memberId: string; isBG?: boolean }> = ({ memberId, isBG, children }) => {
+const ContractLayout: React.FC<{ memberId: string; categories: string[] }> = ({ memberId, categories, children }) => {
   return (
     <>
       <AdminHeader>
@@ -21,7 +21,11 @@ const ContractLayout: React.FC<{ memberId: string; isBG?: boolean }> = ({ member
       <Layout>
         <StyledLayoutContent>
           <div
-            style={{ background: isBG ? 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))' : undefined }}
+            style={{
+              background: categories.some(c => ['B', 'G'].some(v => c.startsWith(v)))
+                ? 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))'
+                : undefined,
+            }}
           >
             {children}
           </div>
