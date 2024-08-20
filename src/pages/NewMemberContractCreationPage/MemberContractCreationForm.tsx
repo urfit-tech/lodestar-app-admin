@@ -1111,7 +1111,17 @@ const MemberContractCreationForm: React.FC<
               <Select<string>>
                 {paymentModes
                   .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
-                  .filter(mode => member.isBG && !['訂金+尾款', '暫收款後開發票'].includes(mode))
+                  .filter(
+                    mode =>
+                      (member.isBG && !['訂金+尾款', '暫收款後開發票'].includes(mode)) ||
+                      (!member.isBG &&
+                        ![
+                          '先上課後月結實支實付',
+                          '先上課後月結固定金額',
+                          '課前頭款+自訂分期',
+                          '開課後自訂分期',
+                        ].includes(mode)),
+                  )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
                       {payment}
