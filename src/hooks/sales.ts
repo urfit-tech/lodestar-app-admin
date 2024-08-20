@@ -278,7 +278,7 @@ export const useManagerLeads = (manager: Manager) => {
     error: errorMembers,
     loading: loadingMembers,
     refetch: refetchMembers,
-  } = useQuery<hasura.PhGetSalesLeadMembers, hasura.PhGetSalesLeadMembersVariables>(PhGetSalesLeadMembers, {
+  } = useQuery<hasura.GetSalesLeadMembers, hasura.GetSalesLeadMembersVariables>(GetSalesLeadMembers, {
     variables: { managerId: manager.id, appId },
   })
   const { authToken } = useAuth()
@@ -322,7 +322,7 @@ export const useManagerLeads = (manager: Manager) => {
   const refetch = () => {
     fetchData()
   }
-  const convertToLead = (v: hasura.PhGetSalesLeadMembers['member'][number] | null): LeadProps | null => {
+  const convertToLead = (v: hasura.GetSalesLeadMembers['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
@@ -404,8 +404,8 @@ export const useManagerLeads = (manager: Manager) => {
   }
 }
 
-const PhGetSalesLeadMembers = gql`
-  query PhGetSalesLeadMembers($appId: String!, $managerId: String!) {
+const GetSalesLeadMembers = gql`
+  query GetSalesLeadMembers($appId: String!, $managerId: String!) {
     member(
       where: {
         app_id: { _eq: $appId }
