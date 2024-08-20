@@ -54,6 +54,10 @@ const MemberContractCreationBlock: React.FC<{
       message.warn('請選擇結帳管道')
       return
     }
+    if (!!fieldValue.unifiedNumber && fieldValue.unifiedNumber.length !== 8) {
+      message.warn('統一編號格式錯誤')
+      return
+    }
     if (!fieldValue.paymentMode) {
       message.warn('請選擇付款模式')
       return
@@ -89,7 +93,7 @@ const MemberContractCreationBlock: React.FC<{
     const invoiceInfo = {
       name: member.name,
       email: member.email,
-      skipIssueInvoice: fieldValue.paymentMode === '暫收款後開發票',
+      skipIssueInvoice: fieldValue.skipIssueInvoice,
       unifiedNumber: fieldValue.unifiedNumber,
       invoiceComment: fieldValue.invoiceComment,
     }
