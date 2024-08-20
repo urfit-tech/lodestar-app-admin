@@ -17,7 +17,6 @@ const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡'] as c
 const paymentModes = [
   '全額付清',
   '訂金+尾款',
-  '暫收款後開發票',
   '先上課後月結實支實付',
   '先上課後月結固定金額',
   '課前頭款+自訂分期',
@@ -41,6 +40,7 @@ type FieldProps = {
   startedAt: Date
   endedAt: Date
   company: string
+  skipIssueInvoice: boolean
 }
 
 type ContractInfo = {
@@ -48,7 +48,9 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    paymentComment?: string
+    paymentComment: string
+    paymentCommentId: string
+    categories: string[]
     isBG?: boolean // business or government
   }
   contracts: {
@@ -101,7 +103,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
-  const { info, error, loading } = useContractInfo(appId, memberId)
+  const { info, error, loading, refetch } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<
@@ -144,7 +146,7 @@ const MemberContractCreationPage: React.VFC = () => {
   console.log({ selectedProducts })
 
   return (
-    <ContractLayout memberId={member.id} isBG={member.isBG}>
+    <ContractLayout memberId={member.id} categories={member.categories}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -221,7 +223,7 @@ const MemberContractCreationPage: React.VFC = () => {
 
 const useContractInfo = (appId: string, memberId: string) => {
   const { authToken } = useAuth()
-  const { loading, error, data } = useQuery<hasura.GetContractInfo, hasura.GetContractInfoVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GetContractInfo, hasura.GetContractInfoVariables>(
     gql`
       query GetContractInfo($appId: String!, $memberId: String!) {
         member_by_pk(id: $memberId) {
@@ -229,6 +231,7 @@ const useContractInfo = (appId: string, memberId: string) => {
           name
           email
           member_properties(where: { property: { name: { _eq: "付款備註" } } }) {
+            id
             value
           }
           member_categories {
@@ -265,9 +268,9 @@ const useContractInfo = (appId: string, memberId: string) => {
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
             paymentComment: data.member_by_pk.member_properties[0]?.value,
-            isBG:
-              data.member_by_pk.member_categories.filter(v => v.category.name === 'B' || v.category.name === 'G')
-                .length > 0,
+            paymentCommentId: data.member_by_pk.member_properties[0]?.id,
+            categories: data.member_by_pk.member_categories.map(v => v.category.name),
+            isBG: data.member_by_pk.member_categories.some(c => ['B', 'G'].some(v => c.category.name.startsWith(v))),
           },
           contracts: data.contract.map(c => ({
             id: c.id,
@@ -282,6 +285,7 @@ const useContractInfo = (appId: string, memberId: string) => {
     loading,
     error,
     info,
+    refetch,
   }
 }
 
