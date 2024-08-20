@@ -4,6 +4,7 @@ import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'ant
 import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
 import countryCodes from 'country-codes-list'
+import { CountryCode, parsePhoneNumber } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -19,7 +20,6 @@ import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
 import memberMessages from './translations'
-import { CountryCode, parsePhoneNumber } from 'libphonenumber-js'
 
 const StyledCloseIcon = styled.div`
   position: absolute;
@@ -83,7 +83,7 @@ const MemberProfileBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole, permissions } = useAuth()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
 
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
@@ -182,7 +182,7 @@ const MemberProfileBasicForm: React.FC<{
         star: memberAdmin.star,
         phones: memberAdmin.phones.length
           ? memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
-          : [''],
+          : [],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -212,30 +212,34 @@ const MemberProfileBasicForm: React.FC<{
           className="mb-4"
           label={formatMessage(commonMessages.label.phone)}
           name="phones"
-          rules={[
-            {
-              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
-              validator: (_: RuleObject, values: string[]) => {
-                const { phones } = splitPhoneData(values, ',')
-                return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
-              },
-            },
-            {
-              message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
-              validator: (_: RuleObject, values: string[]) => {
-                const { phones } = splitPhoneData(values, ',')
-                const regex = /^[0-9]*$/
-                return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
-              },
-            },
-            {
-              message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
-              validator: (_: RuleObject, values: string[]) => {
-                const { countryCodes } = splitPhoneData(values, ',')
-                return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
-              },
-            },
-          ]}
+          rules={
+            settings['member_profile_phone.check.ignore.enable'] === '1'
+              ? []
+              : [
+                  {
+                    message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
+                    validator: (_: RuleObject, values: string[]) => {
+                      const { phones } = splitPhoneData(values, ',')
+                      return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
+                    },
+                  },
+                  {
+                    message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
+                    validator: (_: RuleObject, values: string[]) => {
+                      const { phones } = splitPhoneData(values, ',')
+                      const regex = /^[0-9]*$/
+                      return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
+                    },
+                  },
+                  {
+                    message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
+                    validator: (_: RuleObject, values: string[]) => {
+                      const { countryCodes } = splitPhoneData(values, ',')
+                      return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
+                    },
+                  },
+                ]
+          }
         >
           <PhoneCollectionInput />
         </Form.Item>
@@ -274,6 +278,7 @@ const PhoneCollectionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
   const { countryCodes, phones } = splitPhoneData(value, ',')
 
   return (
@@ -291,7 +296,7 @@ const PhoneCollectionInput: React.FC<{
             }}
             addonBefore={<CountryCodeSelect value={value} index={index} onChange={onChange} />}
           />
-          {index !== 0 && (
+          {(settings['member_profile_phone.check.ignore.enable'] === '1' || index !== 0) && (
             <StyledCloseIcon
               onClick={() => {
                 const newValue = [...value]
