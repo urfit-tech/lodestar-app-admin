@@ -201,6 +201,7 @@ const MemberContractCreationPage: React.VFC = () => {
             installments={installments}
             updateInstallmentPrice={updateInstallmentPrice}
             addNewInstallment={addNewInstallment}
+            removeInstallment={removeInstallment}
             member={member}
           />
 

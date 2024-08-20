@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons'
+import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Select, Skeleton, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
@@ -304,6 +304,7 @@ const MemberContractCreationForm: React.FC<
     installments: { index: number; price: number }[]
     updateInstallmentPrice: (index: number, price: number) => void
     addNewInstallment: (installment: { index: number; price: number }) => void
+    removeInstallment: (index: number) => void
     member: ContractInfo['member']
   }
 > = memo(
@@ -320,6 +321,7 @@ const MemberContractCreationForm: React.FC<
     updateInstallmentPrice,
     addNewInstallment,
     member,
+    removeInstallment,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
@@ -1130,24 +1132,28 @@ const MemberContractCreationForm: React.FC<
 
                   <InputNumber
                     min={0}
-                    max={
-                      sum(selectedProducts.map(p => p.totalPrice)) -
-                      sum(installments.filter(v => v.index !== installment.index).map(i => i.price))
-                    }
+                    max={sum(selectedProducts.map(p => p.totalPrice))}
                     value={installment.price}
                     onChange={value => updateInstallmentPrice(installment.index, Number(value))}
                   />
-                  {installment.index === installments.length && (
+                  {installment.index !== 1 && (
                     <Button
-                      icon={<PlusOutlined />}
+                      icon={<CloseCircleOutlined />}
                       type="link"
                       onClick={() => {
-                        addNewInstallment({ index: installment.index + 1, price: 0 })
+                        removeInstallment(installment.index)
                       }}
                     ></Button>
                   )}
                 </div>
               ))}
+              <Button
+                icon={<PlusOutlined />}
+                type="link"
+                onClick={() => {
+                  addNewInstallment({ index: installments.length + 1, price: 0 })
+                }}
+              ></Button>
             </Descriptions.Item>
           )}
 
