@@ -267,6 +267,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingExpandRowOrderLog,
     data: expandRowOrderLog,
     error: errorExpandRowOrderLog,
+    refetch: refetchExpandRowOrderLog,
   } = useQuery<hasura.GetExpandRowOrderLog, hasura.GetExpandRowOrderLogVariables>(
     gql`
       query GetExpandRowOrderLog($orderId: String!) {
@@ -310,6 +311,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingOrderExecutors,
     error: errorOrderExecutors,
     data: orderExecutorsData,
+    refetch: refetchOrderExecutors,
   } = useQuery<hasura.GetOrderExecutors, hasura.GetOrderExecutorsVariables>(
     gql`
       query GetOrderExecutors($orderId: String!) {
@@ -328,6 +330,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingPaymentLogByOrderId,
     error: errorPaymentLogByOrderId,
     data: paymentLogByOrderIdData,
+    refetch: refetchPaymentLogByOrderId,
   } = useQuery<hasura.GetPaymentLogByOrderId, hasura.GetPaymentLogByOrderIdVariables>(
     gql`
       query GetPaymentLogByOrderId($orderId: String!) {
@@ -350,6 +353,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingOrderDiscountByOrderId,
     error: errorOrderDiscountByOrderId,
     data: orderDiscountByOrderIdData,
+    refetch: refetchOrderDiscountByOrderId,
   } = useQuery<hasura.GetOrderDiscountByOrderId, hasura.GetOrderDiscountByOrderIdVariables>(
     gql`
       query GetOrderDiscountByOrderId($orderId: String!) {
@@ -433,6 +437,12 @@ export const useOrderLogExpandRow = (orderId: string) => {
     paymentMethod,
     paymentLogs,
     orderDiscounts,
-    refetchExpandRowOrderProduct,
+    refetchOrderLogExpandRow: () => {
+      refetchExpandRowOrderLog()
+      refetchExpandRowOrderProduct()
+      refetchOrderExecutors()
+      refetchPaymentLogByOrderId()
+      refetchOrderDiscountByOrderId()
+    },
   }
 }

@@ -336,6 +336,8 @@ const MemberContractCreationForm: React.FC<
     removeInstallment,
     ...formProps
   }) => {
+    console.log({ installments })
+
     const fieldValue = form?.getFieldsValue()
 
     const { id: appId } = useApp()
@@ -974,6 +976,7 @@ const MemberContractCreationForm: React.FC<
                           <div>單價</div>
                           {selectedProduct?.options.isCustomPrice || member.isBG ? (
                             <InputNumber
+                              min={0}
                               value={customPrice}
                               onChange={e => {
                                 setCustomPrice(Number(e))
@@ -1043,6 +1046,7 @@ const MemberContractCreationForm: React.FC<
                           <div>單價</div>
                           {selectedProduct?.options.isCustomPrice || member.isBG ? (
                             <InputNumber
+                              min={0}
                               value={customPrice}
                               onChange={e => {
                                 setCustomPrice(Number(e))
@@ -1085,7 +1089,7 @@ const MemberContractCreationForm: React.FC<
                               onChangeSelectedProducts({
                                 id,
                                 amount: totalAmount,
-                                price: customPrice * totalAmount,
+                                price: customPrice,
                                 totalPrice: customPrice * totalAmount,
                                 productId,
                                 title: newProductName,
@@ -1226,19 +1230,21 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item label="付款模式">
             <Form.Item name="paymentMode" rules={[{ required: true, message: '請選擇付款模式' }]}>
-              <Select<string>>
+              <Select<string>
+                onChange={e => {
+                  if (!['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(e)) {
+                    installments.forEach(installment => {
+                      removeInstallment(installment.index)
+                    })
+                  }
+                }}
+              >
                 {paymentModes
                   .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
                       (member.isBG && !['訂金+尾款'].includes(mode)) ||
-                      (!member.isBG &&
-                        ![
-                          '先上課後月結實支實付',
-                          '先上課後月結固定金額',
-                          '課前頭款+自訂分期',
-                          '開課後自訂分期',
-                        ].includes(mode)),
+                      (!member.isBG && !['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(mode)),
                   )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
@@ -1271,7 +1277,13 @@ const MemberContractCreationForm: React.FC<
                     min={0}
                     max={sum(selectedProducts.map(p => p.totalPrice))}
                     value={installment.price}
-                    onChange={value => updateInstallmentPrice(installment.index, Number(value))}
+                    onChange={value => {
+                      const max =
+                        sum(selectedProducts.map(p => p.totalPrice)) -
+                        sum(installments.filter(i => i.index !== installment.index).map(i => i.price))
+                      const updatedValue = Number(value) > max ? max : Number(value)
+                      updateInstallmentPrice(installment.index, updatedValue)
+                    }}
                   />
                   {installment.index !== 1 && (
                     <Button

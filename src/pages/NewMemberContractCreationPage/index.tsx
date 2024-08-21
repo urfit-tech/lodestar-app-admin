@@ -114,12 +114,7 @@ const MemberContractCreationPage: React.VFC = () => {
       title: string
     }[]
   >([])
-  const [installments, setInstallments] = useState([
-    {
-      index: 1,
-      price: 0,
-    },
-  ])
+  const [installments, setInstallments] = useState<{ index: number; price: number }[]>([])
 
   const updateInstallmentPrice = (index: number, price: number) => {
     setInstallments(prevInstallments =>

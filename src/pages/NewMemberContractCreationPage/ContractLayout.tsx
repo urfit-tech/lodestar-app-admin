@@ -3,8 +3,10 @@ import { Button, Layout } from 'antd'
 import { Link } from 'react-router-dom'
 import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import bgBackground from '../../images/default/bg-background.png'
 
 const ContractLayout: React.FC<{ memberId: string; categories: string[] }> = ({ memberId, categories, children }) => {
+  const isBG = categories.some(c => ['B', 'G'].some(v => c.startsWith(v)))
   return (
     <>
       <AdminHeader>
@@ -22,9 +24,7 @@ const ContractLayout: React.FC<{ memberId: string; categories: string[] }> = ({ 
         <StyledLayoutContent>
           <div
             style={{
-              background: categories.some(c => ['B', 'G'].some(v => c.startsWith(v)))
-                ? 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))'
-                : undefined,
+              backgroundImage: isBG ? `url(${bgBackground})` : undefined,
             }}
           >
             {children}
