@@ -80,6 +80,7 @@ const MemberContractCreationBlock: React.FC<{
     }
 
     if (
+      ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode) &&
       installments.length > 1 &&
       selectedProducts.reduce((sum, product) => sum + product.totalPrice, 0) !== sum(installments.map(v => v.price))
     ) {

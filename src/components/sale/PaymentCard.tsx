@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -48,6 +49,7 @@ const PaymentCard: React.FC<{
 }> = ({ payments, order, onRefetch, onClose }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
+  const { permissions } = useAuth()
   const [loading, setLoading] = useState(false)
   const [cardReaderResponse, setCardReaderResponse] = useState<{
     status: 'success' | 'failed'
@@ -168,7 +170,8 @@ const PaymentCard: React.FC<{
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
                   </div>
                 )}
-                {['UNPAID', 'FAILED'].includes(payment.status) &&
+                {permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
+                  ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway !== 'spgateway' &&
                   payment.method !== 'physicalCredit' && (
                     <ModifyOrderStatusModal

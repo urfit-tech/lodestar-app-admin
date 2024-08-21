@@ -68,7 +68,7 @@ const SaleCollectionExpandRow = ({
     paymentMethod,
     paymentLogs,
     orderDiscounts,
-    refetchExpandRowOrderProduct,
+    refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
 
   const handlePrint = () => {
@@ -146,7 +146,7 @@ const SaleCollectionExpandRow = ({
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
-                            onRefetch={refetchExpandRowOrderProduct}
+                            onRefetch={refetchOrderLogExpandRow}
                           />
                         ) : null}
                       </div>
@@ -185,7 +185,7 @@ const SaleCollectionExpandRow = ({
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
-                            onRefetch={refetchExpandRowOrderProduct}
+                            onRefetch={refetchOrderLogExpandRow}
                           />
                         ) : null}
                       </div>
@@ -274,7 +274,7 @@ const SaleCollectionExpandRow = ({
           )}
           onRefetch={() => {
             onRefetchOrderLog?.()
-            refetchExpandRowOrderProduct()
+            refetchOrderLogExpandRow()
           }}
         />
         {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
@@ -292,7 +292,10 @@ const SaleCollectionExpandRow = ({
               sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) +
               -sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
             }
-            onRefetch={onRefetchOrderLog}
+            onRefetch={() => {
+              onRefetchOrderLog?.()
+              refetchOrderLogExpandRow()
+            }}
           />
         )}
         {currentUserRole === 'app-owner' &&
@@ -311,7 +314,7 @@ const SaleCollectionExpandRow = ({
                 id: orderProduct.id,
                 options: orderProduct.options,
               }))}
-              onRefetch={refetchExpandRowOrderProduct}
+              onRefetch={refetchOrderLogExpandRow}
             />
           ))}
         {enabledModules.invoice_printer &&

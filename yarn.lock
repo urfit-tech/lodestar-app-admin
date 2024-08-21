@@ -4550,9 +4550,9 @@
     ts-toolbelt "^6.15.1"
 
 "@types/ramda@^0.30.1":
-  version "0.30.2"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.30.2.tgz#70661b20c1bb969589a551b7134ae75008ffbfb6"
-  integrity sha512-PyzHvjCalm2BRYjAU6nIB3TprYwMNOUY/7P/N8bSzp9W/yM2YrtGtAnnVtaCNSeOZ8DzKyFDvaqQs7LnWwwmBA==
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.30.1.tgz#316257fec12747bb39a2e921df48a9dcb8c164a9"
+  integrity sha512-aoyF/ADPL6N+/NXXfhPWF+Qj6w1Cql59m9wX0Gi15uyF+bpzXeLd63HPdiTDE2bmLXfNcVufsDPKmbfOrOzTBA==
   dependencies:
     types-ramda "^0.30.1"
 
@@ -12627,7 +12627,7 @@ lodash.upperfirst@^4.3.1:
 
 lodestar-app-element@urfit-tech/lodestar-app-element#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/a1d2add2174dfe1b8c2379f525d9ff9d1a88c4e8"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/03be79fe31770c68b85c01e8f0f6621b23a5aa35"
   dependencies:
     "@apollo/client" "^3.7.11"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
