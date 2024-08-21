@@ -1,5 +1,6 @@
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
-import { Button, Divider, message, Skeleton, Switch } from 'antd'
+import { Button, Divider, Form, InputNumber, message, Select, Skeleton, Switch } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -13,6 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
@@ -26,6 +28,11 @@ import saleMessages from './translation'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
+
+type FieldProps = {
+  price: number
+  type: 'issue' | 'revoke'
+}
 
 const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
   color: ${props => !props.isDelivered && '#CDCDCD'};
@@ -46,11 +53,9 @@ const SaleCollectionExpandRow = ({
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
   const receiptRef2 = useRef<HTMLDivElement | null>(null)
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
-  const [cardReaderResponse, setCardReaderResponse] = useState<{
-    status: 'success' | 'failed'
-    message: string
-  } | null>(null)
+
   const [loading, setLoading] = useState(false)
+  const [form] = useForm<FieldProps>()
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -65,7 +70,6 @@ const SaleCollectionExpandRow = ({
     orderLog,
     orderProducts,
     orderExecutors,
-    paymentMethod,
     paymentLogs,
     orderDiscounts,
     refetchOrderLogExpandRow,
@@ -348,35 +352,96 @@ const SaleCollectionExpandRow = ({
           )}
 
         {!!paymentLogs.filter(p => p.status === 'SUCCESS')[0]?.invoiceOptions?.skipIssueInvoice && (
-          <Button
-            disabled={loading}
-            loading={loading}
-            style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-            onClick={() => {
-              setLoading(true)
-              axios
-                .put(
-                  `${process.env.REACT_APP_API_BASE_ROOT}/payment/invoice/${
-                    paymentLogs.filter(p => p.status === 'SUCCESS')[0].no
-                  }`,
-                  { skipIssueInvoice: false },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${authToken}`,
-                    },
-                  },
-                )
-                .then(r => {
-                  if (r.data.code === 'SUCCESS') {
-                    message.success('已觸發補開，請稍後五分鐘等待發票自動開立')
-                  }
-                })
-                .catch(handleError)
-                .finally(() => setLoading(false))
-            }}
+          <AdminModal
+            renderTrigger={({ setVisible }) => (
+              <Button
+                style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                onClick={() => {
+                  setVisible(true)
+                }}
+              >
+                <div>補開發票/作廢</div>
+              </Button>
+            )}
+            title={'補開發票/作廢'}
+            footer={null}
+            renderFooter={({ setVisible }) => (
+              <>
+                <Button onClick={() => setVisible(false)} className="mr-2">
+                  {formatMessage(commonMessages.ui.back)}
+                </Button>
+                <Button
+                  type="primary"
+                  disabled={loading}
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    axios
+                      .post(
+                        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
+                        { paymentNo: paymentLogs.filter(p => p.status === 'SUCCESS')[0].no },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${authToken}`,
+                          },
+                        },
+                      )
+                      .then(r => {
+                        if (r.data.code === 'SUCCESS') {
+                          message.success('發票開立成功')
+                        }
+                      })
+                      .catch(handleError)
+                      .finally(() => {
+                        setLoading(false)
+                        refetchOrderLogExpandRow()
+                        setVisible(false)
+                      })
+                  }}
+                >
+                  {formatMessage(commonMessages.ui.save)}
+                </Button>
+              </>
+            )}
           >
-            <div>補開發票</div>
-          </Button>
+            <Form form={form} layout="vertical" initialValues={{ price: totalPrice, type: 'issue' }}>
+              <div className="row">
+                <div className="col-6">
+                  <Form.Item label={'處理方式'} name="type">
+                    <Select<string>>
+                      <Select.Option value="issue">開立發票</Select.Option>
+                      <Select.Option value="revoke">作廢發票</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+                <div className="col-6">
+                  <Form.Item
+                    label={'金額'}
+                    name="price"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            </Form>
+          </AdminModal>
         )}
       </div>
     </div>
