@@ -42,6 +42,7 @@ const ModifyOrderStatusModal: React.VFC<{
   hideRefund?: boolean
   renderTrigger?: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => React.ReactElement
   targetPaymentNo?: string
+  minPrice?: number
 }> = ({
   orderLogId,
   defaultOrderStatus,
@@ -51,6 +52,7 @@ const ModifyOrderStatusModal: React.VFC<{
   hideRefund,
   renderTrigger,
   targetPaymentNo,
+  minPrice,
 }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -170,7 +172,7 @@ const ModifyOrderStatusModal: React.VFC<{
               ]}
             >
               <InputNumber
-                min={0}
+                min={minPrice || 0}
                 max={defaultPrice}
                 formatter={value => `NT$ ${value}`}
                 parser={value => value?.replace(/\D/g, '') || ''}
