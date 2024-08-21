@@ -36,6 +36,7 @@ const ModifyOrderStatusModal: React.VFC<{
     status: string | null | undefined
     gateway?: string | null
     method?: string | null
+    no?: string
   }[]
   defaultPrice?: number
   onRefetch?: (status: string) => void
@@ -86,12 +87,13 @@ const ModifyOrderStatusModal: React.VFC<{
           },
         },
       })
-
-      paymentLogs.push({ status: paymentStatus, price: values.price })
-      const totalAmount = sum(paymentLogs.map(p => p.price))
-      const hasRefundPayment = paymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
-      const paidAmount = sum(paymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
-      const refundAmount = sum(paymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
+      let newPaymentLogs = paymentLogs.filter(p => p.no !== targetPaymentNo)
+      newPaymentLogs.push({ status: paymentStatus, price: values.price })
+      const totalAmount = sum(newPaymentLogs.map(p => p.price))
+      const hasRefundPayment =
+        newPaymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
+      const paidAmount = sum(newPaymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
+      const refundAmount = sum(newPaymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
       let orderStatus = defaultOrderStatus
 
       if (totalAmount <= 0 || paidAmount - refundAmount >= totalAmount) {
@@ -195,13 +197,6 @@ const ModifyOrderStatusModal: React.VFC<{
   )
 }
 
-const INSERT_PAYMENT_LOG = gql`
-  mutation INSERT_PAYMENT_LOG($data: payment_log_insert_input!) {
-    insert_payment_log_one(object: $data) {
-      no
-    }
-  }
-`
 const UpsertPaymentLog = gql`
   mutation UpsertPaymentLog($data: payment_log_insert_input!) {
     insert_payment_log_one(

@@ -4,7 +4,7 @@ import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'ant
 import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
 import countryCodes from 'country-codes-list'
-import { CountryCode, parsePhoneNumber } from 'libphonenumber-js'
+import { CountryCode } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -100,65 +100,63 @@ const MemberProfileBasicForm: React.FC<{
       setLoading(true)
       const values = await form.validateFields()
       const { phones, countryCodes } = splitPhoneData(values.phones, ',')
-      updateMemberProfileBasic({
-        variables: {
-          name: values?.name || memberAdmin.name,
-          username: permissions['MEMBER_USERNAME_EDIT']
-            ? values?.username || memberAdmin.username
-            : memberAdmin.username,
-          email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
-          star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
-          memberId: memberAdmin.id,
-          phones: permissions['MEMBER_PHONE_ADMIN']
-            ? phones.map((phone: string, index: number) => ({
-                member_id: memberAdmin.id,
-                phone,
-                country_code: countryCodes[index],
-                international_phone:
-                  parsePhoneNumber(phone, countryCodes[index] as CountryCode)?.formatInternational() || null,
-                is_valid: memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid,
-              }))
-            : phones.map((phone: string, index: number) => ({
-                member_id: memberAdmin.id,
-                phone,
-                country_code: memberAdmin.phones[index].countryCode,
-                international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
-                  ? parsePhoneNumber(
-                      memberAdmin.phones[index].phoneNumber,
-                      countryCodes[index] as CountryCode,
-                    )?.formatInternational() || null
-                  : null,
-              })),
-          managerId:
-            enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
-              ? values.managerId || null
-              : memberAdmin.manager?.id,
-          assignedAt: values.managerId ? new Date() : null,
-          tags: (values.tags || memberAdmin.tags).map(tag => ({
-            name: tag,
-            type: '',
-          })),
-          memberTags: (values.tags || memberAdmin.tags).map(tag => ({
-            member_id: memberAdmin.id,
-            tag_name: tag,
-          })),
-          memberCategories: values.categoryIds.map((categoryId: string, index: number) => ({
-            member_id: memberAdmin.id,
-            category_id: categoryId,
-            position: index,
-          })),
-          memberSpecialities: values.specialities.map(speciality => ({
-            member_id: memberAdmin.id,
-            tag_name: speciality,
-          })),
-        },
-      })
-        .then(() => {
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-          onRefetch?.()
+      try {
+        await updateMemberProfileBasic({
+          variables: {
+            name: values?.name || memberAdmin.name,
+            username: permissions['MEMBER_USERNAME_EDIT']
+              ? values?.username || memberAdmin.username
+              : memberAdmin.username,
+            email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
+            star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
+            memberId: memberAdmin.id,
+            phones: permissions['MEMBER_PHONE_ADMIN']
+              ? phones.map((phone: string, index: number) => ({
+                  member_id: memberAdmin.id,
+                  phone,
+                  country_code: countryCodes[index],
+                  international_phone: `+${countryCodes[index]}${phone}`,
+                  is_valid: Boolean(memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)?.isValid),
+                }))
+              : phones.map((phone: string, index: number) => ({
+                  member_id: memberAdmin.id,
+                  phone,
+                  country_code: memberAdmin.phones[index].countryCode,
+                  international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
+                    ? `+${memberAdmin.phones[index].countryCode}${memberAdmin.phones[index].phoneNumber}`
+                    : null,
+                  is_valid: Boolean(memberAdmin.phones[index].isValid),
+                })),
+            managerId:
+              enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
+                ? values.managerId || null
+                : memberAdmin.manager?.id,
+            assignedAt: values.managerId ? new Date() : null,
+            tags: (values.tags || memberAdmin.tags).map(tag => ({
+              name: tag,
+              type: '',
+            })),
+            memberTags: (values.tags || memberAdmin.tags).map(tag => ({
+              member_id: memberAdmin.id,
+              tag_name: tag,
+            })),
+            memberCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+              member_id: memberAdmin.id,
+              category_id: categoryId,
+              position: index,
+            })),
+            memberSpecialities: values.specialities.map(speciality => ({
+              member_id: memberAdmin.id,
+              tag_name: speciality,
+            })),
+          },
         })
-        .catch(handleError)
-        .finally(() => setLoading(false))
+
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      } catch (error) {
+        handleError(error)
+      }
     } catch (error) {
       process.env.NODE_ENV === 'development' ?? console.error(error)
     } finally {
@@ -214,7 +212,7 @@ const MemberProfileBasicForm: React.FC<{
           name="phones"
           rules={
             settings['member_profile_phone.check.ignore.enable'] === '1'
-              ? []
+              ? undefined
               : [
                   {
                     message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
