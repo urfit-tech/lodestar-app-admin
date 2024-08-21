@@ -48,8 +48,6 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    paymentComment: string
-    paymentCommentId: string
     categories: string[]
     isBG?: boolean // business or government
   }
@@ -230,10 +228,6 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_properties(where: { property: { name: { _eq: "付款備註" } } }) {
-            id
-            value
-          }
           member_categories {
             category {
               name
@@ -267,8 +261,6 @@ const useContractInfo = (appId: string, memberId: string) => {
             id: data.member_by_pk.id,
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
-            paymentComment: data.member_by_pk.member_properties[0]?.value,
-            paymentCommentId: data.member_by_pk.member_properties[0]?.id,
             categories: data.member_by_pk.member_categories.map(v => v.category.name),
             isBG: data.member_by_pk.member_categories.some(c => ['B', 'G'].some(v => c.category.name.startsWith(v))),
           },

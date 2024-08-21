@@ -400,9 +400,11 @@ const MemberContractCreationForm: React.FC<
     })
 
     const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
+
     const options = productOptions?.find((v: any) => v.title === category.product)
 
     const [weeklyBatch, setWeeklyBatch] = useState(10)
+    const [week, setWeek] = useState(13)
     const [totalAmount, setTotalAmount] = useState(60)
     const [customPrice, setCustomPrice] = useState(0)
     const [newProductName, setNewProductName] = useState('')
@@ -450,6 +452,10 @@ const MemberContractCreationForm: React.FC<
 
           if (product.options.locationType !== category.locationType) {
             return false
+          }
+
+          if (category.language === '中文' && category.programType === '套裝項目' && ![1, 4, 13].includes(week)) {
+            return true
           }
 
           if (
@@ -626,9 +632,10 @@ const MemberContractCreationForm: React.FC<
                             </Select>
                           </div>
 
-                          <div style={{ width: 500 }}>
+                          <div style={{ width: '100%', marginRight: 16 }}>
                             品項
                             <Input
+                              style={{ width: '100%', marginRight: 16 }}
                               value={newProductName}
                               onChange={e => {
                                 setNewProductName(e.target.value)
@@ -702,10 +709,30 @@ const MemberContractCreationForm: React.FC<
                               value={category.programType}
                               style={{ width: 110 }}
                               onChange={value => {
-                                setCategory({ ...category, programType: value, name: undefined })
+                                setCategory(
+                                  value === '套裝項目'
+                                    ? { ...category, programType: value, name: undefined, classType: '團體班' }
+                                    : value === '標準時數'
+                                    ? { ...category, programType: value, name: undefined, classType: '個人班' }
+                                    : { ...category, programType: value, name: undefined },
+                                )
+                                if (value === '套裝項目') {
+                                  if (category.language === '中文') {
+                                    setWeeklyBatch(15)
+                                    setWeek(13)
+                                    setTotalAmount(195)
+                                  }
+                                  if (category.language === '師資班') {
+                                    setWeeklyBatch(5)
+                                    setTotalAmount(26)
+                                  }
+                                } else {
+                                  setWeeklyBatch(10)
+                                  setTotalAmount(60)
+                                }
                               }}
                             >
-                              {options.programType.map((d: { title: string }) => (
+                              {options?.programType.map((d: { title: string }) => (
                                 <Select.Option key={d.title} value={d.title}>
                                   {d.title}
                                 </Select.Option>
@@ -713,11 +740,22 @@ const MemberContractCreationForm: React.FC<
                             </Select>
                           </div>
                           {[
-                            { id: 'locationType', title: '海內/外', options: options.locationType },
-                            { id: 'classMode', title: '上課方式', options: options.classMode },
+                            {
+                              id: 'locationType',
+                              title: '海內/外',
+                              value: category.locationType,
+                              options: options.locationType,
+                            },
+                            {
+                              id: 'classMode',
+                              title: '上課方式',
+                              value: category.classMode,
+                              options: options.classMode,
+                            },
                             {
                               id: 'classType',
                               title: '班型',
+                              value: category.classType,
                               options: options.classType,
                             },
                           ].map(v => (
@@ -725,6 +763,7 @@ const MemberContractCreationForm: React.FC<
                               {v.title}
                               <Select
                                 defaultValue={v.options[0]?.title}
+                                value={v.value}
                                 style={{ width: 110 }}
                                 onChange={value => {
                                   setCategory({ ...category, [v.id]: value, name: undefined })
@@ -740,28 +779,55 @@ const MemberContractCreationForm: React.FC<
                           ))}
                           <div style={{ width: 110, marginRight: 8 }}>
                             週頻率
-                            {category.language !== '外文' && category.programType === '套裝項目' ? (
+                            {category.programType === '套裝項目' && category.language !== '外文' ? (
                               category.language === '中文' ? (
-                                <div>{weeklyBatch}</div>
-                              ) : (
                                 <Select
-                                  defaultValue={options.onceSessions?.[0]?.week}
+                                  defaultValue={weeklyBatch}
                                   style={{ width: 110 }}
+                                  value={weeklyBatch}
                                   onChange={value => {
                                     setWeeklyBatch(Number(value))
                                     setCategory({
                                       ...category,
                                       name: undefined,
                                     })
+                                    setTotalAmount(week * Number(value))
                                   }}
                                 >
-                                  {(options.onceSessions || []).map((d: { week: string }) => (
+                                  {[
+                                    { week: '3' },
+                                    { week: '4' },
+                                    { week: '6' },
+                                    { week: '9' },
+                                    { week: '10' },
+                                    { week: '15' },
+                                  ].map((d: { week: string }) => (
                                     <Select.Option key={d.week} value={d.week}>
                                       {d.week}
                                     </Select.Option>
                                   ))}
                                 </Select>
-                              )
+                              ) : category.language === '師資班' ? (
+                                <Select
+                                  defaultValue={weeklyBatch}
+                                  style={{ width: 110 }}
+                                  value={weeklyBatch}
+                                  onChange={value => {
+                                    setWeeklyBatch(Number(value))
+                                    setCategory({
+                                      ...category,
+                                      name: undefined,
+                                    })
+                                    setTotalAmount(26)
+                                  }}
+                                >
+                                  {[{ week: '2' }, { week: '5' }].map((d: { week: string }) => (
+                                    <Select.Option key={d.week} value={d.week}>
+                                      {d.week}
+                                    </Select.Option>
+                                  ))}
+                                </Select>
+                              ) : null
                             ) : (
                               <InputNumber
                                 min={1}
@@ -776,34 +842,48 @@ const MemberContractCreationForm: React.FC<
                               />
                             )}
                           </div>
-                          <div style={{ width: 110, marginRight: 8 }}>
-                            總堂數
-                            {category.language !== '外文' && category.programType === '套裝項目' ? (
-                              <Select
-                                defaultValue={options.onceSessions?.[0]?.title}
-                                style={{ width: 110 }}
-                                onChange={value => {
+                          {category.language === '中文' && category.programType === '套裝項目' && (
+                            <div style={{ width: 110, marginRight: 8 }}>
+                              週數
+                              <InputNumber
+                                min={1}
+                                value={week}
+                                onChange={e => {
+                                  setWeek(Number(e))
                                   setCategory({
                                     ...category,
                                     name: undefined,
                                   })
-                                  setTotalAmount(Number(value))
-                                  category.language === '中文' &&
-                                    setWeeklyBatch(
-                                      options.onceSessions?.find(
-                                        (v: { title: string }) => v.title === String(totalAmount),
-                                      )?.week,
-                                    )
+                                  setTotalAmount(weeklyBatch * Number(e))
                                 }}
-                              >
-                                {(category.language === '師資班' ? [{ title: '26' }] : options.onceSessions || []).map(
-                                  (d: { title: string }) => (
+                              />
+                            </div>
+                          )}
+                          <div style={{ width: 110, marginRight: 8 }}>
+                            總堂數
+                            {category.programType === '套裝項目' && category.language !== '外文' ? (
+                              category.language === '中文' ? (
+                                <div>{totalAmount}</div>
+                              ) : category.language === '師資班' ? (
+                                <Select
+                                  defaultValue={totalAmount}
+                                  value={totalAmount}
+                                  style={{ width: 110 }}
+                                  onChange={value => {
+                                    setCategory({
+                                      ...category,
+                                      name: undefined,
+                                    })
+                                    setTotalAmount(Number(value))
+                                  }}
+                                >
+                                  {[{ title: '26' }].map((d: { title: string }) => (
                                     <Select.Option key={d.title} value={d.title}>
                                       {d.title}
                                     </Select.Option>
-                                  ),
-                                )}
-                              </Select>
+                                  ))}
+                                </Select>
+                              ) : null
                             ) : (
                               <InputNumber
                                 min={1}
@@ -818,10 +898,10 @@ const MemberContractCreationForm: React.FC<
                               />
                             )}
                           </div>
-                          <div style={{ width: 500 }}>
+                          <div style={{ width: '100%', marginRight: 16 }}>
                             品項
                             <Select
-                              style={{ width: 500 }}
+                              style={{ width: '100%', marginRight: 16 }}
                               value={category.name}
                               onChange={value => {
                                 setCategory({
@@ -830,7 +910,15 @@ const MemberContractCreationForm: React.FC<
                                 })
                               }}
                             >
-                              {filterProducts.map((d: { title: string }) => (
+                              {(category.language === '中文' &&
+                              category.programType === '套裝項目' &&
+                              ![1, 4, 13].includes(week)
+                                ? [
+                                    { title: '中文_學費_套裝項目_海內_內課_團體班_2024 冬季團班' },
+                                    { title: '中文_學費_套裝項目_海內_內課_團體班_2024 秋季團班' },
+                                  ]
+                                : filterProducts
+                              ).map((d: { title: string }) => (
                                 <Select.Option key={d.title} value={d.title}>
                                   {d.title}
                                 </Select.Option>
@@ -838,8 +926,12 @@ const MemberContractCreationForm: React.FC<
                             </Select>
                           </div>
                           <div style={{ whiteSpace: 'nowrap', width: 110 }}>
-                            <div>單價/堂</div>
-                            {selectedProduct?.options.isCustomPrice || member.isBG ? (
+                            <div>{category.programType === '套裝項目' ? '總價' : '單價/堂'}</div>
+                            {selectedProduct?.options.isCustomPrice ||
+                            member.isBG ||
+                            (category.language === '中文' &&
+                              category.programType === '套裝項目' &&
+                              ![1, 4, 13].includes(week)) ? (
                               <InputNumber
                                 min={calculateMinPrice(category, weeklyBatch, totalAmount)}
                                 value={customPrice}
@@ -864,6 +956,7 @@ const MemberContractCreationForm: React.FC<
                           alignItems: 'center',
                           gap: 32,
                           width: '100%',
+                          marginRight: 16,
                           flexWrap: 'wrap',
                         }}
                       >
@@ -902,6 +995,7 @@ const MemberContractCreationForm: React.FC<
                           alignItems: 'center',
                           gap: 8,
                           width: '100%',
+                          marginRight: 16,
                           flexWrap: 'wrap',
                         }}
                       >
@@ -926,10 +1020,10 @@ const MemberContractCreationForm: React.FC<
                             ))}
                           </Select>
                         </div>
-                        <div style={{ width: 480 }}>
+                        <div style={{ width: '100%', marginRight: 16 }}>
                           品項
                           <Select
-                            style={{ width: 480 }}
+                            style={{ width: '100%', marginRight: 16 }}
                             value={category.name}
                             onChange={value => {
                               setCategory({
@@ -1013,7 +1107,11 @@ const MemberContractCreationForm: React.FC<
                             amount: category.product === '學費' ? totalAmount : 1,
                             price,
                             totalPrice:
-                              category.programType === '套裝項目'
+                              category.language === '中文' &&
+                              category.programType === '套裝項目' &&
+                              ![1, 4, 13].includes(week)
+                                ? customPrice
+                                : category.programType === '套裝項目'
                                 ? price
                                 : price * (category.product === '學費' ? totalAmount : 1),
                             productId: selectedProduct.productId,

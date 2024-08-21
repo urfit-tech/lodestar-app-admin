@@ -181,6 +181,7 @@ const PaymentCard: React.FC<{
                       defaultOrderStatus={order.status}
                       paymentLogs={payments}
                       defaultPrice={payment.price}
+                      minPrice={payment.price}
                       onRefetch={onRefetch}
                       hideRefund
                       targetPaymentNo={payment.no}
