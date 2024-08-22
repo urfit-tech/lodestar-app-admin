@@ -21,7 +21,15 @@ import moment from 'moment'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
-import { ContractInfo, ContractProduct, ContractSales, FieldProps, paymentMethods, paymentModes } from '.'
+import {
+  ContractInfo,
+  ContractProduct,
+  ContractSales,
+  FieldProps,
+  paymentMethods,
+  paymentModes,
+  SelectedProduct,
+} from '.'
 import { AdminBlockTitle } from '../../components/admin'
 import MemberSelector from '../../components/form/MemberSelector'
 import hasura from '../../hasura'
@@ -295,22 +303,8 @@ const MemberContractCreationForm: React.FC<
     contracts: ContractInfo['contracts']
     products: ContractProduct['products']
     sales: ContractSales['sales']
-    selectedProducts: {
-      id: string
-      amount: number
-      price: number
-      totalPrice: number
-      productId: string
-      title: string
-    }[]
-    onChangeSelectedProducts: (selectedProduct: {
-      id: string
-      amount: number
-      price: number
-      totalPrice: number
-      productId: string
-      title: string
-    }) => void
+    selectedProducts: SelectedProduct[]
+    onChangeSelectedProducts: (selectedProduct: SelectedProduct) => void
     deleteSelectedProduct: (id: string) => void
     adjustSelectedProductAmount: (id: string, amount: number) => void
     installments: { index: number; price: number }[]
@@ -1093,6 +1087,10 @@ const MemberContractCreationForm: React.FC<
                                 totalPrice: customPrice * totalAmount,
                                 productId,
                                 title: newProductName,
+                                options: {
+                                  product: category.product,
+                                  language: category.language,
+                                },
                               })
                             })
                             .catch(e => {
@@ -1120,6 +1118,10 @@ const MemberContractCreationForm: React.FC<
                                 : price * (category.product === '學費' ? totalAmount : 1),
                             productId: selectedProduct.productId,
                             title: selectedProduct.title,
+                            options: {
+                              language: category.language,
+                              product: category.product,
+                            },
                           })
 
                           category.product === '學費' &&

@@ -139,14 +139,13 @@ const MemberContractCreationBlock: React.FC<{
             invoice: invoiceInfo,
             price: totalPrice,
             orderProducts: selectedProducts.map(v => {
-              const p = products.find(p => p.id === v.id)
               return {
-                name: p?.title,
+                name: v.title,
                 price: v.totalPrice,
                 started_at: moment(fieldValue.startedAt).add(1, 'days'),
                 ended_at: fieldValue.endedAt,
-                product_id: p?.productId,
-                options: { quantity: v.amount },
+                product_id: v.productId,
+                options: { quantity: v.amount, ...v.options },
                 delivered_at: new Date(),
               }
             }),

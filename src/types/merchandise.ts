@@ -133,4 +133,5 @@ export type InvoiceProps = {
   status?: string
   invoiceNumber?: string
   referrerEmail?: string
+  invoiceComment?: string
 }

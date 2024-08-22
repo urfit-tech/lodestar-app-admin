@@ -23,16 +23,23 @@ const paymentModes = [
   '開課後自訂分期',
 ] as const
 
+type SelectedProduct = {
+  id: string
+  amount: number
+  price: number
+  totalPrice: number
+  productId: string
+  title: string
+  options: {
+    product: string
+    language: string
+  }
+}
+
 type FieldProps = {
   contractId: string
   executorId: string
-  products: {
-    id: string
-    amount: number
-    price: number
-    totalPrice: number
-    productId: string
-  }[]
+  products: SelectedProduct[]
   paymentMethod: typeof paymentMethods[number]
   paymentMode: typeof paymentModes[number]
   unifiedNumber: string
@@ -104,16 +111,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const { info, error, loading, refetch } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
-  const [selectedProducts, setSelectedProducts] = useState<
-    {
-      id: string
-      amount: number
-      price: number
-      totalPrice: number
-      productId: string
-      title: string
-    }[]
-  >([])
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
   const [installments, setInstallments] = useState<{ index: number; price: number }[]>([])
 
   const updateInstallmentPrice = (index: number, price: number) => {
@@ -402,7 +400,7 @@ const useContractSales = (appId: string) => {
   }
 }
 
-export type { ContractInfo, FieldProps, ContractSales, ContractProduct }
+export type { ContractInfo, FieldProps, ContractSales, ContractProduct, SelectedProduct }
 export { paymentMethods, paymentModes }
 
 export default MemberContractCreationPage
