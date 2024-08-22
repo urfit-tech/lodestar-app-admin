@@ -94,6 +94,7 @@ const saleMessages = {
     invoiceSuccess: { id: 'sale.InvoiceCard.invoiceSuccess', defaultMessage: '開立成功' },
     invoiceFailed: { id: 'sale.InvoiceCard.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
     invoicePending: { id: 'sale.InvoiceCard.invoicePending', defaultMessage: '未開立電子發票' },
+    invoiceComment: { id: 'sale.InvoiceCard.invoiceComment', defaultMessage: '發票備註' },
   }),
   PaymentCard: defineMessages({
     paymentStatus: { id: 'sale.PaymentCard.paymentStatus', defaultMessage: '交易狀態' },

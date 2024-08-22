@@ -149,6 +149,7 @@ const OrderDetailDrawer: React.FC<{
                 uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
                 uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
                 invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${orderLog.invoiceOptions?.address || ''}`}
+                invoiceComment={orderLog.invoiceOptions?.invoiceComment}
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
