@@ -1,3 +1,4 @@
+import { ControlType } from 'braft-editor'
 import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
 import { DisplayMode } from '../components/program/DisplayModeSelector'
 import { Attachment, Category, MetaTag } from './general'
@@ -90,8 +91,30 @@ export type ProgramContent = {
     options: any
   }[]
   videos: Attachment[]
-  programContentBodyData: any
+  displayMode: DisplayMode
+  programContentBody: {
+    id: string
+    type: string | null
+    description: string | null
+    data: any
+    target: string | null
+  }
+  programContentMaterials: {
+    id: string
+    data: any
+  }[]
   pinned_status: boolean
+  audios:
+    | {
+        id: string
+        data: any
+      }[]
+    | null
+  ebook: {
+    id: string
+    data: any
+    trialPercentage: number
+  } | null
 }
 
 export type ProgramContentProps = {
@@ -121,7 +144,7 @@ export type ProgramContentProps = {
     data: any
     trialPercentage: number
   } | null
-  programContentBodyData: any
+  programContentBody: any
   displayMode: DisplayMode
 }
 
@@ -162,6 +185,11 @@ export type ProgramPlan = {
   groupBuyingPeople?: number | null
   isParticipantsVisible: boolean
   cardId?: string
+  listPricePrefix: string | null
+  listPriceSuffix: string | null
+  salePricePrefix: string | null
+  salePriceSuffix: string | null
+  priceDescription: string | null
 }
 
 export type ProgramRoleProps = {
@@ -240,14 +268,27 @@ export type Exam = {
 }
 
 export type Media = 'video' | 'image'
+interface TextEditorOptionType {
+  controls: ControlType[]
+}
+
+type BaseField<T extends string, O = any> = {
+  id: string
+  name: string
+  type: T
+  options: O
+}
+
+type NumberField = BaseField<'Number'>
+type DateField = BaseField<'Date'>
+type TextField = BaseField<'Text'>
+type TextEditorField = BaseField<'TextEditor', TextEditorOptionType>
+
+type customAttributeFields = NumberField | DateField | TextField | TextEditorField
 
 export type ProgramLayoutTemplate = {
   id: string
-  customAttributes: {
-    id: string
-    name: string
-    type: 'Number' | 'Date' | 'Text' | 'TextEditor'
-  }[]
+  customAttributes: customAttributeFields[]
 }
 
 export type ProgramLayoutTemplateConfig = {

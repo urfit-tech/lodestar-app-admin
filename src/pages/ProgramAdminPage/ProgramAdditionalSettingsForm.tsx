@@ -1,10 +1,13 @@
-import { Button, DatePicker, Form, Input, InputNumber, Skeleton } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { DatePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
+import BraftEditor, { EditorState } from 'braft-editor'
 import moment, { MomentInput } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminBraftEditor from '../../components/form/AdminBraftEditor'
+import { handleError } from '../../helpers'
 import { useUpdateCustomAttributeFormValue } from '../../hooks/programLayoutTemplate'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramAdminPageMessages from './translation'
@@ -22,7 +25,7 @@ const StyledInputText = styled(Input)`
 `
 
 interface RenderStrategy {
-  render(): JSX.Element | null
+  render(options?: any): JSX.Element | null
 }
 
 class NumberStrategy implements RenderStrategy {
@@ -49,8 +52,8 @@ class TextStrategy implements RenderStrategy {
 }
 
 class TextEditorStrategy implements RenderStrategy {
-  render() {
-    return null
+  render(options: any): JSX.Element | null {
+    return <AdminBraftEditor customControls={options?.controls} />
   }
 }
 
@@ -62,9 +65,9 @@ class RenderStrategyContext {
     TextEditor: new TextEditorStrategy(),
   }
 
-  public renderModuleComponent(type: string): JSX.Element | null {
+  public renderModuleComponent(type: string, options?: any): JSX.Element | null {
     const strategy = this.strategyMap[type]
-    return strategy ? strategy.render() : null
+    return strategy ? strategy.render(options) : null
   }
 }
 
@@ -76,15 +79,23 @@ const ProgramAdditionalSettingsForm: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ programId, programLayoutTemplateConfigId, program, onRefetch }) => {
+  const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
+  const [loading, setLoading] = useState(false)
+  const { updateCustomAttributesValue } = useUpdateCustomAttributeFormValue(programId, programLayoutTemplateConfigId)
+  const renderContext = new RenderStrategyContext()
+
   const customAttrDefinition = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate || {
     id: 'notFoundCustomAttr',
     customAttributes: null,
   }
 
-  const renderContext = new RenderStrategyContext()
-
   const isMomentInput = (value: any): value is MomentInput => {
     return moment(value).isValid()
+  }
+
+  const isEditorState = (value: any): value is EditorState => {
+    return value && typeof value.getCurrentContent === 'function'
   }
 
   const customAttributesValue = program?.programLayoutTemplateConfig?.moduleData
@@ -96,29 +107,42 @@ const ProgramAdditionalSettingsForm: React.FC<{
             if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
               return [key, moment(value)]
             }
+            if (attributeDefinition && attributeDefinition.type === 'TextEditor' && typeof value === 'string') {
+              return [key, BraftEditor.createEditorState(value)]
+            }
             return [key, value]
           }),
         ),
       }
     : null
 
-  const { updateCustomAttributesValue } = useUpdateCustomAttributeFormValue(programId, programLayoutTemplateConfigId)
-
-  const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
-  const [loading, setLoading] = useState(false)
-
   if (!programLayoutTemplateConfigId) {
     return <Skeleton active />
   }
 
-  const handleSubmit = async (values: FieldProps) => {
+  const handleSubmit = async (values: any) => {
     setLoading(true)
-    await updateCustomAttributesValue(values)
-    setLoading(false)
-    if (onRefetch) {
-      onRefetch()
+    const formatCustomAttributeValue = (values: any) => {
+      return Object.entries(values || {})
+        .map(([key, value]) => {
+          const attributeDefinition = customAttrDefinition?.customAttributes?.find(attr => attr.id === key)
+          if (attributeDefinition && attributeDefinition.type === 'Date' && isMomentInput(value)) {
+            return { [key]: moment(value).format('YYYY-MM-DD HH:mm:ss') }
+          }
+          if (attributeDefinition && attributeDefinition.type === 'TextEditor' && isEditorState(value)) {
+            return { [key]: value?.toHTML() }
+          }
+          return { [key]: value }
+        })
+        .reduce((acc, cur) => ({ ...acc, ...cur }), {})
     }
+    await updateCustomAttributesValue(formatCustomAttributeValue(values))
+      .then(() => message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved)))
+      .catch(error => handleError(error))
+      .finally(() => {
+        setLoading(false)
+        onRefetch?.()
+      })
   }
 
   return (
@@ -133,8 +157,17 @@ const ProgramAdditionalSettingsForm: React.FC<{
       {customAttrDefinition &&
         customAttrDefinition.customAttributes?.map(v => {
           return (
-            <Form.Item key={v.id} label={v.name} name={v.id}>
-              {renderContext.renderModuleComponent(v.type)}
+            <Form.Item
+              key={v.id}
+              name={v.id}
+              label={formatMessage(
+                ProgramAdminPageMessages.ProgramAdditionalSettingsForm[
+                  v.name as keyof typeof ProgramAdminPageMessages.ProgramAdditionalSettingsForm
+                ],
+              )}
+              wrapperCol={{ md: { span: v.type === 'TextEditor' ? 20 : 12 } }}
+            >
+              {renderContext.renderModuleComponent(v.type, v?.options)}
             </Form.Item>
           )
         })}

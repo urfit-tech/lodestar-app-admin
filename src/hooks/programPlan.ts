@@ -118,6 +118,11 @@ export const useUpsertProgramPlan = () => {
         $groupBuyingPeople: numeric
         $isCountdownTimerVisible: Boolean
         $isParticipantsVisible: Boolean
+        $listPricePrefix: String
+        $listPriceSuffix: String
+        $salePricePrefix: String
+        $salePriceSuffix: String
+        $priceDescription: String
       ) {
         insert_program_plan(
           objects: {
@@ -140,6 +145,11 @@ export const useUpsertProgramPlan = () => {
             group_buying_people: $groupBuyingPeople
             is_countdown_timer_visible: $isCountdownTimerVisible
             is_participants_visible: $isParticipantsVisible
+            list_price_prefix: $listPricePrefix
+            list_price_suffix: $listPriceSuffix
+            sale_price_prefix: $salePricePrefix
+            sale_price_suffix: $salePriceSuffix
+            price_description: $priceDescription
           }
           on_conflict: {
             constraint: program_plan_pkey
@@ -160,6 +170,11 @@ export const useUpsertProgramPlan = () => {
               published_at
               is_countdown_timer_visible
               is_participants_visible
+              list_price_prefix
+              list_price_suffix
+              sale_price_prefix
+              sale_price_suffix
+              price_description
             ]
           }
         ) {
