@@ -34,6 +34,7 @@ const InvoiceCard: React.FC<{
   uniformNumber: string
   uniformTitle: string
   invoiceAddress: string
+  invoiceComment?: string
 }> = ({
   status,
   invoiceIssuedAt,
@@ -47,6 +48,7 @@ const InvoiceCard: React.FC<{
   uniformNumber,
   uniformTitle,
   invoiceAddress,
+  invoiceComment,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
@@ -77,6 +79,11 @@ const InvoiceCard: React.FC<{
     { title: formatMessage(saleMessages.InvoiceCard.uniformNumber), message: uniformNumber, isRender: true },
     { title: formatMessage(saleMessages.InvoiceCard.uniformTitle), message: uniformTitle, isRender: true },
     { title: formatMessage(saleMessages.InvoiceCard.invoiceAddress), message: invoiceAddress, isRender: true },
+    {
+      title: formatMessage(saleMessages.InvoiceCard.invoiceComment),
+      message: invoiceComment,
+      isRender: true,
+    },
   ]
   return (
     <StyledCard>
