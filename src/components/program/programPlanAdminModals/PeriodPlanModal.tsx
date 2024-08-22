@@ -16,14 +16,17 @@ import { ProductGiftPlan } from '../../../types/giftPlan'
 import { ProgramPlan } from '../../../types/program'
 import { PeriodFieldProps } from '../../../types/programPlan'
 import AdminModal, { AdminModalProps } from '../../admin/AdminModal'
+import programMessages from '../translation'
 import {
   CurrencyItem,
   GiftItem,
+  ListPriceCircumfixItem,
   ListPriceItem,
   ParticipantsItem,
   PeriodItem,
   PermissionItem,
   PlanDescriptionItem,
+  PriceDescriptionItem,
   ProductLevelItem,
   ProgramExpirationNoticeItem,
   PublishItem,
@@ -58,7 +61,7 @@ const PeriodPlanModal: React.FC<
 }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<PeriodFieldProps>()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { upsertProgramPlan } = useUpsertProgramPlan()
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
   const { updateProductLevel } = useMutateProductLevel()
@@ -96,6 +99,11 @@ const PeriodPlanModal: React.FC<
           publishedAt: values.isPublished ? new Date() : null,
           isCountdownTimerVisible: !!values.sale?.isTimerVisible,
           isParticipantsVisible: values.isParticipantsVisible,
+          listPricePrefix: values.listPriceCircumfix?.listPricePrefix,
+          listPriceSuffix: values.listPriceCircumfix?.listPriceSuffix,
+          salePricePrefix: values.sale?.salePricePrefix || '',
+          salePriceSuffix: values.sale?.salePriceSuffix || '',
+          priceDescription: values?.priceDescription ? values.priceDescription.toHTML() : null,
         },
       })
       const programPlanId = upsertProgramPlanData?.insert_program_plan?.returning?.[0].id
@@ -127,7 +135,7 @@ const PeriodPlanModal: React.FC<
           },
         })
       }
-      setLoading(false)
+
       message.success(formatMessage(commonMessages.event.successfullySaved))
       onSuccess()
       onProductGiftPlanRefetch?.()
@@ -135,12 +143,14 @@ const PeriodPlanModal: React.FC<
       form.resetFields()
     } catch (err) {
       console.log(err)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.periodPlan)}
+      title={formatMessage(programMessages['*'].periodPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -152,7 +162,7 @@ const PeriodPlanModal: React.FC<
               setIsOpen?.(false)
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(programMessages['*'].cancel)}
           </Button>
           <Button
             type="primary"
@@ -164,7 +174,7 @@ const PeriodPlanModal: React.FC<
               })
             }
           >
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(programMessages['*'].confirm)}
           </Button>
         </>
       )}
@@ -193,11 +203,17 @@ const PeriodPlanModal: React.FC<
           isParticipantsVisible: !!programPlan?.isParticipantsVisible,
           currencyId: programPlan?.currencyId,
           listPrice: programPlan?.listPrice || 0,
+          ListPriceCircumfix: {
+            listPricePrefix: programPlan?.listPricePrefix || null,
+            listPriceSuffix: programPlan?.listPriceSuffix || null,
+          },
           sale: programPlan?.soldAt
             ? {
                 price: programPlan.salePrice,
                 soldAt: programPlan.soldAt,
                 isTimerVisible: !!programPlan?.isCountdownTimerVisible,
+                salePricePrefix: programPlan?.salePricePrefix || '',
+                salePriceSuffix: programPlan?.salePriceSuffix || '',
               }
             : null,
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
@@ -209,6 +225,7 @@ const PeriodPlanModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : null,
           giftPlanEndedAt: productGiftPlan?.endedAt ? moment(productGiftPlan.endedAt) : null,
+          priceDescription: BraftEditor.createEditorState(programPlan?.priceDescription),
         }}
       >
         <TitleItem name="title" />
@@ -224,8 +241,14 @@ const PeriodPlanModal: React.FC<
         />
         <ProductLevelItem name="productLevel" programPlanId={programPlan?.id} />
         <CurrencyItem name="currencyId" />
-        <ListPriceItem name="listPrice" programPlanCurrencyId={currencyId} />
+        <ListPriceItem name="listPrice" />
+        {settings['program.layout_template_circumfix.enabled'] ? (
+          <ListPriceCircumfixItem name="listPriceCircumfix" />
+        ) : null}
         <SaleItem name="sale" programPlanCurrencyId={currencyId} />
+        {settings['program.layout_template_price_description.enabled'] ? (
+          <PriceDescriptionItem name="priceDescription" />
+        ) : null}
         <PlanDescriptionItem name="description" />
       </Form>
     </AdminModal>

@@ -82,7 +82,7 @@ const ProgramPublishBlock: React.FC<{
     section.programContents.some(
       content =>
         content.programContentType === 'exercise' &&
-        (content.metadata?.withInvalidQuestion || !content.programContentBodyData?.questions?.length),
+        (content.metadata?.withInvalidQuestion || !content.programContentBody?.questions?.length),
     ),
   ) &&
     errors.push({
