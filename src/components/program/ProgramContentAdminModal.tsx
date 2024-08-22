@@ -166,7 +166,7 @@ const ProgramContentAdminModal: React.FC<{
   }> = ({ programContent, onRefetch }) => {
     const [loading, setLoading] = useState(false)
     const [displayMode, setDisplayMode] = useState<DisplayMode>(programContent?.displayMode || 'conceal')
-    const [contentType, setContentType] = useState<string>(programContent?.programContentType || 'video')
+    const [contentType, setContentType] = useState<string>(programContent?.programContentBody.type || 'video')
     const [audioFiles, setAudioFiles] = useState<File[]>(programContent?.audios?.map(v => v.data) || [])
     const [visible, setVisible] = useState(false)
     const [videoPipeline, setVideoPipeline] = useState<VideoPipeline>('attachment')
@@ -264,8 +264,8 @@ const ProgramContentAdminModal: React.FC<{
 
       if (
         enabledModules.ebook &&
-        ((programContent?.programContentType !== 'ebook' && contentType === 'ebook') ||
-          (programContent?.programContentType === 'ebook' && contentType !== 'ebook') ||
+        ((programContent?.programContentBody.type !== 'ebook' && contentType === 'ebook') ||
+          (programContent?.programContentBody.type === 'ebook' && contentType !== 'ebook') ||
           !ebookFile)
       ) {
         deleteProgramContentEbookTocProgress({ variables: { programContentId } }).catch(handleError)
@@ -463,7 +463,7 @@ const ProgramContentAdminModal: React.FC<{
                     videoPipeline: 'attachment',
                     selectedSource: 'youtube',
                     displayMode: programContent.displayMode,
-                    contentBodyType: programContent.programContentType,
+                    contentBodyType: programContent.programContentBody.type,
                     ebookFile: programContent.ebook?.data || null,
                     pinnedStatus: programContent.pinned_status,
                     trialPercentage: programContent.ebook?.trialPercentage || Number(ebookTrialPercentageSetting),
