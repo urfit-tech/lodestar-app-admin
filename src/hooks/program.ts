@@ -131,6 +131,11 @@ export const useProgram = (programId: string) => {
             group_buying_people
             is_participants_visible
             card_id
+            list_price_prefix
+            list_price_suffix
+            sale_price_prefix
+            sale_price_suffix
+            price_description
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -157,7 +162,6 @@ export const useProgram = (programId: string) => {
             program_id
             program_layout_template_id
             module_data
-            is_active
             program_layout_template {
               id
               name
@@ -219,7 +223,7 @@ export const useProgram = (programId: string) => {
             title: pcp.program_plan.title || '',
           })),
           metadata: pc.metadata,
-          programContentBodyData: pc.program_content_body?.data,
+          programContentBody: pc.program_content_body?.data,
           programContentBodyTarget: pc.program_content_body?.target,
           attachments: pc.program_content_attachments.map(v => ({
             id: v.attachment_id,
@@ -276,6 +280,11 @@ export const useProgram = (programId: string) => {
         groupBuyingPeople: programPlan.group_buying_people,
         isParticipantsVisible: programPlan.is_participants_visible,
         cardId: programPlan.card_id,
+        listPricePrefix: programPlan.list_price_prefix || null,
+        listPriceSuffix: programPlan.list_price_suffix || null,
+        salePricePrefix: programPlan.sale_price_prefix || null,
+        salePriceSuffix: programPlan.sale_price_suffix || null,
+        priceDescription: programPlan.price_description || null,
       })),
       categories: data.program_by_pk.program_categories.map(programCategory => ({
         id: programCategory.category.id,
@@ -778,11 +787,11 @@ export const useMutateProgramContent = () => {
 
 export const useProgramContent = (programContentId: string) => {
   const { data, loading, refetch } = useQuery<
-    hasura.GET_SPECIFIC_PROGRAM_CONTENT,
-    hasura.GET_SPECIFIC_PROGRAM_CONTENTVariables
+    hasura.GetSpecificProgramContent,
+    hasura.GetSpecificProgramContentVariables
   >(
     gql`
-      query GET_SPECIFIC_PROGRAM_CONTENT($programContentId: uuid!) {
+      query GetSpecificProgramContent($programContentId: uuid!) {
         program_content_by_pk(id: $programContentId) {
           id
           title
@@ -793,7 +802,15 @@ export const useProgramContent = (programContentId: string) => {
           notified_at
           metadata
           pinned_status
+          display_mode
           program_content_body {
+            id
+            type
+            description
+            data
+            target
+          }
+          program_content_materials {
             id
             data
           }
@@ -817,8 +834,18 @@ export const useProgramContent = (programContentId: string) => {
             attachment {
               id
               size
+              duration
               options
             }
+          }
+          program_content_audios {
+            id
+            data
+          }
+          program_content_ebook {
+            id
+            data
+            trial_percentage
           }
         }
       }
@@ -828,7 +855,7 @@ export const useProgramContent = (programContentId: string) => {
 
   const programContent:
     | (DeepPick<ProgramContent, '!videos'> &
-        DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].options'>)
+        DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>)
     | null = data?.program_content_by_pk
     ? {
         id: data.program_content_by_pk.id,
@@ -836,19 +863,30 @@ export const useProgramContent = (programContentId: string) => {
         publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
         listPrice: data.program_content_by_pk.list_price,
         duration: data.program_content_by_pk.duration,
+        isNotifyUpdate: data.program_content_by_pk.is_notify_update,
+        notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
+        pinned_status: data.program_content_by_pk.pinned_status,
+        metadata: data.program_content_by_pk.metadata,
+        displayMode: data.program_content_by_pk.display_mode as DisplayMode,
         programContentType:
           data.program_content_by_pk.program_content_videos.length > 0
             ? 'video'
             : data.program_content_by_pk.program_content_type?.type || null,
-        isNotifyUpdate: data.program_content_by_pk.is_notify_update,
-        notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
-        pinned_status: data.program_content_by_pk.pinned_status,
         programPlans: data.program_content_by_pk.program_content_plans.map(pcp => ({
           id: pcp.program_plan.id,
           title: pcp.program_plan.title || '',
         })),
-        metadata: data.program_content_by_pk.metadata,
-        programContentBodyData: data.program_content_by_pk.program_content_body.data,
+        programContentBody: {
+          id: data.program_content_by_pk.program_content_body.id,
+          type: data.program_content_by_pk.program_content_body?.type || null,
+          data: data.program_content_by_pk.program_content_body?.data || null,
+          description: data.program_content_by_pk.program_content_body?.description || null,
+          target: data.program_content_by_pk.program_content_body?.target || null,
+        },
+        programContentMaterials: data.program_content_by_pk.program_content_materials.map(v => ({
+          id: v.id,
+          data: v.data,
+        })),
         attachments: data.program_content_by_pk.program_content_attachments.map(v => ({
           id: v.attachment_id,
           data: v.data,
@@ -857,8 +895,18 @@ export const useProgramContent = (programContentId: string) => {
         videos: data.program_content_by_pk.program_content_videos.map(pcv => ({
           id: pcv.attachment.id,
           size: pcv.attachment.size,
+          duration: pcv.attachment.duration,
           options: pcv.attachment.options,
         })),
+        audios: data.program_content_by_pk.program_content_audios.map(pca => ({
+          id: pca.id,
+          data: pca.data,
+        })),
+        ebook: {
+          id: data.program_content_by_pk.program_content_ebook?.id || '',
+          data: data.program_content_by_pk.program_content_ebook?.data || null,
+          trialPercentage: data.program_content_by_pk.program_content_ebook?.trial_percentage || 0,
+        },
       }
     : null
   return { programContent, loading, refetch }
