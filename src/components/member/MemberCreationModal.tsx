@@ -1,8 +1,7 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useApolloClient, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
@@ -51,7 +50,7 @@ const MemberCreationModal: React.FC<
           variables: {
             appId,
             id: uuidv4(),
-            email,
+            email: email.toLowerCase(),
             username,
             role: role || 'general-member',
             managerId: currentUserRole === 'general-member' ? currentMemberId : null,
