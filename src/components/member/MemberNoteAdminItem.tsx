@@ -1,4 +1,6 @@
 import { MessageOutlined, MoreOutlined } from '@ant-design/icons'
+import { WarningTwoIcon } from '@chakra-ui/icons'
+import { Box, Flex, Icon, Spinner } from '@chakra-ui/react'
 import { Dropdown, Menu, message, Modal, Space } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -21,8 +23,6 @@ import FileUploader from '../common/FileUploader'
 import { CustomRatioImage } from '../common/Image'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
 import MemberNoteTranscriptModal from './MemberNoteTranscriptModal'
-import { Box, Spinner, Flex, Icon } from '@chakra-ui/react'
-import { WarningTwoIcon } from '@chakra-ui/icons'
 import memberMessages from './translation'
 
 const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
