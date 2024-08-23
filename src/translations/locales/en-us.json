@@ -1760,6 +1760,7 @@
   "member.label.reasonOfRejection": "Rejection Reason",
   "member.label.status": "Status",
   "member.label.target": "Member",
+  "member.label.event": "Event Arrangement",
   "member.label.task": "To-Do List",
   "member.label.taskDescription": "Content",
   "member.label.taskTitle": "Title",

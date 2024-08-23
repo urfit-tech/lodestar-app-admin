@@ -1760,6 +1760,7 @@
   "member.label.reasonOfRejection": "拒绝原因",
   "member.label.status": "状态",
   "member.label.target": "学员",
+  "member.label.event": "行事管理",
   "member.label.task": "待办清单",
   "member.label.taskDescription": "内容",
   "member.label.taskTitle": "标题",
