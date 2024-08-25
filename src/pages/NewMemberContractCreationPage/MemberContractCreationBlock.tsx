@@ -113,6 +113,7 @@ const MemberContractCreationBlock: React.FC<{
       language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
       contractId: fieldValue.contractId,
       isBG: member.isBG,
+      executorId: fieldValue.executorId,
     }
     const installmentPlans =
       fieldValue.paymentMode === '訂金+尾款'
