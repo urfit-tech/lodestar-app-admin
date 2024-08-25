@@ -5,8 +5,7 @@ import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import bgBackground from '../../images/default/bg-background.png'
 
-const ContractLayout: React.FC<{ memberId: string; categories: string[] }> = ({ memberId, categories, children }) => {
-  const isBG = categories.some(c => ['B', 'G'].some(v => c.startsWith(v)))
+const ContractLayout: React.FC<{ memberId: string; isBG: boolean }> = ({ memberId, isBG, children }) => {
   return (
     <>
       <AdminHeader>
