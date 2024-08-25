@@ -1,5 +1,5 @@
 // organize-imports-ignore
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
 import { FileAddOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -25,10 +25,11 @@ import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
-import { useMemberTaskCollection } from '../../hooks/task'
+import { useMemberTask, useMemberTaskCollection } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
+import { StringParam, useQueryParam } from 'use-query-params'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -101,7 +102,8 @@ const MemberTaskAdminBlock: React.FC<{
   memberId?: string
   localStorageMemberTaskDisplay?: string
   localStorageMemberTaskFilter?: {}
-}> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter }) => {
+  activeMemberTask?: MemberTaskProps | null
+}> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter, activeMemberTask }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
@@ -118,6 +120,7 @@ const MemberTaskAdminBlock: React.FC<{
   }>(localStorageMemberTaskFilter || {})
   const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
+
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
@@ -145,6 +148,13 @@ const MemberTaskAdminBlock: React.FC<{
   useEffect(() => {
     setExcludedIds([])
   }, [orderBy])
+
+  useEffect(() => {
+    if (activeMemberTask) {
+      setVisible(true)
+      setSelectedMemberTask(activeMemberTask)
+    }
+  }, [activeMemberTask])
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -212,6 +222,8 @@ const MemberTaskAdminBlock: React.FC<{
       onClick: () => {
         setSelectedMemberTask(() => record)
         setVisible(() => true)
+        const newUrl = `${window.location.pathname}?id=${record.id}`
+        window.history.pushState({ path: newUrl }, '', newUrl)
       },
     }
   }
@@ -823,7 +835,12 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
-          onCancel={() => setSelectedMemberTask(null)}
+          onCancel={() => {
+            setSelectedMemberTask(null)
+            setVisible(false)
+            const newUrl = `${window.location.pathname}`
+            window.history.pushState({ path: newUrl }, '', newUrl)
+          }}
         />
       )}
     </>
