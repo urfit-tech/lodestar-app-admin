@@ -392,7 +392,6 @@ const MemberContractCreationForm: React.FC<
       classMode: '內課',
       classType: '個人班',
       locationType: '海內',
-      name: member.isBG ? undefined : '中文_學費_標準時數_海內_內課_個人班_每週10堂以上_60堂以上',
     })
 
     const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
@@ -574,7 +573,7 @@ const MemberContractCreationForm: React.FC<
                             name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
                           })
                           setCustomPrice(0)
-                          setTotalAmount(0)
+                          member.isBG && setTotalAmount(0)
                         }}
                       >
                         {v.title}
@@ -1245,8 +1244,15 @@ const MemberContractCreationForm: React.FC<
                   .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
-                      (member.isBG && !['訂金+尾款'].includes(mode)) ||
-                      (!member.isBG && !['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(mode)),
+                      (!!member.isBG &&
+                        [
+                          '全額付清',
+                          '先上課後月結實支實付',
+                          '先上課後月結固定金額',
+                          '課前頭款+自訂分期',
+                          '開課後自訂分期',
+                        ].includes(mode)) ||
+                      (!member.isBG && ['全額付清', '訂金+尾款'].includes(mode)),
                   )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
