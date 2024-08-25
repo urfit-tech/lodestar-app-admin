@@ -137,7 +137,7 @@ const MemberContractCreationPage: React.VFC = () => {
   console.log({ selectedProducts })
 
   return (
-    <ContractLayout memberId={member.id} categories={member.categories}>
+    <ContractLayout memberId={member.id} isBG={!!member.isBG}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -255,7 +255,9 @@ const useContractInfo = (appId: string, memberId: string) => {
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
             categories: data.member_by_pk.member_categories.map(v => v.category.name),
-            isBG: data.member_by_pk.member_categories.some(c => ['B', 'G'].some(v => c.category.name.startsWith(v))),
+            isBG: data.member_by_pk.member_categories.some(c =>
+              ['B（', 'G（'].some(v => c.category.name.startsWith(v)),
+            ),
           },
           contracts: data.contract.map(c => ({
             id: c.id,
