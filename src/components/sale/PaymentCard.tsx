@@ -153,7 +153,7 @@ const PaymentCard: React.FC<{
                     <StyledInfoTitle className="column">款項</StyledInfoTitle>
                     <StyledInfoMessage className="column">
                       {order.options?.paymentMode === '訂金+尾款'
-                        ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 0
+                        ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
                           ? '訂金'
                           : '尾款'
                         : order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
