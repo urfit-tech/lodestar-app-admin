@@ -118,8 +118,8 @@ const MemberContractCreationBlock: React.FC<{
     const installmentPlans =
       fieldValue.paymentMode === '訂金+尾款'
         ? [
-            { price: Math.ceil(totalPrice * 0.1), index: 0 },
-            { price: totalPrice - Math.ceil(totalPrice * 0.1), index: 1 },
+            { price: Math.ceil(totalPrice * 0.1), index: 1 },
+            { price: totalPrice - Math.ceil(totalPrice * 0.1), index: 2 },
           ]
         : ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode)
         ? installments
@@ -142,7 +142,8 @@ const MemberContractCreationBlock: React.FC<{
             orderProducts: selectedProducts.map(v => {
               return {
                 name: v.title,
-                price: v.totalPrice,
+                price: v.price,
+                totalPrice: v.totalPrice,
                 started_at: moment(fieldValue.startedAt).add(1, 'days'),
                 ended_at: fieldValue.endedAt,
                 product_id: v.productId,
