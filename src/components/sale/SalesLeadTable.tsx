@@ -59,6 +59,9 @@ const TableWrapper = styled.div`
       border-left: 4px solid var(--error);
     }
   }
+  && .ant-pagination.ant-table-pagination.ant-table-pagination-right {
+    align-items: center;
+  }
 `
 const StyledMemberNote = styled.span`
   white-space: pre-wrap;
