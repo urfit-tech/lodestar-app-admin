@@ -29,7 +29,7 @@ import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { StyledLine } from '../../pages/SalesLeadPage'
-import { LeadProps, LeadStatus, Manager } from '../../types/sales'
+import { SalesLeadMember, LeadStatus, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -85,11 +85,11 @@ const StyledDelPhone = styled.p`
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed'
   manager: Manager
-  leads: LeadProps[]
+  leads: SalesLeadMember[]
+  followedLeads: SalesLeadMember[]
   isLoading: boolean
   onRefetch: () => Promise<void>
   title?: string
-  followedLeads: LeadProps[]
   selectedLeadStatusCategoryId?: string
   selectedRowKeys: React.Key[]
   onSelectChange: (newSelectedRowKeys: React.Key[]) => void
@@ -168,53 +168,54 @@ const SalesLeadTable: React.VFC<{
     setListStatus(status)
   }
 
-  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<LeadProps> = onSetFilter => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div className="p-2">
-        <Input
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => {
-            confirm()
-            onSetFilter(selectedKeys[0] as string)
-          }}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <div>
-          <Button
-            type="primary"
-            onClick={() => {
+  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<SalesLeadMember> =
+    onSetFilter => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <Input
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => {
               confirm()
               onSetFilter(selectedKeys[0] as string)
             }}
-            icon={<SearchOutlined />}
-            size="small"
-            className="mr-2"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.search)}
-          </Button>
-          <Button
-            onClick={() => {
-              clearFilters && clearFilters()
-              onSetFilter(undefined)
-            }}
-            size="small"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.reset)}
-          </Button>
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                onSetFilter(selectedKeys[0] as string)
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                onSetFilter(undefined)
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
         </div>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-  })
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    })
 
-  const handleEditFullName = (lead: LeadProps) => {
+  const handleEditFullName = (lead: SalesLeadMember) => {
     setEditFullNameMemberId(lead.id)
   }
 
-  const handleFullNameSave = (lead: LeadProps) => {
+  const handleFullNameSave = (lead: SalesLeadMember) => {
     const fullNameProperty = properties.find(property => property.name === '本名')
     const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
     if (!fullNameValue || fullNameValue === fullNamePropertyValue) {
@@ -240,7 +241,7 @@ const SalesLeadTable: React.VFC<{
   const dataSource = leads
     .filter(v => {
       const { nameAndEmail, phone, categoryName, materialName, memberNote } = filters
-      const { name, email, phones, categoryNames, notes, properties } = v
+      const { name, email, phones, categoryNames, latestNoteDescription, properties } = v
       const fullName = properties.find(property => property.name === '本名')?.value || ''
       const matchesFilter = (filterValue: string | undefined) => (filterData: string) =>
         !filterValue || filterData.trim().toLowerCase().includes(filterValue.trim().toLowerCase())
@@ -260,7 +261,7 @@ const SalesLeadTable: React.VFC<{
         properties.find(property => property.name === '廣告素材')?.value || '',
       )
 
-      const memberNoteMatch = matchesFilter(memberNote)(notes)
+      const memberNoteMatch = matchesFilter(memberNote)(latestNoteDescription)
 
       return nameAndEmailMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
     })
@@ -269,7 +270,7 @@ const SalesLeadTable: React.VFC<{
   const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
   const hasFullNameProperty = properties.some(p => p.name === '本名')
 
-  const columns: ColumnsType<LeadProps> = [
+  const columns: ColumnsType<SalesLeadMember> = [
     {
       key: 'memberId',
       dataIndex: 'id',
@@ -502,9 +503,9 @@ const SalesLeadTable: React.VFC<{
           memberNote: value,
         }),
       ),
-      render: (memberNote, lead) => (
+      render: (_, lead) => (
         <StyledMemberNote>
-          <span>{lead.notes}</span>
+          <span>{lead.latestNoteDescription}</span>
         </StyledMemberNote>
       ),
     },
@@ -1000,7 +1001,7 @@ const SalesLeadTable: React.VFC<{
             </div>
           </div>
         )}
-        <Table<LeadProps>
+        <Table<SalesLeadMember>
           rowKey="id"
           rowSelection={{
             selectedRowKeys,
