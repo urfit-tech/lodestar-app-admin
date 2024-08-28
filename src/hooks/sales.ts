@@ -292,19 +292,42 @@ export const useManagerLeads = (manager: Manager) => {
             },
           )
           .then(({ data }) => {
-            const result = data.map((salesLeadMember: SalesLeadMember) => ({
-              ...salesLeadMember,
+            const result: SalesLeadMember[] = data.map((salesLeadMember: SalesLeadMember) => ({
+              id: salesLeadMember.id,
+              appId: salesLeadMember.appId,
+              name: salesLeadMember.name,
+              email: salesLeadMember.email,
+              pictureUrl: salesLeadMember.pictureUrl,
+              star: Number(salesLeadMember.star),
+              notified: Boolean(salesLeadMember.notified),
+              leadStatusCategoryId: salesLeadMember.leadStatusCategoryId,
+              properties: salesLeadMember.properties.map(property => ({
+                id: property.id,
+                name: property.name,
+                value: property.value,
+              })),
+              phones: salesLeadMember.phones.map(phone => ({
+                phoneNumber: phone.phoneNumber,
+                isValid: phone.isValid,
+              })),
+              categoryNames: salesLeadMember.categoryNames,
+              latestNoteDescription: salesLeadMember.latestNoteDescription,
+              status: salesLeadMember.status as LeadStatus,
               createdAt: dayjs(salesLeadMember.createdAt).toDate(),
-              assignedAt:salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() :null,
+              assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,
               followedAt: salesLeadMember.followedAt ? dayjs(salesLeadMember.followedAt).toDate() : null,
               closedAt: salesLeadMember.closedAt ? dayjs(salesLeadMember.closedAt).toDate() : null,
               completedAt: salesLeadMember.completedAt ? dayjs(salesLeadMember.completedAt).toDate() : null,
               excludedAt: salesLeadMember.excludedAt ? dayjs(salesLeadMember.excludedAt).toDate() : null,
               recycledAt: salesLeadMember.recycledAt ? dayjs(salesLeadMember.recycledAt).toDate() : null,
-              recentContactedAt: salesLeadMember.recentContactedAt ? dayjs(salesLeadMember.recentContactedAt).toDate() : null,
-              recentAnsweredAt: salesLeadMember.recentAnsweredAt ? dayjs(salesLeadMember.recentAnsweredAt).toDate() : null,
+              recentContactedAt: salesLeadMember.recentContactedAt
+                ? dayjs(salesLeadMember.recentContactedAt).toDate()
+                : null,
+              recentAnsweredAt: salesLeadMember.recentAnsweredAt
+                ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
+                : null,
             }))
-            setSalesLeadMembers(result)
+            setSalesLeadMembers(result.filter(v => v.appId === appId))
           })
           .catch(error => setError(error))
       } catch (error) {
