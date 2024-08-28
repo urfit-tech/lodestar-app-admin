@@ -8,6 +8,7 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { DeepPick } from 'ts-deep-pick'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -21,7 +22,6 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
-import { DeepPick } from 'ts-deep-pick'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -230,6 +230,7 @@ const PracticeForm: React.FC<{
           <Dropdown
             trigger={['click']}
             placement="bottomRight"
+            overlayStyle={{ zIndex: 9999 }}
             overlay={
               <Menu>
                 <Menu.Item
