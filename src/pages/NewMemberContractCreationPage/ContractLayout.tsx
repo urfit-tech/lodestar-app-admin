@@ -1,21 +1,22 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Layout } from 'antd'
 import { Link } from 'react-router-dom'
+import { ContractInfo } from '.'
 import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import bgBackground from '../../images/default/bg-background.png'
 
-const ContractLayout: React.FC<{ memberId: string; isBG: boolean }> = ({ memberId, isBG, children }) => {
+const ContractLayout: React.FC<{ member: ContractInfo['member'] }> = ({ member, children }) => {
   return (
     <>
       <AdminHeader>
-        <Link to={`/members/${memberId}/contract`}>
+        <Link to={`/members/${member.id}/contract`}>
           <Button type="link" className="mr-3">
             <ArrowLeftOutlined />
           </Button>
         </Link>
 
-        <a href={`/admin/members/${memberId}/order`} rel="noopener noreferrer">
+        <a href={`/admin/members/${member.id}/order`} rel="noopener noreferrer">
           <Button>會員訂單紀錄</Button>
         </a>
       </AdminHeader>
@@ -23,7 +24,7 @@ const ContractLayout: React.FC<{ memberId: string; isBG: boolean }> = ({ memberI
         <StyledLayoutContent>
           <div
             style={{
-              backgroundImage: isBG ? `url(${bgBackground})` : undefined,
+              backgroundImage: member.isBG ? `url(${bgBackground})` : undefined,
             }}
           >
             {children}
