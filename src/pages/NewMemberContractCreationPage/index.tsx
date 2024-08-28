@@ -48,6 +48,7 @@ type FieldProps = {
   endedAt: Date
   company: string
   skipIssueInvoice: boolean
+  unifiedTitle: string
 }
 
 type ContractInfo = {
@@ -55,7 +56,7 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    categories: string[]
+    memberType: string
     isBG?: boolean // business or government
   }
   contracts: {
@@ -137,7 +138,7 @@ const MemberContractCreationPage: React.VFC = () => {
   console.log({ selectedProducts })
 
   return (
-    <ContractLayout memberId={member.id} isBG={!!member.isBG}>
+    <ContractLayout member={member}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -159,7 +160,7 @@ const MemberContractCreationPage: React.VFC = () => {
             selectedProducts={selectedProducts}
             onChangeSelectedProducts={product => {
               setSelectedProducts(prev => {
-                const existingProductIndex = prev.findIndex(p => p.id === product.id)
+                const existingProductIndex = prev.findIndex(p => p.id === product.id && p.price === product.price)
                 if (existingProductIndex !== -1) {
                   const updatedProducts = [...prev]
                   const existingProduct = updatedProducts[existingProductIndex]
@@ -175,13 +176,13 @@ const MemberContractCreationPage: React.VFC = () => {
                 }
               })
             }}
-            deleteSelectedProduct={productId =>
-              setSelectedProducts(prev => prev.filter(product => product.id !== productId))
+            deleteSelectedProduct={p =>
+              setSelectedProducts(prev => prev.filter(product => product.id !== p.id || p.price !== product.price))
             }
-            adjustSelectedProductAmount={(productId, amount) =>
+            adjustSelectedProductAmount={(p, amount) =>
               setSelectedProducts(prev =>
                 prev.map(product =>
-                  product.id === productId
+                  product.id === p.id && product.price === p.price
                     ? {
                         ...product,
                         amount,
@@ -221,10 +222,8 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_categories {
-            category {
-              name
-            }
+          member_properties(where: { property: { name: { _eq: "會員類型" } } }) {
+            value
           }
         }
         contract(
@@ -254,9 +253,11 @@ const useContractInfo = (appId: string, memberId: string) => {
             id: data.member_by_pk.id,
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
-            categories: data.member_by_pk.member_categories.map(v => v.category.name),
-            isBG: data.member_by_pk.member_categories.some(c =>
-              ['B（', 'G（'].some(v => c.category.name.startsWith(v)),
+            memberType: data.member_by_pk.member_properties[0]?.value || '',
+            isBG: !!(
+              data.member_by_pk.member_properties[0]?.value &&
+              !data.member_by_pk.member_properties[0].value.startsWith('C') &&
+              !data.member_by_pk.member_properties[0].value.startsWith('BIP')
             ),
           },
           contracts: data.contract.map(c => ({

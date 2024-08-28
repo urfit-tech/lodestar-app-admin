@@ -39,6 +39,9 @@ const MemberContractCreationBlock: React.FC<{
   const fieldValue = form.getFieldsValue()
 
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
+  const priceWithoutTax = Math.round(
+    sum(selectedProducts.map(p => (p.options.product === '學費' ? 0 : Math.round(p.totalPrice / 1.05)))),
+  )
 
   const handleMemberContractCreate = async () => {
     const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
@@ -56,6 +59,10 @@ const MemberContractCreationBlock: React.FC<{
     }
     if (!!fieldValue.unifiedNumber && fieldValue.unifiedNumber.length !== 8) {
       message.warn('統一編號格式錯誤')
+      return
+    }
+    if (!!fieldValue.unifiedNumber && !fieldValue.unifiedTitle) {
+      message.warn('若有填寫統一編號，請填寫公司名稱')
       return
     }
     if (!fieldValue.paymentMode) {
@@ -96,7 +103,9 @@ const MemberContractCreationBlock: React.FC<{
       email: member.email,
       skipIssueInvoice: fieldValue.skipIssueInvoice,
       unifiedNumber: fieldValue.unifiedNumber,
+      unifiedTitle: fieldValue.unifiedTitle,
       invoiceComment: fieldValue.invoiceComment,
+      priceWithoutTax,
     }
     const paymentGateway = fieldValue.paymentMethod.includes('藍新') ? 'spgateway' : 'physical'
     const paymentMethod =
@@ -246,10 +255,22 @@ const MemberContractCreationBlock: React.FC<{
 
               <div className="col-3 text-right">${(totalPrice - totalPrice * 0.1).toLocaleString()}</div>
             </div>
+            <div style={{ borderBottom: '1px dashed #4f4f4f', margin: '12px 0' }} />
           </>
         )}
+
         <div className="row mb-2">
-          <strong className="col-6 text-right">合計</strong>
+          <strong className="col-6 text-right">應稅</strong>
+
+          <div className="col-6 text-right">${priceWithoutTax.toLocaleString()}</div>
+        </div>
+        <div className="row mb-2">
+          <strong className="col-6 text-right">稅額</strong>
+
+          <div className="col-6 text-right">${(totalPrice - priceWithoutTax).toLocaleString()}</div>
+        </div>
+        <div className="row mb-2">
+          <strong className="col-6 text-right">總金額(含稅)</strong>
 
           <div className="col-6 text-right">${totalPrice.toLocaleString()}</div>
         </div>

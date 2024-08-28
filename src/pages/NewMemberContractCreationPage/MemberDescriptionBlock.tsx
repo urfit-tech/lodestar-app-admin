@@ -50,7 +50,7 @@ const MemberDescriptionBlock: React.FC<{
           <Descriptions.Item span={2} label="付款備註">
             <Input.TextArea style={{ height: 200 }} value={comment} onChange={e => setComment(e.target.value)} />
           </Descriptions.Item>
-          <Descriptions.Item label="會員分類">{member.categories.join(',')}</Descriptions.Item>
+          <Descriptions.Item label="會員分類">{member.memberType}</Descriptions.Item>
         </Descriptions>
         <Button className="mr-2" onClick={() => setComment(data?.member_property?.[0]?.value || '')}>
           取消
