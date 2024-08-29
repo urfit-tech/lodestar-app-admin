@@ -40,7 +40,11 @@ const MemberContractCreationBlock: React.FC<{
 
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
   const priceWithoutTax = Math.round(
-    sum(selectedProducts.map(p => (p.options.product === '學費' ? 0 : Math.round(p.totalPrice / 1.05)))),
+    sum(
+      selectedProducts.map(p =>
+        p.options.product === '學費' || p.options.product === '註冊費' ? totalPrice : Math.round(p.totalPrice / 1.05),
+      ),
+    ),
   )
 
   const handleMemberContractCreate = async () => {
@@ -103,7 +107,7 @@ const MemberContractCreationBlock: React.FC<{
       email: member.email,
       skipIssueInvoice: fieldValue.skipIssueInvoice,
       uniformNumber: fieldValue.uniformNumber,
-      unifiedTitle: fieldValue.uniformTitle,
+      uniformTitle: fieldValue.uniformTitle,
       invoiceComment: fieldValue.invoiceComment,
       priceWithoutTax,
     }
@@ -115,6 +119,8 @@ const MemberContractCreationBlock: React.FC<{
         ? 'bankTransfer'
         : fieldValue.paymentMethod === '實體刷卡'
         ? 'physicalCredit'
+        : fieldValue.paymentMethod === '遠端輸入卡號'
+        ? 'physicalRemoteCredit'
         : undefined
 
     const options = {
