@@ -57,11 +57,11 @@ const MemberContractCreationBlock: React.FC<{
       message.warn('請選擇結帳管道')
       return
     }
-    if (!!fieldValue.unifiedNumber && fieldValue.unifiedNumber.length !== 8) {
+    if (!!fieldValue.uniformNumber && fieldValue.uniformNumber.length !== 8) {
       message.warn('統一編號格式錯誤')
       return
     }
-    if (!!fieldValue.unifiedNumber && !fieldValue.unifiedTitle) {
+    if (!!fieldValue.uniformNumber && !fieldValue.uniformTitle) {
       message.warn('若有填寫統一編號，請填寫公司名稱')
       return
     }
@@ -102,8 +102,8 @@ const MemberContractCreationBlock: React.FC<{
       name: member.name,
       email: member.email,
       skipIssueInvoice: fieldValue.skipIssueInvoice,
-      unifiedNumber: fieldValue.unifiedNumber,
-      unifiedTitle: fieldValue.unifiedTitle,
+      uniformNumber: fieldValue.uniformNumber,
+      unifiedTitle: fieldValue.uniformTitle,
       invoiceComment: fieldValue.invoiceComment,
       priceWithoutTax,
     }

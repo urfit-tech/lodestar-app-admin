@@ -42,13 +42,13 @@ type FieldProps = {
   products: SelectedProduct[]
   paymentMethod: typeof paymentMethods[number]
   paymentMode: typeof paymentModes[number]
-  unifiedNumber: string
+  uniformNumber: string
   invoiceComment: string
   startedAt: Date
   endedAt: Date
   company: string
   skipIssueInvoice: boolean
-  unifiedTitle: string
+  uniformTitle: string
 }
 
 type ContractInfo = {
