@@ -13,7 +13,7 @@ import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
-const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡'] as const
+const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡', '遠端輸入卡號'] as const
 const paymentModes = [
   '全額付清',
   '訂金+尾款',

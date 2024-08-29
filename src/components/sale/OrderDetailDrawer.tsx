@@ -1,15 +1,18 @@
 import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
-import { Skeleton } from 'antd'
+import { Button, message, Skeleton } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, handleError } from '../../helpers'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
 import OrderCard from './OrderCard'
@@ -45,8 +48,10 @@ const OrderDetailDrawer: React.FC<{
   onRefetch?: () => void
 }> = ({ orderLogId, onClose, renderTrigger, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
+  const { authToken } = useAuth()
   const isOpen = Boolean(orderLogId)
-
+  const [loading, setLoading] = React.useState(false)
   const {
     loadingOrderDetail,
     loadingSharingCode,
@@ -116,7 +121,47 @@ const OrderDetailDrawer: React.FC<{
                 }
               />
             )}
-            <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
+              {orderLog.invoiceOptions?.status === 'SUCCESS' && (
+                <Button
+                  style={{ margin: '24px 0' }}
+                  type="primary"
+                  disabled={loading}
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    axios
+                      .post(
+                        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
+                        {
+                          appId,
+                          invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+                          invoiceNumber: orderLog.invoiceOptions?.invoiceNumber,
+                          invalidReason: '發票作廢',
+                        },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${authToken}`,
+                          },
+                        },
+                      )
+                      .then(r => {
+                        if (r.data.code === 'SUCCESS') {
+                          onClose()
+                          message.success('發票作廢成功')
+                        }
+                      })
+                      .catch(handleError)
+                      .finally(() => {
+                        setLoading(false)
+                      })
+                  }}
+                >
+                  作廢發票
+                </Button>
+              )}
+            </div>
             {loadingOrderDetail ? (
               <Skeleton />
             ) : (
@@ -186,6 +231,7 @@ const useOrderDetail = (orderLogId: string | null) => {
           id
           status
           created_at
+          expired_at
           member {
             id
             name
@@ -254,7 +300,16 @@ const useOrderDetail = (orderLogId: string | null) => {
 
   const orderLog: Pick<
     OrderLog,
-    'id' | 'status' | 'createdAt' | 'name' | 'email' | 'shipping' | 'options' | 'invoiceOptions' | 'invoiceIssuedAt'
+    | 'id'
+    | 'status'
+    | 'createdAt'
+    | 'name'
+    | 'email'
+    | 'shipping'
+    | 'options'
+    | 'invoiceOptions'
+    | 'invoiceIssuedAt'
+    | 'expiredAt'
   > = {
     id: orderDetailData?.order_log_by_pk?.id || '',
     status: orderDetailData?.order_log_by_pk?.status || '',
@@ -265,6 +320,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     options: orderDetailData?.order_log_by_pk?.options,
     invoiceOptions: orderDetailData?.order_log_by_pk?.invoice_options,
     invoiceIssuedAt: orderDetailData?.order_log_by_pk?.invoice_issued_at,
+    expiredAt: orderDetailData?.order_log_by_pk?.expired_at,
   }
 
   const orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[] =
