@@ -230,6 +230,7 @@ const PracticeForm: React.FC<{
           <Dropdown
             trigger={['click']}
             placement="bottomRight"
+            overlayStyle={{ zIndex: 9999 }}
             overlay={
               <Menu>
                 <Menu.Item

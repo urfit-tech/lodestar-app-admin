@@ -297,7 +297,13 @@ const MemberTaskAdminModal: React.FC<
           <Button
             type="primary"
             loading={loading}
-            onClick={() => handleSubmit(() => setVisible(false))}
+            onClick={() =>
+              handleSubmit(() => {
+                setVisible(false)
+                const newUrl = `${window.location.pathname}`
+                window.history.pushState({ path: newUrl }, '', newUrl)
+              })
+            }
             disabled={hasMeeting && invalidGateways.includes('zoom') && meetingGateway === 'zoom'}
           >
             {formatMessage(commonMessages.ui.confirm)}
