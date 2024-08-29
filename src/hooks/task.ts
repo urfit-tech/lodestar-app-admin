@@ -259,3 +259,103 @@ export const useMemberTaskCollection = (options?: {
     loadMoreMemberTasks,
   }
 }
+
+export const useMemberTask = (taskId: string) => {
+  const { data } = useQuery<hasura.GetMemberTaskById, hasura.GetMemberTaskByIdVariables>(
+    gql`
+      query GetMemberTaskById($id: String!) {
+        member_task_by_pk(id: $id) {
+          id
+          title
+          description
+          priority
+          status
+          due_at
+          created_at
+          has_meeting
+          meeting_gateway
+          meeting_hours
+          is_private
+          meet {
+            id
+            started_at
+            ended_at
+            exp_at
+            nbf_at
+          }
+          category {
+            id
+            name
+          }
+          member {
+            id
+            name
+            username
+          }
+          executor {
+            id
+            name
+            username
+            picture_url
+          }
+          author {
+            id
+            name
+            username
+            picture_url
+          }
+        }
+      }
+    `,
+    { variables: { id: taskId } },
+  )
+
+  const memberTask: MemberTaskProps | null = data?.member_task_by_pk
+    ? {
+        id: data?.member_task_by_pk.id,
+        title: data?.member_task_by_pk.title || '',
+        priority: data?.member_task_by_pk.priority as MemberTaskProps['priority'],
+        status: data?.member_task_by_pk.status as MemberTaskProps['status'],
+        category: data?.member_task_by_pk.category
+          ? {
+              id: data?.member_task_by_pk.category.id,
+              name: data?.member_task_by_pk.category.name,
+            }
+          : null,
+        dueAt: data?.member_task_by_pk.due_at && new Date(data?.member_task_by_pk.due_at),
+        createdAt: data?.member_task_by_pk.created_at && new Date(data?.member_task_by_pk.created_at),
+        hasMeeting: data?.member_task_by_pk.has_meeting,
+        meetingGateway: data?.member_task_by_pk.meeting_gateway as MeetingGateway,
+        meetingHours: data?.member_task_by_pk.meeting_hours,
+        meet: {
+          id: data?.member_task_by_pk.meet?.id,
+          startedAt: data?.member_task_by_pk.meet?.started_at,
+          endedAt: data?.member_task_by_pk.meet?.ended_at,
+          nbfAt: data?.member_task_by_pk.meet?.nbf_at,
+          expAt: data?.member_task_by_pk.meet?.exp_at,
+        },
+        description: data?.member_task_by_pk.description || '',
+        member: {
+          id: data?.member_task_by_pk.member.id,
+          name: data?.member_task_by_pk.member.name || data?.member_task_by_pk.member.username,
+        },
+        executor: data?.member_task_by_pk.executor
+          ? {
+              id: data?.member_task_by_pk.executor.id,
+              name: data?.member_task_by_pk.executor.name || data?.member_task_by_pk.executor.username,
+              avatarUrl: data?.member_task_by_pk.executor.picture_url || null,
+            }
+          : null,
+        author: data?.member_task_by_pk.author
+          ? {
+              id: data?.member_task_by_pk.author.id,
+              name: data?.member_task_by_pk.author.name || data?.member_task_by_pk.author.username,
+              avatarUrl: data?.member_task_by_pk.author.picture_url || null,
+            }
+          : null,
+        isPrivate: data?.member_task_by_pk.is_private,
+      }
+    : null
+
+  return { memberTask }
+}

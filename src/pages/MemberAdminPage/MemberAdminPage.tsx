@@ -14,7 +14,7 @@ import MemberProfileBasicForm from '../../components/member/MemberProfileBasicFo
 import MemberPropertyAdminForm from '../../components/member/MemberPropertyAdminForm'
 import MemberNoteAdminBlock from '../../components/note/MemberNoteAdminBlock'
 import SaleCollectionAdminCard from '../../components/sale/SaleCollectionAdminCard'
-import MemberTaskAdminBlock from '../../components/task/MemberTaskAdminBlock'
+import MemberTaskCollectionBlock from '../../components/task/MemberTaskCollectionBlock'
 import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdminBlock'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import { useMemberAdmin } from '../../hooks/member'
@@ -64,7 +64,7 @@ const MemberAdminPage: React.FC = () => {
         enabledModules.member_task && (
           <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
             <div className="p-5">
-              <MemberTaskAdminBlock memberId={memberId} />
+              <MemberTaskCollectionBlock memberId={memberId} />
             </div>
           </Tabs.TabPane>
         ),
