@@ -1291,13 +1291,13 @@ const MemberContractCreationForm: React.FC<
           )}
 
           <Descriptions.Item label="統一編號">
-            <Form.Item className="mb-0" name="unifiedNumber">
+            <Form.Item className="mb-0" name="uniformNumber">
               <Input />
             </Form.Item>
           </Descriptions.Item>
 
           <Descriptions.Item label="公司名稱">
-            <Form.Item className="mb-0" name="unifiedTitle">
+            <Form.Item className="mb-0" name="uniformTitle">
               <Input />
             </Form.Item>
           </Descriptions.Item>
