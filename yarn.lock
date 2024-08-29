@@ -2986,13 +2986,6 @@
     tslib "^2.0.1"
     typescript "^4.0"
 
-"@fullcalendar/core@^6.1.5":
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.5.tgz#b2ec855f3144ca995af8e5b783a15002d73870fb"
-  integrity sha512-U3ZJy1JGAgvyXG4iLWvTW4osbkt5Fj9gmbU1B+RyRhiqwXGE0F329sX7kqLTzj3QI1IPzyq6xnJfWUIsAe7+qw==
-  dependencies:
-    preact "~10.12.1"
-
 "@fullcalendar/core@^6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.15.tgz#6c3f5259fc4589870228853072131219bb533f6e"
@@ -3000,46 +2993,37 @@
   dependencies:
     preact "~10.12.1"
 
-"@fullcalendar/daygrid@^5.11.3":
-  version "5.11.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-5.11.5.tgz#2825ed691eadf72c6a2979bcde871de74681fc7a"
-  integrity sha512-hMpq0U3Nucys2jDD+crbkJCr+tVt3fDw04OE3fbpisuzqtrHxIzRmnUOdbWUjJQyToAAkt7UVUQ9E7hYdmvyGA==
+"@fullcalendar/core@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.5.tgz#b2ec855f3144ca995af8e5b783a15002d73870fb"
+  integrity sha512-U3ZJy1JGAgvyXG4iLWvTW4osbkt5Fj9gmbU1B+RyRhiqwXGE0F329sX7kqLTzj3QI1IPzyq6xnJfWUIsAe7+qw==
   dependencies:
-    "@fullcalendar/common" "~5.11.5"
-    tslib "^2.1.0"
+    preact "~10.12.1"
 
-"@fullcalendar/daygrid@~6.1.15":
+"@fullcalendar/daygrid@^6.1.5", "@fullcalendar/daygrid@~6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-6.1.15.tgz#91208b0955ba805ddad285a53ee6f53855146963"
   integrity sha512-j8tL0HhfiVsdtOCLfzK2J0RtSkiad3BYYemwQKq512cx6btz6ZZ2RNc/hVnIxluuWFyvx5sXZwoeTJsFSFTEFA==
 
-"@fullcalendar/interaction@^6.1.15":
+"@fullcalendar/interaction@^6.1.15", "@fullcalendar/interaction@^6.1.5":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-6.1.15.tgz#1c685d5c269388d4877b75ab2185e97d7c386cc7"
   integrity sha512-DOTSkofizM7QItjgu7W68TvKKvN9PSEEvDJceyMbQDvlXHa7pm/WAVtAc6xSDZ9xmB1QramYoWGLHkCYbTW1rQ==
-
-"@fullcalendar/list@^5.11.3":
-  version "5.11.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/list/-/list-5.11.5.tgz#0440383f795a6a754f0b62d089ed3ffdf5603845"
-  integrity sha512-ZYMPT4CVt9tIYkVVNx7CKkB2xc+n9L56+vgXkurptgYgPsacXYkcpF/1Hy/B5LKlg0ROEF9Qfftjow8xjANqaA==
-  dependencies:
-    "@fullcalendar/common" "~5.11.5"
-    tslib "^2.1.0"
 
 "@fullcalendar/list@^6.1.5":
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/@fullcalendar/list/-/list-6.1.5.tgz#0276d495fbb2b229871ec5fb0547078531eaf756"
   integrity sha512-Z34h32ZuI0+sU6GdV2WrXnF6Z17VvsagjSBY+8/bMrMHfDoLbT76sGfoI6N0GCAr7aW9N2NgWWz8kuQw9uFAZQ==
 
-"@fullcalendar/react@^6.1.5":
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.5.tgz#75f9f705be7297ee0ee700dfab3e6997153b54f3"
-  integrity sha512-OVQJQhtDAwxHbFk84bm5Y6iGLjGDrrBgr3491JbfnqHUjSaO+T1rNHUvtnot0X4/ZdnoxWr2nKqxPxpmCCL/lw==
-
 "@fullcalendar/react@^6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.15.tgz#3198b4a64e256afd37c9760c8741a9af89ade894"
   integrity sha512-L0b9hybS2J4e7lq6G2CD4nqriyLEqOH1tE8iI6JQjAMTVh5JicOo5Mqw+fhU5bJ7hLfMw2K3fksxX3Ul1ssw5w==
+
+"@fullcalendar/react@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.5.tgz#75f9f705be7297ee0ee700dfab3e6997153b54f3"
+  integrity sha512-OVQJQhtDAwxHbFk84bm5Y6iGLjGDrrBgr3491JbfnqHUjSaO+T1rNHUvtnot0X4/ZdnoxWr2nKqxPxpmCCL/lw==
 
 "@fullcalendar/rrule@^6.1.15":
   version "6.1.15"
@@ -7500,11 +7484,6 @@ cosmiconfig@^7.0.0:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.10.0"
-
-country-codes-list@^1.6.11:
-  version "1.6.11"
-  resolved "https://registry.yarnpkg.com/country-codes-list/-/country-codes-list-1.6.11.tgz#fd8241c9a833447677a1b8efdd0e1cd19a1fc176"
-  integrity sha512-MsHoJ83tGyv9tFspeI8yHBomiTH4rruHxdWhNWGG9d1ykXgLyawh/VykmYPH5KqduY+9Q2RUNlL2/KGkXJqANA==
 
 coupon-code@^0.4.5:
   version "0.4.5"
@@ -12328,11 +12307,6 @@ libphonenumber-js@1.9.34:
   version "1.9.34"
   resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.9.34.tgz#ddddc778a9b2f53c70500fcf10c9483596e3574f"
   integrity sha512-gHTNU9xTtVgSp30IDX/57W4pETMXDIYXFfwEOJVXiYosiY7Hc7ogJwlBjOqlCcU04X0aA8DT57hdwUC1sJBJnA==
-
-libphonenumber-js@^1.11.4:
-  version "1.11.4"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.4.tgz#e63fe553f45661b30bb10bb8c82c9cf2b22ec32a"
-  integrity sha512-F/R50HQuWWYcmU/esP5jrH5LiWYaN7DpN0a/99U8+mnGGtnx8kmRE+649dQh3v+CowXXZc8vpkf5AmYkO0AQ7Q==
 
 lie@3.1.1:
   version "3.1.1"
