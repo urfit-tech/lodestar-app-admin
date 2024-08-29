@@ -275,6 +275,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
           id
           expired_at
           shipping
+          invoice_options
         }
       }
     `,
@@ -374,6 +375,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     id: expandRowOrderLog?.order_log_by_pk?.id,
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
+    invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
   }
 
   const orderProducts =

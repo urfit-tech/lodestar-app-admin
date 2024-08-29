@@ -42,7 +42,16 @@ const PaymentCard: React.FC<{
   payments: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method'>[]
   order: Pick<
     OrderLog,
-    'id' | 'status' | 'createdAt' | 'name' | 'email' | 'shipping' | 'options' | 'invoiceOptions' | 'invoiceIssuedAt'
+    | 'id'
+    | 'status'
+    | 'createdAt'
+    | 'name'
+    | 'email'
+    | 'shipping'
+    | 'options'
+    | 'invoiceOptions'
+    | 'invoiceIssuedAt'
+    | 'expiredAt'
   >
   onRefetch?: () => void
   onClose: () => void
@@ -127,6 +136,8 @@ const PaymentCard: React.FC<{
                   ? '銀行匯款'
                   : payment.method === 'physicalCredit'
                   ? '實體刷卡'
+                  : payment.method === 'physicalRemoteCredit'
+                  ? '遠端輸入卡號'
                   : payment.method || '',
               isRender: true,
             },
@@ -155,7 +166,7 @@ const PaymentCard: React.FC<{
                       {order.options?.paymentMode === '訂金+尾款'
                         ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
                           ? '訂金'
-                          : '尾款'
+                          : `尾款 (${dayjs(order.expiredAt).format('YYYY-MM-DD HH:mm')}到期)`
                         : order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
                         ? '頭期'
                         : `${
@@ -173,11 +184,12 @@ const PaymentCard: React.FC<{
                 {permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway !== 'spgateway' &&
-                  payment.method !== 'physicalCredit' && (
+                  payment.method !== 'physicalCredit' &&
+                  payment.method !== 'physicalRemoteCredit' && (
                     <ModifyOrderStatusModal
                       renderTrigger={({ setVisible }) => (
                         <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
-                          變更訂單狀態
+                          變更交易狀態
                         </Button>
                       )}
                       orderLogId={order.id}
@@ -186,21 +198,21 @@ const PaymentCard: React.FC<{
                       defaultPrice={payment.price}
                       minPrice={payment.price}
                       onRefetch={onRefetch}
-                      hideRefund
+                      canModifyOperations={['paid']}
                       targetPaymentNo={payment.no}
                     />
                   )}
                 {enabledModules.card_reader &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway === 'physical' &&
-                  payment.method === 'physicalCredit' && (
+                  (payment.method === 'physicalCredit' || payment.method === 'physicalRemoteCredit') && (
                     <Button
                       disabled={loading}
                       loading={loading}
                       style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                       onClick={() => handleCardReaderSerialport(payment.price, order.id, payment.no)}
                     >
-                      <div>實體刷卡</div>
+                      <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
               </div>
@@ -209,7 +221,7 @@ const PaymentCard: React.FC<{
         })}
       <AdminModal
         visible={!!cardReaderResponse}
-        title="實體刷卡結果"
+        title="刷卡結果"
         footer={null}
         onCancel={() => {
           setCardReaderResponse(null)

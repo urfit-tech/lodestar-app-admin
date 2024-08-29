@@ -1,5 +1,6 @@
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
-import { Button, Divider, Form, InputNumber, message, Select, Skeleton, Switch } from 'antd'
+import bwipjs from '@bwip-js/browser'
+import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -9,6 +10,7 @@ import { sum } from 'lodash'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { render } from 'mustache'
 import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -30,13 +32,77 @@ dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
 
 type FieldProps = {
-  price: number
-  type: 'issue' | 'revoke'
+  priceWithoutTax: number
+  tax: number
+  totalPrice: number
+  type: 'issue'
+  itemName: string
+  itemCount: number
+  itemAmt: number
+  comment: string
+  taxType: '1' | '2' | '3' | '9'
+}
+type InvoiceResponse = {
+  MerchantID: string
+  InvoiceTransNo: string
+  MerchantOrderNo: string
+  InvoiceNumber: string
+  RandomNum: string
+  BuyerName: string
+  BuyerUBN?: string
+  BuyerAddress?: string
+  BuyerPhone?: string
+  BuyerEmail: string
+  InvoiceType: string
+  Category: string
+  TaxType: string
+  TaxRate: string
+  Amt: string
+  TaxAmt: string
+  TotalAmt: string
+  LoveCode?: string
+  PrintFlag: string
+  CreateTime: string
+  ItemDetail: string
+  InvoiceStatus: string
+  CreateStatusTime: string
+  UploadStatus: string
+  CheckCode: string
+  CarrierType?: string
+  CarrierNum?: string
+  BarCode: string
+  QRcodeL: string
+  QRcodeR: string
+  KioskPrintFlag?: string
 }
 
 const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
   color: ${props => !props.isDelivered && '#CDCDCD'};
 `
+
+const generateBarcodeAndQRcode = (type: 'barcode' | 'qrCode', text: string) => {
+  try {
+    const canvasElement = document.createElement('canvas') as HTMLCanvasElement
+    canvasElement.style.display = 'none'
+    document.body.appendChild(canvasElement)
+
+    canvasElement && type === 'barcode'
+      ? bwipjs.toCanvas(canvasElement, {
+          bcid: 'code39',
+          text: text,
+          scale: 1,
+        })
+      : bwipjs.toCanvas(canvasElement, {
+          bcid: 'qrcode',
+          text: text,
+          scale: 1,
+        })
+
+    return (canvasElement as HTMLCanvasElement | null)?.toDataURL('image/png')
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const SaleCollectionExpandRow = ({
   record,
@@ -56,6 +122,7 @@ const SaleCollectionExpandRow = ({
 
   const [loading, setLoading] = useState(false)
   const [form] = useForm<FieldProps>()
+  const [invoiceResponse, setInvoiceResponse] = useState<InvoiceResponse>()
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -75,34 +142,67 @@ const SaleCollectionExpandRow = ({
     refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
 
-  const handlePrint = () => {
-    setShowInvoice(true)
+  const handlePrint = async () => {
+    try {
+      setLoading(true)
 
-    setTimeout(() => {
-      const printContents = window.document.getElementById('print-content')?.innerHTML
-      const WinPrint = window.open('', '', 'width=900,height=650')
-      WinPrint?.document.write('<html><head><title>Print</title>')
-      WinPrint?.document.write('<style>')
-      WinPrint?.document.write(`
-        body {
-        margin:0;
-        padding:0;}
-      @media print {
-        .page-break {
-          page-break-before: always;
+      const result: {
+        data: {
+          code: string
+          message: string
+          result: {
+            Status: string
+            Message: string
+            Result: InvoiceResponse
+          }
         }
-      }
-    `)
-      WinPrint?.document.write('</style></head><body>')
-      WinPrint?.document.write(printContents || '')
-      WinPrint?.document.write('</body></html>')
+      } = await axios.post(
+        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/search`,
+        {
+          invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+          invoiceNumber: orderLog.invoiceOptions?.invoiceNumber,
+          invoiceRandomNumber: orderLog.invoiceOptions?.invoiceRandomNumber,
+          appId,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } },
+      )
 
-      WinPrint?.document.close()
-      WinPrint?.focus()
-      WinPrint?.print()
-      WinPrint?.close()
-      setShowInvoice(false)
-    }, 500)
+      if (result.data.code === 'SUCCESS') {
+        setInvoiceResponse(result.data.result.Result)
+        setShowInvoice(true)
+
+        setTimeout(() => {
+          const printContents = window.document.getElementById('print-content')?.innerHTML
+
+          const WinPrint = window.open('', '', 'width=900,height=650')
+          WinPrint?.document.write('<html><head><title>Print</title>')
+          WinPrint?.document.write('<style>')
+          WinPrint?.document.write(`
+          body {
+            margin:0;
+            padding:0;}
+            @media print {
+              .page-break {
+                page-break-before: always;
+                }
+                }
+                `)
+          WinPrint?.document.write('</style></head><body>')
+          WinPrint?.document.write(printContents || '')
+          WinPrint?.document.write('</body></html>')
+
+          WinPrint?.document.close()
+          WinPrint?.focus()
+          WinPrint?.print()
+          WinPrint?.close()
+          setShowInvoice(false)
+        }, 1500)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -326,25 +426,76 @@ const SaleCollectionExpandRow = ({
           paymentLogs.length > 0 &&
           paymentLogs.filter(p => !!p.invoiceIssuedAt).length > 0 && (
             <>
-              <Button
-                onClick={() => {
-                  handlePrint()
-                }}
-              >
-                列印發票
-              </Button>
+              <Button onClick={handlePrint}>列印發票</Button>
               {showInvoice && (
                 <div id="print-content" style={{ display: 'none' }}>
                   <div className="no-break">
-                    <Receipt ref={receiptRef1} template={JSON.parse(settings['invoice.template'])?.main || ''} />
+                    <Receipt
+                      ref={receiptRef1}
+                      template={JSON.parse(settings['invoice.template'])?.main || ''}
+                      templateVariables={{
+                        year: new Date().getFullYear() - 1911,
+                        month: `${(new Date().getMonth() + (1 % 2) === 0
+                          ? new Date().getMonth() + 1 - 1
+                          : new Date().getMonth() + 1
+                        )
+                          .toString()
+                          .padStart(2, '0')}-${(
+                          (new Date().getMonth() + (1 % 2) === 0
+                            ? new Date().getMonth() + 1 - 1
+                            : new Date().getMonth() + 1) + 1
+                        )
+                          .toString()
+                          .padStart(2, '0')}`,
+                        createdAt: invoiceResponse?.CreateTime,
+                        randomNumber: invoiceResponse?.RandomNum,
+                        sellerUniformNumber: '70560259',
+                        totalPrice: invoiceResponse?.TotalAmt,
+                        uniformTitle: invoiceResponse?.BuyerUBN && `賣方 ${invoiceResponse.BuyerUBN}`,
+                        invoiceNo: `${invoiceResponse?.InvoiceNumber.substring(
+                          0,
+                          2,
+                        )}-${invoiceResponse?.InvoiceNumber.substring(2, 10)}`,
+                        barcode: generateBarcodeAndQRcode('barcode', invoiceResponse?.BarCode || ''),
+                        qrCodeL: generateBarcodeAndQRcode('qrCode', invoiceResponse?.QRcodeL || ''),
+                        qrCodeR: generateBarcodeAndQRcode('qrCode', invoiceResponse?.QRcodeR || ''),
+                      }}
+                    />
                   </div>
                   <div className="page-break"></div>
                   <div className="no-break">
-                    <Receipt ref={receiptRef2} template={JSON.parse(settings['invoice.template'])?.detail1 || ''} />
+                    <Receipt
+                      ref={receiptRef2}
+                      template={JSON.parse(settings['invoice.template'])?.detail1 || ''}
+                      templateVariables={{
+                        createdAt: invoiceResponse?.CreateTime,
+                        invoiceNo: invoiceResponse?.InvoiceNumber,
+                        ItemCount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemCount,
+                        ItemPrice: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemPrice,
+                        ItemName: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemName,
+                        ItemNum: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemNum,
+                        ItemWord: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemWord,
+                        ItemAmount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemAmount,
+                      }}
+                    />
                   </div>
                   <div className="page-break"></div>
                   <div className="no-break">
-                    <Receipt ref={receiptRef3} template={JSON.parse(settings['invoice.template'])?.detail2 || ''} />
+                    <Receipt
+                      ref={receiptRef3}
+                      template={JSON.parse(settings['invoice.template'])?.detail2 || ''}
+                      templateVariables={{
+                        createdAt: invoiceResponse?.CreateTime,
+                        invoiceNo: invoiceResponse?.InvoiceNumber,
+                        ItemCount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemCount,
+                        ItemPrice: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemPrice,
+                        ItemName: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemName,
+                        ItemNum: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemNum,
+                        ItemWord: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemWord,
+                        ItemAmount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemAmount,
+                        month: new Date().getMonth() + 1,
+                      }}
+                    />
                   </div>
                 </div>
               )}
@@ -360,10 +511,10 @@ const SaleCollectionExpandRow = ({
                   setVisible(true)
                 }}
               >
-                <div>補開發票/作廢</div>
+                <div>補開發票</div>
               </Button>
             )}
-            title={'補開發票/作廢'}
+            title={'補開發票'}
             footer={null}
             renderFooter={({ setVisible }) => (
               <>
@@ -374,29 +525,56 @@ const SaleCollectionExpandRow = ({
                   type="primary"
                   disabled={loading}
                   loading={loading}
-                  onClick={() => {
-                    setLoading(true)
-                    axios
-                      .post(
-                        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
-                        { paymentNo: paymentLogs.filter(p => p.status === 'SUCCESS')[0].no },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${authToken}`,
+                  onClick={async () => {
+                    try {
+                      setLoading(true)
+                      const values = await form.validateFields()
+                      axios
+                        .post(
+                          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
+                          {
+                            appId,
+                            invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+                            invoiceInfo: {
+                              MerchantOrderNo: new Date().getTime().toString(),
+                              BuyerEmail: orderLog.invoiceOptions?.email || '',
+                              BuyerName: orderLog.invoiceOptions?.uniformTitle || orderLog.invoiceOptions?.name,
+                              BuyerUBN: orderLog.invoiceOptions?.uniformNumber || '',
+                              Category: orderLog.invoiceOptions?.uniformNumber ? 'B2B' : 'B2C',
+                              TaxType: values.taxType,
+                              TaxRate: 5,
+                              Amt: values.priceWithoutTax,
+                              TaxAmt: values.tax,
+                              TotalAmt: values.totalPrice,
+                              PrintFlag: 'Y',
+                              ItemName: values.itemName,
+                              ItemCount: values.itemCount,
+                              ItemUnit: '個',
+                              ItemPrice: values.itemAmt,
+                              ItemAmt: values.itemAmt * values.itemCount,
+                              Comment: orderLog.invoiceOptions?.invoiceComment || '',
+                            },
                           },
-                        },
-                      )
-                      .then(r => {
-                        if (r.data.code === 'SUCCESS') {
-                          message.success('發票開立成功')
-                        }
-                      })
-                      .catch(handleError)
-                      .finally(() => {
-                        setLoading(false)
-                        refetchOrderLogExpandRow()
-                        setVisible(false)
-                      })
+                          {
+                            headers: {
+                              Authorization: `Bearer ${authToken}`,
+                            },
+                          },
+                        )
+                        .then(r => {
+                          if (r.data.code === 'SUCCESS') {
+                            message.success('發票開立成功')
+                          }
+                        })
+                        .catch(handleError)
+                        .finally(() => {
+                          setLoading(false)
+                          refetchOrderLogExpandRow()
+                          setVisible(false)
+                        })
+                    } catch (error) {
+                      console.error(error)
+                    }
                   }}
                 >
                   {formatMessage(commonMessages.ui.save)}
@@ -404,20 +582,33 @@ const SaleCollectionExpandRow = ({
               </>
             )}
           >
-            <Form form={form} layout="vertical" initialValues={{ price: totalPrice, type: 'issue' }}>
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{ totalPrice, type: 'issue', taxType: '1', itemCount: 1 }}
+            >
               <div className="row">
                 <div className="col-6">
                   <Form.Item label={'處理方式'} name="type">
                     <Select<string>>
                       <Select.Option value="issue">開立發票</Select.Option>
-                      <Select.Option value="revoke">作廢發票</Select.Option>
                     </Select>
                   </Form.Item>
                 </div>
                 <div className="col-6">
+                  <Form.Item label={'課稅別'} name="taxType">
+                    <Select<string>>
+                      <Select.Option value="1">應稅</Select.Option>
+                      <Select.Option value="2">零稅</Select.Option>
+                      <Select.Option value="3">免稅</Select.Option>
+                      <Select.Option value="9">混合稅</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+                <div className="col-4">
                   <Form.Item
-                    label={'金額'}
-                    name="price"
+                    label={'未稅'}
+                    name="priceWithoutTax"
                     rules={[
                       formInstance => ({
                         message: `金額不能超過 ${totalPrice}`,
@@ -439,6 +630,81 @@ const SaleCollectionExpandRow = ({
                     />
                   </Form.Item>
                 </div>
+                <div className="col-4">
+                  <Form.Item
+                    label={'稅額'}
+                    name="tax"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-4">
+                  <Form.Item
+                    label={'總金額(含稅)'}
+                    name="totalPrice"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-3">
+                  <Form.Item label={'商品數量'} name="itemCount">
+                    <InputNumber min={1} />
+                  </Form.Item>
+                </div>
+                <div className="col-3">
+                  <Form.Item label={'商品單價'} name="itemAmt">
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-6">
+                  <Form.Item label={'產品名'} name="itemName">
+                    <Input placeholder="請輸入產品名" />
+                  </Form.Item>
+                </div>
+                <div className="col-12">
+                  <Form.Item label={'備註'} name="comment">
+                    <Input placeholder="請輸入備註" />
+                  </Form.Item>
+                </div>
               </div>
             </Form>
           </AdminModal>
@@ -447,18 +713,20 @@ const SaleCollectionExpandRow = ({
     </div>
   )
 }
-const Receipt = React.forwardRef<HTMLDivElement, { template: string }>((props, ref) => {
-  const { template } = props
-  return (
-    <div className="receipt" ref={ref as any}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: template,
-        }}
-      />
-    </div>
-  )
-})
+const Receipt = React.forwardRef<HTMLDivElement, { template: string; templateVariables?: { [key: string]: any } }>(
+  (props, ref) => {
+    const { template, templateVariables } = props
+    return (
+      <div className="receipt" ref={ref as any}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: render(template, templateVariables),
+          }}
+        />
+      </div>
+    )
+  },
+)
 
 const ModifyOrderDeliveredModal: React.VFC<{
   orderProduct: {

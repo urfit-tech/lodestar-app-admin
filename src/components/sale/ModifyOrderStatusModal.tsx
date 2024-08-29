@@ -23,7 +23,7 @@ const messages = defineMessages({
 })
 
 type FieldProps = {
-  type: 'paid' | 'refunded'
+  type: 'paid' | 'refunded' | 'expired'
   price: number
   paidAt: Moment
 }
@@ -40,7 +40,7 @@ const ModifyOrderStatusModal: React.VFC<{
   }[]
   defaultPrice?: number
   onRefetch?: (status: string) => void
-  hideRefund?: boolean
+  canModifyOperations?: string[]
   renderTrigger?: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => React.ReactElement
   targetPaymentNo?: string
   minPrice?: number
@@ -50,7 +50,7 @@ const ModifyOrderStatusModal: React.VFC<{
   paymentLogs,
   defaultPrice = 0,
   onRefetch,
-  hideRefund,
+  canModifyOperations,
   renderTrigger,
   targetPaymentNo,
   minPrice,
@@ -68,52 +68,62 @@ const ModifyOrderStatusModal: React.VFC<{
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const paymentStatus = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
-      const paidAt = values.paidAt.toISOString(true)
-      await upsertPaymentLog({
-        variables: {
-          data: {
-            order_id: orderLogId,
-            no: targetPaymentNo || `${Date.now()}`,
-            status: paymentStatus,
-            price: values.price,
-            gateway: 'lodestar',
-            options: {
-              gateway: paymentLogs[0]?.gateway || 'lodestar',
-              method: paymentLogs[0].method,
-              authorId: currentMemberId,
+      if (values.type !== 'expired') {
+        const paymentStatus = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
+        const paidAt = values.paidAt.toISOString(true)
+        await upsertPaymentLog({
+          variables: {
+            data: {
+              order_id: orderLogId,
+              no: targetPaymentNo || `${Date.now()}`,
+              status: paymentStatus,
+              price: values.price,
+              gateway: 'lodestar',
+              options: {
+                gateway: paymentLogs[0]?.gateway || 'lodestar',
+                method: paymentLogs[0].method,
+                authorId: currentMemberId,
+              },
+              paid_at: paidAt,
             },
-            paid_at: paidAt,
           },
-        },
-      })
-      let newPaymentLogs = paymentLogs.filter(p => p.no !== targetPaymentNo)
-      newPaymentLogs.push({ status: paymentStatus, price: values.price })
-      const totalAmount = sum(newPaymentLogs.map(p => p.price))
-      const hasRefundPayment =
-        newPaymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
-      const paidAmount = sum(newPaymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
-      const refundAmount = sum(newPaymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
-      let orderStatus = defaultOrderStatus
+        })
+        let newPaymentLogs = paymentLogs.filter(p => p.no !== targetPaymentNo)
+        newPaymentLogs.push({ status: paymentStatus, price: values.price })
+        const totalAmount = sum(newPaymentLogs.map(p => p.price))
+        const hasRefundPayment =
+          newPaymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
+        const paidAmount = sum(newPaymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
+        const refundAmount = sum(newPaymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
+        let orderStatus = defaultOrderStatus
 
-      if (totalAmount <= 0 || paidAmount - refundAmount >= totalAmount) {
-        orderStatus = 'SUCCESS'
-      } else if (hasRefundPayment && paidAmount <= refundAmount) {
-        orderStatus = 'REFUND'
-      } else if (!hasRefundPayment && totalAmount > 0 && paidAmount - refundAmount < totalAmount) {
-        orderStatus = 'PARTIAL_PAID'
-      } else if (hasRefundPayment && paidAmount > refundAmount) {
-        orderStatus = 'PARTIAL_REFUND'
+        if (totalAmount <= 0 || paidAmount - refundAmount >= totalAmount) {
+          orderStatus = 'SUCCESS'
+        } else if (hasRefundPayment && paidAmount <= refundAmount) {
+          orderStatus = 'REFUND'
+        } else if (!hasRefundPayment && totalAmount > 0 && paidAmount - refundAmount < totalAmount) {
+          orderStatus = 'PARTIAL_PAID'
+        } else if (hasRefundPayment && paidAmount > refundAmount) {
+          orderStatus = 'PARTIAL_REFUND'
+        }
+
+        await updateOrderLogStatus({
+          variables: {
+            orderLogId,
+            status: orderStatus,
+            lastPaidAt: paidAt,
+          },
+        })
+        onRefetch?.(orderStatus)
+      } else {
+        await updateOrderLogStatus({
+          variables: {
+            orderLogId,
+            status: 'EXPIRED',
+          },
+        })
+        onRefetch?.('EXPIRED')
       }
-
-      await updateOrderLogStatus({
-        variables: {
-          orderLogId,
-          status: orderStatus,
-          lastPaidAt: paidAt,
-        },
-      })
-      onRefetch?.(orderStatus)
       onFinished?.()
     } catch (error) {
       handleError(error)
@@ -151,8 +161,17 @@ const ModifyOrderStatusModal: React.VFC<{
           <div className="col-6">
             <Form.Item label={formatMessage(orderMessages.label.orderLogStatus)} name="type">
               <Select<string>>
-                <Select.Option value="paid">{formatMessage(messages.hasPaid)}</Select.Option>
-                {!hideRefund && <Select.Option value="refunded">{formatMessage(messages.hasRefunded)}</Select.Option>}
+                {[
+                  { operation: 'paid', label: formatMessage(messages.hasPaid) },
+                  { operation: 'refunded', label: formatMessage(messages.hasRefunded) },
+                  { operation: 'expired', label: formatMessage(commonMessages.status.orderExpired) },
+                ]
+                  .filter(o => !canModifyOperations || canModifyOperations.includes(o.operation))
+                  .map(o => (
+                    <Select.Option key={o.operation} value={o.operation}>
+                      {o.label}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           </div>
@@ -208,7 +227,7 @@ const UpsertPaymentLog = gql`
   }
 `
 const UPDATE_ORDER_LOG_STATUS = gql`
-  mutation UPDATE_ORDER_LOG_STATUS($orderLogId: String!, $status: String!, $lastPaidAt: timestamptz!) {
+  mutation UPDATE_ORDER_LOG_STATUS($orderLogId: String!, $status: String!, $lastPaidAt: timestamptz) {
     update_order_log(where: { id: { _eq: $orderLogId } }, _set: { status: $status, last_paid_at: $lastPaidAt }) {
       affected_rows
     }
