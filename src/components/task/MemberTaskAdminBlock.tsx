@@ -786,6 +786,7 @@ const MemberTaskAdminBlock: React.FC<{
                   setVisible(true)
                 }}
                 eventOrder={['start']}
+                eventOrderStrict
                 datesSet={dateInfo => setFilter(filter => ({ ...filter, dueAt: [dateInfo.start, dateInfo.end] }))}
               />
             </StyledFullCalendarWrapper>
