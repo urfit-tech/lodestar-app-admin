@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { TrashOIcon } from '../../images/icon'
-import { SalesLeadMember } from '../../types/sales'
+import { LeadProps } from '../../types/sales'
 import AdminModal from '../admin/AdminModal'
 import { StyledModalTitle } from '../common'
 import { StyledInputTitle } from './AddListModal'
@@ -19,7 +19,7 @@ const ManagerListModal: React.VFC<{
     categoryName: string
     categoryId: string
   }[]
-  leads: SalesLeadMember[]
+  leads: LeadProps[]
 }> = ({ visible, handleClose, handleManagerLeadStatusCategory, leadStatusCategories, leads }) => {
   const { formatMessage } = useIntl()
   const [tempLeadStatusCategories, setTempLeadStatusCategories] = useState<

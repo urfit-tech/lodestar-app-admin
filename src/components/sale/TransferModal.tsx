@@ -18,11 +18,11 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useTransferManagers } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
-import { SalesLeadMember } from '../../types/sales'
+import { LeadProps } from '../../types/sales'
 import saleMessages from './translation'
 
 const TransferModal: React.FC<{
-  selectedRowLeads: SalesLeadMember[]
+  selectedRowLeads: LeadProps[]
   selectedLeadStatusCategoryId?: string
   listStatus: string
   onRefetch: () => Promise<void>

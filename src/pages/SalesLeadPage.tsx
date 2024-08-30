@@ -120,6 +120,7 @@ const SalesLeadTabs: React.VFC<{
   const { formatMessage } = useIntl()
   const {
     refetch,
+    refetchMembers,
     followedLeads,
     totalLeads,
     idledLeads,
@@ -131,6 +132,7 @@ const SalesLeadTabs: React.VFC<{
     closedLeads,
     completedLeads,
     loading,
+    loadingMembers,
   } = useManagerLeads(manager)
   const [isOpenAddListModal, setIsOpenAddListModal] = useState(false)
   const [isOpenManagerListModal, setIsOpenManagerListModal] = useState(false)
@@ -154,14 +156,14 @@ const SalesLeadTabs: React.VFC<{
   }
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !loadingMembers) {
       setRefetchLoading(false)
     } else {
       setRefetchLoading(true)
     }
-  }, [loading])
+  }, [loading, loadingMembers])
 
-  const followLeadStatusCategoryLists = followedLeads.filter((lead: { leadStatusCategoryId: string }) =>
+  const followLeadStatusCategoryLists = followedLeads.filter(lead =>
     selectedLeadStatusCategory
       ? selectedLeadStatusCategory.id === lead.leadStatusCategoryId
       : !lead.leadStatusCategoryId,
@@ -175,7 +177,8 @@ const SalesLeadTabs: React.VFC<{
         tabBarExtraContent={
           <Button
             onClick={async () => {
-              await refetchLeadStatusCategory()
+              await await refetchLeadStatusCategory()
+              await refetchMembers?.()
               await refetch?.()
             }}
           >
@@ -197,14 +200,7 @@ const SalesLeadTabs: React.VFC<{
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
                     {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
-                    <span>
-                      (
-                      {
-                        followedLeads.filter((lead: { leadStatusCategoryId: string }) => !lead.leadStatusCategoryId)
-                          .length
-                      }
-                      )
-                    </span>
+                    <span>({followedLeads.filter(lead => !lead.leadStatusCategoryId).length})</span>
                   </Menu.Item>
                   {leadStatusCategories.map(leadStatusCategory => (
                     <Menu.Item
@@ -221,14 +217,7 @@ const SalesLeadTabs: React.VFC<{
                       {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}
                       {leadStatusCategory.categoryName}
                       <span>
-                        (
-                        {
-                          followedLeads.filter(
-                            (lead: { leadStatusCategoryId: string }) =>
-                              leadStatusCategory.id === lead.leadStatusCategoryId,
-                          ).length
-                        }
-                        )
+                        ({followedLeads.filter(lead => leadStatusCategory.id === lead.leadStatusCategoryId).length})
                       </span>
                     </Menu.Item>
                   ))}
@@ -267,7 +256,10 @@ const SalesLeadTabs: React.VFC<{
               manager={manager}
               selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
               leads={followLeadStatusCategoryLists}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               isLoading={refetchLoading}
@@ -293,7 +285,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={totalLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -319,7 +314,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={idledLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -378,7 +376,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={[...contactedLeads, ...answeredLeads]}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -389,7 +390,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={contactedLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -400,7 +404,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={answeredLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -459,7 +466,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={[...invitedLeads, ...presentedLeads]}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -470,7 +480,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={invitedLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -481,7 +494,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={presentedLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -508,7 +524,10 @@ const SalesLeadTabs: React.VFC<{
               variant="completed"
               manager={manager}
               leads={completedLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -534,7 +553,10 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               manager={manager}
               leads={signedLeads}
-              onRefetch={async () => await refetch?.()}
+              onRefetch={async () => {
+                await refetchMembers?.()
+                await refetch?.()
+              }}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
@@ -561,7 +583,10 @@ const SalesLeadTabs: React.VFC<{
               <SalesLeadTable
                 manager={manager}
                 leads={closedLeads}
-                onRefetch={async () => await refetch?.()}
+                onRefetch={async () => {
+                  await refetchMembers?.()
+                  await refetch?.()
+                }}
                 isLoading={refetchLoading}
                 followedLeads={followedLeads}
                 selectedRowKeys={selectedRowKeys}
@@ -583,6 +608,7 @@ const SalesLeadTabs: React.VFC<{
             async () => {
               alert(formatMessage(salesMessages.additionSuccessful))
               await refetchLeadStatusCategory()
+              await refetchMembers?.()
               await refetch?.()
               onSelectedLeadStatusCategoryChange(null)
             },
@@ -607,6 +633,7 @@ const SalesLeadTabs: React.VFC<{
                 async () => {
                   alert(formatMessage(salesMessages.savedSuccessfully))
                   await refetchLeadStatusCategory()
+                  await refetchMembers?.()
                   await refetch?.()
                   onSelectedLeadStatusCategoryChange(null)
                 },
