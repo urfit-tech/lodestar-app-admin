@@ -191,11 +191,34 @@ export type ApiResponse = {
   }
 }
 
-export type GetSalesLeadMemberDataInfo = {
-  memberTask: MemberTask[]
-  memberProperty: MemberProperty[]
-  memberPhone: MemberPhone[]
-  memberNote: MemberNote[]
-  memberCategory: MemberCategory[]
-  activeMemberContract: MemberContract[]
+export type SalesLeadMember = {
+  id: string
+  appId: string
+  name: string
+  email: string
+  pictureUrl: string
+  star: number | null
+  createdAt: Date | null
+  assignedAt: Date | null
+  followedAt: Date | null
+  closedAt: Date | null
+  completedAt: Date | null
+  excludedAt: Date | null
+  recycledAt: Date | null
+  notified: Boolean
+  recentContactedAt: Date | null
+  recentAnsweredAt: Date | null
+  leadStatusCategoryId: string
+  properties: {
+    id: string
+    name: string
+    value: string
+  }[]
+  phones: {
+    phoneNumber: string
+    isValid: boolean
+  }[]
+  latestNoteDescription: string
+  categoryNames: string[]
+  status: LeadStatus
 }
