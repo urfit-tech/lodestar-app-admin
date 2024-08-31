@@ -48,7 +48,7 @@ const OrderDetailDrawer: React.FC<{
   onRefetch?: () => void
 }> = ({ orderLogId, onClose, renderTrigger, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
   const { authToken } = useAuth()
   const isOpen = Boolean(orderLogId)
   const [loading, setLoading] = React.useState(false)
@@ -63,6 +63,7 @@ const OrderDetailDrawer: React.FC<{
     orderExecutors,
     paymentLogs,
     orderDetailRefetch,
+    invoices,
   } = useOrderDetail(orderLogId)
 
   return (
@@ -78,138 +79,253 @@ const OrderDetailDrawer: React.FC<{
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            {loadingOrderDetail ? (
-              <Skeleton />
-            ) : (
-              <OrderCard
-                orderId={orderLogId || ''}
-                status={orderLog.status}
-                createdAt={dayjs(orderLog.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')}
-                name={orderLog.name}
-                email={orderLog.email}
-                totalPrice={currencyFormatter(totalPrice) || ''}
-                orderProducts={orderProducts}
-                orderDiscounts={orderDiscounts}
-              />
-            )}
-            <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
-            {loadingOrderDetail && loadingSharingCode ? (
-              <Skeleton />
-            ) : (
-              <OrderOtherInfoCard
-                country={`${orderLog.options?.country || ''}${
-                  (orderLog.options?.countryCode && `(${orderLog.options?.countryCode})`) || ''
-                }`}
-                referrer={orderLog.invoiceOptions?.referrerEmail || ''}
-                sharingCode={sharingCodes.sharingCode}
-                sharingNote={sharingCodes.sharingNote}
-                orderLogExecutor={orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
-                giftPlan={orderProducts.reduce(
-                  (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
-                  '',
+            {settings['payment.v2'] === '1' ? (
+              <>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : (
+                  <OrderCard
+                    orderId={orderLogId || ''}
+                    status={orderLog.status}
+                    createdAt={dayjs(orderLog.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')}
+                    name={orderLog.name}
+                    email={orderLog.email}
+                    totalPrice={currencyFormatter(totalPrice) || ''}
+                    orderProducts={orderProducts}
+                    orderDiscounts={orderDiscounts}
+                  />
                 )}
-                recipientName={orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || ''}
-                recipientPhone={
-                  orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || ''
-                }
-                recipientAddress={
-                  orderLog.shipping?.isOutsideTaiwanIsland === 'true'
-                    ? ''
-                    : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
-                        orderLog.shipping?.district || ''
-                      }${orderLog.shipping?.address || ''}`
-                }
-              />
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
-              {orderLog.invoiceOptions?.status === 'SUCCESS' && (
-                <Button
-                  style={{ margin: '24px 0' }}
-                  type="primary"
-                  disabled={loading}
-                  loading={loading}
-                  onClick={() => {
-                    setLoading(true)
-                    axios
-                      .post(
-                        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
-                        {
-                          appId,
-                          invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
-                          invoiceNumber: orderLog.invoiceOptions?.invoiceNumber,
-                          invalidReason: '發票作廢',
-                        },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${authToken}`,
-                          },
-                        },
-                      )
-                      .then(r => {
-                        if (r.data.code === 'SUCCESS') {
-                          onClose()
-                          message.success('發票作廢成功')
+                <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : (
+                  <PaymentCard
+                    payments={paymentLogs}
+                    order={orderLog}
+                    onRefetch={() => {
+                      onRefetch?.()
+                      orderDetailRefetch()
+                    }}
+                    onClose={onClose}
+                  />
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
+                </div>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : invoices.length === 0 ? (
+                  '未開立發票'
+                ) : (
+                  invoices.map(i => (
+                    <>
+                      <Button
+                        style={{ marginBottom: 12 }}
+                        type="primary"
+                        disabled={loading}
+                        loading={loading}
+                        onClick={() => {
+                          setLoading(true)
+                          axios
+                            .post(
+                              `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
+                              {
+                                appId,
+                                invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+                                invoiceNumber: i.no,
+                                invalidReason: '發票作廢',
+                              },
+                              {
+                                headers: {
+                                  Authorization: `Bearer ${authToken}`,
+                                },
+                              },
+                            )
+                            .then(r => {
+                              if (r.data.code === 'SUCCESS') {
+                                onClose()
+                                message.success('發票作廢成功')
+                              }
+                            })
+                            .catch(handleError)
+                            .finally(() => {
+                              setLoading(false)
+                            })
+                        }}
+                      >
+                        作廢發票
+                      </Button>
+                      <InvoiceCard
+                        key={i.no}
+                        status={'SUCCESS'}
+                        invoiceIssuedAt={
+                          i.createdAt ? dayjs(i.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss') : ''
                         }
-                      })
-                      .catch(handleError)
-                      .finally(() => {
-                        setLoading(false)
-                      })
-                  }}
-                >
-                  作廢發票
-                </Button>
-              )}
-            </div>
-            {loadingOrderDetail ? (
-              <Skeleton />
+                        invoiceNumber={i.no}
+                        invoiceName={orderLog.invoiceOptions?.name || ''}
+                        invoicePhone={orderLog.invoiceOptions?.phone || ''}
+                        invoiceEmail={orderLog.invoiceOptions?.email || ''}
+                        invoiceTarget={
+                          orderLog.invoiceOptions?.donationCode
+                            ? '捐贈'
+                            : orderLog.invoiceOptions?.uniformNumber
+                            ? '公司'
+                            : '個人'
+                        }
+                        donationCode={orderLog.invoiceOptions?.donationCode || ''}
+                        invoiceCarrier={
+                          orderLog.invoiceOptions?.phoneBarCode
+                            ? '手機'
+                            : orderLog.invoiceOptions?.citizenCode
+                            ? '自然人憑證'
+                            : ''
+                        }
+                        uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
+                        uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
+                        invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
+                          orderLog.invoiceOptions?.address || ''
+                        }`}
+                        invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                      />
+                    </>
+                  ))
+                )}
+
+                <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
+                {loadingOrderDetail && loadingSharingCode ? (
+                  <Skeleton />
+                ) : (
+                  <OrderOtherInfoCard
+                    country={`${orderLog.options?.country || ''}${
+                      (orderLog.options?.countryCode && `(${orderLog.options?.countryCode})`) || ''
+                    }`}
+                    referrer={orderLog.invoiceOptions?.referrerEmail || ''}
+                    sharingCode={sharingCodes.sharingCode}
+                    sharingNote={sharingCodes.sharingNote}
+                    orderLogExecutor={orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
+                    giftPlan={orderProducts.reduce(
+                      (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
+                      '',
+                    )}
+                    recipientName={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || ''
+                    }
+                    recipientPhone={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || ''
+                    }
+                    recipientAddress={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+                        ? ''
+                        : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+                            orderLog.shipping?.district || ''
+                          }${orderLog.shipping?.address || ''}`
+                    }
+                  />
+                )}
+              </>
             ) : (
-              <InvoiceCard
-                status={orderLog.invoiceOptions?.status || ''}
-                invoiceIssuedAt={
-                  orderLog.invoiceIssuedAt
-                    ? dayjs(orderLog.invoiceIssuedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')
-                    : ''
-                }
-                invoiceNumber={orderLog.invoiceOptions?.invoiceNumber || ''}
-                invoiceName={orderLog.invoiceOptions?.name || ''}
-                invoicePhone={orderLog.invoiceOptions?.phone || ''}
-                invoiceEmail={orderLog.invoiceOptions?.email || ''}
-                invoiceTarget={
-                  orderLog.invoiceOptions?.donationCode
-                    ? '捐贈'
-                    : orderLog.invoiceOptions?.uniformNumber
-                    ? '公司'
-                    : '個人'
-                }
-                donationCode={orderLog.invoiceOptions?.donationCode || ''}
-                invoiceCarrier={
-                  orderLog.invoiceOptions?.phoneBarCode
-                    ? '手機'
-                    : orderLog.invoiceOptions?.citizenCode
-                    ? '自然人憑證'
-                    : ''
-                }
-                uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
-                uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
-                invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${orderLog.invoiceOptions?.address || ''}`}
-                invoiceComment={orderLog.invoiceOptions?.invoiceComment}
-              />
-            )}
-            <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            {loadingOrderDetail ? (
-              <Skeleton />
-            ) : (
-              <PaymentCard
-                payments={paymentLogs}
-                order={orderLog}
-                onRefetch={() => {
-                  onRefetch?.()
-                  orderDetailRefetch()
-                }}
-                onClose={onClose}
-              />
+              <>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : (
+                  <OrderCard
+                    orderId={orderLogId || ''}
+                    status={orderLog.status}
+                    createdAt={dayjs(orderLog.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')}
+                    name={orderLog.name}
+                    email={orderLog.email}
+                    totalPrice={currencyFormatter(totalPrice) || ''}
+                    orderProducts={orderProducts}
+                    orderDiscounts={orderDiscounts}
+                  />
+                )}
+                <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
+                {loadingOrderDetail && loadingSharingCode ? (
+                  <Skeleton />
+                ) : (
+                  <OrderOtherInfoCard
+                    country={`${orderLog.options?.country || ''}${
+                      (orderLog.options?.countryCode && `(${orderLog.options?.countryCode})`) || ''
+                    }`}
+                    referrer={orderLog.invoiceOptions?.referrerEmail || ''}
+                    sharingCode={sharingCodes.sharingCode}
+                    sharingNote={sharingCodes.sharingNote}
+                    orderLogExecutor={orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
+                    giftPlan={orderProducts.reduce(
+                      (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
+                      '',
+                    )}
+                    recipientName={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || ''
+                    }
+                    recipientPhone={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || ''
+                    }
+                    recipientAddress={
+                      orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+                        ? ''
+                        : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+                            orderLog.shipping?.district || ''
+                          }${orderLog.shipping?.address || ''}`
+                    }
+                  />
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
+                </div>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : (
+                  <InvoiceCard
+                    status={orderLog.invoiceOptions?.status || ''}
+                    invoiceIssuedAt={
+                      orderLog.invoiceIssuedAt
+                        ? dayjs(orderLog.invoiceIssuedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')
+                        : ''
+                    }
+                    invoiceNumber={orderLog.invoiceOptions?.invoiceNumber || ''}
+                    invoiceName={orderLog.invoiceOptions?.name || ''}
+                    invoicePhone={orderLog.invoiceOptions?.phone || ''}
+                    invoiceEmail={orderLog.invoiceOptions?.email || ''}
+                    invoiceTarget={
+                      orderLog.invoiceOptions?.donationCode
+                        ? '捐贈'
+                        : orderLog.invoiceOptions?.uniformNumber
+                        ? '公司'
+                        : '個人'
+                    }
+                    donationCode={orderLog.invoiceOptions?.donationCode || ''}
+                    invoiceCarrier={
+                      orderLog.invoiceOptions?.phoneBarCode
+                        ? '手機'
+                        : orderLog.invoiceOptions?.citizenCode
+                        ? '自然人憑證'
+                        : ''
+                    }
+                    uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
+                    uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
+                    invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
+                      orderLog.invoiceOptions?.address || ''
+                    }`}
+                    invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                  />
+                )}
+                <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
+                {loadingOrderDetail ? (
+                  <Skeleton />
+                ) : (
+                  <PaymentCard
+                    payments={paymentLogs}
+                    order={orderLog}
+                    onRefetch={() => {
+                      onRefetch?.()
+                      orderDetailRefetch()
+                    }}
+                    onClose={onClose}
+                  />
+                )}
+              </>
             )}
           </DrawerBody>
         </DrawerContent>
@@ -241,6 +357,12 @@ const useOrderDetail = (orderLogId: string | null) => {
           invoice_options
           invoice_issued_at
           shipping
+          invoice {
+            no
+            price
+            created_at
+            revoked_at
+          }
         }
         order_product(where: { order_id: { _eq: $orderLogId } }) {
           id
@@ -370,6 +492,14 @@ const useOrderDetail = (orderLogId: string | null) => {
       method: v.method || '',
     })) || []
 
+  const invoices =
+    orderDetailData?.order_log_by_pk?.invoice.map(i => ({
+      no: i.no,
+      price: i.price,
+      createdAt: i.created_at,
+      revokedAt: i.revoked_at,
+    })) || []
+
   return {
     loadingOrderDetail,
     loadingSharingCode,
@@ -382,6 +512,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     totalPrice,
     orderExecutors,
     paymentLogs,
+    invoices,
     orderDetailRefetch,
   }
 }
