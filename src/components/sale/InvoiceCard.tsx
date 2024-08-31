@@ -79,6 +79,7 @@ const InvoiceCard: React.FC<{
   invoiceComment?: string
   invoicePrice?: number
   invoiceRandomNumber?: string
+  invoiceGatewayId?: string
   onClose?: () => void
 }> = ({
   status,
@@ -96,6 +97,7 @@ const InvoiceCard: React.FC<{
   invoiceComment,
   invoicePrice,
   invoiceRandomNumber,
+  invoiceGatewayId,
   onClose,
 }) => {
   const { formatMessage } = useIntl()
@@ -173,7 +175,7 @@ const InvoiceCard: React.FC<{
       } = await axios.post(
         `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/search`,
         {
-          invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+          invoiceGatewayId,
           invoiceNumber,
           invoiceRandomNumber,
           appId,
@@ -310,42 +312,44 @@ const InvoiceCard: React.FC<{
               )}
             </>
           )}
-          <Button
-            className="ml-2"
-            type="primary"
-            disabled={loading}
-            loading={loading}
-            onClick={() => {
-              setLoading(true)
-              axios
-                .post(
-                  `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
-                  {
-                    appId,
-                    invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
-                    invoiceNumber: invoiceNumber,
-                    invalidReason: '發票作廢',
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${authToken}`,
+          {settings['payment.v2'] === '1' && (
+            <Button
+              className="ml-2"
+              type="primary"
+              disabled={loading}
+              loading={loading}
+              onClick={() => {
+                setLoading(true)
+                axios
+                  .post(
+                    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
+                    {
+                      appId,
+                      invoiceGatewayId,
+                      invoiceNumber: invoiceNumber,
+                      invalidReason: '發票作廢',
                     },
-                  },
-                )
-                .then(r => {
-                  if (r.data.code === 'SUCCESS') {
-                    onClose?.()
-                    message.success('發票作廢成功')
-                  }
-                })
-                .catch(handleError)
-                .finally(() => {
-                  setLoading(false)
-                })
-            }}
-          >
-            作廢發票
-          </Button>
+                    {
+                      headers: {
+                        Authorization: `Bearer ${authToken}`,
+                      },
+                    },
+                  )
+                  .then(r => {
+                    if (r.data.code === 'SUCCESS') {
+                      onClose?.()
+                      message.success('發票作廢成功')
+                    }
+                  })
+                  .catch(handleError)
+                  .finally(() => {
+                    setLoading(false)
+                  })
+              }}
+            >
+              作廢發票
+            </Button>
+          )}
         </>
       )}
     </StyledCard>

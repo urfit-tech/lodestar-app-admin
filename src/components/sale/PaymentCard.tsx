@@ -60,7 +60,7 @@ const PaymentCard: React.FC<{
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
-  const permissionGroupId = paymentCompanies.paymentCompanies.find(
+  const permissionGroupId = paymentCompanies?.paymentCompanies?.find(
     c => order.options?.company && c.companies.map(c => c.name).includes(order.options?.company),
   )?.permissionGroupId
 

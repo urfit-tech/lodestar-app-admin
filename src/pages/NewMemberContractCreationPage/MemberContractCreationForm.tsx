@@ -291,7 +291,13 @@ const BG_PRODUCT_OPTIONS_CONFIG = [
 export type PaymentCompany = {
   permissionGroupId: string
   name: string
-  companies: { name: string; paymentGateway?: string; invoiceGateway?: string }[]
+  companies: {
+    name: string
+    paymentGateway?: string
+    invoiceGateway?: string
+    invoiceGatewayId?: string
+    paymentGatewayId?: string
+  }[]
 }
 
 const calculateEndedAt = (startedAt: Date, weeks: number) => {
