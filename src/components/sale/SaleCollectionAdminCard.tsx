@@ -23,6 +23,7 @@ export type OrderLogColumn = {
   email: string
   status: string
   totalPrice: number
+  options?: any
 }
 
 const StyledContainer = styled.div`

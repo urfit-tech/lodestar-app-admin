@@ -86,6 +86,7 @@ export const useOrderLogPreviewCollection = (
           status
           shipping
           member_id
+          options
         }
       }
     `,
@@ -214,7 +215,7 @@ export const useOrderLogPreviewCollection = (
 
   const orderLogPreviewCollection: Pick<
     OrderLog,
-    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice'
+    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options'
   >[] =
     orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
       const productPrice = sum(
@@ -237,6 +238,7 @@ export const useOrderLogPreviewCollection = (
         email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
         shipping: orderLogPreview.shipping,
         totalPrice: Math.max(productPrice - discountPrice + shippingFee),
+        options: orderLogPreview.options,
       }
     }) || []
 
@@ -276,6 +278,10 @@ export const useOrderLogExpandRow = (orderId: string) => {
           expired_at
           shipping
           invoice_options
+          invoice(where: { revoked_at: { _is_null: true } }) {
+            no
+            price
+          }
         }
       }
     `,
@@ -376,6 +382,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
     invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
+    invoiceTotalPrice: sum(expandRowOrderLog?.order_log_by_pk?.invoice?.map(v => v.price) || []),
   }
 
   const orderProducts =
