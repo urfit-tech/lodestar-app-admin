@@ -567,8 +567,30 @@ const MemberContractCreationForm: React.FC<
                                 : undefined,
                             name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
                           })
+                          setWeeklyBatch(
+                            category.language === '中文'
+                              ? 10
+                              : category.language === '外文'
+                              ? 4
+                              : category.language === '師資班'
+                              ? 5
+                              : category.language === '方言'
+                              ? 10
+                              : 10,
+                          )
+                          setTotalAmount(
+                            category.language === '中文'
+                              ? 60
+                              : category.language === '外文'
+                              ? 10
+                              : category.language === '師資班'
+                              ? 26
+                              : category.language === '方言'
+                              ? 60
+                              : 60,
+                          )
+                          setNewProductName('')
                           setCustomPrice(0)
-                          member.isBG && setTotalAmount(0)
                         }}
                       >
                         {v.title}
