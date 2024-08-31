@@ -3,6 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import axios from 'axios'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { sum } from 'ramda'
@@ -13,6 +14,7 @@ import { ContractInfo, ContractProduct, FieldProps } from '.'
 import hasura from '../../hasura'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { PaymentCompany } from './MemberContractCreationForm'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
@@ -27,6 +29,7 @@ const MemberContractCreationBlock: React.FC<{
   contracts: ContractInfo['contracts']
   installments: { price: number; index: number }[]
 }> = ({ member, form, selectedProducts, products, contracts, installments }) => {
+  const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
@@ -37,6 +40,11 @@ const MemberContractCreationBlock: React.FC<{
   const [isFinish, setIsFinish] = useState(false)
 
   const fieldValue = form.getFieldsValue()
+
+  const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const paymentCompany = customSetting.paymentCompanies
+    .find(c => !!c.companies.find(company => company.name === fieldValue.company))
+    ?.companies.find(company => company.name === fieldValue.company)
 
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
   const priceWithoutTax = Math.round(
@@ -108,7 +116,9 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
-    const paymentGateway = fieldValue.paymentMethod.includes('藍新') ? 'spgateway' : 'physical'
+    const paymentGateway = fieldValue.paymentMethod.includes('藍新')
+      ? paymentCompany?.paymentGateway || 'spgateway'
+      : 'physical'
     const paymentMethod =
       fieldValue.paymentMethod === '現金'
         ? 'cash'
@@ -140,6 +150,7 @@ const MemberContractCreationBlock: React.FC<{
       priceWithoutTax,
       totalPrice,
       tax,
+      invoiceGateway: paymentCompany?.invoiceGateway,
     }
     const options = {
       ...fieldValue,
@@ -147,7 +158,12 @@ const MemberContractCreationBlock: React.FC<{
       isBG: member.isBG,
     }
 
-    const paymentOptions = { paymentGateway, paymentMethod, paymentMode, installmentPlans }
+    const paymentOptions = {
+      paymentGateway,
+      paymentMethod,
+      paymentMode,
+      installmentPlans,
+    }
     setLoading(true)
     if (isContract) {
       addMemberContract({
@@ -221,7 +237,7 @@ const MemberContractCreationBlock: React.FC<{
             const paymentNo = res.data.result.paymentNo
             const payToken = res.data.result.payToken
             const orderId = res.data.result.orderId
-            if (paymentGateway === 'spgateway' && orderId) {
+            if (paymentGateway.includes('spgateway') && orderId) {
               setMemberContractUrl(
                 paymentNo
                   ? `${window.origin}/payments/${paymentNo}?token=${payToken}`

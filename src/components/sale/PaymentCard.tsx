@@ -61,7 +61,7 @@ const PaymentCard: React.FC<{
   const { settings, id: appId, enabledModules } = useApp()
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const permissionGroupId = paymentCompanies.paymentCompanies.find(
-    c => order.options?.company && c.companies.includes(order.options?.company),
+    c => order.options?.company && c.companies.map(c => c.name).includes(order.options?.company),
   )?.permissionGroupId
 
   const { permissions } = useAuth()
@@ -79,6 +79,7 @@ const PaymentCard: React.FC<{
     const parseConfigs: { permissionGroupId: string; type: string; targetUrl: string; targetPath: string }[] =
       JSON.parse(settings['pos_serialport.config'])
     const config = parseConfigs.find(c => c.permissionGroupId === permissionGroupId && c.type === method)
+
     if (!config || !config.targetUrl || !config.targetPath) {
       return alert('POS刷卡設定錯誤，請聯繫廠商: no targetUrl or targetPath')
     }
