@@ -352,6 +352,7 @@ const SaleCollectionExpandRow = ({
                           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
                           {
                             appId,
+                            orderId: orderLogId,
                             invoiceGatewayId,
                             invoiceInfo: {
                               MerchantOrderNo: new Date().getTime().toString(),

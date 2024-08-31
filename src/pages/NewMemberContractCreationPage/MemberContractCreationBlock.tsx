@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { ContractInfo, ContractProduct, ContractSales, FieldProps } from '.'
+import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -43,19 +44,134 @@ const MemberContractCreationBlock: React.FC<{
   const fieldValue = form.getFieldsValue()
 
   const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+
   const paymentCompany = customSetting.paymentCompanies
     .find(c => !!c.companies.find(company => company.name === fieldValue.company))
     ?.companies.find(company => company.name === fieldValue.company)
 
+  console.log(paymentCompany)
+  // Invoice Tax Calculation
+  const category = fieldValue.uniformNumber ? 'B2B' : 'B2C'
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
-  const priceWithoutTax = Math.round(
-    sum(
-      selectedProducts.map(p =>
-        p.options.product === '學費' || p.options.product === '註冊費' ? totalPrice : Math.round(p.totalPrice / 1.05),
-      ),
-    ),
+  const totalPriceWithTax = sum(
+    selectedProducts.filter(p => !['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
   )
-  const tax = Math.round(totalPrice - priceWithoutTax)
+  const totalPriceWithoutTax = Math.round(totalPriceWithTax / 1.05)
+  const totalPriceWithZeroTax = sum(
+    selectedProducts.filter(p => !!['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
+  )
+  const tax = totalPrice - totalPriceWithoutTax - totalPriceWithZeroTax
+
+  let invoices: InvoiceRequest[] = []
+
+  const items = selectedProducts.map(p => {
+    const taxType = ['學費', '註冊費'].includes(p.options.product) ? '2' : '1'
+    return p.title.includes('_套裝項目_')
+      ? {
+          name: p.title,
+          count: 1,
+          unit: '件',
+          price: category === 'B2B' ? (taxType === '2' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+          taxType,
+          amt: category === 'B2B' ? (taxType === '2' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+        }
+      : {
+          name: p.title,
+          count: p.amount,
+          unit: '件',
+          price: category === 'B2B' ? (taxType === '2' ? p.price : Math.round(p.price / 1.05)) : p.price,
+          taxType,
+          amt: p.amount * (category === 'B2B' ? (taxType === '2' ? p.price : Math.round(p.price / 1.05)) : p.price),
+        }
+  })
+
+  if (category === 'B2C') {
+    // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
+    const taxType = totalPriceWithZeroTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithZeroTax > 0 ? '2' : '1'
+    const taxRate = taxType === '2' ? 0 : 5
+    invoices.push({
+      TaxType: taxType,
+      Amt: totalPriceWithoutTax + totalPriceWithZeroTax,
+      TaxAmt: taxType === '2' ? 0 : tax,
+      TotalAmt: totalPrice,
+      TaxRate: taxRate,
+      AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
+      AmtFree: taxType === '9' ? 0 : undefined,
+      AmtZero: taxType === '9' ? totalPriceWithZeroTax : undefined,
+      ItemName: items.map(v => v.name).join('|'),
+      ItemCount: items.map(v => v.count).join('|'),
+      ItemUnit: items.map(v => v.unit).join('|'),
+      ItemPrice: items.map(v => v.price).join('|'),
+      ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
+      ItemAmt: items.map(v => v.amt).join('|'),
+      MerchantOrderNo: new Date().getTime().toString(),
+      BuyerEmail: fieldValue.invoiceEmail || member.email,
+      BuyerName: fieldValue.uniformTitle || member.name,
+      BuyerUBN: fieldValue.uniformNumber,
+      Category: category,
+      Comment: fieldValue.invoiceComment,
+      PrintFlag: 'Y',
+    })
+  }
+
+  if (category === 'B2B') {
+    if (totalPriceWithTax > 0) {
+      const filteredItems = items.filter(v => v.taxType === '1')
+      invoices.push({
+        TaxType: '1',
+        Amt: totalPriceWithoutTax,
+        TaxAmt: tax,
+        TotalAmt: totalPrice - totalPriceWithZeroTax,
+        TaxRate: 5,
+        ItemName: filteredItems.map(v => v.name).join('|'),
+        ItemCount: filteredItems.map(v => v.count).join('|'),
+        ItemUnit: filteredItems.map(v => v.unit).join('|'),
+        ItemPrice: filteredItems.map(v => v.price).join('|'),
+        ItemAmt: items.map(v => v.amt).join('|'),
+        MerchantOrderNo: new Date().getTime().toString(),
+        BuyerEmail: fieldValue.invoiceEmail || member.email,
+        BuyerName: fieldValue.uniformTitle,
+        BuyerUBN: fieldValue.uniformNumber,
+        Category: category,
+        Comment: fieldValue.invoiceComment,
+        PrintFlag: 'Y',
+      })
+    }
+
+    if (totalPriceWithZeroTax > 0) {
+      const filteredItems = items.filter(v => v.taxType === '2')
+      invoices.push({
+        TaxType: '2',
+        Amt: totalPriceWithZeroTax,
+        TaxAmt: 0,
+        TotalAmt: totalPriceWithZeroTax,
+        TaxRate: 0,
+        ItemName: filteredItems.map(v => v.name).join('|'),
+        ItemCount: filteredItems.map(v => v.count).join('|'),
+        ItemUnit: filteredItems.map(v => v.unit).join('|'),
+        ItemPrice: filteredItems.map(v => v.price).join('|'),
+        ItemAmt: items.map(v => v.amt).join('|'),
+        MerchantOrderNo: new Date().getTime().toString(),
+        BuyerEmail: fieldValue.invoiceEmail || member.email,
+        BuyerName: fieldValue.uniformTitle,
+        BuyerUBN: fieldValue.uniformNumber,
+        Category: category,
+        Comment: fieldValue.invoiceComment,
+        PrintFlag: 'Y',
+        CustomsClearance: '1',
+      })
+    }
+  }
+
+  console.log({
+    category,
+    totalPrice,
+    totalPriceWithTax,
+    totalPriceWithoutTax,
+    totalPriceWithZeroTax,
+    tax,
+    invoices,
+  })
 
   const handleMemberContractCreate = async () => {
     const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
@@ -153,10 +269,9 @@ const MemberContractCreationBlock: React.FC<{
       uniformNumber: fieldValue.uniformNumber,
       uniformTitle: fieldValue.uniformTitle,
       invoiceComment: fieldValue.invoiceComment,
-      priceWithoutTax,
-      totalPrice,
-      tax,
       invoiceGateway: paymentCompany?.invoiceGateway,
+      invoiceGatewayId: paymentCompany?.invoiceGatewayId,
+      invoices,
     }
     const options = {
       ...fieldValue,
@@ -227,6 +342,7 @@ const MemberContractCreationBlock: React.FC<{
             productIds: selectedProducts.map(v => v.productId),
             invoice: invoiceInfo,
             memberId: member.id,
+            invoiceGatewayId: paymentCompany?.invoiceGatewayId,
             options: {
               ...options,
               ...productOptions,
@@ -290,16 +406,23 @@ const MemberContractCreationBlock: React.FC<{
           </>
         )}
 
-        <div className="row mb-2">
-          <strong className="col-6 text-right">應稅</strong>
+        {invoices.map(i => (
+          <div key={i.TaxType}>
+            <div className="row mb-2">
+              <strong className="col-6 text-right">
+                {i.TaxType === '9' ? '混稅' : i.TaxType === '2' ? '零稅' : '應稅'}
+              </strong>
 
-          <div className="col-6 text-right">${priceWithoutTax.toLocaleString()}</div>
-        </div>
-        <div className="row mb-2">
-          <strong className="col-6 text-right">稅額</strong>
+              <div className="col-6 text-right">${i.Amt.toLocaleString()}</div>
+            </div>
+            <div className="row mb-2">
+              <strong className="col-6 text-right">稅額</strong>
 
-          <div className="col-6 text-right">${tax.toLocaleString()}</div>
-        </div>
+              <div className="col-6 text-right">${i.TaxAmt.toLocaleString()}</div>
+            </div>
+            <div style={{ borderBottom: '1px dashed #4f4f4f', margin: '12px 0' }} />
+          </div>
+        ))}
         <div className="row mb-2">
           <strong className="col-6 text-right">總金額(含稅)</strong>
 
