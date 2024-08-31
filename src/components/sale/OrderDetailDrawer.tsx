@@ -1,18 +1,16 @@
 import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
-import { Button, message, Skeleton } from 'antd'
-import axios from 'axios'
+import { Skeleton } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { currencyFormatter, handleError } from '../../helpers'
+import { currencyFormatter } from '../../helpers'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
 import OrderCard from './OrderCard'
@@ -48,10 +46,8 @@ const OrderDetailDrawer: React.FC<{
   onRefetch?: () => void
 }> = ({ orderLogId, onClose, renderTrigger, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { id: appId, settings } = useApp()
-  const { authToken } = useAuth()
+  const { settings } = useApp()
   const isOpen = Boolean(orderLogId)
-  const [loading, setLoading] = React.useState(false)
   const {
     loadingOrderDetail,
     loadingSharingCode,
@@ -119,76 +115,44 @@ const OrderDetailDrawer: React.FC<{
                   '未開立發票'
                 ) : (
                   invoices.map(i => (
-                    <>
-                      <Button
-                        style={{ marginBottom: 12 }}
-                        type="primary"
-                        disabled={loading}
-                        loading={loading}
-                        onClick={() => {
-                          setLoading(true)
-                          axios
-                            .post(
-                              `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
-                              {
-                                appId,
-                                invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
-                                invoiceNumber: i.no,
-                                invalidReason: '發票作廢',
-                              },
-                              {
-                                headers: {
-                                  Authorization: `Bearer ${authToken}`,
-                                },
-                              },
-                            )
-                            .then(r => {
-                              if (r.data.code === 'SUCCESS') {
-                                onClose()
-                                message.success('發票作廢成功')
-                              }
-                            })
-                            .catch(handleError)
-                            .finally(() => {
-                              setLoading(false)
-                            })
-                        }}
-                      >
-                        作廢發票
-                      </Button>
-                      <InvoiceCard
-                        key={i.no}
-                        status={'SUCCESS'}
-                        invoiceIssuedAt={
-                          i.createdAt ? dayjs(i.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss') : ''
-                        }
-                        invoiceNumber={i.no}
-                        invoiceName={orderLog.invoiceOptions?.name || ''}
-                        invoicePhone={orderLog.invoiceOptions?.phone || ''}
-                        invoiceEmail={orderLog.invoiceOptions?.email || ''}
-                        invoiceTarget={
-                          orderLog.invoiceOptions?.donationCode
-                            ? '捐贈'
-                            : orderLog.invoiceOptions?.uniformNumber
-                            ? '公司'
-                            : '個人'
-                        }
-                        donationCode={orderLog.invoiceOptions?.donationCode || ''}
-                        invoiceCarrier={
-                          orderLog.invoiceOptions?.phoneBarCode
-                            ? '手機'
-                            : orderLog.invoiceOptions?.citizenCode
-                            ? '自然人憑證'
-                            : ''
-                        }
-                        uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
-                        uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
-                        invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
-                          orderLog.invoiceOptions?.address || ''
-                        }`}
-                        invoiceComment={orderLog.invoiceOptions?.invoiceComment}
-                      />
-                    </>
+                    <InvoiceCard
+                      key={i.no}
+                      status={!!i.revokedAt ? 'REVOKED' : 'SUCCESS'}
+                      invoiceIssuedAt={
+                        i.createdAt ? dayjs(i.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss') : ''
+                      }
+                      invoiceNumber={i.no}
+                      invoiceName={orderLog.invoiceOptions?.name || ''}
+                      invoicePhone={orderLog.invoiceOptions?.phone || ''}
+                      invoiceEmail={orderLog.invoiceOptions?.email || ''}
+                      invoiceTarget={
+                        orderLog.invoiceOptions?.donationCode
+                          ? '捐贈'
+                          : orderLog.invoiceOptions?.uniformNumber
+                          ? '公司'
+                          : '個人'
+                      }
+                      donationCode={orderLog.invoiceOptions?.donationCode || ''}
+                      invoiceCarrier={
+                        orderLog.invoiceOptions?.phoneBarCode
+                          ? '手機'
+                          : orderLog.invoiceOptions?.citizenCode
+                          ? '自然人憑證'
+                          : ''
+                      }
+                      uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
+                      uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
+                      invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
+                        orderLog.invoiceOptions?.address || ''
+                      }`}
+                      invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                      invoicePrice={i.price}
+                      invoiceRandomNumber={i.options?.Result?.RandomNum || ''}
+                      onClose={() => {
+                        onClose()
+                        orderDetailRefetch()
+                      }}
+                    />
                   ))
                 )}
 
@@ -362,6 +326,7 @@ const useOrderDetail = (orderLogId: string | null) => {
             price
             created_at
             revoked_at
+            options
           }
         }
         order_product(where: { order_id: { _eq: $orderLogId } }) {
@@ -498,6 +463,7 @@ const useOrderDetail = (orderLogId: string | null) => {
       price: i.price,
       createdAt: i.created_at,
       revokedAt: i.revoked_at,
+      options: i.options,
     })) || []
 
   return {
