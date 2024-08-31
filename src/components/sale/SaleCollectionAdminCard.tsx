@@ -1,9 +1,11 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Spin, Table, Tooltip, Typography } from 'antd'
+import { IconButton } from '@chakra-ui/react'
+import { Button, Input, message, Spin, Table, Tooltip, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { AiOutlineRedo } from 'react-icons/ai'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { currencyFormatter, desktopViewMixin } from '../../helpers'
@@ -21,6 +23,7 @@ export type OrderLogColumn = {
   email: string
   status: string
   totalPrice: number
+  options?: any
 }
 
 const StyledContainer = styled.div`
@@ -55,7 +58,8 @@ const StyledCell = styled.div`
 
 const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
-}> = ({ memberId }) => {
+  isShowRefetchButton?: boolean
+}> = ({ memberId, isShowRefetchButton }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions } = useAuth()
 
@@ -229,18 +233,32 @@ const SaleCollectionAdminCard: React.VFC<{
   return (
     <AdminCard>
       <StyledContainer>
+        {isShowRefetchButton && (
+          <IconButton
+            ml="3"
+            w="45px"
+            h="45px"
+            _hover={{}}
+            aria-label="refresh"
+            icon={<AiOutlineRedo />}
+            variant="outline"
+            onClick={async () => {
+              await Promise.all([refetchOrderLogPreviewCollection(), refetchOrderLogAggregate()])
+              message.info(formatMessage(saleMessages.SaleCollectionAdminCard.successfullyRefreshed))
+            }}
+          />
+        )}
         <div className="d-flex justify-content-end">
           <Typography.Text type="secondary">
             {loadingOrderLogAggregate ? (
               <span>
-                <Spin />{' '}{formatMessage(saleMessages.SaleCollectionAdminCard.calculatingTotalCount)}
+                <Spin /> {formatMessage(saleMessages.SaleCollectionAdminCard.calculatingTotalCount)}
               </span>
             ) : (
               formatMessage(commonMessages.text.totalCount, { count: totalCount })
             )}
           </Typography.Text>
         </div>
-
         <Table<OrderLogColumn>
           rowKey="id"
           loading={
@@ -257,7 +275,6 @@ const SaleCollectionAdminCard: React.VFC<{
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
-
         {loadMoreOrderLogPreviewCollection && (
           <div className="text-center mt-4">
             <Button

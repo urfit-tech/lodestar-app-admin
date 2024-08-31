@@ -1,17 +1,22 @@
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
-import { Button, Divider, message, Skeleton, Switch } from 'antd'
+import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { sum } from 'lodash'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
+import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
@@ -25,6 +30,18 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
 
+type FieldProps = {
+  priceWithoutTax: number
+  tax: number
+  totalPrice: number
+  type: 'issue'
+  itemName: string
+  itemCount: number
+  itemAmt: number
+  comment: string
+  taxType: '1' | '2' | '3' | '9'
+}
+
 const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
   color: ${props => !props.isDelivered && '#CDCDCD'};
 `
@@ -37,9 +54,16 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
-  const { currentUserRole, permissions } = useAuth()
+  const { settings, id: appId } = useApp()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
+  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const invoiceGatewayId = paymentCompanies?.paymentCompanies
+    ?.find(c => record.options?.company && c.companies.map(c => c.name).includes(record.options?.company))
+    ?.companies.find(company => company.name === record.options?.company)?.invoiceGatewayId
+
+  const [loading, setLoading] = useState(false)
+  const [form] = useForm<FieldProps>()
 
   const orderLogId = record.id
   const orderStatus = record.status
@@ -54,10 +78,10 @@ const SaleCollectionExpandRow = ({
     orderLog,
     orderProducts,
     orderExecutors,
-    paymentMethod,
     paymentLogs,
     orderDiscounts,
-    refetchExpandRowOrderProduct,
+    paymentMethod,
+    refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
 
   return (
@@ -68,13 +92,17 @@ const SaleCollectionExpandRow = ({
         <div>
           {orderProducts
             .filter(orderProduct => orderProduct.type !== 'Token')
-            .map(orderProduct => {
+            .map((orderProduct, index) => {
               const isDelivered: boolean = !!orderProduct.deliveredAt
               return (
                 <StyledRowWrapper key={orderProduct.id} isDelivered={isDelivered}>
                   <div className="row">
                     <div className="col-2">
-                      <ProductTypeLabel productType={orderProduct.type} />
+                      {settings['payment.v2'] === '1' ? (
+                        `#${index + 1}`
+                      ) : (
+                        <ProductTypeLabel productType={orderProduct.type} />
+                      )}
                     </div>
                     <div className="col-7">
                       <span>{orderProduct.name}</span>
@@ -105,7 +133,7 @@ const SaleCollectionExpandRow = ({
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
-                            onRefetch={refetchExpandRowOrderProduct}
+                            onRefetch={refetchOrderLogExpandRow}
                           />
                         ) : null}
                       </div>
@@ -127,12 +155,16 @@ const SaleCollectionExpandRow = ({
 
           {orderProducts
             .filter(orderProduct => orderProduct.type === 'Token')
-            .map(orderProduct => {
+            .map((orderProduct, index) => {
               return (
                 <StyledRowWrapper key={orderProduct.id} isDelivered={!!orderProduct.deliveredAt}>
                   <div className="row">
                     <div className="col-2">
-                      <TokenTypeLabel tokenType="GiftPlan" />
+                      {settings['payment.v2'] === '1' ? (
+                        `#${orderProducts.filter(orderProduct => orderProduct.type !== 'Token').length + index + 1}`
+                      ) : (
+                        <TokenTypeLabel tokenType="GiftPlan" />
+                      )}
                     </div>
                     <div className="col-7">
                       <span>{orderProduct.name}</span>
@@ -144,7 +176,7 @@ const SaleCollectionExpandRow = ({
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
-                            onRefetch={refetchExpandRowOrderProduct}
+                            onRefetch={refetchOrderLogExpandRow}
                           />
                         ) : null}
                       </div>
@@ -168,12 +200,23 @@ const SaleCollectionExpandRow = ({
         ) : (
           <>
             <div className="col-3" style={{ fontSize: '14px' }}>
-              {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] ? (
-                <div>承辦人：{orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}</div>
-              ) : null}
-              {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? <div>付款方式：{paymentMethod}</div> : null}
-              {orderLog.expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
-                <div>付款期限：{dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD')}</div>
+              {settings['payment.v2'] === '1' ? (
+                <>
+                  {record.options?.executor && record.options.executor.name ? (
+                    <div>結帳人員：{`${record.options?.executor.name} (${record.options?.executor.email || ''})`}</div>
+                  ) : null}
+                  {record.options?.company && <div>結帳公司：{record.options.company}</div>}
+                </>
+              ) : (
+                <>
+                  {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] ? (
+                    <div>承辦人：{orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}</div>
+                  ) : null}
+                  {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? <div>付款方式：{paymentMethod}</div> : null}
+                  {orderLog.expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
+                    <div>付款期限：{dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD')}</div>
+                  )}
+                </>
               )}
             </div>
 
@@ -231,18 +274,32 @@ const SaleCollectionExpandRow = ({
               {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
             </Button>
           )}
+          onRefetch={() => {
+            onRefetchOrderLog?.()
+            refetchOrderLogExpandRow()
+          }}
         />
-
-        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' && (
+        {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
           <ModifyOrderStatusModal
+            renderTrigger={({ setVisible }) => (
+              <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
+                變更訂單狀態
+              </Button>
+            )}
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
             paymentLogs={paymentLogs}
-            defaultPrice={totalPrice}
-            onRefetch={onRefetchOrderLog}
+            defaultPrice={
+              totalPrice -
+              sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) +
+              -sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
+            }
+            onRefetch={() => {
+              onRefetchOrderLog?.()
+              refetchOrderLogExpandRow()
+            }}
           />
         )}
-
         {currentUserRole === 'app-owner' &&
           orderProducts.some(v =>
             ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.type),
@@ -259,9 +316,217 @@ const SaleCollectionExpandRow = ({
                 id: orderProduct.id,
                 options: orderProduct.options,
               }))}
-              onRefetch={refetchExpandRowOrderProduct}
+              onRefetch={refetchOrderLogExpandRow}
             />
           ))}
+
+        {settings['payment.v2'] === '1' && orderLog.invoiceTotalPrice < record.totalPrice && (
+          <AdminModal
+            renderTrigger={({ setVisible }) => (
+              <Button
+                style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                onClick={() => {
+                  setVisible(true)
+                }}
+              >
+                <div>補開發票</div>
+              </Button>
+            )}
+            title={'補開發票'}
+            footer={null}
+            renderFooter={({ setVisible }) => (
+              <>
+                <Button onClick={() => setVisible(false)} className="mr-2">
+                  {formatMessage(commonMessages.ui.back)}
+                </Button>
+                <Button
+                  type="primary"
+                  disabled={loading}
+                  loading={loading}
+                  onClick={async () => {
+                    try {
+                      setLoading(true)
+                      const values = await form.validateFields()
+                      axios
+                        .post(
+                          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
+                          {
+                            appId,
+                            invoiceGatewayId,
+                            invoiceInfo: {
+                              MerchantOrderNo: new Date().getTime().toString(),
+                              BuyerEmail: orderLog.invoiceOptions?.email || '',
+                              BuyerName: orderLog.invoiceOptions?.uniformTitle || orderLog.invoiceOptions?.name,
+                              BuyerUBN: orderLog.invoiceOptions?.uniformNumber || '',
+                              Category: orderLog.invoiceOptions?.uniformNumber ? 'B2B' : 'B2C',
+                              TaxType: values.taxType,
+                              TaxRate: 5,
+                              Amt: values.priceWithoutTax,
+                              TaxAmt: values.tax,
+                              TotalAmt: values.totalPrice,
+                              PrintFlag: 'Y',
+                              ItemName: values.itemName,
+                              ItemCount: values.itemCount,
+                              ItemUnit: '個',
+                              ItemPrice: values.itemAmt,
+                              ItemAmt: values.itemAmt * values.itemCount,
+                              Comment: orderLog.invoiceOptions?.invoiceComment || '',
+                            },
+                          },
+                          {
+                            headers: {
+                              Authorization: `Bearer ${authToken}`,
+                            },
+                          },
+                        )
+                        .then(r => {
+                          if (r.data.code === 'SUCCESS') {
+                            message.success('發票開立成功')
+                          }
+                        })
+                        .catch(handleError)
+                        .finally(() => {
+                          setLoading(false)
+                          refetchOrderLogExpandRow()
+                          setVisible(false)
+                        })
+                    } catch (error) {
+                      console.error(error)
+                    }
+                  }}
+                >
+                  {formatMessage(commonMessages.ui.save)}
+                </Button>
+              </>
+            )}
+          >
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{ totalPrice, type: 'issue', taxType: '1', itemCount: 1 }}
+            >
+              <div className="row">
+                <div className="col-6">
+                  <Form.Item label={'處理方式'} name="type">
+                    <Select<string>>
+                      <Select.Option value="issue">開立發票</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+                <div className="col-6">
+                  <Form.Item label={'課稅別'} name="taxType">
+                    <Select<string>>
+                      <Select.Option value="1">應稅</Select.Option>
+                      <Select.Option value="2">零稅</Select.Option>
+                      <Select.Option value="3">免稅</Select.Option>
+                      <Select.Option value="9">混合稅</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+                <div className="col-4">
+                  <Form.Item
+                    label={'未稅'}
+                    name="priceWithoutTax"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-4">
+                  <Form.Item
+                    label={'稅額'}
+                    name="tax"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-4">
+                  <Form.Item
+                    label={'總金額(含稅)'}
+                    name="totalPrice"
+                    rules={[
+                      formInstance => ({
+                        message: `金額不能超過 ${totalPrice}`,
+                        validator() {
+                          const price = formInstance.getFieldValue('price')
+                          if (price > totalPrice) {
+                            return Promise.reject(new Error())
+                          }
+                          return Promise.resolve()
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-3">
+                  <Form.Item label={'商品數量'} name="itemCount">
+                    <InputNumber min={1} />
+                  </Form.Item>
+                </div>
+                <div className="col-3">
+                  <Form.Item label={'商品單價'} name="itemAmt">
+                    <InputNumber
+                      min={0}
+                      max={totalPrice}
+                      formatter={value => `NT$ ${value}`}
+                      parser={value => value?.replace(/\D/g, '') || ''}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-6">
+                  <Form.Item label={'產品名'} name="itemName">
+                    <Input placeholder="請輸入產品名" />
+                  </Form.Item>
+                </div>
+                <div className="col-12">
+                  <Form.Item label={'備註'} name="comment">
+                    <Input placeholder="請輸入備註" />
+                  </Form.Item>
+                </div>
+              </div>
+            </Form>
+          </AdminModal>
+        )}
       </div>
     </div>
   )

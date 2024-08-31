@@ -34,7 +34,7 @@ export type IssueProps = {
   issueInstructorIds?: string[]
 }
 
-export type PeriodType = 'H' | 'm' |'D' | 'W' | 'M' | 'Y'
+export type PeriodType = 'H' | 'm' | 'D' | 'W' | 'M' | 'Y'
 
 export type ProductInventoryStatusProps = {
   buyableQuantity: number
@@ -90,7 +90,14 @@ export type OrderLog = {
   orderProducts: OrderProduct[]
   orderDiscounts: OrderDiscount[]
   orderExecutors: { ratio: string; name: string }[]
-  options?: { ip?: string; country?: string; countryCode?: string }
+  options?: {
+    ip?: string
+    country?: string
+    countryCode?: string
+    installmentPlans?: { price: number; index: number; endedAt?: string }[]
+    paymentMode?: string
+    company?: string
+  }
   invoiceOptions?: InvoiceProps
   invoiceIssuedAt?: Date
 }
@@ -105,6 +112,7 @@ export type PaymentLog = {
   method: string
   customNo: string | null
   invoice_options?: InvoiceProps
+  options?: any
 }
 
 export type PermissionGroupProps = {
