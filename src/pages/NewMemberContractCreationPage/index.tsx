@@ -49,6 +49,7 @@ type FieldProps = {
   company: string
   skipIssueInvoice: boolean
   uniformTitle: string
+  invoiceEmail: string
 }
 
 type ContractInfo = {
@@ -113,14 +114,16 @@ const MemberContractCreationPage: React.VFC = () => {
   const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
-  const [installments, setInstallments] = useState<{ index: number; price: number }[]>([])
+  const [installments, setInstallments] = useState<{ index: number; price: number; endedAt: Date }[]>([])
 
-  const updateInstallmentPrice = (index: number, price: number) => {
+  const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
     setInstallments(prevInstallments =>
-      prevInstallments.map(installment => (installment.index === index ? { ...installment, price } : installment)),
+      prevInstallments.map(installment =>
+        installment.index === index ? { ...installment, price, endedAt } : installment,
+      ),
     )
   }
-  const addNewInstallment = (newInstallment: { index: number; price: number }) => {
+  const addNewInstallment = (newInstallment: { index: number; price: number; endedAt: Date }) => {
     setInstallments(prevInstallments => [...prevInstallments, newInstallment])
   }
 
@@ -150,6 +153,7 @@ const MemberContractCreationPage: React.VFC = () => {
               endedAt: moment().add(1, 'y'),
               paymentMethod: paymentMethods[0],
               paymentMode: paymentModes[0],
+              invoiceEmail: member.email,
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)

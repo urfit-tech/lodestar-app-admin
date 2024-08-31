@@ -288,7 +288,7 @@ const BG_PRODUCT_OPTIONS_CONFIG = [
   },
 ]
 
-type PaymentCompany = {
+export type PaymentCompany = {
   permissionGroupId: string
   name: string
   companies: string[]
@@ -307,9 +307,9 @@ const MemberContractCreationForm: React.FC<
     onChangeSelectedProducts: (selectedProduct: SelectedProduct) => void
     deleteSelectedProduct: (selectedProduct: SelectedProduct) => void
     adjustSelectedProductAmount: (selectedProduct: SelectedProduct, amount: number) => void
-    installments: { index: number; price: number }[]
-    updateInstallmentPrice: (index: number, price: number) => void
-    addNewInstallment: (installment: { index: number; price: number }) => void
+    installments: { index: number; price: number; endedAt: Date }[]
+    updateInstallmentPrice: (index: number, price: number, endedAt: Date) => void
+    addNewInstallment: (installment: { index: number; price: number; endedAt: Date }) => void
     removeInstallment: (index: number) => void
     member: ContractInfo['member']
   }
@@ -330,8 +330,6 @@ const MemberContractCreationForm: React.FC<
     removeInstallment,
     ...formProps
   }) => {
-    console.log({ installments })
-
     const fieldValue = form?.getFieldsValue()
 
     const { id: appId } = useApp()
@@ -1256,7 +1254,6 @@ const MemberContractCreationForm: React.FC<
                   style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}
                 >
                   <div>{installment.index === 1 ? '頭期' : `${installment.index}期`}</div>
-
                   <InputNumber
                     min={0}
                     max={sum(selectedProducts.map(p => p.totalPrice))}
@@ -1266,7 +1263,7 @@ const MemberContractCreationForm: React.FC<
                         sum(selectedProducts.map(p => p.totalPrice)) -
                         sum(installments.filter(i => i.index !== installment.index).map(i => i.price))
                       const updatedValue = Number(value) > max ? max : Number(value)
-                      updateInstallmentPrice(installment.index, updatedValue)
+                      updateInstallmentPrice(installment.index, updatedValue, installment.endedAt)
                     }}
                   />
                   {installment.index !== 1 && (
@@ -1278,17 +1275,46 @@ const MemberContractCreationForm: React.FC<
                       }}
                     ></Button>
                   )}
+                  <div style={{ marginLeft: 24 }}>
+                    繳款期限：
+                    <DatePicker
+                      format="YYYY-MM-DD HH:mm"
+                      showTime={{ format: 'HH:mm' }}
+                      value={moment(installment.endedAt)}
+                      onChange={value => {
+                        value && updateInstallmentPrice(installment.index, installment.price, value.toDate())
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
               <Button
                 icon={<PlusOutlined />}
                 type="link"
                 onClick={() => {
-                  addNewInstallment({ index: installments.length + 1, price: 0 })
+                  addNewInstallment({ index: installments.length + 1, price: 0, endedAt: new Date() })
                 }}
               ></Button>
             </Descriptions.Item>
           )}
+
+          <Descriptions.Item
+            label={
+              <div>
+                發票收件人Email<span style={{ color: 'red' }}> *</span>
+              </div>
+            }
+          >
+            <Form.Item className="mb-2" name="invoiceEmail">
+              <Input />
+            </Form.Item>
+          </Descriptions.Item>
+
+          <Descriptions.Item label="發票備註">
+            <Form.Item className="mb-2" name="invoiceComment">
+              <Input />
+            </Form.Item>
+          </Descriptions.Item>
 
           <Descriptions.Item label="統一編號">
             <Form.Item className="mb-0" name="uniformNumber">
@@ -1298,12 +1324,6 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item label="公司名稱">
             <Form.Item className="mb-0" name="uniformTitle">
-              <Input />
-            </Form.Item>
-          </Descriptions.Item>
-
-          <Descriptions.Item span={2} label="發票備註">
-            <Form.Item className="mb-2" name="invoiceComment">
               <Input />
             </Form.Item>
           </Descriptions.Item>

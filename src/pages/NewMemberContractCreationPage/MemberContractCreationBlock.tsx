@@ -46,6 +46,7 @@ const MemberContractCreationBlock: React.FC<{
       ),
     ),
   )
+  const tax = Math.round(totalPrice - priceWithoutTax)
 
   const handleMemberContractCreate = async () => {
     const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
@@ -59,6 +60,10 @@ const MemberContractCreationBlock: React.FC<{
     }
     if (!fieldValue.paymentMethod) {
       message.warn('請選擇結帳管道')
+      return
+    }
+    if (!fieldValue.invoiceEmail) {
+      message.warn('請填寫發票收件人信箱')
       return
     }
     if (!!fieldValue.uniformNumber && fieldValue.uniformNumber.length !== 8) {
@@ -102,15 +107,7 @@ const MemberContractCreationBlock: React.FC<{
     if (!window.confirm('請確認合約是否正確？')) {
       return
     }
-    const invoiceInfo = {
-      name: member.name,
-      email: member.email,
-      skipIssueInvoice: fieldValue.skipIssueInvoice,
-      uniformNumber: fieldValue.uniformNumber,
-      uniformTitle: fieldValue.uniformTitle,
-      invoiceComment: fieldValue.invoiceComment,
-      priceWithoutTax,
-    }
+
     const paymentGateway = fieldValue.paymentMethod.includes('藍新') ? 'spgateway' : 'physical'
     const paymentMethod =
       fieldValue.paymentMethod === '現金'
@@ -123,13 +120,6 @@ const MemberContractCreationBlock: React.FC<{
         ? 'physicalRemoteCredit'
         : undefined
 
-    const options = {
-      company: fieldValue.company,
-      language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
-      contractId: fieldValue.contractId,
-      isBG: member.isBG,
-      executorId: fieldValue.executorId,
-    }
     const installmentPlans =
       fieldValue.paymentMode === '訂金+尾款'
         ? [
@@ -139,8 +129,25 @@ const MemberContractCreationBlock: React.FC<{
         : ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode)
         ? installments
         : undefined
-
     const paymentMode = fieldValue.paymentMode
+    const invoiceInfo = {
+      name: member.name,
+      email: fieldValue.invoiceEmail || member.email,
+      skipIssueInvoice: fieldValue.skipIssueInvoice,
+      uniformNumber: fieldValue.uniformNumber,
+      uniformTitle: fieldValue.uniformTitle,
+      invoiceComment: fieldValue.invoiceComment,
+      priceWithoutTax,
+      totalPrice,
+      tax,
+    }
+    const options = {
+      ...fieldValue,
+      language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
+      isBG: member.isBG,
+    }
+
+    const paymentOptions = { paymentGateway, paymentMethod, paymentMode, installmentPlans }
     setLoading(true)
     if (isContract) {
       addMemberContract({
@@ -166,12 +173,7 @@ const MemberContractCreationBlock: React.FC<{
                 delivered_at: new Date(),
               }
             }),
-            paymentOptions: {
-              paymentGateway,
-              paymentMethod,
-              paymentMode,
-              installmentPlans,
-            },
+            paymentOptions,
             maxLeaveDays: Math.ceil(
               selectedProducts
                 .filter(p => p.productId.includes('AppointmentPlan_'))
@@ -273,7 +275,7 @@ const MemberContractCreationBlock: React.FC<{
         <div className="row mb-2">
           <strong className="col-6 text-right">稅額</strong>
 
-          <div className="col-6 text-right">${(totalPrice - priceWithoutTax).toLocaleString()}</div>
+          <div className="col-6 text-right">${tax.toLocaleString()}</div>
         </div>
         <div className="row mb-2">
           <strong className="col-6 text-right">總金額(含稅)</strong>
