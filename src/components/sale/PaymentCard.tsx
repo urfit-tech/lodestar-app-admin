@@ -8,6 +8,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
 import ModifyOrderStatusModal from './ModifyOrderStatusModal'
@@ -58,6 +59,11 @@ const PaymentCard: React.FC<{
 }> = ({ payments, order, onRefetch, onClose }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
+  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const permissionGroupId = paymentCompanies.paymentCompanies.find(
+    c => order.options?.company && c.companies.includes(order.options?.company),
+  )?.permissionGroupId
+
   const { permissions } = useAuth()
   const [loading, setLoading] = useState(false)
   const [cardReaderResponse, setCardReaderResponse] = useState<{
@@ -65,9 +71,16 @@ const PaymentCard: React.FC<{
     message: string
   } | null>(null)
 
-  const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string) => {
-    if (!settings['pos_serialport.target_url'] || !settings['pos_serialport.target_path']) {
-      return alert('target url or path not found')
+  const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
+    if (!settings['pos_serialport.config']) {
+      return alert('POS刷卡設定錯誤，請聯繫廠商')
+    }
+
+    const parseConfigs: { permissionGroupId: string; type: string; targetUrl: string; targetPath: string }[] =
+      JSON.parse(settings['pos_serialport.config'])
+    const config = parseConfigs.find(c => c.permissionGroupId === permissionGroupId && c.type === method)
+    if (!config || !config.targetUrl || !config.targetPath) {
+      return alert('POS刷卡設定錯誤，請聯繫廠商: no targetUrl or targetPath')
     }
     setLoading(true)
     axios
@@ -75,6 +88,8 @@ const PaymentCard: React.FC<{
         price,
         orderId,
         paymentNo,
+        targetUrl: config.targetUrl,
+        targetPath: config.targetPath,
       })
       .then(res => {
         if (res.data.message === 'success') {
@@ -100,53 +115,79 @@ const PaymentCard: React.FC<{
       {payments
         .sort((a, b) => Number(a.no[a.no.length - 1]) - Number(b.no[b.no.length - 1]))
         .map((payment, index) => {
-          const contentList = [
-            { title: formatMessage(saleMessages.PaymentCard.paymentStatus), message: payment.status, isRender: true },
-            {
-              title: formatMessage(saleMessages.PaymentCard.paidAt),
-              message: payment.paidAt ? dayjs(payment.paidAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm') : '',
-              isRender: true,
-            },
-            {
-              title: formatMessage(saleMessages.PaymentCard.paymentNo),
-              message: payment.no,
-              isRender: true,
-            },
-            {
-              title: formatMessage(saleMessages.PaymentCard.price),
-              message: payment.price.toLocaleString(),
-              isRender: true,
-            },
-            {
-              title: '結帳管道',
-              message:
-                payment.gateway === 'spgateway'
-                  ? '藍新'
-                  : payment.gateway === 'physical'
-                  ? '實體'
-                  : payment.gateway || '',
-              isRender: true,
-            },
-            {
-              title: '付款方式',
-              message:
-                payment.method === 'cash'
-                  ? '現金'
-                  : payment.method === 'bankTransfer'
-                  ? '銀行匯款'
-                  : payment.method === 'physicalCredit'
-                  ? '實體刷卡'
-                  : payment.method === 'physicalRemoteCredit'
-                  ? '遠端輸入卡號'
-                  : payment.method || '',
-              isRender: true,
-            },
-            {
-              title: '付款模式',
-              message: order.options?.paymentMode || '',
-              isRender: true,
-            },
-          ]
+          const contentList =
+            settings['payment.v2'] === '1'
+              ? [
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paymentStatus),
+                    message: payment.status,
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paidAt),
+                    message: payment.paidAt ? dayjs(payment.paidAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm') : '',
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paymentNo),
+                    message: payment.no,
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.price),
+                    message: payment.price.toLocaleString(),
+                    isRender: true,
+                  },
+
+                  {
+                    title: '結帳管道',
+                    message:
+                      payment.gateway === 'spgateway'
+                        ? '藍新'
+                        : payment.method === 'cash'
+                        ? '現金'
+                        : payment.method === 'bankTransfer'
+                        ? '銀行匯款'
+                        : payment.method === 'physicalCredit'
+                        ? '實體刷卡'
+                        : payment.method === 'physicalRemoteCredit'
+                        ? '遠端輸入卡號'
+                        : payment.method || '',
+                    isRender: true,
+                  },
+                  {
+                    title: '付款模式',
+                    message: order.options?.paymentMode || '',
+                    isRender: true,
+                  },
+                ]
+              : [
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paymentStatus),
+                    message: payment.status,
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paidAt),
+                    message: payment.paidAt ? dayjs(payment.paidAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm') : '',
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.paymentNo),
+                    message: payment.no,
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.price),
+                    message: payment.price.toLocaleString(),
+                    isRender: true,
+                  },
+                  {
+                    title: formatMessage(saleMessages.PaymentCard.gateway),
+                    message: payment.gateway,
+                    isRender: true,
+                  },
+                ]
           return (
             <StyledCard key={payment.no}>
               <div className="container">
@@ -166,12 +207,26 @@ const PaymentCard: React.FC<{
                       {order.options?.paymentMode === '訂金+尾款'
                         ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
                           ? '訂金'
-                          : `尾款 (${dayjs(order.expiredAt).format('YYYY-MM-DD HH:mm')}到期)`
+                          : `尾款`
                         : order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
                         ? '頭期'
                         : `${
                             order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index
                           } 期`}
+                    </StyledInfoMessage>
+                  </div>
+                )}
+                {!!order.options?.installmentPlans && (
+                  <div className="row mb-2 justify-content-between">
+                    <StyledInfoTitle className="column">付款期限</StyledInfoTitle>
+                    <StyledInfoMessage className="column">
+                      {order.options?.paymentMode === '訂金+尾款' &&
+                      order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 2
+                        ? dayjs(order.expiredAt).format('YYYY-MM-DD HH:mm')
+                        : order.options?.installmentPlans?.find(plan => plan.price === payment.price)?.endedAt &&
+                          dayjs(
+                            order.options?.installmentPlans?.find(plan => plan.price === payment.price)?.endedAt,
+                          ).format('YYYY-MM-DD HH:mm')}
                     </StyledInfoMessage>
                   </div>
                 )}
@@ -181,7 +236,8 @@ const PaymentCard: React.FC<{
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
                   </div>
                 )}
-                {permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
+                {settings['payment.v2'] === '1' &&
+                  permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway !== 'spgateway' &&
                   payment.method !== 'physicalCredit' &&
@@ -210,7 +266,7 @@ const PaymentCard: React.FC<{
                       disabled={loading}
                       loading={loading}
                       style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-                      onClick={() => handleCardReaderSerialport(payment.price, order.id, payment.no)}
+                      onClick={() => handleCardReaderSerialport(payment.price, order.id, payment.no, payment.method)}
                     >
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
