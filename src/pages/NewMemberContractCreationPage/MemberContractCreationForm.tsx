@@ -295,7 +295,9 @@ export type PaymentCompany = {
 }
 
 const calculateEndedAt = (startedAt: Date, weeks: number) => {
-  return moment(startedAt).add(weeks + 2, 'weeks')
+  const max = moment(startedAt).add(1, 'y').endOf('day')
+  const endedAt = moment(startedAt).add(weeks + 2, 'weeks')
+  return endedAt.isBefore(max) ? endedAt : max
 }
 
 const MemberContractCreationForm: React.FC<
@@ -1161,7 +1163,18 @@ const MemberContractCreationForm: React.FC<
               style={{ whiteSpace: 'nowrap' }}
             >
               <Form.Item name="endedAt" noStyle>
-                <DatePicker />
+                <DatePicker
+                  // disabledDate={current =>
+                  //   !!current &&
+                  //   form?.getFieldValue('startedAt') &&
+                  //   current < moment(form?.getFieldValue('startedAt')).add(1, 'y').startOf('day')
+                  // }
+                  disabledDate={current =>
+                    !!current &&
+                    (current < moment().startOf('day') ||
+                      current > moment(form?.getFieldValue('startedAt')).add(1, 'y').endOf('day'))
+                  }
+                />
               </Form.Item>
             </Descriptions.Item>
           </Descriptions>
@@ -1230,7 +1243,7 @@ const MemberContractCreationForm: React.FC<
                   form?.setFieldsValue({ skipIssueInvoice: e.target.checked })
                 }}
               >
-                後開發票
+                手動開發票
               </Checkbox>
             </Form.Item>
           </Descriptions.Item>

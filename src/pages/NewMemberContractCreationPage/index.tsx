@@ -210,6 +210,7 @@ const MemberContractCreationPage: React.VFC = () => {
             selectedProducts={selectedProducts}
             contracts={contracts}
             installments={installments}
+            sales={sales?.sales || []}
           />
         </AdminBlock>
       </div>
