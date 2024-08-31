@@ -10,7 +10,7 @@ import { sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { ContractInfo, ContractProduct, FieldProps } from '.'
+import { ContractInfo, ContractProduct, ContractSales, FieldProps } from '.'
 import hasura from '../../hasura'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -28,7 +28,8 @@ const MemberContractCreationBlock: React.FC<{
   products: ContractProduct['products']
   contracts: ContractInfo['contracts']
   installments: { price: number; index: number }[]
-}> = ({ member, form, selectedProducts, products, contracts, installments }) => {
+  sales: ContractSales['sales']
+}> = ({ member, form, selectedProducts, products, contracts, installments, sales }) => {
   const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -103,6 +104,11 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
+    if (fieldValue.paymentMethod === '藍新' && fieldValue.company.includes('基金會')) {
+      message.warn(`${fieldValue.company}不支援藍新付款`)
+      return
+    }
+
     if (
       ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode) &&
       installments.length > 1 &&
@@ -156,6 +162,7 @@ const MemberContractCreationBlock: React.FC<{
       ...fieldValue,
       language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
       isBG: member.isBG,
+      executor: sales.find(s => s.id === fieldValue.executorId),
     }
 
     const paymentOptions = {
