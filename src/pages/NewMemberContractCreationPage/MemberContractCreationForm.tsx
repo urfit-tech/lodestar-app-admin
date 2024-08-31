@@ -291,7 +291,7 @@ const BG_PRODUCT_OPTIONS_CONFIG = [
 export type PaymentCompany = {
   permissionGroupId: string
   name: string
-  companies: string[]
+  companies: { name: string; paymentGateway?: string; invoiceGateway?: string }[]
 }
 
 const calculateEndedAt = (startedAt: Date, weeks: number) => {
@@ -332,7 +332,7 @@ const MemberContractCreationForm: React.FC<
   }) => {
     const fieldValue = form?.getFieldsValue()
 
-    const { id: appId } = useApp()
+    const { id: appId, settings } = useApp()
     const { currentMemberId, authToken, currentUserRole } = useAuth()
     const { data: memberPermissionGroups } = useQuery<
       hasura.GetMemberPermissionGroup,
@@ -348,18 +348,7 @@ const MemberContractCreationForm: React.FC<
       { variables: { memberId: currentMemberId || '' }, skip: !currentMemberId || !authToken },
     )
 
-    const { data: appSettings } = useQuery<hasura.GetCustomSetting, hasura.GetCustomSettingVariables>(
-      gql`
-        query GetCustomSetting($appId: String!) {
-          app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "custom" } }) {
-            value
-          }
-        }
-      `,
-      { variables: { appId }, skip: !authToken || !appId },
-    )
-
-    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(appSettings?.app_setting[0]?.value || '{}')
+    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
 
     const [insertAppointmentPlan] = useMutation<
       hasura.CreateAppointmentPlan,
@@ -1348,8 +1337,8 @@ const MemberContractCreationForm: React.FC<
                   .map(company => company.companies)
                   .flat()
                   .map(company => (
-                    <Select.Option key={company} value={company}>
-                      {company}
+                    <Select.Option key={company.name} value={company.name}>
+                      {company.name}
                     </Select.Option>
                   ))}
               </Select>
