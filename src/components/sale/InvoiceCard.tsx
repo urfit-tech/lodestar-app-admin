@@ -5,6 +5,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { render } from 'mustache'
+import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -108,6 +109,10 @@ const InvoiceCard: React.FC<{
   invoicePrice?: number
   invoiceRandomNumber?: string
   invoiceGatewayId?: string
+  companyUniformNumber?: string
+  executorName?: string
+  memberId?: string
+  paymentMethod?: string
   onClose?: () => void
 }> = ({
   status,
@@ -126,6 +131,10 @@ const InvoiceCard: React.FC<{
   invoicePrice,
   invoiceRandomNumber,
   invoiceGatewayId,
+  companyUniformNumber,
+  executorName,
+  memberId,
+  paymentMethod,
   onClose,
 }) => {
   const { formatMessage } = useIntl()
@@ -138,6 +147,7 @@ const InvoiceCard: React.FC<{
   const receiptRef3 = useRef<HTMLDivElement | null>(null)
 
   const [invoiceResponse, setInvoiceResponse] = useState<InvoiceResponse>()
+
   const statusMessage = !status
     ? formatMessage(saleMessages.InvoiceCard.invoicePending)
     : status === 'SUCCESS'
@@ -237,8 +247,8 @@ const InvoiceCard: React.FC<{
 
           WinPrint?.document.close()
           WinPrint?.focus()
-          WinPrint?.print()
-          WinPrint?.close()
+          // WinPrint?.print()
+          // WinPrint?.close()
           setShowInvoice(false)
         }, 1500)
       }
@@ -289,7 +299,7 @@ const InvoiceCard: React.FC<{
                         createdAt: invoiceResponse?.CreateTime,
                         randomNumber: invoiceResponse?.RandomNum,
                         sellerUniformNumber: '70560259',
-                        totalPrice: invoiceResponse?.TotalAmt,
+                        totalPrice: Number(invoiceResponse?.TotalAmt || 0).toLocaleString(),
                         uniformTitle: invoiceResponse?.BuyerUBN && `賣方 ${invoiceResponse.BuyerUBN}`,
                         invoiceNo: `${invoiceResponse?.InvoiceNumber.substring(
                           0,
@@ -309,12 +319,21 @@ const InvoiceCard: React.FC<{
                       templateVariables={{
                         createdAt: invoiceResponse?.CreateTime,
                         invoiceNo: invoiceResponse?.InvoiceNumber,
-                        ItemCount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemCount,
-                        ItemPrice: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemPrice,
-                        ItemName: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemName,
-                        ItemNum: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemNum,
-                        ItemWord: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemWord,
-                        ItemAmount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemAmount,
+                        itemBlock: JSON.parse(invoiceResponse?.ItemDetail || '{}').map(
+                          (item: any) => `<div class='details'>
+    <div style='display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;'><div>${
+      item.ItemCount
+    } * @ ${Number(item.ItemPrice).toLocaleString()}</div><div>${Number(item.ItemAmount).toLocaleString()}</div></div>
+    <div>${item.ItemName}</div>
+    <div>${item.ItemNum}${item.ItemWord}</div>
+  </div>`,
+                        ),
+                        totalAmount: Number(
+                          sum(
+                            JSON.parse(invoiceResponse?.ItemDetail || '{}').map((item: any) => Number(item.ItemAmount)),
+                          ),
+                        ).toLocaleString(),
+                        companyUniformNumber,
                       }}
                     />
                   </div>
@@ -326,13 +345,26 @@ const InvoiceCard: React.FC<{
                       templateVariables={{
                         createdAt: invoiceResponse?.CreateTime,
                         invoiceNo: invoiceResponse?.InvoiceNumber,
-                        ItemCount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemCount,
-                        ItemPrice: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemPrice,
-                        ItemName: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemName,
-                        ItemNum: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemNum,
-                        ItemWord: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemWord,
-                        ItemAmount: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.[0]?.ItemAmount,
-                        month: new Date().getMonth() + 1,
+                        itemBlock: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map(
+                          (item: any) => `<div class='receipt-detail-3-flex'>
+      <div style='max-width:60%;'>${item.ItemName}</div>
+      <div>x ${item.ItemCount} ${Number(item.ItemPrice).toLocaleString()}</div>
+    </div>`,
+                        ),
+                        totalAmount: Number(
+                          sum(
+                            JSON.parse(invoiceResponse?.ItemDetail || '{}').map((item: any) => Number(item.ItemAmount)),
+                          ),
+                        ).toLocaleString(),
+                        executor: executorName,
+                        memberName: invoiceName,
+                        memberId,
+                        comment: invoiceComment,
+                        length: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.length || 0,
+                        totalUnit: sum(
+                          JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map((item: any) => item.ItemCount) || 0,
+                        ),
+                        paymentMethod,
                       }}
                     />
                   </div>
