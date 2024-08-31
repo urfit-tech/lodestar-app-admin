@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
+import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
 import OrderCard from './OrderCard'
@@ -61,7 +62,10 @@ const OrderDetailDrawer: React.FC<{
     orderDetailRefetch,
     invoices,
   } = useOrderDetail(orderLogId)
-
+  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const invoiceGatewayId = paymentCompanies?.paymentCompanies
+    ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
+    ?.companies.find(company => company.name === orderLog.options?.company)?.invoiceGatewayId
   return (
     <>
       {renderTrigger?.({})}
@@ -152,6 +156,7 @@ const OrderDetailDrawer: React.FC<{
                         onClose()
                         orderDetailRefetch()
                       }}
+                      invoiceGatewayId={invoiceGatewayId}
                     />
                   ))
                 )}
@@ -273,6 +278,7 @@ const OrderDetailDrawer: React.FC<{
                       orderLog.invoiceOptions?.address || ''
                     }`}
                     invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                    invoiceGatewayId={invoiceGatewayId}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>

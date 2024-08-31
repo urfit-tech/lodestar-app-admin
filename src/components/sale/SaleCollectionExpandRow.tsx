@@ -16,6 +16,7 @@ import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
+import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
@@ -56,6 +57,10 @@ const SaleCollectionExpandRow = ({
   const { settings, id: appId } = useApp()
   const { currentUserRole, permissions, authToken } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
+  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const invoiceGatewayId = paymentCompanies?.paymentCompanies
+    ?.find(c => record.options?.company && c.companies.map(c => c.name).includes(record.options?.company))
+    ?.companies.find(company => company.name === record.options?.company)?.invoiceGatewayId
 
   const [loading, setLoading] = useState(false)
   const [form] = useForm<FieldProps>()
@@ -347,7 +352,7 @@ const SaleCollectionExpandRow = ({
                           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
                           {
                             appId,
-                            invoiceGatewayId: 'd9bd90af-6662-409b-92ee-9e9c198d196c',
+                            invoiceGatewayId,
                             invoiceInfo: {
                               MerchantOrderNo: new Date().getTime().toString(),
                               BuyerEmail: orderLog.invoiceOptions?.email || '',
