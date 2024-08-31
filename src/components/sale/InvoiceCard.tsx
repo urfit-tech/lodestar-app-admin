@@ -10,6 +10,34 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import saleMessages from './translation'
 
+export type InvoiceRequest = {
+  MerchantOrderNo: string
+  BuyerName: string
+  BuyerUBN?: string
+  BuyerAddress?: string
+  BuyerPhone?: string
+  BuyerEmail?: string
+  Category: string
+  TaxType: string
+  TaxRate: number
+  Amt: number
+  TaxAmt: number
+  TotalAmt: number
+  LoveCode?: string
+  PrintFlag: string
+  ItemName: string
+  ItemCount: string
+  ItemUnit: string
+  ItemPrice: string
+  ItemAmt: string
+  ItemTaxType?: string
+  Comment?: string
+  AmtFree?: number
+  AmtZero?: number
+  CustomsClearance?: string
+  AmtSales?: number
+}
+
 type InvoiceResponse = {
   MerchantID: string
   InvoiceTransNo: string
@@ -26,7 +54,7 @@ type InvoiceResponse = {
   TaxType: string
   TaxRate: string
   Amt: string
-  TaxAmt: string
+  TaxAmt: number
   TotalAmt: string
   LoveCode?: string
   PrintFlag: string
