@@ -66,6 +66,11 @@ const OrderDetailDrawer: React.FC<{
   const invoiceGatewayId = paymentCompanies?.paymentCompanies
     ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
     ?.companies.find(company => company.name === orderLog.options?.company)?.invoiceGatewayId
+  const companyUniformNumber = paymentCompanies?.paymentCompanies
+    ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
+    ?.companies.find(company => company.name === orderLog.options?.company)
+    ?.name?.split(' - ')[1]
+
   return (
     <>
       {renderTrigger?.({})}
@@ -157,6 +162,10 @@ const OrderDetailDrawer: React.FC<{
                         orderDetailRefetch()
                       }}
                       invoiceGatewayId={invoiceGatewayId}
+                      companyUniformNumber={companyUniformNumber}
+                      executorName={orderLog.options?.executor?.name}
+                      memberId={orderLog.memberId}
+                      paymentMethod={orderLog.options?.paymentMethod}
                     />
                   ))
                 )}
@@ -391,7 +400,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     },
   )
 
-  const orderLog: Pick<
+  const orderLog: { memberId: string } & Pick<
     OrderLog,
     | 'id'
     | 'status'
@@ -414,6 +423,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     invoiceOptions: orderDetailData?.order_log_by_pk?.invoice_options,
     invoiceIssuedAt: orderDetailData?.order_log_by_pk?.invoice_issued_at,
     expiredAt: orderDetailData?.order_log_by_pk?.expired_at,
+    memberId: orderDetailData?.order_log_by_pk?.member?.id || '',
   }
 
   const orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[] =
