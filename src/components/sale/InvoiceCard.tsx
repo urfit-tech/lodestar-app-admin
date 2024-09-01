@@ -247,8 +247,8 @@ const InvoiceCard: React.FC<{
 
           WinPrint?.document.close()
           WinPrint?.focus()
-          // WinPrint?.print()
-          // WinPrint?.close()
+          WinPrint?.print()
+          WinPrint?.close()
           setShowInvoice(false)
         }, 1500)
       }
