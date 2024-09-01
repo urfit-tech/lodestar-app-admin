@@ -409,7 +409,7 @@ const MemberContractCreationBlock: React.FC<{
           <div key={i.TaxType}>
             <div className="row mb-2">
               <strong className="col-6 text-right">
-                {i.TaxType === '9' ? '混稅' : i.TaxType === '3' ? '零稅' : '應稅'}
+                {i.TaxType === '9' ? '混稅' : i.TaxType === '2' ? '零稅' : i.TaxType === '3' ? '免稅' : '應稅'}
               </strong>
 
               <div className="col-6 text-right">${i.Amt.toLocaleString()}</div>
