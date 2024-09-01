@@ -1,9 +1,11 @@
 import { Button, message } from 'antd'
 import moment from 'moment'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { useAttend, useGetAttend } from '../../hooks/attend'
+import attendMessages from './translation'
 
 const NavbarClockButton = styled(Button)`
   @media screen and (max-width: 480px) {
@@ -16,7 +18,7 @@ const NavbarClockButton = styled(Button)`
 const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { attend, refetchAttend } = useGetAttend(memberId)
   const { insertAttend, updateAttend } = useAttend()
-
+  const { formatMessage } = useIntl()
   return (
     <NavbarClockButton
       className="mr-3"
@@ -29,7 +31,7 @@ const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
               })
                 .then(() => {
                   refetchAttend()
-                  message.success('下班打卡成功，努力～')
+                  message.success(formatMessage(attendMessages.AttendButton.clockOutSuccessfully))
                 })
                 .catch(handleError)
                 .finally(() => {})
@@ -38,7 +40,7 @@ const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
               await insertAttend({ variables: { memberId: memberId } })
                 .then(() => {
                   refetchAttend()
-                  message.success('上班打卡成功，努力～')
+                  message.success(formatMessage(attendMessages.AttendButton.clockInSuccessfully))
                 })
                 .catch(handleError)
                 .finally(() => {})
@@ -49,7 +51,9 @@ const AttendButton: React.FC<{ memberId: string }> = ({ memberId }) => {
         borderColor: attend.length !== 0 ? '#1890ff' : '#52c41a',
       }}
     >
-      {attend.length !== 0 ? '下班打卡' : '上班打卡'}
+      {attend.length !== 0
+        ? formatMessage(attendMessages.AttendButton.clockOut)
+        : formatMessage(attendMessages.AttendButton.clockIn)}
     </NavbarClockButton>
   )
 }
