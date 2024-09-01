@@ -5,7 +5,6 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { sum } from 'lodash'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -289,15 +288,11 @@ const SaleCollectionExpandRow = ({
             orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
             paymentLogs={paymentLogs}
-            defaultPrice={
-              totalPrice -
-              sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) +
-              -sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
-            }
             onRefetch={() => {
               onRefetchOrderLog?.()
               refetchOrderLogExpandRow()
             }}
+            totalPrice={totalPrice}
           />
         )}
         {currentUserRole === 'app-owner' &&

@@ -23,10 +23,11 @@ const messages = defineMessages({
 })
 
 type FieldProps = {
-  type: 'paid' | 'refunded' | 'expired'
   price: number
   paidAt: Moment
 }
+
+type ModifyType = 'paid' | 'refunded' | 'expired'
 
 const ModifyOrderStatusModal: React.VFC<{
   orderLogId: string
@@ -38,22 +39,22 @@ const ModifyOrderStatusModal: React.VFC<{
     method?: string | null
     no?: string
   }[]
-  defaultPrice?: number
   onRefetch?: (status: string) => void
   canModifyOperations?: string[]
   renderTrigger?: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => React.ReactElement
   targetPaymentNo?: string
   minPrice?: number
+  totalPrice: number
 }> = ({
   orderLogId,
   defaultOrderStatus,
   paymentLogs,
-  defaultPrice = 0,
   onRefetch,
   canModifyOperations,
   renderTrigger,
   targetPaymentNo,
   minPrice,
+  totalPrice,
 }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -63,13 +64,22 @@ const ModifyOrderStatusModal: React.VFC<{
     UPDATE_ORDER_LOG_STATUS,
   )
   const [loading, setLoading] = useState(false)
+  const [type, setType] = useState<ModifyType>('paid')
+
+  const maxPrice =
+    type === 'paid'
+      ? totalPrice - sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price))
+      : type === 'refunded'
+      ? sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) -
+        sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
+      : 0
 
   const handleSubmit = async (onFinished?: () => void) => {
     try {
       setLoading(true)
       const values = await form.validateFields()
-      if (values.type !== 'expired') {
-        const paymentStatus = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
+      if (type !== 'expired') {
+        const paymentStatus = type === 'paid' ? 'SUCCESS' : 'REFUND'
         const paidAt = values.paidAt.toISOString(true)
         await upsertPaymentLog({
           variables: {
@@ -152,15 +162,14 @@ const ModifyOrderStatusModal: React.VFC<{
         form={form}
         layout="vertical"
         initialValues={{
-          type: 'paid',
-          price: defaultPrice,
+          price: maxPrice,
           paidAt: moment().startOf('minute'),
         }}
       >
         <div className="row">
           <div className="col-6">
             <Form.Item label={formatMessage(orderMessages.label.orderLogStatus)} name="type">
-              <Select<string>>
+              <Select<string> defaultValue={type} value={type} onChange={e => setType(e as ModifyType)}>
                 {[
                   { operation: 'paid', label: formatMessage(messages.hasPaid) },
                   { operation: 'refunded', label: formatMessage(messages.hasRefunded) },
@@ -181,10 +190,10 @@ const ModifyOrderStatusModal: React.VFC<{
               name="price"
               rules={[
                 formInstance => ({
-                  message: `金額不能超過 ${defaultPrice}`,
+                  message: `金額不能超過 ${maxPrice}`,
                   validator() {
                     const price = formInstance.getFieldValue('price')
-                    if (price > defaultPrice) {
+                    if (price > maxPrice) {
                       return Promise.reject(new Error())
                     }
                     return Promise.resolve()
@@ -194,7 +203,7 @@ const ModifyOrderStatusModal: React.VFC<{
             >
               <InputNumber
                 min={minPrice || 0}
-                max={defaultPrice}
+                max={maxPrice}
                 formatter={value => `NT$ ${value}`}
                 parser={value => value?.replace(/\D/g, '') || ''}
               />
