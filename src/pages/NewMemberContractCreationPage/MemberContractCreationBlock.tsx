@@ -65,34 +65,34 @@ const MemberContractCreationBlock: React.FC<{
   let invoices: InvoiceRequest[] = []
 
   const items = selectedProducts.map(p => {
-    const taxType = ['學費', '註冊費'].includes(p.options.product) ? '2' : '1'
+    const taxType = ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
     return p.title.includes('_套裝項目_')
       ? {
           name: p.title,
           count: 1,
           unit: '件',
-          price: category === 'B2B' ? (taxType === '2' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+          price: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
           taxType,
-          amt: category === 'B2B' ? (taxType === '2' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+          amt: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
         }
       : {
           name: p.title,
           count: p.amount,
           unit: '件',
-          price: category === 'B2B' ? (taxType === '2' ? p.price : Math.round(p.price / 1.05)) : p.price,
+          price: category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price,
           taxType,
-          amt: p.amount * (category === 'B2B' ? (taxType === '2' ? p.price : Math.round(p.price / 1.05)) : p.price),
+          amt: p.amount * (category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price),
         }
   })
 
   if (category === 'B2C') {
     // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
-    const taxType = totalPriceWithZeroTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithZeroTax > 0 ? '2' : '1'
-    const taxRate = taxType === '2' ? 0 : 5
+    const taxType = totalPriceWithZeroTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithZeroTax > 0 ? '3' : '1'
+    const taxRate = taxType === '3' ? 0 : 5
     invoices.push({
       TaxType: taxType,
       Amt: totalPriceWithoutTax + totalPriceWithZeroTax,
-      TaxAmt: taxType === '2' ? 0 : tax,
+      TaxAmt: taxType === '3' ? 0 : tax,
       TotalAmt: totalPrice,
       TaxRate: taxRate,
       AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
@@ -139,9 +139,9 @@ const MemberContractCreationBlock: React.FC<{
     }
 
     if (totalPriceWithZeroTax > 0) {
-      const filteredItems = items.filter(v => v.taxType === '2')
+      const filteredItems = items.filter(v => v.taxType === '3')
       invoices.push({
-        TaxType: '2',
+        TaxType: '3',
         Amt: totalPriceWithZeroTax,
         TaxAmt: 0,
         TotalAmt: totalPriceWithZeroTax,
@@ -158,7 +158,6 @@ const MemberContractCreationBlock: React.FC<{
         Category: category,
         Comment: fieldValue.invoiceComment,
         PrintFlag: 'Y',
-        CustomsClearance: '1',
       })
     }
   }
@@ -410,7 +409,7 @@ const MemberContractCreationBlock: React.FC<{
           <div key={i.TaxType}>
             <div className="row mb-2">
               <strong className="col-6 text-right">
-                {i.TaxType === '9' ? '混稅' : i.TaxType === '2' ? '零稅' : '應稅'}
+                {i.TaxType === '9' ? '混稅' : i.TaxType === '2' ? '零稅' : i.TaxType === '3' ? '免稅' : '應稅'}
               </strong>
 
               <div className="col-6 text-right">${i.Amt.toLocaleString()}</div>

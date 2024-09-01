@@ -113,6 +113,9 @@ const InvoiceCard: React.FC<{
   executorName?: string
   memberId?: string
   paymentMethod?: string
+  invoiceCompanyName?: string
+  companyAddress?: string
+  companyPhone?: string
   onClose?: () => void
 }> = ({
   status,
@@ -135,6 +138,9 @@ const InvoiceCard: React.FC<{
   executorName,
   memberId,
   paymentMethod,
+  invoiceCompanyName,
+  companyAddress,
+  companyPhone,
   onClose,
 }) => {
   const { formatMessage } = useIntl()
@@ -298,7 +304,7 @@ const InvoiceCard: React.FC<{
                           .padStart(2, '0')}`,
                         createdAt: invoiceResponse?.CreateTime,
                         randomNumber: invoiceResponse?.RandomNum,
-                        sellerUniformNumber: '70560259',
+                        sellerUniformNumber: companyUniformNumber,
                         totalPrice: Number(invoiceResponse?.TotalAmt || 0).toLocaleString(),
                         uniformTitle: invoiceResponse?.BuyerUBN && `賣方 ${invoiceResponse.BuyerUBN}`,
                         invoiceNo: `${invoiceResponse?.InvoiceNumber.substring(
@@ -334,6 +340,9 @@ const InvoiceCard: React.FC<{
                           ),
                         ).toLocaleString(),
                         companyUniformNumber,
+                        invoiceCompanyName,
+                        companyAddress,
+                        companyPhone,
                       }}
                     />
                   </div>
@@ -365,6 +374,9 @@ const InvoiceCard: React.FC<{
                           JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map((item: any) => item.ItemCount) || 0,
                         ),
                         paymentMethod,
+                        invoiceCompanyName,
+                        companyAddress,
+                        companyPhone,
                       }}
                     />
                   </div>
