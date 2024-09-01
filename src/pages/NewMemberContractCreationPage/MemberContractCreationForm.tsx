@@ -297,6 +297,10 @@ export type PaymentCompany = {
     invoiceGateway?: string
     invoiceGatewayId?: string
     paymentGatewayId?: string
+    companyUniformNumber?: string
+    companyAddress?: string
+    companyPhone?: string
+    invoiceCompanyName?: string
   }[]
 }
 

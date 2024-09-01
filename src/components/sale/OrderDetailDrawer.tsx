@@ -63,13 +63,9 @@ const OrderDetailDrawer: React.FC<{
     invoices,
   } = useOrderDetail(orderLogId)
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
-  const invoiceGatewayId = paymentCompanies?.paymentCompanies
-    ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
-    ?.companies.find(company => company.name === orderLog.options?.company)?.invoiceGatewayId
-  const companyUniformNumber = paymentCompanies?.paymentCompanies
+  const company = paymentCompanies?.paymentCompanies
     ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
     ?.companies.find(company => company.name === orderLog.options?.company)
-    ?.name?.split(' - ')[1]
 
   return (
     <>
@@ -161,11 +157,14 @@ const OrderDetailDrawer: React.FC<{
                         onClose()
                         orderDetailRefetch()
                       }}
-                      invoiceGatewayId={invoiceGatewayId}
-                      companyUniformNumber={companyUniformNumber}
+                      invoiceGatewayId={company?.invoiceGatewayId}
+                      companyUniformNumber={company?.companyUniformNumber}
                       executorName={orderLog.options?.executor?.name}
                       memberId={orderLog.memberId}
                       paymentMethod={orderLog.options?.paymentMethod}
+                      invoiceCompanyName={company?.invoiceCompanyName}
+                      companyAddress={company?.companyAddress}
+                      companyPhone={company?.companyPhone}
                     />
                   ))
                 )}
@@ -287,7 +286,7 @@ const OrderDetailDrawer: React.FC<{
                       orderLog.invoiceOptions?.address || ''
                     }`}
                     invoiceComment={orderLog.invoiceOptions?.invoiceComment}
-                    invoiceGatewayId={invoiceGatewayId}
+                    invoiceGatewayId={company?.invoiceGatewayId}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
