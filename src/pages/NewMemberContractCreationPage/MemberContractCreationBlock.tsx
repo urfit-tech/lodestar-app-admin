@@ -57,10 +57,10 @@ const MemberContractCreationBlock: React.FC<{
     selectedProducts.filter(p => !['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
   )
   const totalPriceWithoutTax = Math.round(totalPriceWithTax / 1.05)
-  const totalPriceWithZeroTax = sum(
+  const totalPriceWithFreeTax = sum(
     selectedProducts.filter(p => !!['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
   )
-  const tax = totalPrice - totalPriceWithoutTax - totalPriceWithZeroTax
+  const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
 
   let invoices: InvoiceRequest[] = []
 
@@ -87,24 +87,24 @@ const MemberContractCreationBlock: React.FC<{
 
   if (category === 'B2C') {
     // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
-    const taxType = totalPriceWithZeroTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithZeroTax > 0 ? '3' : '1'
+    const taxType = totalPriceWithFreeTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithFreeTax > 0 ? '3' : '1'
     const taxRate = taxType === '3' ? 0 : 5
     invoices.push({
       TaxType: taxType,
-      Amt: totalPriceWithoutTax + totalPriceWithZeroTax,
+      Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
       TaxAmt: taxType === '3' ? 0 : tax,
       TotalAmt: totalPrice,
       TaxRate: taxRate,
       AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
-      AmtFree: taxType === '9' ? 0 : undefined,
-      AmtZero: taxType === '9' ? totalPriceWithZeroTax : undefined,
+      AmtFree: taxType === '9' ? totalPriceWithFreeTax : undefined,
+      AmtZero: taxType === '9' ? 0 : undefined,
       ItemName: items.map(v => v.name).join('|'),
       ItemCount: items.map(v => v.count).join('|'),
       ItemUnit: items.map(v => v.unit).join('|'),
       ItemPrice: items.map(v => v.price).join('|'),
       ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
       ItemAmt: items.map(v => v.amt).join('|'),
-      MerchantOrderNo: new Date().getTime().toString(),
+      MerchantOrderNo: new Date().getTime().toString() + taxType,
       BuyerEmail: fieldValue.invoiceEmail || member.email,
       BuyerName: fieldValue.uniformTitle || member.name,
       BuyerUBN: fieldValue.uniformNumber,
@@ -121,14 +121,14 @@ const MemberContractCreationBlock: React.FC<{
         TaxType: '1',
         Amt: totalPriceWithoutTax,
         TaxAmt: tax,
-        TotalAmt: totalPrice - totalPriceWithZeroTax,
+        TotalAmt: totalPrice - totalPriceWithFreeTax,
         TaxRate: 5,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
-        ItemAmt: items.map(v => v.amt).join('|'),
-        MerchantOrderNo: new Date().getTime().toString(),
+        ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        MerchantOrderNo: new Date().getTime().toString() + '1',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
         BuyerUBN: fieldValue.uniformNumber,
@@ -138,20 +138,20 @@ const MemberContractCreationBlock: React.FC<{
       })
     }
 
-    if (totalPriceWithZeroTax > 0) {
+    if (totalPriceWithFreeTax > 0) {
       const filteredItems = items.filter(v => v.taxType === '3')
       invoices.push({
         TaxType: '3',
-        Amt: totalPriceWithZeroTax,
+        Amt: totalPriceWithFreeTax,
         TaxAmt: 0,
-        TotalAmt: totalPriceWithZeroTax,
+        TotalAmt: totalPriceWithFreeTax,
         TaxRate: 0,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
-        ItemAmt: items.map(v => v.amt).join('|'),
-        MerchantOrderNo: new Date().getTime().toString(),
+        ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        MerchantOrderNo: new Date().getTime().toString() + '3',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
         BuyerUBN: fieldValue.uniformNumber,
@@ -167,7 +167,7 @@ const MemberContractCreationBlock: React.FC<{
     totalPrice,
     totalPriceWithTax,
     totalPriceWithoutTax,
-    totalPriceWithZeroTax,
+    totalPriceWithFreeTax,
     tax,
     invoices,
   })
