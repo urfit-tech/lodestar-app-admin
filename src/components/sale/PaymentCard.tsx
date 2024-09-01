@@ -252,7 +252,7 @@ const PaymentCard: React.FC<{
                       orderLogId={order.id}
                       defaultOrderStatus={order.status}
                       paymentLogs={payments}
-                      defaultPrice={payment.price}
+                      totalPrice={payment.price}
                       minPrice={payment.price}
                       onRefetch={onRefetch}
                       canModifyOperations={['paid']}
