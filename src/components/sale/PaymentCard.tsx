@@ -142,18 +142,17 @@ const PaymentCard: React.FC<{
 
                   {
                     title: '結帳管道',
-                    message:
-                      payment.gateway === 'spgateway'
-                        ? '藍新'
-                        : payment.method === 'cash'
-                        ? '現金'
-                        : payment.method === 'bankTransfer'
-                        ? '銀行匯款'
-                        : payment.method === 'physicalCredit'
-                        ? '實體刷卡'
-                        : payment.method === 'physicalRemoteCredit'
-                        ? '遠端輸入卡號'
-                        : payment.method || '',
+                    message: payment.gateway.includes('spgateway')
+                      ? '藍新'
+                      : payment.method === 'cash'
+                      ? '現金'
+                      : payment.method === 'bankTransfer'
+                      ? '銀行匯款'
+                      : payment.method === 'physicalCredit'
+                      ? '實體刷卡'
+                      : payment.method === 'physicalRemoteCredit'
+                      ? '遠端輸入卡號'
+                      : payment.method || '',
                     isRender: true,
                   },
                   {
@@ -240,7 +239,7 @@ const PaymentCard: React.FC<{
                 {settings['payment.v2'] === '1' &&
                   permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
-                  payment.gateway !== 'spgateway' &&
+                  !payment.gateway.includes('spgateway') &&
                   payment.method !== 'physicalCredit' &&
                   payment.method !== 'physicalRemoteCredit' && (
                     <ModifyOrderStatusModal

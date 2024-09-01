@@ -193,7 +193,7 @@ const InvoiceCard: React.FC<{
     {
       title: formatMessage(saleMessages.InvoiceCard.invoiceAddress),
       message: invoiceAddress,
-      isRender: !!invoiceAddress,
+      isRender: !!invoiceAddress.trim(),
     },
     {
       title: formatMessage(saleMessages.InvoiceCard.invoiceComment),
@@ -329,16 +329,16 @@ const InvoiceCard: React.FC<{
                           (item: any) => `<div class='details'>
     <div style='display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;'><div>${
       item.ItemCount
-    } * @ ${Number(item.ItemPrice).toLocaleString()}</div><div>${Number(item.ItemAmount).toLocaleString()}</div></div>
+    } * @ ${Number(
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice * 1.05) : item.ItemPrice,
+                          ).toLocaleString()}</div><div>${Number(
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemAmount * 1.05) : item.ItemAmount,
+                          ).toLocaleString()}</div></div>
     <div>${item.ItemName}</div>
     <div>${item.ItemNum}${item.ItemWord}</div>
   </div>`,
                         ),
-                        totalAmount: Number(
-                          sum(
-                            JSON.parse(invoiceResponse?.ItemDetail || '{}').map((item: any) => Number(item.ItemAmount)),
-                          ),
-                        ).toLocaleString(),
+                        totalAmount: Number(invoiceResponse?.TotalAmt || 0).toLocaleString(),
                         companyUniformNumber,
                         invoiceCompanyName,
                         companyAddress,
@@ -357,14 +357,12 @@ const InvoiceCard: React.FC<{
                         itemBlock: JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map(
                           (item: any) => `<div class='receipt-detail-3-flex'>
       <div style='max-width:60%;'>${item.ItemName}</div>
-      <div>x ${item.ItemCount} ${Number(item.ItemPrice).toLocaleString()}</div>
+      <div>x ${item.ItemCount} ${Number(
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice * 1.05) : item.ItemPrice,
+                          ).toLocaleString()}</div>
     </div>`,
                         ),
-                        totalAmount: Number(
-                          sum(
-                            JSON.parse(invoiceResponse?.ItemDetail || '{}').map((item: any) => Number(item.ItemAmount)),
-                          ),
-                        ).toLocaleString(),
+                        totalAmount: Number(invoiceResponse?.TotalAmt || 0).toLocaleString(),
                         executor: executorName,
                         memberName: invoiceName,
                         memberId,
