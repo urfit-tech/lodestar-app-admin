@@ -383,7 +383,7 @@ const SaleCollectionExpandRow = ({
                               BuyerUBN: orderLog.invoiceOptions?.uniformNumber || '',
                               Category: orderLog.invoiceOptions?.uniformNumber ? 'B2B' : 'B2C',
                               TaxType: values.taxType,
-                              TaxRate: 5,
+                              TaxRate: values.taxType === '3' || values.taxType === '2' ? 0 : 5,
                               Amt: values.priceWithoutTax,
                               TaxAmt: values.tax,
                               TotalAmt: values.totalPrice,
@@ -403,8 +403,10 @@ const SaleCollectionExpandRow = ({
                           },
                         )
                         .then(r => {
-                          if (r.data.code === 'SUCCESS') {
+                          if (r.data?.result?.Status === 'SUCCESS') {
                             message.success('發票開立成功')
+                          } else {
+                            throw new Error(r.data?.result?.Message)
                           }
                         })
                         .catch(handleError)
