@@ -82,7 +82,34 @@ const SaleCollectionExpandRow = ({
     paymentMethod,
     refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
+  useEffect(() => {
+    const style: any = document.createElement('style')
+    style.type = 'text/css'
 
+    const styles = `
+      .ant-modal-wrap {
+        z-index: 1500 !important;
+      }
+      .ant-picker-dropdown {
+        z-index: 1500 !important;
+      }
+      .ant-select-dropdown {
+        z-index: 1500 !important;
+      }
+    `
+
+    if (style.styleSheet) {
+      style.styleSheet.cssText = styles
+    } else {
+      style.appendChild(document.createTextNode(styles))
+    }
+
+    document.head.appendChild(style)
+
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
   return (
     <div>
       {loadingExpandRowOrderProduct ? (
