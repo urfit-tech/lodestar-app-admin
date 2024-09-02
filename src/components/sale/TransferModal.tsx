@@ -110,7 +110,8 @@ const TransferModal: React.FC<{
                 {transferManagers
                   .filter(manager =>
                     searchValue !== '' && searchValue.length >= 2
-                      ? manager.email.includes(searchValue) || manager.name.includes(searchValue)
+                      ? manager.email.toLowerCase().includes(searchValue) ||
+                        manager.name.toLowerCase().includes(searchValue)
                       : manager,
                   )
                   .map(manager => (
