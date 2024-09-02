@@ -63,6 +63,7 @@ const ModifyOrderStatusModal: React.VFC<{
   const [updateOrderLogStatus] = useMutation<hasura.UPDATE_ORDER_LOG_STATUS, hasura.UPDATE_ORDER_LOG_STATUSVariables>(
     UPDATE_ORDER_LOG_STATUS,
   )
+
   const [loading, setLoading] = useState(false)
   const [type, setType] = useState<ModifyType>('paid')
 
