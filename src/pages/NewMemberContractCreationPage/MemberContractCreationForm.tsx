@@ -734,6 +734,7 @@ const MemberContractCreationForm: React.FC<
                                     }}
                                   >
                                     {[
+                                      { week: '1' },
                                       { week: '3' },
                                       { week: '4' },
                                       { week: '6' },
