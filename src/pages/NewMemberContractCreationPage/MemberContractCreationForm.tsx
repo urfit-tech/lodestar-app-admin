@@ -859,6 +859,7 @@ const MemberContractCreationForm: React.FC<
                                   ...category,
                                   name: value.toString(),
                                 })
+                                setCustomPrice(calculateMinPrice(category, weeklyBatch, totalAmount))
                               }}
                             >
                               {(category.language === '中文' &&
