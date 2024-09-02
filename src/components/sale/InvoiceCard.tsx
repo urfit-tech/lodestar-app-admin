@@ -330,9 +330,9 @@ const InvoiceCard: React.FC<{
     <div style='display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;'><div>${
       item.ItemCount
     } * @ ${Number(
-                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice * 1.05) : item.ItemPrice,
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice) : item.ItemPrice,
                           ).toLocaleString()}</div><div>${Number(
-                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemAmount * 1.05) : item.ItemAmount,
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemAmount) : item.ItemAmount,
                           ).toLocaleString()}</div></div>
     <div>${item.ItemName}</div>
     <div>${item.ItemNum}${item.ItemWord}</div>
@@ -358,7 +358,7 @@ const InvoiceCard: React.FC<{
                           (item: any) => `<div class='receipt-detail-3-flex'>
       <div style='max-width:60%;'>${item.ItemName}</div>
       <div>x ${item.ItemCount} ${Number(
-                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice * 1.05) : item.ItemPrice,
+                            invoiceResponse?.Category === 'B2B' ? Math.round(item.ItemPrice) : item.ItemPrice,
                           ).toLocaleString()}</div>
     </div>`,
                         ),
