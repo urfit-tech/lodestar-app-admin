@@ -40,7 +40,6 @@ const MemberContractCreationBlock: React.FC<{
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [paymentUrl, setPaymentUrl] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isFinish, setIsFinish] = useState(false)
 
   const fieldValue = form.getFieldsValue()
 
@@ -338,58 +337,55 @@ const MemberContractCreationBlock: React.FC<{
     })
     console.log(paymentGateway)
 
-    if (!paymentGateway.includes('spgateway')) {
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
-          {
-            paymentModel: { type: 'perpetual', gateway: paymentGateway, method: paymentMethod },
-            productIds: selectedProducts.map(v => v.productId),
-            invoice: invoiceInfo,
-            memberId: member.id,
-            invoiceGatewayId: paymentCompany?.invoiceGatewayId,
-            options: {
-              ...options,
-              ...productOptions,
-              installmentPlans,
-              paymentMode,
-            },
+    await axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
+        {
+          paymentModel: { type: 'perpetual', gateway: paymentGateway, method: paymentMethod },
+          productIds: selectedProducts.map(v => v.productId),
+          invoice: invoiceInfo,
+          memberId: member.id,
+          invoiceGatewayId: paymentCompany?.invoiceGatewayId,
+          options: {
+            ...options,
+            ...productOptions,
+            installmentPlans,
+            paymentMode,
           },
-          {
-            headers: { authorization: `Bearer ${authToken}` },
-          },
-        )
-        .then(res => {
-          if (res.data.code === 'SUCCESS') {
-            message.success('訂單建立成功')
-            const paymentNo = res.data.result.paymentNo
-            // const payToken = res.data.result.payToken
-            const orderId = res.data.result.orderId
-            // if (paymentGateway.includes('spgateway') && orderId) {
-            //   setPaymentUrl(
-            //     paymentNo
-            //       ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
-            //       : `${window.origin}/orders/${orderId}?tracking=1`,
-            //   )
-            // }
-            if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
-              setPaymentUrl(
-                paymentNo
-                  ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
-                  : `${window.origin}/orders/${orderId}?tracking=1`,
-              )
-            }
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(res => {
+        if (res.data.code === 'SUCCESS') {
+          message.success('訂單建立成功')
+          const paymentNo = res.data.result.paymentNo
+          const payToken = res.data.result.payToken
+          const orderId = res.data.result.orderId
+          if (paymentGateway.includes('spgateway') && orderId) {
+            setPaymentUrl(
+              paymentNo
+                ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+                : `${window.origin}/orders/${orderId}?tracking=1`,
+            )
           }
-        })
-        .catch(error => {
-          console.log(error)
-          message.error('訂單建立失敗')
-        })
-        .finally(() => {
-          setLoading(false)
-          setIsFinish(true)
-        })
-    }
+          if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
+            setPaymentUrl(
+              paymentNo
+                ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
+                : `${window.origin}/orders/${orderId}?tracking=1`,
+            )
+          }
+        }
+      })
+      .catch(error => {
+        console.log(error)
+        message.error('訂單建立失敗')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
