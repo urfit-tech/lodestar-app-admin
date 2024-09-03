@@ -227,7 +227,7 @@ const InvoiceCard: React.FC<{
         { headers: { Authorization: `Bearer ${authToken}` } },
       )
 
-      if (result.data.code === 'SUCCESS') {
+      if (result.data?.result.Status === 'SUCCESS') {
         setInvoiceResponse(result.data.result.Result)
         setShowInvoice(true)
 
@@ -257,6 +257,8 @@ const InvoiceCard: React.FC<{
           WinPrint?.close()
           setShowInvoice(false)
         }, 1500)
+      } else {
+        message.error(result.data?.result?.Message)
       }
     } catch (error) {
       console.log(error)
