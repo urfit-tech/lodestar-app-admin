@@ -401,6 +401,7 @@ const MemberContractCreationForm: React.FC<
     const [week, setWeek] = useState(13)
     const [totalAmount, setTotalAmount] = useState(60)
     const [customPrice, setCustomPrice] = useState(0)
+    const [customTotalPrice, setCustomTotalPrice] = useState(0)
     const [newProductName, setNewProductName] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -733,6 +734,7 @@ const MemberContractCreationForm: React.FC<
                                     }}
                                   >
                                     {[
+                                      { week: '1' },
                                       { week: '3' },
                                       { week: '4' },
                                       { week: '6' },
@@ -857,6 +859,7 @@ const MemberContractCreationForm: React.FC<
                                   ...category,
                                   name: value.toString(),
                                 })
+                                setCustomPrice(calculateMinPrice(category, weeklyBatch, totalAmount))
                               }}
                             >
                               {(category.language === '中文' &&
@@ -894,6 +897,15 @@ const MemberContractCreationForm: React.FC<
                               {selectedProduct?.price}
                             </div>
                           )}
+                        </div>
+                        <div style={{ whiteSpace: 'nowrap', width: 110 }}>
+                          <div>開放總價</div>
+                          <InputNumber
+                            value={customTotalPrice}
+                            onChange={e => {
+                              setCustomTotalPrice(Number(e))
+                            }}
+                          />
                         </div>
                       </div>
                     ) : null}
@@ -1060,15 +1072,16 @@ const MemberContractCreationForm: React.FC<
                           onChangeSelectedProducts({
                             id: selectedProduct.id,
                             amount: category.product === '學費' ? totalAmount : 1,
-                            price,
-                            totalPrice:
-                              category.language === '中文' &&
-                              category.programType === '套裝項目' &&
-                              ![1, 4, 13].includes(week)
-                                ? customPrice
-                                : category.programType === '套裝項目'
-                                ? price
-                                : price * (category.product === '學費' ? totalAmount : 1),
+                            price: customTotalPrice ? customTotalPrice : price,
+                            totalPrice: customTotalPrice
+                              ? customTotalPrice
+                              : category.language === '中文' &&
+                                category.programType === '套裝項目' &&
+                                ![1, 4, 13].includes(week)
+                              ? customPrice
+                              : category.programType === '套裝項目'
+                              ? price
+                              : price * (category.product === '學費' ? totalAmount : 1),
                             productId: selectedProduct.productId,
                             title: selectedProduct.title,
                             options: {

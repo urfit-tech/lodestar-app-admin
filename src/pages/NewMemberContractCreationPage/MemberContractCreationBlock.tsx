@@ -38,6 +38,7 @@ const MemberContractCreationBlock: React.FC<{
     CREATE_MEMBER_CONTRACT,
   )
   const [memberContractUrl, setMemberContractUrl] = useState('')
+  const [paymentUrl, setPaymentUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [isFinish, setIsFinish] = useState(false)
 
@@ -286,6 +287,8 @@ const MemberContractCreationBlock: React.FC<{
       installmentPlans,
     }
     setLoading(true)
+    console.log({ isContract })
+
     if (isContract) {
       addMemberContract({
         variables: {
@@ -327,12 +330,15 @@ const MemberContractCreationBlock: React.FC<{
         })
         .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
         .finally(() => setLoading(false))
-    } else {
-      let productOptions: { [key: string]: any } = {}
+    }
+    let productOptions: { [key: string]: any } = {}
 
-      selectedProducts.forEach(p => {
-        productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
-      })
+    selectedProducts.forEach(p => {
+      productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
+    })
+    console.log(paymentGateway)
+
+    if (!paymentGateway.includes('spgateway')) {
       await axios
         .post(
           `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
@@ -357,17 +363,17 @@ const MemberContractCreationBlock: React.FC<{
           if (res.data.code === 'SUCCESS') {
             message.success('訂單建立成功')
             const paymentNo = res.data.result.paymentNo
-            const payToken = res.data.result.payToken
+            // const payToken = res.data.result.payToken
             const orderId = res.data.result.orderId
-            if (paymentGateway.includes('spgateway') && orderId) {
-              setMemberContractUrl(
-                paymentNo
-                  ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
-                  : `${window.origin}/orders/${orderId}?tracking=1`,
-              )
-            }
+            // if (paymentGateway.includes('spgateway') && orderId) {
+            //   setPaymentUrl(
+            //     paymentNo
+            //       ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+            //       : `${window.origin}/orders/${orderId}?tracking=1`,
+            //   )
+            // }
             if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
-              setMemberContractUrl(
+              setPaymentUrl(
                 paymentNo
                   ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
                   : `${window.origin}/orders/${orderId}?tracking=1`,
@@ -429,24 +435,38 @@ const MemberContractCreationBlock: React.FC<{
         </div>
       </StyledOrder>
 
-      {memberContractUrl ? (
+      {memberContractUrl || paymentUrl ? (
         <>
-          <Button
-            size="middle"
-            type="primary"
-            icon={<CopyOutlined />}
-            className="mt-3"
-            onClick={() => {
-              copyToClipboard(memberContractUrl)
-              message.success(formatMessage(commonMessages.text.copiedToClipboard))
-            }}
-          >
-            複製連結
-          </Button>
+          {memberContractUrl && (
+            <Button
+              size="middle"
+              type="primary"
+              icon={<CopyOutlined />}
+              className="mt-3"
+              onClick={() => {
+                copyToClipboard(memberContractUrl)
+                message.success(formatMessage(commonMessages.text.copiedToClipboard))
+              }}
+            >
+              複製合約連結
+            </Button>
+          )}
+          {paymentUrl && (
+            <Button
+              size="middle"
+              type="primary"
+              icon={<CopyOutlined />}
+              className="mt-3"
+              onClick={() => {
+                copyToClipboard(paymentUrl)
+                message.success(formatMessage(commonMessages.text.copiedToClipboard))
+              }}
+            >
+              複製付款連結
+            </Button>
+          )}
           <Alert message="合約/訂單連結已建立" type="success" showIcon />
         </>
-      ) : isFinish ? (
-        <Alert message="合約/訂單連結已建立" type="success" showIcon />
       ) : (
         <Button size="large" block type="primary" loading={loading} onClick={handleMemberContractCreate}>
           產生合約

@@ -1,4 +1,5 @@
-import { Button } from 'antd'
+import { gql, useMutation } from '@apollo/client'
+import { Button, Select } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -8,6 +9,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -63,6 +65,9 @@ const PaymentCard: React.FC<{
   const permissionGroupId = paymentCompanies?.paymentCompanies?.find(
     c => order.options?.company && c.companies.map(c => c.name).includes(order.options?.company),
   )?.permissionGroupId
+  const paymentGateway = paymentCompanies?.paymentCompanies
+    ?.find(c => order.options?.company && c.companies.map(c => c.name).includes(order.options?.company))
+    ?.companies?.find(c => c.name === order.options?.company)?.paymentGateway
 
   const { permissions } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -70,6 +75,15 @@ const PaymentCard: React.FC<{
     status: 'success' | 'failed'
     message: string
   } | null>(null)
+  const [isOpenChangePaymentMethodModal, setIsOpenChangePaymentMethodModal] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null)
+  const [updatePaymentMethod] = useMutation<hasura.UpdatePaymentMethod, hasura.UpdatePaymentMethodVariables>(gql`
+    mutation UpdatePaymentMethod($paymentNo: String!, $method: String, $gateway: String!) {
+      update_payment_log(where: { no: { _eq: $paymentNo } }, _set: { method: $method, gateway: $gateway }) {
+        affected_rows
+      }
+    }
+  `)
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -271,7 +285,89 @@ const PaymentCard: React.FC<{
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
+                {settings['payment.v2'] === '1' && (
+                  <Button
+                    disabled={loading}
+                    loading={loading}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                    onClick={() => {
+                      setIsOpenChangePaymentMethodModal(true)
+                      setPaymentMethod(
+                        payment.gateway.includes('spgateway')
+                          ? '藍新'
+                          : payment.method === 'cash'
+                          ? '現金'
+                          : payment.method === 'bankTransfer'
+                          ? '銀行匯款'
+                          : payment.method === 'physicalCredit'
+                          ? '實體刷卡'
+                          : payment.method === 'physicalRemoteCredit'
+                          ? '遠端輸入卡號'
+                          : payment.method,
+                      )
+                    }}
+                  >
+                    <div>更改結帳管道</div>
+                  </Button>
+                )}
               </div>
+              <AdminModal
+                visible={isOpenChangePaymentMethodModal}
+                title="更改結帳管道"
+                footer={
+                  <div>
+                    <Button
+                      onClick={() => {
+                        const gateway = paymentMethod === '藍新' ? paymentGateway || '' : 'physical'
+                        const method =
+                          paymentMethod === '現金'
+                            ? 'cash'
+                            : paymentMethod === '銀行匯款'
+                            ? 'bankTransfer'
+                            : paymentMethod === '實體刷卡'
+                            ? 'physicalCredit'
+                            : paymentMethod === '遠端輸入卡號'
+                            ? 'physicalRemoteCredit'
+                            : undefined
+
+                        updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
+                          .catch(err => console.log(err))
+                          .finally(() => {
+                            setIsOpenChangePaymentMethodModal(false)
+                            onRefetch?.()
+                          })
+                      }}
+                    >
+                      {' '}
+                      更改
+                    </Button>
+                  </div>
+                }
+                onCancel={() => {
+                  setIsOpenChangePaymentMethodModal(false)
+                }}
+              >
+                結帳管道
+                <Select
+                  defaultValue={paymentMethod || ''}
+                  onChange={e => {
+                    setPaymentMethod(e)
+                  }}
+                  style={{ width: '100%' }}
+                >
+                  {[
+                    { value: '藍新' },
+                    { value: '現金' },
+                    { value: '銀行匯款' },
+                    { value: '實體刷卡' },
+                    { value: '遠端輸入卡號' },
+                  ].map(payment => (
+                    <Select.Option value={payment.value} key={payment.value}>
+                      {payment.value}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </AdminModal>
             </StyledCard>
           )
         })}

@@ -259,10 +259,12 @@ const useContractInfo = (appId: string, memberId: string) => {
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
             memberType: data.member_by_pk.member_properties[0]?.value || '',
-            isBG: !(
-              data.member_by_pk.member_properties[0]?.value.trim().startsWith('C') ||
-              data.member_by_pk.member_properties[0]?.value.trim().startsWith('BIP')
-            ),
+            isBG:
+              !!data.member_by_pk.member_properties[0]?.value &&
+              !(
+                data.member_by_pk.member_properties[0]?.value.trim().startsWith('C') ||
+                data.member_by_pk.member_properties[0]?.value.trim().startsWith('BIP')
+              ),
           },
           contracts: data.contract.map(c => ({
             id: c.id,
