@@ -331,7 +331,8 @@ const MemberTaskAdminModal: React.FC<
                 window.history.pushState({ path: newUrl }, '', newUrl)
               })
             }
-            disabled={hasMeeting && meetingGateway && invalidGateways.includes(meetingGateway)}
+            // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+            // disabled={hasMeeting && meetingGateway && invalidGateways.includes(meetingGateway)}
           >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
