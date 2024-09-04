@@ -2986,6 +2986,13 @@
     tslib "^2.0.1"
     typescript "^4.0"
 
+"@fullcalendar/core@6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.5.tgz#b2ec855f3144ca995af8e5b783a15002d73870fb"
+  integrity sha512-U3ZJy1JGAgvyXG4iLWvTW4osbkt5Fj9gmbU1B+RyRhiqwXGE0F329sX7kqLTzj3QI1IPzyq6xnJfWUIsAe7+qw==
+  dependencies:
+    preact "~10.12.1"
+
 "@fullcalendar/core@^6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.15.tgz#6c3f5259fc4589870228853072131219bb533f6e"
@@ -2993,37 +3000,40 @@
   dependencies:
     preact "~10.12.1"
 
-"@fullcalendar/core@^6.1.5":
+"@fullcalendar/daygrid@6.1.5":
   version "6.1.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.5.tgz#b2ec855f3144ca995af8e5b783a15002d73870fb"
-  integrity sha512-U3ZJy1JGAgvyXG4iLWvTW4osbkt5Fj9gmbU1B+RyRhiqwXGE0F329sX7kqLTzj3QI1IPzyq6xnJfWUIsAe7+qw==
-  dependencies:
-    preact "~10.12.1"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-6.1.5.tgz#fa5df2ec926a0a2367a91f43981518643d3d63c7"
+  integrity sha512-wXQUNPOyEQ1FEHVdtxP/tLcAAGwY4zeFejujhcznhKC751X8voInF+7kFmI7GDTVgX9cd72Muku3c+gHi8ygEQ==
 
-"@fullcalendar/daygrid@^6.1.5", "@fullcalendar/daygrid@~6.1.15":
+"@fullcalendar/daygrid@~6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-6.1.15.tgz#91208b0955ba805ddad285a53ee6f53855146963"
   integrity sha512-j8tL0HhfiVsdtOCLfzK2J0RtSkiad3BYYemwQKq512cx6btz6ZZ2RNc/hVnIxluuWFyvx5sXZwoeTJsFSFTEFA==
 
-"@fullcalendar/interaction@^6.1.15", "@fullcalendar/interaction@^6.1.5":
+"@fullcalendar/interaction@6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-6.1.5.tgz#548bee3f21046f30ad64c2596cbd94689db509f0"
+  integrity sha512-7U+WsysSlgVSkWqyjLnE6dVKUk2I7sGZN0zcadSfvL2e3KzD30BKgz78p6LRayW2Trtyf/7rZEe1k064ELd0+Q==
+
+"@fullcalendar/interaction@^6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-6.1.15.tgz#1c685d5c269388d4877b75ab2185e97d7c386cc7"
   integrity sha512-DOTSkofizM7QItjgu7W68TvKKvN9PSEEvDJceyMbQDvlXHa7pm/WAVtAc6xSDZ9xmB1QramYoWGLHkCYbTW1rQ==
 
-"@fullcalendar/list@^6.1.5":
+"@fullcalendar/list@6.1.5":
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/@fullcalendar/list/-/list-6.1.5.tgz#0276d495fbb2b229871ec5fb0547078531eaf756"
   integrity sha512-Z34h32ZuI0+sU6GdV2WrXnF6Z17VvsagjSBY+8/bMrMHfDoLbT76sGfoI6N0GCAr7aW9N2NgWWz8kuQw9uFAZQ==
+
+"@fullcalendar/react@6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.5.tgz#75f9f705be7297ee0ee700dfab3e6997153b54f3"
+  integrity sha512-OVQJQhtDAwxHbFk84bm5Y6iGLjGDrrBgr3491JbfnqHUjSaO+T1rNHUvtnot0X4/ZdnoxWr2nKqxPxpmCCL/lw==
 
 "@fullcalendar/react@^6.1.15":
   version "6.1.15"
   resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.15.tgz#3198b4a64e256afd37c9760c8741a9af89ade894"
   integrity sha512-L0b9hybS2J4e7lq6G2CD4nqriyLEqOH1tE8iI6JQjAMTVh5JicOo5Mqw+fhU5bJ7hLfMw2K3fksxX3Ul1ssw5w==
-
-"@fullcalendar/react@^6.1.5":
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-6.1.5.tgz#75f9f705be7297ee0ee700dfab3e6997153b54f3"
-  integrity sha512-OVQJQhtDAwxHbFk84bm5Y6iGLjGDrrBgr3491JbfnqHUjSaO+T1rNHUvtnot0X4/ZdnoxWr2nKqxPxpmCCL/lw==
 
 "@fullcalendar/rrule@^6.1.15":
   version "6.1.15"
@@ -12683,6 +12693,7 @@ lodestar-app-element@urfit-tech/lodestar-app-element#v1.82.1:
     use-query-params "1.2.3"
     use-tw-zipcode "^2.0.4"
     uuid "8.3.2"
+    xss "^1.0.10"
 
 log-symbols@^4.0.0, log-symbols@^4.1.0:
   version "4.1.0"
