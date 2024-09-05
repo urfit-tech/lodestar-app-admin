@@ -495,6 +495,11 @@ export const routesProps = {
     pageName: 'MemberContractCreationPage',
     authenticated: true,
   },
+  new_member_contract_creation: {
+    path: '/members/:memberId/contract/create',
+    pageName: 'NewMemberContractCreationPage',
+    authenticated: true,
+  },
   member_properties: {
     path: '/member-properties',
     pageName: 'MemberPropertyAdminPage',
