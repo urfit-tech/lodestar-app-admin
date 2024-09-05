@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Card, message, Skeleton } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -48,6 +49,7 @@ const MemberContractAdminBlock: React.FC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
+  const { settings } = useApp()
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
@@ -105,100 +107,81 @@ const MemberContractAdminBlock: React.FC<{
   }
   return (
     <div className="container">
-      <a href={`/admin/members/${memberId}/new-contract`} target="_blank" rel="noopener noreferrer">
+      <a
+        href={
+          settings['contract_page.v2.enabled'] === '1'
+            ? `/admin/members/${memberId}/contract/create`
+            : `/admin/members/${memberId}/new-contract`
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <Button type="primary" className="mb-5">
           {formatMessage(commonMessages.ui.createContract)}
         </Button>
       </a>
 
-      {contracts.map(contract => (
-        <a
-          key={contract.id}
-          href={`/members/${memberId}/contracts/${contract.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Card
-            title={
-              <div className="d-flex align-items-center justify-content-between">
-                <span className="mr-1">{contract.title}</span>
-                {contract.revokedAt ? (
-                  <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
-                ) : contract.agreedAt ? (
-                  <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
-                ) : (
-                  <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
-                )}
-              </div>
-            }
-            className="mb-4"
+      {contracts
+        .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())
+        .map(contract => (
+          <a
+            key={contract.id}
+            href={`/members/${memberId}/contracts/${contract.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <StyledMeta>
-              {contract.agreedAt && (
-                <div>
-                  {formatMessage(memberMessages.text.agreedAt, {
-                    time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
+            <Card
+              title={
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="mr-1">{contract.title}</span>
+                  {contract.revokedAt ? (
+                    <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
+                  ) : contract.agreedAt ? (
+                    <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
+                  ) : (
+                    <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
+                  )}
                 </div>
-              )}
-              {contract.options?.approvedAt && (
-                <div>
-                  {formatMessage(memberMessages.text.approvedAt, {
-                    time: moment(contract.options.approvedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-              )}
-              {contract.options?.loanCanceledAt && (
-                <div>
-                  {formatMessage(memberMessages.text.loanCanceledAt, {
-                    time: moment(contract.options.loanCanceledAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-              )}
-              {contract.revokedAt && (
-                <div>
-                  {formatMessage(memberMessages.text.revokedAt, {
-                    time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-              )}
-              {contract.options?.refundAppliedAt && (
-                <div>
-                  {formatMessage(memberMessages.text.refundAppliedAt, {
-                    time: moment(contract.options.refundAppliedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-              )}
-            </StyledMeta>
-            <div className="d-flex align-items-center justify-content-between">
-              <StyledDescription>
-                <div>
+              }
+              className="mb-4"
+            >
+              <StyledMeta>
+                {contract.revokedAt
+                  ? formatMessage(memberMessages.text.revokedAt, {
+                      time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
+                    })
+                  : contract.agreedAt
+                  ? formatMessage(memberMessages.text.agreedAt, {
+                      time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
+                    })
+                  : null}
+              </StyledMeta>
+              <div className="d-flex align-items-center justify-content-between">
+                <StyledDescription>
                   {formatMessage(memberMessages.text.startedAt, {
                     time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
                   })}
-                </div>
-                <div>
+                  <br />
                   {formatMessage(memberMessages.text.endedAt, {
                     time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
                   })}
-                </div>
-              </StyledDescription>
-              {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
-                <Button
-                  danger
-                  loading={revokeLoading}
-                  onClick={e => {
-                    e.preventDefault()
-                    handleContractRevoke(contract.id, contract.values)
-                  }}
-                >
-                  {formatMessage(messages.revokeContract)}
-                </Button>
-              )}
-            </div>
-          </Card>
-        </a>
-      ))}
+                </StyledDescription>
+                {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
+                  <Button
+                    danger
+                    loading={revokeLoading}
+                    onClick={e => {
+                      e.preventDefault()
+                      handleContractRevoke(contract.id, contract.values)
+                    }}
+                  >
+                    {formatMessage(messages.revokeContract)}
+                  </Button>
+                )}
+              </div>
+            </Card>
+          </a>
+        ))}
     </div>
   )
 }
@@ -213,6 +196,7 @@ const useMemberContracts = (memberId: string) => {
           ended_at
           agreed_at
           agreed_ip
+          created_at
           agreed_options
           revoked_at
           values
@@ -234,6 +218,7 @@ const useMemberContracts = (memberId: string) => {
     startedAt: Date | null
     endedAt: Date | null
     agreedAt: Date | null
+    createdAt: Date
     agreedIp: string | null
     agreedOptions: any
     options: any
@@ -251,6 +236,7 @@ const useMemberContracts = (memberId: string) => {
         agreedOptions: v.agreed_options,
         options: v.options,
         revokedAt: v.revoked_at && new Date(v.revoked_at),
+        createdAt: v.created_at && new Date(v.created_at),
       }
     }) || []
   return {

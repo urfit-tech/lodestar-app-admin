@@ -2130,6 +2130,11 @@
   resolved "https://registry.yarnpkg.com/@bobthered/tailwindcss-palette-generator/-/tailwindcss-palette-generator-2.0.0.tgz#ff8de62835950b820f844b243bfdf8b68100aede"
   integrity sha512-jzYCiy+qXIV8NbXSi9OErpwlhp6PXILgyXZWOV0BUGwgfuc6ff8xJR/m4XxbRKNFafgjljGRp0NOUwy20KKq/w==
 
+"@bwip-js/browser@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@bwip-js/browser/-/browser-4.5.1.tgz#1a1119a4d316b317e298d962ba30c62c0675f6c4"
+  integrity sha512-gtlafU6rRVDvrCz1L4ewpCteFrHGfUI4bxTKhksOFjrBOU3/P8pEy63PB2spyz+lwBf3IblAN/LEPW6Cf90hfA==
+
 "@chakra-ui/accordion@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@chakra-ui/accordion/-/accordion-1.0.3.tgz#2c23e6f80edfc6877585faf92a0f4857a5fb5bd4"
@@ -12612,9 +12617,9 @@ lodash.upperfirst@^4.3.1:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-element@urfit-tech/lodestar-app-element#v1.82.1:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.82.4:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/57aad56cf3bea538bd4e33e16c95fa0eba2c8b45"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/b96f00673b2e2106f99e0cd6e6ce722ad9178bcf"
   dependencies:
     "@apollo/client" "^3.7.11"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"

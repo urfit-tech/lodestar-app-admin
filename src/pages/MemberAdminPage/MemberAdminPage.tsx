@@ -106,7 +106,7 @@ const MemberAdminPage: React.FC = () => {
         (permissions.SALES_RECORDS_ADMIN || permissions.CHECK_MEMBER_ORDER) && (
           <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
             <div className="p-5">
-              <SaleCollectionAdminCard memberId={memberId} />
+              <SaleCollectionAdminCard memberId={memberId} isShowRefetchButton />
             </div>
           </Tabs.TabPane>
         ),
