@@ -50,12 +50,18 @@ export const useMemberTaskCollection = (options?: {
   status?: string
   limit?: number
   orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
+  permissionGroupId?: string
 }) => {
   const defaultOrderBy: hasura.member_task_order_by = { created_at: 'desc' as InputMaybe<order_by> }
 
   const { orderBy = defaultOrderBy } = options || {}
   const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
-    member_id: { _eq: options?.memberId },
+    member: {
+      member_permission_groups: { permission_group_id: { _eq: options?.permissionGroupId } },
+    },
+    member_id: {
+      _eq: options?.memberId,
+    },
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
     category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
     executor: options?.executor
