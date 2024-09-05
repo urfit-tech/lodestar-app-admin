@@ -32,10 +32,12 @@ const PermissionGroupSelector: React.FC<{
 
   return (
     <StyledSelect
+      allowClear
       mode={single ? undefined : 'multiple'}
       loading={loadingPermissionGroups}
       value={value}
       onChange={onChange}
+      placeholder="請選擇權限群組"
     >
       {permissionGroups.map(permissionGroup => (
         <Select.Option key={permissionGroup.id} value={permissionGroup.id || ''} style={{ borderRadius: '4px' }}>

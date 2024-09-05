@@ -29,7 +29,7 @@ import { useMemberTask, useMemberTaskCollection } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
-import { StringParam, useQueryParam } from 'use-query-params'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -98,6 +98,17 @@ export const categoryColors: string[] = [
   '#a0a0a7',
 ]
 
+export type FieldFilter = {
+  title?: string
+  categoryIds?: string[]
+  executor?: string
+  author?: string
+  dueAt?: Date[]
+  createdAt?: Date[]
+  status?: MemberTaskProps['status']
+  permissionGroupId?: string
+}
+
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
   localStorageMemberTaskDisplay?: string
@@ -109,15 +120,7 @@ const MemberTaskAdminBlock: React.FC<{
   const { id: appId, enabledModules } = useApp()
   const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
-  const [filter, setFilter] = useState<{
-    title?: string
-    categoryIds?: string[]
-    executor?: string
-    author?: string
-    dueAt?: Date[]
-    createdAt?: Date[]
-    status?: MemberTaskProps['status']
-  }>(localStorageMemberTaskFilter || {})
+  const [filter, setFilter] = useState<FieldFilter>(localStorageMemberTaskFilter || {})
   const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
 
@@ -614,18 +617,32 @@ const MemberTaskAdminBlock: React.FC<{
   return (
     <>
       <div className="d-flex align-item-center justify-content-between mb-4">
-        <MemberTaskAdminModal
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(memberMessages.ui.newTask)}
-            </Button>
-          )}
-          title={formatMessage(memberMessages.ui.newTask)}
-          initialMemberId={memberId}
-          initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
-          onRefetch={refetchMemberTasks}
-        />
-
+        <div className="d-flex align-item-center flex-wrap">
+          <MemberTaskAdminModal
+            renderTrigger={({ setVisible }) => (
+              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+                {formatMessage(memberMessages.ui.newTask)}
+              </Button>
+            )}
+            title={formatMessage(memberMessages.ui.newTask)}
+            initialMemberId={memberId}
+            initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
+            onRefetch={refetchMemberTasks}
+          />
+          <div style={{ width: '180px', marginLeft: 8 }}>
+            <PermissionGroupSelector
+              single
+              value={filter.permissionGroupId}
+              onChange={value => {
+                setFilter(filter => ({
+                  ...filter,
+                  permissionGroupId: value,
+                }))
+                localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: value }))
+              }}
+            />
+          </div>
+        </div>
         {currentMember && jitsiModalVisible && (
           <JitsiDemoModal
             member={meetingMember}
