@@ -86,6 +86,7 @@ export const useOrderLogPreviewCollection = (
           status
           shipping
           member_id
+          options
         }
       }
     `,
@@ -214,7 +215,7 @@ export const useOrderLogPreviewCollection = (
 
   const orderLogPreviewCollection: Pick<
     OrderLog,
-    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice'
+    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options'
   >[] =
     orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
       const productPrice = sum(
@@ -237,6 +238,7 @@ export const useOrderLogPreviewCollection = (
         email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
         shipping: orderLogPreview.shipping,
         totalPrice: Math.max(productPrice - discountPrice + shippingFee),
+        options: orderLogPreview.options,
       }
     }) || []
 
@@ -267,6 +269,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingExpandRowOrderLog,
     data: expandRowOrderLog,
     error: errorExpandRowOrderLog,
+    refetch: refetchExpandRowOrderLog,
   } = useQuery<hasura.GetExpandRowOrderLog, hasura.GetExpandRowOrderLogVariables>(
     gql`
       query GetExpandRowOrderLog($orderId: String!) {
@@ -274,6 +277,11 @@ export const useOrderLogExpandRow = (orderId: string) => {
           id
           expired_at
           shipping
+          invoice_options
+          invoice(where: { revoked_at: { _is_null: true } }) {
+            no
+            price
+          }
         }
       }
     `,
@@ -310,6 +318,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingOrderExecutors,
     error: errorOrderExecutors,
     data: orderExecutorsData,
+    refetch: refetchOrderExecutors,
   } = useQuery<hasura.GetOrderExecutors, hasura.GetOrderExecutorsVariables>(
     gql`
       query GetOrderExecutors($orderId: String!) {
@@ -328,6 +337,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingPaymentLogByOrderId,
     error: errorPaymentLogByOrderId,
     data: paymentLogByOrderIdData,
+    refetch: refetchPaymentLogByOrderId,
   } = useQuery<hasura.GetPaymentLogByOrderId, hasura.GetPaymentLogByOrderIdVariables>(
     gql`
       query GetPaymentLogByOrderId($orderId: String!) {
@@ -337,6 +347,9 @@ export const useOrderLogExpandRow = (orderId: string) => {
           gateway
           price
           status
+          method
+          invoice_issued_at
+          invoice_options
         }
       }
     `,
@@ -347,6 +360,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loading: loadingOrderDiscountByOrderId,
     error: errorOrderDiscountByOrderId,
     data: orderDiscountByOrderIdData,
+    refetch: refetchOrderDiscountByOrderId,
   } = useQuery<hasura.GetOrderDiscountByOrderId, hasura.GetOrderDiscountByOrderIdVariables>(
     gql`
       query GetOrderDiscountByOrderId($orderId: String!) {
@@ -367,6 +381,8 @@ export const useOrderLogExpandRow = (orderId: string) => {
     id: expandRowOrderLog?.order_log_by_pk?.id,
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
+    invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
+    invoiceTotalPrice: sum(expandRowOrderLog?.order_log_by_pk?.invoice?.map(v => v.price) || []),
   }
 
   const orderProducts =
@@ -396,6 +412,11 @@ export const useOrderLogExpandRow = (orderId: string) => {
     paymentLogByOrderIdData?.payment_log.map(p => ({
       status: p.status,
       price: p.price,
+      no: p.no,
+      gateway: p.gateway,
+      method: p.method,
+      invoiceIssuedAt: p.invoice_issued_at,
+      invoiceOptions: p.invoice_options,
     })) || []
 
   const orderDiscounts =
@@ -425,6 +446,12 @@ export const useOrderLogExpandRow = (orderId: string) => {
     paymentMethod,
     paymentLogs,
     orderDiscounts,
-    refetchExpandRowOrderProduct,
+    refetchOrderLogExpandRow: () => {
+      refetchExpandRowOrderLog()
+      refetchExpandRowOrderProduct()
+      refetchOrderExecutors()
+      refetchPaymentLogByOrderId()
+      refetchOrderDiscountByOrderId()
+    },
   }
 }

@@ -47,7 +47,8 @@ const MemberProfileBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole, permissions } = useAuth()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
+
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
     hasura.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -135,7 +136,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
+        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -199,6 +200,8 @@ const PhoneCollectionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
+
   return (
     <>
       {value?.map((phone, index) => (
@@ -212,7 +215,7 @@ const PhoneCollectionInput: React.FC<{
               onChange && onChange(newValue)
             }}
           />
-          {index !== 0 && (
+          {(settings['member_profile_phone.check.ignore.enable'] === '1' || index !== 0) && (
             <StyledCloseIcon
               onClick={() => {
                 const newValue = [...value]

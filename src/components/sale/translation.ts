@@ -21,6 +21,7 @@ const saleMessages = {
       id: 'sale.SaleCollectionAdminCard.calculatingTotalCount',
       defaultMessage: '計算總筆數中',
     },
+    successfullyRefreshed: { id: 'note.MemberNoteAdminBlock.successfullyRefreshed', defaultMessage: '資料已更新' },
   }),
   SaleCollectionExpandRow: defineMessages({
     productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: '到期' },
@@ -82,6 +83,7 @@ const saleMessages = {
     invoiceNumber: { id: 'sale.InvoiceCard.invoiceNumber', defaultMessage: '發票編號' },
     invoiceIssuedAt: { id: 'sale.InvoiceCard.invoiceIssuedAt', defaultMessage: '發票開立時間' },
     invoiceName: { id: 'sale.InvoiceCard.invoiceName', defaultMessage: '發票姓名' },
+    invoicePrice: { id: 'sale.InvoiceCard.invoicePrice', defaultMessage: '發票金額' },
     invoicePhone: { id: 'sale.InvoiceCard.invoicePhone', defaultMessage: '發票電話' },
     invoiceEmail: { id: 'sale.InvoiceCard.invoiceEmail', defaultMessage: '聯絡信箱' },
     invoiceTarget: { id: 'sale.InvoiceCard.invoiceTarget', defaultMessage: '發票對象' },
@@ -91,8 +93,10 @@ const saleMessages = {
     uniformTitle: { id: 'sale.InvoiceCard.uniformTitle', defaultMessage: '發票抬頭' },
     invoiceAddress: { id: 'sale.InvoiceCard.invoiceAddress', defaultMessage: '發票地址' },
     invoiceSuccess: { id: 'sale.InvoiceCard.invoiceSuccess', defaultMessage: '開立成功' },
+    invoiceRevoked: { id: 'sale.InvoiceCard.invoiceRevoked', defaultMessage: '已作廢' },
     invoiceFailed: { id: 'sale.InvoiceCard.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
     invoicePending: { id: 'sale.InvoiceCard.invoicePending', defaultMessage: '未開立電子發票' },
+    invoiceComment: { id: 'sale.InvoiceCard.invoiceComment', defaultMessage: '發票備註' },
   }),
   PaymentCard: defineMessages({
     paymentStatus: { id: 'sale.PaymentCard.paymentStatus', defaultMessage: '交易狀態' },
@@ -188,8 +192,14 @@ const saleMessages = {
   }),
   TransferModal: defineMessages({
     transfer: { id: 'sale.TransferModal.transfer', defaultMessage: 'transfer' },
-    modalTitle: { id: 'sale.TransferModal.modalTitle', defaultMessage: 'To which manager do you want to transfer this list?' },
-    inputPlaceHolder: { id: 'sale.TransferModal.inputPlaceHolder', defaultMessage: 'Please enter at least two keywords' },
+    modalTitle: {
+      id: 'sale.TransferModal.modalTitle',
+      defaultMessage: 'To which manager do you want to transfer this list?',
+    },
+    inputPlaceHolder: {
+      id: 'sale.TransferModal.inputPlaceHolder',
+      defaultMessage: 'Please enter at least two keywords',
+    },
     pleaseSelectManager: { id: 'sale.TransferModal.pleaseSelectManager', defaultMessage: 'Please select the manager' },
     confirm: { id: 'sale.TransferModal.confirm', defaultMessage: 'confirm' },
   }),
