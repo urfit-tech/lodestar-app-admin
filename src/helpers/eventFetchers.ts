@@ -1,5 +1,6 @@
 import { curry, pipeWith, andThen, pluck, tap } from 'ramda'
 import axios, { AxiosRequestConfig } from "axios";
+import moment from 'moment';
 import {
     ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent,
 } from '../types/event';
@@ -22,7 +23,6 @@ export const createResourceFetcher = curry(
 
 export const createEventFetcher = curry(
     async (authToken: string, payload: { events: Array<EventRequest> }) => {
-        console.log(25, payload)
         return (await axios.post(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event`,
             payload,
@@ -33,7 +33,6 @@ export const createEventFetcher = curry(
 
 export const createInvitationFetcher = curry(
     async (authToken: string, eventResources: Array<EventResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
-        console.log(eventResources, eventIds)
         if (eventResources && eventIds && eventResources?.length > 0 && eventIds?.length > 0) {
             return (await axios.post(
                 `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
@@ -104,7 +103,12 @@ export const getResourceEventsFethcer = curry(
         const resources = await getResourceByTypeTargetFetcher(authToken)(typeTargets)
         const resourceIds = pluck('id')(resources)
         const resourceEvents = await getEventsByResourceFetcher(authToken)(startUntil)(resourceIds)
-        return { resources, resourceEvents }
+        const getDuration = (resourceEvent: FetchedResourceEvent) => {
+            const diff = moment(resourceEvent.ended_at).diff(moment(resourceEvent.started_at))
+            return diff > 0 ? diff : 3600000
+        }
+        const adaptedResourceEvents = resourceEvents.map(resourceEvent => ({ ...resourceEvent, duration: getDuration(resourceEvent) }))
+        return { resources, resourceEvents: adaptedResourceEvents }
     }
 )
 
