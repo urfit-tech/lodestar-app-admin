@@ -308,7 +308,7 @@ const InvoiceCard: React.FC<{
                         randomNumber: invoiceResponse?.RandomNum,
                         sellerUniformNumber: companyUniformNumber,
                         totalPrice: Number(invoiceResponse?.TotalAmt || 0).toLocaleString(),
-                        uniformTitle: invoiceResponse?.BuyerUBN && `賣方 ${invoiceResponse.BuyerUBN}`,
+                        uniformTitle: invoiceResponse?.BuyerUBN && `買方 ${invoiceResponse.BuyerUBN}`,
                         invoiceNo: `${invoiceResponse?.InvoiceNumber.substring(
                           0,
                           2,
