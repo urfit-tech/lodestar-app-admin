@@ -4,12 +4,10 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { inertTransform, renameKey } from 'lodestar-app-element/src/helpers/adaptObject'
 import moment, { Duration, Moment } from 'moment'
-import { DateRange } from 'moment-range'
-import { chain, converge, evolve, filter, identity, isNil, map, pipe, project, prop, propEq, tap } from 'ramda'
+import { filter, isNil, pipe, prop, propEq, tap } from 'ramda'
 import React, { useState } from 'react'
-import { RRule, rrulestr } from 'rrule'
+import { RRule } from 'rrule'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import {
@@ -20,7 +18,7 @@ import {
   ModalDefaultEventForBasicMode,
   ResourceType,
 } from '../../types/event'
-import { DateRanges, eventToDateRanges } from './DateRanges'
+import { DateRanges } from './DateRanges'
 import { adaptEventsToCalendar, adaptEventToModal, momentToWeekday } from './eventAdaptor'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
@@ -117,37 +115,8 @@ export const MemberEventCalendarBlock: React.FC<{
   const activeEvents = filter(pipe(prop('event_deleted_at'), isNil))(resourceEvents)
   console.log(123, activeEvents)
 
-  const availableDateRanges = pipe(
-    project(['started_at', 'ended_at', 'rrule', 'duration']) as (events: Array<FetchedResourceEvent>) => Array<{
-      started_at: string
-      ended_at: string
-      rrule: string
-      duration: number
-    }>,
-    chain(
-      pipe(
-        renameKey({
-          startTime: 'started_at',
-          endTime: 'ended_at',
-        }) as (payload: { started_at: string; ended_at: string; rrule: string }) => {
-          startTime: string
-          endTime: string
-          rrule: string
-        },
-        tap(console.log),
-        evolve({
-          startTime: inertTransform(moment),
-          endTime: inertTransform(moment),
-          rrule: str => (str ? rrulestr(str) : undefined),
-          duration: identity,
-        }) as any,
-        eventToDateRanges,
-      ),
-    ) as any,
-    DateRanges.ascendStart,
-    tap(converge(console.log, [() => 164, map((v: DateRange) => v.toString())] as any)),
-    DateRanges.merge,
-  )(activeEvents)
+  const availableEvents = filter(propEq('role', 'available'))(activeEvents)
+  const availableDateRanges = pipe(DateRanges.parseFromFetchedEvents, DateRanges.merge)(availableEvents)
 
   console.log(
     156,
@@ -181,6 +150,7 @@ export const MemberEventCalendarBlock: React.FC<{
           focusedEvent={modalEvent}
           isRruleOptional={isRruleOptional}
           refetchResourceEvents={refetchResourceEvents}
+          availableDateRanges={availableDateRanges}
           {...{
             createResourceEventFetcher,
             updateResourceEventFetcher,

@@ -1,11 +1,13 @@
-import { ascend, chain, concat, construct, converge, curry, drop, filter, head, identity, init, last, map, pipe, prop, propOr, reduce, Reduced, slice, sort, tap, useWith as rUseWith, __ } from 'ramda'
+import { ascend, chain, concat, construct, converge, curry, drop, evolve, filter, head, identity, init, last, map, pipe, project, prop, propOr, reduce, Reduced, slice, sort, tap, useWith as rUseWith, __ } from 'ramda'
 
 import * as Moment from 'moment'
 import momentTZ from 'moment-timezone';
 import { extendMoment, DateRange } from 'moment-range'
-import { RRule } from "rrule";
+import { RRule, rrulestr } from "rrule";
 
 import { parseRRule } from './eventAdaptor'
+import { FetchedResourceEvent } from '../../types/event';
+import { inertTransform, renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
 
 const selfReduce = curry(
     (fn, arr) => converge(reduce(fn) as any, [head, drop(1)])(arr)
@@ -20,7 +22,6 @@ export const eventToDateRanges = (payload: {
     endTime: Moment.Moment
     duration: number
 }) => pipe(
-    // map((startTime: Moment.Moment) => momentTZ.utc(startTime.clone()).tz(Intl.DateTimeFormat().resolvedOptions().timeZone)),
     map(
         (startTime: Moment.Moment) => moment.range(
             startTime,
@@ -39,20 +40,54 @@ const looseIntersect = curry(
     (
         dateRange: DateRange | null,
         intersectedDateRange: DateRange | null
-    ): DateRange | null => (dateRange === null || intersectedDateRange === null) ?
+    ): DateRange | null => (!dateRange || !intersectedDateRange) ?
             null :
             dateRange.intersect(intersectedDateRange)
 )
 export class DateRanges extends Array<DateRange | null>  {
 
-    static makeFunctor: (arrayOfDateRange: Array<DateRange | null>) => DateRanges =
-        (arrayOfDateRange) => new DateRanges(...arrayOfDateRange)
+    static makeFunctor: (arrayOfDateRange: Array<DateRange | null> | null) => DateRanges =
+        (arrayOfDateRange) => arrayOfDateRange === null ? new DateRanges(null) : new DateRanges(...(arrayOfDateRange as Array<DateRange | null>))
+
+    static parseFromFetchedEvents: (events: Array<FetchedResourceEvent>) => DateRanges = pipe(
+        project(['started_at', 'ended_at', 'rrule', 'duration']) as (events: Array<FetchedResourceEvent>) => Array<{
+            started_at: string
+            ended_at: string
+            rrule: string
+            duration: number
+        }>,
+        chain(
+            pipe(
+                renameKey({
+                    startTime: 'started_at',
+                    endTime: 'ended_at',
+                }) as (payload: { started_at: string; ended_at: string; rrule: string }) => {
+                    startTime: string
+                    endTime: string
+                    rrule: string
+                },
+                evolve({
+                    startTime: inertTransform(moment),
+                    endTime: inertTransform(moment),
+                    rrule: str => (str ? rrulestr(str) : undefined),
+                    duration: identity,
+                }) as any,
+                eventToDateRanges,
+            ),
+        ),
+        DateRanges.makeFunctor
+    )
+
+    stringify = (): Array<string | null> => this.map((dateRange: DateRange | null) => dateRange ? dateRange.toString() : null)
 
     static absolute: (dateRanges: DateRanges) => DateRanges = map(absolute) as any
 
     absolute = () => DateRanges.absolute(this)
 
-    static trim: (dateRanges: DateRanges) => DateRanges & Array<DateRange> = filter(v => v !== null) as (dateRanges: DateRanges) => DateRanges & Array<DateRange>
+    static trim: (dateRanges: DateRanges) => DateRanges & Array<DateRange> = pipe(
+        filter(v => !!v),
+        DateRanges.makeFunctor
+    ) as (dateRanges: DateRanges) => DateRanges & Array<DateRange>
 
     trim = () => DateRanges.trim(this)
 
@@ -64,13 +99,10 @@ export class DateRanges extends Array<DateRange | null>  {
     ascendStart = () => DateRanges.ascendStart(this)
 
     static mergeTwo = curry(
-        (dateRange: DateRange, mergedDateRange: DateRange): DateRanges => {
-            console.log(65, dateRange.toString(), mergedDateRange.toString(), dateRange.overlaps(mergedDateRange, { adjacent: true }))
-            return DateRanges.makeFunctor(
-                dateRange.overlaps(mergedDateRange, { adjacent: true }) ?
-                    [dateRange.add(mergedDateRange, { adjacent: true })] : [dateRange, mergedDateRange]
-            )
-        }
+        (dateRange: DateRange, mergedDateRange: DateRange): DateRanges => DateRanges.makeFunctor(
+            dateRange.overlaps(mergedDateRange, { adjacent: true }) ?
+                [dateRange.add(mergedDateRange, { adjacent: true })] : [dateRange, mergedDateRange]
+        )
     )
 
     static tailMerge =
@@ -109,9 +141,9 @@ export class DateRanges extends Array<DateRange | null>  {
     selfIntersect = () => DateRanges.selfIntersect(this)
 
     static intersectDateRange = curry(
-        (dateRanges: DateRanges, intersecteDateRange: DateRange) => pipe(
-            map(looseIntersect(intersecteDateRange)),
-            DateRanges.selfIntersect
+        (dateRanges: DateRanges, intersecteDateRange: DateRange | null) => pipe(
+            map(looseIntersect(intersecteDateRange as any)),
+            DateRanges.selfIntersect,
         )(dateRanges)
     )
 
@@ -131,7 +163,7 @@ export class DateRanges extends Array<DateRange | null>  {
             DateRanges.trim,
             map(
                 pipe(
-                    deprivedDateRange.subtract,
+                    (dateRange: DateRange) => deprivedDateRange.subtract(dateRange),
                     DateRanges.makeFunctor
                 )
             ),
@@ -142,10 +174,13 @@ export class DateRanges extends Array<DateRange | null>  {
     static deprive = curry(
         (dateRanges: DateRanges, deprivedDateRanges: DateRanges): DateRanges => pipe(
             DateRanges.trim,
-            chain(DateRanges.depriveFromDateRange(deprivedDateRanges)),
+            chain(DateRanges.depriveFromDateRange(deprivedDateRanges)) as (dateRanges: any) => DateRanges,
+            DateRanges.trim,
             DateRanges.makeFunctor,
             DateRanges.merge
         )(dateRanges)
     )
+
+    deprive: (dateRanges: DateRanges) => DateRanges = DateRanges.deprive(this as DateRanges)
 
 }

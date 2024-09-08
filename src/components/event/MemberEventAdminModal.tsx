@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Textarea,
 } from '@chakra-ui/react'
 import { FetchButton } from 'lodestar-app-element/src/components/buttons/FetchButton'
@@ -36,6 +37,7 @@ import {
   ModalDefaultEventForEditMode,
   Resource,
 } from '../../types/event'
+import { DateRanges } from './DateRanges'
 import { momentToWeekday } from './eventAdaptor'
 
 const MemberEventAdminModal: React.FC<{
@@ -52,6 +54,7 @@ const MemberEventAdminModal: React.FC<{
   createResourceEventFetcher: (payload: { events: Array<EventRequest>; invitedResource: Array<any> }) => any
   updateResourceEventFetcher: (payload: EventRequest) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
+  availableDateRanges: DateRanges
 }> = ({
   memberId,
   membersAsResources,
@@ -63,6 +66,7 @@ const MemberEventAdminModal: React.FC<{
   createResourceEventFetcher,
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
+  availableDateRanges,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -188,8 +192,15 @@ const MemberEventAdminModal: React.FC<{
     filter((resource: Resource) => resource.target === memberId),
     map((resource: Resource) => ({
       temporally_exclusive_resource_id: resource.id,
+      role: role,
     })),
   )(membersAsResources)
+
+  const getUnavailableDateRange = () =>
+    DateRanges.parseFromFetchedEvents([
+      { ...eventPayload, duration: moment(eventPayload.ended_at).diff(moment(eventPayload.started_at)) } as any,
+    ]).deprive(availableDateRanges)
+  console.log(`unavailable daterange: ${getUnavailableDateRange().map(v => v?.toString())}`)
 
   const { trigger: createEventAndInviteResource } = useSWRMutation(
     [eventPayload, invitedResource],
@@ -210,7 +221,12 @@ const MemberEventAdminModal: React.FC<{
     <Modal size="lg" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{memberId}</ModalHeader>
+        <ModalHeader>
+          <Select placeholder="角色類別" defaultValue={role} value={role} onChange={e => setRole(e.target.value)}>
+            <option value="available">開放時段</option>
+            <option value="participant">排課</option>
+          </Select>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           Title
