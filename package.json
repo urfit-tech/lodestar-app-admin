@@ -114,7 +114,7 @@
     "md5": "^2.3.0",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
-    "moment-timezone": "^0.5.31",
+    "moment-timezone": "^0.5.45",
     "mustache": "^4.1.0",
     "nosleep.js": "^0.11.0",
     "organize-imports-cli": "0.7.0",

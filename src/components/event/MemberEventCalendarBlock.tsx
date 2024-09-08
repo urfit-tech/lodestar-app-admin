@@ -4,9 +4,12 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import moment, { Duration } from 'moment'
-import { filter, pipe, tap } from 'ramda'
+import { inertTransform, renameKey } from 'lodestar-app-element/src/helpers/adaptObject'
+import moment, { Duration, Moment } from 'moment'
+import { DateRange } from 'moment-range'
+import { chain, converge, evolve, filter, identity, isNil, map, pipe, project, prop, propEq, tap } from 'ramda'
 import React, { useState } from 'react'
+import { RRule, rrulestr } from 'rrule'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import {
@@ -17,7 +20,8 @@ import {
   ModalDefaultEventForBasicMode,
   ResourceType,
 } from '../../types/event'
-import { adaptEventsToCalendar, adaptEventToModal } from './eventAdaptor'
+import { DateRanges, eventToDateRanges } from './DateRanges'
+import { adaptEventsToCalendar, adaptEventToModal, momentToWeekday } from './eventAdaptor'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
@@ -74,14 +78,19 @@ export const MemberEventCalendarBlock: React.FC<{
     ended_at: moment(),
   })
   const [duration, setDuration] = useState(defaultEventDuration)
-  const [isRruleOptional, setIsRruleOptional] = useState(false)
+  const [isRruleOptional, setIsRruleOptional] = useState(true)
+
+  const generateDefaultRruleString = ({ started_at, ended_at }: { started_at: Moment; ended_at: Moment }): string =>
+    new RRule({
+      freq: RRule.WEEKLY,
+      until: ended_at.toDate(),
+      byweekday: [momentToWeekday(moment(started_at))],
+    }).toString()
 
   const handleDateClick = (info: DateClickArg) => {
-    const defaultModalEvent = {
-      started_at: moment(info.date),
-      ended_at: moment(info.date).clone().add(duration),
-    }
-    setModalEvent(defaultModalEvent)
+    const started_at = moment(info.date)
+    const ended_at = moment(info.date).clone().add(duration)
+    setModalEvent({ started_at, ended_at })
     onEventModalOpen()
   }
 
@@ -103,9 +112,47 @@ export const MemberEventCalendarBlock: React.FC<{
   }
 
   if (!resources || resources.length === 0) createResourceForMember()
-  const memberResource = filter(resource => (resource as FetchedResource).target === memberId)(resources)
+  const memberResource = filter(propEq('target', memberId))(resources)
 
-  console.log(108, resourceEvents)
+  const activeEvents = filter(pipe(prop('event_deleted_at'), isNil))(resourceEvents)
+  console.log(123, activeEvents)
+
+  const availableDateRanges = pipe(
+    project(['started_at', 'ended_at', 'rrule', 'duration']) as (events: Array<FetchedResourceEvent>) => Array<{
+      started_at: string
+      ended_at: string
+      rrule: string
+      duration: number
+    }>,
+    chain(
+      pipe(
+        renameKey({
+          startTime: 'started_at',
+          endTime: 'ended_at',
+        }) as (payload: { started_at: string; ended_at: string; rrule: string }) => {
+          startTime: string
+          endTime: string
+          rrule: string
+        },
+        tap(console.log),
+        evolve({
+          startTime: inertTransform(moment),
+          endTime: inertTransform(moment),
+          rrule: str => (str ? rrulestr(str) : undefined),
+          duration: identity,
+        }) as any,
+        eventToDateRanges,
+      ),
+    ) as any,
+    DateRanges.ascendStart,
+    tap(converge(console.log, [() => 164, map((v: DateRange) => v.toString())] as any)),
+    DateRanges.merge,
+  )(activeEvents)
+
+  console.log(
+    156,
+    availableDateRanges.map(v => v?.toString()),
+  )
 
   return (
     <Box>

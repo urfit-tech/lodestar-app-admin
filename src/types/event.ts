@@ -98,9 +98,9 @@ export const isModalDefaultEventForEditMode = (
 }
 
 export const isModalDefaultEventForEditModeAndRecurring = (
-    event: ModalDefaultEventForBasicMode | ModalDefaultEventForEditMode
+    event: any
 ): event is ModalDefaultEventForEditModeAndRecurring => {
-    return ['rrule', 'until'].every(key => key in event)
+    return ['rrule', 'until'].every((key) => event?.[key])
 }
 
 export type FetchedResourceEvent = {
@@ -111,11 +111,11 @@ export type FetchedResourceEvent = {
     description?: string,
     event_metadata?: object,
     temporally_exclusive_resource_id: string,
-    role?: string,
+    role: string | null,
     is_exclusive: boolean,
-    is_attending?: boolean,
-    published_at?: string,
-    event_deleted_at?: string
+    is_attending: string | null,
+    published_at: string | null,
+    event_deleted_at: string | null
 } & (
         {
             rrule: string,

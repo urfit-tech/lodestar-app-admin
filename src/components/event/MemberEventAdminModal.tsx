@@ -36,6 +36,7 @@ import {
   ModalDefaultEventForEditMode,
   Resource,
 } from '../../types/event'
+import { momentToWeekday } from './eventAdaptor'
 
 const MemberEventAdminModal: React.FC<{
   memberId: string
@@ -56,19 +57,14 @@ const MemberEventAdminModal: React.FC<{
   membersAsResources,
   isOpen,
   onClose,
-  isRruleOptional,
   focusedEvent,
+  isRruleOptional,
   refetchResourceEvents,
   createResourceEventFetcher,
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
 }) => {
   const { formatMessage } = useIntl()
-  const [isRrulePanelOpen, setIsRrulePanelOpen] = useState(!isRruleOptional)
-
-  const toggleRrulePanel = () => {
-    setIsRrulePanelOpen(!isRruleOptional || !isRrulePanelOpen)
-  }
 
   const generateDefaultEventValue = curry(
     <K extends keyof ModalDefaultEventForEditMode>(
@@ -77,14 +73,6 @@ const MemberEventAdminModal: React.FC<{
     ): ModalDefaultEventForEditMode[K] => (isModalDefaultEventForEditMode(focusedEvent) ? focusedEvent?.[key] : value),
   )
 
-  const generateDefaultRecurringEventValue = curry(
-    <K extends keyof Options>(key: K, value: Partial<Options>[K]): Partial<Options>[K] | undefined =>
-      isModalDefaultEventForEditModeAndRecurring(focusedEvent)
-        ? focusedEvent.rrule?.origOptions?.[key]
-        : isRrulePanelOpen
-        ? value
-        : undefined,
-  )
   console.log(focusedEvent)
 
   const [startTime, setStartTime] = useState(focusedEvent.started_at)
@@ -101,15 +89,40 @@ const MemberEventAdminModal: React.FC<{
     isModalDefaultEventForBasicModeWithSource(focusedEvent) ? focusedEvent.source_target : undefined,
   )
 
-  const [rruleFreq, setRruleFreq] = useState(
-    generateDefaultRecurringEventValue('freq')(RRule.WEEKLY) as Frequency | undefined,
+  const [isRrulePanelOpen, setIsRrulePanelOpen] = useState(
+    !isRruleOptional || isModalDefaultEventForEditModeAndRecurring(focusedEvent),
   )
-  const [until, setUntil] = useState(
-    generateDefaultRecurringEventValue('until')(focusedEvent.ended_at.toDate()) as Date,
-  )
+
+  const getRruleValueBykey = curry((rrule: RRule, key: keyof Options) => rrule.origOptions[key])
+
+  const getFocusedRecurringEventValueByKey = (key: keyof Options) =>
+    isModalDefaultEventForEditModeAndRecurring(focusedEvent) ? getRruleValueBykey(focusedEvent.rrule)(key) : undefined
+
+  const [rruleFreq, setRruleFreq] = useState(getFocusedRecurringEventValueByKey('freq') as Frequency | undefined)
+  const [until, setUntil] = useState(getFocusedRecurringEventValueByKey('until') as Date | undefined)
   const [byweekday, setByweekday] = useState(
-    generateDefaultRecurringEventValue('byweekday')([momentToWeekday(startTime)]) as Array<Weekday> | undefined,
+    getFocusedRecurringEventValueByKey('byweekday') as Array<Weekday> | undefined,
   )
+
+  const defaultRrule: RRule = isModalDefaultEventForEditModeAndRecurring(focusedEvent)
+    ? focusedEvent.rrule
+    : new RRule({
+        freq: RRule.WEEKLY,
+        until: focusedEvent.ended_at.toDate(),
+        byweekday: [momentToWeekday(moment(focusedEvent.started_at))],
+      })
+  const getDefaultRruleValueByKey = getRruleValueBykey(defaultRrule)
+
+  const isRrulePanelFinallyOpen = !isRruleOptional || isRrulePanelOpen
+
+  const toggleRrulePanel = () => {
+    const determineValueByKey = (key: keyof Options) =>
+      !isRrulePanelFinallyOpen ? getDefaultRruleValueByKey(key) : undefined
+    setRruleFreq(determineValueByKey('freq') as Frequency | undefined)
+    setUntil(determineValueByKey('until') as Date | undefined)
+    setByweekday(determineValueByKey('byweekday') as Array<Weekday> | undefined)
+    setIsRrulePanelOpen(!isRruleOptional || !isRrulePanelOpen)
+  }
 
   const [role, setRole] = useState(generateDefaultEventValue('role')('') as string)
 
@@ -127,11 +140,6 @@ const MemberEventAdminModal: React.FC<{
     }
   }
 
-  function momentToWeekday(moment: Moment): Weekday {
-    const weekdayKey = moment.clone().locale('en').format('dd').toUpperCase() as WeekdayStr
-    return RRule[weekdayKey]
-  }
-
   const isInByweekday = (targetWeekday: Weekday) =>
     byweekday?.filter((weekday: Weekday) => weekday.equals(targetWeekday)).length !== 0
 
@@ -147,13 +155,15 @@ const MemberEventAdminModal: React.FC<{
 
   const formatLocalDateTime = (moment: Moment | undefined) => moment?.format?.('YYYY-MM-DD HH:mm:ss')
 
-  const rrule = new RRule({
-    dtstart: startTime.clone().utc(true).toDate(),
-    freq: rruleFreq,
-    byweekday,
-    until: until,
-    tzid: 'Asia/Taipei',
-  })
+  const rrule = isRrulePanelFinallyOpen
+    ? new RRule({
+        dtstart: startTime.clone().utc(false).toDate(),
+        freq: rruleFreq,
+        byweekday,
+        byhour: startTime.clone().utc(true).hour(),
+        until: until,
+      })
+    : undefined
 
   const eventPayload = {
     ...{
@@ -212,24 +222,20 @@ const MemberEventAdminModal: React.FC<{
             size="md"
             type="datetime-local"
             value={formatLocalDateTime(startTime)}
-            onChange={e => changeEventStartTime(moment(e.target.value))}
+            onChange={e => changeEventStartTime(moment(new Date(e.target.value)))}
           />
           To
           <Input
             size="md"
             type="datetime-local"
             value={formatLocalDateTime(endTime)}
-            onChange={e => changeEventEndTime(moment(e.target.value))}
+            onChange={e => changeEventEndTime(moment(new Date(e.target.value)))}
           />
-          <Accordion
-            defaultIndex={isRruleOptional ? undefined : [0]}
-            index={isRrulePanelOpen ? [0] : undefined}
-            onClick={toggleRrulePanel}
-          >
+          <Accordion defaultIndex={isRruleOptional ? undefined : [0]} index={isRrulePanelFinallyOpen ? [0] : []}>
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={toggleRrulePanel}>
                 <Box as="span" textAlign="left">
-                  <Checkbox isChecked={isRrulePanelOpen} onClick={toggleRrulePanel} /> Rrule
+                  <Checkbox isChecked={isRrulePanelFinallyOpen} onClick={e => e.preventDefault()} /> Rrule
                 </Box>
               </AccordionButton>
               <AccordionPanel pb={4}>
@@ -253,10 +259,10 @@ const MemberEventAdminModal: React.FC<{
                 </ButtonGroup>
                 <p>Until</p>
                 <Input
-                  value={formatLocalDateTime(moment(until).utc(false))}
+                  value={formatLocalDateTime(moment(until))}
                   size="md"
                   type="datetime-local"
-                  onChange={e => setUntil(moment(e.target.value).utc(true).toDate())}
+                  onChange={e => setUntil(new Date(e.target.value))}
                 />
               </AccordionPanel>
             </AccordionItem>

@@ -1,8 +1,11 @@
-import { ascend, chain, concat, converge, curry, drop, filter, head, identity, init, last, map, pipe, propOr, reduce, Reduced, slice, sort, __ } from 'ramda'
+import { ascend, chain, concat, construct, converge, curry, drop, filter, head, identity, init, last, map, pipe, prop, propOr, reduce, Reduced, slice, sort, tap, useWith as rUseWith, __ } from 'ramda'
 
 import * as Moment from 'moment'
+import momentTZ from 'moment-timezone';
 import { extendMoment, DateRange } from 'moment-range'
 import { RRule } from "rrule";
+
+import { parseRRule } from './eventAdaptor'
 
 const selfReduce = curry(
     (fn, arr) => converge(reduce(fn) as any, [head, drop(1)])(arr)
@@ -10,20 +13,22 @@ const selfReduce = curry(
 
 const moment = extendMoment(Moment)
 
-export class RecurringEvent {
-    rrule: RRule
-    endTime: Date
-    constructor(rrule: RRule, endTime: Date) {
-        this.rrule = rrule;
-        this.endTime = endTime;
-    }
-    all(): DateRanges {
-        return new DateRanges(
-            ...this.rrule.all()
-                .map((startTime: Date) => moment.range(startTime, this.endTime))
+
+export const eventToDateRanges = (payload: {
+    startTime: Moment.Moment
+    rrule?: RRule
+    endTime: Moment.Moment
+    duration: number
+}) => pipe(
+    // map((startTime: Moment.Moment) => momentTZ.utc(startTime.clone()).tz(Intl.DateTimeFormat().resolvedOptions().timeZone)),
+    map(
+        (startTime: Moment.Moment) => moment.range(
+            startTime,
+            payload.rrule ? startTime.clone().add(payload.duration) : payload.endTime
         )
-    }
-}
+    ),
+    DateRanges.makeFunctor
+)(payload.rrule ? payload.rrule.all().map(v => moment(new Date(v).toJSON().replace('Z', ''))) : [payload.startTime])
 
 const absolute = (dateRange: DateRange | null) =>
     dateRange === null || dateRange.start <= dateRange.end
@@ -39,37 +44,33 @@ const looseIntersect = curry(
             dateRange.intersect(intersectedDateRange)
 )
 export class DateRanges extends Array<DateRange | null>  {
-    constructor(...args: Array<DateRange | null>) {
-        super(...args)
-        DateRanges.absolute(this)
-    }
 
     static makeFunctor: (arrayOfDateRange: Array<DateRange | null>) => DateRanges =
         (arrayOfDateRange) => new DateRanges(...arrayOfDateRange)
 
-    static absolute: (dateRanges: DateRanges) => DateRanges = pipe(
-        map(absolute),
-        DateRanges.makeFunctor
-    )
+    static absolute: (dateRanges: DateRanges) => DateRanges = map(absolute) as any
 
-    absolute = DateRanges.absolute(this)
+    absolute = () => DateRanges.absolute(this)
 
     static trim: (dateRanges: DateRanges) => DateRanges & Array<DateRange> = filter(v => v !== null) as (dateRanges: DateRanges) => DateRanges & Array<DateRange>
 
-    trim = DateRanges.trim(this)
+    trim = () => DateRanges.trim(this)
 
     static ascendStart: (dateRanges: DateRanges) => DateRanges = pipe(
         sort(ascend(propOr(0, 'start'))),
         DateRanges.makeFunctor
     )
 
-    ascendStart = DateRanges.ascendStart(this)
+    ascendStart = () => DateRanges.ascendStart(this)
 
     static mergeTwo = curry(
-        (dateRange: DateRange, mergedDateRange: DateRange): DateRanges => DateRanges.makeFunctor(
-            dateRange.overlaps(mergedDateRange) ?
-                [dateRange.add(mergedDateRange)] : [dateRange, mergedDateRange]
-        )
+        (dateRange: DateRange, mergedDateRange: DateRange): DateRanges => {
+            console.log(65, dateRange.toString(), mergedDateRange.toString(), dateRange.overlaps(mergedDateRange, { adjacent: true }))
+            return DateRanges.makeFunctor(
+                dateRange.overlaps(mergedDateRange, { adjacent: true }) ?
+                    [dateRange.add(mergedDateRange, { adjacent: true })] : [dateRange, mergedDateRange]
+            )
+        }
     )
 
     static tailMerge =
@@ -78,11 +79,12 @@ export class DateRanges extends Array<DateRange | null>  {
                 converge(
                     concat as (...args: any) => Array<DateRange | null>,
                     [
-                        init as (dateRange: Array<DateRange | null>) => Array<DateRange | null>,
+                        pipe(
+                            init as (dateRange: Array<DateRange | null>) => Array<DateRange | null>,
+                        ),
                         pipe(
                             last,
-                            head,
-                            DateRanges.mergeTwo(__)(dateRange)
+                            (tail: DateRange) => DateRanges.mergeTwo(tail)(dateRange),
                         )
                     ]
                 ),
@@ -93,10 +95,10 @@ export class DateRanges extends Array<DateRange | null>  {
     static merge: (dateRanges: DateRanges) => DateRanges = pipe(
         DateRanges.ascendStart,
         DateRanges.trim,
-        reduce(DateRanges.tailMerge, new DateRanges())
+        converge(reduce(DateRanges.tailMerge as any) as any, [pipe(head, (v: DateRange) => new DateRanges(v)), pipe(drop(1))])
     )
 
-    merge = pipe(
+    merge = () => pipe(
         concat(this),
         DateRanges.makeFunctor,
         DateRanges.merge
@@ -104,7 +106,7 @@ export class DateRanges extends Array<DateRange | null>  {
 
     static selfIntersect: (dateRanges: DateRanges) => DateRanges | null = selfReduce(looseIntersect)
 
-    selfIntersect = DateRanges.selfIntersect(this)
+    selfIntersect = () => DateRanges.selfIntersect(this)
 
     static intersectDateRange = curry(
         (dateRanges: DateRanges, intersecteDateRange: DateRange) => pipe(
@@ -122,7 +124,7 @@ export class DateRanges extends Array<DateRange | null>  {
         )(dateRanges)
     )
 
-    intersect = DateRanges.intersect(this as DateRanges)
+    intersect = () => DateRanges.intersect(this as DateRanges)
 
     static depriveFromDateRange = curry(
         (dateRanges: DateRanges, deprivedDateRange: DateRange) => pipe(
