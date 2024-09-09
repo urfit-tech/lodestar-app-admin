@@ -101,7 +101,7 @@ const ModifyOrderStatusModal: React.VFC<{
         })
         let newPaymentLogs = paymentLogs.filter(p => p.no !== targetPaymentNo)
         newPaymentLogs.push({ status: paymentStatus, price: values.price })
-        const totalAmount = sum(newPaymentLogs.map(p => p.price))
+        const totalAmount = totalPrice
         const hasRefundPayment =
           newPaymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
         const paidAmount = sum(newPaymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
