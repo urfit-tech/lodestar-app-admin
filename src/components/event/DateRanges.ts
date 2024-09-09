@@ -1,11 +1,9 @@
-import { ascend, chain, concat, construct, converge, curry, drop, evolve, filter, head, identity, init, last, map, pipe, project, prop, propOr, reduce, Reduced, slice, sort, tap, useWith as rUseWith, __ } from 'ramda'
+import { ascend, chain, concat, converge, curry, drop, evolve, filter, head, identity, init, invoker, last, map, pipe, project, propOr, reduce, sort, tap, __ } from 'ramda'
 
 import * as Moment from 'moment'
-import momentTZ from 'moment-timezone';
 import { extendMoment, DateRange } from 'moment-range'
 import { RRule, rrulestr } from "rrule";
 
-import { parseRRule } from './eventAdaptor'
 import { FetchedResourceEvent } from '../../types/event';
 import { inertTransform, renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
 
@@ -15,6 +13,7 @@ const selfReduce = curry(
 
 const moment = extendMoment(Moment)
 
+const stripeTimeZone = (dateString: string | Date): string => new Date(dateString).toJSON().replace('Z', '')
 
 export const eventToDateRanges = (payload: {
     startTime: Moment.Moment
@@ -29,7 +28,7 @@ export const eventToDateRanges = (payload: {
         )
     ),
     DateRanges.makeFunctor
-)(payload.rrule ? payload.rrule.all().map(v => moment(new Date(v).toJSON().replace('Z', ''))) : [payload.startTime])
+)(payload.rrule ? map(pipe(stripeTimeZone, moment))(payload.rrule.all()) : [payload.startTime])
 
 const absolute = (dateRange: DateRange | null) =>
     dateRange === null || dateRange.start <= dateRange.end
@@ -142,15 +141,15 @@ export class DateRanges extends Array<DateRange | null>  {
 
     static intersectDateRange = curry(
         (dateRanges: DateRanges, intersecteDateRange: DateRange | null) => pipe(
-            map(looseIntersect(intersecteDateRange as any)),
-            DateRanges.selfIntersect,
+            chain(looseIntersect(intersecteDateRange as any)),
+            DateRanges.makeFunctor,
         )(dateRanges)
     )
 
     static intersect = curry(
         (dateRanges: DateRanges, intersecteDateRanges: DateRanges): DateRanges => pipe(
             DateRanges.trim,
-            map(DateRanges.intersectDateRange(intersecteDateRanges)),
+            chain(DateRanges.intersectDateRange(intersecteDateRanges)),
             DateRanges.makeFunctor,
             DateRanges.merge
         )(dateRanges)
@@ -164,7 +163,7 @@ export class DateRanges extends Array<DateRange | null>  {
             map(
                 pipe(
                     (dateRange: DateRange) => deprivedDateRange.subtract(dateRange),
-                    DateRanges.makeFunctor
+                    DateRanges.makeFunctor,
                 )
             ),
             selfReduce(DateRanges.intersect)
@@ -182,5 +181,4 @@ export class DateRanges extends Array<DateRange | null>  {
     )
 
     deprive: (dateRanges: DateRanges) => DateRanges = DateRanges.deprive(this as DateRanges)
-
 }

@@ -32,7 +32,7 @@ const fetchedEventValuesAdaptorMap: { [K in keyof FetchedResourceEvent]?: Functi
   published_at: inertTransform(moment),
   event_deleted_at: inertTransform(moment),
   rrule: inertTransform(rrulestr),
-  until: inertTransform((string: string) => new Date(string)),
+  until: inertTransform(moment),
 }
 
 export const parseRRule = (rrule: RRule) => {

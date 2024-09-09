@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { FetchButton } from 'lodestar-app-element/src/components/buttons/FetchButton'
 import moment, { Moment } from 'moment'
-import { curry, filter, map, pipe } from 'ramda'
+import { curry, filter, map, pickAll, pipe } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Frequency, Options, RRule, Weekday, WeekdayStr } from 'rrule'
@@ -103,27 +103,39 @@ const MemberEventAdminModal: React.FC<{
     isModalDefaultEventForEditModeAndRecurring(focusedEvent) ? getRruleValueBykey(focusedEvent.rrule)(key) : undefined
 
   const [rruleFreq, setRruleFreq] = useState(getFocusedRecurringEventValueByKey('freq') as Frequency | undefined)
-  const [until, setUntil] = useState(getFocusedRecurringEventValueByKey('until') as Date | undefined)
+  const [until, setUntil] = useState(
+    pipe(getFocusedRecurringEventValueByKey as (key: string) => Date, moment)('until') as Moment | undefined,
+  )
   const [byweekday, setByweekday] = useState(
     getFocusedRecurringEventValueByKey('byweekday') as Array<Weekday> | undefined,
   )
 
-  const defaultRrule: RRule = isModalDefaultEventForEditModeAndRecurring(focusedEvent)
-    ? focusedEvent.rrule
-    : new RRule({
-        freq: RRule.WEEKLY,
-        until: focusedEvent.ended_at.toDate(),
-        byweekday: [momentToWeekday(moment(focusedEvent.started_at))],
-      })
-  const getDefaultRruleValueByKey = getRruleValueBykey(defaultRrule)
+  const generateDefaultRruleByEvent = (determinedEvent: {
+    started_at: Moment | Date
+    ended_at: Moment | Date
+    rrule?: RRule
+  }): RRule =>
+    isModalDefaultEventForEditModeAndRecurring(determinedEvent)
+      ? determinedEvent.rrule
+      : new RRule({
+          freq: RRule.WEEKLY,
+          until: moment(determinedEvent.ended_at).toDate(),
+          byweekday: [momentToWeekday(moment(determinedEvent.started_at))],
+        })
 
   const isRrulePanelFinallyOpen = !isRruleOptional || isRrulePanelOpen
 
   const toggleRrulePanel = () => {
+    const getDefaultRruleValueByEventPayload = pipe(
+      pickAll(['started_at', 'ended_at', 'rrule']),
+      generateDefaultRruleByEvent,
+      getRruleValueBykey,
+    )(eventPayload)
+
     const determineValueByKey = (key: keyof Options) =>
-      !isRrulePanelFinallyOpen ? getDefaultRruleValueByKey(key) : undefined
+      !isRrulePanelFinallyOpen ? getDefaultRruleValueByEventPayload(key) : undefined
     setRruleFreq(determineValueByKey('freq') as Frequency | undefined)
-    setUntil(determineValueByKey('until') as Date | undefined)
+    setUntil(pipe(determineValueByKey as (key: string) => Date, moment)('until') as Moment | undefined)
     setByweekday(determineValueByKey('byweekday') as Array<Weekday> | undefined)
     setIsRrulePanelOpen(!isRruleOptional || !isRrulePanelOpen)
   }
@@ -159,15 +171,19 @@ const MemberEventAdminModal: React.FC<{
 
   const formatLocalDateTime = (moment: Moment | undefined) => moment?.format?.('YYYY-MM-DD HH:mm:ss')
 
+  console.log(until)
+
   const rrule = isRrulePanelFinallyOpen
     ? new RRule({
         dtstart: startTime.clone().utc(false).toDate(),
         freq: rruleFreq,
         byweekday,
         byhour: startTime.clone().utc(true).hour(),
-        until: until,
+        until: (until as Moment).clone().utc(false).toDate(),
       })
     : undefined
+
+  console.log(rrule)
 
   const eventPayload = {
     ...{
@@ -200,6 +216,7 @@ const MemberEventAdminModal: React.FC<{
     DateRanges.parseFromFetchedEvents([
       { ...eventPayload, duration: moment(eventPayload.ended_at).diff(moment(eventPayload.started_at)) } as any,
     ]).deprive(availableDateRanges)
+
   console.log(`unavailable daterange: ${getUnavailableDateRange().map(v => v?.toString())}`)
 
   const { trigger: createEventAndInviteResource } = useSWRMutation(
@@ -278,7 +295,7 @@ const MemberEventAdminModal: React.FC<{
                   value={formatLocalDateTime(moment(until))}
                   size="md"
                   type="datetime-local"
-                  onChange={e => setUntil(new Date(e.target.value))}
+                  onChange={e => setUntil(moment(e.target.value))}
                 />
               </AccordionPanel>
             </AccordionItem>

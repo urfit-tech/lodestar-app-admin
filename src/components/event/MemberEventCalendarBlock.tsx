@@ -4,10 +4,9 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import moment, { Duration, Moment } from 'moment'
+import moment, { Duration } from 'moment'
 import { filter, isNil, pipe, prop, propEq, tap } from 'ramda'
 import React, { useState } from 'react'
-import { RRule } from 'rrule'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import {
@@ -19,7 +18,7 @@ import {
   ResourceType,
 } from '../../types/event'
 import { DateRanges } from './DateRanges'
-import { adaptEventsToCalendar, adaptEventToModal, momentToWeekday } from './eventAdaptor'
+import { adaptEventsToCalendar, adaptEventToModal } from './eventAdaptor'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
@@ -77,13 +76,6 @@ export const MemberEventCalendarBlock: React.FC<{
   })
   const [duration, setDuration] = useState(defaultEventDuration)
   const [isRruleOptional, setIsRruleOptional] = useState(true)
-
-  const generateDefaultRruleString = ({ started_at, ended_at }: { started_at: Moment; ended_at: Moment }): string =>
-    new RRule({
-      freq: RRule.WEEKLY,
-      until: ended_at.toDate(),
-      byweekday: [momentToWeekday(moment(started_at))],
-    }).toString()
 
   const handleDateClick = (info: DateClickArg) => {
     const started_at = moment(info.date)
