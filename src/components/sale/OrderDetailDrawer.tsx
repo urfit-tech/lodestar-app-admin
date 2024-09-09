@@ -117,7 +117,43 @@ const OrderDetailDrawer: React.FC<{
                 {loadingOrderDetail ? (
                   <Skeleton />
                 ) : invoices.length === 0 ? (
-                  '未開立發票'
+                  <InvoiceCard
+                    status={''}
+                    invoiceIssuedAt={''}
+                    invoiceNumber={''}
+                    invoiceName={orderLog.invoiceOptions?.name || ''}
+                    invoicePhone={orderLog.invoiceOptions?.phone || ''}
+                    invoiceEmail={orderLog.invoiceOptions?.email || ''}
+                    invoiceTarget={
+                      orderLog.invoiceOptions?.donationCode
+                        ? '捐贈'
+                        : orderLog.invoiceOptions?.uniformNumber
+                        ? '公司'
+                        : '個人'
+                    }
+                    donationCode={orderLog.invoiceOptions?.donationCode || ''}
+                    invoiceCarrier={
+                      orderLog.invoiceOptions?.phoneBarCode
+                        ? '手機'
+                        : orderLog.invoiceOptions?.citizenCode
+                        ? '自然人憑證'
+                        : ''
+                    }
+                    uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
+                    uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
+                    invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
+                      orderLog.invoiceOptions?.address || ''
+                    }`}
+                    invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                    invoiceGatewayId={company?.invoiceGatewayId}
+                    companyUniformNumber={company?.companyUniformNumber}
+                    executorName={orderLog.options?.executor?.name}
+                    memberId={orderLog.memberId}
+                    paymentMethod={orderLog.options?.paymentMethod}
+                    invoiceCompanyName={company?.invoiceCompanyName}
+                    companyAddress={company?.companyAddress}
+                    companyPhone={company?.companyPhone}
+                  />
                 ) : (
                   invoices.map(i => (
                     <InvoiceCard
@@ -150,7 +186,7 @@ const OrderDetailDrawer: React.FC<{
                       invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
                         orderLog.invoiceOptions?.address || ''
                       }`}
-                      invoiceComment={orderLog.invoiceOptions?.invoiceComment}
+                      invoiceComment={i.options?.Result?.Comment || orderLog.invoiceOptions?.invoiceComment}
                       invoicePrice={i.price}
                       invoiceRandomNumber={i.options?.Result?.RandomNum || ''}
                       onClose={() => {

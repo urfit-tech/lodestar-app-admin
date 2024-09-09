@@ -268,7 +268,7 @@ const InvoiceCard: React.FC<{
   }
   return (
     <StyledCard>
-      <div className="container" style={{ opacity: status === 'REVOKED' ? 0.4 : 1 }}>
+      <div className="container" style={{ opacity: status !== 'SUCCESS' ? 0.4 : 1 }}>
         {contentList.map(
           (row, idx) =>
             row.isRender && (
