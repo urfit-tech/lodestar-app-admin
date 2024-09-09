@@ -49,11 +49,14 @@ export const useMeetingServiceCheck = () => {
     const gatewayServiceIds = gatewayServices.map(service => service.id)
     const periodUsedServiceId = overlapMeets.map(meet => meet.serviceId)
     const availableGatewayServiceId = gatewayServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
-    if (!availableGatewayServiceId) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-      return handleError({ message: `此時段無可用 ${gateway} 帳號` })
-    } else {
-      setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
+    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+    if (gateway !== 'google-meet') {
+      if (!availableGatewayServiceId) {
+        setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
+        return handleError({ message: `此時段無可用 ${gateway} 帳號` })
+      } else {
+        setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
+      }
     }
     return availableGatewayServiceId
   }
