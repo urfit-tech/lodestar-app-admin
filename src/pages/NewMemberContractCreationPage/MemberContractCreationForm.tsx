@@ -861,7 +861,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: '100%', marginRight: 16 }}>
                           品項
-                          {category.programType === '自訂項目' || category.name?.includes('自訂') ? (
+                          {category.programType === '自訂項目' || category.project?.includes('自訂') ? (
                             <Input
                               style={{ width: '100%', marginRight: 16 }}
                               value={newProductName}
@@ -1003,7 +1003,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: '100%', marginRight: 16 }}>
                           品項
-                          {category.name?.includes('自訂') ? (
+                          {category.project?.includes('自訂') ? (
                             <Input
                               style={{ width: '100%', marginRight: 16 }}
                               value={newProductName}
@@ -1053,7 +1053,7 @@ const MemberContractCreationForm: React.FC<
                       disabled={(!member.isBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
                       loading={loading}
                       onClick={() => {
-                        if (category.programType === '自訂項目' || category.name?.includes('自訂')) {
+                        if (category.programType === '自訂項目' || category.project?.includes('自訂')) {
                           if (!newProductName) {
                             return message.error('請輸入自訂產品命名字')
                           }
