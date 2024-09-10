@@ -442,12 +442,12 @@ const formMessages = {
     },
   }),
   GiftPlanInput: defineMessages({
-    pleaseSelectAGiftPlan: { id: 'form.GiftPlanInput.pleaseSelectAGiftPlan', message: '請選擇一個贈品方案' },
-    noGiftPlan: { id: 'form.GiftPlanInput.noGiftPlan', message: '無贈品' },
-    hasGiftPlan: { id: 'form.GiftPlanInput.hasGiftPlan', message: '有贈品' },
+    pleaseSelectAGiftPlan: { id: 'form.GiftPlanInput.pleaseSelectAGiftPlan', defaultMessage: '請選擇一個贈品方案' },
+    noGiftPlan: { id: 'form.GiftPlanInput.noGiftPlan', defaultMessage: '無贈品' },
+    hasGiftPlan: { id: 'form.GiftPlanInput.hasGiftPlan', defaultMessage: '有贈品' },
     whetherProvideGift: { id: 'form.GiftPlanInput.whetherProvideGift', defaultMessage: '是否有提供贈品' },
     selectGiftPlan: { id: 'form.GiftPlanInput.selectGiftPlan', defaultMessage: '選擇贈品方案' },
-    pleaseCreateGiftPlan: { id: 'form.GiftPlanInput.pleaseCreateGiftPlan', message: '請新增贈品方案' },
+    pleaseCreateGiftPlan: { id: 'form.GiftPlanInput.pleaseCreateGiftPlan', defaultMessage: '請新增贈品方案' },
   }),
   MemberSelector: defineMessages({
     memberSelect: { id: 'form.MemberSelector.memberSelect', defaultMessage: '請輸入帳號或 Email' },
