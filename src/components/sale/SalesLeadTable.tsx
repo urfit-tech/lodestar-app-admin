@@ -25,7 +25,6 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
-import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
@@ -40,6 +39,7 @@ import ManagerListModal from './ManagerListModal'
 import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
 import TransferModal from './TransferModal'
+import saleMessages from './translation'
 
 dayjs.extend(utc)
 
@@ -197,7 +197,7 @@ const SalesLeadTable: React.VFC<{
               className="mr-2"
               style={{ width: 90 }}
             >
-              {formatMessage(commonMessages.ui.search)}
+              {formatMessage(saleMessages.SalesLeadTable.search)}
             </Button>
             <Button
               onClick={() => {
@@ -207,7 +207,7 @@ const SalesLeadTable: React.VFC<{
               size="small"
               style={{ width: 90 }}
             >
-              {formatMessage(commonMessages.ui.reset)}
+              {formatMessage(saleMessages.SalesLeadTable.reset)}
             </Button>
           </div>
         </div>
@@ -232,7 +232,7 @@ const SalesLeadTable: React.VFC<{
         },
       })
         .then(() => {
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+          message.success(formatMessage(saleMessages.SalesLeadTable.successfullySaved))
           onRefetch()
           setRefetchLoading(false)
           setFullNameValue('')
@@ -253,44 +253,38 @@ const SalesLeadTable: React.VFC<{
     let eventSuccessMessage = ''
     switch (status) {
       case 'followed':
-        // confirmText = formatMessage(salesMessages.followedLeadConfirmMessage)
-        confirmText = '確定收藏這些名單'
-        eventSuccessMessage = '已成功收錄'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.followedLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.followedSuccessfully)
         break
       case 'removeFollowed':
-        // confirmText = formatMessage(salesMessages.removeFollowedLeadConfirmMessage)
-        confirmText = '確定移除收藏'
-        eventSuccessMessage = '已成功移除'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.removeFollowedLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.removedSuccessfully)
         break
       case 'specificList':
-        // confirmText = formatMessage(salesMessages.moveToSpecificListConfirmMessage)
-        confirmText = `確定收藏這些名單到${leadStatusCategory?.categoryName || ''}？`
-        eventSuccessMessage = `已成功收錄到`
+        confirmText = formatMessage(saleMessages.SalesLeadTable.moveToSpecificListConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.moveToSpecificListSuccessfully, {
+          categoryName: leadStatusCategory?.categoryName || '',
+        })
         break
       case 'completed':
-        // confirmText = formatMessage(salesMessages.completedLeadConfirmMessage)
-        confirmText = '確定這些名單已完成？'
-        eventSuccessMessage = '已成功完成此名單！'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.completedLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.completedSuccessfully)
         break
       case 'cancel':
-        // confirmText = formatMessage(salesMessages.cancelCompletedLeadConfirmMessage)
-        confirmText = '確定取消這些已完成的名單？'
-        eventSuccessMessage = '已取消已完成名單！'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.cancelCompletedLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.cancelCompletedSuccessfully)
         break
       case 'recycle':
-        // confirmText = formatMessage(salesMessages.recycleLeadConfirmMessage)
-        confirmText = '確定回收這些名單？'
-        eventSuccessMessage = '已成功回收此名單！'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.recycleLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.recycledSuccessfully)
         break
       case 'reject':
-        // confirmText = formatMessage(salesMessages.rejectLeadConfirmMessage)
-        confirmText = '確定拒絕這些名單？'
-        eventSuccessMessage = '已成功拒絕此名單！'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.rejectLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.rejectedSuccessfully)
         break
       case 'delete':
-        // confirmText = formatMessage(salesMessages.deleteLeadConfirmMessage)
-        confirmText = '確定永久刪除這些名單？此動作無法復原！'
-        eventSuccessMessage = '已成功刪除此名單！'
+        confirmText = formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm)
+        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully)
         break
     }
     if (window.confirm(confirmText)) {
@@ -482,7 +476,7 @@ const SalesLeadTable: React.VFC<{
       key: 'memberId',
       dataIndex: 'id',
       width: 80,
-      title: formatMessage(commonMessages.label.leadLevel),
+      title: formatMessage(saleMessages.SalesLeadTable.leadLevel),
       filters: [
         {
           text: 'SSR',
@@ -516,21 +510,9 @@ const SalesLeadTable: React.VFC<{
       // defaultSortOrder: 'descend',
       onFilter: (value, lead) =>
         value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
-      render: (memberId, record) => (
+      render: (_, record) => (
         <div className="d-flex flex-row justify-content-end">
-          {/* <Button
-            icon={<Icon component={() => <UserOutlinedIcon />} />}
-            className="mr-2"
-            onClick={() => {
-              setSelectedMember({
-                id: record.id,
-                name: record.name,
-                categoryNames: record.categoryNames,
-              })
-              setPropertyModalVisible(true)
-            }}
-          /> */}
-          <Tooltip placement="bottom" title={formatMessage(memberMessages.ui.newTask)}>
+          <Tooltip placement="bottom" title={formatMessage(saleMessages.SalesLeadTable.newTask)}>
             <Button
               icon={<CheckSquareOutlined />}
               className="mr-1"
@@ -546,7 +528,7 @@ const SalesLeadTable: React.VFC<{
               }}
             />
           </Tooltip>
-          <Tooltip placement="bottom" title={formatMessage(memberMessages.label.createMemberNote)}>
+          <Tooltip placement="bottom" title={formatMessage(saleMessages.SalesLeadTable.createMemberNote)}>
             <Button
               className="mr-1"
               icon={<FileAddOutlined />}
@@ -569,7 +551,7 @@ const SalesLeadTable: React.VFC<{
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
       width: 200,
-      title: formatMessage(salesMessages.memberNickName),
+      title: formatMessage(saleMessages.SalesLeadTable.memberNickName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -591,7 +573,7 @@ const SalesLeadTable: React.VFC<{
             <small>{lead?.email}</small>
             {hasFullNameProperty ? (
               <div className="d-flex align-items-center">
-                <p>{`${formatMessage(salesMessages.memberFullName)}：`}</p>
+                <p>{`${formatMessage(saleMessages.SalesLeadTable.memberFullName)}：`}</p>
                 {editFullNameMemberId && editFullNameMemberId === lead.id ? (
                   <Input.Group compact>
                     <Input
@@ -619,7 +601,7 @@ const SalesLeadTable: React.VFC<{
       key: 'phones',
       dataIndex: 'phones',
       width: 100,
-      title: formatMessage(salesMessages.tel),
+      title: formatMessage(saleMessages.SalesLeadTable.tel),
       render: (phones: { phoneNumber: string; isValid: boolean }[], record) => (
         <StyledPhones>
           <div>
@@ -674,7 +656,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'categoryNames',
       dataIndex: 'categoryNames',
-      title: formatMessage(commonMessages.label.category),
+      title: formatMessage(saleMessages.SalesLeadTable.category),
       filters: categoryNames.map(categoryName => ({
         text: categoryName,
         value: categoryName,
@@ -686,7 +668,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'materialNames',
       dataIndex: 'properties',
-      title: formatMessage(commonMessages.label.adMaterial),
+      title: formatMessage(saleMessages.SalesLeadTable.adMaterial),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -703,7 +685,7 @@ const SalesLeadTable: React.VFC<{
       key: 'memberNote',
       dataIndex: 'memberNote',
       width: 300,
-      title: formatMessage(commonMessages.label.memberNote),
+      title: formatMessage(saleMessages.SalesLeadTable.memberNote),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -719,7 +701,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'createdAt',
       dataIndex: 'createdAt',
-      title: formatMessage(salesMessages.createdAt),
+      title: formatMessage(saleMessages.SalesLeadTable.createdAt),
       sorter: {
         compare: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
         multiple: 2,
@@ -729,7 +711,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'recentContactedAt',
       dataIndex: 'recentContactedAt',
-      title: formatMessage(salesMessages.recentContactedAt),
+      title: formatMessage(saleMessages.SalesLeadTable.recentContactedAt),
       sorter: {
         compare: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
         multiple: 3,
@@ -739,7 +721,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'recentAnsweredAt',
       dataIndex: 'recentAnsweredAt',
-      title: formatMessage(salesMessages.recentAnsweredAt),
+      title: formatMessage(saleMessages.SalesLeadTable.recentAnsweredAt),
       sorter: {
         compare: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
         multiple: 4,
@@ -772,7 +754,7 @@ const SalesLeadTable: React.VFC<{
         <MemberTaskAdminModal
           visible={taskModalVisible}
           onCancel={() => setTaskModalVisible(false)}
-          title={formatMessage(memberMessages.ui.newTask)}
+          title={formatMessage(saleMessages.SalesLeadTable.newTask)}
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
@@ -791,7 +773,7 @@ const SalesLeadTable: React.VFC<{
           afterClose={() => {
             setSelectedMember(null)
           }}
-          title={formatMessage(memberMessages.label.createMemberNote)}
+          title={formatMessage(saleMessages.SalesLeadTable.createMemberNote)}
           onSubmit={async ({ type, status, duration, description, attachments }) =>
             await insertMemberNote({
               variables: {
@@ -819,7 +801,7 @@ const SalesLeadTable: React.VFC<{
                 if (memberNoteId && attachments.length) {
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
                 }
-                message.success(formatMessage(commonMessages.event.successfullyCreated))
+                message.success(formatMessage(saleMessages.SalesLeadTable.successfullyCreated))
               })
               .catch(handleError)
               .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
@@ -840,7 +822,7 @@ const SalesLeadTable: React.VFC<{
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row align-items-center justify-content-between mb-3">
             <b>
-              {formatMessage(salesMessages.selectedCount, {
+              {formatMessage(saleMessages.SalesLeadTable.selectedCount, {
                 count: selectedRowKeys.length,
               })}
             </b>
@@ -860,7 +842,8 @@ const SalesLeadTable: React.VFC<{
                           )
                         }
                       >
-                        {formatMessage(salesMessages.moveTo) + formatMessage(salesMessages.followedLead)}
+                        {formatMessage(saleMessages.SalesLeadTable.moveTo) +
+                          formatMessage(saleMessages.SalesLeadTable.followedLead)}
                       </Menu.Item>
                       {leadStatusCategories.map(leadStatusCategory => (
                         <Menu.Item
@@ -875,25 +858,25 @@ const SalesLeadTable: React.VFC<{
                             )
                           }
                         >
-                          {formatMessage(salesMessages.moveTo)} {leadStatusCategory.categoryName}
+                          {formatMessage(saleMessages.SalesLeadTable.moveTo)} {leadStatusCategory.categoryName}
                         </Menu.Item>
                       ))}
                       <StyledLine />
                       <Menu.Item onClick={() => handleOpenAddListModal('FOLLOWED')}>
-                        {formatMessage(salesMessages.addList)}
+                        {formatMessage(saleMessages.SalesLeadTable.addList)}
                       </Menu.Item>
                       {leadStatusCategories.length > 0 && (
                         <Menu.Item onClick={() => handleOpenManagerListModal('FOLLOWED')}>
-                          {formatMessage(salesMessages.managerList)}
+                          {formatMessage(saleMessages.SalesLeadTable.managerList)}
                         </Menu.Item>
                       )}
                     </Menu>
                   }
                 >
                   <Button icon={<StarOutlined />}>
-                    {formatMessage(salesMessages.moveTo) +
-                      formatMessage(salesMessages.followedLead) +
-                      formatMessage(salesMessages.list)}
+                    {formatMessage(saleMessages.SalesLeadTable.moveTo) +
+                      formatMessage(saleMessages.SalesLeadTable.followedLead) +
+                      formatMessage(saleMessages.SalesLeadTable.list)}
                   </Button>
                 </Dropdown>
               )}
@@ -913,6 +896,7 @@ const SalesLeadTable: React.VFC<{
                           }}
                         >
                           移至收藏
+                          {formatMessage(saleMessages.SalesLeadTable.moveToFollowed)}
                         </Menu.Item>
                       ) : null}
                       {leadStatusCategories
@@ -931,6 +915,9 @@ const SalesLeadTable: React.VFC<{
                             }}
                           >
                             移至 {leadStatusCategory.categoryName}
+                            {formatMessage(saleMessages.SalesLeadTable.moveToSpecificList, {
+                              categoryName: leadStatusCategory.categoryName,
+                            })}
                           </Menu.Item>
                         ))}
                       <Divider />
@@ -945,14 +932,24 @@ const SalesLeadTable: React.VFC<{
                         }}
                       >
                         移除收藏
+                        {formatMessage(saleMessages.SalesLeadTable.removeFollowed)}
                       </Menu.Item>
-                      <Menu.Item onClick={() => onIsOpenAddListModalChange(true)}>新增清單</Menu.Item>
-                      <Menu.Item onClick={() => onIsOpenManagerListModalChange(true)}>管理清單</Menu.Item>
+                      <Menu.Item onClick={() => onIsOpenAddListModalChange(true)}>
+                        新增清單
+                        {formatMessage(saleMessages.SalesLeadTable.addList)}
+                      </Menu.Item>
+                      <Menu.Item onClick={() => onIsOpenManagerListModalChange(true)}>
+                        管理清單
+                        {formatMessage(saleMessages.SalesLeadTable.managerList)}
+                      </Menu.Item>
                     </Menu>
                   }
                 >
                   <Center>
-                    <Button className="mr-2">編輯收藏清單</Button>
+                    <Button className="mr-2">
+                      編輯收藏清單
+                      {formatMessage(saleMessages.SalesLeadTable.editFollowed)}
+                    </Button>
                   </Center>
                 </Dropdown>
               )}
@@ -970,6 +967,7 @@ const SalesLeadTable: React.VFC<{
                   }
                 >
                   完成
+                  {formatMessage(saleMessages.SalesLeadTable.complete)}
                 </Button>
               )}
               {variant === 'completed' && (
@@ -986,6 +984,7 @@ const SalesLeadTable: React.VFC<{
                   }
                 >
                   取消完成
+                  {formatMessage(saleMessages.SalesLeadTable.cancelComplete)}
                 </Button>
               )}
               {variant !== 'completed' && (
@@ -1004,6 +1003,7 @@ const SalesLeadTable: React.VFC<{
                       }
                     >
                       回收
+                      {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
                   <Button
@@ -1019,6 +1019,7 @@ const SalesLeadTable: React.VFC<{
                     }
                   >
                     拒絕
+                    {formatMessage(saleMessages.SalesLeadTable.reject)}
                   </Button>
                   <Button
                     icon={<DeleteOutlined />}
@@ -1033,6 +1034,7 @@ const SalesLeadTable: React.VFC<{
                     }
                   >
                     刪除
+                    {formatMessage(saleMessages.SalesLeadTable.delete)}
                   </Button>
                 </>
               )}
@@ -1100,7 +1102,7 @@ const SalesLeadTable: React.VFC<{
             },
           })
             .then(() => {
-              message.success(formatMessage(commonMessages.event.successfullySaved))
+              message.success(formatMessage(saleMessages.SalesLeadTable.successfullySaved))
               setJitsiModalVisible(false)
             })
             .catch(handleError)
@@ -1116,13 +1118,13 @@ const SalesLeadTable: React.VFC<{
             listName,
             listStatus,
             async () => {
-              alert(formatMessage(salesMessages.additionSuccessful))
+              alert(formatMessage(saleMessages.SalesLeadTable.additionSuccessful))
               await refetchLeadStatusCategory()
               await onRefetch()
             },
             err => {
               console.log(err)
-              alert(formatMessage(salesMessages.additionFailed))
+              alert(formatMessage(saleMessages.SalesLeadTable.additionFailed))
             },
           )
         }}
@@ -1134,18 +1136,18 @@ const SalesLeadTable: React.VFC<{
             setIsOpenManagerListModal(false)
           }}
           handleManagerLeadStatusCategory={async (deletedLeadStatusCategoryIds, memberIds) => {
-            if (window.confirm(formatMessage(salesMessages.deleteListConfirmMessage))) {
+            if (window.confirm(formatMessage(saleMessages.SalesLeadTable.deleteListConfirmMessage))) {
               await handleManagerLeadStatusCategory(
                 deletedLeadStatusCategoryIds,
                 memberIds,
                 async () => {
-                  alert(formatMessage(salesMessages.savedSuccessfully))
+                  alert(formatMessage(saleMessages.SalesLeadTable.savedSuccessfully))
                   await refetchLeadStatusCategory()
                   await onRefetch()
                 },
                 err => {
                   console.log(err)
-                  alert(formatMessage(salesMessages.saveFailed))
+                  alert(formatMessage(saleMessages.SalesLeadTable.saveFailed))
                 },
               )
             }
