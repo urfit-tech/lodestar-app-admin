@@ -52,6 +52,8 @@ export type ProgramProps = {
   displayFooter: boolean
   coverType: string
   mobileCoverType: string
+  label: string
+  labelColorType: string
 }
 
 export type ProgramAdminProps = ProgramProps & {
