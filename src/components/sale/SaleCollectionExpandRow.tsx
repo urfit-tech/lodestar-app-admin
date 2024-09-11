@@ -394,6 +394,7 @@ const SaleCollectionExpandRow = ({
                               ItemPrice: values.itemAmt,
                               ItemAmt: values.itemAmt * values.itemCount,
                               Comment: values.comment,
+                              CustomsClearance: values.taxType === '2' ? '1' : undefined,
                             },
                           },
                           {
