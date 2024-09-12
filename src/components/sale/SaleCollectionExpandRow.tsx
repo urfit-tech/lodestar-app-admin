@@ -351,10 +351,10 @@ const SaleCollectionExpandRow = ({
                   setVisible(true)
                 }}
               >
-                <div>補開發票</div>
+                <div>手開發票</div>
               </Button>
             )}
-            title={'補開發票'}
+            title={'手開發票'}
             footer={null}
             renderFooter={({ setVisible }) => (
               <>
@@ -393,7 +393,8 @@ const SaleCollectionExpandRow = ({
                               ItemUnit: '個',
                               ItemPrice: values.itemAmt,
                               ItemAmt: values.itemAmt * values.itemCount,
-                              Comment: orderLog.invoiceOptions?.invoiceComment || '',
+                              Comment: values.comment,
+                              CustomsClearance: values.taxType === '2' ? '1' : undefined,
                             },
                           },
                           {
