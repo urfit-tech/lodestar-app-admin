@@ -66,9 +66,10 @@ const MemberContractCreationBlock: React.FC<{
 
   const items = selectedProducts.map(p => {
     const taxType = ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
+    const splitTitle = p.title.split('_')
     return p.title.includes('_套裝項目_')
       ? {
-          name: p.title,
+          name: splitTitle[0] + splitTitle[1],
           count: 1,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
@@ -76,7 +77,7 @@ const MemberContractCreationBlock: React.FC<{
           amt: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
         }
       : {
-          name: p.title,
+          name: splitTitle[0] + splitTitle[1],
           count: p.amount,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price,
