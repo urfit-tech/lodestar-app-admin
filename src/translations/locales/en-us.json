@@ -98,6 +98,8 @@
   "ProgramAdminPage.ProgramBasicForm.programTitle": "課程名稱",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "控制購買前是否能看到所有章節內容名稱",
   "ProgramAdminPage.ProgramBasicForm.tag": "標籤",
+  "ProgramAdminPage.ProgramBasicForm.programLabel": "Marketing Label",
+  "ProgramAdminPage.ProgramBasicForm.programLabelInfo": "Enter up to 16 half-size characters",
   "ProgramAdminPage.ProgramCoverForm.default": "預設",
   "ProgramAdminPage.ProgramCoverForm.defaultImageTips": "建議圖片尺寸：1200*675px",
   "ProgramAdminPage.ProgramCoverForm.defaultVideoTips": "BRecommended video size: 200MB",

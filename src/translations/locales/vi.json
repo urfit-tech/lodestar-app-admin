@@ -98,6 +98,8 @@
   "ProgramAdminPage.ProgramBasicForm.programTitle": "Tên khóa học",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "Bạn có thể xem nội dung nội dung của tất cả các chương trước khi mua không",
   "ProgramAdminPage.ProgramBasicForm.tag": "Nhãn mác",
+  "ProgramAdminPage.ProgramBasicForm.programLabel": "Nhãn tiếp thị",
+  "ProgramAdminPage.ProgramBasicForm.programLabelInfo": "Nhập tối đa 16 ký tự cỡ nhỏ",
   "ProgramAdminPage.ProgramCoverForm.default": "Đặt trước",
   "ProgramAdminPage.ProgramCoverForm.defaultImageTips": "Kích thước hình ảnh được đề xuất：1200*675px",
   "ProgramAdminPage.ProgramCoverForm.defaultVideoTips": "BRecommended video size: 200MB",

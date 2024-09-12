@@ -146,11 +146,11 @@ const ProgramBasicForm: React.FC<{
 
       {!!enabledModules.program_label && (
         <>
-          <Form.Item label={'行銷小標'} name="label">
-            <Input maxLength={16} />
-            <Text color="var(--gary-dark)" size="sm">
-              最多輸入16個半型文字
-            </Text>
+          <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLabel)} name="label">
+            <Input
+              maxLength={16}
+              placeholder={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLabelInfo)}
+            />
           </Form.Item>
           {programLabelColorConfig.length !== 0 && (
             <Form.Item

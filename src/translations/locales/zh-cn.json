@@ -98,6 +98,8 @@
   "ProgramAdminPage.ProgramBasicForm.programTitle": "课程名称",
   "ProgramAdminPage.ProgramBasicForm.sectionVisible": "控制购买前是否能看到所有章节内容名称",
   "ProgramAdminPage.ProgramBasicForm.tag": "标签",
+  "ProgramAdminPage.ProgramBasicForm.programLabel": "行销小标",
+  "ProgramAdminPage.ProgramBasicForm.programLabelInfo": "最多输入16个半型文字",
   "ProgramAdminPage.ProgramCoverForm.default": "预设",
   "ProgramAdminPage.ProgramCoverForm.defaultImageTips": "建议图片尺寸：1200*675px",
   "ProgramAdminPage.ProgramCoverForm.defaultVideoTips": "建议视频大小：200MB",
