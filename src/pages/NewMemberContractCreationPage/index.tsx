@@ -33,6 +33,15 @@ type SelectedProduct = {
   options: {
     product: string
     language: string
+    language_type?: string
+    program_type?: string
+    class_mode?: string
+    class_type?: string
+    location_type?: string
+    project?: string
+    once_sessions?: number
+    weekly_frequency?: { max: number; min: number }
+    total_sessions?: { max: number; min: number }
   }
 }
 

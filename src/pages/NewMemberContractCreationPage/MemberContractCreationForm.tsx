@@ -152,28 +152,32 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
           { title: '生活華語' },
           { title: '發音' },
           { title: '銀行與證券投資' },
+          { title: '口袋辭典' },
+          { title: '兩岸現代漢語常用詞典' },
         ],
       },
       {
         title: '活動',
-        projects: [{ title: '移地教學' }],
+        projects: [{ title: '移地教學' }, { title: '其他' }],
       },
       {
         title: '其他',
         projects: [
           { title: '其他收入' },
-          { title: '外購教材：HELLO華語' },
-          { title: '外購教材：HSK 標準教程' },
-          { title: '外購教材：其他台灣用書' },
-          { title: '外購教材：其他大陸用書' },
+          { title: '外購教材：當代中文課程' },
           { title: '外購教材：各行各業說中文' },
-          { title: '外購教材：學華語向前走' },
-          { title: '外購教材：康軒國語' },
-          { title: '外購教材：新實用漢語課本' },
           { title: '外購教材：新版實用視聽華語' },
           { title: '外購教材：時代華語' },
-          { title: '外購教材：當代中文課程' },
+          { title: '外購教材：學華語向前走' },
+          { title: '外購教材：HELLO華語' },
+          { title: '外購教材：康軒國語' },
+          { title: '外購教材：新實用漢語課本' },
+          { title: '外購教材：HSK 標準教程' },
+          { title: '外購教材：其他台灣用書' },
+          { title: '外購教材：模擬試題' },
+          { title: '外購教材：其他大陸用書' },
           { title: '外購教材：遠東' },
+          { title: '外購教材：自訂' },
         ],
       },
     ],
@@ -208,7 +212,7 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
       },
       {
         title: '其他',
-        projects: [{ title: '其他收入' }],
+        projects: [{ title: '其他收入' }, { title: '外購教材：自訂' }],
       },
     ],
   },
@@ -230,8 +234,12 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         ],
       },
       {
+        title: '活動',
+        projects: [{ title: '自訂' }],
+      },
+      {
         title: '其他',
-        projects: [{ title: '其他收入' }],
+        projects: [{ title: '其他收入' }, { title: '外購教材：自訂' }],
       },
     ],
   },
@@ -255,7 +263,7 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
       },
       {
         title: '其他',
-        projects: [{ title: '其他收入' }],
+        projects: [{ title: '其他收入' }, { title: '外購教材：自訂' }],
       },
     ],
   },
@@ -368,6 +376,13 @@ const MemberContractCreationForm: React.FC<
     >(gql`
       mutation CreateAppointmentPlan($data: appointment_plan_insert_input!) {
         insert_appointment_plan_one(object: $data) {
+          id
+        }
+      }
+    `)
+    const [insertToken] = useMutation<hasura.CreateToken, hasura.CreateTokenVariables>(gql`
+      mutation CreateToken($data: token_insert_input!) {
+        insert_token_one(object: $data) {
           id
         }
       }
@@ -785,18 +800,22 @@ const MemberContractCreationForm: React.FC<
                             {category.language === '中文' && category.programType === '套裝項目' && (
                               <div style={{ width: 110, marginRight: 8 }}>
                                 週數
-                                <InputNumber
-                                  min={1}
-                                  value={week}
-                                  onChange={e => {
-                                    setWeek(Number(e))
-                                    setCategory({
-                                      ...category,
-                                      name: undefined,
-                                    })
-                                    setTotalAmount(weeklyBatch * Number(e))
-                                  }}
-                                />
+                                {weeklyBatch === 1 ? (
+                                  <div>{weeklyBatch}</div>
+                                ) : (
+                                  <InputNumber
+                                    min={1}
+                                    value={week}
+                                    onChange={e => {
+                                      setWeek(Number(e))
+                                      setCategory({
+                                        ...category,
+                                        name: undefined,
+                                      })
+                                      setTotalAmount(weeklyBatch * Number(e))
+                                    }}
+                                  />
+                                )}
                               </div>
                             )}
                           </>
@@ -842,7 +861,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: '100%', marginRight: 16 }}>
                           品項
-                          {category.programType === '自訂項目' ? (
+                          {category.programType === '自訂項目' || category.project?.includes('自訂') ? (
                             <Input
                               style={{ width: '100%', marginRight: 16 }}
                               value={newProductName}
@@ -984,22 +1003,32 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: '100%', marginRight: 16 }}>
                           品項
-                          <Select
-                            style={{ width: '100%', marginRight: 16 }}
-                            value={category.name}
-                            onChange={value => {
-                              setCategory({
-                                ...category,
-                                name: value.toString(),
-                              })
-                            }}
-                          >
-                            {filterProducts.map((d: { title: string }) => (
-                              <Select.Option key={d.title} value={d.title}>
-                                {d.title}
-                              </Select.Option>
-                            ))}
-                          </Select>
+                          {category.project?.includes('自訂') ? (
+                            <Input
+                              style={{ width: '100%', marginRight: 16 }}
+                              value={newProductName}
+                              onChange={e => {
+                                setNewProductName(e.target.value)
+                              }}
+                            />
+                          ) : (
+                            <Select
+                              style={{ width: '100%', marginRight: 16 }}
+                              value={category.name}
+                              onChange={value => {
+                                setCategory({
+                                  ...category,
+                                  name: value.toString(),
+                                })
+                              }}
+                            >
+                              {filterProducts.map((d: { title: string }) => (
+                                <Select.Option key={d.title} value={d.title}>
+                                  {d.title}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          )}
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
@@ -1024,46 +1053,126 @@ const MemberContractCreationForm: React.FC<
                       disabled={(!member.isBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
                       loading={loading}
                       onClick={() => {
-                        if (category.product === '學費' && category.programType === '自訂項目') {
+                        if (category.programType === '自訂項目' || category.project?.includes('自訂')) {
                           if (!newProductName) {
                             return message.error('請輸入自訂產品命名字')
                           }
                           setLoading(true)
-                          insertAppointmentPlan({
-                            variables: {
-                              data: {
-                                title: newProductName,
-                                price: customPrice,
-                                duration: 0,
-                                published_at: new Date(),
-                                app_id: appId,
-                                options: { isBG: true, language: category.language, product: category.product },
-                              },
-                            },
-                          })
-                            .then(r => {
-                              const id = r.data?.insert_appointment_plan_one?.id
-                              const productId = `AppointmentPlan_${id}`
-
-                              onChangeSelectedProducts({
-                                id,
-                                amount: totalAmount,
-                                price: customPrice,
-                                totalPrice: customPrice * totalAmount,
-                                productId,
-                                title: newProductName,
-                                options: {
-                                  product: category.product,
-                                  language: category.language,
+                          if (category.product === '學費') {
+                            insertAppointmentPlan({
+                              variables: {
+                                data: {
+                                  title: newProductName,
+                                  price: customPrice,
+                                  duration: 0,
+                                  published_at: new Date(),
+                                  app_id: appId,
+                                  options:
+                                    category.programType === '自訂項目'
+                                      ? {
+                                          isBG: member.isBG,
+                                          language: category.language,
+                                          product: category.product,
+                                          language_type: category.languageType,
+                                          total_sessions: { max: totalAmount, min: totalAmount },
+                                        }
+                                      : {
+                                          language: category.language,
+                                          product: category.product,
+                                          language_type: category.languageType,
+                                          program_type: category.programType,
+                                          class_mode: category.classMode,
+                                          class_type: category.classType,
+                                          location_type: category.locationType,
+                                          project: category.project,
+                                          once_sessions: category.programType === '套裝項目' ? week : undefined,
+                                          weekly_frequency: { max: weeklyBatch, min: weeklyBatch },
+                                          total_sessions: { max: totalAmount, min: totalAmount },
+                                        },
                                 },
+                              },
+                            })
+                              .then(r => {
+                                const id = r.data?.insert_appointment_plan_one?.id
+                                const productId = `AppointmentPlan_${id}`
+
+                                onChangeSelectedProducts({
+                                  id,
+                                  amount: totalAmount,
+                                  price: customPrice,
+                                  totalPrice: customPrice * totalAmount,
+                                  productId,
+                                  title: newProductName,
+                                  options:
+                                    category.programType === '自訂項目'
+                                      ? {
+                                          language: category.language,
+                                          product: category.product,
+                                          language_type: category.languageType,
+                                          total_sessions: { max: totalAmount, min: totalAmount },
+                                        }
+                                      : {
+                                          product: category.product,
+                                          language: category.language,
+                                          language_type: category.languageType,
+                                          program_type: category.programType,
+                                          class_mode: category.classMode,
+                                          class_type: category.classType,
+                                          location_type: category.locationType,
+                                          project: category.project,
+                                          once_sessions: category.programType === '套裝項目' ? week : undefined,
+                                          weekly_frequency: { max: weeklyBatch, min: weeklyBatch },
+                                          total_sessions: { max: totalAmount, min: totalAmount },
+                                        },
+                                })
                               })
+                              .catch(e => {
+                                console.log(e)
+                              })
+                              .finally(() => {
+                                setLoading(false)
+                              })
+                          } else {
+                            insertToken({
+                              variables: {
+                                data: {
+                                  title: newProductName,
+                                  price: customPrice,
+                                  app_id: appId,
+                                  type: 'contract',
+                                  options: {
+                                    language: category.language,
+                                    product: category.product,
+                                    project: category.project,
+                                  },
+                                },
+                              },
                             })
-                            .catch(e => {
-                              console.log(e)
-                            })
-                            .finally(() => {
-                              setLoading(false)
-                            })
+                              .then(r => {
+                                const id = r.data?.insert_token_one?.id
+                                const productId = `Token_${id}`
+
+                                onChangeSelectedProducts({
+                                  id,
+                                  amount: category.product === '學費' ? totalAmount : 1,
+                                  price: customPrice,
+                                  totalPrice: customPrice * 1,
+                                  productId,
+                                  title: newProductName,
+                                  options: {
+                                    product: category.product,
+                                    language: category.language,
+                                    project: category.project,
+                                  },
+                                })
+                              })
+                              .catch(e => {
+                                console.log(e)
+                              })
+                              .finally(() => {
+                                setLoading(false)
+                              })
+                          }
                         } else if (selectedProduct) {
                           const price =
                             filterProducts.find(p => p.title === category.name)?.options.isCustomPrice || member.isBG
@@ -1087,6 +1196,15 @@ const MemberContractCreationForm: React.FC<
                             options: {
                               language: category.language,
                               product: category.product,
+                              language_type: category.languageType,
+                              program_type: category.programType,
+                              class_mode: category.classMode,
+                              class_type: category.classType,
+                              location_type: category.locationType,
+                              project: category.project,
+                              once_sessions: category.programType === '套裝項目' ? week : undefined,
+                              weekly_frequency: { max: weeklyBatch, min: weeklyBatch },
+                              total_sessions: { max: totalAmount, min: totalAmount },
                             },
                           })
 
@@ -1509,7 +1627,7 @@ const calculateMinPrice = (
   weeklyBatch: number,
   totalAmount: number,
 ) => {
-  return category.language === '中文' &&
+  return (category.language === '中文' || category.language === '方言') &&
     category.programType === '客製時數' &&
     category.classType === '個人班' &&
     category.classMode === '內課' &&
@@ -1525,7 +1643,7 @@ const calculateMinPrice = (
         ? 700
         : 650
       : 0
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '自組班' &&
       category.classMode === '內課' &&
@@ -1541,31 +1659,31 @@ const calculateMinPrice = (
         ? 450
         : 420
       : 0
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '個人班' &&
       category.classMode === '外課' &&
       category.locationType === '海內'
     ? 950
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '2人班' &&
       category.classMode === '外課' &&
       category.locationType === '海內'
     ? 1400
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '3-5人班' &&
       category.classMode === '外課' &&
       category.locationType === '海內'
     ? 2000
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '6-10人班' &&
       category.classMode === '外課' &&
       category.locationType === '海內'
     ? 3000
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '個人班' &&
       category.classMode === '線上課' &&
@@ -1581,7 +1699,7 @@ const calculateMinPrice = (
         ? 700
         : 650
       : 0
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '自組班' &&
       category.classMode === '線上課' &&
@@ -1597,7 +1715,7 @@ const calculateMinPrice = (
         ? 450
         : 420
       : 0
-    : category.language === '中文' &&
+    : (category.language === '中文' || category.language === '方言') &&
       category.programType === '客製時數' &&
       category.classType === '個人班' &&
       category.classMode === '線上課' &&
