@@ -234,7 +234,11 @@ const saleMessages = {
       id: 'sale.SalesLeadTable.deleteLeadConfirm',
       defaultMessage: 'Are you sure to delete this lead?',
     },
-    deletedSuccessfully:{
+    deleteListConfirm: {
+      id: 'sale.SalesLeadTable.deleteListConfirm',
+      defaultMessage: 'Are you sure to delete this list?',
+    },
+    deletedSuccessfully: {
       id: 'sale.SalesLeadTable.deletedSuccessfully',
       defaultMessage: 'Deleted Successfully',
     },

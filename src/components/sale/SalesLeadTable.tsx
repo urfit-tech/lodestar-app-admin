@@ -10,9 +10,9 @@ import {
   StopOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { Center } from '@chakra-ui/layout'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Dropdown, Input, Menu, message, Table, Tag, Tooltip, Divider } from 'antd'
+import { Center } from '@chakra-ui/layout'
+import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -29,7 +29,7 @@ import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { StyledLine } from '../../pages/SalesLeadPage'
-import { SalesLeadMember, LeadStatus, Manager } from '../../types/sales'
+import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -1136,7 +1136,7 @@ const SalesLeadTable: React.VFC<{
             setIsOpenManagerListModal(false)
           }}
           handleManagerLeadStatusCategory={async (deletedLeadStatusCategoryIds, memberIds) => {
-            if (window.confirm(formatMessage(saleMessages.SalesLeadTable.deleteListConfirmMessage))) {
+            if (window.confirm(formatMessage(saleMessages.SalesLeadTable.deleteListConfirm))) {
               await handleManagerLeadStatusCategory(
                 deletedLeadStatusCategoryIds,
                 memberIds,
