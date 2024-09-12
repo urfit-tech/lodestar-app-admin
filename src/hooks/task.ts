@@ -56,9 +56,11 @@ export const useMemberTaskCollection = (options?: {
 
   const { orderBy = defaultOrderBy } = options || {}
   const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
-    member: {
-      member_permission_groups: { permission_group_id: { _eq: options?.permissionGroupId } },
-    },
+    member: options?.permissionGroupId
+      ? {
+          member_permission_groups: { permission_group_id: { _eq: options?.permissionGroupId } },
+        }
+      : undefined,
     member_id: {
       _eq: options?.memberId,
     },
