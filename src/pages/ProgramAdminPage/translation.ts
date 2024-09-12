@@ -69,6 +69,11 @@ const ProgramAdminPageMessages = {
   }),
   ProgramBasicForm: defineMessages({
     programTitle: { id: 'ProgramAdminPage.ProgramBasicForm.programTitle', defaultMessage: '課程名稱' },
+    programLabel: { id: 'ProgramAdminPage.ProgramBasicForm.programLabel', defaultMessage: 'Marketing Label' },
+    programLabelInfo: {
+      id: 'ProgramAdminPage.ProgramBasicForm.programLabelInfo',
+      defaultMessage: 'Enter up to 16 half-size characters',
+    },
     category: { id: 'ProgramAdminPage.ProgramBasicForm.category', defaultMessage: '分類' },
     tag: { id: 'ProgramAdminPage.ProgramBasicForm.tag', defaultMessage: '標籤' },
     languages: { id: 'ProgramAdminPage.ProgramBasicForm.languages', defaultMessage: '顯示語系' },
