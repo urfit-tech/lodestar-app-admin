@@ -18,6 +18,7 @@ import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { prop, uniqBy } from 'ramda'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
@@ -881,15 +882,7 @@ const MemberContractCreationForm: React.FC<
                                 setCustomPrice(calculateMinPrice(category, weeklyBatch, totalAmount))
                               }}
                             >
-                              {(category.language === '中文' &&
-                              category.programType === '套裝項目' &&
-                              ![1, 4, 13].includes(week)
-                                ? [
-                                    { title: '中文_學費_套裝項目_海內_內課_團體班_2024 冬季團班' },
-                                    { title: '中文_學費_套裝項目_海內_內課_團體班_2024 秋季團班' },
-                                  ]
-                                : filterProducts
-                              ).map((d: { title: string }) => (
+                              {uniqBy(prop('title'), filterProducts).map((d: { title: string }) => (
                                 <Select.Option key={d.title} value={d.title}>
                                   {d.title}
                                 </Select.Option>
