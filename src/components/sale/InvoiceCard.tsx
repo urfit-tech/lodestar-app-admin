@@ -345,6 +345,8 @@ const InvoiceCard: React.FC<{
                         invoiceCompanyName,
                         companyAddress,
                         companyPhone,
+                        uniformTitle: invoiceResponse?.BuyerUBN && `統編：${invoiceResponse.BuyerUBN}`,
+                        comment: invoiceComment,
                       }}
                     />
                   </div>
