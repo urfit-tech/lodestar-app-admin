@@ -68,9 +68,10 @@ const MemberContractCreationBlock: React.FC<{
   const items = selectedProducts.map(p => {
     const taxType = ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
     const splitTitle = p.title.split('_')
+    const name = ['學費', '註冊費'].includes(p.options.product) ? splitTitle[0] + splitTitle[1] : p.title
     return p.title.includes('_套裝項目_')
       ? {
-          name: splitTitle[0] + splitTitle[1],
+          name,
           count: 1,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
@@ -78,7 +79,7 @@ const MemberContractCreationBlock: React.FC<{
           amt: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
         }
       : {
-          name: splitTitle[0] + splitTitle[1],
+          name,
           count: p.amount,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price,
@@ -289,7 +290,6 @@ const MemberContractCreationBlock: React.FC<{
       installmentPlans,
     }
     setLoading(true)
-    console.log({ isContract })
 
     if (isContract) {
       addMemberContract({
@@ -338,7 +338,6 @@ const MemberContractCreationBlock: React.FC<{
     selectedProducts.forEach(p => {
       productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
     })
-    console.log(paymentGateway)
 
     await axios
       .post(
