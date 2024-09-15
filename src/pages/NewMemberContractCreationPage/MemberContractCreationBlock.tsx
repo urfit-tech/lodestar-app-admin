@@ -30,7 +30,8 @@ const MemberContractCreationBlock: React.FC<{
   contracts: ContractInfo['contracts']
   installments: { price: number; index: number }[]
   sales: ContractSales['sales']
-}> = ({ member, form, selectedProducts, products, contracts, installments, sales }) => {
+  isMemberTypeBG: boolean
+}> = ({ member, form, selectedProducts, products, contracts, installments, sales, isMemberTypeBG }) => {
   const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -174,7 +175,8 @@ const MemberContractCreationBlock: React.FC<{
   })
 
   const handleMemberContractCreate = async () => {
-    const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
+    const isContract =
+      !isMemberTypeBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
     if (isContract && !fieldValue.contractId) {
       message.warn('請選擇合約')
       return
@@ -276,7 +278,7 @@ const MemberContractCreationBlock: React.FC<{
     const options = {
       ...fieldValue,
       language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
-      isBG: member.isBG,
+      isBG: isMemberTypeBG,
       executor: sales.find(s => s.id === fieldValue.executorId),
     }
 
