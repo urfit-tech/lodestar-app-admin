@@ -20,6 +20,7 @@ import { salesMessages } from '../helpers/translation'
 import { useLeadStatusCategory, useManagerLeads, useManagers } from '../hooks/sales'
 import { LeadStatus, Manager, SalesLeadMember } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
+import pageMessages from './translation'
 
 const StyledManagerBlock = styled.div`
   width: 400px;
@@ -76,7 +77,7 @@ const SalesLeadPage: React.VFC = () => {
         </AdminPageTitle>
         {(permissions.SALES_LEAD_SELECTOR_ADMIN || permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
-            <span className="flex-shrink-0">承辦人：</span>
+            <span className="flex-shrink-0">{formatMessage(pageMessages.SalesLeadPage.agent)}：</span>
             <MemberSelector
               members={managers}
               value={manager.id}
@@ -87,7 +88,9 @@ const SalesLeadPage: React.VFC = () => {
             />
           </StyledManagerBlock>
         ) : currentMember ? (
-          <div>承辦編號：{currentMember.id}</div>
+          <div>
+            {formatMessage(pageMessages.SalesLeadPage.agentId)}：{currentMember.id}
+          </div>
         ) : null}
       </div>
       {manager ? (
@@ -779,6 +782,7 @@ const SalesLeadTabs: React.VFC<{
 }
 
 const useMemberContractNotification = () => {
+  const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_TODAY_MEMBER_CONTRACT, hasura.GET_TODAY_MEMBER_CONTRACTVariables>(
     gql`
       query GET_TODAY_MEMBER_CONTRACT($today: timestamptz!) {
@@ -825,7 +829,9 @@ const useMemberContractNotification = () => {
     Object.values(notifications).forEach(v => {
       notification.success({
         duration: 0,
-        message: `${v.names.join('、')} 喜提 ${new Intl.NumberFormat('zh').format(v.totalPrice)}`,
+        message: `${v.names.join('、')} ${formatMessage(pageMessages.SalesLeadPage.got)} ${new Intl.NumberFormat(
+          'zh',
+        ).format(v.totalPrice)}`,
         description: (
           <div>
             {v.products.map(product => (

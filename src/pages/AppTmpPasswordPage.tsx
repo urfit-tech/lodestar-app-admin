@@ -74,7 +74,7 @@ const AppTmpPasswordPage: React.FC = () => {
         )
         if (code !== 'SUCCESS') {
           if (code === 'E_TMP_PASSWORD') {
-            setErrorMessage(`臨時密碼申請錯誤，請確認使用者信箱或權限！`)
+            setErrorMessage(formatMessage(pageMessages.AppTmpPasswordPage.temPasswordFailed))
             return
           }
           throw errorMessage
