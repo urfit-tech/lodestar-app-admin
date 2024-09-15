@@ -30,7 +30,8 @@ const MemberContractCreationBlock: React.FC<{
   contracts: ContractInfo['contracts']
   installments: { price: number; index: number }[]
   sales: ContractSales['sales']
-}> = ({ member, form, selectedProducts, products, contracts, installments, sales }) => {
+  isMemberTypeBG: boolean
+}> = ({ member, form, selectedProducts, products, contracts, installments, sales, isMemberTypeBG }) => {
   const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -67,9 +68,10 @@ const MemberContractCreationBlock: React.FC<{
   const items = selectedProducts.map(p => {
     const taxType = ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
     const splitTitle = p.title.split('_')
+    const name = ['學費', '註冊費'].includes(p.options.product) ? splitTitle[0] + splitTitle[1] : p.title
     return p.title.includes('_套裝項目_')
       ? {
-          name: splitTitle[0] + splitTitle[1],
+          name,
           count: 1,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
@@ -77,7 +79,7 @@ const MemberContractCreationBlock: React.FC<{
           amt: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
         }
       : {
-          name: splitTitle[0] + splitTitle[1],
+          name,
           count: p.amount,
           unit: '件',
           price: category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price,
@@ -174,7 +176,8 @@ const MemberContractCreationBlock: React.FC<{
   })
 
   const handleMemberContractCreate = async () => {
-    const isContract = !member.isBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
+    const isContract =
+      !isMemberTypeBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
     if (isContract && !fieldValue.contractId) {
       message.warn('請選擇合約')
       return
@@ -276,7 +279,7 @@ const MemberContractCreationBlock: React.FC<{
     const options = {
       ...fieldValue,
       language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
-      isBG: member.isBG,
+      isBG: isMemberTypeBG,
       executor: sales.find(s => s.id === fieldValue.executorId),
     }
 
@@ -287,7 +290,6 @@ const MemberContractCreationBlock: React.FC<{
       installmentPlans,
     }
     setLoading(true)
-    console.log({ isContract })
 
     if (isContract) {
       addMemberContract({
@@ -336,7 +338,6 @@ const MemberContractCreationBlock: React.FC<{
     selectedProducts.forEach(p => {
       productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
     })
-    console.log(paymentGateway)
 
     await axios
       .post(
