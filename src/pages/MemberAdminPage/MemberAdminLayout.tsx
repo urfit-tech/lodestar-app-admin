@@ -132,7 +132,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions, authToken } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)

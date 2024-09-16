@@ -357,6 +357,7 @@ export const call = async ({
   salesTelephone,
 }: {
   appId: string
+
   authToken: string | null
   phone: string
   salesTelephone: string
