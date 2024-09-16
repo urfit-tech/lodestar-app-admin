@@ -1517,7 +1517,7 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item
             label={
               <div>
-                發票收件人Email<span style={{ color: 'red' }}> *</span>
+                發票收件人信箱<span style={{ color: 'red' }}> *</span>
               </div>
             }
           >
@@ -1538,7 +1538,7 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="公司名稱">
+          <Descriptions.Item label="發票抬頭">
             <Form.Item className="mb-0" name="uniformTitle">
               <Input />
             </Form.Item>
