@@ -2,7 +2,7 @@ import { Moment } from 'moment'
 import { Category } from './general'
 
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
-export type MeetingGateway = 'jitsi' | 'zoom'
+export type MeetingGateway = 'jitsi' | 'zoom' | 'google-meet'
 
 export type MemberProps = {
   id: string
@@ -99,6 +99,7 @@ export type MemberAdminProps = {
   phones: {
     isValid: boolean
     phoneNumber: string
+    countryCode: string
   }[]
   categories: Category[]
   permissionIds: string[]
@@ -211,7 +212,7 @@ export type MemberTaskAdminModalFieldProps = {
   description: string | null
   hasMeeting: boolean
   meetingHours: number
-  meetingGateway: 'jitsi' | 'zoom'
+  meetingGateway: MeetingGateway
   isPrivate: boolean
 }
 

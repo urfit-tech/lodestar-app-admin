@@ -66,8 +66,12 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    memberType: string
-    isBG?: boolean // business or government
+    properties: {
+      id: string
+      name: string
+      placeholder: string
+      value: string | null
+    }[]
   }
   contracts: {
     id: string
@@ -147,10 +151,13 @@ const MemberContractCreationPage: React.VFC = () => {
   }
 
   const { member, contracts } = info
+  const memberType = member.properties.find(p => p.name === '會員類型')?.value
+  const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
+
   console.log({ selectedProducts })
 
   return (
-    <ContractLayout member={member}>
+    <ContractLayout member={member} isMemberTypeBG={isMemberTypeBG}>
       <div className="container py-5">
         <AdminBlock>
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
@@ -210,6 +217,7 @@ const MemberContractCreationPage: React.VFC = () => {
             addNewInstallment={addNewInstallment}
             removeInstallment={removeInstallment}
             member={member}
+            isMemberTypeBG={isMemberTypeBG}
           />
 
           <MemberContractCreationBlock
@@ -220,6 +228,7 @@ const MemberContractCreationPage: React.VFC = () => {
             contracts={contracts}
             installments={installments}
             sales={sales?.sales || []}
+            isMemberTypeBG={isMemberTypeBG}
           />
         </AdminBlock>
       </div>
@@ -236,9 +245,16 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_properties(where: { property: { name: { _eq: "會員類型" } } }) {
+          member_properties {
+            id
             value
+            property_id
           }
+        }
+        property(where: { app_id: { _eq: $appId } }) {
+          id
+          name
+          placeholder
         }
         contract(
           where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
@@ -267,13 +283,12 @@ const useContractInfo = (appId: string, memberId: string) => {
             id: data.member_by_pk.id,
             name: data.member_by_pk.name,
             email: data.member_by_pk.email,
-            memberType: data.member_by_pk.member_properties[0]?.value || '',
-            isBG:
-              !!data.member_by_pk.member_properties[0]?.value &&
-              !(
-                data.member_by_pk.member_properties[0]?.value.trim().startsWith('C') ||
-                data.member_by_pk.member_properties[0]?.value.trim().startsWith('BIP')
-              ),
+            properties: data.property.map(p => ({
+              id: p.id,
+              name: p.name,
+              placeholder: p.placeholder || '',
+              value: data.member_by_pk?.member_properties.find(mp => mp.property_id === p.id)?.value || null,
+            })),
           },
           contracts: data.contract.map(c => ({
             id: c.id,
