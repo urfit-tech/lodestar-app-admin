@@ -6,8 +6,6 @@ import { commonMessages } from '../../helpers/translation'
 
 const defaultOptions: PeriodType[] = ['D', 'W', 'M', 'Y']
 
-const defaultOptions: PeriodType[] = ['D', 'W', 'M', 'Y']
-
 const PeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }
   onChange?: (value: { type: PeriodType; amount: number }) => void
