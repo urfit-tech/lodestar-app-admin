@@ -696,13 +696,13 @@ const SaleCollectionExpandRow = ({
                             </Form.List>
                             <div className="row">
                               <div className="col-6">
-                                <Form.Item label={'買受人姓名'} name={[field.name, 'BuyerName']}>
-                                  <Input placeholder="請輸入買受人姓名" />
+                                <Form.Item label={'發票抬頭'} name={[field.name, 'BuyerName']}>
+                                  <Input placeholder="請輸入發票抬頭" />
                                 </Form.Item>
                               </div>
                               <div className="col-6">
-                                <Form.Item label={'買受人信箱'} name={[field.name, 'BuyerEmail']}>
-                                  <Input placeholder="請輸入買受人姓名" />
+                                <Form.Item label={'發票收件人信箱'} name={[field.name, 'BuyerEmail']}>
+                                  <Input placeholder="請輸入發票收件人信箱" />
                                 </Form.Item>
                               </div>
                               <div className="col-6">
