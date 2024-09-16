@@ -1,9 +1,11 @@
-import { curry, pipeWith, andThen, pluck, tap } from 'ramda'
+import { curry, pipeWith, andThen, pluck, tap, evolve, invoker, pipe, map, mapObjIndexed, values } from 'ramda'
 import axios, { AxiosRequestConfig } from "axios";
 import moment from 'moment';
 import {
     ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent,
-} from '../types/event';
+} from './eventFetcher.type';
+import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
+import { adaptFetchedResourceEvent } from './eventAdaptor'
 
 const authedConfig = curry(
     (authToken: string, config: AxiosRequestConfig | undefined) => {
@@ -78,6 +80,34 @@ export const getResourceByTypeTargetFetcher = curry(
     }
 )
 
+
+export const getResourcesByPermissionGroups = curry(
+    async (
+        authToken: string,
+        permissionGroups: Array<string>,
+        type: 'physical_space' | 'member',
+        properties?: Array<string> | undefined
+    ) => {
+        const query = pipe(
+            evolve({
+                permissionGroups: invoker(1, 'join')(','),
+                properties: v => v ? invoker(1, 'join')(',') : v
+            }) as (obj: { type: string, properties: Array<string> | undefined, permissionGroups: Array<string> | undefined }) => { type: string, properties: string, permissionGroups: string },
+            renameKey({
+                ids: 'permissionGroups'
+            }) as (obj: { type: string, properties: string, permissionGroups: string }) => ({ type: string, properties: string, ids: string }),
+            mapObjIndexed((value, key) => value ? `${key}=${value}` : ''),
+            values as (obj: { type: string, properties: string, ids: string }) => Array<string>,
+            invoker(1, 'join')('&')
+        )({ type, permissionGroups, properties })
+
+        return (await axios.get(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/permission-group?${query}`,
+            authedConfig(authToken)(undefined)
+        )).data as Array<FetchedResource>
+    }
+)
+
 export const getEventsByResourceFetcher = curry(
     async (authToken: string, startUntil: { startedAt: Date, until: Date }, resourceIds: Array<string>) => {
         const { startedAt, until } = startUntil
@@ -94,21 +124,21 @@ export const getEventsByResourceFetcher = curry(
     }
 )
 
-export const getResourceEventsFethcer = curry(
+export const getDefaultResourceEventsFethcer = curry(
     async (
         authToken: string,
         typeTargets: { type: ResourceType, targets: Array<string> },
         startUntil: { startedAt: Date, until: Date }
     ) => {
-        const resources = await getResourceByTypeTargetFetcher(authToken)(typeTargets)
-        const resourceIds = pluck('id')(resources)
-        const resourceEvents = await getEventsByResourceFetcher(authToken)(startUntil)(resourceIds)
-        const getDuration = (resourceEvent: FetchedResourceEvent) => {
-            const diff = moment(resourceEvent.ended_at).diff(moment(resourceEvent.started_at))
-            return diff > 0 ? diff : 3600000
+        try {
+            const resources = await getResourceByTypeTargetFetcher(authToken)(typeTargets)
+            const resourceIds = pluck('id')(resources)
+            const resourceEvents = await getEventsByResourceFetcher(authToken)(startUntil)(resourceIds)
+            const adaptedResourceEvents = resourceEvents.map(adaptFetchedResourceEvent)
+            return { resources, resourceEvents: adaptedResourceEvents }
+        } catch (e) {
+            console.error(e)
         }
-        const adaptedResourceEvents = resourceEvents.map(resourceEvent => ({ ...resourceEvent, duration: getDuration(resourceEvent) }))
-        return { resources, resourceEvents: adaptedResourceEvents }
     }
 )
 

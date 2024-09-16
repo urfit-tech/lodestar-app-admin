@@ -25,7 +25,7 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Frequency, Options, RRule, Weekday, WeekdayStr } from 'rrule'
 import useSWRMutation from 'swr/mutation'
-import { commonMessages } from '../../helpers/translation'
+import { momentToWeekday } from '../../helpers/eventHelper/eventAdaptor'
 import {
   EventRequest,
   GeneralModalDefaultEventForEditMode,
@@ -36,13 +36,13 @@ import {
   ModalDefaultEventForBasicModeWithSource,
   ModalDefaultEventForEditMode,
   Resource,
-} from '../../types/event'
+} from '../../helpers/eventHelper/eventFetcher.type'
+import { commonMessages } from '../../helpers/translation'
 import { DateRanges } from './DateRanges'
-import { momentToWeekday } from './eventAdaptor'
 
 const MemberEventAdminModal: React.FC<{
   memberId: string
-  membersAsResources: Array<Resource>
+  defaultResource: Resource
   isOpen: boolean
   onClose: () => void
   focusedEvent:
@@ -57,7 +57,7 @@ const MemberEventAdminModal: React.FC<{
   availableDateRanges: DateRanges
 }> = ({
   memberId,
-  membersAsResources,
+  defaultResource,
   isOpen,
   onClose,
   focusedEvent,
@@ -210,7 +210,7 @@ const MemberEventAdminModal: React.FC<{
       temporally_exclusive_resource_id: resource.id,
       role: role,
     })),
-  )(membersAsResources)
+  )(defaultResource)
 
   const getUnavailableDateRange = () =>
     DateRanges.parseFromFetchedEvents([

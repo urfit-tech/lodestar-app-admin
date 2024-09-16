@@ -19,11 +19,10 @@ import MemberTaskCollectionBlock from '../../components/task/MemberTaskCollectio
 import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdminBlock'
 import {
   createEventAndInviteResourceFetcher,
-  createResourceFetcher,
   deleteEvent,
-  getResourceEventsFethcer,
+  getDefaultResourceEventsFethcer,
   updateEvent,
-} from '../../helpers/eventFetchers'
+} from '../../helpers/eventHelper/eventFetchers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
@@ -72,8 +71,10 @@ const MemberAdminPage: React.FC = () => {
             <div className="p-5">
               <MemberEventCalendarBlock
                 memberId={memberId}
-                createResourceFetcher={createResourceFetcher(authToken as string)}
-                resourceEventsFetcher={getResourceEventsFethcer(authToken as string)}
+                defaultResourceEventsFetcher={getDefaultResourceEventsFethcer(authToken as string)({
+                  type: 'member',
+                  targets: [memberId],
+                })}
                 createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)}
                 updateResourceEventFetcher={updateEvent(authToken as string)}
                 deleteResourceEventFetcher={deleteEvent(authToken as string)}

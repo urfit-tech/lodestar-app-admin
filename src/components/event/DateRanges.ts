@@ -4,8 +4,8 @@ import * as Moment from 'moment'
 import { extendMoment, DateRange } from 'moment-range'
 import { RRule, rrulestr } from "rrule";
 
-import { FetchedResourceEvent } from '../../types/event';
-import { inertTransform, renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
+import { FetchedResourceEvent } from '../../helpers/eventHelper/eventFetcher.type';
+import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
 
 const selfReduce = curry(
     (fn, arr) => converge(reduce(fn) as any, [head, drop(1)])(arr)
@@ -66,8 +66,8 @@ export class DateRanges extends Array<DateRange | null>  {
                     rrule: string
                 },
                 evolve({
-                    startTime: inertTransform(moment),
-                    endTime: inertTransform(moment),
+                    startTime: moment,
+                    endTime: moment,
                     rrule: str => (str ? rrulestr(str) : undefined),
                     duration: identity,
                 }) as any,

@@ -1,36 +1,26 @@
 import { Box, useDisclosure } from '@chakra-ui/react'
-import { EventClickArg } from '@fullcalendar/core'
+import { EventApi, EventClickArg, EventInput } from '@fullcalendar/core'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import moment, { Duration } from 'moment'
-import { filter, isNil, pipe, prop, propEq, tap } from 'ramda'
+import { equals, filter, isNil, path, pipe } from 'ramda'
 import React, { useState } from 'react'
 import useSWR from 'swr'
-import useSWRMutation from 'swr/mutation'
 import {
   EventRequest,
-  FetchedResource,
-  FetchedResourceEvent,
   GeneralModalDefaultEventForEditMode,
   ModalDefaultEventForBasicMode,
-  ResourceType,
-} from '../../types/event'
+} from '../../helpers/eventHelper/eventFetcher.type'
 import { DateRanges } from './DateRanges'
-import { adaptEventsToCalendar, adaptEventToModal } from './eventAdaptor'
+import { ResourceEventsFetcher, TemporallyExclusiveResource } from './events.type'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
   memberId: string
-  resourceEventsFetcher: (typeTarget: { type: ResourceType; targets: Array<string> }) => (startUntil: {
-    startedAt: Date
-    until: Date
-  }) => {
-    resources: Array<FetchedResource>
-    resourceEvents: Array<FetchedResourceEvent>
-  }
-  createResourceFetcher: (payload: { type: ResourceType; target: string }) => any
+  defaultResourceEventsFetcher: ResourceEventsFetcher
+  invitedResourceEventsFetcher?: ResourceEventsFetcher
   createResourceEventFetcher: (payload: { events: Array<EventRequest>; invitedResource: Array<any> }) => any
   updateResourceEventFetcher: (payload: EventRequest) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
@@ -38,8 +28,8 @@ export const MemberEventCalendarBlock: React.FC<{
   defaultEventDuration?: Duration
 }> = ({
   memberId,
-  createResourceFetcher,
-  resourceEventsFetcher,
+  defaultResourceEventsFetcher,
+  invitedResourceEventsFetcher,
   createResourceEventFetcher,
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
@@ -47,24 +37,25 @@ export const MemberEventCalendarBlock: React.FC<{
   defaultEventDuration = moment.duration(1, 'hours'),
 }) => {
   const {
-    data: fetchedResourceEvents,
-    isLoading: isResourceEventsLoading,
-    error: resourceEventsfetchingError,
-    mutate: refetchResourceEvents,
+    data: fetchedDefaultResourceEvents,
+    isLoading: isDefaultResourceEventsLoading,
+    error: defaultResourceEventsfetchingError,
+    mutate: refetchDefaultResourceEvents,
   } = useSWR(
     [
-      { type: 'member' as ResourceType, targets: [memberId] },
-      {
-        startedAt: moment().subtract(eventPaginationDuration).startOf('day').toDate(),
-        until: moment().add(eventPaginationDuration).startOf('day').toDate(),
-      },
+      moment().subtract(eventPaginationDuration).startOf('day').toDate(),
+      moment().add(eventPaginationDuration).startOf('day').toDate(),
     ],
-    ([typeTarget, startUntil]) => resourceEventsFetcher(typeTarget)(startUntil),
+    ([startedAt, until]) => defaultResourceEventsFetcher({ startedAt, until }),
   )
 
-  const { trigger: createResourceForMember } = useSWRMutation([memberId], ([memberId]) =>
-    createResourceFetcher({ type: 'member', target: memberId }),
-  )
+  // const { trigger: getInvitedResourceEvents } = useSWRMutation(
+  //   [
+  //     moment().subtract(eventPaginationDuration).startOf('day').toDate(),
+  //     moment().add(eventPaginationDuration).startOf('day').toDate(),
+  //   ],
+  //   ([startedAt, until]) => invitedResourceEventsFetcher({ startedAt, until })
+  // )
 
   const { isOpen: isEventModalOpen, onOpen: onEventModalOpen, onClose: onEventModalClose } = useDisclosure()
 
@@ -85,29 +76,28 @@ export const MemberEventCalendarBlock: React.FC<{
   }
 
   const handleEventClick = (info: EventClickArg) => {
-    const [targetEvent] = (resourceEvents as Array<FetchedResourceEvent>).filter(
-      event => event.event_id === info.event.id,
+    const [targetEvent] = (defaultResourceEvents as Array<EventApi>).filter(
+      event => event.extendedProps.event_id === info.event.id,
     )
-    pipe(adaptEventToModal, tap(setModalEvent))(targetEvent)
+    // pipe(adaptEventToModal, tap(setModalEvent))(targetEvent)
     onEventModalOpen()
   }
 
-  if (isResourceEventsLoading || resourceEventsfetchingError) {
+  if (isDefaultResourceEventsLoading || defaultResourceEventsfetchingError) {
     return <></>
   }
 
-  const { resources, resourceEvents } = fetchedResourceEvents as {
-    resources: Array<FetchedResource>
-    resourceEvents: Array<FetchedResourceEvent>
+  const { resources: defaultResource, resourceEvents: defaultResourceEvents } = fetchedDefaultResourceEvents as {
+    resources: Array<TemporallyExclusiveResource>
+    resourceEvents: Array<EventApi>
   }
 
-  if (!resources || resources.length === 0) createResourceForMember()
-  const memberResource = filter(propEq('target', memberId))(resources)
+  const activeEvents = filter(pipe(path(['extendedProps', 'event_deleted_at']), isNil))(defaultResourceEvents)
 
-  const activeEvents = filter(pipe(prop('event_deleted_at'), isNil))(resourceEvents)
-  console.log(123, activeEvents)
+  const availableEvents = filter(
+    pipe(path(['extendedProps', 'role']) as (event: EventApi) => string, equals('available')),
+  )(activeEvents)
 
-  const availableEvents = filter(propEq('role', 'available'))(activeEvents)
   const availableDateRanges = pipe(DateRanges.parseFromFetchedEvents, DateRanges.merge)(availableEvents)
 
   console.log(
@@ -128,20 +118,17 @@ export const MemberEventCalendarBlock: React.FC<{
         }}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
-        events={pipe(
-          filter((event: FetchedResourceEvent) => !event.event_deleted_at),
-          adaptEventsToCalendar,
-        )(resourceEvents)}
+        events={activeEvents as EventInput}
       />
       {isEventModalOpen ? (
         <MemberEventAdminModal
           memberId={memberId}
-          membersAsResources={memberResource as any}
+          defaultResource={defaultResource as any}
           isOpen={isEventModalOpen}
           onClose={onEventModalClose}
           focusedEvent={modalEvent}
           isRruleOptional={isRruleOptional}
-          refetchResourceEvents={refetchResourceEvents}
+          refetchResourceEvents={refetchDefaultResourceEvents}
           availableDateRanges={availableDateRanges}
           {...{
             createResourceEventFetcher,
