@@ -621,7 +621,7 @@ const SaleCollectionExpandRow = ({
                                         <div style={{ fontSize: 18, fontWeight: 500, padding: '4px 0' }}>
                                           商品{idx + 1}
                                         </div>
-                                        <Form.Item className="flex-grow-1" {...field}>
+                                        <Form.Item className="flex-grow-1">
                                           <div className="row">
                                             <div className="col-4">
                                               <Form.Item label={'商品數量'} name={[field.name, 'ItemCount']}>
