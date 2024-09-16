@@ -6,11 +6,7 @@ import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import bgBackground from '../../images/default/bg-background.png'
 
-const ContractLayout: React.FC<{ member: ContractInfo['member']; isMemberTypeBG: boolean }> = ({
-  member,
-  isMemberTypeBG,
-  children,
-}) => {
+const ContractLayout: React.FC<{ member: ContractInfo['member'] }> = ({ member, children }) => {
   return (
     <>
       <AdminHeader>
@@ -28,7 +24,7 @@ const ContractLayout: React.FC<{ member: ContractInfo['member']; isMemberTypeBG:
         <StyledLayoutContent>
           <div
             style={{
-              backgroundImage: isMemberTypeBG ? `url(${bgBackground})` : undefined,
+              backgroundImage: member.isBG ? `url(${bgBackground})` : undefined,
             }}
           >
             {children}

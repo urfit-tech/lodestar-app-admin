@@ -47,51 +47,13 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         programType: [{ title: '標準時數' }, { title: '套裝項目' }, { title: '客製時數' }, { title: '自訂項目' }],
         classMode: [{ title: '內課' }, { title: '外課' }, { title: '線上課' }],
         classType: [
-          {
-            title: '個人班',
-          },
-          {
-            title: '自組班',
-          },
-          {
-            title: '團體班',
-          },
-          {
-            title: '2-10人班',
-          },
-          {
-            title: '2人班',
-          },
-          {
-            title: '3-5人班',
-          },
-          {
-            title: '3人班',
-          },
-          {
-            title: '4人班',
-          },
-          {
-            title: '5人班',
-          },
-          {
-            title: '6-10人班',
-          },
-          {
-            title: '6人班',
-          },
-          {
-            title: '7人班',
-          },
-          {
-            title: '8人班',
-          },
-          {
-            title: '9人班',
-          },
-          {
-            title: '10人班',
-          },
+          { title: '個人班' },
+          { title: '自組班' },
+          { title: '團體班' },
+          { title: '2-10人班' },
+          { title: '2人班' },
+          { title: '3-5人班' },
+          { title: '6-10人班' },
         ],
         locationType: [{ title: '海內' }, { title: '海外' }],
         onceSessions: [
@@ -240,30 +202,12 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         programType: [{ title: '標準時數' }, { title: '套裝項目' }, { title: '客製時數' }, { title: '自訂項目' }],
         classMode: [{ title: '內課' }, { title: '外課' }, { title: '線上課' }],
         classType: [
-          {
-            title: '個人班',
-          },
-          {
-            title: '自組班',
-          },
-          {
-            title: '團體班',
-          },
-          {
-            title: '2人班',
-          },
-          {
-            title: '3-5人班',
-          },
-          {
-            title: '3人班',
-          },
-          {
-            title: '4人班',
-          },
-          {
-            title: '5人班',
-          },
+          { title: '個人班' },
+          { title: '團體班' },
+          { title: '2人班' },
+          { title: '3-5人班' },
+          { title: '自組2-5人' },
+          { title: '自組3-10人' },
         ],
         locationType: [{ title: '海內' }],
       },
@@ -389,7 +333,6 @@ const MemberContractCreationForm: React.FC<
     addNewInstallment: (installment: { index: number; price: number; endedAt: Date }) => void
     removeInstallment: (index: number) => void
     member: ContractInfo['member']
-    isMemberTypeBG: boolean
   }
 > = memo(
   ({
@@ -406,7 +349,6 @@ const MemberContractCreationForm: React.FC<
     addNewInstallment,
     member,
     removeInstallment,
-    isMemberTypeBG,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
@@ -742,7 +684,7 @@ const MemberContractCreationForm: React.FC<
                             }}
                           >
                             {options?.programType
-                              .filter((p: { title: string }) => isMemberTypeBG || p.title !== '自訂項目')
+                              .filter((p: { title: string }) => member.isBG || p.title !== '自訂項目')
                               .map((d: { title: string }) => (
                                 <Select.Option key={d.title} value={d.title}>
                                   {d.title}
@@ -951,7 +893,7 @@ const MemberContractCreationForm: React.FC<
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>{category.programType === '套裝項目' ? '總價' : '單價/堂'}</div>
                           {selectedProduct?.options.isCustomPrice ||
-                          isMemberTypeBG ||
+                          member.isBG ||
                           (category.language === '中文' &&
                             category.programType === '套裝項目' &&
                             ![1, 4, 13].includes(week)) ? (
@@ -1003,7 +945,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {selectedProduct?.options.isCustomPrice || isMemberTypeBG ? (
+                          {selectedProduct?.options.isCustomPrice || member.isBG ? (
                             <InputNumber
                               min={0}
                               value={customPrice}
@@ -1083,7 +1025,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {selectedProduct?.options.isCustomPrice || isMemberTypeBG ? (
+                          {selectedProduct?.options.isCustomPrice || member.isBG ? (
                             <InputNumber
                               min={0}
                               value={customPrice}
@@ -1101,7 +1043,7 @@ const MemberContractCreationForm: React.FC<
                     )}
 
                     <Button
-                      disabled={(!isMemberTypeBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
+                      disabled={(!member.isBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
                       loading={loading}
                       onClick={() => {
                         if (category.programType === '自訂項目' || category.project?.includes('自訂')) {
@@ -1121,7 +1063,7 @@ const MemberContractCreationForm: React.FC<
                                   options:
                                     category.programType === '自訂項目'
                                       ? {
-                                          isBG: isMemberTypeBG,
+                                          isBG: member.isBG,
                                           language: category.language,
                                           product: category.product,
                                           language_type: category.languageType,
@@ -1226,7 +1168,7 @@ const MemberContractCreationForm: React.FC<
                           }
                         } else if (selectedProduct) {
                           const price =
-                            filterProducts.find(p => p.title === category.name)?.options.isCustomPrice || isMemberTypeBG
+                            filterProducts.find(p => p.title === category.name)?.options.isCustomPrice || member.isBG
                               ? customPrice
                               : selectedProduct.price
                           onChangeSelectedProducts({
@@ -1326,7 +1268,7 @@ const MemberContractCreationForm: React.FC<
             )
           })}
         </div>
-        {selectedProducts.filter(p => p.productId.includes('AppointmentPlan_')).length > 0 && !isMemberTypeBG && (
+        {selectedProducts.filter(p => p.productId.includes('AppointmentPlan_')).length > 0 && !member.isBG && (
           <Descriptions title="合約內容" column={2} bordered className="mb-5">
             <Descriptions.Item
               label={
@@ -1434,7 +1376,7 @@ const MemberContractCreationForm: React.FC<
                   .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
-                      (!!isMemberTypeBG &&
+                      (!!member.isBG &&
                         [
                           '全額付清',
                           '先上課後月結實支實付',
@@ -1442,7 +1384,7 @@ const MemberContractCreationForm: React.FC<
                           '課前頭款+自訂分期',
                           '開課後自訂分期',
                         ].includes(mode)) ||
-                      (!isMemberTypeBG && ['全額付清', '訂金+尾款'].includes(mode)),
+                      (!member.isBG && ['全額付清', '訂金+尾款'].includes(mode)),
                   )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
