@@ -100,7 +100,7 @@ const ProgramBasicForm: React.FC<{
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
         label: values.label,
-        labelColorType: values.programLabelColor.toString(),
+        labelColorType: values.programLabelColor?.toString(),
       },
     })
       .then(async () => {

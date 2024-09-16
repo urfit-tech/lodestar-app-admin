@@ -27,7 +27,8 @@ const PermissionGroupSelector: React.FC<{
   single?: boolean
   value?: string
   onChange?: (value: string) => void
-}> = ({ single, value, onChange }) => {
+  onClear?: () => void
+}> = ({ single, value, onChange, onClear }) => {
   const { loadingPermissionGroups, permissionGroups } = usePermissionGroupCollection()
 
   return (
@@ -37,6 +38,7 @@ const PermissionGroupSelector: React.FC<{
       loading={loadingPermissionGroups}
       value={value}
       onChange={onChange}
+      onClear={onClear}
       placeholder="請選擇權限群組"
     >
       {permissionGroups.map(permissionGroup => (

@@ -117,7 +117,7 @@ const MemberTaskAdminBlock: React.FC<{
 }> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter, activeMemberTask }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
   const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<FieldFilter>(localStorageMemberTaskFilter || {})
@@ -629,19 +629,28 @@ const MemberTaskAdminBlock: React.FC<{
             initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
             onRefetch={refetchMemberTasks}
           />
-          <div style={{ width: '180px', marginLeft: 8 }}>
-            <PermissionGroupSelector
-              single
-              value={filter.permissionGroupId}
-              onChange={value => {
-                setFilter(filter => ({
-                  ...filter,
-                  permissionGroupId: value,
-                }))
-                localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: value }))
-              }}
-            />
-          </div>
+          {settings['member_task.permission_group.selector.enabled'] === '1' && (
+            <div style={{ width: '180px', marginLeft: 8 }}>
+              <PermissionGroupSelector
+                single
+                value={filter.permissionGroupId}
+                onChange={value => {
+                  setFilter(filter => ({
+                    ...filter,
+                    permissionGroupId: value,
+                  }))
+                  localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, permissionGroupId: value }))
+                }}
+                onClear={() => {
+                  setFilter(filter => ({
+                    ...filter,
+                    permissionGroupId: undefined,
+                  }))
+                  localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, permissionGroupId: undefined }))
+                }}
+              />
+            </div>
+          )}
         </div>
         {currentMember && jitsiModalVisible && (
           <JitsiDemoModal
