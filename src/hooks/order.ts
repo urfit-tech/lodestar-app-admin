@@ -278,6 +278,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
           expired_at
           shipping
           invoice_options
+          options
           invoice(where: { revoked_at: { _is_null: true } }) {
             no
             price
@@ -383,6 +384,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
     invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
     invoiceTotalPrice: sum(expandRowOrderLog?.order_log_by_pk?.invoice?.map(v => v.price) || []),
+    options: expandRowOrderLog?.order_log_by_pk?.options,
   }
 
   const orderProducts =
