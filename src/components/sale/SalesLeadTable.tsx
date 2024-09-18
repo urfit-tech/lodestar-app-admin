@@ -249,44 +249,45 @@ const SalesLeadTable: React.VFC<{
     status: 'followed' | 'removeFollowed' | 'specificList' | 'completed' | 'cancel' | 'recycle' | 'reject' | 'delete',
     leadStatusCategory?: { id: string; categoryName: string },
   ) => {
-    let confirmText = ''
-    let eventSuccessMessage = ''
-    switch (status) {
-      case 'followed':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.followedLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.followedSuccessfully)
-        break
-      case 'removeFollowed':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.removeFollowedLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.removedSuccessfully)
-        break
-      case 'specificList':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.moveToSpecificListConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.moveToSpecificListSuccessfully, {
+    const statusMessages: Record<typeof status, { confirm: string; success: string }> = {
+      followed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.followedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.followedSuccessfully),
+      },
+      removeFollowed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.removeFollowedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.removedSuccessfully),
+      },
+      specificList: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.moveToSpecificListConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.moveToSpecificListSuccessfully, {
           categoryName: leadStatusCategory?.categoryName || '',
-        })
-        break
-      case 'completed':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.completedLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.completedSuccessfully)
-        break
-      case 'cancel':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.cancelCompletedLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.cancelCompletedSuccessfully)
-        break
-      case 'recycle':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.recycleLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.recycledSuccessfully)
-        break
-      case 'reject':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.rejectLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.rejectedSuccessfully)
-        break
-      case 'delete':
-        confirmText = formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm)
-        eventSuccessMessage = formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully)
-        break
+        }),
+      },
+      completed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.completedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.completedSuccessfully),
+      },
+      cancel: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.cancelCompletedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.cancelCompletedSuccessfully),
+      },
+      recycle: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.recycleLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.recycledSuccessfully),
+      },
+      reject: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.rejectLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.rejectedSuccessfully),
+      },
+      delete: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully),
+      },
     }
+
+    const { confirm: confirmText, success: eventSuccessMessage } = statusMessages[status]
+
     if (window.confirm(confirmText)) {
       updateLeads({
         variables: {
