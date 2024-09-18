@@ -15,20 +15,30 @@ import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/
 import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 import { CraftSettingLabel } from './CraftSettingsPanel'
+import { Select } from '@chakra-ui/react'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useApolloClient } from '@apollo/client'
+import { GetAppPageLanguage } from '../../hooks/craft'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
+import craftPageAdminPage from './translation'
+import hasura from '../../hasura'
 
 type FieldProps = {
   pageName: string
   path: string
   noHeader: boolean
   noFooter: boolean
+  language: string
 }
 
 const CraftPageBasicSettingBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null
   onRefetch?: () => void
 }> = ({ pageAdmin, onRefetch }) => {
+  const { enabledModules, id: appId } = useApp()
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
+  const client = useApolloClient()
   const { updateAppPage, updateAppPageMetaTag } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
   const [path, setPath] = useState(pageAdmin?.path || '')
@@ -47,6 +57,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
       pageId: pageAdmin.id,
       path: values.path,
       title: values.pageName,
+      language: values.language,
       options: { ...pageAdmin.options, noHeader: values.noHeader, noFooter: values.noFooter },
     })
       .then(() => {
@@ -74,6 +85,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
             path: pageAdmin?.path,
             noHeader: pageAdmin?.options?.noHeader,
             noFooter: pageAdmin?.options?.noFooter,
+            language: pageAdmin.language,
           }}
           onFinish={handleSubmit}
         >
@@ -122,6 +134,43 @@ const CraftPageBasicSettingBlock: React.VFC<{
                     field: formatMessage(craftPageMessages.label.path),
                   }),
                 },
+                {
+                  validator: async (_, value, callback) => {
+                    await client
+                      .query<hasura.GetAppPageLanguage, hasura.GetAppPageLanguageVariables>({
+                        query: GetAppPageLanguage,
+                        variables: {
+                          condition: {
+                            app_id: { _eq: appId },
+                            path: { _eq: form.getFieldValue('path') },
+                            language: value === 'none' ? { _is_null: true } : { _eq: value },
+                          },
+                        },
+                      })
+                      .then(res => {
+                        const appPages = res.data.app_page.filter(v => v.id !== pageAdmin.id)
+                        if (value && appPages.length !== 0) {
+                          return Promise.reject(
+                            enabledModules.locale
+                              ? form.getFieldValue('language') === 'none'
+                                ? formatMessage(
+                                    craftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
+                                  )
+                                : formatMessage(
+                                    craftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
+                                    {
+                                      locale: SUPPORTED_LOCALES.find(
+                                        supportedLocale => supportedLocale.locale === form.getFieldValue('language'),
+                                      )?.label,
+                                    },
+                                  )
+                              : formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.pathIsExistWarning),
+                          )
+                        }
+                        return Promise.resolve()
+                      })
+                  },
+                },
               ]}
             >
               <Input className="mb-2" onChange={e => setPath(e.target.value)} />
@@ -166,6 +215,77 @@ const CraftPageBasicSettingBlock: React.VFC<{
               </Radio.Group>
             </Form.Item>
           </Form.Item>
+          {enabledModules.locale ? (
+            <Form.Item
+              label={
+                <span className="d-flex align-items-center">
+                  {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.displayLocale)}
+                  <Tooltip
+                    placement="top"
+                    title={
+                      <StyledTips>
+                        {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.displayLocaleTooltip)}
+                      </StyledTips>
+                    }
+                  >
+                    <QuestionCircleFilled className="ml-2" />
+                  </Tooltip>
+                </span>
+              }
+            >
+              <Form.Item
+                name="language"
+                initialValue="none"
+                noStyle
+                rules={[
+                  {
+                    validator: async (_, value, callback) => {
+                      await client
+                        .query<hasura.GetAppPageLanguage, hasura.GetAppPageLanguageVariables>({
+                          query: GetAppPageLanguage,
+                          variables: {
+                            condition: {
+                              app_id: { _eq: appId },
+                              path: { _eq: form.getFieldValue('path') },
+                              language: value === 'none' ? { _is_null: true } : { _eq: value },
+                            },
+                          },
+                        })
+                        .then(res => {
+                          const appPages = res.data.app_page.filter(v => v.id !== pageAdmin.id)
+                          if (value && appPages.length !== 0) {
+                            return Promise.reject(
+                              form.getFieldValue('language') === 'none'
+                                ? formatMessage(
+                                    craftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
+                                  )
+                                : formatMessage(
+                                    craftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
+                                    {
+                                      locale: SUPPORTED_LOCALES.find(
+                                        supportedLocale => supportedLocale.locale === form.getFieldValue('language'),
+                                      )?.label,
+                                    },
+                                  ),
+                            )
+                          }
+                          return Promise.resolve()
+                        })
+                    },
+                  },
+                ]}
+              >
+                <Select>
+                  <option value="none">
+                    {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.noSpecificLocale)}
+                  </option>
+                  {SUPPORTED_LOCALES.map(supportedLocale => (
+                    <option value={supportedLocale.locale}>{supportedLocale.label}</option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Form.Item>
+          ) : null}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button
               className="mr-2"
