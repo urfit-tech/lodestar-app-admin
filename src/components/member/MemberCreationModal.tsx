@@ -50,8 +50,8 @@ const MemberCreationModal: React.FC<
           variables: {
             appId,
             id: uuidv4(),
-            email: email.toLowerCase(),
-            username,
+            email: email.toLowerCase().trim(),
+            username: username.trim(),
             role: role || 'general-member',
             managerId: currentUserRole === 'general-member' ? currentMemberId : null,
             assignedAt: currentUserRole === 'general-member' ? new Date() : null,

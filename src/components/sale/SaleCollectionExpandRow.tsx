@@ -8,6 +8,7 @@ import utc from 'dayjs/plugin/utc'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -15,6 +16,7 @@ import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
+import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
@@ -29,16 +31,74 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
 
+type TaxType = '1' | '2' | '3' | '9'
+
+type Invoice = {
+  TaxType: TaxType
+  MerchantOrderNo: string
+  Amt: number
+  TaxAmt: number
+  TotalAmt: number
+  TaxRate: number
+  Category: 'B2B' | 'B2C'
+  BuyerEmail: string
+  BuyerName: string
+  BuyerUBN?: string
+  Comment?: string
+  PrintFlag?: 'Y'
+  CustomsClearance?: '1'
+  AmtFree?: number
+  AmtZero?: number
+  AmtSales?: number
+  Items: {
+    ItemName: string
+    ItemCount: number
+    ItemPrice: number // 商品單價
+    ItemUnit: string
+    ItemAmt: number
+    ItemTaxType?: TaxType
+  }[]
+}
+
+type InvoiceFromAPI = Pick<
+  Invoice,
+  | 'TaxType'
+  | 'Comment'
+  | 'TaxType'
+  | 'BuyerEmail'
+  | 'MerchantOrderNo'
+  | 'Amt'
+  | 'BuyerName'
+  | 'Category'
+  | 'PrintFlag'
+  | 'TaxAmt'
+  | 'TotalAmt'
+  | 'AmtFree'
+  | 'AmtSales'
+  | 'AmtZero'
+  | 'BuyerUBN'
+  | 'CustomsClearance'
+> & {
+  ItemName: string
+  ItemCount: string
+  ItemPrice: string
+  ItemUnit: string
+  ItemAmt: string
+  ItemTaxType?: TaxType
+}
+
 type FieldProps = {
-  priceWithoutTax: number
-  tax: number
-  totalPrice: number
-  type: 'issue'
-  itemName: string
-  itemCount: number
-  itemAmt: number
-  comment: string
-  taxType: '1' | '2' | '3' | '9'
+  invoices: (Pick<Invoice, 'Comment' | 'TaxType' | 'BuyerEmail' | 'BuyerName'> & { BuyerUBN?: string } & {
+    Items: Array<Pick<Invoice['Items'][number], 'ItemName' | 'ItemCount' | 'ItemPrice' | 'ItemTaxType'>>
+  })[]
+}
+
+type IssueInvoiceResult = {
+  Status: string
+  Message: string
+  Result?: {
+    InvoiceNumber: string
+  }
 }
 
 const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
@@ -53,17 +113,10 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings, id: appId } = useApp()
-  const { currentUserRole, permissions, authToken } = useAuth()
+  const { settings } = useApp()
+  const { currentUserRole, permissions } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
-  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
-  const invoiceGatewayId = paymentCompanies?.paymentCompanies
-    ?.find(c => record.options?.company && c.companies.map(c => c.name).includes(record.options?.company))
-    ?.companies.find(company => company.name === record.options?.company)?.invoiceGatewayId
-
-  const [loading, setLoading] = useState(false)
-  const [form] = useForm<FieldProps>()
-
+  const [issueInvoiceResults, setIssueInvoiceResults] = useState<IssueInvoiceResult[] | null>(null)
   const orderLogId = record.id
   const orderStatus = record.status
   const totalPrice = record.totalPrice
@@ -82,6 +135,7 @@ const SaleCollectionExpandRow = ({
     paymentMethod,
     refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
+
   useEffect(() => {
     const style: any = document.createElement('style')
     style.type = 'text/css'
@@ -110,6 +164,7 @@ const SaleCollectionExpandRow = ({
       document.head.removeChild(style)
     }
   }, [])
+
   return (
     <div>
       {loadingExpandRowOrderProduct ? (
@@ -341,220 +396,417 @@ const SaleCollectionExpandRow = ({
               onRefetch={refetchOrderLogExpandRow}
             />
           ))}
-
-        {settings['payment.v2'] === '1' && orderLog.invoiceTotalPrice < record.totalPrice && (
-          <AdminModal
-            renderTrigger={({ setVisible }) => (
-              <Button
-                style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-                onClick={() => {
-                  setVisible(true)
-                }}
-              >
-                <div>手開發票</div>
-              </Button>
-            )}
-            title={'手開發票'}
-            footer={null}
-            renderFooter={({ setVisible }) => (
-              <>
-                <Button onClick={() => setVisible(false)} className="mr-2">
-                  {formatMessage(commonMessages.ui.back)}
-                </Button>
-                <Button
-                  type="primary"
-                  disabled={loading}
-                  loading={loading}
-                  onClick={async () => {
-                    try {
-                      setLoading(true)
-                      const values = await form.validateFields()
-                      axios
-                        .post(
-                          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
-                          {
-                            appId,
-                            orderId: orderLogId,
-                            invoiceGatewayId,
-                            invoiceInfo: {
-                              MerchantOrderNo: new Date().getTime().toString(),
-                              BuyerEmail: orderLog.invoiceOptions?.email || '',
-                              BuyerName: orderLog.invoiceOptions?.uniformTitle || orderLog.invoiceOptions?.name,
-                              BuyerUBN: orderLog.invoiceOptions?.uniformNumber || '',
-                              Category: orderLog.invoiceOptions?.uniformNumber ? 'B2B' : 'B2C',
-                              TaxType: values.taxType,
-                              TaxRate: values.taxType === '3' || values.taxType === '2' ? 0 : 5,
-                              Amt: values.priceWithoutTax,
-                              TaxAmt: values.tax,
-                              TotalAmt: values.totalPrice,
-                              PrintFlag: 'Y',
-                              ItemName: values.itemName,
-                              ItemCount: values.itemCount,
-                              ItemUnit: '個',
-                              ItemPrice: values.itemAmt,
-                              ItemAmt: values.itemAmt * values.itemCount,
-                              Comment: values.comment,
-                              CustomsClearance: values.taxType === '2' ? '1' : undefined,
-                            },
-                          },
-                          {
-                            headers: {
-                              Authorization: `Bearer ${authToken}`,
-                            },
-                          },
-                        )
-                        .then(r => {
-                          if (r.data?.result?.Status === 'SUCCESS') {
-                            message.success('發票開立成功')
-                          } else {
-                            throw new Error(r.data?.result?.Message)
-                          }
-                        })
-                        .catch(handleError)
-                        .finally(() => {
-                          setLoading(false)
-                          refetchOrderLogExpandRow()
-                          setVisible(false)
-                        })
-                    } catch (error) {
-                      console.error(error)
-                    }
-                  }}
-                >
-                  {formatMessage(commonMessages.ui.save)}
-                </Button>
-              </>
-            )}
-          >
-            <Form
-              form={form}
-              layout="vertical"
-              initialValues={{ totalPrice, type: 'issue', taxType: '1', itemCount: 1 }}
-            >
-              <div className="row">
-                <div className="col-6">
-                  <Form.Item label={'處理方式'} name="type">
-                    <Select<string>>
-                      <Select.Option value="issue">開立發票</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-                <div className="col-6">
-                  <Form.Item label={'課稅別'} name="taxType">
-                    <Select<string>>
-                      <Select.Option value="1">應稅</Select.Option>
-                      <Select.Option value="2">零稅</Select.Option>
-                      <Select.Option value="3">免稅</Select.Option>
-                      <Select.Option value="9">混合稅</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-                <div className="col-4">
-                  <Form.Item
-                    label={'未稅'}
-                    name="priceWithoutTax"
-                    rules={[
-                      formInstance => ({
-                        message: `金額不能超過 ${totalPrice}`,
-                        validator() {
-                          const price = formInstance.getFieldValue('price')
-                          if (price > totalPrice) {
-                            return Promise.reject(new Error())
-                          }
-                          return Promise.resolve()
-                        },
-                      }),
-                    ]}
-                  >
-                    <InputNumber
-                      min={0}
-                      max={totalPrice}
-                      formatter={value => `NT$ ${value}`}
-                      parser={value => value?.replace(/\D/g, '') || ''}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-4">
-                  <Form.Item
-                    label={'稅額'}
-                    name="tax"
-                    rules={[
-                      formInstance => ({
-                        message: `金額不能超過 ${totalPrice}`,
-                        validator() {
-                          const price = formInstance.getFieldValue('price')
-                          if (price > totalPrice) {
-                            return Promise.reject(new Error())
-                          }
-                          return Promise.resolve()
-                        },
-                      }),
-                    ]}
-                  >
-                    <InputNumber
-                      min={0}
-                      max={totalPrice}
-                      formatter={value => `NT$ ${value}`}
-                      parser={value => value?.replace(/\D/g, '') || ''}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-4">
-                  <Form.Item
-                    label={'總金額(含稅)'}
-                    name="totalPrice"
-                    rules={[
-                      formInstance => ({
-                        message: `金額不能超過 ${totalPrice}`,
-                        validator() {
-                          const price = formInstance.getFieldValue('price')
-                          if (price > totalPrice) {
-                            return Promise.reject(new Error())
-                          }
-                          return Promise.resolve()
-                        },
-                      }),
-                    ]}
-                  >
-                    <InputNumber
-                      min={0}
-                      max={totalPrice}
-                      formatter={value => `NT$ ${value}`}
-                      parser={value => value?.replace(/\D/g, '') || ''}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-3">
-                  <Form.Item label={'商品數量'} name="itemCount">
-                    <InputNumber min={1} />
-                  </Form.Item>
-                </div>
-                <div className="col-3">
-                  <Form.Item label={'商品單價'} name="itemAmt">
-                    <InputNumber
-                      min={0}
-                      max={totalPrice}
-                      formatter={value => `NT$ ${value}`}
-                      parser={value => value?.replace(/\D/g, '') || ''}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-6">
-                  <Form.Item label={'產品名'} name="itemName">
-                    <Input placeholder="請輸入產品名" />
-                  </Form.Item>
-                </div>
-                <div className="col-12">
-                  <Form.Item label={'備註'} name="comment">
-                    <Input placeholder="請輸入備註" />
-                  </Form.Item>
-                </div>
-              </div>
-            </Form>
-          </AdminModal>
+        {!loadingExpandRowOrderLog && settings['payment.v2'] === '1' && orderLog.invoiceTotalPrice < record.totalPrice && (
+          <ManualIssueInvoiceModal
+            orderLog={orderLog}
+            totalPrice={totalPrice}
+            onRefetch={() => {
+              onRefetchOrderLog?.()
+              refetchOrderLogExpandRow()
+            }}
+            afterIssued={result => {
+              setIssueInvoiceResults(prev => [...(prev || []), result])
+            }}
+          />
         )}
+        <AdminModal
+          visible={!!issueInvoiceResults}
+          title="手動開立發票結果"
+          footer={null}
+          onCancel={() => {
+            setIssueInvoiceResults(null)
+          }}
+        >
+          <div>
+            {issueInvoiceResults?.map(i => {
+              return (
+                <div>
+                  {i?.Status === 'SUCCESS' ? '發票開立成功：' + i.Result?.InvoiceNumber : '發票開立失敗：' + i?.Message}
+                </div>
+              )
+            })}
+          </div>
+        </AdminModal>
       </div>
     </div>
+  )
+}
+
+const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => {
+  return field.invoices.map(value => {
+    const Items = value.Items.map(i => ({
+      ItemName: i.ItemName,
+      ItemCount: i.ItemCount,
+      ItemPrice: i.ItemPrice,
+      ItemTaxType: i.ItemTaxType,
+      ItemUnit: '項',
+      ItemAmt: Math.ceil(i.ItemCount * i.ItemPrice),
+    }))
+    const AmtFree =
+      value.TaxType === '9' ? sum(Items.filter(i => i.ItemTaxType === '3').map(i => i.ItemAmt)) : undefined
+    const AmtZero =
+      value.TaxType === '9' ? sum(Items.filter(i => i.ItemTaxType === '2').map(i => i.ItemAmt)) : undefined
+    const AmtSales =
+      value.TaxType === '9'
+        ? sum(Items.filter(i => i.ItemTaxType === '1').map(i => Math.round(i.ItemAmt / 1.05)))
+        : undefined
+    const TotalAmt = sum(Items.map(i => i.ItemAmt))
+    const TaxRate = value.TaxType === '3' || value.TaxType === '2' ? 0 : 5
+    const Amt =
+      value.TaxType === '9'
+        ? Number(AmtFree) + Number(AmtSales) + Number(AmtZero)
+        : Math.round(TotalAmt / (1 + TaxRate / 100))
+    const TaxAmt = TotalAmt - Amt
+    return {
+      MerchantOrderNo: new Date().getTime().toString(),
+      BuyerEmail: value.BuyerEmail,
+      BuyerName: value.BuyerName || value.BuyerUBN || memberName || value.BuyerEmail,
+      BuyerUBN: value.BuyerUBN,
+      Category: value.BuyerUBN ? 'B2B' : 'B2C',
+      TaxType: value.TaxType as TaxType,
+      Comment: value.Comment,
+      PrintFlag: 'Y',
+      CustomsClearance: value.TaxType === '2' || value.TaxType === '9' ? '1' : undefined,
+      TaxRate,
+      Amt,
+      TaxAmt,
+      TotalAmt,
+      Items,
+      AmtFree,
+      AmtZero,
+      AmtSales,
+    }
+  })
+}
+
+const ManualIssueInvoiceModal: React.VFC<{
+  orderLog: {
+    id: string | undefined
+    expiredAt: any
+    shipping: any
+    invoiceOptions: any
+    invoiceTotalPrice: number
+    options: any
+  }
+  totalPrice: number
+  onRefetch: () => void
+  afterIssued: (result: IssueInvoiceResult) => void
+}> = ({ orderLog, totalPrice, onRefetch, afterIssued }) => {
+  const { id: appId, settings } = useApp()
+  const { authToken } = useAuth()
+  const { formatMessage } = useIntl()
+  const [loading, setLoading] = useState(false)
+  const [form] = useForm<FieldProps>()
+  const [invoices, setInvoices] = useState<Invoice[]>(
+    orderLog.invoiceOptions?.invoices?.map((i: InvoiceFromAPI) => ({
+      ...i,
+      Items:
+        i.ItemCount?.split('|').map((_item, idx) => ({
+          ItemName: i.ItemName?.split('|')[idx],
+          ItemCount: i.ItemCount?.split('|')[idx],
+          ItemPrice: i.ItemPrice?.split('|')[idx],
+          ItemAmt: i.ItemAmt?.split('|')[idx],
+          ItemTaxType: i.ItemTaxType?.split('|')[idx],
+        })) || [],
+    })),
+  )
+  console.log(invoices)
+
+  const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+  const invoiceGatewayId = paymentCompanies?.paymentCompanies
+    ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
+    ?.companies.find(company => company.name === orderLog.options?.company)?.invoiceGatewayId
+
+  const orderId = orderLog.id
+
+  return (
+    <AdminModal
+      renderTrigger={({ setVisible }) => (
+        <Button
+          style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+          onClick={() => {
+            setVisible(true)
+          }}
+        >
+          <div>手開發票</div>
+        </Button>
+      )}
+      title={'手開發票'}
+      footer={null}
+      renderFooter={({ setVisible }) => (
+        <>
+          <Button onClick={() => setVisible(false)} className="mr-2">
+            {formatMessage(commonMessages.ui.back)}
+          </Button>
+          <Button
+            type="primary"
+            disabled={loading}
+            loading={loading}
+            onClick={async () => {
+              setLoading(true)
+              for (let i = 0; i < invoices.length; i++) {
+                const invoice = invoices[i]
+                axios
+                  .post(
+                    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/issue`,
+                    {
+                      appId,
+                      orderId,
+                      invoiceGatewayId,
+                      invoiceInfo: {
+                        MerchantOrderNo: invoice.MerchantOrderNo,
+                        BuyerEmail: invoice.BuyerEmail,
+                        BuyerName: invoice.BuyerName,
+                        BuyerUBN: invoice.BuyerUBN,
+                        Category: invoice.Category,
+                        TaxType: invoice.TaxType,
+                        TaxRate: invoice.TaxRate,
+                        Comment: invoice.Comment,
+                        PrintFlag: invoice.PrintFlag,
+                        CustomsClearance: invoice.CustomsClearance,
+                        Amt: invoice.Amt,
+                        TaxAmt: invoice.TaxAmt,
+                        TotalAmt: invoice.TotalAmt,
+                        AmtFree: invoice.AmtFree,
+                        AmtZero: invoice.AmtZero,
+                        AmtSales: invoice.AmtSales,
+                        ItemName: invoice.Items.map(i => i.ItemName).join('|'),
+                        ItemCount: invoice.Items.map(i => i.ItemCount).join('|'),
+                        ItemPrice: invoice.Items.map(i => i.ItemPrice).join('|'),
+                        ItemTaxType: invoice.Items.map(i => i.ItemTaxType).join('|'),
+                        ItemUnit: invoice.Items.map(i => i.ItemUnit).join('|'),
+                        ItemAmt: invoice.Items.map(i => i.ItemAmt).join('|'),
+                      },
+                    },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${authToken}`,
+                      },
+                    },
+                  )
+                  .then(r => {
+                    if (r.data?.result?.Status === 'SUCCESS') {
+                      afterIssued(r.data?.result)
+                    } else {
+                      throw new Error(r.data?.result?.Message)
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err)
+                    afterIssued({
+                      Status: 'ERROR',
+                      Message: err.message,
+                    })
+                  })
+                  .finally(() => {
+                    setLoading(false)
+                    setVisible(false)
+                    onRefetch()
+                  })
+              }
+            }}
+          >
+            {formatMessage(commonMessages.ui.save)}
+          </Button>
+        </>
+      )}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          invoices,
+        }}
+        onValuesChange={(_, values) => {
+          setInvoices(transformInvoice(values, orderLog.invoiceOptions?.name))
+        }}
+      >
+        <Form.List name="invoices">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field, idx) => (
+                <div
+                  key={field.key}
+                  className="d-flex mb-4"
+                  style={{ border: '1px solid #4f4f4f', padding: '4px 12px' }}
+                >
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 500, padding: '4px 0' }}>發票{idx + 1}</div>
+                    <div className="row">
+                      <div className="col-6">
+                        <Form.Item label={'課稅別'} name={[field.name, 'TaxType']}>
+                          <Select<string>>
+                            <Select.Option value="1">應稅</Select.Option>
+                            <Select.Option value="2">零稅</Select.Option>
+                            <Select.Option value="3">免稅</Select.Option>
+                            <Select.Option value="9">混合稅</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </div>
+                    </div>
+                    <Form.List name={[field.name, 'Items']}>
+                      {(fields, { add, remove }) => (
+                        <>
+                          {fields.map((field, index) => (
+                            <div
+                              key={field.key}
+                              className="d-flex mb-1"
+                              style={{ border: '1px solid #4f4f4f', padding: '4px 12px' }}
+                            >
+                              <div>
+                                <div style={{ fontSize: 18, fontWeight: 500, padding: '4px 0' }}>商品{index + 1}</div>
+                                <Form.Item className="flex-grow-1">
+                                  <div className="row">
+                                    <div className="col-4">
+                                      <Form.Item label={'商品數量'} name={[field.name, 'ItemCount']}>
+                                        <InputNumber min={1} />
+                                      </Form.Item>
+                                    </div>
+                                    <div className="col-4">
+                                      <Form.Item label={'商品單價'} name={[field.name, 'ItemPrice']}>
+                                        <InputNumber
+                                          min={0}
+                                          max={totalPrice}
+                                          formatter={value => `${Number(value).toLocaleString()}`}
+                                          parser={value => value?.replace(/\D/g, '') || ''}
+                                        />
+                                      </Form.Item>
+                                    </div>
+                                    <div className="col-4">
+                                      <Form.Item label={'商品小計'} name={[field.name, 'ItemAmt']}>
+                                        {(
+                                          invoices[idx].Items[index].ItemCount * invoices[idx].Items[index].ItemPrice
+                                        ).toLocaleString()}
+                                      </Form.Item>
+                                    </div>
+                                    <div className="col-6">
+                                      <Form.Item label={'產品名'} name={[field.name, 'ItemName']}>
+                                        <Input placeholder="請輸入產品名" />
+                                      </Form.Item>
+                                    </div>
+
+                                    <div className="col-6">
+                                      <Form.Item
+                                        label={'商品課稅別（混合稅才需要填寫）'}
+                                        name={[field.name, 'ItemTaxType']}
+                                      >
+                                        <Select<string>>
+                                          <Select.Option value="1">應稅</Select.Option>
+                                          <Select.Option value="2">零稅</Select.Option>
+                                          <Select.Option value="3">免稅</Select.Option>
+                                          <Select.Option value="9">混合稅</Select.Option>
+                                        </Select>
+                                      </Form.Item>
+                                    </div>
+                                  </div>
+                                </Form.Item>
+                              </div>
+                              {fields.length > 0 && (
+                                <Button
+                                  type="link"
+                                  onClick={() => remove(field.name)}
+                                  className="flex-shrink-0 d-flex"
+                                  icon={<TrashOIcon className="m-auto" />}
+                                />
+                              )}
+                            </div>
+                          ))}
+                          <Form.Item>
+                            <Button
+                              type="link"
+                              icon={<PlusIcon className="m-auto" />}
+                              className="p-0"
+                              onClick={() =>
+                                add({
+                                  ItemName: '',
+                                  ItemCount: 1,
+                                  ItemPrice: 0,
+                                })
+                              }
+                            >
+                              <span className="ml-2">新增商品</span>
+                            </Button>
+                          </Form.Item>
+                        </>
+                      )}
+                    </Form.List>
+                    <Form.Item className="flex-grow-1" {...field}>
+                      <div className="row">
+                        <div className="col-4">
+                          <Form.Item label={'未稅'} name={[field.name, 'Amt']}>
+                            {invoices[idx].Amt.toLocaleString()}
+                          </Form.Item>
+                        </div>
+                        <div className="col-4">
+                          <Form.Item label={'稅額'} name={[field.name, 'TaxAmt']}>
+                            {invoices[idx].TaxAmt.toLocaleString()}
+                          </Form.Item>
+                        </div>
+                        <div className="col-4">
+                          <Form.Item label={'總金額(含稅)'} name={[field.name, 'TotalAmt']}>
+                            {invoices[idx].TotalAmt.toLocaleString()}
+                          </Form.Item>
+                        </div>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-6">
+                          <Form.Item label={'統一編號'} name={[field.name, 'BuyerUBN']}>
+                            <Input placeholder="請輸入統一編號" />
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-6">
+                          <Form.Item label={'發票抬頭'} name={[field.name, 'BuyerName']}>
+                            <Input placeholder="請輸入發票抬頭" />
+                          </Form.Item>
+                        </div>
+                        <div className="col-6">
+                          <Form.Item label={'發票收件人信箱'} name={[field.name, 'BuyerEmail']}>
+                            <Input placeholder="請輸入發票收件人信箱" />
+                          </Form.Item>
+                        </div>
+                        <div className="col-12">
+                          <Form.Item label={'備註'} name={[field.name, 'Comment']}>
+                            <Input placeholder="請輸入備註" />
+                          </Form.Item>
+                        </div>
+                      </div>
+                    </Form.Item>
+                  </div>
+                  {fields.length > 0 && (
+                    <Button
+                      type="link"
+                      onClick={() => remove(field.name)}
+                      className="flex-shrink-0 d-flex"
+                      icon={<TrashOIcon className="m-auto" />}
+                    />
+                  )}
+                </div>
+              ))}
+
+              <Form.Item>
+                <Button
+                  type="link"
+                  icon={<PlusIcon className="m-auto" />}
+                  className="p-0"
+                  onClick={() =>
+                    add({
+                      TaxType: '1',
+                      BuyerEmail: orderLog.invoiceOptions?.email,
+                      BuyerName: orderLog.invoiceOptions?.name,
+                      Items: [{ ItemName: '', ItemCount: 1, ItemPrice: 0 }],
+                    })
+                  }
+                >
+                  <span className="ml-2">新增發票</span>
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+      </Form>
+    </AdminModal>
   )
 }
 

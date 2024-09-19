@@ -27,15 +27,19 @@ const PermissionGroupSelector: React.FC<{
   single?: boolean
   value?: string
   onChange?: (value: string) => void
-}> = ({ single, value, onChange }) => {
+  onClear?: () => void
+}> = ({ single, value, onChange, onClear }) => {
   const { loadingPermissionGroups, permissionGroups } = usePermissionGroupCollection()
 
   return (
     <StyledSelect
+      allowClear
       mode={single ? undefined : 'multiple'}
       loading={loadingPermissionGroups}
       value={value}
       onChange={onChange}
+      onClear={onClear}
+      placeholder="請選擇權限群組"
     >
       {permissionGroups.map(permissionGroup => (
         <Select.Option key={permissionGroup.id} value={permissionGroup.id || ''} style={{ borderRadius: '4px' }}>
