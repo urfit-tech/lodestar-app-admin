@@ -1189,6 +1189,7 @@ export const memberMessages = {
     note: { id: 'member.label.note', defaultMessage: '聯絡紀錄' },
     basic: { id: 'member.label.basic', defaultMessage: '基本資料' },
     property: { id: 'member.label.property', defaultMessage: '自訂欄位' },
+    event: { id: 'member.label.event', defaultMessage: '行事管理' },
     task: { id: 'member.label.task', defaultMessage: '待辦清單' },
     timetable: { id: 'member.label.timetable', defaultMessage: '時間表' },
     contract: { id: 'member.label.contract', defaultMessage: '合約紀錄' },

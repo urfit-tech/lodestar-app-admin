@@ -47,6 +47,8 @@ export const useProgram = (programId: string) => {
           display_footer
           cover_type
           mobile_cover_type
+          label
+          label_color_type
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -204,6 +206,8 @@ export const useProgram = (programId: string) => {
       displayFooter: data.program_by_pk.display_footer ?? true,
       coverType: data.program_by_pk.cover_type,
       mobileCoverType: data.program_by_pk.mobile_cover_type,
+      label: data.program_by_pk.label || '',
+      labelColorType: data.program_by_pk.label_color_type || '1',
       contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
         id: pcs.id,
         title: pcs.title || '',

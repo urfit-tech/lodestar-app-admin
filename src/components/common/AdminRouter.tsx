@@ -389,6 +389,11 @@ export const routesProps = {
     pageName: 'MemberAdminPage',
     authenticated: true,
   },
+  member_event_admin: {
+    path: '/members/:memberId/event',
+    pageName: 'MemberAdminPage',
+    authenticated: true,
+  },
   member_task_admin: {
     path: '/members/:memberId/task',
     pageName: 'MemberAdminPage',
