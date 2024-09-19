@@ -45,24 +45,19 @@ const checkMeetingMember = ({
   memberTaskId,
   formExecutorId,
   formMemberId,
-  formMeetingGateway,
 }: {
   overlapMeets: OverlapMeets
   memberTaskId: string | undefined
   formExecutorId: string
   formMemberId: string
-  formMeetingGateway?: string
 }) => {
   let message = ''
-  // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-  if (formMeetingGateway !== 'google-meet') {
-    if (
-      overlapMeets.filter(
-        overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
-      ).length > 0
-    ) {
-      message = '此時段不可指派此執行人員'
-    }
+  if (
+    overlapMeets.filter(
+      overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
+    ).length > 0
+  ) {
+    message = '此時段不可指派此執行人員'
   }
 
   if (
@@ -195,7 +190,6 @@ const MemberTaskAdminModal: React.FC<
           memberTaskId,
           formExecutorId,
           formMemberId,
-          formMeetingGateway,
         })
         if (!!message) {
           return handleError({ message })
@@ -304,10 +298,9 @@ const MemberTaskAdminModal: React.FC<
   const handleMeetingGateway = async (currentMeetingGateway: MeetingGateway, startedAt: Date, endedAt: Date) => {
     const defaultServiceGateways = Array.from(new Set(services.map(service => service.gateway)))
     const validGateways = await getValidGatewaysWithinTimeRange({ startedAt, endedAt })
-    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-    // const gatewayPriority: MeetingGateway[] = [currentMeetingGateway, 'google-meet', 'zoom', 'jitsi']
-    // const selectedGateway = gatewayPriority.find(gateway => validGateways.includes(gateway)) || 'jitsi'
-    // form.setFieldsValue({ meetingGateway: selectedGateway })
+    const gatewayPriority: MeetingGateway[] = [currentMeetingGateway, 'google-meet', 'zoom', 'jitsi']
+    const selectedGateway = gatewayPriority.find(gateway => validGateways.includes(gateway)) || 'jitsi'
+    form.setFieldsValue({ meetingGateway: selectedGateway })
     setInvalidGateways(
       defaultServiceGateways.filter(
         defaultServiceGateway => !validGateways.some(validGateway => validGateway === defaultServiceGateway),
@@ -333,8 +326,7 @@ const MemberTaskAdminModal: React.FC<
                 window.history.pushState({ path: newUrl }, '', newUrl)
               })
             }
-            // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-            // disabled={hasMeeting && meetingGateway && invalidGateways.includes(meetingGateway)}
+            disabled={hasMeeting && meetingGateway && invalidGateways.includes(meetingGateway)}
           >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
@@ -609,8 +601,7 @@ const MemberTaskAdminModal: React.FC<
                 <Stack direction="row">
                   <Radio
                     value="google-meet"
-                    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-                    // disabled={invalidGateways.includes('google-meet')}
+                    disabled={invalidGateways.includes('google-meet')}
                     onChange={e => setMeetingGateWay(e.target.value)}
                   >
                     Google meet
