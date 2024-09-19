@@ -25,6 +25,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
@@ -438,7 +439,7 @@ const SalesLeadTable: React.VFC<{
           onRefetch()
           onSelectChange([])
         } else {
-          message.error('系統錯誤')
+          message.error(formatMessage(saleMessages.SalesLeadTable.systemError))
         }
       })
     }
@@ -587,7 +588,9 @@ const SalesLeadTable: React.VFC<{
                       onChange={e => setFullNameValue(e.target.value.trim())}
                     />
                     <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
-                      {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                      {fullNameValue && fullNameValue !== fullNamePropertyValue
+                        ? formatMessage(commonMessages.ui.save)
+                        : formatMessage(commonMessages.ui.cancel)}
                     </Button>
                   </Input.Group>
                 ) : (
@@ -900,7 +903,6 @@ const SalesLeadTable: React.VFC<{
                             )
                           }}
                         >
-                          移至收藏
                           {formatMessage(saleMessages.SalesLeadTable.moveToFollowed)}
                         </Menu.Item>
                       ) : null}
@@ -919,7 +921,6 @@ const SalesLeadTable: React.VFC<{
                               )
                             }}
                           >
-                            移至 {leadStatusCategory.categoryName}
                             {formatMessage(saleMessages.SalesLeadTable.moveToSpecificList, {
                               categoryName: leadStatusCategory.categoryName,
                             })}
@@ -936,25 +937,19 @@ const SalesLeadTable: React.VFC<{
                           )
                         }}
                       >
-                        移除收藏
                         {formatMessage(saleMessages.SalesLeadTable.removeFollowed)}
                       </Menu.Item>
                       <Menu.Item onClick={() => onIsOpenAddListModalChange(true)}>
-                        新增清單
                         {formatMessage(saleMessages.SalesLeadTable.addList)}
                       </Menu.Item>
                       <Menu.Item onClick={() => onIsOpenManagerListModalChange(true)}>
-                        管理清單
                         {formatMessage(saleMessages.SalesLeadTable.managerList)}
                       </Menu.Item>
                     </Menu>
                   }
                 >
                   <Center>
-                    <Button className="mr-2">
-                      編輯收藏清單
-                      {formatMessage(saleMessages.SalesLeadTable.editFollowed)}
-                    </Button>
+                    <Button className="mr-2">{formatMessage(saleMessages.SalesLeadTable.editFollowed)}</Button>
                   </Center>
                 </Dropdown>
               )}
@@ -971,7 +966,6 @@ const SalesLeadTable: React.VFC<{
                     )
                   }
                 >
-                  完成
                   {formatMessage(saleMessages.SalesLeadTable.complete)}
                 </Button>
               )}
@@ -988,7 +982,6 @@ const SalesLeadTable: React.VFC<{
                     )
                   }
                 >
-                  取消完成
                   {formatMessage(saleMessages.SalesLeadTable.cancelComplete)}
                 </Button>
               )}
@@ -1007,7 +1000,6 @@ const SalesLeadTable: React.VFC<{
                         )
                       }
                     >
-                      回收
                       {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
@@ -1023,7 +1015,6 @@ const SalesLeadTable: React.VFC<{
                       )
                     }
                   >
-                    拒絕
                     {formatMessage(saleMessages.SalesLeadTable.reject)}
                   </Button>
                   <Button
@@ -1038,7 +1029,6 @@ const SalesLeadTable: React.VFC<{
                       )
                     }
                   >
-                    刪除
                     {formatMessage(saleMessages.SalesLeadTable.delete)}
                   </Button>
                 </>

@@ -800,6 +800,18 @@ const pageMessages = {
     optionContent: { id: 'page.QuestionBlock.optionContent', defaultMessage: '選項內容' },
   }),
   MemberDescriptionBlock: defineMessages({
+    goToBackendAndComplete: {
+      id: 'page.MemberDescriptionBlock.goToBackendAndComplete',
+      defaultMessage: '請去後台 > 會員列表 > 找到學員並將資料填寫完成',
+    },
+    phone: {
+      id: 'page.MemberDescriptionBlock.phone',
+      defaultMessage: '學員電話',
+    },
+    notSet: {
+      id: 'page.MemberDescriptionBlock.notSet',
+      defaultMessage: '未設定',
+    },
     info: { id: 'page.MemberDescriptionBlock.info', defaultMessage: '學生資料' },
     name: { id: 'page.MemberDescriptionBlock.name', defaultMessage: '學員姓名' },
     email: { id: 'page.MemberDescriptionBlock.email', defaultMessage: '學員信箱' },
@@ -811,6 +823,54 @@ const pageMessages = {
     fail: { id: 'page.MemberDescriptionBlock.fail', defaultMessage: '更新失敗' },
   }),
   MemberContractCreationBlock: defineMessages({
+    fillMemberInfo: {
+      id: 'page.MemberContractCreationBlock.fillMemberInfo',
+      defaultMessage: '學員資料請填寫完整',
+    },
+    uploadProof: {
+      id: 'page.MemberContractCreationBlock.uploadProof',
+      defaultMessage: '需上傳證明',
+    },
+    addContractContent: {
+      id: 'page.MemberContractCreationBlock.addContractContent',
+      defaultMessage: '請至少要新增一個合約內容',
+    },
+    selectPaymentMethod: {
+      id: 'page.MemberContractCreationBlock.selectPaymentMethod',
+      defaultMessage: '請選擇付款方式',
+    },
+    selectInstallmentPeriod: {
+      id: 'page.MemberContractCreationBlock.selectInstallmentPeriod',
+      defaultMessage: '請選擇分期期數',
+    },
+    totalProportionMustBeOne: {
+      id: 'page.MemberContractCreationBlock.totalProportionMustBeOne',
+      defaultMessage: '承辦人分潤比例加總必須為 1',
+    },
+    confirmContractCorrectness: {
+      id: 'page.MemberContractCreationBlock.confirmContractCorrectness',
+      defaultMessage: '請確認合約是否正確？',
+    },
+    addonProduct: {
+      id: 'page.MemberContractCreationBlock.addonProduct',
+      defaultMessage: '【加購項目】',
+    },
+    referralDiscount: {
+      id: 'page.MemberContractCreationBlock.referralDiscount',
+      defaultMessage: '【介紹折抵】',
+    },
+    promotionDiscount: {
+      id: 'page.MemberContractCreationBlock.promotionDiscount',
+      defaultMessage: '【促銷折抵】',
+    },
+    totalAmount: {
+      id: 'page.MemberContractCreationBlock.totalAmount',
+      defaultMessage: '合計',
+    },
+    contractLink: {
+      id: 'page.MemberContractCreationBlock.contractLink',
+      defaultMessage: '合約連結',
+    },
     contractCreateSuccess: {
       id: 'page.MemberContractCreationBlock.contractCreateSuccess',
       defaultMessage: '成功產生合約',
@@ -846,6 +906,30 @@ const pageMessages = {
     },
   }),
   LearningOverviewPage: defineMessages({
+    totalMemberCount: {
+      id: 'page.LearningOverviewPage.totalMemberCount',
+      defaultMessage: '所有人數',
+    },
+    enrolledMemberCount: {
+      id: 'page.LearningOverviewPage.enrolledMemberCount',
+      defaultMessage: '上課人數',
+    },
+    exercisedMemberCount: {
+      id: 'page.LearningOverviewPage.exercisedMemberCount',
+      defaultMessage: '測驗人數',
+    },
+    passedMemberCount: {
+      id: 'page.LearningOverviewPage.passedMemberCount',
+      defaultMessage: '通過人數',
+    },
+    peopleSuffix: {
+      id: 'page.LearningOverviewPage.peopleSuffix',
+      defaultMessage: '人',
+    },
+    hoursSuffix: {
+      id: 'page.LearningOverviewPage.hoursSuffix',
+      defaultMessage: '小時',
+    },
     recentLearningCount: {
       id: 'page.LearningOverviewPage.recentLearningCount',
       defaultMessage: '近三十天學習人數',
@@ -883,6 +967,140 @@ const pageMessages = {
     conversionRate: {
       id: 'page.ProgressFunnel.conversionRate',
       defaultMessage: '轉化率 {percentage} %',
+    },
+  }),
+  MemberSmsModal: defineMessages({
+    send: {
+      id: 'page.MemberSmsModal.send',
+      defaultMessage: '發送',
+    },
+  }),
+  MemberContractCreationForm: defineMessages({
+    selectContractValidity: {
+      id: 'page.MemberContractCreationForm.selectContractValidity',
+      defaultMessage: '請選擇合約效期',
+    },
+    contractPeriod: {
+      id: 'page.MemberContractCreationForm.contractPeriod',
+      defaultMessage: '合約期間',
+    },
+    contractItem: {
+      id: 'page.MemberContractCreationForm.contractItem',
+      defaultMessage: '合約項目',
+    },
+    contractValidity: {
+      id: 'page.MemberContractCreationForm.contractValidity',
+      defaultMessage: '合約效期',
+    },
+    serviceStartDate: {
+      id: 'page.MemberContractCreationForm.serviceStartDate',
+      defaultMessage: '服務開始日',
+    },
+    serviceEndDate: {
+      id: 'page.MemberContractCreationForm.serviceEndDate',
+      defaultMessage: '服務結束日',
+    },
+    contractContent: {
+      id: 'page.MemberContractCreationForm.contractContent',
+      defaultMessage: '合約內容',
+    },
+    selectContract: {
+      id: 'page.MemberContractCreationForm.selectContract',
+      defaultMessage: '請選擇合約',
+    },
+    itemName: {
+      id: 'page.MemberContractCreationForm.itemName',
+      defaultMessage: '項目名稱',
+    },
+    itemPlaceholder: {
+      id: 'page.MemberContractCreationForm.itemPlaceholder',
+      defaultMessage: '請選擇項目 (搜尋請輸入至少兩個關鍵字)',
+    },
+    unitPrice: {
+      id: 'page.MemberContractCreationForm.unitPrice',
+      defaultMessage: '單價',
+    },
+    quantity: {
+      id: 'page.MemberContractCreationForm.quantity',
+      defaultMessage: '數量',
+    },
+    addItem: {
+      id: 'page.MemberContractCreationForm.addItem',
+      defaultMessage: '新增項目',
+    },
+    memberStatus: {
+      id: 'page.MemberContractCreationForm.memberStatus',
+      defaultMessage: '學員身份',
+    },
+    normal: {
+      id: 'page.MemberContractCreationForm.normal',
+      defaultMessage: '一般',
+    },
+    student: {
+      id: 'page.MemberContractCreationForm.student',
+      defaultMessage: '學生',
+    },
+    referrer: {
+      id: 'page.MemberContractCreationForm.referrer',
+      defaultMessage: '介紹人',
+    },
+    deposit: {
+      id: 'page.MemberContractCreationForm.deposit',
+      defaultMessage: '訂金',
+    },
+    deductDeposit: {
+      id: 'page.MemberContractCreationForm.deductDeposit',
+      defaultMessage: '扣除訂金 $1000',
+    },
+    appreciationPeriod: {
+      id: 'page.MemberContractCreationForm.appreciationPeriod',
+      defaultMessage: '鑑賞期',
+    },
+    useAppreciationPeriod: {
+      id: 'page.MemberContractCreationForm.useAppreciationPeriod',
+      defaultMessage: '使用鑑賞期',
+    },
+    paymentMethod: {
+      id: 'page.MemberContractCreationForm.paymentMethod',
+      defaultMessage: '付款方式',
+    },
+    selectPaymentMethod: {
+      id: 'page.MemberContractCreationForm.selectPaymentMethod',
+      defaultMessage: '請選擇付款方式',
+    },
+    installmentPeriod: {
+      id: 'page.MemberContractCreationForm.installmentPeriod',
+      defaultMessage: '分期期數',
+    },
+    selectInstallmentPeriod: {
+      id: 'page.MemberContractCreationForm.selectInstallmentPeriod',
+      defaultMessage: '請選擇分期期數',
+    },
+    paymentNumber: {
+      id: 'page.MemberContractCreationForm.paymentNumber',
+      defaultMessage: '金流編號',
+    },
+    contractManagerAndProfit: {
+      id: 'page.MemberContractCreationForm.contractManagerAndProfit',
+      defaultMessage: '承辦人 / 分潤',
+    },
+    fillContractManager: {
+      id: 'page.MemberContractCreationForm.fillContractManager',
+      defaultMessage: '請填寫承辦人',
+    },
+    contractManager: {
+      id: 'page.MemberContractCreationForm.contractManager',
+      defaultMessage: '承辦人',
+    },
+    addManager: {
+      id: 'page.MemberContractCreationForm.addManager',
+      defaultMessage: '加入',
+    },
+  }),
+  LearningRadar: defineMessages({
+    completionRate: {
+      id: 'page.LearningRadar.completionRate',
+      defaultMessage: '完課率',
     },
   }),
 }

@@ -7,6 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import saleMessages from './translation'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -86,7 +87,7 @@ const JitsiDemoModal: React.FC<
       closable={false}
       centered
       destroyOnClose
-      okText="結束通話"
+      okText={formatMessage(saleMessages.JitsiDemoModal.endCall)}
       okButtonProps={{
         disabled: Object.values(jitsiUsers).length === 0 || Object.values(jitsiUsers).every(user => !user.endedAt),
       }}
@@ -116,7 +117,7 @@ const JitsiDemoModal: React.FC<
             message.success(formatMessage(commonMessages.text.copiedToClipboard))
           }}
         >
-          複製邀請連結
+          {formatMessage(saleMessages.JitsiDemoModal.copyInviteLink)}
         </Button>
       )}
     </Modal>

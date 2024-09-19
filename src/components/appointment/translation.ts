@@ -16,6 +16,10 @@ const appointmentMessages = {
     cancel: { id: 'appointmentMessages.*.cancel', defaultMessage: '取消' },
   }),
   AppointmentPeriodCard: defineMessages({
+    meetingLinkNotSet: {
+      id: 'appointmentMessages.AppointmentPeriodCard.meetingLinkNotSet',
+      defaultMessage: '尚未設定會議連結',
+    },
     finished: { id: 'appointmentMessages.AppointmentPeriodCard.finished', defaultMessage: '已結束' },
     appointmentText: {
       id: 'appointment.AppointmentPeriodCard.appointmentText',
@@ -137,7 +141,10 @@ const appointmentMessages = {
   }),
   AppointmentPlanScheduleCreationModal: defineMessages({
     createPeriod: { id: 'appointment.AppointmentPlanScheduleCreationModal.createPeriod', defaultMessage: '建立時段' },
-
+    duplicatePeriodError: {
+      id: 'appointment.AppointmentPlanScheduleCreationModal.duplicatePeriodError',
+      defaultMessage: '已有重複的時段',
+    },
     timezone: {
       id: 'appointment.AppointmentPlanScheduleCreationModal.timezone',
       defaultMessage: '時間以 {city} (GMT{timezone}) 顯示',
@@ -188,6 +195,12 @@ const appointmentMessages = {
     selectImportedSchedule: {
       id: 'appointment.AppointmentScheduleImportModal.selectedImportedSchedule',
       defaultMessage: '選擇欲匯入的預約方案時段',
+    },
+  }),
+  AppointmentRescheduleModal: defineMessages({
+    changePeriodFail: {
+      id: 'appointment.AppointmentRescheduleModal.changePeriodFail',
+      defaultMessage: '更換時段失敗 ,{error}',
     },
   }),
 }

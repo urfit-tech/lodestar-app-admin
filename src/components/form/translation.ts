@@ -485,5 +485,11 @@ const formMessages = {
     outdated: { id: 'form.SaleInput.outdated', defaultMessage: 'Expired' },
     priceDescription: { id: 'form.SaleInput.priceDescription', defaultMessage: 'Price description' },
   }),
+  PermissionGroupSelector: defineMessages({
+    selectPermissionGroup: {
+      id: 'form.PermissionGroupSelector.selectPermissionGroup',
+      defaultMessage: '請選擇權限群組',
+    },
+  }),
 }
 export default formMessages

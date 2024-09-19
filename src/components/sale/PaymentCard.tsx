@@ -87,7 +87,7 @@ const PaymentCard: React.FC<{
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
-      return alert('POS刷卡設定錯誤，請聯繫廠商')
+      return alert(formatMessage(saleMessages.PaymentCard.posCardError))
     }
 
     const parseConfigs: { permissionGroupId: string; type: string; targetUrl: string; targetPath: string }[] =
@@ -95,7 +95,7 @@ const PaymentCard: React.FC<{
     const config = parseConfigs.find(c => c.permissionGroupId === permissionGroupId && c.type === method)
 
     if (!config || !config.targetUrl || !config.targetPath) {
-      return alert('POS刷卡設定錯誤，請聯繫廠商: no targetUrl or targetPath')
+      return alert(formatMessage(saleMessages.PaymentCard.posCardErrorDetail))
     }
     setLoading(true)
     axios
@@ -108,14 +108,14 @@ const PaymentCard: React.FC<{
       })
       .then(res => {
         if (res.data.message === 'success') {
-          setCardReaderResponse({ status: 'success', message: '付款成功，請重整確認訂單狀態' })
+          setCardReaderResponse({ status: 'success', message: formatMessage(saleMessages.PaymentCard.paymentSuccess) })
         }
       })
       .catch(err => {
         console.log({ err })
         setCardReaderResponse({
           status: 'failed',
-          message: `付款失敗，原因：${
+          message: `${formatMessage(saleMessages.PaymentCard.paymentFailure)}${
             err.response.data.message.split('Internal Server Error: ')[1] || err.response.data.message
           }`,
         })
@@ -155,7 +155,7 @@ const PaymentCard: React.FC<{
                   },
 
                   {
-                    title: '結帳管道',
+                    title: formatMessage(saleMessages.PaymentCard.checkoutMethod),
                     message: payment.gateway.includes('spgateway')
                       ? '藍新'
                       : payment.method === 'cash'
@@ -170,7 +170,7 @@ const PaymentCard: React.FC<{
                     isRender: true,
                   },
                   {
-                    title: '付款模式',
+                    title: formatMessage(saleMessages.PaymentCard.paymentMode),
                     message: order.options?.paymentMode || '',
                     isRender: true,
                   },
@@ -216,7 +216,9 @@ const PaymentCard: React.FC<{
 
                 {!!order.options?.installmentPlans && (
                   <div className="row mb-2 justify-content-between">
-                    <StyledInfoTitle className="column">款項</StyledInfoTitle>
+                    <StyledInfoTitle className="column">
+                      {formatMessage(saleMessages.PaymentCard.amount)}
+                    </StyledInfoTitle>
                     <StyledInfoMessage className="column">
                       {order.options?.paymentMode === '訂金+尾款'
                         ? order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 1
@@ -232,7 +234,9 @@ const PaymentCard: React.FC<{
                 )}
                 {!!order.options?.installmentPlans && (
                   <div className="row mb-2 justify-content-between">
-                    <StyledInfoTitle className="column">付款期限</StyledInfoTitle>
+                    <StyledInfoTitle className="column">
+                      {formatMessage(saleMessages.PaymentCard.paymentDeadline)}
+                    </StyledInfoTitle>
                     <StyledInfoMessage className="column">
                       {order.options?.paymentMode === '訂金+尾款' &&
                       order.options?.installmentPlans?.filter(plan => plan.price === payment.price)[0]?.index === 2
@@ -246,7 +250,9 @@ const PaymentCard: React.FC<{
                 )}
                 {!!payment.options?.bankCode && (
                   <div className="row mb-2 justify-content-between">
-                    <StyledInfoTitle className="column">銀行後五碼</StyledInfoTitle>
+                    <StyledInfoTitle className="column">
+                      {formatMessage(saleMessages.PaymentCard.bankLastFiveDigits)}
+                    </StyledInfoTitle>
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
                   </div>
                 )}
@@ -259,7 +265,7 @@ const PaymentCard: React.FC<{
                     <ModifyOrderStatusModal
                       renderTrigger={({ setVisible }) => (
                         <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
-                          變更交易狀態
+                          {formatMessage(saleMessages.PaymentCard.changeTransactionStatus)}
                         </Button>
                       )}
                       orderLogId={order.id}
@@ -307,13 +313,13 @@ const PaymentCard: React.FC<{
                       )
                     }}
                   >
-                    <div>更改結帳管道</div>
+                    <div>{formatMessage(saleMessages.PaymentCard.changeCheckoutMethod)}</div>
                   </Button>
                 )}
               </div>
               <AdminModal
                 visible={isOpenChangePaymentMethodModal}
-                title="更改結帳管道"
+                title={formatMessage(saleMessages.PaymentCard.changeCheckoutMethod)}
                 footer={
                   <div>
                     <Button
@@ -339,7 +345,7 @@ const PaymentCard: React.FC<{
                       }}
                     >
                       {' '}
-                      更改
+                      {formatMessage(saleMessages.PaymentCard.change)}
                     </Button>
                   </div>
                 }
@@ -347,7 +353,7 @@ const PaymentCard: React.FC<{
                   setIsOpenChangePaymentMethodModal(false)
                 }}
               >
-                結帳管道
+                {formatMessage(saleMessages.PaymentCard.checkoutMethod)}
                 <Select
                   defaultValue={paymentMethod || ''}
                   onChange={e => {
@@ -373,7 +379,7 @@ const PaymentCard: React.FC<{
         })}
       <AdminModal
         visible={!!cardReaderResponse}
-        title="刷卡結果"
+        title={formatMessage(saleMessages.PaymentCard.cardResult)}
         footer={null}
         onCancel={() => {
           setCardReaderResponse(null)

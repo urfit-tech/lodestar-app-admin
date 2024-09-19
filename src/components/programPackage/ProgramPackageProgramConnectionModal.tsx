@@ -1,8 +1,7 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, message, TreeSelect } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -104,7 +103,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
             treeData={[
               {
                 key: 'allPerpetualPrograms',
-                title: '所有單次課程',
+                title: formatMessage(programPackageMessages.form.allPerpetualPrograms),
                 children: availablePrograms
                   .filter(program => !program.isSubscription)
                   .map(program => ({
@@ -117,7 +116,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
               },
               {
                 key: 'allSubscriptionPrograms',
-                title: '所有訂閱課程',
+                title: formatMessage(programPackageMessages.form.allSubscriptionPrograms),
                 children: availablePrograms
                   .filter(program => program.isSubscription)
                   .map(program => ({

@@ -55,7 +55,7 @@ const LearningOverviewPage: React.VFC = () => {
               <Statistic
                 title={formatMessage(pageMessages.LearningOverviewPage.recentLearningCount)}
                 value={recentLearningCount}
-                suffix="人"
+                suffix={formatMessage(pageMessages.LearningOverviewPage.peopleSuffix)}
               />
             )}
           </Card>
@@ -69,7 +69,7 @@ const LearningOverviewPage: React.VFC = () => {
                 title={formatMessage(pageMessages.LearningOverviewPage.recentLearningDuration)}
                 value={recentLearningDuration / 60 / 60}
                 precision={0}
-                suffix="小時"
+                suffix={formatMessage(pageMessages.LearningOverviewPage.hoursSuffix)}
               />
             )}
           </Card>
@@ -132,10 +132,19 @@ const LearningOverviewPage: React.VFC = () => {
             ) : (
               <ProgressFunnel
                 values={[
-                  { stage: '所有人數', count: totalMemberCount },
-                  { stage: '上課人數', count: enrolledMemberCount },
-                  { stage: '測驗人數', count: exercisedMemberCount },
-                  { stage: '通過人數', count: passedMemberCount },
+                  { stage: formatMessage(pageMessages.LearningOverviewPage.totalMemberCount), count: totalMemberCount },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.enrolledMemberCount),
+                    count: enrolledMemberCount,
+                  },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.exercisedMemberCount),
+                    count: exercisedMemberCount,
+                  },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.passedMemberCount),
+                    count: passedMemberCount,
+                  },
                 ]}
               />
             )}
