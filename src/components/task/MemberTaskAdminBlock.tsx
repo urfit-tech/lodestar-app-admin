@@ -245,7 +245,7 @@ const MemberTaskAdminBlock: React.FC<{
       .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
       .replace('MEMBER_NAME', hostMemberName)
 
-    // jitsi or zoom or google-meet
+    // jitsi or zoom
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
       query: GetMeetById,
       variables: { meetId },
@@ -255,11 +255,8 @@ const MemberTaskAdminBlock: React.FC<{
       return message.error('非會議時間')
     }
     let startUrl
-    if (
-      enabledModules.meet_service &&
-      (data.meet_by_pk?.gateway === 'zoom' || data.meet_by_pk?.gateway === 'google-meet')
-    ) {
-      // create meeting than get startUrl
+    if (enabledModules.meet_service && data.meet_by_pk?.gateway === 'zoom') {
+      // create zoom meeting than get startUrl
       try {
         const { data: createMeetData } = await axios.post(
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -270,7 +267,7 @@ const MemberTaskAdminBlock: React.FC<{
             autoRecording: true,
             nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
             expAt: endedAt,
-            service: data.meet_by_pk.gateway,
+            service: 'zoom',
             target: memberTaskId,
             hostMemberId: currentMemberId,
             type: `${data.meet_by_pk?.type}`,

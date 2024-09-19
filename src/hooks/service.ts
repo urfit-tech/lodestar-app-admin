@@ -4,7 +4,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { Service } from '../types/service'
 import { useState } from 'react'
 import { handleError } from '../helpers'
-import { useGetOverlapMeet } from './meet'
+import { OverlapMeets } from '../types/meet'
 
 export const GetService = gql`
   query GetService($appId: String!) {
@@ -15,67 +15,36 @@ export const GetService = gql`
   }
 `
 
-export const useMeetingServiceCheck = () => {
+export const useZoomServiceCheck = () => {
   const apolloClient = useApolloClient()
   const { id: appId } = useApp()
-  const { getOverlapMeets } = useGetOverlapMeet()
   const [invalidGateways, setInvalidGateways] = useState<string[]>([])
 
-  const getAvailableGatewayServiceId = async ({
-    gateway,
-    startedAt,
-    endedAt,
-  }: {
-    gateway: string
-    startedAt: Date
-    endedAt: Date
-  }) => {
-    const { overlapMeets } = await getOverlapMeets({
-      startedAt: startedAt.toISOString(),
-      endedAt: endedAt.toISOString(),
-    })
+  const zoomServiceCheck = async ({ overlapMeets }: { overlapMeets: OverlapMeets }) => {
     const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
       query: GetService,
       variables: {
         appId,
       },
     })
-    const gatewayServices = serviceData.service.filter(service => service.gateway === gateway)
+    const zoomServices = serviceData.service.filter(service => service.gateway === 'zoom')
 
-    if (gatewayServices.length === 0) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-      return handleError({ message: `無 ${gateway} 帳號` })
+    if (zoomServices.length === 0) {
+      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
+      return handleError({ message: '無zoom帳號' })
     }
-    const gatewayServiceIds = gatewayServices.map(service => service.id)
+    const zoomServiceIds = zoomServices.map(service => service.id)
     const periodUsedServiceId = overlapMeets.map(meet => meet.serviceId)
-    const availableGatewayServiceId = gatewayServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
-    if (!availableGatewayServiceId) {
-      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-      return handleError({ message: `此時段無可用 ${gateway} 帳號` })
+    const availableZoomServiceId = zoomServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
+    if (!availableZoomServiceId) {
+      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom'), 'zoom'])
+      return handleError({ message: '此時段無可用zoom帳號' })
     } else {
-      setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
+      setInvalidGateways(prev => [...prev.filter(v => v !== 'zoom')])
     }
-    return availableGatewayServiceId
+    return availableZoomServiceId
   }
-
-  const getValidGatewaysWithinTimeRange = async ({ startedAt, endedAt }: { startedAt: Date; endedAt: Date }) => {
-    const { overlapMeets } = await getOverlapMeets({
-      startedAt: startedAt.toISOString(),
-      endedAt: endedAt.toISOString(),
-    })
-    const { data: serviceData } = await apolloClient.query<hasura.GetService, hasura.GetServiceVariables>({
-      query: GetService,
-      variables: {
-        appId,
-      },
-    })
-    const availableGatewayServices = serviceData.service.filter(
-      service => !overlapMeets.find(overlapMeet => overlapMeet.serviceId === service.id),
-    )
-    return Array.from(new Set(availableGatewayServices.map(service => service.gateway)))
-  }
-
-  return { getAvailableGatewayServiceId, getValidGatewaysWithinTimeRange, invalidGateways, setInvalidGateways }
+  return { zoomServiceCheck, invalidGateways, setInvalidGateways }
 }
 
 export const useService = () => {
