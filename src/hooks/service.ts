@@ -47,17 +47,19 @@ export const useMeetingServiceCheck = () => {
       return handleError({ message: `無 ${gateway} 帳號` })
     }
     const gatewayServiceIds = gatewayServices.map(service => service.id)
+    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+    if (gateway === 'google-meet') {
+      return gatewayServiceIds[0]
+    }
     const periodUsedServiceId = overlapMeets.map(meet => meet.serviceId)
     const availableGatewayServiceId = gatewayServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
-    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-    if (gateway !== 'google-meet') {
-      if (!availableGatewayServiceId) {
-        setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-        return handleError({ message: `此時段無可用 ${gateway} 帳號` })
-      } else {
-        setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
-      }
+    if (!availableGatewayServiceId) {
+      setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
+      return handleError({ message: `此時段無可用 ${gateway} 帳號` })
+    } else {
+      setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
     }
+
     return availableGatewayServiceId
   }
 
