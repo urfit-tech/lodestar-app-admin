@@ -5399,14 +5399,7 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.5.tgz#75a2a8e7d8ab4b230414505d92335d1dcb53a6df"
   integrity sha512-L28j2FcJfSZOnL1WBjDYp2vUHCeIFlyYI/53EwD/rKUBQ7MtUUfbQWiyKJGpcnv4/WgrhWsFKrcPstcAt/J0tQ==
 
-"@types/ramda@^0.27.40":
-  version "0.27.66"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.27.66.tgz#f1a23d13b0087d806a62e3ff941e5e59b3318999"
-  integrity sha512-i2YW+E2U6NfMt3dp0RxNcejox+bxJUNDjB7BpYuRuoHIzv5juPHkJkNgcUOu+YSQEmaWu8cnAo/8r63C0NnuVA==
-  dependencies:
-    ts-toolbelt "^6.15.1"
-
-"@types/ramda@^0.30.1":
+"@types/ramda@^0.30.1", "@types/ramda@^0.30.2":
   version "0.30.2"
   resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.30.2.tgz#70661b20c1bb969589a551b7134ae75008ffbfb6"
   integrity sha512-PyzHvjCalm2BRYjAU6nIB3TprYwMNOUY/7P/N8bSzp9W/yM2YrtGtAnnVtaCNSeOZ8DzKyFDvaqQs7LnWwwmBA==
@@ -7685,9 +7678,9 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, can
   integrity sha512-9Cf+Xv1jJNe1xPZLGuUXLNkE1BoDkqRqYyFJ9TDYSqhduqA4hu4oR9HluGoWYQC/aj8WHjsGVV+bwkh0+tegRg==
 
 caniuse-lite@^1.0.30001646:
-  version "1.0.30001658"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001658.tgz#b5f7be8ac748a049ab06aa1cf7a1408d83f074ec"
-  integrity sha512-N2YVqWbJELVdrnsW5p+apoQyYt51aBMSsBZki1XZEfeBCexcM/sf4xiAHcXQBkuOwJBXtWF7aW1sYX6tKebPHw==
+  version "1.0.30001660"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001660.tgz#31218de3463fabb44d0b7607b652e56edf2e2355"
+  integrity sha512-GacvNTTuATm26qC74pt+ad1fW15mlQ/zuTzzY1ZoIzECTP8HURDfF43kNxPgf7H1jmelCBQTTbBNxdSXOA7Bqg==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -9541,9 +9534,9 @@ electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.411:
   integrity sha512-wZOyn3s/aQOtLGAwXMZfteQPN68kgls2wDAnYOA8kCjBvKVrW5RwmWVspxJYTqrcN7Y263XJVsC66VCIGzDO3g==
 
 electron-to-chromium@^1.5.4:
-  version "1.5.16"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.16.tgz#125b6777774dbd4287aa86ab181cc880f4a5fb47"
-  integrity sha512-2gQpi2WYobXmz2q23FrOBYTLcI1O/P4heW3eqX+ldmPVDQELRqhiebV380EhlGG12NtnX1qbK/FHpN0ba+7bLA==
+  version "1.5.24"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.24.tgz#b3cd2f71b7a84bac340d862e3b7b0aadf48478de"
+  integrity sha512-0x0wLCmpdKFCi9ulhvYZebgcPmHTkFVUfU2wzDykadkslKwT4oAmDTHEKLnlrDsMGZe4B+ksn8quZfZjYsBetA==
 
 element-resize-event@^3.0.3:
   version "3.0.6"
@@ -13570,9 +13563,13 @@ lodash.upperfirst@^4.3.1:
 
 lodestar-app-element@urfit-tech/lodestar-app-element#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/e8ef9344b1761f4a25688a6149288a79f698e04e"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/ea6f26462eec8b1f3761b1feff3fbc5a7fd3fc00"
   dependencies:
     "@apollo/client" "^3.7.11"
+    "@babel/cli" "^7.13.16"
+    "@babel/core" "^7.14.0"
+    "@babel/preset-env" "^7.14.1"
+    "@babel/preset-react" "^7.13.13"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
     "@chakra-ui/icons" "1.0.0"
     "@chakra-ui/react" "1.1.2"
@@ -13581,10 +13578,15 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     "@emotion/react" "11"
     "@emotion/styled" "11"
     "@fingerprintjs/fingerprintjs" "^3.3.6"
+    "@fullcalendar/core" "^6.1.15"
+    "@fullcalendar/interaction" "^6.1.15"
+    "@fullcalendar/react" "^6.1.15"
+    "@fullcalendar/rrule" "^6.1.15"
+    "@fullcalendar/timegrid" "^6.1.15"
     "@types/js-cookie" "^3.0.3"
     "@types/mustache" "4.0.1"
     "@types/node" "12.0.0"
-    "@types/ramda" "0.27.45"
+    "@types/ramda" "^0.30.1"
     "@types/react" "17.0.0"
     "@types/react-color" "^3.0.5"
     "@types/react-dom" "17.0.0"
@@ -13597,6 +13599,8 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     ajv "^8.11.2"
     antd "3"
     axios "0.21.4"
+    babel-plugin-import "^1.13.3"
+    babel-plugin-react-intl "^7.5.28"
     braft-editor "2.3.9"
     classnames "^2.3.1"
     dangerously-set-html-content "^1.0.13"
@@ -13610,7 +13614,7 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     moment "^2.29.1"
     mustache "4.2.0"
     query-string "7.0.1"
-    ramda "0.27.0"
+    ramda "^0.30.1"
     rc-progress "^3.1.4"
     react "17.0.2"
     react-color "2.19.3"
@@ -13620,18 +13624,22 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     react-hotjar "^4.0.0"
     react-icons "4.3.1"
     react-intl "5.20.9"
+    react-intl-translations-manager "^5.0.3"
     react-is "^17.0.2"
     react-responsive "8.1.0"
     react-router-dom "5.2.0"
     react-scripts "4.0.3"
     react-slick "0.28.1"
     react-style-editor "^0.4.0"
+    rrule "^2.8.1"
     styled-components "5.1.1"
+    swr "^2.2.5"
     ts-deep-pick "0.2.2"
     typescript "4.4.3"
     use-query-params "1.2.3"
     use-tw-zipcode "^2.0.4"
     uuid "8.3.2"
+    xss "^1.0.10"
 
 log-symbols@^4.0.0, log-symbols@^4.1.0:
   version "4.1.0"
@@ -16268,11 +16276,6 @@ raf@^3.4.0, raf@^3.4.1:
   integrity sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==
   dependencies:
     performance-now "^2.1.0"
-
-ramda@0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.0.tgz#915dc29865c0800bf3f69b8fd6c279898b59de43"
-  integrity sha512-pVzZdDpWwWqEVVLshWUHjNwuVP7SfcmPraYuqocJp1yo2U1R7P+5QAfDhdItkuoGqIBnBYrtPp7rEPqDn9HlZA==
 
 ramda@^0.30.1:
   version "0.30.1"
@@ -19755,11 +19758,6 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
-
-ts-toolbelt@^6.15.1:
-  version "6.15.5"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
-  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
 ts-toolbelt@^9.6.0:
   version "9.6.0"

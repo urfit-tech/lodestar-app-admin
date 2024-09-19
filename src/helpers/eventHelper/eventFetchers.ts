@@ -1,85 +1,45 @@
-import { curry, pipeWith, andThen, pluck, tap, evolve, invoker, pipe, map, mapObjIndexed, values } from 'ramda'
+import {
+    curry, pipeWith, andThen, pluck,
+    tap, evolve, invoker, pipe, map,
+    identity, mapObjIndexed, values, mergeLeft
+} from 'ramda'
 import axios, { AxiosRequestConfig } from "axios";
-import moment from 'moment';
 import {
     ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent,
 } from './eventFetcher.type';
 import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
-import { adaptFetchedResourceEvent } from './eventAdaptor'
+import { adaptedEventPayload, adaptFetchedResourceEvent } from './eventAdaptor'
+import { GeneralEventApi } from '../../components/event/events.type';
 
-const authedConfig = curry(
-    (authToken: string, config: AxiosRequestConfig | undefined) => {
-        return { ...(config ?? {}), headers: { Authorization: `Bearer ${authToken}` } }
-    }
-)
+const authedConfig: (authToken: string) => (config: AxiosRequestConfig) => AxiosRequestConfig
+    = authToken => mergeLeft({ headers: { Authorization: `Bearer ${authToken}` } })
 
 export const createResourceFetcher = curry(
     async (authToken: string, payload: { type: ResourceType, target: string }) => {
         return (await axios.post(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource`,
             payload,
-            authedConfig(authToken)(undefined)
+            authedConfig(authToken)({})
         )).data
     }
 )
 
-export const createEventFetcher = curry(
-    async (authToken: string, payload: { events: Array<EventRequest> }) => {
-        return (await axios.post(
-            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event`,
-            payload,
-            authedConfig(authToken)(undefined)
-        )).data
-    }
-)
-
-export const createInvitationFetcher = curry(
-    async (authToken: string, eventResources: Array<EventResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
-        if (eventResources && eventIds && eventResources?.length > 0 && eventIds?.length > 0) {
-            return (await axios.post(
-                `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
-                { eventResources, eventIds },
-                authedConfig(authToken)(undefined)
-            )).data
-        }
-        else {
-            throw new Error(`Failed to invite resource: event resources or event ids is empty.`)
-        }
-    }
-)
-
-export const createEventAndInviteResourceFetcher = curry(
-    async (
+export const getResourceByTypeTargetFetcher = curry<
+    (
         authToken: string,
-        payload: {
-            events: Array<EventRequest>,
-            invitedResource: Array<any>
-        }
-    ) => {
-        if (authToken && payload.invitedResource.length > 0) {
-            return await pipeWith(andThen)([
-                createEventFetcher(authToken),
-                tap((any: any) => console.log(60, any)),
-                pluck('id'),
-                createInvitationFetcher(authToken)(payload.invitedResource)
-            ])({ events: payload.events })
-        } else {
-            throw new Error(`Failed to create the event or invite resources.`)
-        }
-    }
-)
-
-export const getResourceByTypeTargetFetcher = curry(
-    async (authToken: string, typeTargets: { type: ResourceType, targets: Array<string> }) => {
+        typeTargets: { type: ResourceType, targets: Array<string> }
+    ) =>
+        Promise<Array<FetchedResource>>
+>(
+    async (authToken, typeTargets) => {
         const { type, targets } = typeTargets
         return (await axios.post(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/batch/get/${type}`,
             targets,
-            authedConfig(authToken)(undefined)
-        )).data as Array<FetchedResource>
+            authedConfig(authToken)({})
+        )).data
     }
 )
-
 
 export const getResourcesByPermissionGroups = curry(
     async (
@@ -103,7 +63,7 @@ export const getResourcesByPermissionGroups = curry(
 
         return (await axios.get(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/permission-group?${query}`,
-            authedConfig(authToken)(undefined)
+            authedConfig(authToken)({})
         )).data as Array<FetchedResource>
     }
 )
@@ -115,7 +75,7 @@ export const getEventsByResourceFetcher = curry(
             const result = (await axios.post(
                 `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/batch/get?started_at=${startedAt.toISOString()}&until=${until.toISOString()}`,
                 resourceIds,
-                authedConfig(authToken)(undefined)
+                authedConfig(authToken)({})
             )).data as Array<FetchedResourceEvent>
             return result
         } else {
@@ -131,13 +91,86 @@ export const getDefaultResourceEventsFethcer = curry(
         startUntil: { startedAt: Date, until: Date }
     ) => {
         try {
-            const resources = await getResourceByTypeTargetFetcher(authToken)(typeTargets)
-            const resourceIds = pluck('id')(resources)
-            const resourceEvents = await getEventsByResourceFetcher(authToken)(startUntil)(resourceIds)
-            const adaptedResourceEvents = resourceEvents.map(adaptFetchedResourceEvent)
-            return { resources, resourceEvents: adaptedResourceEvents }
+            const resources = await pipe<
+                [{ type: ResourceType, targets: Array<string> }],
+                { type: ResourceType, targets: Array<string> },
+                Promise<Array<EventResource>>
+            >(
+                tap(createResourceFetcher(authToken) as any),
+                getResourceByTypeTargetFetcher(authToken),
+            )(typeTargets)
+
+            const resourceEvents = await pipe<
+                [Array<EventResource>],
+                Array<string>,
+                Promise<Array<FetchedResourceEvent>>,
+                Promise<Array<GeneralEventApi>>
+            >(
+                pluck('id') as (resources: Array<EventResource>) => Array<string>,
+                getEventsByResourceFetcher(authToken)(startUntil),
+                andThen(map(adaptFetchedResourceEvent))
+            )(resources)
+
+            return { resources, resourceEvents }
         } catch (e) {
             console.error(e)
+        }
+    }
+)
+
+export const createEventFetcher = curry(
+    async (authToken: string, app_id: string, payload: { events: Array<GeneralEventApi> }) => {
+        const adaptedEvents = map(
+            pipe<[GeneralEventApi],
+                GeneralEventApi & { app_id: string },
+                EventRequest
+            >(
+                mergeLeft({ app_id }),
+                adaptedEventPayload
+            )
+        )(payload.events)
+
+        return (await axios.post(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event`,
+            { events: adaptedEvents },
+            authedConfig(authToken)({})
+        )).data
+    }
+)
+
+export const createInvitationFetcher = curry(
+    async (authToken: string, eventResources: Array<EventResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
+        if (eventResources && eventIds && eventResources?.length > 0 && eventIds?.length > 0) {
+            return (await axios.post(
+                `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
+                { eventResources, eventIds },
+                authedConfig(authToken)({})
+            )).data
+        }
+        else {
+            throw new Error(`Failed to invite resource: event resources or event ids is empty.`)
+        }
+    }
+)
+
+export const createEventAndInviteResourceFetcher = curry(
+    async (
+        authToken: string,
+        app_id: string,
+        payload: {
+            events: Array<GeneralEventApi>,
+            invitedResource: Array<EventResource>
+        }
+    ) => {
+        if (authToken && payload.invitedResource.length > 0) {
+            return await pipeWith(andThen)([
+                createEventFetcher(authToken)(app_id),
+                tap((any: any) => console.log(60, any)),
+                pluck('id'),
+                createInvitationFetcher(authToken)(payload.invitedResource)
+            ])({ events: payload.events })
+        } else {
+            throw new Error(`Failed to create the event or invite resources.`)
         }
     }
 )
@@ -145,18 +178,18 @@ export const getDefaultResourceEventsFethcer = curry(
 export const updateEvent = curry(
     async (
         authToken: string,
-        payload: EventRequest,
+        payload: Partial<GeneralEventApi>,
         event_id: string,
     ) => {
         return (await axios.patch(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/${event_id}`,
-            payload,
-            authedConfig(authToken)(undefined)
+            adaptedEventPayload(payload),
+            authedConfig(authToken)({})
         )).data
     }
 )
 
 export const deleteEvent = curry(
     async (authToken: string, deletedAt: Date, event_id: string) =>
-        await updateEvent(authToken)({ deleted_at: deletedAt } as EventRequest)(event_id)
+        await updateEvent(authToken)({ extendedProps: { deletedAt } })(event_id)
 )

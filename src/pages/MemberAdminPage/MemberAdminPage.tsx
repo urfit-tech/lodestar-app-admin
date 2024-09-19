@@ -32,7 +32,7 @@ const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { permissions, currentUserRole, authToken } = useAuth()
   const { memberId } = useParams<{ memberId: string }>()
-  const { enabledModules } = useApp()
+  const { enabledModules, id: appId } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
@@ -75,7 +75,7 @@ const MemberAdminPage: React.FC = () => {
                   type: 'member',
                   targets: [memberId],
                 })}
-                createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)}
+                createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)(appId as string)}
                 updateResourceEventFetcher={updateEvent(authToken as string)}
                 deleteResourceEventFetcher={deleteEvent(authToken as string)}
               />

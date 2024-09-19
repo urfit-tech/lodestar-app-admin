@@ -1,7 +1,3 @@
-import { RRule } from 'rrule'
-import { Moment } from 'moment'
-import { any, curry } from 'ramda'
-
 export type ResourceType = 'member' | 'physical_space'
 
 export type FetchedResource = {
@@ -10,11 +6,6 @@ export type FetchedResource = {
     target: string,
     appId: string
 }
-
-const isKeyNullish = curry((object: object, key: keyof object) => object?.[key])
-const areSomeKeysNullish = curry((object: object, keys: Array<string>) => any(isKeyNullish(object), keys))
-
-export const isFetchedResource = (fetchedResource: any) => fetchedResource && !areSomeKeysNullish(fetchedResource)(['id', 'type', 'target'])
 
 export type EventRequest = {
     app_id: string,
@@ -51,56 +42,6 @@ export type EventResource = {
     deleted_at?: Date
     role?: string
     is_exclusive?: boolean
-}
-
-export type ModalDefaultEventForBasicMode = {
-    started_at: Moment,
-    ended_at: Moment,
-}
-
-export type ModalDefaultEventForBasicModeWithSource = ModalDefaultEventForBasicMode & {
-    source_type: string
-    source_target: string
-}
-
-export type ModalDefaultEventForEditMode = ModalDefaultEventForBasicMode & {
-    event_id: string,
-    temporally_exclusive_resource_id: string,
-    title?: string,
-    description?: string,
-    event_metadata?: object,
-    role?: string,
-    is_exclusive: boolean,
-    is_attending?: string,
-    published_at?: Date,
-    deleted_at?: Date
-}
-
-export type ModalDefaultEventForEditModeAndRecurring = ModalDefaultEventForEditMode & {
-    rrule: RRule,
-    until: Date,
-}
-
-export type GeneralModalDefaultEventForEditMode
-    = (ModalDefaultEventForEditMode | ModalDefaultEventForEditModeAndRecurring) &
-    ({} | ModalDefaultEventForBasicModeWithSource)
-
-export const isModalDefaultEventForBasicModeWithSource = (
-    event: ModalDefaultEventForBasicMode
-): event is ModalDefaultEventForBasicModeWithSource => {
-    return ['source_type', 'source_target'].every(key => key in event)
-}
-
-export const isModalDefaultEventForEditMode = (
-    event: ModalDefaultEventForBasicMode | ModalDefaultEventForEditMode
-): event is ModalDefaultEventForEditMode => {
-    return ['event_id', 'temporally_exclusive_resource_id'].every(key => key in event)
-}
-
-export const isModalDefaultEventForEditModeAndRecurring = (
-    event: any
-): event is ModalDefaultEventForEditModeAndRecurring => {
-    return ['rrule', 'until'].every((key) => event?.[key])
 }
 
 export type FetchedResourceEvent = {

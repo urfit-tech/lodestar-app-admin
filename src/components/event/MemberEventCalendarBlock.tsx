@@ -5,24 +5,19 @@ import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import moment, { Duration } from 'moment'
-import { equals, filter, isNil, path, pipe } from 'ramda'
+import { curry, equals, filter, isNil, path, pipe, tap } from 'ramda'
 import React, { useState } from 'react'
 import useSWR from 'swr'
-import {
-  EventRequest,
-  GeneralModalDefaultEventForEditMode,
-  ModalDefaultEventForBasicMode,
-} from '../../helpers/eventHelper/eventFetcher.type'
 import { DateRanges } from './DateRanges'
-import { ResourceEventsFetcher, TemporallyExclusiveResource } from './events.type'
+import { GeneralEventApi, ResourceEventsFetcher, TemporallyExclusiveResource } from './events.type'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
   memberId: string
   defaultResourceEventsFetcher: ResourceEventsFetcher
   invitedResourceEventsFetcher?: ResourceEventsFetcher
-  createResourceEventFetcher: (payload: { events: Array<EventRequest>; invitedResource: Array<any> }) => any
-  updateResourceEventFetcher: (payload: EventRequest) => (event_id: string) => any
+  createResourceEventFetcher: (payload: { events: Array<GeneralEventApi>; invitedResource: Array<any> }) => any
+  updateResourceEventFetcher: (payload: GeneralEventApi) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
   eventPaginationDuration?: Duration
   defaultEventDuration?: Duration
@@ -59,27 +54,30 @@ export const MemberEventCalendarBlock: React.FC<{
 
   const { isOpen: isEventModalOpen, onOpen: onEventModalOpen, onClose: onEventModalClose } = useDisclosure()
 
-  type DefaultEvent = ModalDefaultEventForBasicMode | GeneralModalDefaultEventForEditMode
+  const generateDefaultModalEvent = curry((duration: Duration | number, date: Date) => ({
+    start: date,
+    end: moment(date).clone().add(duration).toDate(),
+  }))
 
-  const [modalEvent, setModalEvent]: [DefaultEvent, React.Dispatch<React.SetStateAction<DefaultEvent>>] = useState({
-    started_at: moment(),
-    ended_at: moment(),
-  })
-  const [duration, setDuration] = useState(defaultEventDuration)
-  const [isRruleOptional, setIsRruleOptional] = useState(true)
+  const [modalEvent, setModalEvent] = useState<GeneralEventApi>(
+    generateDefaultModalEvent(defaultEventDuration)(new Date()),
+  )
+
+  const [duration, setDuration] = useState<number | Duration>(defaultEventDuration)
+  const [isRruleOptional, setIsRruleOptional] = useState<boolean>(true)
 
   const handleDateClick = (info: DateClickArg) => {
-    const started_at = moment(info.date)
-    const ended_at = moment(info.date).clone().add(duration)
-    setModalEvent({ started_at, ended_at })
+    pipe<[Date], { start: Date; end: Date }, { start: Date; end: Date }>(
+      generateDefaultModalEvent(duration),
+      tap(setModalEvent),
+    )(info.date)
+
     onEventModalOpen()
   }
 
   const handleEventClick = (info: EventClickArg) => {
-    const [targetEvent] = (defaultResourceEvents as Array<EventApi>).filter(
-      event => event.extendedProps.event_id === info.event.id,
-    )
-    // pipe(adaptEventToModal, tap(setModalEvent))(targetEvent)
+    const [targetEvent] = (defaultResourceEvents as Array<GeneralEventApi>).filter(event => event.id === info.event.id)
+    setModalEvent(targetEvent)
     onEventModalOpen()
   }
 
@@ -98,7 +96,11 @@ export const MemberEventCalendarBlock: React.FC<{
     pipe(path(['extendedProps', 'role']) as (event: EventApi) => string, equals('available')),
   )(activeEvents)
 
-  const availableDateRanges = pipe(DateRanges.parseFromFetchedEvents, DateRanges.merge)(availableEvents)
+  availableEvents.forEach(event => (event.display = 'background'))
+
+  console.log(101, availableEvents)
+
+  const availableDateRanges = pipe(DateRanges.parseFromEvents, DateRanges.merge)(availableEvents as any)
 
   console.log(
     156,
