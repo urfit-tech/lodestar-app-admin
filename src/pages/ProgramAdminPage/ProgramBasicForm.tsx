@@ -1,10 +1,12 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
+import { Text } from '@chakra-ui/react'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/form/CategorySelector'
 import LanguageSelector from '../../components/form/LanguageSelector'
@@ -29,7 +31,16 @@ type FieldProps = {
   displayHeader: boolean
   displayFooter: boolean
   programLayoutTemplateId: string
+  label: string
+  programLabelColor: number
 }
+
+const StyledProgramLabelColorRadio = styled(Radio)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  text-align: center;
+`
 
 const ProgramBasicForm: React.FC<{
   program: ProgramAdminProps | null
@@ -37,13 +48,24 @@ const ProgramBasicForm: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
-  const [loading, setLoading] = useState(false)
   const { programLayoutTemplates } = useGetProgramLayoutTemplates()
+
+  const [loading, setLoading] = useState(false)
+
   const currentProgramLayoutTemplateId = program?.programLayoutTemplateConfig?.ProgramLayoutTemplate?.id
-  const [updateProgramBasic] = useMutation(UPDATE_PROGRAM_BASIC)
+  const [updateProgramBasic] = useMutation(UpdateProgramBasic)
   const { activatedTemplateForProgram } = useActivatedTemplateForProgram()
+  let programLabelColorConfig = []
+
+  if (!!settings['program_label_color.config'] && !!enabledModules.program_label) {
+    try {
+      programLabelColorConfig = JSON.parse(settings['program_label_color.config'])
+    } catch (err) {
+      console.error('App Setting: "program_label_color.config" Error:', err)
+    }
+  }
 
   if (!program || loadingProduct) {
     return <Skeleton active />
@@ -77,6 +99,8 @@ const ProgramBasicForm: React.FC<{
         productId: `Program_${program.id}`,
         displayHeader: values.displayHeader,
         displayFooter: values.displayFooter,
+        label: values.label,
+        labelColorType: values.programLabelColor?.toString(),
       },
     })
       .then(async () => {
@@ -111,12 +135,50 @@ const ProgramBasicForm: React.FC<{
         displayHeader: program.displayHeader,
         displayFooter: program.displayFooter,
         programLayoutTemplateId: currentProgramLayoutTemplateId,
+        label: program.label || '',
+        programLabelColor: Number(program.labelColorType) || 1,
       }}
       onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programTitle)} name="title">
         <Input />
       </Form.Item>
+
+      {!!enabledModules.program_label && (
+        <>
+          <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLabel)} name="label">
+            <Input
+              maxLength={16}
+              placeholder={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programLabelInfo)}
+            />
+          </Form.Item>
+          {programLabelColorConfig.length !== 0 && (
+            <Form.Item
+              label=" "
+              name="programLabelColor"
+              labelCol={{ xs: { span: 0 }, md: { span: 4 } }}
+              wrapperCol={{ span: 14 }}
+            >
+              <Radio.Group style={{ display: 'flex', flexWrap: 'wrap' }}>
+                {programLabelColorConfig.map(
+                  (programLabelColor: { backgroundColor: string; textColor: string }, index: number) => (
+                    <StyledProgramLabelColorRadio value={index + 1} key={programLabelColor.backgroundColor}>
+                      <Text
+                        backgroundColor={programLabelColor.backgroundColor}
+                        color={programLabelColor.textColor}
+                        borderRadius="4px"
+                      >
+                        樣式 {index + 1}
+                      </Text>
+                    </StyledProgramLabelColorRadio>
+                  ),
+                )}
+              </Radio.Group>
+            </Form.Item>
+          )}
+        </>
+      )}
+
       <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.category)} name="categoryIds">
         <CategorySelector classType="program" />
       </Form.Item>
@@ -209,8 +271,8 @@ const ProgramBasicForm: React.FC<{
   )
 }
 
-const UPDATE_PROGRAM_BASIC = gql`
-  mutation UPDATE_PROGRAM_BASIC(
+const UpdateProgramBasic = gql`
+  mutation UpdateProgramBasic(
     $programId: uuid!
     $title: String
     $supportLocales: jsonb
@@ -224,6 +286,8 @@ const UPDATE_PROGRAM_BASIC = gql`
     $programTags: [program_tag_insert_input!]!
     $displayHeader: Boolean
     $displayFooter: Boolean
+    $label: String
+    $labelColorType: String
   ) {
     update_program(
       where: { id: { _eq: $programId } }
@@ -235,6 +299,8 @@ const UPDATE_PROGRAM_BASIC = gql`
         is_enrolled_count_visible: $isEnrolledCountVisible
         display_header: $displayHeader
         display_footer: $displayFooter
+        label: $label
+        label_color_type: $labelColorType
       }
     ) {
       affected_rows

@@ -15,10 +15,10 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
 import { useDeleteMeet, useGetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
-import { useZoomServiceCheck } from '../../hooks/service'
+import { useMeetingServiceCheck, useService } from '../../hooks/service'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { OverlapMeets } from '../../types/meet'
-import { MemberTaskAdminModalFieldProps, MemberTaskProps } from '../../types/member'
+import { MeetingGateway, MemberTaskAdminModalFieldProps, MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
@@ -45,19 +45,24 @@ const checkMeetingMember = ({
   memberTaskId,
   formExecutorId,
   formMemberId,
+  formMeetingGateway,
 }: {
   overlapMeets: OverlapMeets
   memberTaskId: string | undefined
   formExecutorId: string
   formMemberId: string
+  formMeetingGateway?: string
 }) => {
   let message = ''
-  if (
-    overlapMeets.filter(
-      overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
-    ).length > 0
-  ) {
-    message = '此時段不可指派此執行人員'
+  // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+  if (formMeetingGateway !== 'google-meet') {
+    if (
+      overlapMeets.filter(
+        overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
+      ).length > 0
+    ) {
+      message = '此時段不可指派此執行人員'
+    }
   }
 
   if (
@@ -88,15 +93,17 @@ const MemberTaskAdminModal: React.FC<
   const { currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
+  const [loading, setLoading] = useState(false)
   const [form] = useForm<MemberTaskAdminModalFieldProps>()
   const { insertMemberTask, updateMemberTask, deleteMemberTask } = useMutateMemberTask()
   const { insertMeet } = useMutateMeet()
-  const { insertMeetMember } = useMutateMeetMember()
   const { deleteMeet } = useDeleteMeet()
+  const { insertMeetMember } = useMutateMeetMember()
   const { getOverlapMeets } = useGetOverlapMeet()
-  const { zoomServiceCheck, invalidGateways, setInvalidGateways } = useZoomServiceCheck()
-  const [loading, setLoading] = useState(false)
-  const [meetingGateway, setMeetingGateWay] = useState<'zoom' | 'jitsi'>()
+  const { getAvailableGatewayServiceId, getValidGatewaysWithinTimeRange, invalidGateways, setInvalidGateways } =
+    useMeetingServiceCheck()
+  const { services } = useService()
+  const [meetingGateway, setMeetingGateWay] = useState<MeetingGateway>()
   const [hasMeeting, setHasMeeting] = useState(!!memberTask?.meetingGateway || memberTask?.hasMeeting || false)
 
   const handleSubmit = async (onSuccess?: () => void) => {
@@ -171,9 +178,16 @@ const MemberTaskAdminModal: React.FC<
           endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
         })
 
-        if (enabledModules.meet_service && formMeetingGateway === 'zoom' && changeMeetingCondition) {
-          const availableZoomServiceId = await zoomServiceCheck({ overlapMeets })
-          toBeUsedServiceId = availableZoomServiceId
+        if (
+          enabledModules.meet_service &&
+          changeMeetingCondition &&
+          (formMeetingGateway === 'zoom' || formMeetingGateway === 'google-meet')
+        ) {
+          toBeUsedServiceId = await getAvailableGatewayServiceId({
+            gateway: formMeetingGateway,
+            startedAt: formDueAt.toDate(),
+            endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate(),
+          })
         }
 
         const { message } = checkMeetingMember({
@@ -181,6 +195,7 @@ const MemberTaskAdminModal: React.FC<
           memberTaskId,
           formExecutorId,
           formMemberId,
+          formMeetingGateway,
         })
         if (!!message) {
           return handleError({ message })
@@ -220,13 +235,13 @@ const MemberTaskAdminModal: React.FC<
                 ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
                 nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
                 exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                auto_recording: formMeetingGateway === 'zoom',
+                auto_recording: formMeetingGateway !== 'jitsi',
                 target: memberTaskId ?? insertMemberTaskData?.insert_member_task_one?.id,
                 type: 'memberTask',
                 app_id: appId,
                 host_member_id: formExecutorId,
                 gateway: formMeetingGateway ?? 'jitsi',
-                service_id: formMeetingGateway === 'zoom' ? toBeUsedServiceId : null,
+                service_id: formMeetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
                 options: {},
               },
             },
@@ -286,6 +301,20 @@ const MemberTaskAdminModal: React.FC<
     form.resetFields()
   }
 
+  const handleMeetingGateway = async (currentMeetingGateway: MeetingGateway, startedAt: Date, endedAt: Date) => {
+    const defaultServiceGateways = Array.from(new Set(services.map(service => service.gateway)))
+    const validGateways = await getValidGatewaysWithinTimeRange({ startedAt, endedAt })
+    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+    // const gatewayPriority: MeetingGateway[] = [currentMeetingGateway, 'google-meet', 'zoom', 'jitsi']
+    // const selectedGateway = gatewayPriority.find(gateway => validGateways.includes(gateway)) || 'jitsi'
+    // form.setFieldsValue({ meetingGateway: selectedGateway })
+    setInvalidGateways(
+      defaultServiceGateways.filter(
+        defaultServiceGateway => !validGateways.some(validGateway => validGateway === defaultServiceGateway),
+      ),
+    )
+  }
+
   return (
     <AdminModal
       footer={null}
@@ -304,7 +333,8 @@ const MemberTaskAdminModal: React.FC<
                 window.history.pushState({ path: newUrl }, '', newUrl)
               })
             }
-            disabled={hasMeeting && invalidGateways.includes('zoom') && meetingGateway === 'zoom'}
+            // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+            // disabled={hasMeeting && meetingGateway && invalidGateways.includes(meetingGateway)}
           >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
@@ -369,7 +399,7 @@ const MemberTaskAdminModal: React.FC<
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
           createdAt: memberTask?.createdAt ? moment(memberTask.createdAt) : moment(moment(), 'HH:mm:ss'),
           hasMeeting: memberTask?.hasMeeting || false,
-          meetingGateway: memberTask?.meetingGateway || 'jitsi',
+          meetingGateway: memberTask?.meetingGateway || 'google-meet',
           meetingHours: memberTask?.meetingHours || 1,
           description: memberTask?.description || '',
           isPrivate: memberTask?.isPrivate || false,
@@ -530,13 +560,13 @@ const MemberTaskAdminModal: React.FC<
                 style={{ width: '100%' }}
                 onChange={async () => {
                   const formValues = form.getFieldsValue()
-                  const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
-                  if (hasMeeting && formDueAt && enabledModules.meet_service && memberTask?.meetingGateway !== 'zoom') {
-                    const { overlapMeets } = await getOverlapMeets({
-                      startedAt: formDueAt.toDate().toISOString(),
-                      endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
-                    })
-                    await zoomServiceCheck({ overlapMeets })
+                  const { dueAt: formDueAt, meetingHours: formMeetingHours, meetingGateway } = formValues
+                  if (hasMeeting && formDueAt && enabledModules.meet_service) {
+                    handleMeetingGateway(
+                      meetingGateway,
+                      formDueAt.toDate(),
+                      dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate(),
+                    )
                   }
                 }}
               />
@@ -552,8 +582,19 @@ const MemberTaskAdminModal: React.FC<
         >
           <Checkbox
             style={{ display: 'flex', alignItems: 'center', width: 'fit-content' }}
-            onChange={e => {
+            onChange={async e => {
               setHasMeeting(e.target.checked)
+              const formValues = form.getFieldsValue()
+              const { dueAt: formDueAt, meetingHours: formMeetingHours, meetingGateway } = formValues
+              if (formDueAt) {
+                handleMeetingGateway(
+                  meetingGateway,
+                  formDueAt.toDate(),
+                  dayjs(formDueAt.toDate())
+                    .add(formMeetingHours || 1, 'hour')
+                    .toDate(),
+                )
+              }
             }}
           >
             <Text color="var(--gary-dark)" size="sm">
@@ -567,25 +608,17 @@ const MemberTaskAdminModal: React.FC<
               <Radio.Group>
                 <Stack direction="row">
                   <Radio
+                    value="google-meet"
+                    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+                    // disabled={invalidGateways.includes('google-meet')}
+                    onChange={e => setMeetingGateWay(e.target.value)}
+                  >
+                    Google meet
+                  </Radio>
+                  <Radio
                     value="zoom"
                     disabled={invalidGateways.includes('zoom')}
-                    onChange={async e => {
-                      const formValues = form.getFieldsValue()
-                      const { dueAt: formDueAt, meetingHours: formMeetingHours } = formValues
-                      setMeetingGateWay(e.target.value)
-                      if (
-                        hasMeeting &&
-                        formDueAt &&
-                        enabledModules.meet_service &&
-                        memberTask?.meetingGateway !== 'zoom'
-                      ) {
-                        const { overlapMeets } = await getOverlapMeets({
-                          startedAt: formDueAt.toDate().toISOString(),
-                          endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate().toISOString(),
-                        })
-                        await zoomServiceCheck({ overlapMeets })
-                      }
-                    }}
+                    onChange={e => setMeetingGateWay(e.target.value)}
                   >
                     Zoom
                   </Radio>

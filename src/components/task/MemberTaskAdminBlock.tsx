@@ -25,11 +25,11 @@ import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
-import { useMemberTask, useMemberTaskCollection } from '../../hooks/task'
+import { useMemberTaskCollection } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
-import { StringParam, useQueryParam } from 'use-query-params'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -98,6 +98,17 @@ export const categoryColors: string[] = [
   '#a0a0a7',
 ]
 
+export type FieldFilter = {
+  title?: string
+  categoryIds?: string[]
+  executor?: string
+  author?: string
+  dueAt?: Date[]
+  createdAt?: Date[]
+  status?: MemberTaskProps['status']
+  permissionGroupId?: string
+}
+
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
   localStorageMemberTaskDisplay?: string
@@ -106,18 +117,10 @@ const MemberTaskAdminBlock: React.FC<{
 }> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter, activeMemberTask }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
   const { authToken, currentMember, currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
-  const [filter, setFilter] = useState<{
-    title?: string
-    categoryIds?: string[]
-    executor?: string
-    author?: string
-    dueAt?: Date[]
-    createdAt?: Date[]
-    status?: MemberTaskProps['status']
-  }>(localStorageMemberTaskFilter || {})
+  const [filter, setFilter] = useState<FieldFilter>(localStorageMemberTaskFilter || {})
   const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
 
@@ -242,7 +245,7 @@ const MemberTaskAdminBlock: React.FC<{
       .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
       .replace('MEMBER_NAME', hostMemberName)
 
-    // jitsi or zoom
+    // jitsi or zoom or google-meet
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
       query: GetMeetById,
       variables: { meetId },
@@ -252,8 +255,11 @@ const MemberTaskAdminBlock: React.FC<{
       return message.error('非會議時間')
     }
     let startUrl
-    if (enabledModules.meet_service && data.meet_by_pk?.gateway === 'zoom') {
-      // create zoom meeting than get startUrl
+    if (
+      enabledModules.meet_service &&
+      (data.meet_by_pk?.gateway === 'zoom' || data.meet_by_pk?.gateway === 'google-meet')
+    ) {
+      // create meeting than get startUrl
       try {
         const { data: createMeetData } = await axios.post(
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -264,7 +270,7 @@ const MemberTaskAdminBlock: React.FC<{
             autoRecording: true,
             nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
             expAt: endedAt,
-            service: 'zoom',
+            service: data.meet_by_pk.gateway,
             target: memberTaskId,
             hostMemberId: currentMemberId,
             type: `${data.meet_by_pk?.type}`,
@@ -611,18 +617,41 @@ const MemberTaskAdminBlock: React.FC<{
   return (
     <>
       <div className="d-flex align-item-center justify-content-between mb-4">
-        <MemberTaskAdminModal
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(memberMessages.ui.newTask)}
-            </Button>
+        <div className="d-flex align-item-center flex-wrap">
+          <MemberTaskAdminModal
+            renderTrigger={({ setVisible }) => (
+              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+                {formatMessage(memberMessages.ui.newTask)}
+              </Button>
+            )}
+            title={formatMessage(memberMessages.ui.newTask)}
+            initialMemberId={memberId}
+            initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
+            onRefetch={refetchMemberTasks}
+          />
+          {settings['member_task.permission_group.selector.enabled'] === '1' && (
+            <div style={{ width: '180px', marginLeft: 8 }}>
+              <PermissionGroupSelector
+                single
+                value={filter.permissionGroupId}
+                onChange={value => {
+                  setFilter(filter => ({
+                    ...filter,
+                    permissionGroupId: value,
+                  }))
+                  localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, permissionGroupId: value }))
+                }}
+                onClear={() => {
+                  setFilter(filter => ({
+                    ...filter,
+                    permissionGroupId: undefined,
+                  }))
+                  localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, permissionGroupId: undefined }))
+                }}
+              />
+            </div>
           )}
-          title={formatMessage(memberMessages.ui.newTask)}
-          initialMemberId={memberId}
-          initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
-          onRefetch={refetchMemberTasks}
-        />
-
+        </div>
         {currentMember && jitsiModalVisible && (
           <JitsiDemoModal
             member={meetingMember}

@@ -1,4 +1,5 @@
 import { Skeleton, Tabs } from 'antd'
+import MemberEventCalendarBlock from 'lodestar-app-element/src/components/event/MemberEventCalendarBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -16,6 +17,13 @@ import MemberNoteAdminBlock from '../../components/note/MemberNoteAdminBlock'
 import SaleCollectionAdminCard from '../../components/sale/SaleCollectionAdminCard'
 import MemberTaskCollectionBlock from '../../components/task/MemberTaskCollectionBlock'
 import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdminBlock'
+import {
+  createEventAndInviteResourceFetcher,
+  createResourceFetcher,
+  deleteEvent,
+  getResourceEventsFethcer,
+  updateEvent,
+} from '../../helpers/eventFetchers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
@@ -23,7 +31,7 @@ import MemberHistoryAdminBlock from './MemberHistoryAdminBlock'
 
 const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { permissions, currentUserRole } = useAuth()
+  const { permissions, currentUserRole, authToken } = useAuth()
   const { memberId } = useParams<{ memberId: string }>()
   const { enabledModules } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
@@ -31,7 +39,6 @@ const MemberAdminPage: React.FC = () => {
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
   }
-
   return (
     <MemberAdminLayout
       member={memberAdmin}
@@ -58,6 +65,20 @@ const MemberAdminPage: React.FC = () => {
         enabledModules.member_note && (permissions.MEMBER_NOTE_ADMIN || permissions.VIEW_ALL_MEMBER_NOTE) && (
           <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
             <MemberNoteAdminBlock memberId={memberId} />
+          </Tabs.TabPane>
+        ),
+        enabledModules.event_arrangement && (
+          <Tabs.TabPane key="event" tab={formatMessage(memberMessages.label.event)}>
+            <div className="p-5">
+              <MemberEventCalendarBlock
+                memberId={memberId}
+                createResourceFetcher={createResourceFetcher(authToken as string)}
+                resourceEventsFetcher={getResourceEventsFethcer(authToken as string)}
+                createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)}
+                updateResourceEventFetcher={updateEvent(authToken as string)}
+                deleteResourceEventFetcher={deleteEvent(authToken as string)}
+              />
+            </div>
           </Tabs.TabPane>
         ),
         enabledModules.member_task && (

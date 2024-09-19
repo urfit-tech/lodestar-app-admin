@@ -47,8 +47,7 @@ const MemberProfileBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole, permissions } = useAuth()
-  const { enabledModules, settings } = useApp()
-
+  const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
     hasura.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -136,7 +135,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [],
+        phones: memberAdmin.phones.length ? memberAdmin.phones.map(phone => phone.phoneNumber) : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,

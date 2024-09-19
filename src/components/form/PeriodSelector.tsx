@@ -4,7 +4,6 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 
-
 const defaultOptions: PeriodType[] = ['D', 'W', 'M', 'Y']
 
 const PeriodSelector: React.FC<{
