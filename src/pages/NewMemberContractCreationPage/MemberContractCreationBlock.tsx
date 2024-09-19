@@ -5,6 +5,7 @@ import { FormInstance } from 'antd/lib/form'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import moment from 'moment'
 import { sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -289,48 +290,48 @@ const MemberContractCreationBlock: React.FC<{
     }
     setLoading(true)
 
-    // if (isContract) {
-    //   addMemberContract({
-    //     variables: {
-    //       memberId: member.id,
-    //       contractId: fieldValue.contractId,
-    //       startedAt: moment(fieldValue.startedAt).add(1, 'days'),
-    //       endedAt: fieldValue.endedAt,
-    //       authorId: fieldValue.executorId,
-    //       values: {
-    //         memberId: member.id,
-    //         invoice: invoiceInfo,
-    //         price: totalPrice,
-    //         orderProducts: selectedProducts.map(v => {
-    //           return {
-    //             name: v.title,
-    //             price: v.price,
-    //             totalPrice: v.totalPrice,
-    //             started_at: moment(fieldValue.startedAt).add(1, 'days'),
-    //             ended_at: fieldValue.endedAt,
-    //             product_id: v.productId,
-    //             options: { quantity: v.amount, ...v.options },
-    //             delivered_at: new Date(),
-    //           }
-    //         }),
-    //         paymentOptions,
-    //         maxLeaveDays: Math.ceil(
-    //           selectedProducts
-    //             .filter(p => p.productId.includes('AppointmentPlan_'))
-    //             .reduce((sum, product) => sum + product.amount, 0) * 0.1,
-    //         ),
-    //         options,
-    //       },
-    //     },
-    //   })
-    //     .then(({ data }) => {
-    //       const contractId = data?.insert_member_contract_one?.id
-    //       setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
-    //       message.success('成功產生合約')
-    //     })
-    //     .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
-    //     .finally(() => setLoading(false))
-    // }
+    if (isContract) {
+      addMemberContract({
+        variables: {
+          memberId: member.id,
+          contractId: fieldValue.contractId,
+          startedAt: moment(fieldValue.startedAt).add(1, 'days'),
+          endedAt: fieldValue.endedAt,
+          authorId: fieldValue.executorId,
+          values: {
+            memberId: member.id,
+            invoice: invoiceInfo,
+            price: totalPrice,
+            orderProducts: selectedProducts.map(v => {
+              return {
+                name: v.title,
+                price: v.price,
+                totalPrice: v.totalPrice,
+                started_at: moment(fieldValue.startedAt).add(1, 'days'),
+                ended_at: fieldValue.endedAt,
+                product_id: v.productId,
+                options: { quantity: v.amount, ...v.options },
+                delivered_at: new Date(),
+              }
+            }),
+            paymentOptions,
+            maxLeaveDays: Math.ceil(
+              selectedProducts
+                .filter(p => p.productId.includes('AppointmentPlan_'))
+                .reduce((sum, product) => sum + product.amount, 0) * 0.1,
+            ),
+            options,
+          },
+        },
+      })
+        .then(({ data }) => {
+          const contractId = data?.insert_member_contract_one?.id
+          setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+          message.success('成功產生合約')
+        })
+        .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
+        .finally(() => setLoading(false))
+    }
     let productOptions: { [key: string]: any } = {}
 
     selectedProducts.forEach(p => {
