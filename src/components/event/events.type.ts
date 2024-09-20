@@ -1,6 +1,7 @@
 import { pipe, props, all, complement, isNil } from 'ramda'
 import { RRule } from "rrule"
 import { EventApi } from "@fullcalendar/core"
+import { FetchedResource, ResourceGroup } from '../../helpers/eventHelper/eventFetcher.type'
 
 type EventBase = Partial<EventApi> & { start: Date, end: Date }
 
@@ -26,10 +27,17 @@ export type TemporallyExclusiveResource = {
     id: string
 } & Record<string, any>
 
-export type ResourceEventsFetcher = (startUntil: {
+type StartUntil = {
     startedAt: Date
     until: Date
-}) => {
-    resources: Array<TemporallyExclusiveResource>
-    resourceEvents: Array<Partial<EventApi>>
 }
+
+type ResourcesWithEvents = {
+    resources: Array<FetchedResource>
+    resourceEvents: Array<Partial<GeneralEventApi>>
+}
+
+export type ResourceGroupsWithEvents = ResourcesWithEvents & { resourceGroups: Array<ResourceGroup> }
+
+export type ResourceEventsFetcher = (startUntil: StartUntil) => ResourcesWithEvents
+export type ResourceGroupEventsFetcher = (startUntil: StartUntil) => ResourceGroupsWithEvents

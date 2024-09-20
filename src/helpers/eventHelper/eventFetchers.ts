@@ -1,15 +1,15 @@
 import {
-    curry, pipeWith, andThen, pluck,
-    tap, evolve, invoker, pipe, map,
-    identity, mapObjIndexed, values, mergeLeft
+    curry, pipeWith, andThen, pluck, props, append, filter,
+    tap, evolve, invoker, pipe, map, apply, useWith, isNotEmpty,
+    identity, mapObjIndexed, values, mergeLeft, converge, chain, flatten
 } from 'ramda'
 import axios, { AxiosRequestConfig } from "axios";
 import {
-    ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent,
+    ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent, ResourceGroup,
 } from './eventFetcher.type';
 import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
 import { adaptedEventPayload, adaptFetchedResourceEvent } from './eventAdaptor'
-import { GeneralEventApi } from '../../components/event/events.type';
+import { GeneralEventApi, ResourceGroupsWithEvents } from '../../components/event/events.type';
 
 const authedConfig: (authToken: string) => (config: AxiosRequestConfig) => AxiosRequestConfig
     = authToken => mergeLeft({ headers: { Authorization: `Bearer ${authToken}` } })
@@ -38,33 +38,6 @@ export const getResourceByTypeTargetFetcher = curry<
             targets,
             authedConfig(authToken)({})
         )).data
-    }
-)
-
-export const getResourcesByPermissionGroups = curry(
-    async (
-        authToken: string,
-        permissionGroups: Array<string>,
-        type: 'physical_space' | 'member',
-        properties?: Array<string> | undefined
-    ) => {
-        const query = pipe(
-            evolve({
-                permissionGroups: invoker(1, 'join')(','),
-                properties: v => v ? invoker(1, 'join')(',') : v
-            }) as (obj: { type: string, properties: Array<string> | undefined, permissionGroups: Array<string> | undefined }) => { type: string, properties: string, permissionGroups: string },
-            renameKey({
-                ids: 'permissionGroups'
-            }) as (obj: { type: string, properties: string, permissionGroups: string }) => ({ type: string, properties: string, ids: string }),
-            mapObjIndexed((value, key) => value ? `${key}=${value}` : ''),
-            values as (obj: { type: string, properties: string, ids: string }) => Array<string>,
-            invoker(1, 'join')('&')
-        )({ type, permissionGroups, properties })
-
-        return (await axios.get(
-            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/permission-group?${query}`,
-            authedConfig(authToken)({})
-        )).data as Array<FetchedResource>
     }
 )
 
@@ -117,6 +90,88 @@ export const getDefaultResourceEventsFethcer = curry(
         }
     }
 )
+
+export const getResourcesByPermissionGroups = curry(
+    async (
+        authToken: string,
+        permissionGroups: Array<string>,
+        type: 'physical_space' | 'member',
+        properties?: Array<string> | undefined
+    ) => {
+        const query = pipe(
+            evolve({
+                permissionGroups: invoker(1, 'join')(','),
+                properties: v => { console.log(v); return v ? invoker(1, 'join')(',') : v }
+            }),
+            renameKey({
+                ids: 'permissionGroups'
+            }),
+            mapObjIndexed((value, key) => value ? `${key}=${value}` : ''),
+            values,
+            filter(isNotEmpty),
+            invoker(1, 'join')('&')
+        )({ type, permissionGroups, properties })
+
+        return (await axios.get(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/permission-group?${query}`,
+            authedConfig(authToken)({})
+        )).data as Array<ResourceGroupsWithEvents>
+    }
+)
+
+export const getResourceGroup: (authToken: string) => Promise<Array<ResourceGroup>>
+    = async authToken => {
+        return await [
+            {
+                "name": "instructor",
+                "type": "member",
+                "permission_group_id": "6e34cf8f-4668-4d9d-94bc-bbf76212ace8",
+                "default_label": "教師"
+            },
+            {
+                "name": "classroom",
+                "type": "physical_space",
+                "permission_group_id": "6e34cf8f-4668-4d9d-94bc-bbf76212ace8",
+                "default_label": "教室"
+            }
+        ]
+    }
+
+export const getInvitedResourceEventsFetcher =
+    curry<
+        (authToken: string, startUntil: { startedAt: Date, until: Date }) =>
+            Promise<{
+                resourceGroups: Array<ResourceGroup>,
+                resources: Array<EventResource>,
+                resourceEvents: Array<FetchedResourceEvent>
+            }>
+    >(async (authToken, startUntil) => {
+        const resourceGroups = await getResourceGroup(authToken)
+
+        const rawResources = await Promise.all(map(pipe<
+            [ResourceGroup],
+            ResourceGroup & { permission_group_id: Array<string> },
+            Array<[Array<string>, string]>,
+            Array<[Array<string>, string, undefined]>,
+            Promise<Array<ResourceGroupsWithEvents>>,
+            Array<ResourceGroupsWithEvents>
+        >(
+            evolve({ permission_group_id: v => [v] }) as any,
+            props(['permission_group_id', 'type']) as any,
+            append(undefined) as any,
+            apply(getResourcesByPermissionGroups(authToken)) as any,
+            andThen(identity) as any,
+        ))(resourceGroups))
+        const resources = flatten(rawResources)
+
+        const resourceEvents = await pipe(
+            pluck('temporally_exclusive_resource_id'),
+            getEventsByResourceFetcher(authToken)(startUntil) as any,
+            andThen(map(adaptFetchedResourceEvent))
+        )(resources as any) as any
+
+        return { resourceGroups, resources, resourceEvents } as any
+    })
 
 export const createEventFetcher = curry(
     async (authToken: string, app_id: string, payload: { events: Array<GeneralEventApi> }) => {

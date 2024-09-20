@@ -1,10 +1,14 @@
 export type ResourceType = 'member' | 'physical_space'
 
 export type FetchedResource = {
-    id: string,
+    temporally_exclusive_resource_id: string,
     type: ResourceType,
-    target: string,
-    appId: string
+    id: string,
+    permission_group_ids: Array<string>,
+    name: string,
+    email?: string,
+    capacity?: number
+
 }
 
 export type EventRequest = {
@@ -74,6 +78,13 @@ export type FetchedResourceEvent = {
             source_target?: undefined
         }
     )
+
+export type ResourceGroup = {
+    name: string,
+    type: string,
+    permission_group_id: string,
+    default_label: string
+}
 
 export type Resource = {
     id: string

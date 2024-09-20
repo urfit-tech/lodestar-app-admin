@@ -17,22 +17,42 @@ import {
   ModalOverlay,
   Select,
   Textarea,
+  useToast,
 } from '@chakra-ui/react'
 import { FetchButton } from 'lodestar-app-element/src/components/buttons/FetchButton'
 import moment from 'moment'
-import { all, curry, defaultTo, filter, ifElse, isNotNil, map, path, Path, pickAll, pipe, prop } from 'ramda'
-import { useState } from 'react'
+import {
+  all,
+  curry,
+  defaultTo,
+  evolve,
+  ifElse,
+  isNotNil,
+  join,
+  map,
+  path,
+  Path,
+  pickAll,
+  pipe,
+  prop,
+  props,
+} from 'ramda'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Frequency, Options, RRule, Weekday, WeekdayStr } from 'rrule'
 import useSWRMutation from 'swr/mutation'
-import { EventApiWithRRule, GeneralEventApi, isEventApiWithRRule } from '../../components/event/events.type'
-import { dateToWeekday, getSafeRrule } from '../../helpers/eventHelper/eventAdaptor'
-import { Resource } from '../../helpers/eventHelper/eventFetcher.type'
+import {
+  EventApiWithRRule,
+  GeneralEventApi,
+  isEventApiWithRRule,
+  ResourceGroupsWithEvents,
+} from '../../components/event/events.type'
+import { dateToWeekday, getAvailableEvents, getSafeRrule } from '../../helpers/eventHelper/eventAdaptor'
+import { FetchedResource, Resource } from '../../helpers/eventHelper/eventFetcher.type'
 import { commonMessages } from '../../helpers/translation'
 import { DateRanges } from './DateRanges'
 
 const MemberEventAdminModal: React.FC<{
-  memberId: string
   defaultResource: Resource
   isOpen: boolean
   onClose: () => void
@@ -42,9 +62,13 @@ const MemberEventAdminModal: React.FC<{
   createResourceEventFetcher: (payload: { events: Array<GeneralEventApi>; invitedResource: Array<any> }) => any
   updateResourceEventFetcher: (payload: GeneralEventApi) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
-  availableDateRanges: DateRanges
+  availableDateRangesForDefaultResource: DateRanges
+  focusedResource: FetchedResource | undefined
+  setFocusedResource: Dispatch<SetStateAction<FetchedResource | undefined>>
+  defaultResourceEvents: any
+  focusedInvitedResourceEvents: ResourceGroupsWithEvents | undefined
+  invitedResourceEvents: any
 }> = ({
-  memberId,
   defaultResource,
   isOpen,
   onClose,
@@ -54,9 +78,14 @@ const MemberEventAdminModal: React.FC<{
   createResourceEventFetcher,
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
-  availableDateRanges,
+  availableDateRangesForDefaultResource,
+  focusedResource,
+  setFocusedResource,
+  defaultResourceEvents,
+  focusedInvitedResourceEvents,
+  invitedResourceEvents,
 }) => {
-  console.log(79, focusedEvent)
+  console.log('focuedEvent', focusedEvent)
 
   const { formatMessage } = useIntl()
 
@@ -185,6 +214,7 @@ const MemberEventAdminModal: React.FC<{
     : {}
 
   const eventPayload: GeneralEventApi = {
+    id: focusedEvent?.id,
     start,
     end,
     title,
@@ -198,22 +228,86 @@ const MemberEventAdminModal: React.FC<{
     ...rrule,
   }
 
-  console.log(229, eventPayload)
+  console.log(210, eventPayload)
 
-  const invitedResource = pipe(
-    filter((resource: Resource) => resource.target === memberId),
-    map((resource: Resource) => ({
-      temporally_exclusive_resource_id: resource.id,
-      role: role,
-    })),
-  )(defaultResource)
+  const invitedResource = {
+    temporally_exclusive_resource_id: focusedResource?.temporally_exclusive_resource_id,
+    role: 'host',
+  }
 
-  const getUnavailableDateRange = () =>
+  const getUnavailableDateRange = (occupiedDateRanges: DateRanges, deprivedDateRanges: DateRanges) =>
     DateRanges.parseFromEvents([
       { ...eventPayload, duration: moment(eventPayload.end).diff(moment(eventPayload.start)).valueOf() } as any,
-    ]).deprive(availableDateRanges)
+    ])
+      .deprive(occupiedDateRanges)
+      .deprive(deprivedDateRanges)
+      .filter(isNotNil)
 
-  console.log(`unavailable daterange:`, getUnavailableDateRange().stringify())
+  const notAvailableDateRangesForDefaultResource = pipe(
+    getAvailableEvents,
+    DateRanges.parseFromEvents,
+  )(defaultResourceEvents)
+
+  const unavailableDateRangeForDefaultResource = getUnavailableDateRange(
+    notAvailableDateRangesForDefaultResource,
+    availableDateRangesForDefaultResource,
+  )
+
+  const availableDateRangesForInvitedResource = pipe(
+    getAvailableEvents,
+    DateRanges.parseFromEvents,
+    DateRanges.merge,
+  )(focusedInvitedResourceEvents as any)
+
+  const notAvailableDateRangesForInvitedResource = pipe(
+    getAvailableEvents,
+    DateRanges.parseFromEvents,
+  )(focusedInvitedResourceEvents as any)
+
+  const unavailableDateRangeForInvitedResource = getUnavailableDateRange(
+    notAvailableDateRangesForInvitedResource,
+    availableDateRangesForInvitedResource,
+  )
+
+  const prettifyDate = (date: Date) => moment(date).format('YYYY-MM-DD HH:mm')
+  const prettifyDateRanges = pipe(
+    map(pipe(evolve({ start: prettifyDate, end: prettifyDate }) as any, props(['start', 'end']), join(' ~ ')) as any),
+    join('\n'),
+  )
+
+  const toast = useToast()
+
+  if (unavailableDateRangeForDefaultResource.length + unavailableDateRangeForInvitedResource.length > 0) {
+    toast({
+      title: '時間衝突',
+      description: (
+        <>
+          <p>
+            {unavailableDateRangeForDefaultResource.length > 0
+              ? `學員時間衝突：\n${prettifyDateRanges(unavailableDateRangeForDefaultResource)}`
+              : ''}
+          </p>
+          <p>
+            {unavailableDateRangeForInvitedResource.length > 0
+              ? `講師時間衝突：\n${prettifyDateRanges(unavailableDateRangeForInvitedResource)}`
+              : ``}
+          </p>
+        </>
+      ),
+      status: 'error',
+      duration: 9000,
+      isClosable: true,
+    })
+  }
+  console.log(281, unavailableDateRangeForDefaultResource, unavailableDateRangeForInvitedResource)
+  console.log(
+    unavailableDateRangeForDefaultResource.length > 0
+      ? `學員時間衝突：\n${prettifyDateRanges(unavailableDateRangeForDefaultResource)}\n`
+      : ``,
+    unavailableDateRangeForInvitedResource.length > 0
+      ? `講師時間衝突：\n${prettifyDateRanges(unavailableDateRangeForInvitedResource)}`
+      : ``,
+  )
 
   const { trigger: createEventAndInviteResource } = useSWRMutation(
     [eventPayload, invitedResource],
@@ -294,34 +388,71 @@ const MemberEventAdminModal: React.FC<{
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
+          {role === 'available' ? (
+            <></>
+          ) : (
+            <>
+              <p>Instructor</p>
+              <Select
+                placeholder="教師"
+                defaultValue={focusedResource?.temporally_exclusive_resource_id}
+                value={focusedResource?.temporally_exclusive_resource_id}
+                onChange={e =>
+                  setFocusedResource(
+                    invitedResourceEvents?.resources
+                      ? invitedResourceEvents?.resources?.filter(
+                          (resource: FetchedResource) => resource.temporally_exclusive_resource_id === e.target.value,
+                        )[0]
+                      : undefined,
+                  )
+                }
+              >
+                {invitedResourceEvents?.resources ? (
+                  invitedResourceEvents?.resources
+                    .filter((resource: FetchedResource) => resource.type === 'member')
+                    .map((resource: any) => (
+                      <option value={resource.temporally_exclusive_resource_id}>{resource.name}</option>
+                    ))
+                ) : (
+                  <></>
+                )}
+              </Select>
+            </>
+          )}
         </ModalBody>
 
-        <ModalFooter>
-          <FetchButton
-            fetcher={focusedEvent.id ? updateEvent : createEventAndInviteResource}
-            afterFetch={() => {
-              onClose()
-              refetchResourceEvents()
-            }}
-            colorScheme={'blue'}
-          >
-            {focusedEvent.id ? formatMessage(commonMessages.ui.modify) : formatMessage(commonMessages.ui.add)}
-          </FetchButton>
-          {focusedEvent.id ? (
+        {unavailableDateRangeForDefaultResource.length + unavailableDateRangeForInvitedResource.length === 0 ? (
+          <ModalFooter>
             <FetchButton
-              fetcher={deleteEvent}
+              fetcher={focusedEvent?.extendedProps?.event_id ? updateEvent : createEventAndInviteResource}
               afterFetch={() => {
                 onClose()
                 refetchResourceEvents()
               }}
-              colorScheme={'red'}
+              colorScheme={'blue'}
             >
-              {formatMessage(commonMessages.ui.delete)}
+              {focusedEvent?.extendedProps?.event_id
+                ? formatMessage(commonMessages.ui.modify)
+                : formatMessage(commonMessages.ui.add)}
             </FetchButton>
-          ) : (
-            <></>
-          )}
-        </ModalFooter>
+            {focusedEvent?.extendedProps?.event_id ? (
+              <FetchButton
+                fetcher={deleteEvent}
+                afterFetch={() => {
+                  onClose()
+                  refetchResourceEvents()
+                }}
+                colorScheme={'red'}
+              >
+                {formatMessage(commonMessages.ui.delete)}
+              </FetchButton>
+            ) : (
+              <></>
+            )}
+          </ModalFooter>
+        ) : (
+          <></>
+        )}
       </ModalContent>
     </Modal>
   )
