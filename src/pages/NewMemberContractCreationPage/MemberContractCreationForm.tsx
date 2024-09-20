@@ -197,7 +197,7 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
       },
       {
         title: '活動',
-        projects: [{ title: '移地教學' }, { title: '其他' }],
+        projects: [{ title: '移地教學' }, { title: '自訂' }],
       },
       {
         title: '其他',
@@ -390,6 +390,7 @@ const MemberContractCreationForm: React.FC<
     removeInstallment: (index: number) => void
     member: ContractInfo['member']
     isMemberTypeBG: boolean
+    isMemberZeroTax: boolean
   }
 > = memo(
   ({
@@ -407,6 +408,7 @@ const MemberContractCreationForm: React.FC<
     member,
     removeInstallment,
     isMemberTypeBG,
+    isMemberZeroTax,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
@@ -478,9 +480,14 @@ const MemberContractCreationForm: React.FC<
     const [customTotalPrice, setCustomTotalPrice] = useState(0)
     const [newProductName, setNewProductName] = useState('')
     const [loading, setLoading] = useState(false)
+    const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
 
     const filterProducts = useMemo(() => {
       return products.filter(product => {
+        if (category.project?.includes('自訂')) {
+          return true
+        }
+
         if (category.product === '學費' && category.programType === '自訂項目') {
           return true
         }
@@ -557,6 +564,11 @@ const MemberContractCreationForm: React.FC<
     }, [category, weeklyBatch, totalAmount, products])
 
     const selectedProduct = filterProducts.find(p => p.title === category.name)
+    useEffect(() => {
+      isMemberZeroTax &&
+        !['註冊費', '學費'].includes(category.product) &&
+        setZeroTaxPrice(Math.round((customTotalPrice || customPrice || selectedProduct?.price || 0) / 1.05))
+    }, [customPrice, isMemberZeroTax, selectedProduct?.price, customTotalPrice, category])
 
     console.log({ category })
     console.log({ products })
@@ -617,6 +629,8 @@ const MemberContractCreationForm: React.FC<
               )
               setNewProductName('')
               setCustomPrice(0)
+              setCustomTotalPrice(0)
+              setZeroTaxPrice(0)
             }}
           >
             {CUSTOM_PRODUCT_OPTIONS_CONFIG.map((k, index) => (
@@ -670,6 +684,8 @@ const MemberContractCreationForm: React.FC<
                           )
                           setNewProductName('')
                           setCustomPrice(0)
+                          setCustomTotalPrice(0)
+                          setZeroTaxPrice(0)
                         }}
                       >
                         {v.title}
@@ -938,6 +954,9 @@ const MemberContractCreationForm: React.FC<
                                   name: value.toString(),
                                 })
                                 setCustomPrice(calculateMinPrice(category, weeklyBatch, totalAmount))
+                                setCustomPrice(0)
+                                setCustomTotalPrice(0)
+                                setZeroTaxPrice(0)
                               }}
                             >
                               {uniqBy(prop('title'), filterProducts).map((d: { title: string }) => (
@@ -1083,7 +1102,9 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {selectedProduct?.options.isCustomPrice || isMemberTypeBG ? (
+                          {selectedProduct?.options.isCustomPrice ||
+                          isMemberTypeBG ||
+                          category.project?.includes('自訂') ? (
                             <InputNumber
                               min={0}
                               value={customPrice}
@@ -1097,11 +1118,22 @@ const MemberContractCreationForm: React.FC<
                             </div>
                           )}
                         </div>
+                        {isMemberZeroTax && (
+                          <div style={{ whiteSpace: 'nowrap', width: 110, marginLeft: 12 }}>
+                            <div>零稅價</div>
+                            <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>{zeroTaxPrice}</div>
+                          </div>
+                        )}
                       </div>
                     )}
 
                     <Button
-                      disabled={(!isMemberTypeBG && (filterProducts.length === 0 || !selectedProduct)) || loading}
+                      disabled={
+                        (!isMemberTypeBG &&
+                          !category.project?.includes('自訂') &&
+                          (filterProducts.length === 0 || !selectedProduct)) ||
+                        loading
+                      }
                       loading={loading}
                       onClick={() => {
                         if (category.programType === '自訂項目' || category.project?.includes('自訂')) {
@@ -1150,8 +1182,8 @@ const MemberContractCreationForm: React.FC<
                                 onChangeSelectedProducts({
                                   id,
                                   amount: totalAmount,
-                                  price: customPrice,
-                                  totalPrice: customPrice * totalAmount,
+                                  price: zeroTaxPrice || customPrice,
+                                  totalPrice: (zeroTaxPrice || customPrice) * totalAmount,
                                   productId,
                                   title: newProductName,
                                   options:
@@ -1206,8 +1238,8 @@ const MemberContractCreationForm: React.FC<
                                 onChangeSelectedProducts({
                                   id,
                                   amount: category.product === '學費' ? totalAmount : 1,
-                                  price: customPrice,
-                                  totalPrice: customPrice * 1,
+                                  price: zeroTaxPrice || customPrice,
+                                  totalPrice: (zeroTaxPrice || customPrice) * 1,
                                   productId,
                                   title: newProductName,
                                   options: {
@@ -1232,8 +1264,18 @@ const MemberContractCreationForm: React.FC<
                           onChangeSelectedProducts({
                             id: selectedProduct.id,
                             amount: category.product === '學費' ? totalAmount : 1,
-                            price: customTotalPrice ? customTotalPrice : price,
-                            totalPrice: customTotalPrice
+                            price: zeroTaxPrice
+                              ? category.product === '學費'
+                                ? Math.round((zeroTaxPrice / totalAmount) * 100) / 100
+                                : zeroTaxPrice
+                              : customTotalPrice
+                              ? category.product === '學費'
+                                ? Math.round((customTotalPrice / totalAmount) * 100) / 100
+                                : customTotalPrice
+                              : price,
+                            totalPrice: zeroTaxPrice
+                              ? zeroTaxPrice
+                              : customTotalPrice
                               ? customTotalPrice
                               : category.language === '中文' &&
                                 category.programType === '套裝項目' &&
