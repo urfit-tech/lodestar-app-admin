@@ -10,7 +10,6 @@ const MemberDescriptionBlock: React.FC<{
 }> = memo(
   ({ memberBlockRef, member }) => {
     const memberTypeProperty = member.properties.find(p => p.name === '會員類型')
-
     const defaultMemberType = memberTypeProperty?.value || ''
     const memberTypeOptions = memberTypeProperty?.placeholder.split('/') || []
     const [memberType, setMemberType] = React.useState(defaultMemberType)
@@ -18,6 +17,11 @@ const MemberDescriptionBlock: React.FC<{
     const commentProperty = member.properties.find(p => p.name === '付款備註')
     const defaultComment = commentProperty?.value || ''
     const [comment, setComment] = React.useState(defaultComment)
+
+    const isMemberZeroTaxProperty = member.properties.find(p => p.name === '是否零稅')
+    const defaultIsMemberZeroTax = isMemberZeroTaxProperty?.value || ''
+    const IsMemberZeroTaxOptions = isMemberZeroTaxProperty?.placeholder.split('/') || []
+    const [isMemberZeroTax, setIsMemberZeroTax] = React.useState(defaultIsMemberZeroTax)
     const [loading, setLoading] = useState(false)
 
     const [upsertMemberProperty] = useMutation<hasura.UpsertMemberProperty, hasura.UpsertMemberPropertyVariables>(gql`
@@ -52,6 +56,19 @@ const MemberDescriptionBlock: React.FC<{
               ))}
             </Select>
           </Descriptions.Item>
+          <Descriptions.Item label="是否零稅">
+            <Select
+              style={{ width: '100%' }}
+              defaultValue={isMemberZeroTax}
+              onChange={value => {
+                setIsMemberZeroTax(value)
+              }}
+            >
+              {IsMemberZeroTaxOptions.map(p => (
+                <Select.Option value={p}>{p}</Select.Option>
+              ))}
+            </Select>
+          </Descriptions.Item>
         </Descriptions>
         <Button className="mr-2" onClick={() => setComment(defaultComment)}>
           取消
@@ -79,6 +96,16 @@ const MemberDescriptionBlock: React.FC<{
                       value: memberType,
                       member_id: member.id,
                       property_id: memberTypeProperty.id,
+                    },
+                  },
+                }))
+              isMemberZeroTaxProperty &&
+                (await upsertMemberProperty({
+                  variables: {
+                    data: {
+                      value: isMemberZeroTax,
+                      member_id: member.id,
+                      property_id: isMemberZeroTaxProperty.id,
                     },
                   },
                 }))

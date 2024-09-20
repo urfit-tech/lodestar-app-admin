@@ -153,6 +153,8 @@ const MemberContractCreationPage: React.VFC = () => {
   const { member, contracts } = info
   const memberType = member.properties.find(p => p.name === '會員類型')?.value
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
+  const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
+  const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
 
   console.log({ selectedProducts })
 
@@ -218,6 +220,7 @@ const MemberContractCreationPage: React.VFC = () => {
             removeInstallment={removeInstallment}
             member={member}
             isMemberTypeBG={isMemberTypeBG}
+            isMemberZeroTax={isMemberZeroTax}
           />
 
           <MemberContractCreationBlock
