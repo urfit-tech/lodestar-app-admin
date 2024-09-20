@@ -1,5 +1,4 @@
 import { Skeleton, Tabs } from 'antd'
-import MemberEventCalendarBlock from 'lodestar-app-element/src/components/event/MemberEventCalendarBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -9,6 +8,7 @@ import { AdminBlock, AdminBlockTitle } from '../../components/admin'
 import MemberCoinAdminBlock from '../../components/coin/MemberCoinAdminBlock'
 import MemberContractAdminBlock from '../../components/contract/MemberContractAdminBlock'
 import MemberCouponAdminBlock from '../../components/coupon/MemberCouponAdminBlock'
+import MemberEventCalendarBlock from '../../components/event/MemberEventCalendarBlock'
 import MemberPermissionForm from '../../components/member/MemberPermissionForm'
 import MemberProfileAbstractForm from '../../components/member/MemberProfileAbstractForm'
 import MemberProfileBasicForm from '../../components/member/MemberProfileBasicForm'
@@ -19,11 +19,11 @@ import MemberTaskCollectionBlock from '../../components/task/MemberTaskCollectio
 import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdminBlock'
 import {
   createEventAndInviteResourceFetcher,
-  createResourceFetcher,
   deleteEvent,
-  getResourceEventsFethcer,
+  getDefaultResourceEventsFethcer,
+  getInvitedResourceEventsFetcher,
   updateEvent,
-} from '../../helpers/eventFetchers'
+} from '../../helpers/eventHelper/eventFetchers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
@@ -33,7 +33,7 @@ const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { permissions, currentUserRole, authToken } = useAuth()
   const { memberId } = useParams<{ memberId: string }>()
-  const { enabledModules } = useApp()
+  const { enabledModules, id: appId } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
@@ -72,9 +72,12 @@ const MemberAdminPage: React.FC = () => {
             <div className="p-5">
               <MemberEventCalendarBlock
                 memberId={memberId}
-                createResourceFetcher={createResourceFetcher(authToken as string)}
-                resourceEventsFetcher={getResourceEventsFethcer(authToken as string)}
-                createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)}
+                defaultResourceEventsFetcher={getDefaultResourceEventsFethcer(authToken as string)({
+                  type: 'member',
+                  targets: [memberId],
+                })}
+                invitedResourceEventsFetcher={getInvitedResourceEventsFetcher(authToken as string)}
+                createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)(appId as string)}
                 updateResourceEventFetcher={updateEvent(authToken as string)}
                 deleteResourceEventFetcher={deleteEvent(authToken as string)}
               />
