@@ -3,7 +3,8 @@ import moment, { Moment } from 'moment'
 import {
   converge, evolve, identity, invoker, map,
   chain, pick, pipe, mergeLeft, prop, pluck, project,
-  tap, values, concat, keys, ifElse, isNil, omit
+  tap, values, concat, keys, ifElse, isNil, omit, filter,
+  path, equals
 } from 'ramda'
 import { RRule, rrulestr, Weekday, WeekdayStr } from 'rrule'
 import { evolveWithSelf, renameKey } from '../../components/event/adaptObject'
@@ -58,6 +59,7 @@ const getDuration: (resourceEvent: FetchedResourceEvent) => number
 
 const getExtendedProps: (resourceEvent: FetchedResourceEvent) => Partial<FetchedResourceEvent>
   = pick<Array<keyof FetchedResourceEvent>>([
+    'event_id',
     'description',
     'event_metadata',
     'temporally_exclusive_resource_id',
@@ -91,18 +93,6 @@ export const adaptFetchedResourceEvent: (event: FetchedResourceEvent) => General
     ) as any,
   )
 
-// const fetchedEventValuesAdaptorMap = {
-//   started_at: moment,
-//   ended_at: moment,
-//   published_at: moment,
-//   event_deleted_at: moment,
-//   rrule: rrulestr,
-//   until: moment,
-// }
-
-// export const adaptEventToModal = evolve(fetchedEventValuesAdaptorMap)
-
-
 const keysMapForEventPayload = {
   started_at: 'start',
   ended_at: 'end',
@@ -133,21 +123,13 @@ export const adaptedEventPayload: (eventPayload: Partial<GeneralEventApi>) => Ev
     omit(['extendedProps']) as any,
   )
 
-//   ({
-//   ...{
-//     title,
-//     description,
-//     started_at: start,
-//     ended_at: end,
-//     // source_type: sourceType,
-//     // source_target: sourceTarget,
-//     metadata,
-//     published_at: publishedAt,
-//   },
-//   ...(rrule
-//     ? {
-//       rrule: rrule.toString(),
-//       until: until,
-//     }
-//     : {}),
-// })
+export const getAvailableEvents: (events: Array<GeneralEventApi>) => Array<GeneralEventApi>
+  = filter(
+    pipe(
+      path(['extendedProps', 'role']) as (event: GeneralEventApi) => string,
+      equals('available')
+    ),
+  )
+
+export const getActiveEvents: (events: Array<GeneralEventApi>) => Array<GeneralEventApi>
+  = filter(pipe(path(['extendedProps', 'event_deleted_at']), isNil))

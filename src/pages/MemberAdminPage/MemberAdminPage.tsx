@@ -21,6 +21,7 @@ import {
   createEventAndInviteResourceFetcher,
   deleteEvent,
   getDefaultResourceEventsFethcer,
+  getInvitedResourceEventsFetcher,
   updateEvent,
 } from '../../helpers/eventHelper/eventFetchers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
@@ -75,6 +76,7 @@ const MemberAdminPage: React.FC = () => {
                   type: 'member',
                   targets: [memberId],
                 })}
+                invitedResourceEventsFetcher={getInvitedResourceEventsFetcher(authToken as string)}
                 createResourceEventFetcher={createEventAndInviteResourceFetcher(authToken as string)(appId as string)}
                 updateResourceEventFetcher={updateEvent(authToken as string)}
                 deleteResourceEventFetcher={deleteEvent(authToken as string)}
