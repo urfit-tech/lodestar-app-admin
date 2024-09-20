@@ -10,7 +10,7 @@ import { sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { ContractInfo, ContractProduct, ContractSales, FieldProps } from '.'
+import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
 import { copyToClipboard } from '../../helpers'
@@ -26,12 +26,12 @@ const MemberContractCreationBlock: React.FC<{
   member: NonNullable<ContractInfo['member']>
   selectedProducts: NonNullable<FieldProps['products']>
   form: FormInstance<FieldProps>
-  products: ContractProduct['products']
   contracts: ContractInfo['contracts']
   installments: { price: number; index: number }[]
   sales: ContractSales['sales']
   isMemberTypeBG: boolean
-}> = ({ member, form, selectedProducts, products, contracts, installments, sales, isMemberTypeBG }) => {
+  isMemberZeroTax: boolean
+}> = ({ member, form, selectedProducts, contracts, installments, sales, isMemberTypeBG, isMemberZeroTax }) => {
   const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -66,35 +66,58 @@ const MemberContractCreationBlock: React.FC<{
   let invoices: InvoiceRequest[] = []
 
   const items = selectedProducts.map(p => {
-    const taxType = ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
+    const taxType = isMemberZeroTax ? '2' : ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
     const name = ['學費', '註冊費'].includes(p.options.product) ? p.options.language + p.options.product : p.title
     return p.options.program_type?.includes('套裝項目')
       ? {
           name,
           count: 1,
           unit: '件',
-          price: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+          price:
+            category === 'B2B'
+              ? taxType === '3' || taxType === '2'
+                ? p.totalPrice
+                : Math.round(p.totalPrice / 1.05)
+              : p.totalPrice,
           taxType,
-          amt: category === 'B2B' ? (taxType === '3' ? p.totalPrice : Math.round(p.totalPrice / 1.05)) : p.totalPrice,
+          amt:
+            category === 'B2B'
+              ? taxType === '3' || taxType === '2'
+                ? p.totalPrice
+                : Math.round(p.totalPrice / 1.05)
+              : p.totalPrice,
         }
       : {
           name,
           count: p.amount,
           unit: '件',
-          price: category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price,
+          price:
+            category === 'B2B' ? (taxType === '3' || taxType === '2' ? p.price : Math.round(p.price / 1.05)) : p.price,
           taxType,
-          amt: p.amount * (category === 'B2B' ? (taxType === '3' ? p.price : Math.round(p.price / 1.05)) : p.price),
+          amt:
+            p.amount *
+            (category === 'B2B'
+              ? taxType === '3' || taxType === '2'
+                ? p.price
+                : Math.round(p.price / 1.05)
+              : p.price),
         }
   })
 
   if (category === 'B2C') {
     // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
-    const taxType = totalPriceWithFreeTax > 0 && totalPriceWithTax > 0 ? '9' : totalPriceWithFreeTax > 0 ? '3' : '1'
-    const taxRate = taxType === '3' ? 0 : 5
+    const taxType = isMemberZeroTax
+      ? '2'
+      : totalPriceWithFreeTax > 0 && totalPriceWithTax > 0
+      ? '9'
+      : totalPriceWithFreeTax > 0
+      ? '3'
+      : '1'
+    const taxRate = taxType === '3' || taxType === '2' ? 0 : 5
     invoices.push({
       TaxType: taxType,
       Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
-      TaxAmt: taxType === '3' ? 0 : tax,
+      TaxAmt: taxType === '3' || taxType === '2' ? 0 : tax,
       TotalAmt: totalPrice,
       TaxRate: taxRate,
       AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
@@ -141,7 +164,7 @@ const MemberContractCreationBlock: React.FC<{
     }
 
     if (totalPriceWithFreeTax > 0) {
-      const filteredItems = items.filter(v => v.taxType === '3')
+      const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
       invoices.push({
         TaxType: '3',
         Amt: totalPriceWithFreeTax,

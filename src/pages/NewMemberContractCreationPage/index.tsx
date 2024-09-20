@@ -226,12 +226,12 @@ const MemberContractCreationPage: React.VFC = () => {
           <MemberContractCreationBlock
             form={form}
             member={member}
-            products={products?.products || []}
             selectedProducts={selectedProducts}
             contracts={contracts}
             installments={installments}
             sales={sales?.sales || []}
             isMemberTypeBG={isMemberTypeBG}
+            isMemberZeroTax={isMemberZeroTax}
           />
         </AdminBlock>
       </div>
