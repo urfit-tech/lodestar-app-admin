@@ -399,8 +399,8 @@ const MemberEventAdminModal: React.FC<{
               <p>Instructor</p>
               <Select
                 placeholder="教師"
-                defaultValue={focusedInvitedResource?.temporally_exclusive_resource_id}
-                value={focusedInvitedResource?.temporally_exclusive_resource_id}
+                defaultValue={focusedEvent.id ? undefined : focusedInvitedResource?.temporally_exclusive_resource_id}
+                value={focusedEvent.id ? undefined : focusedInvitedResource?.temporally_exclusive_resource_id}
                 onChange={e =>
                   setFocusedInvitedResource(
                     invitedResourceEvents?.resources

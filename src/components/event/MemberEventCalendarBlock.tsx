@@ -12,12 +12,7 @@ import useSWRMutation from 'swr/mutation'
 import { FetchedResource } from '../../helpers/eventHelper/eventFetcher.type'
 import { DateRanges } from './DateRanges'
 import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
-import {
-  GeneralEventApi,
-  ResourceEventsFetcher,
-  ResourceGroupEventsFetcher,
-  ResourceGroupsWithEvents,
-} from './events.type'
+import { GeneralEventApi, ResourceEventsFetcher, ResourceGroupEventsFetcher } from './events.type'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
@@ -84,7 +79,7 @@ export const MemberEventCalendarBlock: React.FC<{
   const [duration, setDuration] = useState<number | Duration>(defaultEventDuration)
   const [isRruleOptional, setIsRruleOptional] = useState<boolean>(true)
 
-  const [invitedResourceEvents, setInvitedResourceEvents] = useState<ResourceGroupsWithEvents | undefined>(undefined)
+  // const [invitedResourceEvents, setInvitedResourceEvents] = useState<ResourceGroupsWithEvents | undefined>(undefined)
 
   const handleDateClick = (info: DateClickArg) => {
     pipe<[Date], { start: Date; end: Date }, { start: Date; end: Date }>(
@@ -103,29 +98,27 @@ export const MemberEventCalendarBlock: React.FC<{
     onEventModalOpen()
   }
 
-  const handleResourceClick = (resource: FetchedResource) => {
-    pipe(
-      tap(setFocusedInvitedResource),
-      (resource: any) =>
-        filter(
-          (event: GeneralEventApi) =>
-            event?.extendedProps?.temporally_exclusive_resource_id === resource.temporally_exclusive_resource_id,
-        )(invitedResourceEvents?.resourceEvents as Array<GeneralEventApi>),
-      tap(
-        converge(
-          forEach((event: GeneralEventApi) => (event.display = 'background')),
-          [getAvailableEvents],
-        ),
+  const handleResourceClick: (resource: FetchedResource) => void = pipe(
+    tap(setFocusedInvitedResource),
+    (resource: FetchedResource) =>
+      filter(
+        (event: GeneralEventApi) =>
+          event?.extendedProps?.temporally_exclusive_resource_id === resource?.temporally_exclusive_resource_id,
+      )(fetchedInvitedResourceEvents?.resourceEvents as Array<GeneralEventApi>),
+    tap(
+      converge(
+        forEach((event: GeneralEventApi) => (event.display = 'background')),
+        [getAvailableEvents],
       ),
-      tap(
-        forEach((event: GeneralEventApi) => {
-          event.backgroundColor = 'pink'
-          event.borderColor = 'pink'
-        }),
-      ),
-      tap(setFocusedInvitedResourceEvents),
-    )(resource)
-  }
+    ),
+    tap(
+      forEach((event: GeneralEventApi) => {
+        event.backgroundColor = 'pink'
+        event.borderColor = 'pink'
+      }),
+    ),
+    tap(setFocusedInvitedResourceEvents),
+  )
 
   console.log('focusedInvitedResource', focusedInvitedResource)
 
@@ -155,7 +148,6 @@ export const MemberEventCalendarBlock: React.FC<{
 
   const onEventArrange = async () => {
     await getInvitedResourceEvents()
-    setInvitedResourceEvents(fetchedInvitedResourceEvents)
     setMode('eventArrangement')
   }
 
@@ -254,6 +246,7 @@ export const MemberEventCalendarBlock: React.FC<{
             isRruleOptional={isRruleOptional}
             refetchResourceEvents={refetchDefaultResourceEvents}
             availableDateRangesForDefaultResource={availableDateRangesForDefaultResource}
+            invitedResourceEvents={fetchedInvitedResourceEvents}
             {...{
               createResourceEventFetcher,
               updateResourceEventFetcher,
@@ -262,7 +255,6 @@ export const MemberEventCalendarBlock: React.FC<{
               setFocusedInvitedResource,
               defaultResourceEvents,
               focusedInvitedResourceEvents,
-              invitedResourceEvents,
             }}
           />
         ) : (
