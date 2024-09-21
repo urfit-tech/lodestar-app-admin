@@ -153,19 +153,10 @@ export const MemberEventCalendarBlock: React.FC<{
     DateRanges.merge,
   )(defaultAvailableEvents as any)
 
-  // console.log(
-  //   156,
-  //   availableDateRanges.map(v => v?.toString()),
-  // )
-
-  console.log(125, fetchedInvitedResourceEvents)
-
   const onEventArrange = async () => {
     await getInvitedResourceEvents()
-    if (!isFetchedInvitedResourceEventsLoading) {
-      setMode('eventArrangement')
-      setInvitedResourceEvents(fetchedInvitedResourceEvents)
-    }
+    setInvitedResourceEvents(fetchedInvitedResourceEvents)
+    setMode('eventArrangement')
   }
 
   const onQuitEventArrange = () => {
@@ -176,19 +167,19 @@ export const MemberEventCalendarBlock: React.FC<{
 
   return (
     <Box>
-      {mode === 'default' ? (
-        <Button onClick={onEventArrange}>管理活動</Button>
-      ) : (
+      {mode === 'eventArrangement' ? (
         <Button colorScheme="red" onClick={onQuitEventArrange}>
           退出管理
         </Button>
+      ) : (
+        <Button onClick={onEventArrange}>管理活動</Button>
       )}
       <Flex>
         {mode === 'eventArrangement' ? (
           <>
             <Box w="20%">
               <Flex direction="column" justify="center" align="center">
-                {invitedResourceEvents?.resourceGroups.map((group, idx, arr) => (
+                {fetchedInvitedResourceEvents?.resourceGroups.map((group, idx, arr) => (
                   <>
                     <Spacer />
                     <Box flex={1} w="90%" h="40%" key={group.permission_group_id}>
@@ -199,7 +190,7 @@ export const MemberEventCalendarBlock: React.FC<{
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {invitedResourceEvents.resources
+                          {fetchedInvitedResourceEvents.resources
                             .filter(
                               resource =>
                                 resource?.permission_group_ids?.includes(group.permission_group_id) &&
