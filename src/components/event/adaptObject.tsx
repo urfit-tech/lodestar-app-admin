@@ -1,4 +1,17 @@
-import { converge, curry, evolve, identity, map, mapObjIndexed, mergeRight, omit, pipe, values } from 'ramda'
+import {
+  converge,
+  curry,
+  evolve,
+  identity,
+  ifElse,
+  isNotNil,
+  map,
+  mapObjIndexed,
+  mergeRight,
+  omit,
+  pipe,
+  values,
+} from 'ramda'
 
 const generatePartialWithNewKey =
   <O extends object, OldKey extends keyof O, Key extends keyof object>(keysMap: Record<Key, OldKey>) =>
@@ -19,3 +32,9 @@ export const evolveWithSelf = curry(
   <O extends object, Key extends keyof O>(keyMap: Record<Key, (obj: O) => Function>) =>
     converge(evolve as any, [obj => map((func: Function) => () => func(obj))(keyMap as any) as any, identity]),
 )
+
+export const sealIf = curry<
+  (cond: (...arg: Array<any>) => boolean, fn: (...arg: Array<any>) => any) => (...arg: Array<any>) => any
+>((cond, fn) => ifElse(cond, fn, identity))
+
+export const sealNil = sealIf(isNotNil)
