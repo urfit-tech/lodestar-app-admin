@@ -21,7 +21,6 @@ import {
 import MemberEventAdminModal from './MemberEventAdminModal'
 
 export const MemberEventCalendarBlock: React.FC<{
-  memberId: string
   defaultResourceEventsFetcher: ResourceEventsFetcher
   invitedResourceEventsFetcher: ResourceGroupEventsFetcher
   createResourceEventFetcher: (payload: { events: Array<GeneralEventApi>; invitedResource: Array<any> }) => any
@@ -31,7 +30,6 @@ export const MemberEventCalendarBlock: React.FC<{
   eventPaginationDuration?: Duration
   defaultEventDuration?: Duration
 }> = ({
-  memberId,
   defaultResourceEventsFetcher,
   invitedResourceEventsFetcher,
   createResourceEventFetcher,

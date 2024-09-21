@@ -26,6 +26,7 @@ import {
   curry,
   defaultTo,
   evolve,
+  filter,
   ifElse,
   isNotNil,
   join,
@@ -228,9 +229,13 @@ const MemberEventAdminModal: React.FC<{
 
   console.log(210, eventPayload)
 
+  console.log(231, defaultResource, focusedInvitedResource)
   const rawInvitedResources = [defaultResource, sealNil(mergeLeft({ role: 'host' }))(focusedInvitedResource)]
 
-  const invitedResource = project(['temporally_exclusive_resource_id', 'role'])(rawInvitedResources)
+  const invitedResource = pipe(
+    filter(isNotNil),
+    project(['temporally_exclusive_resource_id', 'role']),
+  )(rawInvitedResources)
 
   console.log('invitedResource', invitedResource)
 
