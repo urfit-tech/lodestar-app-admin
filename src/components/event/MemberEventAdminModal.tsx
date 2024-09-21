@@ -30,30 +30,29 @@ import {
   isNotNil,
   join,
   map,
+  mergeLeft,
   path,
   Path,
   pickAll,
   pipe,
+  project,
   prop,
   props,
+  tap,
 } from 'ramda'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Frequency, Options, RRule, Weekday, WeekdayStr } from 'rrule'
 import useSWRMutation from 'swr/mutation'
-import {
-  EventApiWithRRule,
-  GeneralEventApi,
-  isEventApiWithRRule,
-  ResourceGroupsWithEvents,
-} from '../../components/event/events.type'
-import { dateToWeekday, getAvailableEvents, getSafeRrule } from '../../helpers/eventHelper/eventAdaptor'
-import { FetchedResource, Resource } from '../../helpers/eventHelper/eventFetcher.type'
+import { EventApiWithRRule, GeneralEventApi, isEventApiWithRRule } from '../../components/event/events.type'
+import { FetchedResource } from '../../helpers/eventHelper/eventFetcher.type'
 import { commonMessages } from '../../helpers/translation'
-import { DateRanges } from './DateRanges'
+import { sealNil } from './adaptObject'
+import { absolute, DateRanges } from './DateRanges'
+import { dateToWeekday, getAvailableEvents, getSafeRrule } from './eventAdaptor'
 
 const MemberEventAdminModal: React.FC<{
-  defaultResource: Resource
+  defaultResource: FetchedResource | undefined
   isOpen: boolean
   onClose: () => void
   focusedEvent: GeneralEventApi
@@ -63,10 +62,10 @@ const MemberEventAdminModal: React.FC<{
   updateResourceEventFetcher: (payload: GeneralEventApi) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
   availableDateRangesForDefaultResource: DateRanges
-  focusedResource: FetchedResource | undefined
-  setFocusedResource: Dispatch<SetStateAction<FetchedResource | undefined>>
-  defaultResourceEvents: any
-  focusedInvitedResourceEvents: ResourceGroupsWithEvents | undefined
+  focusedInvitedResource: FetchedResource | undefined
+  setFocusedInvitedResource: Dispatch<SetStateAction<FetchedResource | undefined>>
+  defaultResourceEvents: Array<GeneralEventApi>
+  focusedInvitedResourceEvents: Array<GeneralEventApi> | undefined
   invitedResourceEvents: any
 }> = ({
   defaultResource,
@@ -79,8 +78,8 @@ const MemberEventAdminModal: React.FC<{
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
   availableDateRangesForDefaultResource,
-  focusedResource,
-  setFocusedResource,
+  focusedInvitedResource,
+  setFocusedInvitedResource,
   defaultResourceEvents,
   focusedInvitedResourceEvents,
   invitedResourceEvents,
@@ -169,20 +168,19 @@ const MemberEventAdminModal: React.FC<{
 
   const [role, setRole] = useState(generateDefaultEventValue('')(['extendedProps', 'role']) as string)
 
+  const setAbsolutedStartEnd: (startEnd: { start: Date; end: Date }) => { start: Date; end: Date } = pipe(
+    absolute,
+    tap(pipe(prop('start'), setStart)),
+    tap(pipe(prop('end'), setEnd)),
+  )
+
   const changeEventStart = (targetStart: Date) => {
-    const [adaptedStart, adaptedEnd] = map(moment)([targetStart, end])
-    if (adaptedStart < adaptedEnd) {
-      setStart(targetStart)
-      setByweekday([dateToWeekday(targetStart)])
-      setEnd(end)
-    }
+    const { start: adaptedStart } = setAbsolutedStartEnd({ start: targetStart, end })
+    setByweekday([dateToWeekday(adaptedStart)])
   }
 
   const changeEventEnd = (targetEndDate: Date) => {
-    const [adaptedStart, adaptedEnd] = map(moment)([start, targetEndDate])
-    if (adaptedStart < adaptedEnd) {
-      setEnd(targetEndDate)
-    }
+    setAbsolutedStartEnd({ start, end: targetEndDate })
   }
 
   const isInByweekday = (targetWeekday: Weekday) =>
@@ -230,10 +228,11 @@ const MemberEventAdminModal: React.FC<{
 
   console.log(210, eventPayload)
 
-  const invitedResource = {
-    temporally_exclusive_resource_id: focusedResource?.temporally_exclusive_resource_id,
-    role: 'host',
-  }
+  const rawInvitedResources = [defaultResource, sealNil(mergeLeft({ role: 'host' }))(focusedInvitedResource)]
+
+  const invitedResource = project(['temporally_exclusive_resource_id', 'role'])(rawInvitedResources)
+
+  console.log('invitedResource', invitedResource)
 
   const getUnavailableDateRange = (occupiedDateRanges: DateRanges, deprivedDateRanges: DateRanges) =>
     DateRanges.parseFromEvents([
@@ -295,7 +294,7 @@ const MemberEventAdminModal: React.FC<{
         </>
       ),
       status: 'error',
-      duration: 9000,
+      duration: 5000,
       isClosable: true,
     })
   }
@@ -395,10 +394,10 @@ const MemberEventAdminModal: React.FC<{
               <p>Instructor</p>
               <Select
                 placeholder="教師"
-                defaultValue={focusedResource?.temporally_exclusive_resource_id}
-                value={focusedResource?.temporally_exclusive_resource_id}
+                defaultValue={focusedInvitedResource?.temporally_exclusive_resource_id}
+                value={focusedInvitedResource?.temporally_exclusive_resource_id}
                 onChange={e =>
-                  setFocusedResource(
+                  setFocusedInvitedResource(
                     invitedResourceEvents?.resources
                       ? invitedResourceEvents?.resources?.filter(
                           (resource: FetchedResource) => resource.temporally_exclusive_resource_id === e.target.value,

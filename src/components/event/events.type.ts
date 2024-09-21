@@ -1,7 +1,10 @@
 import { pipe, props, all, complement, isNil } from 'ramda'
 import { RRule } from "rrule"
+import { DateRange } from 'moment-range'
 import { EventApi } from "@fullcalendar/core"
 import { FetchedResource, ResourceGroup } from '../../helpers/eventHelper/eventFetcher.type'
+
+export type LooseDateRange = DateRange | null
 
 type EventBase = Partial<EventApi> & { start: Date, end: Date }
 
@@ -22,10 +25,6 @@ export const isEventApiWithRRule
         props(['rrule', 'duration', 'until']),
         all(complement(isNil))
     ) as (event: unknown) => event is EventApiWithRRule
-
-export type TemporallyExclusiveResource = {
-    id: string
-} & Record<string, any>
 
 type StartUntil = {
     startedAt: Date

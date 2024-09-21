@@ -1,23 +1,22 @@
 import { Box, Button, Flex, Spacer, Table, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react'
-import { EventApi, EventClickArg, EventInput } from '@fullcalendar/core'
+import { EventClickArg, EventInput } from '@fullcalendar/core'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import moment, { Duration } from 'moment'
-import { converge, curry, filter, forEach, pipe, tap } from 'ramda'
+import { converge, curry, filter, forEach, head, pipe, tap } from 'ramda'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
-import { getActiveEvents, getAvailableEvents } from '../../helpers/eventHelper/eventAdaptor'
 import { FetchedResource } from '../../helpers/eventHelper/eventFetcher.type'
 import { DateRanges } from './DateRanges'
+import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
 import {
   GeneralEventApi,
   ResourceEventsFetcher,
   ResourceGroupEventsFetcher,
   ResourceGroupsWithEvents,
-  TemporallyExclusiveResource,
 } from './events.type'
 import MemberEventAdminModal from './MemberEventAdminModal'
 
@@ -130,13 +129,15 @@ export const MemberEventCalendarBlock: React.FC<{
     )(resource)
   }
 
+  console.log('focusedInvitedResource', focusedInvitedResource)
+
   if (isDefaultResourceEventsLoading || defaultResourceEventsfetchingError) {
     return <></>
   }
 
   const { resources: defaultResource, resourceEvents: defaultResourceEvents } = fetchedDefaultResourceEvents as {
-    resources: Array<TemporallyExclusiveResource>
-    resourceEvents: Array<EventApi>
+    resources: Array<FetchedResource>
+    resourceEvents: Array<GeneralEventApi>
   }
 
   const activeEvents = getActiveEvents(defaultResourceEvents as any)
@@ -192,7 +193,7 @@ export const MemberEventCalendarBlock: React.FC<{
                 {invitedResourceEvents?.resourceGroups.map((group, idx, arr) => (
                   <>
                     <Spacer />
-                    <Box flex={1} w="90%" h="40%" key={group.name}>
+                    <Box flex={1} w="90%" h="40%" key={group.permission_group_id}>
                       <Table variant="simple" border="2px solid" padding="5%" marginTop="5vh">
                         <Thead>
                           <Tr>
@@ -208,9 +209,18 @@ export const MemberEventCalendarBlock: React.FC<{
                             )
                             .map(resource => (
                               <Tr>
-                                <Td cursor="pointer" onClick={() => handleResourceClick(resource as FetchedResource)}>
+                                <Td
+                                  cursor="pointer"
+                                  key={resource.temporally_exclusive_resource_id}
+                                  onClick={() => handleResourceClick(resource as FetchedResource)}
+                                >
                                   <Box
-                                    border={resource.id === focusedInvitedResource?.id ? '1px solid pink' : ''}
+                                    border={
+                                      resource.temporally_exclusive_resource_id ===
+                                      focusedInvitedResource?.temporally_exclusive_resource_id
+                                        ? '1px solid pink'
+                                        : ''
+                                    }
                                     padding="0.2em"
                                   >
                                     {resource.name}
@@ -248,7 +258,7 @@ export const MemberEventCalendarBlock: React.FC<{
         </Box>
         {isEventModalOpen ? (
           <MemberEventAdminModal
-            defaultResource={defaultResource as any}
+            defaultResource={head(defaultResource)}
             isOpen={isEventModalOpen}
             onClose={onEventModalClose}
             focusedEvent={modalEvent}
