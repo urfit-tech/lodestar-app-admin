@@ -8,7 +8,7 @@ import {
     ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent, ResourceGroup,
 } from './eventFetcher.type';
 import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
-import { adaptedEventPayload, adaptFetchedResourceEvent } from './eventAdaptor'
+import { adaptedEventPayload, adaptFetchedResourceEvent } from './fetchedEventAdaptor'
 import { GeneralEventApi, ResourceGroupsWithEvents } from '../../components/event/events.type';
 
 const authedConfig: (authToken: string) => (config: AxiosRequestConfig) => AxiosRequestConfig
@@ -73,14 +73,9 @@ export const getDefaultResourceEventsFethcer = curry(
                 getResourceByTypeTargetFetcher(authToken),
             )(typeTargets)
 
-            const resourceEvents = await pipe<
-                [Array<EventResource>],
-                Array<string>,
-                Promise<Array<FetchedResourceEvent>>,
-                Promise<Array<GeneralEventApi>>
-            >(
-                pluck('id') as (resources: Array<EventResource>) => Array<string>,
-                getEventsByResourceFetcher(authToken)(startUntil),
+            const resourceEvents = await pipe(
+                pluck('temporally_exclusive_resource_id'),
+                getEventsByResourceFetcher(authToken)(startUntil) as any,
                 andThen(map(adaptFetchedResourceEvent))
             )(resources)
 

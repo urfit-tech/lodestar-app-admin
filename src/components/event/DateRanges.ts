@@ -11,16 +11,18 @@ import { extendMoment, DateRange } from 'moment-range'
 import { RRule, rrulestr } from "rrule";
 
 import { FetchedResourceEvent } from '../../helpers/eventHelper/eventFetcher.type';
-import { renameKey } from '../../components/event/adaptObject'
-import { EventApiWithRRule, GeneralEventApi, isEventApiWithRRule } from './events.type';
+import { renameKey, sealIf, sealNil } from '../../components/event/adaptObject'
+import {
+    LooseDateRange,
+    EventApiWithRRule, GeneralEventApi, isEventApiWithRRule
+} from './events.type';
 import { Duration, EventApi } from '@fullcalendar/core';
-import { getSafeRrule } from '../../helpers/eventHelper/eventAdaptor';
+import { getSafeRrule } from './eventAdaptor';
 
 const selfReduce: <T, S>(fn: (accm: S, curr: T) => S) => (arr: Array<T>) => S
     = fn => converge(reduce(fn), [head, tail])
 
 const moment = extendMoment(Moment)
-
 
 const stripeTimeZone: (date: string | Date) => Date
     = pipe(
@@ -73,13 +75,31 @@ const eventToDateRanges: (event: GeneralEventApi) => Array<DateRange> = ifElse(
     )
 )
 
-const absolute = (dateRange: DateRange | null) =>
-    dateRange === null || dateRange.start <= dateRange.end
-        ? dateRange
-        : moment.range(dateRange.end, dateRange.start)
+const naiveAbsolute: (startEnd: { start: Date, end: Date }) => { start: Date, end: Date }
+    = pipe(
+        sealIf(
+            startEnd => startEnd.start > startEnd.end,
+            startEnd => ({ start: startEnd.end, end: startEnd.start }),
+        ),
+    )
+
+export const absolute: (dateRange: { start: Date, end: Date }) => { start: Date, end: Date }
+    = sealNil(naiveAbsolute)
+
+const absoluteDateRange: (dateRange: LooseDateRange) => LooseDateRange
+    = pipe<
+        [LooseDateRange],
+        { start: Date, end: Date },
+        [Date, Date],
+        LooseDateRange
+    >(
+        sealNil(naiveAbsolute),
+        props(['start', 'end']) as ((startEnd: { start: Date, end: Date }) => [Date, Date]),
+        startEnd => new DateRange(startEnd)
+    )
 
 const looseIntersect = curry<
-    (dateRange: DateRange | null, intersectedDateRange: DateRange | null) => DateRange | null
+    (dateRange: LooseDateRange, intersectedDateRange: LooseDateRange) => LooseDateRange
 >(
     (dateRange, intersectedDateRange) =>
         (!dateRange || !intersectedDateRange) ?
@@ -87,10 +107,10 @@ const looseIntersect = curry<
             dateRange.intersect(intersectedDateRange)
 )
 
-export class DateRanges extends Array<DateRange | null>  {
+export class DateRanges extends Array<LooseDateRange>  {
 
-    static makeFunctor: (arrayOfDateRange: Array<DateRange | null> | null) => DateRanges =
-        (arrayOfDateRange) => arrayOfDateRange === null ? new DateRanges(null) : new DateRanges(...(arrayOfDateRange as Array<DateRange | null>))
+    static makeFunctor: (arrayOfDateRange: Array<LooseDateRange> | null) => DateRanges =
+        (arrayOfDateRange) => arrayOfDateRange === null ? new DateRanges(null) : new DateRanges(...(arrayOfDateRange as Array<LooseDateRange>))
 
     static parseFromEvents: (events: Array<GeneralEventApi>) => DateRanges
         = pipe(
@@ -98,9 +118,13 @@ export class DateRanges extends Array<DateRange | null>  {
             DateRanges.makeFunctor
         )
 
-    stringify = (): Array<string | null> => this.map((dateRange: DateRange | null) => dateRange ? dateRange.toString() : null)
+    stringify = (): Array<string | null> => this.map((dateRange: LooseDateRange) => dateRange ? dateRange.toString() : null)
 
-    static absolute: (dateRanges: DateRanges) => DateRanges = map(absolute) as any
+    static absolute: (dateRanges: DateRanges) => DateRanges
+        = pipe(
+            map<LooseDateRange, LooseDateRange>(absoluteDateRange),
+            DateRanges.makeFunctor
+        )
 
     absolute = () => DateRanges.absolute(this)
 
@@ -165,7 +189,7 @@ export class DateRanges extends Array<DateRange | null>  {
     selfIntersect = () => DateRanges.selfIntersect(this)
 
     static intersectDateRange:
-        (intersecteDateRange: DateRange | null) => (dateRanges: DateRanges) => Array<DateRange | null>
+        (intersecteDateRange: LooseDateRange) => (dateRanges: DateRanges) => Array<LooseDateRange>
         = intersecteDateRange =>
             map(looseIntersect(intersecteDateRange as any) as any)
 
@@ -173,7 +197,7 @@ export class DateRanges extends Array<DateRange | null>  {
         (intersecteDateRanges: DateRanges) => pipe<
             [DateRanges],
             DateRanges,
-            Array<DateRange | null>,
+            Array<LooseDateRange>,
             DateRanges, DateRanges
         >(
             DateRanges.trim,
