@@ -347,6 +347,9 @@ const InvoiceCard: React.FC<{
                         companyPhone,
                         uniformTitle: invoiceResponse?.BuyerUBN && `統編：${invoiceResponse.BuyerUBN}`,
                         comment: invoiceComment,
+                        taxBlock:
+                          invoiceResponse?.BuyerUBN &&
+                          `<div>稅額: ${Number(invoiceResponse?.TaxAmt || 0).toLocaleString()}</div>`,
                       }}
                     />
                   </div>
@@ -379,6 +382,12 @@ const InvoiceCard: React.FC<{
                         invoiceCompanyName,
                         companyAddress,
                         companyPhone,
+                        taxBlock:
+                          invoiceResponse?.BuyerUBN &&
+                          `<div class="receipt-detail-2-flex" style="margin-right: 16px">
+    <div>稅額</div>
+    <div>${Number(invoiceResponse?.TaxAmt || 0).toLocaleString()}</div>
+  </div>`,
                       }}
                     />
                   </div>

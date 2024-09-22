@@ -57,10 +57,14 @@ const MemberContractCreationBlock: React.FC<{
   const totalPriceWithTax = sum(
     selectedProducts.filter(p => !['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
   )
-  const totalPriceWithoutTax = Math.round(totalPriceWithTax / 1.05)
-  const totalPriceWithFreeTax = sum(
-    selectedProducts.filter(p => !!['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
-  )
+  const totalPriceWithoutTax = isMemberZeroTax ? 0 : Math.round(totalPriceWithTax / 1.05)
+  const totalPriceWithFreeTax = isMemberZeroTax
+    ? sum(selectedProducts.map(product => product.totalPrice))
+    : sum(
+        selectedProducts
+          .filter(p => !!['學費', '註冊費'].includes(p.options.product))
+          .map(product => product.totalPrice),
+      )
   const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
 
   let invoices: InvoiceRequest[] = []
@@ -435,7 +439,15 @@ const MemberContractCreationBlock: React.FC<{
           <div key={i.TaxType}>
             <div className="row mb-2">
               <strong className="col-6 text-right">
-                {i.TaxType === '9' ? '混稅' : i.TaxType === '2' ? '零稅' : i.TaxType === '3' ? '免稅' : '應稅'}
+                {isMemberZeroTax
+                  ? '零稅'
+                  : i.TaxType === '9'
+                  ? '混稅'
+                  : i.TaxType === '2'
+                  ? '零稅'
+                  : i.TaxType === '3'
+                  ? '免稅'
+                  : '應稅'}
               </strong>
 
               <div className="col-6 text-right">${i.Amt.toLocaleString()}</div>
