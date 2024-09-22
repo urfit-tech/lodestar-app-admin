@@ -227,9 +227,8 @@ const MemberEventAdminModal: React.FC<{
     ...rrule,
   }
 
-  console.log(210, eventPayload)
+  console.log('eventPayload', eventPayload)
 
-  console.log(231, defaultResource, focusedInvitedResource)
   const rawInvitedResources = [defaultResource, sealNil(mergeLeft({ role: 'host' }))(focusedInvitedResource)]
 
   const invitedResource = pipe(
@@ -303,7 +302,6 @@ const MemberEventAdminModal: React.FC<{
       isClosable: true,
     })
   }
-  console.log(281, unavailableDateRangeForDefaultResource, unavailableDateRangeForInvitedResource)
   console.log(
     unavailableDateRangeForDefaultResource.length > 0
       ? `學員時間衝突：\n${prettifyDateRanges(unavailableDateRangeForDefaultResource)}\n`
