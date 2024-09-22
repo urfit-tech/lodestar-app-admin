@@ -86,7 +86,6 @@ export const MemberEventCalendarBlock: React.FC<{
       generateDefaultModalEvent(duration),
       tap(setModalEvent),
     )(info.date)
-
     onEventModalOpen()
   }
 
@@ -94,8 +93,10 @@ export const MemberEventCalendarBlock: React.FC<{
     const [targetEvent] = (defaultResourceEvents as Array<GeneralEventApi>).filter(
       event => event?.extendedProps?.event_id === info?.event._def.extendedProps?.event_id,
     )
-    setModalEvent(targetEvent)
-    onEventModalOpen()
+    if (info.event._def.ui.display !== 'background') {
+      setModalEvent(targetEvent)
+      onEventModalOpen()
+    }
   }
 
   const handleResourceClick: (resource: FetchedResource) => void = pipe(
@@ -138,8 +139,6 @@ export const MemberEventCalendarBlock: React.FC<{
   const defaultAvailableEvents = getAvailableEvents(activeEvents as any)
 
   defaultAvailableEvents.forEach(event => (event.display = 'background'))
-
-  // console.log(101, defaultAvailableEvents)
 
   const availableDateRangesForDefaultResource = pipe(
     DateRanges.parseFromEvents,
