@@ -129,7 +129,7 @@ const appointmentMessages = {
   }),
   AppointmentBasicForm: defineMessages({
     defaultMeetGateWay: {
-      id: 'appointmentMessages.AppointmentBasicForm.defaultMeetGateWay,',
+      id: 'appointmentMessages.AppointmentBasicForm.defaultMeetGateWay',
       defaultMessage: '預設會議系統',
     },
   }),
