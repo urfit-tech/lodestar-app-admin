@@ -504,8 +504,14 @@ const ManualIssueInvoiceModal: React.VFC<{
         i.ItemCount?.split('|').map((_item, idx) => ({
           ItemName: i.ItemName?.split('|')[idx],
           ItemCount: i.ItemCount?.split('|')[idx],
-          ItemPrice: i.ItemPrice?.split('|')[idx],
-          ItemAmt: i.ItemAmt?.split('|')[idx],
+          ItemPrice:
+            i.BuyerUBN && i.TaxType === '1'
+              ? Math.round(Number(i.ItemPrice?.split('|')[idx]) * 1.05)
+              : i.ItemPrice?.split('|')[idx],
+          ItemAmt:
+            i.BuyerUBN && i.TaxType === '1'
+              ? Math.round(Number(i.ItemAmt?.split('|')[idx]) * 1.05)
+              : i.ItemAmt?.split('|')[idx],
           ItemTaxType: i.ItemTaxType?.split('|')[idx],
         })) || [],
     })),
@@ -572,10 +578,14 @@ const ManualIssueInvoiceModal: React.VFC<{
                         AmtSales: invoice.AmtSales,
                         ItemName: invoice.Items.map(i => i.ItemName).join('|'),
                         ItemCount: invoice.Items.map(i => i.ItemCount).join('|'),
-                        ItemPrice: invoice.Items.map(i => i.ItemPrice).join('|'),
+                        ItemPrice: invoice.Items.map(i =>
+                          invoice.BuyerUBN && invoice.TaxType === '1' ? Math.round(i.ItemPrice / 1.05) : i.ItemPrice,
+                        ).join('|'),
                         ItemTaxType: invoice.Items.map(i => i.ItemTaxType).join('|'),
-                        ItemUnit: invoice.Items.map(i => i.ItemUnit).join('|'),
-                        ItemAmt: invoice.Items.map(i => i.ItemAmt).join('|'),
+                        ItemUnit: invoice.Items.map(i => '項').join('|'),
+                        ItemAmt: invoice.Items.map(i =>
+                          invoice.BuyerUBN && invoice.TaxType === '1' ? Math.round(i.ItemAmt / 1.05) : i.ItemAmt,
+                        ).join('|'),
                       },
                     },
                     {
@@ -658,12 +668,12 @@ const ManualIssueInvoiceModal: React.VFC<{
                                 <Form.Item className="flex-grow-1">
                                   <div className="row">
                                     <div className="col-4">
-                                      <Form.Item label={'商品數量'} name={[field.name, 'ItemCount']}>
+                                      <Form.Item label={'數量'} name={[field.name, 'ItemCount']}>
                                         <InputNumber min={1} />
                                       </Form.Item>
                                     </div>
                                     <div className="col-4">
-                                      <Form.Item label={'商品單價'} name={[field.name, 'ItemPrice']}>
+                                      <Form.Item label={`單價`} name={[field.name, 'ItemPrice']}>
                                         <InputNumber
                                           min={0}
                                           max={totalPrice}
@@ -673,23 +683,20 @@ const ManualIssueInvoiceModal: React.VFC<{
                                       </Form.Item>
                                     </div>
                                     <div className="col-4">
-                                      <Form.Item label={'商品小計'} name={[field.name, 'ItemAmt']}>
+                                      <Form.Item label={'小計'} name={[field.name, 'ItemAmt']}>
                                         {(
                                           invoices[idx].Items[index].ItemCount * invoices[idx].Items[index].ItemPrice
                                         ).toLocaleString()}
                                       </Form.Item>
                                     </div>
                                     <div className="col-6">
-                                      <Form.Item label={'產品名'} name={[field.name, 'ItemName']}>
-                                        <Input placeholder="請輸入產品名" />
+                                      <Form.Item label={'名稱'} name={[field.name, 'ItemName']}>
+                                        <Input placeholder="請輸入名稱" />
                                       </Form.Item>
                                     </div>
 
                                     <div className="col-6">
-                                      <Form.Item
-                                        label={'商品課稅別（混合稅才需要填寫）'}
-                                        name={[field.name, 'ItemTaxType']}
-                                      >
+                                      <Form.Item label={'課稅別(混合稅才需要填寫)'} name={[field.name, 'ItemTaxType']}>
                                         <Select<string>>
                                           <Select.Option value="1">應稅</Select.Option>
                                           <Select.Option value="2">零稅</Select.Option>
@@ -733,7 +740,7 @@ const ManualIssueInvoiceModal: React.VFC<{
                     <Form.Item className="flex-grow-1" {...field}>
                       <div className="row">
                         <div className="col-4">
-                          <Form.Item label={'未稅'} name={[field.name, 'Amt']}>
+                          <Form.Item label={'銷售額'} name={[field.name, 'Amt']}>
                             {invoices[idx].Amt.toLocaleString()}
                           </Form.Item>
                         </div>
@@ -743,7 +750,7 @@ const ManualIssueInvoiceModal: React.VFC<{
                           </Form.Item>
                         </div>
                         <div className="col-4">
-                          <Form.Item label={'總金額(含稅)'} name={[field.name, 'TotalAmt']}>
+                          <Form.Item label={'總計'} name={[field.name, 'TotalAmt']}>
                             {invoices[idx].TotalAmt.toLocaleString()}
                           </Form.Item>
                         </div>
