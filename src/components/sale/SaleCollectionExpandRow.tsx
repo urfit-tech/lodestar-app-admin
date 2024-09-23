@@ -569,7 +569,8 @@ const ManualIssueInvoiceModal: React.VFC<{
                         TaxRate: invoice.TaxRate,
                         Comment: invoice.Comment,
                         PrintFlag: invoice.PrintFlag,
-                        CustomsClearance: invoice.CustomsClearance,
+                        CustomsClearance:
+                          invoice.TaxType === '2' || invoice.TaxType === '9' ? '1' : invoice.CustomsClearance,
                         Amt: invoice.Amt,
                         TaxAmt: invoice.TaxAmt,
                         TotalAmt: invoice.TotalAmt,
