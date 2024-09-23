@@ -127,6 +127,7 @@ export const useMemberTaskCollection = (options?: {
             ended_at
             exp_at
             nbf_at
+            options
           }
           category {
             id
@@ -204,6 +205,7 @@ export const useMemberTaskCollection = (options?: {
         endedAt: v.meet?.ended_at,
         nbfAt: v.meet?.nbf_at,
         expAt: v.meet?.exp_at,
+        options: v.meet?.options,
       },
       description: v.description || '',
       member: {
