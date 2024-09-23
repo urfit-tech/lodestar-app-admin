@@ -182,6 +182,9 @@ export type MemberTaskProps = {
     endedAt: Date
     nbfAt: Date | null
     expAt: Date | null
+    options?: {
+      startUrl?: string
+    }
   }
   description: string | null
   member: {
