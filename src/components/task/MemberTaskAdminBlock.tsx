@@ -336,18 +336,24 @@ const MemberTaskAdminBlock: React.FC<{
                   }
                 })
                 setMeetingMember(() => record.member)
-                getMeetingLink(
-                  record.id,
-                  record.meet.id,
-                  record.meet.startedAt,
-                  record.meet.endedAt,
-                  record.meet.nbfAt,
-                  record.meet.expAt,
-                  record.member.id,
-                  currentMember.id,
-                ).finally(() => {
+                if (record.meet.options?.startUrl) {
+                  window.open(record.meet.options.startUrl, '_blank')
                   setMeetingLoading(null)
-                })
+                } else {
+                  getMeetingLink(
+                    record.id,
+                    record.meet.id,
+                    record.meet.startedAt,
+                    record.meet.endedAt,
+                    record.meet.nbfAt,
+                    record.meet.expAt,
+                    record.member.id,
+                    currentMember.id,
+                  ).finally(() => {
+                    setMeetingLoading(null)
+                    refetchMemberTasks()
+                  })
+                }
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
