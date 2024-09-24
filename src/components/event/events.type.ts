@@ -4,6 +4,8 @@ import { DateRange } from 'moment-range'
 import { EventApi } from "@fullcalendar/core"
 import { FetchedResource, ResourceGroup } from '../../helpers/eventHelper/eventFetcher.type'
 
+export type ArrangeMode = 'default'|'arrange'
+
 export type LooseDateRange = DateRange | null
 
 type EventBase = Partial<EventApi> & { start: Date, end: Date }

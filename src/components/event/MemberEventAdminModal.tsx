@@ -23,10 +23,12 @@ import { FetchButton } from 'lodestar-app-element/src/components/buttons/FetchBu
 import moment from 'moment'
 import {
   all,
+  converge,
   curry,
   defaultTo,
   evolve,
   filter,
+  identity,
   ifElse,
   isNotNil,
   join,
@@ -40,6 +42,7 @@ import {
   prop,
   props,
   tap,
+  without,
 } from 'ramda'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -50,7 +53,7 @@ import { FetchedResource } from '../../helpers/eventHelper/eventFetcher.type'
 import { commonMessages } from '../../helpers/translation'
 import { sealNil } from './adaptObject'
 import { absolute, DateRanges } from './DateRanges'
-import { dateToWeekday, getAvailableEvents, getSafeRrule } from './eventAdaptor'
+import { dateToWeekday, getAvailableEvents, getSafeRrule, isAvailableEvent } from './eventAdaptor'
 
 const MemberEventAdminModal: React.FC<{
   defaultResource: FetchedResource | undefined
@@ -229,7 +232,10 @@ const MemberEventAdminModal: React.FC<{
 
   console.log('eventPayload', eventPayload)
 
-  const rawInvitedResources = [defaultResource, sealNil(mergeLeft({ role: 'host' }))(focusedInvitedResource)]
+  const rawInvitedResources = [
+    mergeLeft({ role })(defaultResource as FetchedResource),
+    sealNil(mergeLeft({ role: 'host' }))(focusedInvitedResource),
+  ]
 
   const invitedResource = pipe(
     filter(isNotNil),
@@ -239,15 +245,15 @@ const MemberEventAdminModal: React.FC<{
   console.log('invitedResource', invitedResource)
 
   const getUnavailableDateRange = (occupiedDateRanges: DateRanges, deprivedDateRanges: DateRanges) =>
-    DateRanges.parseFromEvents([
-      { ...eventPayload, duration: moment(eventPayload.end).diff(moment(eventPayload.start)).valueOf() } as any,
-    ])
-      .deprive(occupiedDateRanges)
-      .deprive(deprivedDateRanges)
-      .filter(isNotNil)
+    isAvailableEvent(focusedEvent)
+      ? []
+      : DateRanges.parseFromEvents([focusedEvent])
+          .deprive(deprivedDateRanges.deprive(occupiedDateRanges).filter(isNotNil) as any)
+          .filter(isNotNil)
 
   const notAvailableDateRangesForDefaultResource = pipe(
-    getAvailableEvents,
+    converge(without, [getAvailableEvents as any, identity]),
+    without([focusedEvent]),
     DateRanges.parseFromEvents,
   )(defaultResourceEvents)
 
@@ -263,7 +269,8 @@ const MemberEventAdminModal: React.FC<{
   )(focusedInvitedResourceEvents as any)
 
   const notAvailableDateRangesForInvitedResource = pipe(
-    getAvailableEvents,
+    converge(without, [getAvailableEvents as any, identity]),
+    without([focusedEvent]),
     DateRanges.parseFromEvents,
   )(focusedInvitedResourceEvents as any)
 

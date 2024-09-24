@@ -5,7 +5,7 @@ import {
 } from 'ramda'
 import axios, { AxiosRequestConfig } from "axios";
 import {
-    ResourceType, FetchedResource, EventRequest, EventResource, FetchedResourceEvent, ResourceGroup,
+    ResourceType, FetchedResource, EventRequest, FetchedResourceEvent, ResourceGroup,
 } from './eventFetcher.type';
 import { renameKey } from 'lodestar-app-element/src/helpers/adaptObject';
 import { adaptedEventPayload, adaptFetchedResourceEvent } from './fetchedEventAdaptor'
@@ -67,7 +67,7 @@ export const getDefaultResourceEventsFethcer = curry(
             const resources = await pipe<
                 [{ type: ResourceType, targets: Array<string> }],
                 { type: ResourceType, targets: Array<string> },
-                Promise<Array<EventResource>>
+                Promise<Array<FetchedResource>>
             >(
                 tap(createResourceFetcher(authToken) as any),
                 getResourceByTypeTargetFetcher(authToken),
@@ -137,7 +137,7 @@ export const getInvitedResourceEventsFetcher =
         (authToken: string, startUntil: { startedAt: Date, until: Date }) =>
             Promise<{
                 resourceGroups: Array<ResourceGroup>,
-                resources: Array<EventResource>,
+                resources: Array<FetchedResource>,
                 resourceEvents: Array<FetchedResourceEvent>
             }>
     >(async (authToken, startUntil) => {
@@ -189,7 +189,7 @@ export const createEventFetcher = curry(
 )
 
 export const createInvitationFetcher = curry(
-    async (authToken: string, eventResources: Array<EventResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
+    async (authToken: string, eventResources: Array<FetchedResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
         if (eventResources && eventIds && eventResources?.length > 0 && eventIds?.length > 0) {
             return (await axios.post(
                 `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
@@ -209,7 +209,7 @@ export const createEventAndInviteResourceFetcher = curry(
         app_id: string,
         payload: {
             events: Array<GeneralEventApi>,
-            invitedResource: Array<EventResource>
+            invitedResource: Array<FetchedResource>
         }
     ) => {
         if (authToken && payload.invitedResource.length > 0) {
@@ -241,5 +241,8 @@ export const updateEvent = curry(
 
 export const deleteEvent = curry(
     async (authToken: string, deletedAt: Date, event_id: string) =>
-        await updateEvent(authToken)({ extendedProps: { deletedAt } })(event_id)
+        await (await axios.delete(
+            `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/${event_id}`,
+            authedConfig(authToken)({})
+        )).data
 )
