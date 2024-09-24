@@ -71,7 +71,7 @@ const MemberAdminPage: React.FC = () => {
           <Tabs.TabPane key="event" tab={formatMessage(memberMessages.label.event)}>
             <div className="p-5">
               <MemberEventCalendarBlock
-                memberId={memberId}
+                allowedMode={['default', 'arrange']}
                 defaultResourceEventsFetcher={getDefaultResourceEventsFethcer(authToken as string)({
                   type: 'member',
                   targets: [memberId],
