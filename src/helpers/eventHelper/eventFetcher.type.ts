@@ -1,4 +1,13 @@
+import { Color } from "react-color"
+
 export type ResourceType = 'member' | 'physical_space'
+
+export type ResourceGroup = {
+    name: string,
+    type: ResourceType,
+    permission_group_id: string,
+    default_label: string
+}
 
 export type FetchedResource = {
     temporally_exclusive_resource_id: string,
@@ -8,6 +17,7 @@ export type FetchedResource = {
     app_id?: string,
     email?: string,
     capacity?: number
+    color?:Color
 }
 
 export type EventRequest = {
@@ -39,14 +49,6 @@ export type EventRequest = {
         }
     )
 
-export type EventResource = {
-    temporally_exclusive_resource_id: string
-    metadata?: object
-    deleted_at?: Date
-    role?: string
-    is_exclusive?: boolean
-}
-
 export type FetchedResourceEvent = {
     event_id: string,
     started_at: string,
@@ -77,10 +79,3 @@ export type FetchedResourceEvent = {
             source_target?: undefined
         }
     )
-
-export type ResourceGroup = {
-    name: string,
-    type: string,
-    permission_group_id: string,
-    default_label: string
-}

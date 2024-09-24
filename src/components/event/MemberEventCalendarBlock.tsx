@@ -5,35 +5,71 @@ import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import moment, { Duration } from 'moment'
-import { converge, curry, filter, forEach, head, pipe, tap } from 'ramda'
+import {
+  andThen,
+  complement,
+  concat,
+  cond,
+  converge,
+  curry,
+  equals,
+  filter,
+  forEach,
+  head,
+  ifElse,
+  includes,
+  isNil,
+  map,
+  pipe,
+  pipeWith,
+  tap,
+} from 'ramda'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import { FetchedResource } from '../../helpers/eventHelper/eventFetcher.type'
+import { sealIf } from './adaptObject'
 import { DateRanges } from './DateRanges'
-import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
-import { GeneralEventApi, ResourceEventsFetcher, ResourceGroupEventsFetcher } from './events.type'
+import { getActiveEvents, getAvailableEvents, getEventsByResource } from './eventAdaptor'
+import {
+  ArrangeMode,
+  GeneralEventApi,
+  ResourceEventsFetcher,
+  ResourceGroupEventsFetcher,
+  ResourceGroupsWithEvents,
+} from './events.type'
 import MemberEventAdminModal from './MemberEventAdminModal'
+import { cloneAvailbleEventWithBackgroundDisplay, cloneWithEventsUnderConditionSetProps } from './stateActions'
 
 export const MemberEventCalendarBlock: React.FC<{
+  allowedMode: Array<ArrangeMode>
+  defaultMode?: ArrangeMode
   defaultResourceEventsFetcher: ResourceEventsFetcher
   invitedResourceEventsFetcher: ResourceGroupEventsFetcher
   createResourceEventFetcher: (payload: { events: Array<GeneralEventApi>; invitedResource: Array<any> }) => any
   updateResourceEventFetcher: (payload: GeneralEventApi) => (event_id: string) => any
   deleteResourceEventFetcher: (deletedAt: Date) => (event_id: string) => any
-  defaultMode?: string
   eventPaginationDuration?: Duration
   defaultEventDuration?: Duration
 }> = ({
+  allowedMode,
+  defaultMode = 'default',
   defaultResourceEventsFetcher,
   invitedResourceEventsFetcher,
   createResourceEventFetcher,
   updateResourceEventFetcher,
   deleteResourceEventFetcher,
-  defaultMode = 'default',
   eventPaginationDuration = moment.duration(1, 'years'),
   defaultEventDuration = moment.duration(1, 'hours'),
 }) => {
+  const [mode, setMode] = useState<ArrangeMode>(defaultMode)
+
+  const isModeAllowed: (mode: ArrangeMode) => boolean = mode => includes(mode)(allowedMode)
+  const decideModeSafely: (mode: ArrangeMode) => ArrangeMode = sealIf(complement(isModeAllowed), () => 'default')
+  const setModeSafely: (mode: ArrangeMode) => void = pipe(decideModeSafely, setMode)
+
+  console.log('mode: ', mode)
+
   const {
     data: fetchedDefaultResourceEvents,
     isLoading: isDefaultResourceEventsLoading,
@@ -60,8 +96,7 @@ export const MemberEventCalendarBlock: React.FC<{
     ([startedAt, until]) => invitedResourceEventsFetcher({ startedAt, until }),
   )
 
-  const [mode, setMode] = useState<string>('default')
-
+  const [invitedResources, setInvitedResources] = useState<ResourceGroupsWithEvents | undefined>(undefined)
   const [focusedInvitedResource, setFocusedInvitedResource] = useState<FetchedResource | undefined>(undefined)
   const [focusedInvitedResourceEvents, setFocusedInvitedResourceEvents] = useState<Array<GeneralEventApi>>([])
 
@@ -79,13 +114,17 @@ export const MemberEventCalendarBlock: React.FC<{
   const [duration, setDuration] = useState<number | Duration>(defaultEventDuration)
   const [isRruleOptional, setIsRruleOptional] = useState<boolean>(true)
 
-  // const [invitedResourceEvents, setInvitedResourceEvents] = useState<ResourceGroupsWithEvents | undefined>(undefined)
+  const modeCond = <F extends Function>(modeFnPair: Array<[ArrangeMode, F]>) =>
+    cond(map(([mode, fn]) => [equals(mode), fn])(modeFnPair) as any)
 
   const handleDateClick = (info: DateClickArg) => {
-    pipe<[Date], { start: Date; end: Date }, { start: Date; end: Date }>(
+    const generateDefaultEvent = pipe<[Date], { start: Date; end: Date }, { start: Date; end: Date }>(
       generateDefaultModalEvent(duration),
       tap(setModalEvent),
     )(info.date)
+
+    modeCond([['default', () => generateDefaultEvent]])(mode)
+
     onEventModalOpen()
   }
 
@@ -121,11 +160,22 @@ export const MemberEventCalendarBlock: React.FC<{
     tap(setFocusedInvitedResourceEvents),
   )
 
-  console.log('focusedInvitedResource', focusedInvitedResource)
+  const onEventArrange = async () => {
+    // await getInvitedResourceEvents()
+    setModeSafely('arrange')
+  }
+
+  const onQuitEventArrange = () => {
+    setModeSafely('default')
+    setFocusedInvitedResource(undefined)
+    setFocusedInvitedResourceEvents([])
+  }
 
   if (isDefaultResourceEventsLoading || defaultResourceEventsfetchingError) {
     return <></>
   }
+
+  console.log('focusedInvitedResource', focusedInvitedResource)
 
   const { resources: defaultResource, resourceEvents: defaultResourceEvents } = fetchedDefaultResourceEvents as {
     resources: Array<FetchedResource>
@@ -134,31 +184,42 @@ export const MemberEventCalendarBlock: React.FC<{
 
   const activeEvents = getActiveEvents(defaultResourceEvents as any)
 
-  activeEvents.forEach(event => (event.backgroundColor = 'royalblue'))
-
   const defaultAvailableEvents = getAvailableEvents(activeEvents as any)
-
-  defaultAvailableEvents.forEach(event => (event.display = 'background'))
 
   const availableDateRangesForDefaultResource = pipe(
     DateRanges.parseFromEvents,
     DateRanges.merge,
   )(defaultAvailableEvents as any)
 
-  const onEventArrange = async () => {
-    await getInvitedResourceEvents()
-    setMode('eventArrangement')
-  }
+  const renderEventsInDefaultMode: () => Array<GeneralEventApi> = () =>
+    pipe<[Array<GeneralEventApi>], Array<GeneralEventApi>, Array<GeneralEventApi>>(
+      cloneWithEventsUnderConditionSetProps(() => true)({ backgroundColor: 'royalblue' })('up'),
+      getActiveEvents,
+    )(defaultResourceEvents)
 
-  const onQuitEventArrange = () => {
-    setMode('default')
-    setFocusedInvitedResource(undefined)
-    setFocusedInvitedResourceEvents([])
-  }
+  // console.log(`fetchedInvitedResourceEvents`, fetchedInvitedResourceEvents)
+
+  const renderEventsInArrangeMode: () => Array<GeneralEventApi> = () =>
+    ifElse(
+      isNil,
+      pipe(tap(pipeWith(andThen, [async () => await getInvitedResourceEvents(), tap(setInvitedResources)])), () => []),
+      pipe(
+        ifElse(isNil, () => () => [], getEventsByResource)(focusedInvitedResource as any) as any,
+        concat(cloneAvailbleEventWithBackgroundDisplay('up')(defaultResourceEvents)) as any,
+        getActiveEvents,
+      ),
+    )(invitedResources?.resourceEvents) as any
+
+  const renderEvents: (mode: ArrangeMode) => Array<GeneralEventApi> = pipe(
+    modeCond([
+      ['default', renderEventsInDefaultMode],
+      ['arrange', renderEventsInArrangeMode],
+    ]) as any,
+  )
 
   return (
     <Box>
-      {mode === 'eventArrangement' ? (
+      {mode === 'arrange' ? (
         <Button colorScheme="red" onClick={onQuitEventArrange}>
           退出管理
         </Button>
@@ -166,7 +227,7 @@ export const MemberEventCalendarBlock: React.FC<{
         <Button onClick={onEventArrange}>管理活動</Button>
       )}
       <Flex>
-        {mode === 'eventArrangement' ? (
+        {mode === 'arrange' ? (
           <>
             <Box w="20%">
               <Flex direction="column" justify="center" align="center">
@@ -233,7 +294,7 @@ export const MemberEventCalendarBlock: React.FC<{
             }}
             dateClick={handleDateClick}
             eventClick={handleEventClick}
-            events={activeEvents.concat(focusedInvitedResourceEvents as any) as EventInput}
+            events={renderEvents(mode) as Array<EventInput>}
           />
         </Box>
         {isEventModalOpen ? (
