@@ -1,8 +1,7 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Collapse, message } from 'antd'
-import { gql } from '@apollo/client'
 import GridOptionsBlock from 'lodestar-app-element/src/components/blocks/GridOptionsBlock'
 import ListsOptionsBlock from 'lodestar-app-element/src/components/blocks/ListsOptionsBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -215,6 +214,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
         questionListData: questionList.map(question => ({
           id: question.id,
           question_group_id: questionGroupId,
+          type: (question.options?.filter(option => option.isAnswer).length ?? 0) >= 2 ? 'multiple' : 'single',
           subject: question.subject,
           layout: question.layout,
           font: question.font,
@@ -454,7 +454,7 @@ const useQuestionMutation = () => {
     ) {
       insert_question(
         objects: $questionListData
-        on_conflict: { constraint: question_pkey, update_columns: [subject, layout, font, explanation, position] }
+        on_conflict: { constraint: question_pkey, update_columns: [type, subject, layout, font, explanation, position] }
       ) {
         affected_rows
         returning {
