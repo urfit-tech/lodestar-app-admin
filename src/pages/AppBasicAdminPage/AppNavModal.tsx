@@ -210,6 +210,7 @@ const AppNavModal: React.FC<AppNavModalProps> = ({
                 { value: 'zh-tw', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.zhTw) },
                 { value: 'zh-cn', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.zhCn) },
                 { value: 'en-us', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.enUs) },
+                { value: 'ja', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.ja) },
                 { value: 'vi', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.vi) },
               ]}
             />

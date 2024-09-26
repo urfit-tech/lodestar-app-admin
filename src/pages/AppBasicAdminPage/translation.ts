@@ -79,6 +79,10 @@ const AppBasicAdminPageMessages = {
       id: 'AppBasicAdminPageMessages.AppNavModal.vi',
       defaultMessage: 'Tiếng việt',
     },
+    ja: {
+      id: 'AppBasicAdminPageMessages.AppNavModal.ja',
+      defaultMessage: '日本語',
+    },
     navTag: {
       id: 'AppBasicAdminPageMessages.AppNavModal.navTag',
       defaultMessage: '標籤',
