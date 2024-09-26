@@ -352,8 +352,8 @@ const MemberContractCreationBlock: React.FC<{
         },
       })
         .then(({ data }) => {
-          const contractId = data?.insert_member_contract_one?.id
-          setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+          // const contractId = data?.insert_member_contract_one?.id
+          // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
           message.success('成功產生合約')
         })
         .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
@@ -388,23 +388,38 @@ const MemberContractCreationBlock: React.FC<{
       .then(res => {
         if (res.data.code === 'SUCCESS') {
           message.success('訂單建立成功')
-          const paymentNo = res.data.result.paymentNo
-          const payToken = res.data.result.payToken
-          const orderId = res.data.result.orderId
-          if (paymentGateway.includes('spgateway') && orderId) {
-            setPaymentUrl(
-              paymentNo
-                ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
-                : `${window.origin}/orders/${orderId}?tracking=1`,
+          axios
+            .post(
+              `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
+              {
+                memberId: member.id,
+                executorId: fieldValue.executorId,
+                email: fieldValue.invoiceEmail || member.email,
+              },
+              {
+                headers: { authorization: `Bearer ${authToken}` },
+              },
             )
-          }
-          if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
-            setPaymentUrl(
-              paymentNo
-                ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
-                : `${window.origin}/orders/${orderId}?tracking=1`,
-            )
-          }
+            .then(res => {
+              message.success('信件已發送成功')
+            })
+          // const paymentNo = res.data.result.paymentNo
+          // const payToken = res.data.result.payToken
+          // const orderId = res.data.result.orderId
+          // if (paymentGateway.includes('spgateway') && orderId) {
+          //   setPaymentUrl(
+          //     paymentNo
+          //       ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+          //       : `${window.origin}/orders/${orderId}?tracking=1`,
+          //   )
+          // }
+          // if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
+          //   setPaymentUrl(
+          //     paymentNo
+          //       ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
+          //       : `${window.origin}/orders/${orderId}?tracking=1`,
+          //   )
+          // }
         }
       })
       .catch(error => {
