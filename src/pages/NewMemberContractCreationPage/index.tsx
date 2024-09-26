@@ -175,6 +175,11 @@ const MemberContractCreationPage: React.VFC = () => {
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
+              if (values.startedAt) {
+                form?.setFieldsValue({
+                  endedAt: moment(values.startedAt).add(1, 'y').endOf('day'),
+                })
+              }
             }}
             products={products?.products || []}
             contracts={contracts}
