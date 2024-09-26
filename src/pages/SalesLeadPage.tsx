@@ -1,6 +1,5 @@
 import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Flex } from '@chakra-ui/react'
 import { Center } from '@chakra-ui/layout'
 import { Button, Dropdown, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -196,18 +195,16 @@ const SalesLeadTabs: React.VFC<{
                       setSelectedRowKeys([])
                     }}
                   >
-                    <Flex alignContent="center">
-                      {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" style={{ margin: 'auto' }} />}
-                      {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
-                      <span>
-                        (
-                        {
-                          followedLeads.filter((lead: { leadStatusCategoryId: string }) => !lead.leadStatusCategoryId)
-                            .length
-                        }
-                        )
-                      </span>
-                    </Flex>
+                    {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
+                    <span>
+                      (
+                      {
+                        followedLeads.filter((lead: { leadStatusCategoryId: string }) => !lead.leadStatusCategoryId)
+                          .length
+                      }
+                      )
+                    </span>
                   </Menu.Item>
                   {leadStatusCategories.map(leadStatusCategory => (
                     <Menu.Item
@@ -254,20 +251,7 @@ const SalesLeadTabs: React.VFC<{
                 }}
               >
                 {formatMessage(salesMessages.followedLead)}
-                <span>
-                  (
-                  {refetchLoading ? (
-                    <Spin size="small" />
-                  ) : (
-                    followedLeads.filter(
-                      followedLead =>
-                        leadStatusCategories.find(
-                          leadStatusCategory => leadStatusCategory.id === followedLead.leadStatusCategoryId,
-                        )?.memberId === manager.id || !followedLead.leadStatusCategoryId,
-                    ).length
-                  )}
-                  )
-                </span>
+                <span>({refetchLoading ? <Spin size="small" /> : followedLeads.length})</span>
                 <DownOutlined className="mr-0 ml-1" />
               </Center>
             </Dropdown>
@@ -288,8 +272,6 @@ const SalesLeadTabs: React.VFC<{
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               isLoading={refetchLoading}
               followedLeads={followedLeads}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -316,8 +298,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -344,8 +324,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -405,8 +383,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
           {'contacted' === contactedTabState && (
@@ -418,8 +394,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
           {'answered' === contactedTabState && (
@@ -431,8 +405,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -492,8 +464,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
           {'invited' === demoTabState && (
@@ -505,8 +475,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
           {'presented' === demoTabState && (
@@ -518,8 +486,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -547,8 +513,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -575,8 +539,6 @@ const SalesLeadTabs: React.VFC<{
               followedLeads={followedLeads}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
         </Tabs.TabPane>
@@ -604,8 +566,6 @@ const SalesLeadTabs: React.VFC<{
                 followedLeads={followedLeads}
                 selectedRowKeys={selectedRowKeys}
                 onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-                onIsOpenAddListModalChange={setIsOpenAddListModal}
-                onIsOpenManagerListModalChange={setIsOpenManagerListModal}
               />
             )}
           </Tabs.TabPane>
