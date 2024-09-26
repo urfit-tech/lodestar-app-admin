@@ -92,7 +92,7 @@ const ModifyOrderStatusModal: React.VFC<{
               gateway: 'lodestar',
               options: {
                 gateway: paymentLogs[0]?.gateway || 'lodestar',
-                method: paymentLogs[0].method,
+                method: paymentLogs[0]?.method,
                 authorId: currentMemberId,
               },
               paid_at: paidAt,
