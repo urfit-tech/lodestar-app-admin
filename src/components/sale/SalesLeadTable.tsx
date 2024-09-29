@@ -13,7 +13,7 @@ import {
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
 import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
-import { ColumnProps, ColumnsType } from 'antd/lib/table'
+import { ColumnProps, ColumnsType, TableProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -87,20 +87,23 @@ const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed'
   manager: Manager
   leads: SalesLeadMember[]
-  followedLeads: SalesLeadMember[]
+  followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
   isLoading: boolean
   onRefetch: () => Promise<void>
   title?: string
+  onTableChange: TableProps<SalesLeadMember>['onChange']
   selectedLeadStatusCategoryId?: string
   selectedRowKeys: React.Key[]
   onSelectChange: (newSelectedRowKeys: React.Key[]) => void
   onIsOpenAddListModalChange: (isOpenAddListModal: boolean) => void
   onIsOpenManagerListModalChange: (isOpenManagerListModal: boolean) => void
+  dataCount: number
 }> = ({
   variant,
   manager,
   leads,
   onRefetch,
+  onTableChange,
   isLoading,
   title,
   selectedLeadStatusCategoryId,
@@ -108,6 +111,7 @@ const SalesLeadTable: React.VFC<{
   onSelectChange,
   onIsOpenAddListModalChange,
   onIsOpenManagerListModalChange,
+  dataCount,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
@@ -700,7 +704,7 @@ const SalesLeadTable: React.VFC<{
       ),
     },
     {
-      key: 'createdAt',
+      key: 'created_at',
       dataIndex: 'createdAt',
       title: formatMessage(saleMessages.SalesLeadTable.createdAt),
       sorter: {
@@ -710,7 +714,7 @@ const SalesLeadTable: React.VFC<{
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     {
-      key: 'recentContactedAt',
+      key: 'last_member_note_called',
       dataIndex: 'recentContactedAt',
       title: formatMessage(saleMessages.SalesLeadTable.recentContactedAt),
       sorter: {
@@ -720,7 +724,7 @@ const SalesLeadTable: React.VFC<{
       render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
     },
     {
-      key: 'recentAnsweredAt',
+      key: 'last_member_note_answered',
       dataIndex: 'recentAnsweredAt',
       title: formatMessage(saleMessages.SalesLeadTable.recentAnsweredAt),
       sorter: {
@@ -1072,7 +1076,9 @@ const SalesLeadTable: React.VFC<{
                 ? settingPageSizeOptions.split(',')
                 : ['20', '50', '100', '300', '500', '1000']
               : ['20', '50', '100', '300', '500', '1000'],
+            total: dataCount,
           }}
+          onChange={onTableChange}
           className="mb-3"
         />
       </TableWrapper>
