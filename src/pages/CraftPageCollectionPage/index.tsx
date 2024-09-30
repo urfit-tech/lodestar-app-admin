@@ -43,6 +43,7 @@ const CraftPageCollectionPage: React.VFC = () => {
           editorName: appPage.editorName,
           craftData: appPage.craftData,
           options: appPage.options,
+          language: appPage.language,
         })),
     },
     {
@@ -58,6 +59,7 @@ const CraftPageCollectionPage: React.VFC = () => {
           editorName: appPage.editorName,
           craftData: appPage.craftData,
           options: appPage.options,
+          language: appPage.language,
         })),
     },
   ]

@@ -16,20 +16,43 @@ const craftPageCollectionPageMessages = {
     path: { id: 'CraftPageCollectionPage.*.path', defaultMessage: '網址路徑' },
     pathTips: { id: 'CraftPageCollectionPage.*.pathTips', defaultMessage: '請填入頁面網址路徑，ex：/path' },
     slashIsRequest: { id: 'CraftPageCollectionPage.*.slashIsRequest', defaultMessage: '斜線是必須的' },
-    pathIsExistWarning: { id: 'CraftPageCollectionPage.*.pathIsExist', defaultMessage: '網址路徑重複，請更換' },
+    pathIsExistWarning: {
+      id: 'craftPageAdminPage.*.pathIsExist',
+      defaultMessage: '網址路徑重複，請更換',
+    },
+    localePathIsExistWarning: {
+      id: 'CraftPageCollectionPage.*.pathIsExist',
+      defaultMessage: '{locale}語系已重複設定同個路徑',
+    },
     header: { id: 'CraftPageCollectionPage.*.header', defaultMessage: '頁首選單' },
     footer: { id: 'CraftPageCollectionPage.*.footer', defaultMessage: '頁尾選單' },
     enable: { id: 'CraftPageCollectionPage.*.enable', defaultMessage: '顯示' },
     disable: { id: 'CraftPageCollectionPage.*.disable', defaultMessage: '隱藏' },
+    displayLocale: { id: 'CraftPageCollectionPage.*.displayLocale', defaultMessage: '顯示語系' },
+    noSpecificLocale: {
+      id: 'CraftPageCollectionPage.*.noSpecificLocale',
+      defaultMessage: '不指定特定語系',
+    },
+    noneLocalePathIsExistWarning: {
+      id: 'CraftPageCollectionPage.*.noneLocalePathIsExist',
+      defaultMessage: '不指定特定語系已重複設定同個路徑',
+    },
   }),
   CraftPageCollectionTable: defineMessages({
     url: { id: 'CraftPageCollectionPage.CraftPageCollectionTable.url', defaultMessage: '網址' },
-    latestUpdatedAt: { id: 'CraftPageCollectionPage.CraftPageCollectionTable.latestUpdatedAt', defaultMessage: '最後修改時間' },
+    latestUpdatedAt: {
+      id: 'CraftPageCollectionPage.CraftPageCollectionTable.latestUpdatedAt',
+      defaultMessage: '最後修改時間',
+    },
   }),
   CraftPageReplicateModal: defineMessages({
-    originPageName: { id: 'CraftPageCollectionPage.CraftPageReplicateModal.originPageName', defaultMessage: '原始的頁面名稱' },
+    originPageName: {
+      id: 'CraftPageCollectionPage.CraftPageReplicateModal.originPageName',
+      defaultMessage: '原始的頁面名稱',
+    },
     originPath: { id: 'CraftPageCollectionPage.CraftPageReplicateModal.originPath', defaultMessage: '原始的網址路徑' },
   }),
+  CraftPageCreationModal: defineMessages({}),
 }
 
 export default craftPageCollectionPageMessages
