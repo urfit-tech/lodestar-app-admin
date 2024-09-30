@@ -2,10 +2,12 @@ import Icon, { CalendarOutlined, UserOutlined } from '@ant-design/icons'
 import { Typography } from 'antd'
 import moment from 'moment-timezone'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as PlayIcon } from '../../images/icon/play.svg'
+import postMessages from './translation'
 
 const StyledWrapper = styled.div`
   overflow: hidden;
@@ -69,6 +71,7 @@ const BlogPostCard: React.FC<{
   action?: React.ReactNode
   memberName?: string | null
 }> = ({ title, coverUrl, videoUrl, views, publishedAt, link, memberName }) => {
+  const { formatMessage } = useIntl()
   return (
     <StyledWrapper>
       <Link to={link}>
@@ -94,7 +97,9 @@ const BlogPostCard: React.FC<{
         </StyledDescription>
       </Link>
 
-      <StyledViews>瀏覽 {views}</StyledViews>
+      <StyledViews>
+        {formatMessage(postMessages.BlogPostCard.views)} {views}
+      </StyledViews>
     </StyledWrapper>
   )
 }

@@ -192,6 +192,114 @@ const craftMessages = {
     bottom: { id: 'craft.SpaceStyleInput.bottom', defaultMessage: 'bottom' },
     left: { id: 'craft.SpaceStyleInput.left', defaultMessage: 'left' },
   }),
+  ActivityCollectionSection: defineMessages({
+    activityTitle: {
+      id: 'craft.ActivityCollectionSection.activityTitle',
+      defaultMessage: '活動',
+    },
+    viewNow: {
+      id: 'craft.ActivityCollectionSection.viewNow',
+      defaultMessage: '馬上查看 〉',
+    },
+  }),
+  CTASection: defineMessages({
+    whatAreYouWaitingFor: {
+      id: 'craft.CTASection.whatAreYouWaitingFor',
+      defaultMessage: '還在等什麼？立即查看課程',
+    },
+    viewNow: {
+      id: 'craft.CTASection.viewNow',
+      defaultMessage: '馬上查看',
+    },
+  }),
+  ContentSection: defineMessages({
+    sectionTitle: {
+      id: 'craft.ContentSection.sectionTitle',
+      defaultMessage: '屹立不搖的組織都有相同的模式',
+    },
+    sectionContent: {
+      id: 'craft.ContentSection.sectionContent',
+      defaultMessage:
+        '但是什麼時候該理想，什麼時候該現實，什麼時候該堅持，什麼時候該妥協，又是一門藝術了，而這中間的拿捏，也是「初階的管理人才」與「進階的管理人才」之間的差別吧！但是什麼時候該理想，什麼時候該現實，什麼時候該堅持，什麼時候該妥協，又是一門藝術了，而這中間的拿捏，也是「初階的管理人才」與「進階的管理人才」之間的差別吧！',
+    },
+  }),
+  FAQSection: defineMessages({
+    faqTitle: {
+      id: 'craft.FAQSection.faqTitle',
+      defaultMessage: '常見問題',
+    },
+    title1: {
+      id: 'craft.FAQSection.title1',
+      defaultMessage: '什麼是線上課程? 請問在哪裡上課？上課時間？',
+    },
+    description1: {
+      id: 'craft.FAQSection.description1',
+      defaultMessage:
+        '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+    },
+    title2: {
+      id: 'craft.FAQSection.title2',
+      defaultMessage: '課程可以看幾次？',
+    },
+    description2: {
+      id: 'craft.FAQSection.description2',
+      defaultMessage:
+        '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+    },
+    title3: {
+      id: 'craft.FAQSection.title3',
+      defaultMessage: '可以問老師問題嗎？',
+    },
+    description3: {
+      id: 'craft.FAQSection.description3',
+      defaultMessage:
+        '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+    },
+  }),
+  FeatureSection: defineMessages({
+    title: {
+      id: 'craft.FeatureSection.title',
+      defaultMessage: '四大特色',
+    },
+  }),
+  MemberCollectionSection: defineMessages({
+    title: {
+      id: 'craft.MemberCollectionSection.title',
+      defaultMessage: '精選師資',
+    },
+  }),
+  ReferrerSection: defineMessages({
+    title: {
+      id: 'craft.ReferrerSection.title',
+      defaultMessage: '推薦評價',
+    },
+  }),
+  RichFeatureSection: defineMessages({
+    title: {
+      id: 'craft.RichFeatureSection.title',
+      defaultMessage: '六大特色',
+    },
+  }),
+  StatisticsSection: defineMessages({
+    title: {
+      id: 'craft.StatisticsSection.title',
+      defaultMessage: '提供完善的服務',
+    },
+  }),
+  VerticalCTASection: defineMessages({
+    title1: {
+      id: 'craft.VerticalCTASection.title1',
+      defaultMessage: '還在等什麼？立即查看課程',
+    },
+    title2: {
+      id: 'craft.VerticalCTASection.title2',
+      defaultMessage: '所以我們不該是為學習而學習，而是在設定好學習目標',
+    },
+    buttonTitle: {
+      id: 'craft.VerticalCTASection.buttonTitle',
+      defaultMessage: '馬上查看',
+    },
+  }),
 }
 
 export default craftMessages

@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { message, Modal, Spin } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -23,6 +22,7 @@ import {
   exportPodcastProgram,
   splitPodcastProgramAudio,
 } from './RecordingPageHelpers'
+import pageMessages from './translation'
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
   overflow-y: auto;
@@ -110,7 +110,9 @@ const RecordingPage: React.FC = () => {
 
   const onGetRecordAudio = useCallback(
     (blob: Blob, duration: number) => {
-      const filename = `未命名${`${signedPodCastProgramAudios.length + 1}`.padStart(2, '0')}.mp3`
+      const filename = `${formatMessage(pageMessages.RecordingPage.Unnamed)}${`${
+        signedPodCastProgramAudios.length + 1
+      }`.padStart(2, '0')}.mp3`
       const audioKey = `audios/${appId}/${podcastProgramId}/${filename}`
 
       const totalDurationSecond = signedPodCastProgramAudios.reduce((sum, audio) => (sum += audio.duration), 0)

@@ -242,6 +242,10 @@ const programMessages = {
       id: 'program.ProgramContentSectionAdminCard.programExercise',
       defaultMessage: 'Program exercise',
     },
+    expandChapter: {
+      id: 'program.ProgramContentSectionAdminCard.expandChapter',
+      defaultMessage: '展開章節',
+    },
   }),
   PriceDescriptionItem: defineMessages({
     priceDescription: {

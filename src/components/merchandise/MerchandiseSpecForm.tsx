@@ -1,9 +1,8 @@
 import { CloseOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Checkbox, Divider, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { PeriodType } from 'lodestar-app-element/src/types/data'
@@ -340,13 +339,16 @@ const MerchandiseSpecForm: React.FC<{
                               ])
                             }
                           >
-                            加贈代幣
+                            {formatMessage(merchandiseMessages.ui.bonusTokens)}
                           </Checkbox>
                         </div>
 
                         {specsCoinBack[index].hasCoinBack && (
                           <>
-                            <Form.Item label={<StyledLabel>代幣數量</StyledLabel>} className="mb-0 mr-3">
+                            <Form.Item
+                              label={<StyledLabel>{formatMessage(merchandiseMessages.ui.tokenQuantity)}</StyledLabel>}
+                              className="mb-0 mr-3"
+                            >
                               <CurrencyInput
                                 noUnit
                                 value={specsCoinBack[index]?.coinBack}
@@ -359,7 +361,10 @@ const MerchandiseSpecForm: React.FC<{
                                 }
                               />
                             </Form.Item>
-                            <Form.Item label={<StyledLabel>有效期限</StyledLabel>} className="mb-0 mr-3">
+                            <Form.Item
+                              label={<StyledLabel>{formatMessage(merchandiseMessages.ui.expirationDate)}</StyledLabel>}
+                              className="mb-0 mr-3"
+                            >
                               <PeriodSelector
                                 value={specsCoinBack[index]?.coinBackPeriod}
                                 onChange={({ type, amount }) => {

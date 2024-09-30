@@ -1,16 +1,19 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Layout } from 'antd'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { ContractInfo } from '.'
 import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import bgBackground from '../../images/default/bg-background.png'
+import pageMessages from '../translation'
 
 const ContractLayout: React.FC<{ member: ContractInfo['member']; isMemberTypeBG: boolean }> = ({
   member,
   isMemberTypeBG,
   children,
 }) => {
+  const { formatMessage } = useIntl()
   return (
     <>
       <AdminHeader>
@@ -21,7 +24,7 @@ const ContractLayout: React.FC<{ member: ContractInfo['member']; isMemberTypeBG:
         </Link>
 
         <a href={`/admin/members/${member.id}/order`} rel="noopener noreferrer">
-          <Button>會員訂單紀錄</Button>
+          <Button>{formatMessage(pageMessages.ContractLayout.memberOrderHistory)}</Button>
         </a>
       </AdminHeader>
       <Layout>

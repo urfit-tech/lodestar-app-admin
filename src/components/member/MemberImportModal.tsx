@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl'
 import { uploadFileV2 } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
+import memberMessages from './translation'
 
 const MemberImportModal: React.FC<{
   onRefetch?: () => void
@@ -84,17 +85,22 @@ const MemberImportModal: React.FC<{
           case 201:
             return (
               <Alert
-                message={`${response.name}上傳成功!`}
+                message={formatMessage(memberMessages.MemberImportModal.uploadSuccess, { name: response.name })}
                 type="success"
                 description={
                   <div>
-                    <div>匯入結果將會以信件寄出</div>
+                    <div>{formatMessage(memberMessages.MemberImportModal.importResultNotification)}</div>
                   </div>
                 }
               />
             )
           default:
-            return <Alert message={`${response.name}上傳失敗!`} type="error" />
+            return (
+              <Alert
+                message={formatMessage(memberMessages.MemberImportModal.uploadFail, { name: response.name })}
+                type="error"
+              />
+            )
         }
       })}
     </AdminModal>

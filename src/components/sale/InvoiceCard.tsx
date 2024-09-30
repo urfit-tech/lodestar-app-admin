@@ -283,7 +283,7 @@ const InvoiceCard: React.FC<{
         <>
           {enabledModules.invoice_printer && (
             <>
-              <Button onClick={handlePrint}>列印發票</Button>
+              <Button onClick={handlePrint}>{formatMessage(saleMessages.InvoiceCard.printInvoice)}</Button>
               {showInvoice && (
                 <div id="print-content" style={{ display: 'none' }}>
                   <div className="no-break">
@@ -421,7 +421,7 @@ const InvoiceCard: React.FC<{
                   .then(r => {
                     if (r.data.code === 'SUCCESS') {
                       onClose?.()
-                      message.success('發票作廢成功')
+                      message.success(formatMessage(saleMessages.InvoiceCard.voidInvoiceSuccess))
                     }
                   })
                   .catch(handleError)
@@ -430,7 +430,7 @@ const InvoiceCard: React.FC<{
                   })
               }}
             >
-              作廢發票
+              {formatMessage(saleMessages.InvoiceCard.voidInvoice)}
             </Button>
           )}
         </>
