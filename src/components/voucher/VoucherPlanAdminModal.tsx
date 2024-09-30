@@ -269,12 +269,12 @@ const SaleVoucherInput: React.VFC<{
           <Input
             value={value.amount}
             onChange={e => onChange?.({ ...value, amount: Number(e.target.value) || 1 })}
-            addonAfter="張"
+            addonAfter={formatMessage(voucherMessages.VoucherPlanAdminModal.amount)}
           />
           <Input
             value={value.price}
             onChange={e => onChange?.({ ...value, price: Number(e.target.value) || 0 })}
-            addonAfter="元"
+            addonAfter={formatMessage(voucherMessages.VoucherPlanAdminModal.price)}
           />
         </Input.Group>
       )}

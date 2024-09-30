@@ -1,10 +1,10 @@
-import dayjs from 'dayjs'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useApolloClient, useMutation } from '@apollo/client'
 import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -82,7 +82,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           },
         })
         if (appointmentPeriodData.appointment_period.length > 0) {
-          message.error('已有重複的時段')
+          message.error(formatMessage(appointmentMessages.AppointmentPlanScheduleCreationModal.duplicatePeriodError))
           setLoading(false)
           return
         }

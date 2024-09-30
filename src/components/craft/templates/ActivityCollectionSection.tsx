@@ -8,10 +8,12 @@ import {
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const ActivityCollectionSection: React.VFC = () => {
   const theme = useAppTheme()
-
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -23,7 +25,7 @@ const ActivityCollectionSection: React.VFC = () => {
       canvas
     >
       <CraftTitle
-        title="活動"
+        title={formatMessage(craftMessages.ActivityCollectionSection.activityTitle)}
         customStyle={{
           fontSize: 20,
           margin: '0 0 40 0',
@@ -54,7 +56,14 @@ const ActivityCollectionSection: React.VFC = () => {
         </CraftActivityCollection>
       </Element>
       <div style={{ textAlign: 'center' }}>
-        <CraftButton title="馬上查看 〉" link="/programs" openNewTab={false} size="md" block={false} variant="text" />
+        <CraftButton
+          title={formatMessage(craftMessages.ActivityCollectionSection.viewNow)}
+          link="/programs"
+          openNewTab={false}
+          size="md"
+          block={false}
+          variant="text"
+        />
       </div>
     </Element>
   )

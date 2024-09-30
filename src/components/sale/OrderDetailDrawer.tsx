@@ -126,17 +126,17 @@ const OrderDetailDrawer: React.FC<{
                     invoiceEmail={orderLog.invoiceOptions?.email || ''}
                     invoiceTarget={
                       orderLog.invoiceOptions?.donationCode
-                        ? '捐贈'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetDonation)
                         : orderLog.invoiceOptions?.uniformNumber
-                        ? '公司'
-                        : '個人'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetCompany)
+                        : formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetIndividual)
                     }
                     donationCode={orderLog.invoiceOptions?.donationCode || ''}
                     invoiceCarrier={
                       orderLog.invoiceOptions?.phoneBarCode
-                        ? '手機'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.phoneBarCode)
                         : orderLog.invoiceOptions?.citizenCode
-                        ? '自然人憑證'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.citizenCode)
                         : ''
                     }
                     uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
@@ -168,17 +168,17 @@ const OrderDetailDrawer: React.FC<{
                       invoiceEmail={orderLog.invoiceOptions?.email || ''}
                       invoiceTarget={
                         orderLog.invoiceOptions?.donationCode
-                          ? '捐贈'
+                          ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetDonation)
                           : orderLog.invoiceOptions?.uniformNumber
-                          ? '公司'
-                          : '個人'
+                          ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetCompany)
+                          : formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetIndividual)
                       }
                       donationCode={orderLog.invoiceOptions?.donationCode || ''}
                       invoiceCarrier={
                         orderLog.invoiceOptions?.phoneBarCode
-                          ? '手機'
+                          ? formatMessage(saleMessages.OrderDetailDrawer.phoneBarCode)
                           : orderLog.invoiceOptions?.citizenCode
-                          ? '自然人憑證'
+                          ? formatMessage(saleMessages.OrderDetailDrawer.citizenCode)
                           : ''
                       }
                       uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
@@ -303,17 +303,17 @@ const OrderDetailDrawer: React.FC<{
                     invoiceEmail={orderLog.invoiceOptions?.email || ''}
                     invoiceTarget={
                       orderLog.invoiceOptions?.donationCode
-                        ? '捐贈'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetDonation)
                         : orderLog.invoiceOptions?.uniformNumber
-                        ? '公司'
-                        : '個人'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetCompany)
+                        : formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetIndividual)
                     }
                     donationCode={orderLog.invoiceOptions?.donationCode || ''}
                     invoiceCarrier={
                       orderLog.invoiceOptions?.phoneBarCode
-                        ? '手機'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.phoneBarCode)
                         : orderLog.invoiceOptions?.citizenCode
-                        ? '自然人憑證'
+                        ? formatMessage(saleMessages.OrderDetailDrawer.citizenCode)
                         : ''
                     }
                     uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}

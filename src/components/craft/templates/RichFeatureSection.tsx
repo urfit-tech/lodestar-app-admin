@@ -6,10 +6,13 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const RichFeatureSection: React.VFC<{
   variant?: 'default' | 'dark'
 }> = ({ variant = 'default' }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -25,7 +28,7 @@ const RichFeatureSection: React.VFC<{
       canvas
     >
       <CraftTitle
-        title="六大特色"
+        title={formatMessage(craftMessages.RichFeatureSection.title)}
         // fontSize={20}
         // margin={{ mb: '40' }}
         // textAlign="center"

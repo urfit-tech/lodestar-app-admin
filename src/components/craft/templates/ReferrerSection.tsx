@@ -6,10 +6,13 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const ReferrerSection: React.VFC<{
   variant?: 'default' | 'card'
 }> = ({ variant = 'default' }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -20,7 +23,7 @@ const ReferrerSection: React.VFC<{
       canvas
     >
       <CraftTitle
-        title="推薦評價"
+        title={formatMessage(craftMessages.ReferrerSection.title)}
         // fontSize={20}
         // margin={{ mb: '25' }}
         // textAlign="center"

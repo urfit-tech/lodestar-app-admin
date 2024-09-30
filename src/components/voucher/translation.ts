@@ -23,6 +23,14 @@ const voucherMessages = {
     },
   }),
   VoucherPlanAdminModal: defineMessages({
+    amount: {
+      id: 'voucher.VoucherPlanAdminModal.amount',
+      defaultMessage: '張',
+    },
+    price: {
+      id: 'voucher.VoucherPlanAdminModal.price',
+      defaultMessage: '元',
+    },
     voucherCodes: { id: 'voucher.VoucherPlanAdminModal.voucherCodes', defaultMessage: '兌換碼' },
     voucherCategory: { id: 'voucher.VoucherPlanAdminModal.VoucherCategory', defaultMessage: '兌換分類' },
     errorVoucherCodes: {

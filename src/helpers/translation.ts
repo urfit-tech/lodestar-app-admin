@@ -542,6 +542,14 @@ export const errorMessages = {
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
     memberAlreadyExist: { id: 'error.text.memberAlreadyExist', defaultMessage: '會員已存在' },
     invalidUrl: { id: 'error.text.invalidURL', defaultMessage: '無效的網址' },
+    uploadImageError: {
+      id: 'error.text.uploadImageError',
+      defaultMessage: '請上傳圖片格式',
+    },
+    imageSizeError: {
+      id: 'error.text.imageSizeError',
+      defaultMessage: '圖片大小請小於 {size}MB',
+    },
   }),
 }
 
@@ -837,7 +845,7 @@ export const programMessages = {
     noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
-    searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
+    searchExerciseMember: { id: 'program.text.searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
     audioFileLimit: {
@@ -877,6 +885,16 @@ export const programPackageMessages = {
   }),
   status: defineMessages({
     unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
+  }),
+  form: defineMessages({
+    allPerpetualPrograms: {
+      id: 'programPackage.ProgramPackageProgramConnectionModal.allPerpetualPrograms',
+      defaultMessage: '所有單次課程',
+    },
+    allSubscriptionPrograms: {
+      id: 'programPackage.ProgramPackageProgramConnectionModal.allSubscriptionPrograms',
+      defaultMessage: '所有訂閱課程',
+    },
   }),
 }
 
@@ -989,6 +1007,18 @@ export const merchandiseMessages = {
     modifyInventory: { id: 'merchandise.ui.modifyInventory', defaultMessage: '調整庫存' },
     createMemberShop: { id: 'merchandise.ui.createMemberShop', defaultMessage: '建立商店' },
     addSpec: { id: 'merchandise.ui.addSpec', defaultMessage: '新增規格' },
+    bonusTokens: {
+      id: 'merchandise.ui.bonusTokens',
+      defaultMessage: '加贈代幣',
+    },
+    tokenQuantity: {
+      id: 'merchandise.ui.tokenQuantity',
+      defaultMessage: '代幣數量',
+    },
+    expirationDate: {
+      id: 'merchandise.ui.expirationDate',
+      defaultMessage: '有效期限',
+    },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
@@ -1212,6 +1242,18 @@ export const memberMessages = {
     },
   }),
   text: {
+    noAvailableAccountInPeriod: {
+      id: 'member.text.noAvailableAccountInPeriod',
+      defaultMessage: '此時段無可用 {gateway} 帳號',
+    },
+    noAccountAvailable: {
+      id: 'member.text.noAccountAvailable',
+      defaultMessage: '無 {gateway} 帳號',
+    },
+    zoomMeetingLimitReached: {
+      id: 'meeting.text.zoomMeetingLimitReached',
+      defaultMessage: '此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議',
+    },
     deleteMemberConfirmation: {
       id: 'member.text.deleteMemberConfirmation',
       defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？',
@@ -1493,6 +1535,22 @@ export const salesMessages = defineMessages({
   deleteListConfirmMessage: {
     id: 'sales.label.deleteListConfirmMessage',
     defaultMessage: 'If the deleted list contains leads, they will all be moved to the default list after deletion.',
+  },
+  confirmCallPhone: {
+    id: 'sales.confirmCallPhone',
+    defaultMessage: '撥打號碼：',
+  },
+  phoneLinkSuccess: {
+    id: 'sales.phoneLinkSuccess',
+    defaultMessage: '話機連結成功',
+  },
+  phoneError: {
+    id: 'sales.phoneError',
+    defaultMessage: '電話錯誤',
+  },
+  connectionError: {
+    id: 'sales.connectionError',
+    defaultMessage: '連線異常，請再嘗試',
   },
 })
 

@@ -5,6 +5,8 @@ import { Service } from '../types/service'
 import { useState } from 'react'
 import { handleError } from '../helpers'
 import { useGetOverlapMeet } from './meet'
+import { useIntl } from 'react-intl'
+import { memberMessages } from '../helpers/translation'
 
 export const GetService = gql`
   query GetService($appId: String!) {
@@ -16,6 +18,7 @@ export const GetService = gql`
 `
 
 export const useMeetingServiceCheck = () => {
+  const { formatMessage } = useIntl()
   const apolloClient = useApolloClient()
   const { id: appId } = useApp()
   const { getOverlapMeets } = useGetOverlapMeet()
@@ -44,7 +47,7 @@ export const useMeetingServiceCheck = () => {
 
     if (gatewayServices.length === 0) {
       setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-      return handleError({ message: `無 ${gateway} 帳號` })
+      return handleError({ message: formatMessage(memberMessages.text.noAccountAvailable, { gateway: gateway }) })
     }
     const gatewayServiceIds = gatewayServices.map(service => service.id)
     // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
@@ -55,7 +58,9 @@ export const useMeetingServiceCheck = () => {
     const availableGatewayServiceId = gatewayServiceIds.find(serviceId => !periodUsedServiceId.includes(serviceId))
     if (!availableGatewayServiceId) {
       setInvalidGateways(prev => [...prev.filter(v => v !== gateway), gateway])
-      return handleError({ message: `此時段無可用 ${gateway} 帳號` })
+      return handleError({
+        message: formatMessage(memberMessages.text.noAvailableAccountInPeriod, { gateway: gateway }),
+      })
     } else {
       setInvalidGateways(prev => [...prev.filter(v => v !== gateway)])
     }

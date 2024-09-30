@@ -6,12 +6,15 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const FAQSection: React.VFC<{ variant?: 'accordion' }> = ({ variant }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element id="CraftSection" is={CraftSection} customStyle={{ padding: '64 0', margin: '0 0 5 0' }} canvas>
       <CraftTitle
-        title="常見問題"
+        title={formatMessage(craftMessages.FAQSection.faqTitle)}
         customStyle={{
           fontSize: 20,
           margin: '0 0 40 0',
@@ -43,19 +46,16 @@ const FAQSection: React.VFC<{ variant?: 'accordion' }> = ({ variant }) => {
             is={CraftCollapse}
             list={[
               {
-                title: '什麼是線上課程? 請問在哪裡上課？上課時間？',
-                description:
-                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+                title: formatMessage(craftMessages.FAQSection.title1),
+                description: formatMessage(craftMessages.FAQSection.description1),
               },
               {
-                title: '課程可以看幾次？',
-                description:
-                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+                title: formatMessage(craftMessages.FAQSection.title2),
+                description: formatMessage(craftMessages.FAQSection.description2),
               },
               {
-                title: '可以問老師問題嗎？',
-                description:
-                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+                title: formatMessage(craftMessages.FAQSection.title3),
+                description: formatMessage(craftMessages.FAQSection.description3),
               },
             ]}
             customStyle={{

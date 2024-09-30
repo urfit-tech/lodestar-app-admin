@@ -134,7 +134,12 @@ const QuestionBlock: React.VFC<{
       ...question,
       options: [
         ...(question.options || []),
-        { id: uuid(), value: '<p>選項內容</p>', isAnswer: false, position: optionsLength + 1 },
+        {
+          id: uuid(),
+          value: `<p>${formatMessage(pageMessages.QuestionBlock.optionContent)}</p>`,
+          isAnswer: false,
+          position: optionsLength + 1,
+        },
       ],
     }
     onQuestionChange?.(newQuestion)
