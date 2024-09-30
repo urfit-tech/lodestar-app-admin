@@ -1,6 +1,9 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/client'
+import { Select } from '@chakra-ui/react'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -10,18 +13,15 @@ import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledTips } from '../../c
 import AdminModal from '../../components/admin/AdminModal'
 import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
+import { GetAppPageLanguage } from '../../hooks/craft'
 import { CraftPageAdminProps } from '../../types/craft'
 import { CraftSettingLabel } from './CraftSettingsPanel'
-import { Select } from '@chakra-ui/react'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useApolloClient } from '@apollo/client'
-import { GetAppPageLanguage } from '../../hooks/craft'
-import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
-import craftPageAdminPage from './translation'
-import hasura from '../../hasura'
+import CraftPageAdminPage from './translation'
 
 type FieldProps = {
   pageName: string
@@ -154,17 +154,17 @@ const CraftPageBasicSettingBlock: React.VFC<{
                             enabledModules.locale
                               ? form.getFieldValue('language') === 'none'
                                 ? formatMessage(
-                                    craftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
+                                    CraftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
                                   )
                                 : formatMessage(
-                                    craftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
+                                    CraftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
                                     {
                                       locale: SUPPORTED_LOCALES.find(
                                         supportedLocale => supportedLocale.locale === form.getFieldValue('language'),
                                       )?.label,
                                     },
                                   )
-                              : formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.pathIsExistWarning),
+                              : formatMessage(CraftPageAdminPage.CraftPageBasicSettingBlock.pathIsExistWarning),
                           )
                         }
                         return Promise.resolve()
@@ -219,12 +219,12 @@ const CraftPageBasicSettingBlock: React.VFC<{
             <Form.Item
               label={
                 <span className="d-flex align-items-center">
-                  {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.displayLocale)}
+                  {formatMessage(CraftPageAdminPage.CraftPageBasicSettingBlock.displayLocale)}
                   <Tooltip
                     placement="top"
                     title={
                       <StyledTips>
-                        {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.displayLocaleTooltip)}
+                        {formatMessage(CraftPageAdminPage.CraftPageBasicSettingBlock.displayLocaleTooltip)}
                       </StyledTips>
                     }
                   >
@@ -257,10 +257,10 @@ const CraftPageBasicSettingBlock: React.VFC<{
                             return Promise.reject(
                               form.getFieldValue('language') === 'none'
                                 ? formatMessage(
-                                    craftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
+                                    CraftPageAdminPage.CraftPageBasicSettingBlock.noneLocalePathIsExistWarning,
                                   )
                                 : formatMessage(
-                                    craftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
+                                    CraftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning,
                                     {
                                       locale: SUPPORTED_LOCALES.find(
                                         supportedLocale => supportedLocale.locale === form.getFieldValue('language'),
@@ -277,7 +277,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
               >
                 <Select>
                   <option value="none">
-                    {formatMessage(craftPageAdminPage.CraftPageBasicSettingBlock.noSpecificLocale)}
+                    {formatMessage(CraftPageAdminPage.CraftPageBasicSettingBlock.noSpecificLocale)}
                   </option>
                   {SUPPORTED_LOCALES.map(supportedLocale => (
                     <option value={supportedLocale.locale}>{supportedLocale.label}</option>

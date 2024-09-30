@@ -1,20 +1,20 @@
 import { defineMessages } from 'react-intl'
 
-const craftPageAdminPage = {
+const CraftPageAdminPage = {
   '*': defineMessages({}),
   CraftPageBasicSettingBlock: defineMessages({
-    selectLocale: { id: 'craftPageAdminPage.CraftPageBasicSettingBlock.selectLocale', defaultMessage: '選擇語系' },
-    displayLocale: { id: 'craftPageAdminPage.CraftPageBasicSettingBlock.displayLocale', defaultMessage: '顯示語系' },
+    selectLocale: { id: 'CraftPageAdminPage.CraftPageBasicSettingBlock.selectLocale', defaultMessage: '選擇語系' },
+    displayLocale: { id: 'CraftPageAdminPage.CraftPageBasicSettingBlock.displayLocale', defaultMessage: '顯示語系' },
     localeTooltip: {
-      id: 'craftPageAdminPage.CraftPageBasicSettingBlock.localeTooltip',
+      id: 'CraftPageAdminPage.CraftPageBasicSettingBlock.localeTooltip',
       defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示',
     },
     pathIsExistWarning: {
-      id: 'craftPageAdminPage.CraftPageBasicSettingBlock.pathIsExist',
+      id: 'CraftPageAdminPage.CraftPageBasicSettingBlock.pathIsExistWarning',
       defaultMessage: '網址路徑重複，請更換',
     },
     localePathIsExistWarning: {
-      id: 'CraftPageCollectionPage.CraftPageBasicSettingBlock.pathIsExist',
+      id: 'CraftPageAdminPage.CraftPageBasicSettingBlock.localePathIsExistWarning',
       defaultMessage: '{locale}語系已重複設定同個路徑',
     },
     noneLocalePathIsExistWarning: {
@@ -32,4 +32,4 @@ const craftPageAdminPage = {
   }),
 }
 
-export default craftPageAdminPage
+export default CraftPageAdminPage
