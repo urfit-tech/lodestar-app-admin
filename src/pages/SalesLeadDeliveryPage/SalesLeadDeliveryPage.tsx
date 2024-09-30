@@ -137,6 +137,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
                       completed_at: isClearCompletedAt ? null : undefined,
                       closed_at: isClearClosedAt ? null : undefined,
                       recycled_at: isClearRecycledAt ? null : undefined,
+                      lead_status_category_id: null,
                       star: isClearCompletedAt || isClearClosedAt || isClearRecycledAt ? 0 : undefined,
                     },
                   },
