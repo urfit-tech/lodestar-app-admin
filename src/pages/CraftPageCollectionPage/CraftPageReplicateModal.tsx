@@ -15,6 +15,10 @@ import { handleError } from '../../helpers'
 import { errorMessages } from '../../helpers/translation'
 import { AppPageProps, useMutateAppPage } from '../../hooks/appPage'
 import craftPageCollectionPageMessages from './translation'
+import { Select } from '@chakra-ui/react'
+import { GetAppPageLanguage } from '../../hooks/craft'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 
 const StyledDemoUrl = styled.div`
   font-size: 14px;
@@ -28,31 +32,40 @@ type FieldProps = {
   path: string
   noHeader: boolean
   noFooter: boolean
+  language: string
 }
 
 const CraftPageReplicateModal: React.FC<
   AdminModalProps & {
-    originCraftPage: Pick<AppPageProps, 'id' | 'path' | 'title' | 'options' | 'craftData'>
+    originCraftPage: Pick<AppPageProps, 'id' | 'path' | 'title' | 'options' | 'craftData' | 'language'>
     onRefetch?: () => Promise<any>
   }
 > = ({ originCraftPage, onCancel, onRefetch, ...props }) => {
+  const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const client = useApolloClient()
   const history = useHistory()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string; noHeader?: boolean; noFooter?: boolean }>({
+  const [pageInfo, setPageInfo] = useState<{
+    pageName: string
+    path: string
+    noHeader?: boolean
+    noFooter?: boolean
+    language: string
+  }>({
     pageName: '',
     path: '',
     noHeader: originCraftPage?.options?.noHeader,
     noFooter: originCraftPage?.options?.noFooter,
+    language: 'none',
   })
   const { insertAppPage } = useMutateAppPage()
 
   const handleResetModal = () => {
     form.resetFields()
-    setPageInfo({ pageName: '', path: '', noHeader: false, noFooter: false })
+    setPageInfo({ pageName: '', path: '', noHeader: false, noFooter: false, language: 'none' })
   }
 
   const handleSubmit = () => {
@@ -60,13 +73,14 @@ const CraftPageReplicateModal: React.FC<
     form
       .validateFields()
       .then(async value => {
-        const { path, pageName, noHeader, noFooter } = value
+        const { path, pageName, noHeader, noFooter, language } = value
         const insertRes = await insertAppPage({
           path: path,
           title: pageName,
           editorId: currentMemberId || '',
           craftData: originCraftPage.craftData,
           options: { white: true, noHeader, noFooter },
+          language: language === 'none' ? null : language,
         })
 
         await onRefetch?.()
@@ -173,7 +187,9 @@ const CraftPageReplicateModal: React.FC<
                     })
                     .then(res => {
                       if (value && res.data.app_page.length !== 0) {
-                        return Promise.reject(formatMessage(craftPageCollectionPageMessages['*'].pathIsExistWarning))
+                        return Promise.reject(
+                          formatMessage(craftPageCollectionPageMessages['*'].localePathIsExistWarning),
+                        )
                       }
                       return Promise.resolve()
                     })
@@ -235,6 +251,53 @@ const CraftPageReplicateModal: React.FC<
             </Radio.Group>
           </Form.Item>
         </Form.Item>
+        {enabledModules.locale ? (
+          <Form.Item label={formatMessage(craftPageCollectionPageMessages['*'].displayLocale)}>
+            <Form.Item
+              name="language"
+              initialValue="none"
+              noStyle
+              rules={[
+                {
+                  validator: async (_, value, callback) => {
+                    await client
+                      .query<hasura.GetAppPageLanguage, hasura.GetAppPageLanguageVariables>({
+                        query: GetAppPageLanguage,
+                        variables: {
+                          condition: {
+                            app_id: { _eq: appId },
+                            path: { _eq: form.getFieldValue('path') },
+                            language: value === 'none' ? { _is_null: true } : { _eq: value },
+                          },
+                        },
+                      })
+                      .then(res => {
+                        if (value && res.data.app_page.length !== 0) {
+                          return Promise.reject(
+                            form.getFieldValue('language') === 'none'
+                              ? formatMessage(craftPageCollectionPageMessages['*'].noneLocalePathIsExistWarning)
+                              : formatMessage(craftPageCollectionPageMessages['*'].localePathIsExistWarning, {
+                                  locale: SUPPORTED_LOCALES.find(
+                                    supportedLocale => supportedLocale.locale === form.getFieldValue('language'),
+                                  )?.label,
+                                }),
+                          )
+                        }
+                        return Promise.resolve()
+                      })
+                  },
+                },
+              ]}
+            >
+              <Select>
+                <option value="none">{formatMessage(craftPageCollectionPageMessages['*'].noSpecificLocale)}</option>
+                {SUPPORTED_LOCALES.map(supportedLocale => (
+                  <option value={supportedLocale.locale}>{supportedLocale.label}</option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form.Item>
+        ) : null}
       </Form>
     </AdminModal>
   )
