@@ -88,6 +88,42 @@ const adminMessages = {
     report: { id: 'admin.AdminMenu.report', defaultMessage: '報表分析' },
     tmpPassword: { id: 'admin.AdminMenu.tmpPassword', defaultMessage: 'Temporary Password Request' },
     announcementManagement: { id: 'admin.AdminMenu.announcementManagement', defaultMessage: 'Announcement Management' },
+    contractDataManagement: {
+      id: 'admin.AdminMenu.contractDataManagement',
+      defaultMessage: '合約資料管理',
+    },
+    businessInquiry: {
+      id: 'admin.AdminMenu.businessInquiry',
+      defaultMessage: '業務查詢',
+    },
+    realTimeBattleQuery: {
+      id: 'admin.AdminMenu.realTimeBattleQuery',
+      defaultMessage: '即時戰況查詢',
+    },
+    registrationFormQuery: {
+      id: 'admin.AdminMenu.registrationFormQuery',
+      defaultMessage: '{name} 報名表查詢',
+    },
+    dataAnalysis: {
+      id: 'admin.AdminMenu.dataAnalysis',
+      defaultMessage: '數據分析',
+    },
+    materialPerformance: {
+      id: 'admin.AdminMenu.materialPerformance',
+      defaultMessage: '素材表現',
+    },
+    businessPerformance: {
+      id: 'admin.AdminMenu.businessPerformance',
+      defaultMessage: '業務表現',
+    },
+    activityVolume: {
+      id: 'admin.AdminMenu.activityVolume',
+      defaultMessage: '活動量',
+    },
+    adAudience: {
+      id: 'admin.AdminMenu.adAudience',
+      defaultMessage: '廣告受眾',
+    },
   }),
 }
 export default adminMessages

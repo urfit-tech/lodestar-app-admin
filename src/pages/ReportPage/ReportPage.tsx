@@ -6,12 +6,14 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import { useMemberPermissionGroups } from '../../hooks/member'
 import { useReport } from '../../hooks/report'
 import ForbiddenPage from '../ForbiddenPage'
+import pageMessages from '../translation'
 
 const StyledReportHeightBlock = styled.div`
   display: flex;
@@ -24,6 +26,7 @@ const StyledReportHeightText = styled.div`
 `
 
 const ReportPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { enabledModules, settings } = useApp()
   const { authToken, permissions, currentMemberId } = useAuth()
   const [isIframeLoading, setIframeLoading] = useState<boolean>(true)
@@ -65,7 +68,7 @@ const ReportPage: React.FC = () => {
           </AdminPageTitle>
           {settings['report.resizable'] === '1' && (
             <StyledReportHeightBlock>
-              <StyledReportHeightText>報表高度</StyledReportHeightText>
+              <StyledReportHeightText>{formatMessage(pageMessages.ReportPage.reportHeight)}</StyledReportHeightText>
               <InputNumber
                 size="middle"
                 value={iframeHeight}

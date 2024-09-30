@@ -1,8 +1,11 @@
 import { Element } from '@craftjs/core'
 import { CraftSection, CraftTitle } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const MemberCollectionSection: React.VFC = () => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -13,7 +16,7 @@ const MemberCollectionSection: React.VFC = () => {
       canvas
     >
       <CraftTitle
-        title="精選師資"
+        title={formatMessage(craftMessages.MemberCollectionSection.title)}
         // fontSize={20}
         // margin={{ mb: '25' }}
         // textAlign="center"

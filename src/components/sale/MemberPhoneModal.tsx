@@ -8,6 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
+import saleMessages from './translation'
 
 const StyledModalTitle = styled.div`
   ${CommonTitleMixin}
@@ -228,7 +229,9 @@ const MemberPhoneModal: React.FC<{
                         }
                         if (existPhone) {
                           setIsDisabled(true)
-                          return Promise.reject(new Error('手機號碼不能重複'))
+                          return Promise.reject(
+                            new Error(formatMessage(saleMessages.MemberPhoneModal.phoneDuplicateError)),
+                          )
                         }
                       },
                     }),

@@ -65,15 +65,15 @@ const TransferModal: React.FC<{
         })
 
         if (data?.update_member?.affected_rows) {
-          window.alert('已成功轉移此名單！')
+          window.alert(formatMessage(saleMessages.TransferModal.transferSuccess))
           onRefetch()
         }
       } catch (error: any) {
         if (error.graphQLErrors) {
           const graphqlErrors = error.graphQLErrors.map((graphqlError: any) => graphqlError.message)
-          window.alert(`轉移失敗(graphqlErrors)：${graphqlErrors.join(', ')}`)
+          window.alert(`${formatMessage(saleMessages.TransferModal.transferFailGraphql)}${graphqlErrors.join(', ')}`)
         } else {
-          window.alert(`轉移失敗：${error.message}`)
+          window.alert(`${formatMessage(saleMessages.TransferModal.transferFail)}${error.message}`)
         }
       } finally {
         onTransferFinish()

@@ -11,7 +11,8 @@ import {
   SyncOutlined,
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
+import { Center } from '@chakra-ui/layout'
+import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -29,7 +30,7 @@ import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { StyledLine } from '../../pages/SalesLeadPage'
-import { SalesLeadMember, LeadStatus, Manager } from '../../types/sales'
+import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -39,6 +40,7 @@ import ManagerListModal from './ManagerListModal'
 import MemberPhoneModal from './MemberPhoneModal'
 import MemberPropertyModal from './MemberPropertyModal'
 import TransferModal from './TransferModal'
+import saleMessages from './translation'
 
 dayjs.extend(utc)
 
@@ -93,6 +95,8 @@ const SalesLeadTable: React.VFC<{
   selectedLeadStatusCategoryId?: string
   selectedRowKeys: React.Key[]
   onSelectChange: (newSelectedRowKeys: React.Key[]) => void
+  onIsOpenAddListModalChange: (isOpenAddListModal: boolean) => void
+  onIsOpenManagerListModalChange: (isOpenManagerListModal: boolean) => void
 }> = ({
   variant,
   manager,
@@ -104,6 +108,8 @@ const SalesLeadTable: React.VFC<{
   selectedLeadStatusCategoryId,
   selectedRowKeys,
   onSelectChange,
+  onIsOpenAddListModalChange,
+  onIsOpenManagerListModalChange,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
@@ -235,6 +241,204 @@ const SalesLeadTable: React.VFC<{
           setEditFullNameMemberId('')
         })
         .catch(handleError)
+    }
+  }
+
+  const handleLeadStatus = (
+    memberIds: string[],
+    managerId: string,
+    leads: SalesLeadMember[],
+    status: 'followed' | 'removeFollowed' | 'specificList' | 'completed' | 'cancel' | 'recycle' | 'reject' | 'delete',
+    leadStatusCategory?: { id: string; categoryName: string },
+  ) => {
+    const statusMessages: Record<typeof status, { confirm: string; success: string }> = {
+      followed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.followedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.followedSuccessfully),
+      },
+      removeFollowed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.removeFollowedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.removedSuccessfully),
+      },
+      specificList: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.moveToSpecificListConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.moveToSpecificListSuccessfully, {
+          categoryName: leadStatusCategory?.categoryName || '',
+        }),
+      },
+      completed: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.completedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.completedSuccessfully),
+      },
+      cancel: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.cancelCompletedLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.cancelCompletedSuccessfully),
+      },
+      recycle: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.recycleLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.recycledSuccessfully),
+      },
+      reject: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.rejectLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.rejectedSuccessfully),
+      },
+      delete: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully),
+      },
+    }
+
+    const { confirm: confirmText, success: eventSuccessMessage } = statusMessages[status]
+
+    if (window.confirm(confirmText)) {
+      updateLeads({
+        variables: {
+          updateLeads: memberIds.map(memberId => {
+            let updateLeadsSetObject: {
+              manager_id: string | null
+              star: number | null
+              followed_at: Date | string | null
+              completed_at: Date | string | null
+              closed_at: Date | string | null
+              excluded_at: Date | string | null
+              recycled_at: Date | string | null
+              lead_status_category_id?: string | null
+            } = {
+              manager_id: managerId,
+              star: leads.find(lead => lead.id === memberId)?.star || null,
+              followed_at: leads.find(lead => lead.id === memberId)?.followedAt || null,
+              completed_at: leads.find(lead => lead.id === memberId)?.completedAt || null,
+              closed_at: leads.find(lead => lead.id === memberId)?.closedAt || null,
+              excluded_at: leads.find(lead => lead.id === memberId)?.excludedAt || null,
+              recycled_at: leads.find(lead => lead.id === memberId)?.recycledAt || null,
+            }
+
+            switch (status) {
+              case 'followed':
+                updateLeadsSetObject = {
+                  manager_id: manager.id,
+                  star: updateLeadsSetObject.star,
+                  followed_at: dayjs().utc().toISOString(),
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                }
+                break
+              case 'removeFollowed':
+                updateLeadsSetObject = {
+                  manager_id: manager.id,
+                  star: updateLeadsSetObject.star,
+                  followed_at: null,
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                }
+                break
+              case 'specificList':
+                updateLeadsSetObject = {
+                  manager_id: manager.id,
+                  star: updateLeadsSetObject.star,
+                  followed_at: dayjs().utc().toISOString(),
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: leadStatusCategory?.id ? leadStatusCategory.id : null,
+                }
+                break
+              case 'completed':
+                updateLeadsSetObject = {
+                  manager_id: manager.id,
+                  star: updateLeadsSetObject.star,
+                  followed_at: updateLeadsSetObject.followed_at,
+                  completed_at: dayjs().utc().toISOString(),
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                }
+                break
+              case 'cancel':
+                updateLeadsSetObject = {
+                  manager_id: manager.id,
+                  star: updateLeadsSetObject.star,
+                  followed_at: updateLeadsSetObject.followed_at,
+                  completed_at: null,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                }
+                break
+              case 'recycle':
+                updateLeadsSetObject = {
+                  manager_id: null,
+                  star: updateLeadsSetObject.star,
+                  followed_at: null,
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: dayjs().utc().toISOString(),
+                  lead_status_category_id: null,
+                }
+                break
+              case 'reject':
+                updateLeadsSetObject = {
+                  manager_id: null,
+                  star: -999,
+                  followed_at: null,
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: dayjs().utc().toISOString(),
+                  excluded_at: updateLeadsSetObject.excluded_at,
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                }
+                break
+              case 'delete':
+                updateLeadsSetObject = {
+                  manager_id: null,
+                  star: -9999,
+                  followed_at: null,
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: dayjs().utc().toISOString(),
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                }
+                break
+            }
+            return {
+              where: {
+                id: { _eq: memberId },
+              },
+              _set: {
+                manager_id: updateLeadsSetObject.manager_id,
+                star: updateLeadsSetObject.star,
+                followed_at: updateLeadsSetObject.followed_at,
+                completed_at: updateLeadsSetObject.completed_at,
+                closed_at: updateLeadsSetObject.closed_at,
+                excluded_at: updateLeadsSetObject.excluded_at,
+                recycled_at: updateLeadsSetObject.recycled_at,
+                lead_status_category_id: updateLeadsSetObject.lead_status_category_id,
+              },
+            }
+          }),
+        },
+      }).then(({ data }) => {
+        if (
+          data?.update_member_many &&
+          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+        ) {
+          message.success(eventSuccessMessage)
+          onRefetch()
+          onSelectChange([])
+        } else {
+          message.error(formatMessage(saleMessages.SalesLeadTable.systemError))
+        }
+      })
     }
   }
 
@@ -393,7 +597,9 @@ const SalesLeadTable: React.VFC<{
                       onChange={e => setFullNameValue(e.target.value.trim())}
                     />
                     <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
-                      {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                      {fullNameValue && fullNameValue !== fullNamePropertyValue
+                        ? formatMessage(commonMessages.ui.save)
+                        : formatMessage(commonMessages.ui.cancel)}
                     </Button>
                   </Input.Group>
                 ) : (
@@ -743,45 +949,69 @@ const SalesLeadTable: React.VFC<{
                 </Dropdown>
               )}
               {variant === 'followed' && (
-                <Button
-                  className="mr-2"
-                  onClick={() => {
-                    if (window.confirm('確定取消收藏這些名單？')) {
-                      updateLeads({
-                        variables: {
-                          updateLeads: selectedRowLeads.map(lead => ({
-                            where: {
-                              id: { _eq: lead.id },
-                            },
-                            _set: {
-                              manager_id: manager.id,
-                              star: lead.star,
-                              followed_at: null,
-                              completed_at: lead.completedAt,
-                              closed_at: lead.closedAt,
-                              excluded_at: lead.excludedAt,
-                              recycled_at: lead.recycledAt,
-                              lead_status_category_id: null,
-                            },
-                          })),
-                        },
-                      }).then(({ data }) => {
-                        if (
-                          data?.update_member_many &&
-                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
-                        ) {
-                          message.success('已成功取消收藏！')
-                          onRefetch()
-                          onSelectChange([])
-                        } else {
-                          message.error('系統錯誤')
-                        }
-                      })
-                    }
-                  }}
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      {Boolean(selectedLeadStatusCategoryId) ? (
+                        <Menu.Item
+                          onClick={() => {
+                            handleLeadStatus(
+                              selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                              manager.id,
+                              leads,
+                              'followed',
+                            )
+                          }}
+                        >
+                          {formatMessage(saleMessages.SalesLeadTable.moveToFollowed)}
+                        </Menu.Item>
+                      ) : null}
+                      {leadStatusCategories
+                        .filter(leadStatusCategory => leadStatusCategory.categoryId !== selectedLeadStatusCategoryId)
+                        .map(leadStatusCategory => (
+                          <Menu.Item
+                            key={leadStatusCategory.id}
+                            onClick={() => {
+                              handleLeadStatus(
+                                selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                                manager.id,
+                                leads,
+                                'specificList',
+                                { id: leadStatusCategory.id, categoryName: leadStatusCategory.categoryName },
+                              )
+                            }}
+                          >
+                            {formatMessage(saleMessages.SalesLeadTable.moveToSpecificList, {
+                              categoryName: leadStatusCategory.categoryName,
+                            })}
+                          </Menu.Item>
+                        ))}
+                      <Divider />
+                      <Menu.Item
+                        onClick={() => {
+                          handleLeadStatus(
+                            selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                            manager.id,
+                            leads,
+                            'removeFollowed',
+                          )
+                        }}
+                      >
+                        {formatMessage(saleMessages.SalesLeadTable.removeFollowed)}
+                      </Menu.Item>
+                      <Menu.Item onClick={() => onIsOpenAddListModalChange(true)}>
+                        {formatMessage(saleMessages.SalesLeadTable.addList)}
+                      </Menu.Item>
+                      <Menu.Item onClick={() => onIsOpenManagerListModalChange(true)}>
+                        {formatMessage(saleMessages.SalesLeadTable.managerList)}
+                      </Menu.Item>
+                    </Menu>
+                  }
                 >
-                  取消收藏
-                </Button>
+                  <Center>
+                    <Button className="mr-2">{formatMessage(saleMessages.SalesLeadTable.editFollowed)}</Button>
+                  </Center>
+                </Dropdown>
               )}
               {variant !== 'completed' && (
                 <Button
@@ -821,7 +1051,7 @@ const SalesLeadTable: React.VFC<{
                     }
                   }}
                 >
-                  完成
+                  {formatMessage(saleMessages.SalesLeadTable.complete)}
                 </Button>
               )}
               {variant === 'completed' && (
@@ -862,7 +1092,7 @@ const SalesLeadTable: React.VFC<{
                     }
                   }}
                 >
-                  取消完成
+                  {formatMessage(saleMessages.SalesLeadTable.cancelComplete)}
                 </Button>
               )}
               {variant !== 'completed' && (
@@ -906,7 +1136,7 @@ const SalesLeadTable: React.VFC<{
                         }
                       }}
                     >
-                      回收
+                      {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
                   <Button
@@ -947,7 +1177,7 @@ const SalesLeadTable: React.VFC<{
                       }
                     }}
                   >
-                    拒絕
+                    {formatMessage(saleMessages.SalesLeadTable.reject)}
                   </Button>
                   <Button
                     icon={<DeleteOutlined />}
@@ -987,7 +1217,7 @@ const SalesLeadTable: React.VFC<{
                       }
                     }}
                   >
-                    刪除
+                    {formatMessage(saleMessages.SalesLeadTable.delete)}
                   </Button>
                 </>
               )}

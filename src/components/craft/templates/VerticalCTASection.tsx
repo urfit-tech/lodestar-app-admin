@@ -6,10 +6,13 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const VerticalCTASection: React.VFC<{
   variant?: 'default' | 'dark'
 }> = ({ variant = 'default' }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -33,7 +36,7 @@ const VerticalCTASection: React.VFC<{
         // desktop={{ margin: { ml: '200', mr: '200' }, columnAmount: 1, columnRatio: [12], displayAmount: 3 }}
       >
         <CraftTitle
-          title="還在等什麼？立即查看課程"
+          title={formatMessage(craftMessages.VerticalCTASection.title1)}
           // fontSize={28}
           // margin={{ mb: '0' }}
           // textAlign="center"
@@ -41,7 +44,7 @@ const VerticalCTASection: React.VFC<{
           // color={variant === 'dark' ? 'white' : '#585858'}
         />
         <CraftTitle
-          title="所以我們不該是為學習而學習，而是在設定好學習目標"
+          title={formatMessage(craftMessages.VerticalCTASection.title2)}
           // fontSize={16}
           // margin={{ mb: '10' }}
           // textAlign="center"
@@ -49,7 +52,7 @@ const VerticalCTASection: React.VFC<{
           // color={variant === 'dark' ? 'white' : '#585858'}
         />
         <CraftButton
-          title="馬上查看"
+          title={formatMessage(craftMessages.VerticalCTASection.buttonTitle)}
           link=""
           openNewTab={false}
           size="md"

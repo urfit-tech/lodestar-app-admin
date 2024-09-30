@@ -21,6 +21,16 @@ const programPackageMessages = {
   ProgramPackagePlanAdminModal: defineMessages({
     productLevel: { id: 'programPackage.ProgramPackagePlanAdminModal.productLevel', defaultMessage: '方案等級' },
   }),
+  ProgramPackageProgramConnectionModal: defineMessages({
+    allPerpetualPrograms: {
+      id: 'programPackage.ProgramPackageProgramConnectionModal.allPerpetualPrograms',
+      defaultMessage: '所有單次課程',
+    },
+    allSubscriptionPrograms: {
+      id: 'programPackage.ProgramPackageProgramConnectionModal.allSubscriptionPrograms',
+      defaultMessage: '所有訂閱課程',
+    },
+  }),
 }
 
 export default programPackageMessages

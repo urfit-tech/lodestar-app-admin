@@ -119,7 +119,7 @@ const AppointmentPeriodCard: React.FC<
       if (meet?.options?.startUrl) {
         startUrl = meet?.options.startUrl
       } else if (meetGenerationMethod === 'manual') {
-        return message.info('尚未設定會議連結')
+        return message.info(formatMessage(appointmentMessages.AppointmentPeriodCard.meetingLinkNotSet))
       } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
         // create zoom meeting than get startUrl
         const { data: createMeetData } = await axios.post(

@@ -6,11 +6,14 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 type StatisticsVariant = 'default' | 'dark' | 'image'
 const StatisticsSection: React.VFC<{
   variant?: StatisticsVariant
 }> = ({ variant = 'default' }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -27,7 +30,7 @@ const StatisticsSection: React.VFC<{
     >
       {variant !== 'image' && (
         <CraftTitle
-          title="提供完善的服務"
+          title={formatMessage(craftMessages.StatisticsSection.title)}
           // fontSize={20}
           // margin={{ mb: '25' }}
           // textAlign="center"
