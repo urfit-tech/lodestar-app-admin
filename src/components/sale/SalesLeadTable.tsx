@@ -25,7 +25,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
@@ -619,9 +619,9 @@ const SalesLeadTable: React.VFC<{
                   <del>{phone.phoneNumber}</del>
                 </StyledDelPhone>
               ) : (
-                <a
+                <button
                   key={idx}
-                  href="#!"
+                  // href="#!"
                   className="m-0 mr-1 cursor-pointer d-flex"
                   onClick={() => {
                     call({
@@ -629,11 +629,23 @@ const SalesLeadTable: React.VFC<{
                       authToken,
                       phone: phone.phoneNumber,
                       salesTelephone: manager.telephone,
+                      confirmMessage: `${formatMessage(salesMessages.confirmCallPhone)}${phone.phoneNumber}`,
                     })
+                      .then(({ data: { code } }) => {
+                        if (code === 'SUCCESS') {
+                          message.success(formatMessage(salesMessages.phoneLinkSuccess))
+                        } else {
+                          message.error(formatMessage(salesMessages.phoneError))
+                        }
+                      })
+                      .catch(error => {
+                        process.env.NODE_ENV === 'development' && console.error(error)
+                        message.error(formatMessage(salesMessages.connectionError))
+                      })
                   }}
                 >
                   {phone.phoneNumber}
-                </a>
+                </button>
               ),
             )}
           </div>
