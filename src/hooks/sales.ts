@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
+import { SorterResult } from 'antd/lib/table/interface'
 
 type ManagerWithMemberCountData = {
   manager: {
@@ -270,10 +271,32 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
   }
 }
 
-export const useManagerLeads = (manager: Manager) => {
+export const useManagerLeads = (
+  manager: Manager,
+  currentPage: number,
+  currentPageSize: number,
+  status: string,
+  leadStatusCategoryId: string | null,
+  sorter?: SorterResult<SalesLeadMember> | SorterResult<SalesLeadMember>[],
+) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
-  const [salesLeadMembers, setSalesLeadMembers] = useState<SalesLeadMember[]>([])
+  const [salesLeadMembersData, setSalesLeadMembersData] = useState<{
+    totalPages: number
+    totalCount: number
+    followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
+    followedLeadsCount: number
+    signedLeadsCount: number
+    completedLeadsCount: number
+    deadLeadsCount: number
+    closedLeadsCount: number
+    presentedLeadsCount: number
+    invitedLeadsCount: number
+    answeredLeadsCount: number
+    contactedLeadsCount: number
+    idLedLeadsCount: number
+    salesLeadMembers: SalesLeadMember[]
+  }>()
   const [error, setError] = useState<any>(null)
   const [loading, setLoading] = useState(false)
 
@@ -286,48 +309,94 @@ export const useManagerLeads = (manager: Manager) => {
         await axios
           .post(
             `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/sales-lead/${manager.id}`,
-            {},
+            {
+              currentPageSize,
+              currentPage,
+              status,
+              leadStatusCategoryId,
+              sorter: sorter
+                ? Array.isArray(sorter)
+                  ? sorter.map(sorter => ({
+                      columnKey: sorter?.columnKey,
+                      order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
+                    }))
+                  : {
+                      columnKey: sorter?.columnKey,
+                      order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
+                    }
+                : undefined,
+            },
             {
               headers: { authorization: `Bearer ${authToken}` },
             },
           )
           .then(({ data }) => {
-            const result: SalesLeadMember[] = data.map((salesLeadMember: SalesLeadMember) => ({
-              id: salesLeadMember.id,
-              appId: salesLeadMember.appId,
-              name: salesLeadMember.name,
-              email: salesLeadMember.email,
-              pictureUrl: salesLeadMember.pictureUrl,
-              star: Number(salesLeadMember.star),
-              notified: Boolean(salesLeadMember.notified),
-              leadStatusCategoryId: salesLeadMember.leadStatusCategoryId,
-              properties: salesLeadMember.properties.map(property => ({
-                id: property.id,
-                name: property.name,
-                value: property.value,
+            const result: {
+              totalPages: number
+              totalCount: number
+              followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
+              followedLeadsCount: number
+              signedLeadsCount: number
+              completedLeadsCount: number
+              deadLeadsCount: number
+              closedLeadsCount: number
+              presentedLeadsCount: number
+              invitedLeadsCount: number
+              answeredLeadsCount: number
+              contactedLeadsCount: number
+              idLedLeadsCount: number
+              salesLeadMembers: SalesLeadMember[]
+            } = {
+              totalPages: data.totalPages,
+              totalCount: data.totalCount,
+              followedLeads: data.followedLeads,
+              followedLeadsCount: data.followedLeadsCount,
+              signedLeadsCount: data.signedLeadsCount,
+              completedLeadsCount: data.completedLeadsCount,
+              deadLeadsCount: data.deadLeadsCount,
+              closedLeadsCount: data.closedLeadsCount,
+              presentedLeadsCount: data.presentedLeadsCount,
+              invitedLeadsCount: data.invitedLeadsCount,
+              answeredLeadsCount: data.answeredLeadsCount,
+              contactedLeadsCount: data.contactedLeadsCount,
+              idLedLeadsCount: data.idLedLeadsCount,
+              salesLeadMembers: data.salesLeadMembers.map((salesLeadMember: SalesLeadMember) => ({
+                id: salesLeadMember.id,
+                appId: salesLeadMember.appId,
+                name: salesLeadMember.name,
+                email: salesLeadMember.email,
+                pictureUrl: salesLeadMember.pictureUrl,
+                star: Number(salesLeadMember.star),
+                notified: Boolean(salesLeadMember.notified),
+                leadStatusCategoryId: salesLeadMember.leadStatusCategoryId,
+                properties: salesLeadMember.properties.map(property => ({
+                  id: property.id,
+                  name: property.name,
+                  value: property.value,
+                })),
+                phones: salesLeadMember.phones.map(phone => ({
+                  phoneNumber: phone.phoneNumber,
+                  isValid: phone.isValid,
+                })),
+                categoryNames: salesLeadMember.categoryNames,
+                latestNoteDescription: salesLeadMember.latestNoteDescription,
+                status: salesLeadMember.status as LeadStatus,
+                createdAt: dayjs(salesLeadMember.createdAt).toDate(),
+                assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,
+                followedAt: salesLeadMember.followedAt ? dayjs(salesLeadMember.followedAt).toDate() : null,
+                closedAt: salesLeadMember.closedAt ? dayjs(salesLeadMember.closedAt).toDate() : null,
+                completedAt: salesLeadMember.completedAt ? dayjs(salesLeadMember.completedAt).toDate() : null,
+                excludedAt: salesLeadMember.excludedAt ? dayjs(salesLeadMember.excludedAt).toDate() : null,
+                recycledAt: salesLeadMember.recycledAt ? dayjs(salesLeadMember.recycledAt).toDate() : null,
+                recentContactedAt: salesLeadMember.recentContactedAt
+                  ? dayjs(salesLeadMember.recentContactedAt).toDate()
+                  : null,
+                recentAnsweredAt: salesLeadMember.recentAnsweredAt
+                  ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
+                  : null,
               })),
-              phones: salesLeadMember.phones.map(phone => ({
-                phoneNumber: phone.phoneNumber,
-                isValid: phone.isValid,
-              })),
-              categoryNames: salesLeadMember.categoryNames,
-              latestNoteDescription: salesLeadMember.latestNoteDescription,
-              status: salesLeadMember.status as LeadStatus,
-              createdAt: dayjs(salesLeadMember.createdAt).toDate(),
-              assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,
-              followedAt: salesLeadMember.followedAt ? dayjs(salesLeadMember.followedAt).toDate() : null,
-              closedAt: salesLeadMember.closedAt ? dayjs(salesLeadMember.closedAt).toDate() : null,
-              completedAt: salesLeadMember.completedAt ? dayjs(salesLeadMember.completedAt).toDate() : null,
-              excludedAt: salesLeadMember.excludedAt ? dayjs(salesLeadMember.excludedAt).toDate() : null,
-              recycledAt: salesLeadMember.recycledAt ? dayjs(salesLeadMember.recycledAt).toDate() : null,
-              recentContactedAt: salesLeadMember.recentContactedAt
-                ? dayjs(salesLeadMember.recentContactedAt).toDate()
-                : null,
-              recentAnsweredAt: salesLeadMember.recentAnsweredAt
-                ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
-                : null,
-            }))
-            setSalesLeadMembers(result.filter(v => v.appId === appId))
+            }
+            setSalesLeadMembersData(result)
           })
           .catch(error => setError(error))
       } catch (error) {
@@ -338,7 +407,7 @@ export const useManagerLeads = (manager: Manager) => {
     } else {
       setLoading(false)
     }
-  }, [appId, authToken, manager])
+  }, [appId, authToken, currentPage, currentPageSize, leadStatusCategoryId, manager, sorter, status])
 
   useEffect(() => {
     fetchData()
@@ -350,16 +419,7 @@ export const useManagerLeads = (manager: Manager) => {
     loading,
     error,
     refetch,
-    totalLeads: salesLeadMembers,
-    followedLeads: salesLeadMembers.filter((lead: { status: string }) => lead.status === 'FOLLOWED'),
-    idledLeads: salesLeadMembers.filter((lead: { status: string }) => lead.status === 'IDLED'),
-    contactedLeads: salesLeadMembers.filter((lead: { status: string }) => lead.status === 'CONTACTED'),
-    answeredLeads: salesLeadMembers.filter((lead: { status: string }) => lead.status === 'ANSWERED'),
-    invitedLeads: salesLeadMembers.filter((lead: { status: string }) => lead?.status === 'INVITED'),
-    presentedLeads: salesLeadMembers.filter((lead: { status: string }) => lead?.status === 'PRESENTED'),
-    signedLeads: salesLeadMembers.filter((lead: { status: string }) => lead?.status === 'SIGNED'),
-    closedLeads: salesLeadMembers.filter((lead: { status: string }) => lead?.status === 'CLOSED'),
-    completedLeads: salesLeadMembers.filter((lead: { status: string }) => lead?.status === 'COMPLETED'),
+    salesLeadMembersData,
   }
 }
 
