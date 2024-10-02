@@ -305,7 +305,9 @@ const MemberContractCreationBlock: React.FC<{
     }
     const options = {
       ...fieldValue,
-      language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
+      language: fieldValue.language
+        ? fieldValue.language
+        : contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
       isBG: isMemberTypeBG,
       executor: sales.find(s => s.id === fieldValue.executorId),
     }
@@ -317,50 +319,51 @@ const MemberContractCreationBlock: React.FC<{
       installmentPlans,
     }
     setLoading(true)
+    let memberContractId
 
     if (isContract) {
-      addMemberContract({
-        variables: {
-          memberId: member.id,
-          contractId: fieldValue.contractId,
-          startedAt: moment(fieldValue.startedAt).add(1, 'days'),
-          endedAt: fieldValue.endedAt,
-          authorId: fieldValue.executorId,
-          values: {
+      try {
+        const addMemberContractResult = await addMemberContract({
+          variables: {
             memberId: member.id,
-            invoice: invoiceInfo,
-            price: totalPrice,
-            orderProducts: selectedProducts.map(v => {
-              return {
-                name: v.title,
-                price: v.price,
-                totalPrice: v.totalPrice,
-                started_at: moment(fieldValue.startedAt).add(1, 'days'),
-                ended_at: fieldValue.endedAt,
-                product_id: v.productId,
-                options: { quantity: v.amount, ...v.options },
-                delivered_at: new Date(),
-              }
-            }),
-            paymentOptions,
-            maxLeaveDays: Math.ceil(
-              selectedProducts
-                .filter(p => p.productId.includes('AppointmentPlan_'))
-                .reduce((sum, product) => sum + product.amount, 0) * 0.1,
-            ),
-            options,
+            contractId: fieldValue.contractId,
+            startedAt: moment(fieldValue.startedAt).add(1, 'days'),
+            endedAt: fieldValue.endedAt,
+            authorId: fieldValue.executorId,
+            values: {
+              memberId: member.id,
+              invoice: invoiceInfo,
+              price: totalPrice,
+              orderProducts: selectedProducts.map(v => {
+                return {
+                  name: v.title,
+                  price: v.price,
+                  totalPrice: v.totalPrice,
+                  started_at: moment(fieldValue.startedAt).add(1, 'days'),
+                  ended_at: fieldValue.endedAt,
+                  product_id: v.productId,
+                  options: { quantity: v.amount, ...v.options },
+                  delivered_at: new Date(),
+                }
+              }),
+              paymentOptions,
+              maxLeaveDays: Math.ceil(
+                selectedProducts
+                  .filter(p => p.productId.includes('AppointmentPlan_'))
+                  .reduce((sum, product) => sum + product.amount, 0) * 0.1,
+              ),
+              options,
+            },
           },
-        },
-      })
-        .then(({ data }) => {
-          // const contractId = data?.insert_member_contract_one?.id
-          // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
-          message.success('成功產生合約')
         })
-        .catch(err =>
-          message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${err}`),
-        )
-        .finally(() => setLoading(false))
+        memberContractId = addMemberContractResult.data?.insert_member_contract_one?.id
+        // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+        message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
+      } catch (error) {
+        message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${error}`)
+      } finally {
+        setLoading(false)
+      }
     }
     let productOptions: { [key: string]: any } = {}
 
@@ -377,11 +380,13 @@ const MemberContractCreationBlock: React.FC<{
           invoice: invoiceInfo,
           memberId: member.id,
           invoiceGatewayId: paymentCompany?.invoiceGatewayId,
+          skipPayForm: true,
           options: {
             ...options,
             ...productOptions,
             installmentPlans,
             paymentMode,
+            memberContractId,
           },
         },
         {
