@@ -319,7 +319,17 @@ export const useMembershipCardTerms = (cardId: string) => {
   const refetchCardTerm = async () => {
     await refetch()
     await queryClient.refetchQueries({
-      include: ['GetProgramPlanInfo', 'GetProgramPackageAndProgramPackagePlan', 'GetPodcastProgram', 'GetCard'],
+      include: [
+        'GetActivityTicketTitle',
+        'GetProgramPlanInfo',
+        'GetProgramPackageAndProgramPackagePlan',
+        'GetPodcastProgram',
+        'GetAppointmentPlan',
+        'GetMerchandiseSpec',
+        'GetProjectPlan',
+        'GetPodcastPlan',
+        'GetCard',
+      ],
     })
   }
 
