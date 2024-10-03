@@ -14,7 +14,12 @@ export type MembershipCard = {
   sku: string | null
 }
 
-export type MembershipCardTermsProductType = 'ActivityTicket' | 'ProgramPlan' | 'ProgramPackagePlan' | 'PodcastProgram'
+export type MembershipCardTermsProductType =
+  | 'ActivityTicket'
+  | 'ProgramPlan'
+  | 'ProgramPackagePlan'
+  | 'PodcastProgram'
+  | 'AppointmentPlan'
 
 export type MembershipCardEquityProgramPlanProduct = {
   id: string
