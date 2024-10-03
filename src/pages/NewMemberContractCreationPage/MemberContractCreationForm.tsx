@@ -1656,6 +1656,17 @@ const MemberContractCreationForm: React.FC<
               </Select>
             </Form.Item>
           </Descriptions.Item>
+          <Descriptions.Item
+            label={
+              <div>
+                付款人信箱<span style={{ color: 'red' }}> *</span>
+              </div>
+            }
+          >
+            <Form.Item className="mb-2" name="destinationEmail">
+              <Input />
+            </Form.Item>
+          </Descriptions.Item>
         </Descriptions>
       </Form>
     )
