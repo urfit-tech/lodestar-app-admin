@@ -204,7 +204,13 @@ const MemberContractCreationBlock: React.FC<{
 
   const handleMemberContractCreate = async () => {
     const isContract =
-      !isMemberTypeBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
+      !isMemberTypeBG &&
+      selectedProducts.filter(
+        p =>
+          p.productId.includes('AppointmentPlan_') &&
+          ((p.options.language === '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'teacher')) ||
+            (p.options.language !== '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'normal'))),
+      ).length > 0
     if (isContract && !fieldValue.contractId) {
       message.warn('請選擇合約')
       return
