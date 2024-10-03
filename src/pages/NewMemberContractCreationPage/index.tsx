@@ -258,7 +258,9 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_contracts(where: { agreed_at: { _is_null: false }, ended_at: { _gt: "now()" } }) {
+          member_contracts(
+            where: { agreed_at: { _is_null: false }, ended_at: { _gt: "now()" }, revoked_at: { _is_null: true } }
+          ) {
             ended_at
             contract {
               options
