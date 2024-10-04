@@ -57,7 +57,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
       pageId: pageAdmin.id,
       path: values.path,
       title: values.pageName,
-      language: values.language,
+      language: values.language === 'none' ? null : values.language,
       options: { ...pageAdmin.options, noHeader: values.noHeader, noFooter: values.noFooter },
     })
       .then(() => {
