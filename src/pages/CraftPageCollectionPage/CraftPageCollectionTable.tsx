@@ -1,6 +1,7 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -36,6 +37,7 @@ const CraftPageCollectionTable: React.VFC<{
   pages: CraftPageColumnProps[]
   onRefetch?: () => Promise<any>
 }> = ({ loading, pages, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [searchPageName, setSearchPageName] = useState<string>('')
 
@@ -72,14 +74,16 @@ const CraftPageCollectionTable: React.VFC<{
     {
       key: 'language',
       title: formatMessage(craftPageCollectionPageMessages['*'].displayLocale),
-      width: '20%',
-      render: (_, record) => (
-        <StyledText>
-          {record.language
-            ? SUPPORTED_LOCALES.find(supportedLocale => supportedLocale.locale === record.language)?.label
-            : formatMessage(craftPageCollectionPageMessages['*'].noSpecificLocale)}
-        </StyledText>
-      ),
+      width: enabledModules.locale ? '20%' : '0%',
+      render: (_, record) => {
+        return enabledModules.locale ? (
+          <StyledText>
+            {record.language
+              ? SUPPORTED_LOCALES.find(supportedLocale => supportedLocale.locale === record.language)?.label
+              : formatMessage(craftPageCollectionPageMessages['*'].noSpecificLocale)}
+          </StyledText>
+        ) : null
+      },
     },
     {
       key: 'updatedAtAndEditor',
