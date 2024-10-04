@@ -190,7 +190,7 @@ export const useMutateAppPage = () => {
     craftData?: { [key: string]: any }
     options?: { [key: string]: any }
     isDeleted?: boolean
-    language?: string
+    language?: string | null
   }) => {
     return updateAppPageHandler({
       variables: {
