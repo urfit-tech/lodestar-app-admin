@@ -416,8 +416,8 @@ const saleMessages = {
       id: 'sale.SalesLeadTable.completedSuccessfully',
       defaultMessage: 'Completed Successfully',
     },
-    complete: { id: 'sale.SalesLeadTable.completedAt', defaultMessage: 'Complete' },
-    createMemberNote: { id: 'sale.SalesLeadTable.createNote', defaultMessage: 'Create Note' },
+    completed: { id: 'sale.SalesLeadTable.completed', defaultMessage: 'Completed' },
+    createMemberNote: { id: 'sale.SalesLeadTable.createMemberNote', defaultMessage: 'Create Member Note' },
     createdAt: { id: 'sale.SalesLeadTable.createdAt', defaultMessage: 'Created Date' },
     delete: { id: 'sale.SalesLeadTable.delete', defaultMessage: 'Delete' },
     deleteLeadConfirm: {
