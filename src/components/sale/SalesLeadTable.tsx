@@ -232,7 +232,7 @@ const SalesLeadTable: React.VFC<{
         },
       })
         .then(() => {
-          message.success(formatMessage(saleMessages.SalesLeadTable.successfullySaved))
+          message.success(formatMessage(saleMessages.SalesLeadTable.savedSuccessfully))
           onRefetch()
           setRefetchLoading(false)
           setFullNameValue('')
@@ -961,7 +961,7 @@ const SalesLeadTable: React.VFC<{
                     )
                   }
                 >
-                  {formatMessage(saleMessages.SalesLeadTable.complete)}
+                  {formatMessage(saleMessages.SalesLeadTable.completed)}
                 </Button>
               )}
               {variant === 'completed' && (
