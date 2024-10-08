@@ -237,7 +237,7 @@ const SalesLeadTable: React.VFC<{
         },
       })
         .then(() => {
-          message.success(formatMessage(saleMessages.SalesLeadTable.successfullySaved))
+          message.success(formatMessage(saleMessages.SalesLeadTable.savedSuccessfully))
           onRefetch()
           setRefetchLoading(false)
           setFullNameValue('')
@@ -357,7 +357,7 @@ const SalesLeadTable: React.VFC<{
                 updateLeadsSetObject = {
                   manager_id: manager.id,
                   star: updateLeadsSetObject.star,
-                  followed_at: updateLeadsSetObject.followed_at,
+                  followed_at: null,
                   completed_at: dayjs().utc().toISOString(),
                   closed_at: updateLeadsSetObject.closed_at,
                   excluded_at: updateLeadsSetObject.excluded_at,
@@ -978,7 +978,7 @@ const SalesLeadTable: React.VFC<{
                     )
                   }
                 >
-                  {formatMessage(saleMessages.SalesLeadTable.complete)}
+                  {formatMessage(saleMessages.SalesLeadTable.completed)}
                 </Button>
               )}
               {variant === 'completed' && (
