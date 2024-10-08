@@ -435,6 +435,8 @@
   "appointment.label.status": "tiểu bang",
   "appointment.label.unReschedule": "Không thể thay đổi",
   "appointment.label.unlimited": "không giới hạn",
+  "appointment.label.meetingLinkUrl": "Liên kết cố định",
+  "appointment.text.validURL": "Phải là URL hợp lệ",
   "appointment.status.aboutToStart": "Sẽ được tổ chức sớm",
   "appointment.status.available": "Cuộc hẹn",
   "appointment.status.canceled": "Đã bị hủy",

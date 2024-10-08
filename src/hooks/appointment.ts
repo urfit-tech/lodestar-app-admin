@@ -41,6 +41,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           reschedule_type
           meet_generation_method
           default_meet_gateway
+          meeting_link_url
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
@@ -89,6 +90,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
           rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
           meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
+          meetingLinkUrl: data.appointment_plan_by_pk.meeting_link_url || null,
           defaultMeetGateway: data.appointment_plan_by_pk.default_meet_gateway as MeetGateway,
           schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => ({
             id: appointmentSchedule.id,
@@ -131,7 +133,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           isPrivate: data?.appointment_plan_by_pk.is_private,
         }
       : null
-  }, [appointmentPlanId, data])
+  }, [appointmentPlanId, data?.appointment_plan_by_pk, targetMemberId])
 
   return {
     loadingAppointmentPlanAdmin: loading,
@@ -254,6 +256,7 @@ export const useAppointmentEnrollmentCollection = (
             }
             reschedule_amount
             reschedule_type
+            meeting_link_url
           }
           member {
             id
@@ -314,6 +317,7 @@ export const useAppointmentEnrollmentCollection = (
         rescheduleAmount: v.appointment_plan?.reschedule_amount,
         rescheduleType: v.appointment_plan?.reschedule_type,
         defaultMeetGateway: v.appointment_plan?.default_meet_gateway as MeetGateway,
+        meetingLinkUrl: v.appointment_plan?.meeting_link_url || null,
       } as AppointmentPeriodPlanProps,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),
@@ -325,6 +329,7 @@ export const useAppointmentEnrollmentCollection = (
       },
       orderProduct: { id: v.order_product_id, options: v.order_product?.options },
       meetGenerationMethod: (v.appointment_plan?.meet_generation_method as MeetGenerationMethod) || 'auto',
+      meetingLinkUrl: v.appointment_plan?.meeting_link_url || null,
     })) || []
 
   const loadMoreAppointmentEnrollments =

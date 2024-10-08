@@ -411,6 +411,8 @@
   "appointment.label.manuallyDistributed": "手動派發",
   "appointment.label.maximumCapacity": "單場人數上限",
   "appointment.label.meetingLink": "會議連結",
+  "appointment.label.meetingLinkUrl": "固定連結",
+  "appointment.text.validURL":"必須為有效網址",
   "appointment.label.member": "學生",
   "appointment.label.people": "{count} 人",
   "appointment.label.period": "時段",
