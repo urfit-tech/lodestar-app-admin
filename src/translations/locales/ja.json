@@ -425,6 +425,8 @@
   "appointment.label.status": "ステータス",
   "appointment.label.unReschedule": "変更不可",
   "appointment.label.unlimited": "無制限",
+  "appointment.label.meetingLinkUrl": "固定リンク",
+  "appointment.text.validURL": "有効な URL である必要があります",
   "appointment.status.aboutToStart": "もうすぐ開始",
   "appointment.status.available": "予約可",
   "appointment.status.canceled": "キャンセル済み",

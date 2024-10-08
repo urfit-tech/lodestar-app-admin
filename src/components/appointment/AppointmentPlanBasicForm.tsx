@@ -1,5 +1,6 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
+import { Flex } from '@chakra-ui/react'
 import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Spin, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -34,6 +35,7 @@ type FieldProps = {
   rescheduleType: ReservationType
   meetGenerationMethod: MeetGenerationMethod
   defaultMeetGateway: string
+  meetingLinkUrl: string
 }
 
 const UpdateAppointmentPlan = gql`
@@ -47,6 +49,7 @@ const UpdateAppointmentPlan = gql`
     $rescheduleType: String
     $meetGenerationMethod: String
     $defaultMeetGateway: String
+    $meetingLinkUrl: String
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
@@ -59,6 +62,7 @@ const UpdateAppointmentPlan = gql`
         reschedule_type: $rescheduleType
         meet_generation_method: $meetGenerationMethod
         default_meet_gateway: $defaultMeetGateway
+        meeting_link_url: $meetingLinkUrl
       }
     ) {
       affected_rows
@@ -103,6 +107,7 @@ const AppointmentPlanBasicForm: React.FC<{
         meetGenerationMethod: values.meetGenerationMethod,
         defaultMeetGateway:
           meetGenerationMethod === 'auto' && values.defaultMeetGateway ? values.defaultMeetGateway : 'jitsi',
+        meetingLinkUrl: values.meetingLinkUrl || null,
       },
     })
       .then(() => {
@@ -130,6 +135,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
         defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway ?? 'jitsi',
+        meetingLinkUrl: appointmentPlanAdmin.meetingLinkUrl,
       }}
       onFinish={handleSubmit}
     >
@@ -275,15 +281,46 @@ const AppointmentPlanBasicForm: React.FC<{
         )}
       </Form.Item>
 
-      <Form.Item label={formatMessage(appointmentMessages.label.meetingLink)} name="meetGenerationMethod">
-        <Select style={{ width: '150px' }} onChange={value => setMeetGenerationMethod(value as 'auto' | 'manual')}>
-          <Select.Option key="auto" value="auto">
-            {formatMessage(appointmentMessages.label.automaticallyGenerated)}
-          </Select.Option>
-          <Select.Option key="manual" value="manual">
-            {formatMessage(appointmentMessages.label.manuallyDistributed)}
-          </Select.Option>
-        </Select>
+      <Form.Item label={formatMessage(appointmentMessages.label.meetingLink)} style={{ marginBottom: '0px' }}>
+        <Flex>
+          <Form.Item name="meetGenerationMethod">
+            <Select
+              style={{ width: '150px' }}
+              onChange={value => setMeetGenerationMethod(value as 'auto' | 'manual')}
+              defaultValue={appointmentPlanAdmin?.meetGenerationMethod}
+            >
+              <Select.Option key="auto" value="auto">
+                {formatMessage(appointmentMessages.label.automaticallyGenerated)}
+              </Select.Option>
+              <Select.Option key="manual" value="manual">
+                {formatMessage(appointmentMessages.label.manuallyDistributed)}
+              </Select.Option>
+            </Select>
+          </Form.Item>
+
+          {meetGenerationMethod === 'manual' && (
+            <Form.Item
+              name="meetingLinkUrl"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    if (!value || value.trim() === '') {
+                      return Promise.resolve()
+                    }
+                    try {
+                      new URL(value)
+                      return Promise.resolve()
+                    } catch {
+                      return Promise.reject(new Error(formatMessage(appointmentMessages.text.validURL)))
+                    }
+                  },
+                },
+              ]}
+            >
+              <Input style={{ width: '300px' }} placeholder={formatMessage(appointmentMessages.label.meetingLinkUrl)} />
+            </Form.Item>
+          )}
+        </Flex>
       </Form.Item>
 
       {loadingService ? (

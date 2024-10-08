@@ -435,6 +435,8 @@
   "appointment.label.status": "状态",
   "appointment.label.unReschedule": "不可更换",
   "appointment.label.unlimited": "不设限",
+  "appointment.label.meetingLinkUrl": "固定连结",
+  "appointment.text.validURL": "必须为有效网址",
   "appointment.status.aboutToStart": "即将举行",
   "appointment.status.available": "可预约",
   "appointment.status.canceled": "已取消",
