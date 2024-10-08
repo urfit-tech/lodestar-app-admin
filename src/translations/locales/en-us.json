@@ -435,6 +435,8 @@
   "appointment.label.status": "Status",
   "appointment.label.unReschedule": "Not Replaceable",
   "appointment.label.unlimited": "unlimited",
+  "appointment.label.meetingLinkUrl": "Fixed Link URL",
+  "appointment.text.validURL": "Must be a valid URL.",
   "appointment.status.aboutToStart": "About to start",
   "appointment.status.available": "Available",
   "appointment.status.canceled": "Canceled",

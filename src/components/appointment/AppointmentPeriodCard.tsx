@@ -1,5 +1,5 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { Button, Divider, Dropdown, Menu, message, Skeleton } from 'antd'
+import { Button, Divider, Dropdown, Menu, Skeleton } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
@@ -118,9 +118,11 @@ const AppointmentPeriodCard: React.FC<
       if (!currentMemberId) return
       if (meet?.options?.startUrl) {
         startUrl = meet?.options.startUrl
-      } else if (meetGenerationMethod === 'manual') {
-        return message.info(formatMessage(appointmentMessages.AppointmentPeriodCard.meetingLinkNotSet))
-      } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
+      }
+      // else if (meetGenerationMethod === 'manual') {
+      //   return message.info(formatMessage(appointmentMessages.AppointmentPeriodCard.meetingLinkNotSet))
+      // }
+      else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
         // create zoom meeting than get startUrl
         const { data: createMeetData } = await axios.post(
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -143,6 +145,8 @@ const AppointmentPeriodCard: React.FC<
           },
         )
         startUrl = createMeetData.data?.options?.startUrl
+      } else if (!!appointmentPlan?.meetingLinkUrl) {
+        startUrl = appointmentPlan?.meetingLinkUrl
       } else {
         // default jitsi
         startUrl = `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
@@ -280,7 +284,7 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl ? (
+            {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl && !appointmentPlan?.meetingLinkUrl ? (
               <StyledCanceledText className="ml-2">
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.notYetConfigured)}
               </StyledCanceledText>
