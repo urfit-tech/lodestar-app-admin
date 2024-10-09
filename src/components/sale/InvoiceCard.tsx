@@ -266,6 +266,24 @@ const InvoiceCard: React.FC<{
       setLoading(false)
     }
   }
+
+  const INVOICE_RANGE: { [key: string]: string } = {
+    '1': '01-02',
+    '2': '01-02',
+    '3': '03-04',
+    '4': '03-04',
+    '5': '05-06',
+    '6': '05-06',
+    '7': '07-08',
+    '8': '07-08',
+    '9': '09-10',
+    '10': '09-10',
+    '11': '11-12',
+    '12': '11-12',
+  }
+
+  const currentMonth = new Date().getMonth() + 1
+
   return (
     <StyledCard>
       <div className="container" style={{ opacity: status !== 'SUCCESS' ? 0.4 : 1 }}>
@@ -292,18 +310,7 @@ const InvoiceCard: React.FC<{
                       template={JSON.parse(settings['invoice.template'])?.main || ''}
                       templateVariables={{
                         year: new Date().getFullYear() - 1911,
-                        month: `${(new Date().getMonth() + (1 % 2) === 0
-                          ? new Date().getMonth() + 1 - 1
-                          : new Date().getMonth() + 1
-                        )
-                          .toString()
-                          .padStart(2, '0')}-${(
-                          (new Date().getMonth() + (1 % 2) === 0
-                            ? new Date().getMonth() + 1 - 1
-                            : new Date().getMonth() + 1) + 1
-                        )
-                          .toString()
-                          .padStart(2, '0')}`,
+                        month: INVOICE_RANGE[currentMonth.toString()],
                         createdAt: invoiceResponse?.CreateTime,
                         randomNumber: invoiceResponse?.RandomNum,
                         sellerUniformNumber: companyUniformNumber,
