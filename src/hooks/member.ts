@@ -148,13 +148,6 @@ export const useMemberAdmin = (memberId: string) => {
             id
             permission_id
           }
-          coin_statuses_aggregate {
-            aggregate {
-              sum {
-                remaining
-              }
-            }
-          }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
@@ -181,6 +174,28 @@ export const useMemberAdmin = (memberId: string) => {
             permission_group {
               id
               name
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        memberId,
+      },
+    },
+  )
+
+  const { data: coinStatusRemainingData } = useQuery<
+    hasura.GetCoinStatusRemaining,
+    hasura.GetCoinStatusRemainingVariables
+  >(
+    gql`
+      query GetCoinStatusRemaining($memberId: String!) {
+        coin_status_aggregate(where: { member_id: { _eq: $memberId } }) {
+          aggregate {
+            sum {
+              remaining
             }
           }
         }
@@ -247,7 +262,9 @@ export const useMemberAdmin = (memberId: string) => {
               ),
             ),
           ),
-          coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
+          coins: coinStatusRemainingData?.coin_status_aggregate
+            ? coinStatusRemainingData?.coin_status_aggregate?.aggregate?.sum?.remaining
+            : 0,
           categories: data.member_by_pk.member_categories.map(v => ({
             id: v.category.id,
             name: v.category.name,
