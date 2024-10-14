@@ -207,6 +207,7 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       onSelectedLeadStatusCategoryChange(null)
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
@@ -231,6 +232,7 @@ const SalesLeadTabs: React.VFC<{
                           categoryId: leadStatusCategory.categoryId,
                         })
                         setSelectedRowKeys([])
+                        setPagination(undefined)
                       }}
                     >
                       {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}
@@ -264,6 +266,7 @@ const SalesLeadTabs: React.VFC<{
                   setDemoTabState(null)
                   setContactedTabState(null)
                   setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.followedLead)}
@@ -315,6 +318,7 @@ const SalesLeadTabs: React.VFC<{
                 setDemoTabState(null)
                 setContactedTabState(null)
                 setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.totalLead)}
@@ -352,6 +356,7 @@ const SalesLeadTabs: React.VFC<{
                 setDemoTabState(null)
                 setContactedTabState(null)
                 setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.idledLead)}
@@ -390,6 +395,7 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       setContactedTabState('CONTACTED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center>
@@ -402,6 +408,7 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       setContactedTabState('ANSWERED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center>
@@ -419,6 +426,7 @@ const SalesLeadTabs: React.VFC<{
                   setDemoTabState(null)
                   setContactedTabState(null)
                   setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.calledLead)}
@@ -507,6 +515,7 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       setDemoTabState('INVITED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center>
@@ -519,6 +528,7 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       setDemoTabState('PRESENTED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center onClick={() => setSelectedRowKeys([])}>
@@ -536,6 +546,7 @@ const SalesLeadTabs: React.VFC<{
                   setDemoTabState(null)
                   setContactedTabState(null)
                   setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.demoReservation)}
@@ -623,6 +634,7 @@ const SalesLeadTabs: React.VFC<{
                 setDemoTabState(null)
                 setContactedTabState(null)
                 setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.completedLead)}
@@ -661,6 +673,7 @@ const SalesLeadTabs: React.VFC<{
                 setDemoTabState(null)
                 setContactedTabState(null)
                 setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.signedLead)}
@@ -699,6 +712,7 @@ const SalesLeadTabs: React.VFC<{
                   setDemoTabState(null)
                   setContactedTabState(null)
                   setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.closedLead)}
