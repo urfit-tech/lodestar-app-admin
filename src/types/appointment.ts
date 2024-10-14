@@ -121,5 +121,4 @@ export type AppointmentPeriodCardProps = {
   }
   orderProduct: { id: string; options: any }
   meetGenerationMethod: MeetGenerationMethod
-  meetingLinkUrl: string | null
 }
