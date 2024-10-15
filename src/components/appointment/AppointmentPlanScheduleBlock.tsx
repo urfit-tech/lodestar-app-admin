@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import dayjs from 'dayjs'
 import { groupBy } from 'ramda'
 import React from 'react'
@@ -9,7 +8,6 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { AppointmentPlanAdmin } from '../../types/appointment'
 import { EmptyBlock } from '../admin'
-import AppointmentPeriodCollection from './AppointmentPeriodCollection'
 
 const messages = defineMessages({
   noPeriodCreated: { id: 'appointment.text.noPeriodCreated', defaultMessage: '目前還沒有建立任何時段' },
@@ -82,29 +80,30 @@ const AppointmentPlanScheduleBlock: React.FC<{
       {Object.values(periodCollections).length === 0 ? (
         <EmptyBlock>{formatMessage(messages.noPeriodCreated)}</EmptyBlock>
       ) : (
-        Object.values(periodCollections).map(periods => (
-          <AppointmentPeriodCollection
-            key={dayjs(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
-            appointmentPlan={{
-              id: appointmentPlanAdmin.id,
-              capacity: appointmentPlanAdmin.capacity,
-              defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
-              creatorId: appointmentPlanAdmin.creatorId,
-            }}
-            periods={periods.map(period => ({
-              schedule:
-                appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
-              appointmentScheduleId: period.appointmentScheduleId,
-              appointmentScheduleCreatedAt: period.appointmentScheduleCreatedAt,
-              startedAt: period.startedAt,
-              endedAt: period.endedAt,
-              isEnrolled: period.isEnrolled,
-              isExcluded: period.isExcluded,
-            }))}
-            onDelete={handleDelete}
-            onClose={handleClose}
-          />
-        ))
+        {}
+        // Object.values(periodCollections).map(periods => (
+        //   <AppointmentPeriodCollection
+        //     key={dayjs(periods?.[0]?.startedAt || new Date()).format('YYYY-MM-DD(dd)')}
+        //     appointmentPlan={{
+        //       id: appointmentPlanAdmin.id,
+        //       capacity: appointmentPlanAdmin.capacity,
+        //       defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
+        //       creatorId: appointmentPlanAdmin.creatorId,
+        //     }}
+        //     periods={periods.map(period => ({
+        //       schedule:
+        //         appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.appointmentScheduleId) || null,
+        //       appointmentScheduleId: period.appointmentScheduleId,
+        //       appointmentScheduleCreatedAt: period.appointmentScheduleCreatedAt,
+        //       startedAt: period.startedAt,
+        //       endedAt: period.endedAt,
+        //       isEnrolled: period.isEnrolled,
+        //       isExcluded: period.isExcluded,
+        //     })) || u}
+        //     onDelete={handleDelete}
+        //     onClose={handleClose}
+        //   />
+        // ))
       )}
     </>
   )

@@ -60,6 +60,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
     <>
       {appointmentEnrollments.map(v => (
         <AppointmentPeriodCard
+          meetingLinkUrl={v.meetingLinkUrl || null}
           key={v.id}
           id={v.id}
           member={v.member}

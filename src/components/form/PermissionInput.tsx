@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { Checkbox, Divider, Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { groupBy, prop, sortBy, uniq } from 'ramda'
+import { groupBy, uniq } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -79,7 +79,7 @@ const PermissionInput: React.FC<{
         </Checkbox>
       </div>
 
-      {Object.keys(enabledGroups)
+      {/* {Object.keys(enabledGroups)
         .filter(groupId => enabledGroups[groupId as keyof typeof enabledGroups])
         .map(groupId => (
           <div key={groupId} className="col-md-4 col-12 mb-3">
@@ -95,7 +95,7 @@ const PermissionInput: React.FC<{
               onChange={onChange}
             />
           </div>
-        ))}
+        ))} */}
     </div>
   )
 }

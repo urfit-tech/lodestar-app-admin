@@ -1,12 +1,11 @@
 import { CheckCircleTwoTone } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Divider, Flex, SkeletonText } from '@chakra-ui/react'
+import { Divider, SkeletonText } from '@chakra-ui/react'
 import { Button, message } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { CommonTitleMixin, MultiLineTruncationMixin } from 'lodestar-app-element/src/components/common'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
 import { groupBy } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -19,7 +18,6 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
-import AppointmentPeriodItem from './AppointmentPeriodItem'
 import appointmentMessages from './translation'
 
 const StyledModalTitle = styled.div`
@@ -247,7 +245,8 @@ const AppointmentRescheduleModal: React.VFC<
           </StyledInfo>
         ) : (
           <>
-            {Object.values(periodCollections).map(periods => {
+            {}
+            {/* {Object.values(periodCollections).map(periods => {
               return (
                 <>
                   <StyledScheduleTitle>{moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
@@ -291,7 +290,7 @@ const AppointmentRescheduleModal: React.VFC<
                   </Flex>
                 </>
               )
-            })}
+            })} */}
           </>
         )}
       </AdminModal>

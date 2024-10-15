@@ -5,7 +5,6 @@ import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import dayjs from 'dayjs'
 import { groupBy, sum } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -23,7 +22,6 @@ import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DiscountSelectionCard from '../checkout/DiscountSelectionCard'
 import { CustomRatioImage } from '../common/Image'
 import { AllMemberSelector } from '../form/MemberSelector'
-import AppointmentPeriodItem from './AppointmentPeriodItem'
 
 const messages = defineMessages({
   periodDurationAtMost: { id: 'appointment.text.periodDurationAtMost', defaultMessage: '諮詢一次 {duration} 分鐘為限' },
@@ -118,7 +116,7 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
       <StyledPeriodTitle>
         {periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
       </StyledPeriodTitle>
-      <StyledWrapper>
+      {/* <StyledWrapper>
         {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
           .map(periods =>
             periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
@@ -144,7 +142,7 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
               onClick={() => (!period.targetMemberBooked ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
             />
           ))}
-      </StyledWrapper>
+      </StyledWrapper> */}
     </div>
   )
 }
@@ -354,7 +352,7 @@ const AppointmentPlanAppointmentModal: React.FC<
               {appointmentStep === 'period' &&
                 Object.values(periodCollections).map(periods => (
                   <AppointmentPlanPeriodStepBlock
-                    periods={periods}
+                    periods={periods || []}
                     appointmentPlanAdmin={appointmentPlanAdmin}
                     services={services}
                     loadingServices={loadingServices}

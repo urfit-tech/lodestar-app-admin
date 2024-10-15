@@ -14,7 +14,6 @@ import { handleError } from '../../helpers'
 import { codeMessages } from '../../helpers/translation'
 import { AuthState } from '../../types/general'
 import { AuthModalContext, StyledDivider, StyledTitle } from './AuthModal'
-import { FacebookLoginButton, GoogleLoginButton, LineLoginButton, ParentingLoginButton } from './SocialLoginButton'
 import authMessages from './translation'
 
 const StyledContainer = styled.div`
@@ -89,77 +88,54 @@ const LoginSection: React.VFC<{
     <StyledContainer>
       {renderTitle ? renderTitle() : <StyledTitle>{formatMessage(authMessages.LoginSection.login)}</StyledTitle>}
 
-      {!!settings['auth.parenting.client_id'] && (
-        <div className="mb-3" style={{ width: '100%' }}>
-          <ParentingLoginButton accountLinkToken={accountLinkToken} />
-        </div>
-      )}
-      {!!settings['auth.facebook_app_id'] && (
-        <div className="mb-3" style={{ width: '100%' }}>
-          <FacebookLoginButton accountLinkToken={accountLinkToken} />
-        </div>
-      )}
-      {!!settings['auth.line_client_id'] && !!settings['auth.line_client_secret'] && (
-        <div className="mb-3" style={{ width: '100%' }}>
-          <LineLoginButton accountLinkToken={accountLinkToken} />
-        </div>
-      )}
-      {!!settings['auth.google_client_id'] && (
-        <div className="mb-3" style={{ width: '100%' }}>
-          <GoogleLoginButton accountLinkToken={accountLinkToken} />
-        </div>
-      )}
+      <>
+        {!!settings['auth.facebook_app_id'] ||
+          !!settings['auth.google_client_id'] ||
+          (!!settings['auth.line_client_id'] && !!settings['auth.line_client_secret'] && (
+            <StyledDivider>{formatMessage(authMessages['*'].or)}</StyledDivider>
+          ))}
 
-      {!noGeneralLogin && !(settings['auth.email.disabled'] === 'true') && (
-        <>
-          {!!settings['auth.facebook_app_id'] ||
-            !!settings['auth.google_client_id'] ||
-            (!!settings['auth.line_client_id'] && !!settings['auth.line_client_secret'] && (
-              <StyledDivider>{formatMessage(authMessages['*'].or)}</StyledDivider>
-            ))}
+        <InputGroup className="mb-3">
+          <Input
+            name="account"
+            ref={register({ required: formatMessage(authMessages.LoginSection.usernameOrEmail) })}
+            placeholder={formatMessage(authMessages.LoginSection.usernameOrEmail)}
+          />
+          <InputRightElement children={<Icon as={AiOutlineUser} />} />
+        </InputGroup>
 
-          <InputGroup className="mb-3">
-            <Input
-              name="account"
-              ref={register({ required: formatMessage(authMessages.LoginSection.usernameOrEmail) })}
-              placeholder={formatMessage(authMessages.LoginSection.usernameOrEmail)}
-            />
-            <InputRightElement children={<Icon as={AiOutlineUser} />} />
-          </InputGroup>
+        <InputGroup className="mb-3">
+          <Input
+            type={passwordShow ? 'text' : 'password'}
+            name="password"
+            ref={register({ required: formatMessage(authMessages.LoginSection.password) })}
+            placeholder={formatMessage(authMessages.LoginSection.password)}
+          />
+          <InputRightElement
+            children={
+              <Icon
+                className="cursor-pointer"
+                as={passwordShow ? AiOutlineEye : AiOutlineEyeInvisible}
+                onClick={() => setPasswordShow(!passwordShow)}
+              />
+            }
+          />
+        </InputGroup>
 
-          <InputGroup className="mb-3">
-            <Input
-              type={passwordShow ? 'text' : 'password'}
-              name="password"
-              ref={register({ required: formatMessage(authMessages.LoginSection.password) })}
-              placeholder={formatMessage(authMessages.LoginSection.password)}
-            />
-            <InputRightElement
-              children={
-                <Icon
-                  className="cursor-pointer"
-                  as={passwordShow ? AiOutlineEye : AiOutlineEyeInvisible}
-                  onClick={() => setPasswordShow(!passwordShow)}
-                />
-              }
-            />
-          </InputGroup>
+        <ForgetPassword>
+          <div
+            onClick={() => {
+              window.location.href = `https://${window.location.hostname}/forgot-password`
+            }}
+          >
+            {formatMessage(authMessages.LoginSection.forgotPassword)}
+          </div>
+        </ForgetPassword>
 
-          <ForgetPassword>
-            <div
-              onClick={() => {
-                window.location.href = `https://${window.location.hostname}/forgot-password`
-              }}
-            >
-              {formatMessage(authMessages.LoginSection.forgotPassword)}
-            </div>
-          </ForgetPassword>
-
-          <Button variant="primary" isFullWidth isLoading={loading} onClick={handleLogin}>
-            {formatMessage(authMessages.LoginSection.login)}
-          </Button>
-        </>
-      )}
+        <Button variant="primary" isFullWidth isLoading={loading} onClick={handleLogin}>
+          {formatMessage(authMessages.LoginSection.login)}
+        </Button>
+      </>
     </StyledContainer>
   )
 }

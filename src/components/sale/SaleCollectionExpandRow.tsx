@@ -1,4 +1,3 @@
-import { CopyOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -14,7 +13,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { copyToClipboard, currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
+import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
@@ -433,7 +432,7 @@ const SaleCollectionExpandRow = ({
             }}
           />
         )}
-        {enabledModules.order_payment_link_module && (
+        {/* {enabledModules.order_payment_link_module && (
           <Button
             disabled={generatePaymentLinkLoading}
             loading={generatePaymentLinkLoading}
@@ -458,7 +457,7 @@ const SaleCollectionExpandRow = ({
           >
             複製付款連結
           </Button>
-        )}
+        )} */}
         <AdminModal
           visible={!!issueInvoiceResults}
           title="手動開立發票結果"

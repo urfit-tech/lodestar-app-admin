@@ -1,7 +1,5 @@
 import { Button } from 'antd'
-import dayjs from 'dayjs'
 import moment from 'moment'
-import { groupBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -9,7 +7,6 @@ import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useService } from '../../hooks/service'
 import { AppointmentPeriod, AppointmentSchedule } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
-import AppointmentPeriodItem from './AppointmentPeriodItem'
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -77,7 +74,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
     <>
       <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
 
-      <StyledWrapper>
+      {/* <StyledWrapper>
         {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
           .map(periods =>
             periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
@@ -108,7 +105,7 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
               }}
             />
           ))}
-      </StyledWrapper>
+      </StyledWrapper> */}
 
       <AdminModal
         visible={visible}

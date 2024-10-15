@@ -295,6 +295,7 @@ export const useManagerLeads = (
     answeredLeadsCount: number
     contactedLeadsCount: number
     idLedLeadsCount: number
+    callbackedLeadsCount: number
     salesLeadMembers: SalesLeadMember[]
   }>()
   const [error, setError] = useState<any>(null)
@@ -345,6 +346,7 @@ export const useManagerLeads = (
               answeredLeadsCount: number
               contactedLeadsCount: number
               idLedLeadsCount: number
+              callbackedLeadsCount: number
               salesLeadMembers: SalesLeadMember[]
             } = {
               totalPages: data.totalPages,
@@ -360,6 +362,7 @@ export const useManagerLeads = (
               answeredLeadsCount: data.answeredLeadsCount,
               contactedLeadsCount: data.contactedLeadsCount,
               idLedLeadsCount: data.idLedLeadsCount,
+              callbackedLeadsCount: data.callbackedLeadsCount,
               salesLeadMembers: data.salesLeadMembers.map((salesLeadMember: SalesLeadMember) => ({
                 id: salesLeadMember.id,
                 appId: salesLeadMember.appId,
@@ -394,6 +397,7 @@ export const useManagerLeads = (
                 recentAnsweredAt: salesLeadMember.recentAnsweredAt
                   ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
                   : null,
+                callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
               })),
             }
             setSalesLeadMembersData(result)

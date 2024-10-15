@@ -29,6 +29,7 @@ import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
+import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
@@ -85,7 +86,7 @@ const StyledDelPhone = styled.p`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'followed' | 'completed'
+  variant?: 'followed' | 'completed' | 'callbacked'
   manager: Manager
   leads: SalesLeadMember[]
   followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
@@ -251,7 +252,16 @@ const SalesLeadTable: React.VFC<{
     memberIds: string[],
     managerId: string,
     leads: SalesLeadMember[],
-    status: 'followed' | 'removeFollowed' | 'specificList' | 'completed' | 'cancel' | 'recycle' | 'reject' | 'delete',
+    status:
+      | 'followed'
+      | 'removeFollowed'
+      | 'specificList'
+      | 'completed'
+      | 'cancel'
+      | 'recycle'
+      | 'reject'
+      | 'delete'
+      | 'leaveTheCallbackTab',
     leadStatusCategory?: { id: string; categoryName: string },
   ) => {
     const statusMessages: Record<typeof status, { confirm: string; success: string }> = {
@@ -289,6 +299,10 @@ const SalesLeadTable: React.VFC<{
         confirm: formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm),
         success: formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully),
       },
+      leaveTheCallbackTab: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabSuccessfully),
+      },
     }
 
     const { confirm: confirmText, success: eventSuccessMessage } = statusMessages[status]
@@ -306,6 +320,7 @@ const SalesLeadTable: React.VFC<{
               excluded_at: Date | string | null
               recycled_at: Date | string | null
               lead_status_category_id?: string | null
+              callbacked_at?: Date | string | null
             } = {
               manager_id: managerId,
               star: leads.find(lead => lead.id === memberId)?.star || null,
@@ -314,6 +329,7 @@ const SalesLeadTable: React.VFC<{
               closed_at: leads.find(lead => lead.id === memberId)?.closedAt || null,
               excluded_at: leads.find(lead => lead.id === memberId)?.excludedAt || null,
               recycled_at: leads.find(lead => lead.id === memberId)?.recycledAt || null,
+              callbacked_at: leads.find(lead => lead.id === memberId)?.callbackedAt || null,
             }
 
             switch (status) {
@@ -327,6 +343,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'removeFollowed':
@@ -339,6 +356,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'specificList':
@@ -351,6 +369,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: leadStatusCategory?.id ? leadStatusCategory.id : null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'completed':
@@ -363,6 +382,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'cancel':
@@ -386,6 +406,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: dayjs().utc().toISOString(),
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'reject':
@@ -398,6 +419,7 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: updateLeadsSetObject.excluded_at,
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
                 }
                 break
               case 'delete':
@@ -410,6 +432,20 @@ const SalesLeadTable: React.VFC<{
                   excluded_at: dayjs().utc().toISOString(),
                   recycled_at: updateLeadsSetObject.recycled_at,
                   lead_status_category_id: null,
+                  callbacked_at: updateLeadsSetObject.callbacked_at,
+                }
+                break
+              case 'leaveTheCallbackTab':
+                updateLeadsSetObject = {
+                  manager_id: null,
+                  star: -9999,
+                  followed_at: null,
+                  completed_at: updateLeadsSetObject.completed_at,
+                  closed_at: updateLeadsSetObject.closed_at,
+                  excluded_at: dayjs().utc().toISOString(),
+                  recycled_at: updateLeadsSetObject.recycled_at,
+                  lead_status_category_id: null,
+                  callbacked_at: null,
                 }
                 break
             }
@@ -426,6 +462,7 @@ const SalesLeadTable: React.VFC<{
                 excluded_at: updateLeadsSetObject.excluded_at,
                 recycled_at: updateLeadsSetObject.recycled_at,
                 lead_status_category_id: updateLeadsSetObject.lead_status_category_id,
+                callbacked_at: updateLeadsSetObject.callbacked_at,
               },
             }
           }),
@@ -847,6 +884,22 @@ const SalesLeadTable: React.VFC<{
               })}
             </b>
             <div className="d-flex flex-row align-items-center">
+              {variant === 'callbacked' && (
+                <Button
+                  icon={<LeaveTheTab style={{ marginRight: '8px', verticalAlign: 'middle' }} />}
+                  className="mr-3"
+                  onClick={() =>
+                    handleLeadStatus(
+                      selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                      manager.id,
+                      leads,
+                      'leaveTheCallbackTab',
+                    )
+                  }
+                >
+                  {formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTab)}
+                </Button>
+              )}
               {variant !== 'followed' && (
                 <Dropdown
                   className="mr-2"
