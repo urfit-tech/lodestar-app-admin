@@ -1,4 +1,5 @@
 import Icon from '@ant-design/icons'
+import { Spinner } from '@chakra-ui/react'
 import { DatePicker, Input, message, Select, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -6,7 +7,6 @@ import moment from 'moment'
 import { RangeValue } from 'rc-picker/lib/interface'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { Spinner } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
@@ -103,7 +103,11 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
             {loadingAppointmentCreators ? (
               <Spinner />
             ) : (
-              appointmentCreators.map(v => <Select.Option value={v.id}>{v.name}</Select.Option>)
+              appointmentCreators.map(v => (
+                <Select.Option key={v.id} value={v.id}>
+                  {v.name}
+                </Select.Option>
+              ))
             )}
           </Select>
         )}

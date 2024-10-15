@@ -39,7 +39,7 @@ export const GetMeetById = gql`
   }
 `
 
-export const useOverlapMeets = (startedAt: Date, endedAt: Date) => {
+export const useOverlapMeets = (startedAt: Date | null, endedAt: Date | null) => {
   const { id: appId } = useApp()
   const { loading, data } = useQuery<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>(GetOverlapMeets, {
     variables: { appId, startedAt, endedAt },
