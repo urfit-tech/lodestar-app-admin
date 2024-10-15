@@ -404,7 +404,11 @@ export const useCancelAppointment = () => {
   }
 }
 
-export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, startedAt: Date, endedAt: Date) => {
+export const useMeetByAppointmentPlanIdAndPeriod = (
+  appointmentPlanId: string,
+  startedAt: Date | null,
+  endedAt: Date | null,
+) => {
   const { id: appId } = useApp()
   const { loading, data, error } = useQuery<
     hasura.GetMeetByAppointmentPlanIdAndPeriod,
@@ -442,8 +446,8 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
     {
       variables: {
         target: appointmentPlanId,
-        startedAt: startedAt.toISOString(),
-        endedAt: endedAt.toISOString(),
+        startedAt: startedAt?.toISOString(),
+        endedAt: endedAt?.toISOString(),
         appId,
       },
     },
