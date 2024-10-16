@@ -254,6 +254,7 @@ const SalesLeadTable: React.VFC<{
   const handleLeaveResubmission = (memberIds: string[]) => {
     setRefetchLoading(true)
     const resubmissionProperty = properties.find(property => property.name === '最新填寫日期')
+    if (!resubmissionProperty) return
     deleteMemberProperty({
       variables: {
         memberIds,
