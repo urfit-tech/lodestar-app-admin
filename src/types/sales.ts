@@ -1,18 +1,3 @@
-export type LeadStatus =
-  | 'IDLED'
-  | 'CONTACTED'
-  | 'INVITED'
-  | 'PRESENTED'
-  | 'TODO'
-  | 'SIGNED'
-  | 'CLOSED'
-  | 'DEDICATED'
-  | 'EXISTED'
-  | 'DEAD'
-  | 'FOLLOWED'
-  | 'ANSWERED'
-  | 'COMPLETED'
-
 export type Manager = {
   id: string
   avatarUrl: string | null
@@ -127,10 +112,21 @@ export type SalesMemberProps = {
   name: string
 }
 
-export type GroupSettingProps = {
-  name: string
-  sales: SalesMemberProps[]
-}
+export type LeadStatus =
+  | 'IDLED'
+  | 'CONTACTED'
+  | 'INVITED'
+  | 'PRESENTED'
+  | 'TODO'
+  | 'SIGNED'
+  | 'CLOSED'
+  | 'DEDICATED'
+  | 'EXISTED'
+  | 'DEAD'
+  | 'FOLLOWED'
+  | 'ANSWERED'
+  | 'COMPLETED'
+  | 'LASTCREATED'
 
 export type MemberTask = {
   memberId: string

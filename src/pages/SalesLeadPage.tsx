@@ -1,7 +1,6 @@
 import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Flex } from '@chakra-ui/react'
 import { Button, Dropdown, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
 import { SorterResult, TablePaginationConfig } from 'antd/lib/table/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -698,6 +697,41 @@ const SalesLeadTabs: React.VFC<{
                 setSelectedRowKeys([])
               }}
               dataCount={salesLeadMembersData?.signedLeadsCount || 0}
+            />
+          )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          key="RESUBMISSION"
+          tab={
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
+              {formatMessage(salesMessages.resubmissionLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.resubmissionCount})</span>
+            </div>
+          }
+        >
+          {activeKey === 'RESUBMISSION' && (
+            <SalesLeadTable
+              variant="resubmission"
+              manager={manager}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.resubmissionCount || 0}
             />
           )}
         </Tabs.TabPane>
