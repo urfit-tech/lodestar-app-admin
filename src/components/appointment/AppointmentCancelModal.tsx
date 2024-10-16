@@ -21,12 +21,9 @@ const StyledModalSubTitle = styled.div`
   letter-spacing: 0.4px;
 `
 
-const AppointmentCancelModal: React.VFC<AdminModalProps & { orderProductId: string; meetId: string; onRefetch?: () => void }> = ({
-  orderProductId,
-  meetId,
-  onRefetch,
-  ...props
-}) => {
+const AppointmentCancelModal: React.VFC<
+  AdminModalProps & { orderProductId: string; meetId: string; onRefetch?: () => void }
+> = ({ orderProductId, meetId, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const [canceledReason, setCanceledReason] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,13 +35,14 @@ const AppointmentCancelModal: React.VFC<AdminModalProps & { orderProductId: stri
     try {
       await cancelAppointment({
         variables: {
-          orderProductId, data: {
+          orderProductId,
+          data: {
             appointmentCanceledAt: new Date(),
             appointmentCanceledReason: canceledReason,
-          }
-        }
+          },
+        },
       })
-      await deleteGeneralMeet({ variables: { meetId } })
+      // await deleteGeneralMeet({ variables: { meetId } }) // If there are multiple appointments at the same time, deleting meet will cause other appointments to not be able to find meet.
       message.success(formatMessage(appointmentMessages.AppointmentCancelModal.cancelSuccess))
     } catch (error) {
       handleError(error)
