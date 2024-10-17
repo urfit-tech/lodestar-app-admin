@@ -146,13 +146,15 @@ const MemberContractAdminBlock: React.FC<{
               className="mb-4"
             >
               <StyledMeta>
+                {contract.agreedAt
+                  ? formatMessage(memberMessages.text.agreedAt, {
+                      time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
+                    })
+                  : null}
+                <br />
                 {contract.revokedAt
                   ? formatMessage(memberMessages.text.revokedAt, {
                       time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
-                    })
-                  : contract.agreedAt
-                  ? formatMessage(memberMessages.text.agreedAt, {
-                      time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
                     })
                   : null}
               </StyledMeta>
