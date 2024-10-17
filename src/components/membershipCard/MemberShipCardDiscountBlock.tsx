@@ -1,6 +1,7 @@
 import { FileAddOutlined, MoreOutlined } from '@ant-design/icons'
 import { Box, Flex, Table as ChakraTable, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
 import { Button, Dropdown, Menu } from 'antd'
+import { ascend, defaultTo, path, prop, sortWith } from 'ramda'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useDeleteCardDiscount, useMembershipCardTerms } from '../../hooks/membershipCard'
@@ -102,74 +103,76 @@ const MemberShipCardDiscountBlock: React.FC<{ membershipCardId: string }> = ({ m
               </Tr>
             </Thead>
             <Tbody>
-              {cardTerm?.cardDiscounts
-                .filter(discount => !!discount.product.details)
-                .map(discount => {
-                  const discountProductType = discount?.product?.type as MembershipCardTermsProductType
-                  const discountProductPlanName = discount?.product?.details?.productPlanName
-                  const discountProductName = discount?.product?.details?.productName
-                  const discountName = discountProductPlanName
-                    ? `${discountProductName} - ${discountProductPlanName}`
-                    : discountProductName
-                  return (
-                    <Tr key={discount.id}>
-                      <Td>{renderProductType(discountProductType)}</Td>
-                      <Td>
-                        <Text>{discountName}</Text>
-                      </Td>
-                      <Td>{renderDiscount(discount)}</Td>
-                      <Td>
-                        <Dropdown
-                          placement="bottomRight"
-                          trigger={['click']}
-                          overlay={
-                            <Menu>
-                              {discount.type === 'equity' ? (
-                                <Menu.Item>
-                                  <a
-                                    href={`/admin/programs/${discount?.product?.details?.productTarget}?tab=plan`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {formatMessage(membershipCardMessages.MembershipCardDiscount.editDiscountTerm)}
-                                  </a>
-                                </Menu.Item>
-                              ) : (
-                                <Menu.Item>
-                                  <MemberShipCardDiscountModal
-                                    renderTrigger={({ setVisible }) => (
-                                      <>
-                                        <span onClick={() => setVisible(true)}>
-                                          {formatMessage(
-                                            membershipCardMessages.MembershipCardDiscount.editDiscountTerm,
-                                          )}
-                                        </span>
-                                      </>
-                                    )}
-                                    onRefetch={refetchCardTerm}
-                                    model="update"
-                                    membershipCardId={membershipCardId}
-                                    membershipCardDiscount={discount}
-                                    cardDiscounts={cardTerm?.cardDiscounts}
-                                  />
-                                </Menu.Item>
-                              )}
-                              {discount.type !== 'equity' && (
-                                <Menu.Item onClick={() => handleDelete(discount.id)}>
-                                  <span>
-                                    {formatMessage(membershipCardMessages.MembershipCardDiscount.deleteDiscountTerm)}
-                                  </span>
-                                </Menu.Item>
-                              )}
-                            </Menu>
-                          }
-                        >
-                          <MoreOutlined />
-                        </Dropdown>
-                      </Td>
-                    </Tr>
-                  )
-                })}
+              {sortWith(
+                [
+                  ascend(discount => defaultTo('', prop('type', discount))),
+                  ascend(discount => defaultTo('', path(['product', 'type'], discount))),
+                ],
+                cardTerm?.cardDiscounts.filter(discount => !!discount.product.details) || [],
+              ).map(discount => {
+                const discountProductType = discount?.product?.type as MembershipCardTermsProductType
+                const discountProductPlanName = discount?.product?.details?.productPlanName
+                const discountProductName = discount?.product?.details?.productName
+                const discountName = discountProductPlanName
+                  ? `${discountProductName} - ${discountProductPlanName}`
+                  : discountProductName
+                return (
+                  <Tr key={discount.id}>
+                    <Td>{renderProductType(discountProductType)}</Td>
+                    <Td>
+                      <Text>{discountName}</Text>
+                    </Td>
+                    <Td>{renderDiscount(discount)}</Td>
+                    <Td>
+                      <Dropdown
+                        placement="bottomRight"
+                        trigger={['click']}
+                        overlay={
+                          <Menu>
+                            {discount.type === 'equity' ? (
+                              <Menu.Item>
+                                <a
+                                  href={`/admin/programs/${discount?.product?.details?.productTarget}?tab=plan`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {formatMessage(membershipCardMessages.MembershipCardDiscount.editDiscountTerm)}
+                                </a>
+                              </Menu.Item>
+                            ) : (
+                              <Menu.Item>
+                                <MemberShipCardDiscountModal
+                                  renderTrigger={({ setVisible }) => (
+                                    <>
+                                      <span onClick={() => setVisible(true)}>
+                                        {formatMessage(membershipCardMessages.MembershipCardDiscount.editDiscountTerm)}
+                                      </span>
+                                    </>
+                                  )}
+                                  onRefetch={refetchCardTerm}
+                                  model="update"
+                                  membershipCardId={membershipCardId}
+                                  membershipCardDiscount={discount}
+                                  cardDiscounts={cardTerm?.cardDiscounts || []}
+                                />
+                              </Menu.Item>
+                            )}
+                            {discount.type !== 'equity' && (
+                              <Menu.Item onClick={() => handleDelete(discount.id)}>
+                                <span>
+                                  {formatMessage(membershipCardMessages.MembershipCardDiscount.deleteDiscountTerm)}
+                                </span>
+                              </Menu.Item>
+                            )}
+                          </Menu>
+                        }
+                      >
+                        <MoreOutlined />
+                      </Dropdown>
+                    </Td>
+                  </Tr>
+                )
+              })}
             </Tbody>
           </StyledTable>
         )}
