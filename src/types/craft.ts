@@ -9,6 +9,7 @@ export type CraftPageAdminProps = {
   craftData: { [key: string]: string } | null
   options: { customStyle?: string; noHeader?: boolean; noFooter?: boolean } | null
   metaTag?: MetaTag | null
+  language: string | null
 }
 
 export type CraftPageColumnProps = {

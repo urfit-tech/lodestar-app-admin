@@ -213,6 +213,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
         questionListData: questionList.map(question => ({
           id: question.id,
           question_group_id: questionGroupId,
+          type: (question.options?.filter(option => option.isAnswer).length ?? 0) >= 2 ? 'multiple' : 'single',
           subject: question.subject,
           layout: question.layout,
           font: question.font,
@@ -452,7 +453,7 @@ const useQuestionMutation = () => {
     ) {
       insert_question(
         objects: $questionListData
-        on_conflict: { constraint: question_pkey, update_columns: [subject, layout, font, explanation, position] }
+        on_conflict: { constraint: question_pkey, update_columns: [type, subject, layout, font, explanation, position] }
       ) {
         affected_rows
         returning {
