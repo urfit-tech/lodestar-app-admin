@@ -60,7 +60,6 @@ type FieldProps = {
   uniformTitle: string
   invoiceEmail: string
   language: string
-  destinationEmail: string
 }
 
 type ContractInfo = {
@@ -178,7 +177,6 @@ const MemberContractCreationPage: React.VFC = () => {
               paymentMethod: paymentMethods[0],
               paymentMode: paymentModes[0],
               invoiceEmail: member.email,
-              destinationEmail: member.email,
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)

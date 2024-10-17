@@ -402,7 +402,7 @@ const MemberContractCreationBlock: React.FC<{
               {
                 memberId: member.id,
                 executorId: fieldValue.executorId,
-                destinationEmail: fieldValue.destinationEmail,
+                email: fieldValue.invoiceEmail || member.email,
               },
               {
                 headers: { authorization: `Bearer ${authToken}` },
