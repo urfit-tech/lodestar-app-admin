@@ -369,6 +369,12 @@ export type PaymentCompany = {
   }[]
 }
 
+const calculateEndedAt = (startedAt: Date, weeks: number) => {
+  const max = moment(startedAt).add(1, 'y').endOf('day')
+  const endedAt = moment(startedAt).add(weeks + 2, 'weeks')
+  return endedAt.isBefore(max) ? endedAt : max
+}
+
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
@@ -568,20 +574,7 @@ const MemberContractCreationForm: React.FC<
     console.log({ products })
     console.log({ filterProducts })
     return (
-      <Form
-        layout="vertical"
-        colon={false}
-        hideRequiredMark
-        form={form}
-        {...formProps}
-        onValuesChange={(_, value) => {
-          if (value.startedAt) {
-            form?.setFieldsValue({
-              endedAt: moment(value.startedAt).add(1, 'y').endOf('day'),
-            })
-          }
-        }}
-      >
+      <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
         {products.length === 0 ? (
           <Skeleton active />
@@ -1307,6 +1300,14 @@ const MemberContractCreationForm: React.FC<
                               total_sessions: { max: totalAmount, min: totalAmount },
                             },
                           })
+
+                          category.product === '學費' &&
+                            form?.setFieldsValue({
+                              endedAt: calculateEndedAt(
+                                form.getFieldValue('startedAt'),
+                                Math.ceil(totalAmount / weeklyBatch),
+                              ),
+                            })
                         }
                       }}
                     >
