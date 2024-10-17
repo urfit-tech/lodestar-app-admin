@@ -15,6 +15,7 @@ export type AppPageProps = {
   updatedAt: Date
   options: { [key: string]: any } | null
   metaTag: { [key: string]: any } | null
+  language: string | null
 }
 
 export const useAppPage = (pageId: string) => {
@@ -31,6 +32,7 @@ export const useAppPage = (pageId: string) => {
           options
           meta_tag
           editor_id
+          language
           editor {
             name
           }
@@ -56,6 +58,7 @@ export const useAppPage = (pageId: string) => {
         updatedAt: new Date(data.app_page_by_pk.updated_at),
         options: data.app_page_by_pk.options,
         metaTag: data.app_page_by_pk.meta_tag,
+        language: data.app_page_by_pk.language || null,
       }
     : null
 
@@ -93,6 +96,7 @@ export const useAppPageCollection = () => {
           options
           meta_tag
           editor_id
+          language
           editor {
             name
           }
@@ -119,6 +123,7 @@ export const useAppPageCollection = () => {
         updatedAt: new Date(v.updated_at),
         options: v.options,
         metaTag: v.meta_tag,
+        language: v.language || null,
       }))
       .filter(v => v.craftData) || []
 
@@ -140,6 +145,7 @@ export const useMutateAppPage = () => {
       $title: String!
       $craftData: jsonb
       $options: jsonb
+      $language: String
     ) {
       insert_app_page_one(
         object: {
@@ -149,6 +155,7 @@ export const useMutateAppPage = () => {
           editor_id: $editorId
           craft_data: $craftData
           options: $options
+          language: $language
         }
       ) {
         id
@@ -160,7 +167,8 @@ export const useMutateAppPage = () => {
     title: string
     editorId: string
     craftData: { [key: string]: any } | null
-    options: { [key: string]: any } 
+    options: { [key: string]: any }
+    language?: string | null
   }) => {
     return insertAppPageHandler({
       variables: { appId, ...values },
@@ -182,6 +190,7 @@ export const useMutateAppPage = () => {
     craftData?: { [key: string]: any }
     options?: { [key: string]: any }
     isDeleted?: boolean
+    language?: string | null
   }) => {
     return updateAppPageHandler({
       variables: {
@@ -194,6 +203,7 @@ export const useMutateAppPage = () => {
           options: values.options,
           is_deleted: values.isDeleted,
           published_at: values.publishedAt,
+          language: values.language,
         },
       },
     })

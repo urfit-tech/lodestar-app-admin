@@ -1,10 +1,12 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 import { AppPageProps } from '../../hooks/appPage'
 import CraftPageReplicateModal from './CraftPageReplicateModal'
 import craftPageCollectionPageMessages from './translation'
@@ -27,7 +29,7 @@ const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filter
 
 type CraftPageColumnProps = Pick<
   AppPageProps,
-  'id' | 'title' | 'path' | 'updatedAt' | 'editorName' | 'craftData' | 'options'
+  'id' | 'title' | 'path' | 'updatedAt' | 'editorName' | 'craftData' | 'options' | 'language'
 >
 
 const CraftPageCollectionTable: React.VFC<{
@@ -35,6 +37,7 @@ const CraftPageCollectionTable: React.VFC<{
   pages: CraftPageColumnProps[]
   onRefetch?: () => Promise<any>
 }> = ({ loading, pages, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [searchPageName, setSearchPageName] = useState<string>('')
 
@@ -46,7 +49,7 @@ const CraftPageCollectionTable: React.VFC<{
     {
       key: 'pageName',
       title: formatMessage(craftPageCollectionPageMessages['*'].pageName),
-      width: '55%',
+      width: '40%',
       render: (_, record) => <StyledText onClick={() => openCraftPage(record.id)}>{record.title}</StyledText>,
       filterDropdown: () => (
         <div className="p-2">
@@ -65,13 +68,27 @@ const CraftPageCollectionTable: React.VFC<{
     {
       key: 'path',
       title: formatMessage(craftPageCollectionPageMessages.CraftPageCollectionTable.url),
-      width: '25%',
+      width: '20%',
       render: (_, record) => <StyledText onClick={() => openCraftPage(record.id)}>{record.path}</StyledText>,
+    },
+    {
+      key: 'language',
+      title: formatMessage(craftPageCollectionPageMessages['*'].displayLocale),
+      width: enabledModules.locale ? '20%' : '0%',
+      render: (_, record) => {
+        return enabledModules.locale ? (
+          <StyledText>
+            {record.language
+              ? SUPPORTED_LOCALES.find(supportedLocale => supportedLocale.locale === record.language)?.label
+              : formatMessage(craftPageCollectionPageMessages['*'].noSpecificLocale)}
+          </StyledText>
+        ) : null
+      },
     },
     {
       key: 'updatedAtAndEditor',
       title: formatMessage(craftPageCollectionPageMessages.CraftPageCollectionTable.latestUpdatedAt),
-      width: '40%',
+      width: '45%',
       render: (_, record) => (
         <StyledUpdatedAtAndEditor onClick={() => openCraftPage(record.id)}>
           <div>{moment(record.updatedAt).format('YYYY-MM-DD HH:mm')}</div>
@@ -97,6 +114,7 @@ const CraftPageCollectionTable: React.VFC<{
                     title: record?.title || '',
                     options: record?.options || {},
                     craftData: record.craftData,
+                    language: record.language,
                   }}
                   renderTrigger={({ setVisible }) => (
                     <span onClick={() => setVisible(true)}>
