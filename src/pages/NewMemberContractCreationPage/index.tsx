@@ -59,7 +59,6 @@ type FieldProps = {
   skipIssueInvoice: boolean
   uniformTitle: string
   invoiceEmail: string
-  language: string
 }
 
 type ContractInfo = {
@@ -72,10 +71,6 @@ type ContractInfo = {
       name: string
       placeholder: string
       value: string | null
-    }[]
-    agreedAndUnexpiredContracts: {
-      ended_at: Date
-      type: string
     }[]
   }
   contracts: {
@@ -258,12 +253,6 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_contracts(where: { agreed_at: { _is_null: false }, ended_at: { _gt: "now()" } }) {
-            ended_at
-            contract {
-              options
-            }
-          }
           member_properties {
             id
             value
@@ -307,10 +296,6 @@ const useContractInfo = (appId: string, memberId: string) => {
               name: p.name,
               placeholder: p.placeholder || '',
               value: data.member_by_pk?.member_properties.find(mp => mp.property_id === p.id)?.value || null,
-            })),
-            agreedAndUnexpiredContracts: data.member_by_pk.member_contracts.map(c => ({
-              ended_at: c.ended_at,
-              type: c.contract.options.type,
             })),
           },
           contracts: data.contract.map(c => ({
