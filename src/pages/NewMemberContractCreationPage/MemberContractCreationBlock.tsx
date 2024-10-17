@@ -401,7 +401,7 @@ const MemberContractCreationBlock: React.FC<{
       )
       .then(res => {
         if (res.data.code === 'SUCCESS') {
-          message.success(formatMessage(pageMessages.MemberContractCreationBlock.orderCreateSuccess))
+          message.success('訂單建立成功')
           axios
             .post(
               `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
