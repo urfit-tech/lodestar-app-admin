@@ -568,7 +568,20 @@ const MemberContractCreationForm: React.FC<
     console.log({ products })
     console.log({ filterProducts })
     return (
-      <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
+      <Form
+        layout="vertical"
+        colon={false}
+        hideRequiredMark
+        form={form}
+        {...formProps}
+        onValuesChange={(_, value) => {
+          if (value.startedAt) {
+            form?.setFieldsValue({
+              endedAt: moment(value.startedAt).add(1, 'y').endOf('day'),
+            })
+          }
+        }}
+      >
         <AdminBlockTitle>產品清單</AdminBlockTitle>
         {products.length === 0 ? (
           <Skeleton active />
