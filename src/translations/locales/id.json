@@ -3437,5 +3437,9 @@
   "voucher.status.redeemable": "Dapat ditukarkan",
   "voucher.text.fromNow": "Mulai sekarang",
   "voucher.text.items": "item",
-  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan"
+  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan",
+  "sales.label.callbackedLead": "panggilan balik",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "Tinggalkan tab",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "Apakah Anda yakin ingin meninggalkan tab ini?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "Berhasil meninggalkan tab"
 }

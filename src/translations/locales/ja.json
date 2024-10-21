@@ -3423,5 +3423,9 @@
   "voucher.status.redeemable": "交換可能",
   "voucher.text.fromNow": "即日より",
   "voucher.text.items": "項目",
-  "voucher.text.noUsePeriod": "使用期限なし"
+  "voucher.text.noUsePeriod": "使用期限なし",
+  "sales.label.callbackedLead": "コールバック",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "タブを離れる",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "このタブを離れてもよろしいですか？",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "タブを正常に離れました"
 }
