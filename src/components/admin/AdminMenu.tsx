@@ -468,23 +468,23 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
         Boolean(permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
       key: 'member_contract_collection',
       icon: () => <UserCopyIcon />,
-      name: '合約資料管理',
+      name: formatMessage(adminMessages.AdminMenu.contractDataManagement),
     },
     {
       permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
       key: 'sales_call_admin',
       icon: () => <PhoneIcon />,
-      name: '業務查詢',
+      name: formatMessage(adminMessages.AdminMenu.businessInquiry),
       subMenuItems: [
         // {
         //   permissionIsAllowed: true,
         //   key: 'sales_status',
-        //   name: '即時戰況查詢',
+        //   name: formatMessage(adminMessages.AdminMenu.realTimeBattleQuery),
         // },
         {
           permissionIsAllowed: true,
           key: 'chailease_lookup',
-          name: `${settings['name']}報名表查詢`,
+          name: formatMessage(adminMessages.AdminMenu.registrationFormQuery, { name: settings['name'] }),
         },
         {
           permissionIsAllowed: true,
@@ -503,27 +503,27 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
       key: 'analytics',
       icon: () => <BarChartOutlined style={{ margin: 0 }} />,
-      name: '數據分析',
+      name: formatMessage(adminMessages.AdminMenu.dataAnalysis),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'analytics_sales_materials',
-          name: '素材表現',
+          name: formatMessage(adminMessages.AdminMenu.materialPerformance),
         },
         {
           permissionIsAllowed: true,
           key: 'analytics_sales_member_categories',
-          name: '業務表現',
+          name: formatMessage(adminMessages.AdminMenu.businessPerformance),
         },
         {
           permissionIsAllowed: true,
           key: 'analytics_sales_activeness',
-          name: '活動量',
+          name: formatMessage(adminMessages.AdminMenu.activityVolume),
         },
         {
           permissionIsAllowed: true,
           key: 'analytics_advertising_audience',
-          name: '廣告受眾',
+          name: formatMessage(adminMessages.AdminMenu.adAudience),
         },
       ],
     },

@@ -13,5 +13,13 @@ export const reportMessages = {
       defaultMessage: 'Only can view Self Data',
     },
     existReport: { id: 'reportMessages.ReportAdminModal.existReport', defaultMessage: '已存在相同報表' },
+    embedSingleReport: {
+      id: 'reportMessages.ReportAdminModal.embedSingleReport',
+      defaultMessage: '嵌入單一報表',
+    },
+    embedDashboard: {
+      id: 'reportMessages.ReportAdminModal.embedDashboard',
+      defaultMessage: '嵌入儀表板',
+    },
   }),
 }

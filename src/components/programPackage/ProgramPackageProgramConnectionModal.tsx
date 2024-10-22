@@ -103,7 +103,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
             treeData={[
               {
                 key: 'allPerpetualPrograms',
-                title: '所有單次課程',
+                title: formatMessage(programPackageMessages.form.allPerpetualPrograms),
                 children: availablePrograms
                   .filter(program => !program.isSubscription)
                   .map(program => ({
@@ -116,7 +116,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
               },
               {
                 key: 'allSubscriptionPrograms',
-                title: '所有訂閱課程',
+                title: formatMessage(programPackageMessages.form.allSubscriptionPrograms),
                 children: availablePrograms
                   .filter(program => program.isSubscription)
                   .map(program => ({

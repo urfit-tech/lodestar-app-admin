@@ -4,7 +4,9 @@ import { UploadProps } from 'antd/lib/upload/Upload'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
+import { useIntl } from 'react-intl'
 import { handleError, uploadFile } from '../../helpers'
+import pageMessages from '../translation'
 
 const CertificationUploader: React.VFC<
   UploadProps & {
@@ -12,6 +14,7 @@ const CertificationUploader: React.VFC<
     onFinish?: (path: string) => void
   }
 > = ({ memberId, onFinish, ...uploadProps }) => {
+  const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
@@ -30,7 +33,7 @@ const CertificationUploader: React.VFC<
       {...uploadProps}
     >
       <Button icon={<UploadOutlined />} loading={uploading}>
-        上傳證明
+        {formatMessage(pageMessages.CertificationUploader.uploadProof)}
       </Button>
     </Upload>
   )

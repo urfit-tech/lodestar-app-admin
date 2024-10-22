@@ -181,8 +181,8 @@ const ReportAdminModal: React.FC<
         </Form.Item>
         <Form.Item style={{ marginTop: '16px' }} name="formType">
           <Radio.Group onChange={e => setFormType(e.target.value)}>
-            <Radio value="question">嵌入單一報表</Radio>
-            <Radio value="dashboard">嵌入儀表板</Radio>
+            <Radio value="question">{formatMessage(reportMessages.ReportAdminModal.embedSingleReport)}</Radio>
+            <Radio value="dashboard">{formatMessage(reportMessages.ReportAdminModal.embedDashboard)}</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item

@@ -54,5 +54,25 @@ const memberMessages = {
       defaultMessage: 'Note (visible only to those with permission)',
     },
   }),
+  MemberImportModal: defineMessages({
+    uploadSuccess: {
+      id: 'member.MemberImportModal.uploadSuccess',
+      defaultMessage: '{name} 上傳成功!',
+    },
+    uploadFail: {
+      id: 'member.MemberImportModal.uploadFail',
+      defaultMessage: '{name} 上傳失敗!',
+    },
+    importResultNotification: {
+      id: 'member.MemberImportModal.importResultNotification',
+      defaultMessage: '匯入結果將會以信件寄出',
+    },
+  }),
+  MemberNoteAdminItem: defineMessages({
+    note: {
+      id: 'member.MemberNoteAdminItem.note',
+      defaultMessage: '備註',
+    },
+  }),
 }
 export default memberMessages

@@ -392,7 +392,9 @@ const SalesLeadTable: React.VFC<{
                       onChange={e => setFullNameValue(e.target.value.trim())}
                     />
                     <Button type="primary" onClick={() => handleFullNameSave(lead)} loading={refetchLoading}>
-                      {fullNameValue && fullNameValue !== fullNamePropertyValue ? '儲存' : '取消'}
+                      {fullNameValue && fullNameValue !== fullNamePropertyValue
+                        ? formatMessage(commonMessages.ui.save)
+                        : formatMessage(commonMessages.ui.cancel)}
                     </Button>
                   </Input.Group>
                 ) : (

@@ -86,7 +86,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         </Typography.Title>
 
         <Checkbox disabled={isCollapseLoading} defaultChecked={isCollapse} onChange={toggleChecked}>
-          {'展開章節'}
+          {formatMessage(programMessages.ProgramContentSectionAdminCard.expandChapter)}
         </Checkbox>
 
         <Dropdown

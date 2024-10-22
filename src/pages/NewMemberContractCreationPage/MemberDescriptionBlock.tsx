@@ -1,8 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import { Button, Descriptions, Input, message, Select } from 'antd'
 import React, { memo, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { ContractInfo } from '.'
 import hasura from '../../hasura'
+import pageMessages from '../translation'
 
 const MemberDescriptionBlock: React.FC<{
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
@@ -22,6 +24,7 @@ const MemberDescriptionBlock: React.FC<{
     const defaultIsMemberZeroTax = isMemberZeroTaxProperty?.value || ''
     const IsMemberZeroTaxOptions = isMemberZeroTaxProperty?.placeholder.split('/') || []
     const [isMemberZeroTax, setIsMemberZeroTax] = React.useState(defaultIsMemberZeroTax)
+    const { formatMessage } = useIntl()
     const [loading, setLoading] = useState(false)
 
     const [upsertMemberProperty] = useMutation<hasura.UpsertMemberProperty, hasura.UpsertMemberPropertyVariables>(gql`
@@ -37,13 +40,22 @@ const MemberDescriptionBlock: React.FC<{
 
     return (
       <div ref={memberBlockRef} className="mb-5">
-        <Descriptions title={<span>學生資料</span>} bordered className="mb-5" column={2}>
-          <Descriptions.Item label="學員姓名">{member.name}</Descriptions.Item>
-          <Descriptions.Item label="學員信箱">{member.email}</Descriptions.Item>
-          <Descriptions.Item span={2} label="付款備註">
+        <Descriptions
+          title={<span>{formatMessage(pageMessages.MemberDescriptionBlock.info)}</span>}
+          bordered
+          className="mb-5"
+          column={2}
+        >
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.name)}>
+            {member.name}
+          </Descriptions.Item>
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.email)}>
+            {member.email}
+          </Descriptions.Item>
+          <Descriptions.Item span={2} label={formatMessage(pageMessages.MemberDescriptionBlock.paymentNote)}>
             <Input.TextArea style={{ height: 200 }} value={comment} onChange={e => setComment(e.target.value)} />
           </Descriptions.Item>
-          <Descriptions.Item label="會員分類">
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.memberCategory)}>
             <Select
               style={{ width: '100%' }}
               defaultValue={memberType}
@@ -71,7 +83,7 @@ const MemberDescriptionBlock: React.FC<{
           </Descriptions.Item>
         </Descriptions>
         <Button className="mr-2" onClick={() => setComment(defaultComment)}>
-          取消
+          {formatMessage(pageMessages.MemberDescriptionBlock.cancel)}
         </Button>
         <Button
           type="primary"
@@ -109,16 +121,16 @@ const MemberDescriptionBlock: React.FC<{
                     },
                   },
                 }))
-              message.success('更新成功')
+              message.success(formatMessage(pageMessages.MemberDescriptionBlock.success))
             } catch (error) {
-              message.error('更新失敗')
+              message.error(formatMessage(pageMessages.MemberDescriptionBlock.fail))
             } finally {
               setLoading(false)
               window.location.reload()
             }
           }}
         >
-          儲存
+          {formatMessage(pageMessages.MemberDescriptionBlock.save)}
         </Button>
       </div>
     )

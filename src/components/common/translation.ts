@@ -45,6 +45,18 @@ const commonMessages = {
   UnAuthCover: defineMessages({
     unAuth: { id: 'common.UnAuthCover.unAuth', defaultMessage: '無此權限' },
   }),
+  ManagerInput: defineMessages({
+    loadError: {
+      id: 'common.ManagerInput.loadError',
+      defaultMessage: '讀取錯誤',
+    },
+  }),
+  SalesMemberInput: defineMessages({
+    loadError: {
+      id: 'common.SalesMemberInput.loadError',
+      defaultMessage: '讀取錯誤',
+    },
+  }),
 }
 
 export default commonMessages

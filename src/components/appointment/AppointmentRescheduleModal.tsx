@@ -171,7 +171,7 @@ const AppointmentRescheduleModal: React.VFC<
         refetchOrderProduct()
       })
       .catch(error => {
-        message.error(`更換時段失敗 ,${error}`)
+        message.error(formatMessage(appointmentMessages.AppointmentRescheduleModal.changePeriodFail, { error: error }))
       })
       .finally(() => {
         setLoading(false)
