@@ -7,6 +7,7 @@ import { SalesLeadMember } from '../../types/sales'
 import AdminModal from '../admin/AdminModal'
 import { StyledModalTitle } from '../common'
 import { StyledInputTitle } from './AddListModal'
+import saleMessages from './translation'
 
 const ManagerListModal: React.VFC<{
   visible: boolean
@@ -87,7 +88,10 @@ const ManagerListModal: React.VFC<{
           <div key={c.id}>
             <StyledInputTitle>
               {formatMessage(salesMessages.listName)}
-              <span className="ml-2">({leads.filter(lead => lead.leadStatusCategoryId === c.id).length}筆)</span>
+              <span className="ml-2">
+                ({leads.filter(lead => lead.leadStatusCategoryId === c.id).length}
+                {formatMessage(saleMessages.ManagerListModal.leadCount)})
+              </span>
             </StyledInputTitle>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <Input value={c.categoryName} disabled />

@@ -23,6 +23,7 @@ import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
+import taskMessages from './translation'
 
 const StyledLinkIconWrapper = styled.span`
   cursor: pointer;
@@ -53,6 +54,8 @@ const checkMeetingMember = ({
   formMemberId: string
   formMeetingGateway?: string
 }) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { formatMessage } = useIntl()
   let message = ''
   // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
   if (formMeetingGateway !== 'google-meet') {
@@ -61,7 +64,7 @@ const checkMeetingMember = ({
         overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
       ).length > 0
     ) {
-      message = '此時段不可指派此執行人員'
+      message = formatMessage(taskMessages.MemberTaskAdminModal.executorNotAvailable)
     }
   }
 
@@ -73,7 +76,7 @@ const checkMeetingMember = ({
         overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
     ).length > 0
   ) {
-    message = '此時段不可指派此學員'
+    message = formatMessage(taskMessages.MemberTaskAdminModal.memberNotAvailable)
   }
   return {
     message,

@@ -7,6 +7,7 @@ import AdminModal from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
 import { commonMessages, questionLibraryMessage } from '../../helpers/translation'
 import { Question } from '../../types/questionLibrary'
+import pageMessages from '../translation'
 
 type QuestionGroupData = Pick<Question, 'id' | 'title' | 'modifierId'>
 type QuestionsData = Pick<Question, 'type' | 'subject' | 'position' | 'layout' | 'font' | 'explanation' | 'options'>[]
@@ -107,6 +108,7 @@ const QuestionGroupDuplicateAdminModal: React.VFC<{
 export default QuestionGroupDuplicateAdminModal
 
 const useQuestionGroupData = (questionGroupId: string, currentMemberId: string) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<hasura.GET_QUESTION_GROUP_DATA, hasura.GET_QUESTION_GROUP_DATAVariables>(
     GET_QUESTION_GROUP_DATA,
     {
@@ -118,7 +120,9 @@ const useQuestionGroupData = (questionGroupId: string, currentMemberId: string) 
 
   const duplicateQuestionGroupData: QuestionGroupData = {
     id: uuid(),
-    title: `${data?.question_group_by_pk?.title} 複製` || '複製題庫',
+    title:
+      formatMessage(pageMessages.QuestionGroupDuplicateAdminModal.copy, { title: data?.question_group_by_pk?.title }) ||
+      formatMessage(pageMessages.QuestionGroupDuplicateAdminModal.copyQuestionBank),
     modifierId: currentMemberId,
   }
 

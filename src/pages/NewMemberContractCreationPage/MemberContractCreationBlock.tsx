@@ -15,6 +15,7 @@ import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
 
 const StyledOrder = styled.div`
@@ -354,9 +355,11 @@ const MemberContractCreationBlock: React.FC<{
         .then(({ data }) => {
           const contractId = data?.insert_member_contract_one?.id
           setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
-          message.success('成功產生合約')
+          message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
         })
-        .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
+        .catch(err =>
+          message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${err}`),
+        )
         .finally(() => setLoading(false))
     }
     let productOptions: { [key: string]: any } = {}
@@ -409,7 +412,7 @@ const MemberContractCreationBlock: React.FC<{
       })
       .catch(error => {
         console.log(error)
-        message.error('訂單建立失敗')
+        message.error(formatMessage(pageMessages.MemberContractCreationBlock.orderCreateFail))
       })
       .finally(() => {
         setLoading(false)
@@ -422,12 +425,14 @@ const MemberContractCreationBlock: React.FC<{
         {fieldValue.paymentMode?.includes('訂金') && (
           <>
             <div className="row mb-2">
-              <div className="col-9 text-right">訂金</div>
+              <div className="col-9 text-right">{formatMessage(pageMessages.MemberContractCreationBlock.deposit)}</div>
 
               <div className="col-3 text-right">${(totalPrice * 0.1).toLocaleString()}</div>
             </div>
             <div className="row mb-2">
-              <div className="col-9 text-right">尾款</div>
+              <div className="col-9 text-right">
+                {formatMessage(pageMessages.MemberContractCreationBlock.finalPayment)}
+              </div>
 
               <div className="col-3 text-right">${(totalPrice - totalPrice * 0.1).toLocaleString()}</div>
             </div>
@@ -453,7 +458,9 @@ const MemberContractCreationBlock: React.FC<{
               <div className="col-6 text-right">${i.Amt.toLocaleString()}</div>
             </div>
             <div className="row mb-2">
-              <strong className="col-6 text-right">稅額</strong>
+              <strong className="col-6 text-right">
+                {formatMessage(pageMessages.MemberContractCreationBlock.tax)}
+              </strong>
 
               <div className="col-6 text-right">${i.TaxAmt.toLocaleString()}</div>
             </div>
@@ -461,7 +468,9 @@ const MemberContractCreationBlock: React.FC<{
           </div>
         ))}
         <div className="row mb-2">
-          <strong className="col-6 text-right">總金額(含稅)</strong>
+          <strong className="col-6 text-right">
+            {formatMessage(pageMessages.MemberContractCreationBlock.totalAmountWithTax)}
+          </strong>
 
           <div className="col-6 text-right">${totalPrice.toLocaleString()}</div>
         </div>
@@ -480,7 +489,7 @@ const MemberContractCreationBlock: React.FC<{
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
-              複製合約連結
+              {formatMessage(pageMessages.MemberContractCreationBlock.copyContractLink)}
             </Button>
           )}
           {paymentUrl && (
@@ -494,14 +503,18 @@ const MemberContractCreationBlock: React.FC<{
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
-              複製付款連結
+              {formatMessage(pageMessages.MemberContractCreationBlock.copyPaymentLink)}
             </Button>
           )}
-          <Alert message="合約/訂單連結已建立" type="success" showIcon />
+          <Alert
+            message={formatMessage(pageMessages.MemberContractCreationBlock.contractOrderLinkCreated)}
+            type="success"
+            showIcon
+          />
         </>
       ) : (
         <Button size="large" block type="primary" loading={loading} onClick={handleMemberContractCreate}>
-          產生合約
+          {formatMessage(pageMessages.MemberContractCreationBlock.generateContract)}
         </Button>
       )}
     </>

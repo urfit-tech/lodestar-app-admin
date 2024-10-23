@@ -6,12 +6,14 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { flatten, range, sum, uniqBy } from 'ramda'
 import { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { ContractInfo, ContractItem, FieldProps } from '.'
 import hasura from '../../hasura'
 import { currencyFormatter, notEmpty, periodTypeConverter } from '../../helpers'
 import { useAppCustom } from '../../hooks'
+import pageMessages from '../translation'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
@@ -75,6 +77,8 @@ const MemberContractCreationBlock: React.FC<{
   const { id: appId, host } = useApp()
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
+  const { formatMessage } = useIntl()
+
   const fieldValue = form.getFieldsValue()
 
   const selectedCustomCoupons = flatten(
@@ -92,11 +96,11 @@ const MemberContractCreationBlock: React.FC<{
     const alert = document.getElementsByClassName('ant-alert')[0]
 
     if (memberBlockRef.current?.contains(alert)) {
-      message.warning('學員資料請填寫完整')
+      message.warning(formatMessage(pageMessages.MemberContractCreationBlock.fillMemberInfo))
       return
     }
     if (fieldValue.identity === 'student' && !fieldValue?.certification?.file.name) {
-      message.warn('需上傳證明')
+      message.warn(formatMessage(pageMessages.MemberContractCreationBlock.uploadProof))
       return
     }
 
@@ -121,26 +125,26 @@ const MemberContractCreationBlock: React.FC<{
     ].filter(v => v.member_id && v.ratio)
 
     if (contractProducts.length < 1) {
-      message.warn('請至少要新增一個合約內容')
+      message.warn(formatMessage(pageMessages.MemberContractCreationBlock.addContractContent))
       return
     }
 
     if (!fieldValue.paymentMethod) {
-      message.warn('請選擇付款方式')
+      message.warn(formatMessage(pageMessages.MemberContractCreationBlock.selectPaymentMethod))
       return
     }
 
     if (!fieldValue.installmentPlan) {
-      message.warn('請選擇分期期數')
+      message.warn(formatMessage(pageMessages.MemberContractCreationBlock.selectInstallmentPeriod))
       return
     }
 
     if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
-      message.warn('承辦人分潤比例加總必須為 1')
+      message.warn(formatMessage(pageMessages.MemberContractCreationBlock.totalProportionMustBeOne))
       return
     }
 
-    if (!window.confirm('請確認合約是否正確？')) {
+    if (!window.confirm(formatMessage(pageMessages.MemberContractCreationBlock.confirmContractCorrectness))) {
       return
     }
 
@@ -514,10 +518,12 @@ const MemberContractCreationBlock: React.FC<{
     })
       .then(({ data }) => {
         const contractId = data?.insert_member_contract_one?.id
-        setMemberContractUrl(`https://${host}/members/${member.id}/contracts/${contractId}`)
-        message.success('成功產生合約')
+        setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+        message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
       })
-      .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
+      .catch(err =>
+        message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${err}`),
+      )
   }
 
   return (
@@ -526,10 +532,11 @@ const MemberContractCreationBlock: React.FC<{
         {[...contractProducts, ...contractDiscounts].map(item => (
           <div key={item.id} className="row mb-2">
             <div className="col-6 text-right">
-              {item.type === 'addonProduct' && '【加購項目】'}
-              {item.type === 'referralDiscount' && '【介紹折抵】'}
-              {item.type === 'promotionDiscount' && '【促銷折抵】'}
-              {item.type === 'rebateDiscount' && '【滿額折抵】'}
+              {item.type === 'addonProduct' && formatMessage(pageMessages.MemberContractCreationBlock.addonProduct)}
+              {item.type === 'referralDiscount' &&
+                formatMessage(pageMessages.MemberContractCreationBlock.referralDiscount)}
+              {item.type === 'promotionDiscount' &&
+                formatMessage(pageMessages.MemberContractCreationBlock.promotionDiscount)}
             </div>
             <div className="col-3">
               <span>{item.name}</span>
@@ -568,10 +575,15 @@ const MemberContractCreationBlock: React.FC<{
       </StyledOrder>
 
       {memberContractUrl ? (
-        <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
+        <Alert
+          message={formatMessage(pageMessages.MemberContractCreationBlock.contractLink)}
+          description={memberContractUrl}
+          type="success"
+          showIcon
+        />
       ) : (
         <Button size="large" block type="primary" onClick={handleMemberContractCreate}>
-          產生合約
+          {formatMessage(pageMessages.MemberContractCreationBlock.generateContract)}
         </Button>
       )}
     </>

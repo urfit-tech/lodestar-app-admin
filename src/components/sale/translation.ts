@@ -48,6 +48,106 @@ const saleMessages = {
       id: 'sale.SaleCollectionExpandRow.cancelSubscriptionDate',
       defaultMessage: '已於 {date} 取消訂閱',
     },
+    cashierInfo: {
+      id: 'sale.SaleCollectionExpandRow.cashierInfo',
+      defaultMessage: '結帳人員:',
+    },
+    companyInfo: {
+      id: 'sale.SaleCollectionExpandRow.companyInfo',
+      defaultMessage: '結帳公司：{company}',
+    },
+    executorsInfo: {
+      id: 'sale.SaleCollectionExpandRow.executorsInfo',
+      defaultMessage: '承辦人：',
+    },
+    paymentMethod: {
+      id: 'sale.SaleCollectionExpandRow.paymentMethod',
+      defaultMessage: '付款方式：{paymentMethod}',
+    },
+    paymentDeadline: {
+      id: 'sale.SaleCollectionExpandRow.paymentDeadline',
+      defaultMessage: '付款期限：{date}',
+    },
+    changeOrderStatus: {
+      id: 'sale.SaleCollectionExpandRow.changeOrderStatus',
+      defaultMessage: '變更訂單狀態',
+    },
+    manualInvoice: {
+      id: 'sale.SaleCollectionExpandRow.manualInvoice',
+      defaultMessage: '手開發票',
+    },
+    invoiceIssuedSuccess: {
+      id: 'sale.SaleCollectionExpandRow.invoiceIssuedSuccess',
+      defaultMessage: '發票開立成功',
+    },
+    processingMethod: {
+      id: 'sale.SaleCollectionExpandRow.processingMethod',
+      defaultMessage: '處理方式',
+    },
+    issueInvoice: {
+      id: 'sale.SaleCollectionExpandRow.issueInvoice',
+      defaultMessage: '開立發票',
+    },
+    taxType: {
+      id: 'sale.SaleCollectionExpandRow.taxType',
+      defaultMessage: '課稅別',
+    },
+    taxable: {
+      id: 'sale.SaleCollectionExpandRow.taxable',
+      defaultMessage: '應稅',
+    },
+    zeroTax: {
+      id: 'sale.SaleCollectionExpandRow.zeroTax',
+      defaultMessage: '零稅',
+    },
+    taxExempt: {
+      id: 'sale.SaleCollectionExpandRow.taxExempt',
+      defaultMessage: '免稅',
+    },
+    mixedTax: {
+      id: 'sale.SaleCollectionExpandRow.mixedTax',
+      defaultMessage: '混合稅',
+    },
+    priceWithoutTax: {
+      id: 'sale.SaleCollectionExpandRow.priceWithoutTax',
+      defaultMessage: '未稅',
+    },
+    taxAmount: {
+      id: 'sale.SaleCollectionExpandRow.taxAmount',
+      defaultMessage: '稅額',
+    },
+    totalPriceWithTax: {
+      id: 'sale.SaleCollectionExpandRow.totalPriceWithTax',
+      defaultMessage: '總金額(含稅)',
+    },
+    priceExceedLimit: {
+      id: 'sale.SaleCollectionExpandRow.priceExceedLimit',
+      defaultMessage: '金額不能超過 {totalPrice}',
+    },
+    itemCount: {
+      id: 'sale.SaleCollectionExpandRow.itemCount',
+      defaultMessage: '商品數量',
+    },
+    itemUnitPrice: {
+      id: 'sale.SaleCollectionExpandRow.itemUnitPrice',
+      defaultMessage: '商品單價',
+    },
+    itemName: {
+      id: 'sale.SaleCollectionExpandRow.itemName',
+      defaultMessage: '產品名',
+    },
+    itemNamePlaceholder: {
+      id: 'sale.SaleCollectionExpandRow.itemNamePlaceholder',
+      defaultMessage: '請輸入產品名',
+    },
+    comment: {
+      id: 'sale.SaleCollectionExpandRow.comment',
+      defaultMessage: '備註',
+    },
+    commentPlaceholder: {
+      id: 'sale.SaleCollectionExpandRow.commentPlaceholder',
+      defaultMessage: '請輸入備註',
+    },
   }),
   OrderDetailDrawer: defineMessages({
     orderDetail: { id: 'sale.OrderDetailDrawer.orderDetail', defaultMessage: '訂單詳情' },
@@ -55,6 +155,20 @@ const saleMessages = {
     otherInfo: { id: 'sale.OrderDetailDrawer.otherInfo', defaultMessage: '其他資訊' },
     invoiceInfo: { id: 'sale.OrderDetailDrawer.invoiceInfo', defaultMessage: '發票資訊' },
     paymentInfo: { id: 'sale.OrderDetailDrawer.paymentInfo', defaultMessage: '交易紀錄' },
+    invoiceTargetDonation: {
+      id: 'sale.OrderDetailDrawer.invoiceTargetDonation',
+      defaultMessage: '捐贈',
+    },
+    invoiceTargetCompany: {
+      id: 'sale.OrderDetailDrawer.invoiceTargetCompany',
+      defaultMessage: '公司',
+    },
+    invoiceTargetIndividual: {
+      id: 'sale.OrderDetailDrawer.invoiceTargetIndividual',
+      defaultMessage: '個人',
+    },
+    phoneBarCode: { id: 'sale.OrderDetailDrawer.phoneBarCode', defaultMessage: '手機' },
+    citizenCode: { id: 'sale.OrderDetailDrawer.citizenCode', defaultMessage: '自然人憑證' },
   }),
   OrderCard: defineMessages({
     orderId: { id: 'sale.OrderCard.orderId', defaultMessage: '訂單編號' },
@@ -79,6 +193,18 @@ const saleMessages = {
     recipientAddress: { id: 'sale.OrderOtherInfoCard.recipientAddress', defaultMessage: '收件地址' },
   }),
   InvoiceCard: defineMessages({
+    printInvoice: {
+      id: 'sale.InvoiceCard.printInvoice',
+      defaultMessage: '列印發票',
+    },
+    voidInvoiceSuccess: {
+      id: 'sale.InvoiceCard.voidInvoiceSuccess',
+      defaultMessage: '發票作廢成功',
+    },
+    voidInvoice: {
+      id: 'sale.InvoiceCard.voidInvoice',
+      defaultMessage: '作廢發票',
+    },
     invoiceStatus: { id: 'sale.InvoiceCard.invoiceStatus', defaultMessage: '發票狀態' },
     invoiceNumber: { id: 'sale.InvoiceCard.invoiceNumber', defaultMessage: '發票編號' },
     invoiceIssuedAt: { id: 'sale.InvoiceCard.invoiceIssuedAt', defaultMessage: '發票開立時間' },
@@ -104,6 +230,58 @@ const saleMessages = {
     paymentNo: { id: 'sale.PaymentCard.paymentNo', defaultMessage: '交易編號' },
     price: { id: 'sale.PaymentCard.price', defaultMessage: '金額' },
     gateway: { id: 'sale.PaymentCard.gateway', defaultMessage: '交易渠道' },
+    posCardError: {
+      id: 'sale.PaymentCard.posCardError',
+      defaultMessage: 'POS刷卡設定錯誤，請聯繫廠商',
+    },
+    posCardErrorDetail: {
+      id: 'sale.PaymentCard.posCardErrorDetail',
+      defaultMessage: 'POS刷卡設定錯誤，請聯繫廠商: no targetUrl or targetPath',
+    },
+    paymentSuccess: {
+      id: 'sale.PaymentCard.paymentSuccess',
+      defaultMessage: '付款成功，請重整確認訂單狀態',
+    },
+    paymentFailure: {
+      id: 'sale.PaymentCard.paymentFailure',
+      defaultMessage: '付款失敗，原因：',
+    },
+    checkoutMethod: {
+      id: 'sale.PaymentCard.checkoutMethod',
+      defaultMessage: '結帳管道',
+    },
+    paymentMode: {
+      id: 'sale.PaymentCard.paymentMode',
+      defaultMessage: '付款模式',
+    },
+    amount: {
+      id: 'sale.PaymentCard.amount',
+      defaultMessage: '款項',
+    },
+    paymentDeadline: {
+      id: 'sale.PaymentCard.paymentDeadline',
+      defaultMessage: '付款期限',
+    },
+    bankLastFiveDigits: {
+      id: 'sale.PaymentCard.bankLastFiveDigits',
+      defaultMessage: '銀行後五碼',
+    },
+    changeTransactionStatus: {
+      id: 'sale.PaymentCard.changeTransactionStatus',
+      defaultMessage: '變更交易狀態',
+    },
+    changeCheckoutMethod: {
+      id: 'sale.PaymentCard.changeCheckoutMethod',
+      defaultMessage: '更改結帳管道',
+    },
+    change: {
+      id: 'sale.PaymentCard.change',
+      defaultMessage: '更改',
+    },
+    cardResult: {
+      id: 'sale.PaymentCard.cardResult',
+      defaultMessage: '刷卡結果',
+    },
   }),
   OrderExportModal: defineMessages({
     yes: { id: 'sale.OrderExportModal.yes', defaultMessage: '是' },
@@ -191,6 +369,18 @@ const saleMessages = {
     },
   }),
   TransferModal: defineMessages({
+    transferSuccess: {
+      id: 'sale.TransferModal.transferSuccess',
+      defaultMessage: '已成功轉移此名單！',
+    },
+    transferFailGraphql: {
+      id: 'sale.TransferModal.transferFailGraphql',
+      defaultMessage: '轉移失敗(graphqlErrors)：',
+    },
+    transferFail: {
+      id: 'sale.TransferModal.transferFail',
+      defaultMessage: '轉移失敗：',
+    },
     transfer: { id: 'sale.TransferModal.transfer', defaultMessage: 'transfer' },
     modalTitle: {
       id: 'sale.TransferModal.modalTitle',
@@ -202,6 +392,202 @@ const saleMessages = {
     },
     pleaseSelectManager: { id: 'sale.TransferModal.pleaseSelectManager', defaultMessage: 'Please select the manager' },
     confirm: { id: 'sale.TransferModal.confirm', defaultMessage: 'confirm' },
+  }),
+  SalesLeadTable: defineMessages({
+    adMaterial: { id: 'sale.SalesLeadTable.adMaterial', defaultMessage: 'Ad Material' },
+    addList: { id: 'sale.SalesLeadTable.addList', defaultMessage: 'Add List' },
+    additionFailed: { id: 'sale.SalesLeadTable.additionFailed', defaultMessage: 'Addition Failed' },
+    additionSuccessful: { id: 'sale.SalesLeadTable.additionSuccessful', defaultMessage: 'Addition Successful' },
+    cancelComplete: { id: 'sale.SalesLeadTable.cancelComplete', defaultMessage: 'Cancel Complete' },
+    cancelCompletedLeadConfirm: {
+      id: 'sale.SalesLeadTable.cancelCompletedLeadConfirm',
+      defaultMessage: 'Are you sure to cancel this lead?',
+    },
+    cancelCompletedSuccessfully: {
+      id: 'sale.SalesLeadTable.cancelCompletedSuccessfully',
+      defaultMessage: 'Cancel Completed Successfully',
+    },
+    category: { id: 'sale.SalesLeadTable.category', defaultMessage: 'Category' },
+    completedLeadConfirm: {
+      id: 'sale.SalesLeadTable.completedLeadConfirm',
+      defaultMessage: 'Are you sure to complete this lead?',
+    },
+    completedSuccessfully: {
+      id: 'sale.SalesLeadTable.completedSuccessfully',
+      defaultMessage: 'Completed Successfully',
+    },
+    completed: { id: 'sale.SalesLeadTable.completed', defaultMessage: 'Completed' },
+    createMemberNote: { id: 'sale.SalesLeadTable.createMemberNote', defaultMessage: 'Create Member Note' },
+    createdAt: { id: 'sale.SalesLeadTable.createdAt', defaultMessage: 'Created Date' },
+    delete: { id: 'sale.SalesLeadTable.delete', defaultMessage: 'Delete' },
+    deleteLeadConfirm: {
+      id: 'sale.SalesLeadTable.deleteLeadConfirm',
+      defaultMessage: 'Are you sure to delete this lead?',
+    },
+    deleteListConfirm: {
+      id: 'sale.SalesLeadTable.deleteListConfirm',
+      defaultMessage: 'Are you sure to delete this list?',
+    },
+    deletedSuccessfully: {
+      id: 'sale.SalesLeadTable.deletedSuccessfully',
+      defaultMessage: 'Deleted Successfully',
+    },
+    editFollowed: { id: 'sales.SalesLeadTable.editFollowed', defaultMessage: 'Edit Followed' },
+    failedToFollow: { id: 'sale.SalesLeadTable.failedToFollow', defaultMessage: 'Failed to Follow' },
+    followedLead: { id: 'sale.SalesLeadTable.followedLead', defaultMessage: 'Followed Lead' },
+    followedLeadConfirm: {
+      id: 'sale.SalesLeadTable.followedLeadConfirm',
+      defaultMessage: 'Are you sure to follow this lead?',
+    },
+    followedSuccessfully: { id: 'sale.SalesLeadTable.followedSuccessfully', defaultMessage: 'Followed Successfully' },
+    leadLevel: { id: 'sale.SalesLeadTable.leadLevel', defaultMessage: 'Lead Level' },
+    list: { id: 'sale.SalesLeadTable.list', defaultMessage: 'List' },
+    managerList: { id: 'sale.SalesLeadTable.managerList', defaultMessage: 'Manager List' },
+    memberFullName: { id: 'sale.SalesLeadTable.memberFullName', defaultMessage: 'Full Name' },
+    memberNickName: { id: 'sale.SalesLeadTable.memberNickName', defaultMessage: 'Nickname' },
+    memberNote: { id: 'sale.SalesLeadTable.memberNote', defaultMessage: 'Last Contact Note' },
+    moveTo: { id: 'sale.SalesLeadTable.moveTo', defaultMessage: 'Move To' },
+    moveToFollowed: { id: 'sale.SalesLeadTable.moveToFollowed', defaultMessage: 'Move to Followed' },
+    moveToSpecificList: { id: 'sale.SalesLeadTable.moveToSpecificList', defaultMessage: 'Move to {categoryName}' },
+    moveToSpecificListConfirm: {
+      id: 'sale.SalesLeadTable.moveToSpecificListConfirm',
+      defaultMessage: 'Are you sure to move this lead to another list?',
+    },
+    moveToSpecificListSuccessfully: {
+      id: 'sale.SalesLeadTable.moveToSpecificListSuccessfully',
+      defaultMessage: 'Moved to {categoryName} Successfully',
+    },
+    newTask: { id: 'sale.SalesLeadTable.newTask', defaultMessage: 'New Task' },
+    recentAnsweredAt: { id: 'sale.SalesLeadTable.recentAnsweredAt', defaultMessage: 'Recently Answered' },
+    recentContactedAt: { id: 'sale.SalesLeadTable.recentContactedAt', defaultMessage: 'Recently Contacted' },
+    recycle: { id: 'sale.SalesLeadTable.recycle', defaultMessage: 'Recycle' },
+    recycleLeadConfirm: {
+      id: 'sale.SalesLeadTable.recycleLeadConfirm',
+      defaultMessage: 'Are you sure to recycle this lead?',
+    },
+    recycledSuccessfully: { id: 'sale.SalesLeadTable.recycledSuccessfully', defaultMessage: 'Recycled Successfully' },
+    reject: { id: 'sale.SalesLeadTable.reject', defaultMessage: 'Reject' },
+    rejectLeadConfirm: {
+      id: 'sale.SalesLeadTable.rejectLeadConfirm',
+      defaultMessage: 'Are you sure to reject this lead?',
+    },
+    rejectedSuccessfully: { id: 'sale.SalesLeadTable.rejectedSuccessfully', defaultMessage: 'Rejected Successfully' },
+    removeFollowed: { id: 'sales.SalesLeadTable.removeFollowed', defaultMessage: 'Remove Followed' },
+    removeFollowedLeadConfirm: {
+      id: 'sale.SalesLeadTable.removeFollowedLeadConfirm',
+      defaultMessage: 'Are you sure to remove this lead?',
+    },
+    removedSuccessfully: { id: 'sale.SalesLeadTable.removedSuccessfully', defaultMessage: 'Removed Successfully' },
+    reset: { id: 'sale.SalesLeadTable.reset', defaultMessage: 'Reset' },
+    saveFailed: { id: 'sale.SalesLeadTable.saveFailed', defaultMessage: 'Save Failed' },
+    savedSuccessfully: { id: 'sale.SalesLeadTable.savedSuccessfully', defaultMessage: 'Saved Successfully' },
+    search: { id: 'sale.SalesLeadTable.search', defaultMessage: 'Search' },
+    selectedCount: { id: 'sale.SalesLeadTable.selectedCount', defaultMessage: '{count} rows selected' },
+    successfullyCreated: { id: 'sale.SalesLeadTable.successfullyCreated', defaultMessage: 'Created Successfully' },
+    successfullySaved: { id: 'sale.SalesLeadTable.successfullySaved', defaultMessage: 'Saved Successfully' },
+    tel: { id: 'sale.SalesLeadTable.tel', defaultMessage: 'Phone' },
+    confirmSaveLeads: {
+      id: 'sale.SalesLeadTable.confirmSaveLeads',
+      defaultMessage: '確定收藏這些名單？',
+    },
+    saveSuccess: {
+      id: 'sale.SalesLeadTable.saveSuccess',
+      defaultMessage: '已成功收錄！',
+    },
+    systemError: {
+      id: 'sale.SalesLeadTable.systemError',
+      defaultMessage: '系統錯誤',
+    },
+    confirmSaveLeadsToCategory: {
+      id: 'sale.SalesLeadTable.confirmSaveLeadsToCategory',
+      defaultMessage: '確定收藏這些名單到 {category}？',
+    },
+    confirmUnsaveLeads: {
+      id: 'sale.SalesLeadTable.confirmUnsaveLeads',
+      defaultMessage: '確定取消收藏這些名單？',
+    },
+    unsaveSuccess: {
+      id: 'sale.SalesLeadTable.unsaveSuccess',
+      defaultMessage: '已成功取消收藏！',
+    },
+    confirmCompleteLeads: {
+      id: 'sale.SalesLeadTable.confirmCompleteLeads',
+      defaultMessage: '確定這些名單已完成？',
+    },
+    completeLeadsSuccess: {
+      id: 'sale.SalesLeadTable.completeLeadsSuccess',
+      defaultMessage: '已成功完成此名單！',
+    },
+    confirmCancelCompleteLeads: {
+      id: 'sale.SalesLeadTable.confirmCancelCompleteLeads',
+      defaultMessage: '確定取消這些已完成的名單？',
+    },
+    cancelCompleteLeadsSuccess: {
+      id: 'sale.SalesLeadTable.cancelCompleteLeadsSuccess',
+      defaultMessage: '已取消已完成名單！',
+    },
+    confirmRecycleLeads: {
+      id: 'sale.SalesLeadTable.confirmRecycleLeads',
+      defaultMessage: '確定回收這些名單？',
+    },
+    recycleLeadsSuccess: {
+      id: 'sale.SalesLeadTable.recycleLeadsSuccess',
+      defaultMessage: '已成功回收此名單！',
+    },
+    confirmRejectLeads: {
+      id: 'sale.SalesLeadTable.confirmRejectLeads',
+      defaultMessage: '確定拒絕這些名單？',
+    },
+    rejectLeadsSuccess: {
+      id: 'sale.SalesLeadTable.rejectLeadsSuccess',
+      defaultMessage: '已成功拒絕此名單！',
+    },
+    confirmDeleteLeads: {
+      id: 'sale.SalesLeadTable.confirmDeleteLeads',
+      defaultMessage: '確定永久刪除這些名單？此動作無法復原！',
+    },
+    deleteLeadsSuccess: {
+      id: 'sale.SalesLeadTable.deleteLeadsSuccess',
+      defaultMessage: '已成功刪除此名單！',
+    },
+    cancelCollect: {
+      id: 'sale.SalesLeadTable.cancelCollect',
+      defaultMessage: '取消收藏',
+    },
+    leaveTab: {
+      id: 'sale.SalesLeadTable.leaveTab',
+      defineMessages: 'Leave This Tab',
+    },
+    leaveTabInfo: {
+      id: 'sale.SalesLeadTable.leaveTabInfo',
+      defaultMessage: 'The list will leave the "Resubmission" area and return to its original position.',
+    },
+    leaveTabSuccess: {
+      id: 'sale.SalesLeadTable.leaveTabSuccess',
+      defaultMessage: 'Leave this tab successfully!',
+    },
+  }),
+  MemberPhoneModal: defineMessages({
+    phoneDuplicateError: {
+      id: 'sale.MemberPhoneModal.phoneDuplicateError',
+      defaultMessage: '手機號碼不能重複',
+    },
+  }),
+  ManagerListModal: defineMessages({
+    leadCount: {
+      id: 'sale.ManagerListModal.leadCount',
+      defaultMessage: '筆',
+    },
+  }),
+  JitsiDemoModal: defineMessages({
+    copyInviteLink: {
+      id: 'sale.JitsiDemoModal.copyInviteLink',
+      defaultMessage: '複製邀請連結',
+    },
+    endCall: {
+      id: 'sale.JitsiDemoModal.endCall',
+      defaultMessage: '結束通話',
+    },
   }),
 }
 

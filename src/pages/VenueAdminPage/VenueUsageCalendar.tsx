@@ -5,42 +5,45 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import zhTWLocale from '@fullcalendar/core/locales/zh-tw'
 import moment from 'moment'
 import { categoryColors, StyledCategoryDot, StyledEventTime } from '../../components/task/MemberTaskAdminBlock'
+import { useIntl } from 'react-intl'
+import pageMessages from '../translation'
 
 const VenueUsageCalendar: React.VFC = () => {
+  const { formatMessage } = useIntl()
   const venueUsage = [
     {
       id: '3982031-231',
-      name: '11樓B01',
+      name: formatMessage(pageMessages.VenueUsageCalendar.floor11RoomB01),
       activity: {
         id: '1',
-        title: '高三國文集中營',
+        title: formatMessage(pageMessages.VenueUsageCalendar.highThreeChineseCamp),
       },
       dueAt: '2022-08-10T12:50:00.296+00:00',
     },
     {
       id: '520981-231',
-      name: '11樓B02',
+      name: formatMessage(pageMessages.VenueUsageCalendar.floor11RoomB02),
       activity: {
         id: '2',
-        title: '高一數學特訓班',
+        title: formatMessage(pageMessages.VenueUsageCalendar.highOneMathTrainingClass),
       },
       dueAt: '2022-08-17T16:20:00.296+00:00',
     },
     {
       id: '0951-281',
-      name: '11樓B03',
+      name: formatMessage(pageMessages.VenueUsageCalendar.floor11RoomB03),
       activity: {
         id: '3',
-        title: '高二英文職考班',
+        title: formatMessage(pageMessages.VenueUsageCalendar.highTwoEnglishTestClass),
       },
       dueAt: '2022-08-20T06:20:00.296+00:00',
     },
     {
       id: '77241-131',
-      name: '12樓B01',
+      name: formatMessage(pageMessages.VenueUsageCalendar.floor12RoomB01),
       activity: {
         id: '4',
-        title: '高四理化實驗中心',
+        title: formatMessage(pageMessages.VenueUsageCalendar.highFourPhysicsChemLab),
       },
       dueAt: '2022-08-14T14:55:00.296+00:00',
     },
@@ -73,9 +76,10 @@ const VenueUsageCalendar: React.VFC = () => {
         })}
       eventClick={e => {
         alert(
-          `${e.event.title}於${moment(venueUsage.find(v => v.id === e.event.id)?.dueAt).format(
-            'YYYY-MM-DD HH:mm',
-          )}開始!`,
+          formatMessage(pageMessages.VenueUsageCalendar.eventStartAlert, {
+            eventTitle: e.event.title,
+            startTime: moment(venueUsage.find(v => v.id === e.event.id)?.dueAt).format('YYYY-MM-DD HH:mm'),
+          }),
         )
       }}
       datesSet={dateInfo => console.log(dateInfo)}
