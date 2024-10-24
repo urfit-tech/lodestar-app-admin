@@ -121,11 +121,16 @@ const MediaLibraryPage: React.FC = () => {
   const [uppy, setUppy] = useState<Uppy>()
   const [searchText, setSearchText] = useState('')
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
+  activeTabKey || setActiveTabKey('video')
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
   const { authToken, permissions, currentMemberId } = useAuth()
   const { id: appId } = useApp()
-  const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
+  const {
+    attachments,
+    loading: loadingAttachments,
+    refetch: refetchAttachments,
+  } = useAttachments({ contentType: `${activeTabKey}*` })
 
   const handleVideoAdd = useCallback(() => {
     authToken &&
