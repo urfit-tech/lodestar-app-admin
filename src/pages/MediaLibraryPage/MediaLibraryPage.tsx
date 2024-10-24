@@ -130,7 +130,7 @@ const MediaLibraryPage: React.FC = () => {
     attachments,
     loading: loadingAttachments,
     refetch: refetchAttachments,
-  } = useAttachments({ contentType: `${activeTabKey}*` })
+  } = useAttachments({ contentType: `${activeTabKey ?? 'video'}*` })
 
   const handleVideoAdd = useCallback(() => {
     authToken &&
