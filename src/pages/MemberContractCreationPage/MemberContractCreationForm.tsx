@@ -312,9 +312,8 @@ const MemberContractCreationForm: React.FC<
           title={formatMessage(pageMessages.MemberContractCreationForm.paymentMethod)}
           bordered
           className="mb-5"
-          column={6}
         >
-          <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.paymentMethod)} span={4}>
+          <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.paymentMethod)}>
             <Form.Item
               className="mb-0"
               name="paymentMethod"
@@ -363,7 +362,7 @@ const MemberContractCreationForm: React.FC<
 
           <Descriptions.Item
             label={formatMessage(pageMessages.MemberContractCreationForm.contractManagerAndProfit)}
-            span={6}
+            span={3}
           >
             <Space align="center" className="d-flex mb-3">
               <Form.Item

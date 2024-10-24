@@ -467,7 +467,7 @@ const SalesLeadTable: React.VFC<{
           onRefetch()
           onSelectChange([])
         } else {
-          message.error('系統錯誤')
+          message.error(formatMessage(saleMessages.SalesLeadTable.systemError))
         }
       })
     }
