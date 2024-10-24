@@ -353,8 +353,8 @@ const MemberContractCreationBlock: React.FC<{
         },
       })
         .then(({ data }) => {
-          const contractId = data?.insert_member_contract_one?.id
-          setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+          // const contractId = data?.insert_member_contract_one?.id
+          // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
           message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
         })
         .catch(err =>

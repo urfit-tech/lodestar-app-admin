@@ -82,7 +82,7 @@ const MemberDescriptionBlock: React.FC<{
             {!!length(member.phones) ? (
               member.phones.map((v, index) => <Tag key={index}>{v}</Tag>)
             ) : (
-              <Alert type="error" message="未設定" />
+              <Alert type="error" message={formatMessage(pageMessages.MemberDescriptionBlock.notSet)} />
             )}
           </Descriptions.Item>
         </Descriptions>
