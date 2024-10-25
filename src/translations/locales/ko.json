@@ -3423,5 +3423,9 @@
   "voucher.status.redeemable": "교환 가능",
   "voucher.text.fromNow": "즉시",
   "voucher.text.items": "개 항목",
-  "voucher.text.noUsePeriod": "사용 기한 없음"
+  "voucher.text.noUsePeriod": "사용 기한 없음",
+  "sales.label.callbackedLead": "콜백",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "탭 나가기",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "이 탭을 나가시겠습니까?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "탭을 성공적으로 나갔습니다"
 }
