@@ -340,6 +340,8 @@ const SalesLeadTable: React.VFC<{
       updateLeads({
         variables: {
           updateLeads: memberIds.map(memberId => {
+            const lead = leads.find(lead => lead.id === memberId)
+
             let updateLeadsSetObject: {
               manager_id: string | null
               star: number | null
@@ -348,151 +350,94 @@ const SalesLeadTable: React.VFC<{
               closed_at: Date | string | null
               excluded_at: Date | string | null
               recycled_at: Date | string | null
-              lead_status_category_id?: string | null
-              callbacked_at?: Date | string | null
+              callbacked_at: Date | string | null
+              lead_status_category_id: string | null
             } = {
-              manager_id: managerId,
-              star: leads.find(lead => lead.id === memberId)?.star || null,
-              followed_at: leads.find(lead => lead.id === memberId)?.followedAt || null,
-              completed_at: leads.find(lead => lead.id === memberId)?.completedAt || null,
-              closed_at: leads.find(lead => lead.id === memberId)?.closedAt || null,
-              excluded_at: leads.find(lead => lead.id === memberId)?.excludedAt || null,
-              recycled_at: leads.find(lead => lead.id === memberId)?.recycledAt || null,
-              callbacked_at: leads.find(lead => lead.id === memberId)?.callbackedAt || null,
+              manager_id: managerId || null,
+              star: lead?.star || null,
+              followed_at: lead?.followedAt || null,
+              completed_at: lead?.completedAt || null,
+              closed_at: lead?.closedAt || null,
+              excluded_at: lead?.excludedAt || null,
+              recycled_at: lead?.recycledAt || null,
+              callbacked_at: lead?.callbackedAt || null,
+              lead_status_category_id: lead?.leadStatusCategoryId || null,
             }
 
-            switch (status) {
-              case 'followed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: dayjs().utc().toISOString(),
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'removeFollowed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'specificList':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: dayjs().utc().toISOString(),
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: leadStatusCategory?.id ? leadStatusCategory.id : null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'completed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: dayjs().utc().toISOString(),
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'cancel':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: updateLeadsSetObject.followed_at,
-                  completed_at: null,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                }
-                break
-              case 'recycle':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: dayjs().utc().toISOString(),
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'reject':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: -999,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: dayjs().utc().toISOString(),
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'delete':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: -9999,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: dayjs().utc().toISOString(),
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                  callbacked_at: updateLeadsSetObject.callbacked_at,
-                }
-                break
-              case 'leaveTheCallbackTab':
-                updateLeadsSetObject = {
-                  manager_id: updateLeadsSetObject.manager_id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: updateLeadsSetObject.followed_at,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: updateLeadsSetObject.lead_status_category_id,
-                  callbacked_at: null,
-                }
-                break
+            const updateFieldsByStatus = (status: string) => {
+              switch (status) {
+                case 'followed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'removeFollowed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: null,
+                    lead_status_category_id: null,
+                  }
+                case 'specificList':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: leadStatusCategory?.id || null,
+                  }
+                case 'completed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    completed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'cancel':
+                  return { ...updateLeadsSetObject, manager_id: manager.id, completed_at: null, callbacked_at: null }
+                case 'recycle':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    followed_at: null,
+                    recycled_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'reject':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    star: -999,
+                    followed_at: null,
+                    closed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'delete':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    star: -9999,
+                    followed_at: null,
+                    excluded_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                  }
+                case 'leaveTheCallbackTab':
+                  return { ...updateLeadsSetObject, callbacked_at: null }
+                default:
+                  return updateLeadsSetObject
+              }
             }
+
+            updateLeadsSetObject = updateFieldsByStatus(status)
+
             return {
-              where: {
-                id: { _eq: memberId },
-              },
-              _set: {
-                manager_id: updateLeadsSetObject.manager_id,
-                star: updateLeadsSetObject.star,
-                followed_at: updateLeadsSetObject.followed_at,
-                completed_at: updateLeadsSetObject.completed_at,
-                closed_at: updateLeadsSetObject.closed_at,
-                excluded_at: updateLeadsSetObject.excluded_at,
-                recycled_at: updateLeadsSetObject.recycled_at,
-                lead_status_category_id: updateLeadsSetObject.lead_status_category_id,
-                callbacked_at: updateLeadsSetObject.callbacked_at,
-              },
+              where: { id: { _eq: memberId } },
+              _set: updateLeadsSetObject,
             }
           }),
         },
