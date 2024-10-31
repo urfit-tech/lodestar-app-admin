@@ -12,9 +12,7 @@ import {
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Text } from '@chakra-ui/react'
 import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
-import ButtonGroup from 'antd/lib/button/button-group'
 import { ColumnProps, ColumnsType, TableProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -29,12 +27,11 @@ import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
+import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
-import AdminModal from '../admin/AdminModal'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import AddListModal from './AddListModal'
@@ -88,7 +85,7 @@ const StyledDelPhone = styled.p`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'followed' | 'completed' | 'resubmission'
+  variant?: 'followed' | 'completed'
   manager: Manager
   leads: SalesLeadMember[]
   followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
@@ -120,11 +117,9 @@ const SalesLeadTable: React.VFC<{
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
   const { authToken } = useAuth()
-  const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
-  const { deleteMemberProperty } = useDeleteMemberProperty()
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
@@ -250,30 +245,6 @@ const SalesLeadTable: React.VFC<{
         })
         .catch(handleError)
     }
-  }
-
-  const handleLeaveResubmission = (memberIds: string[]) => {
-    setRefetchLoading(true)
-    const resubmissionProperty = properties.find(property => property.name === '最新填寫日期')
-    if (!resubmissionProperty) return
-    deleteMemberProperty({
-      variables: {
-        memberIds,
-        propertyId: resubmissionProperty?.id,
-      },
-    })
-      .then(() => {
-        if (confirmModalVisibleType === 'leaveResubmission') {
-          message.success(formatMessage(saleMessages.SalesLeadTable.leaveTabSuccess))
-        }
-        setConfirmModalVisibleType('')
-        onSelectChange([])
-        onRefetch()
-      })
-      .finally(() => {
-        setRefetchLoading(false)
-      })
-      .catch(handleError)
   }
 
   const handleLeadStatus = (
@@ -472,7 +443,6 @@ const SalesLeadTable: React.VFC<{
         }
       })
     }
-    handleLeaveResubmission(memberIds)
   }
 
   const dataSource = leads
@@ -785,32 +755,6 @@ const SalesLeadTable: React.VFC<{
 
   return (
     <StyledAdminCard>
-      <AdminModal
-        title={formatMessage(saleMessages.SalesLeadTable.leaveTab)}
-        visible={confirmModalVisibleType === 'leaveResubmission'}
-        onCancel={() => setConfirmModalVisibleType('')}
-        footer={null}
-        renderFooter={() => (
-          <ButtonGroup>
-            <Button className="mr-2" onClick={() => setConfirmModalVisibleType('')}>
-              {formatMessage(commonMessages.ui.cancel)}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => handleLeaveResubmission(selectedRowLeads.map(selectedRowLead => selectedRowLead.id))}
-              loading={refetchLoading}
-            >
-              {formatMessage(commonMessages.ui.confirm)}
-            </Button>
-          </ButtonGroup>
-        )}
-      >
-        <Text marginBottom="20px">
-          {formatMessage(saleMessages.SalesLeadTable.leaveTabInfo, {
-            tab: formatMessage(saleMessages.SalesLeadTable.leaveTab),
-          })}
-        </Text>
-      </AdminModal>
       {selectedMember && (
         <MemberPropertyModal
           visible={propertyModalVisible}
@@ -903,16 +847,6 @@ const SalesLeadTable: React.VFC<{
               })}
             </b>
             <div className="d-flex flex-row align-items-center">
-              {variant === 'resubmission' && (
-                <Button
-                  className="mr-2"
-                  onClick={() => {
-                    setConfirmModalVisibleType('leaveResubmission')
-                  }}
-                >
-                  {formatMessage(saleMessages.SalesLeadTable.leaveTab)}
-                </Button>
-              )}
               {variant !== 'followed' && (
                 <Dropdown
                   className="mr-2"

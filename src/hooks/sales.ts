@@ -5,7 +5,7 @@ import { sum } from 'ramda'
 import hasura from '../hasura'
 import { SalesProps, LeadStatus, Manager, SalesLeadMember } from '../types/sales'
 import dayjs from 'dayjs'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
@@ -281,16 +281,12 @@ export const useManagerLeads = (
 ) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
-
-  const lastFetchedStatus = useRef(status)
-
   const [salesLeadMembersData, setSalesLeadMembersData] = useState<{
     totalPages: number
     totalCount: number
     followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
     followedLeadsCount: number
     signedLeadsCount: number
-    resubmissionCount: number
     completedLeadsCount: number
     deadLeadsCount: number
     closedLeadsCount: number
@@ -341,7 +337,6 @@ export const useManagerLeads = (
               followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
               followedLeadsCount: number
               signedLeadsCount: number
-              resubmissionCount: number
               completedLeadsCount: number
               deadLeadsCount: number
               closedLeadsCount: number
@@ -352,20 +347,19 @@ export const useManagerLeads = (
               idLedLeadsCount: number
               salesLeadMembers: SalesLeadMember[]
             } = {
-              totalPages: data.totalPages || 0,
-              totalCount: data.totalCount || 0,
-              followedLeads: data.followedLeads || 0,
-              followedLeadsCount: data.followedLeadsCount || 0,
-              signedLeadsCount: data.signedLeadsCount || 0,
-              resubmissionCount: data.resubmissionCount || 0,
-              completedLeadsCount: data.completedLeadsCount || 0,
-              deadLeadsCount: data.deadLeadsCount || 0,
-              closedLeadsCount: data.closedLeadsCount || 0,
-              presentedLeadsCount: data.presentedLeadsCount || 0,
-              invitedLeadsCount: data.invitedLeadsCount || 0,
-              answeredLeadsCount: data.answeredLeadsCount || 0,
-              contactedLeadsCount: data.contactedLeadsCount || 0,
-              idLedLeadsCount: data.idLedLeadsCount || 0,
+              totalPages: data.totalPages,
+              totalCount: data.totalCount,
+              followedLeads: data.followedLeads,
+              followedLeadsCount: data.followedLeadsCount,
+              signedLeadsCount: data.signedLeadsCount,
+              completedLeadsCount: data.completedLeadsCount,
+              deadLeadsCount: data.deadLeadsCount,
+              closedLeadsCount: data.closedLeadsCount,
+              presentedLeadsCount: data.presentedLeadsCount,
+              invitedLeadsCount: data.invitedLeadsCount,
+              answeredLeadsCount: data.answeredLeadsCount,
+              contactedLeadsCount: data.contactedLeadsCount,
+              idLedLeadsCount: data.idLedLeadsCount,
               salesLeadMembers: data.salesLeadMembers.map((salesLeadMember: SalesLeadMember) => ({
                 id: salesLeadMember.id,
                 appId: salesLeadMember.appId,
@@ -416,16 +410,10 @@ export const useManagerLeads = (
   }, [appId, authToken, currentPage, currentPageSize, leadStatusCategoryId, manager, sorter, status])
 
   useEffect(() => {
-    lastFetchedStatus.current = status
     fetchData()
-  }, [fetchData, status])
+  }, [fetchData])
 
-  const refetch = async () => {
-    if (lastFetchedStatus.current !== status) {
-      return // Ignore if refetch after status change
-    }
-    await fetchData()
-  }
+  const refetch = () => fetchData()
 
   return {
     loading,

@@ -99,7 +99,6 @@ export type LeadStatus =
   | 'FOLLOWED'
   | 'ANSWERED'
   | 'COMPLETED'
-  | 'LASTCREATED'
 
 export type MemberTask = {
   memberId: string

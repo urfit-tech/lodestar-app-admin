@@ -1484,7 +1484,6 @@ export const salesMessages = defineMessages({
   totalLead: { id: 'sales.label.totalLead', defaultMessage: '全部' },
   recentAnsweredAt: { id: 'sales.label.recentAnsweredAt', defaultMessage: '最近接通' },
   salesLead: { id: 'sales.label.salesLead', defaultMessage: '名單撥打' },
-  resubmissionLead: { id: 'sales.label.resubmissionLead', defaultMessage: 'Resubmission' },
   salesLeadDelivery: { id: 'sales.label.salesLeadDelivery', defaultMessage: '名單派發' },
   salesPerformance: { id: 'sales.label.salesPerformance', defaultMessage: '業績總表' },
   salesCall: { id: 'sales.label.salesCall', defaultMessage: '業務撥打' },

@@ -1127,17 +1127,6 @@ export const useMutateMemberProperty = () => {
   return { updateMemberProperty }
 }
 
-export const useDeleteMemberProperty = () => {
-  const [deleteMemberProperty] = useMutation<hasura.deleteMemberProperties, hasura.deleteMemberPropertiesVariables>(gql`
-    mutation deleteMemberProperties($memberIds: [String!], $propertyId: uuid!) {
-      delete_member_property(where: { member_id: { _in: $memberIds }, property_id: { _eq: $propertyId } }) {
-        affected_rows
-      }
-    }
-  `)
-  return { deleteMemberProperty }
-}
-
 export const useMemberPermissionGroups = (memberId: string) => {
   const { loading, data, error } = useQuery<
     hasura.GetMemberPermissionGroups,
