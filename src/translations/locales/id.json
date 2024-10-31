@@ -435,6 +435,8 @@
   "appointment.label.status": "Status",
   "appointment.label.unReschedule": "Tidak Dapat Diubah",
   "appointment.label.unlimited": "tidak terbatas",
+  "appointment.label.meetingLinkUrl": "Tautan tetap",
+  "appointment.text.validURL": "Harus berupa URL yang valid",
   "appointment.status.aboutToStart": "Akan diselenggarakan segera",
   "appointment.status.available": "Janji",
   "appointment.status.canceled": "Dibatalkan",

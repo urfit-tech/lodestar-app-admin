@@ -26,6 +26,7 @@ export type AppointmentPlan = {
   defaultMeetGateway: MeetGateway
   rescheduleAmount: number
   rescheduleType: RescheduleType
+  meetingLinkUrl: string | null
 }
 
 export type AppointmentPeriod = {
@@ -69,6 +70,7 @@ export type AppointmentPlanAdmin = Pick<
   | 'defaultMeetGateway'
   | 'rescheduleAmount'
   | 'rescheduleType'
+  | 'meetingLinkUrl'
 > & {
   schedules: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'>[]
   periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
@@ -93,6 +95,7 @@ export type AppointmentPeriodPlanProps = {
   rescheduleAmount: number
   rescheduleType: RescheduleType
   defaultMeetGateway: MeetGateway
+  meetingLinkUrl: string | null
 }
 
 export type AppointmentPeriodCardProps = {
@@ -106,7 +109,7 @@ export type AppointmentPeriodCardProps = {
   }
   appointmentPlan: Pick<
     AppointmentPlan,
-    'id' | 'title' | 'duration' | 'rescheduleAmount' | 'rescheduleType' | 'defaultMeetGateway'
+    'id' | 'title' | 'duration' | 'rescheduleAmount' | 'rescheduleType' | 'defaultMeetGateway' | 'meetingLinkUrl'
   >
   startedAt: Date
   endedAt: Date

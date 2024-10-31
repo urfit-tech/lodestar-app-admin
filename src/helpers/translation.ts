@@ -646,6 +646,7 @@ export const appointmentMessages = {
     creator: { id: 'appointment.label.creator', defaultMessage: '講師' },
     member: { id: 'appointment.label.member', defaultMessage: '學生' },
     meetingLink: { id: 'appointment.label.meetingLink', defaultMessage: 'Meeting Link' },
+    meetingLinkUrl: { id: 'appointment.label.meetingLinkUrl', defaultMessage: 'Meeting Link Url' },
     automaticallyGenerated: {
       id: 'appointment.label.automaticallyGenerated',
       defaultMessage: 'automatically generated',
@@ -667,7 +668,7 @@ export const appointmentMessages = {
   }),
   text: defineMessages({
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
-
+    validURL: { id: 'appointment.text.validURL', defaultMessage: 'Must be a valid URL.' },
     noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
     noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
     noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },

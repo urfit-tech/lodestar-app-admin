@@ -14,6 +14,7 @@ import {
   MeetGateway,
 } from '../types/appointment'
 import { PeriodType } from '../types/general'
+import { Meet } from '../types/meet'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -41,6 +42,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           reschedule_type
           meet_generation_method
           default_meet_gateway
+          meeting_link_url
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
@@ -89,6 +91,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
           rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
           meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
+          meetingLinkUrl: data.appointment_plan_by_pk.meeting_link_url || null,
           defaultMeetGateway: data.appointment_plan_by_pk.default_meet_gateway as MeetGateway,
           schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => ({
             id: appointmentSchedule.id,
@@ -131,7 +134,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           isPrivate: data?.appointment_plan_by_pk.is_private,
         }
       : null
-  }, [appointmentPlanId, data])
+  }, [appointmentPlanId, data?.appointment_plan_by_pk, targetMemberId])
 
   return {
     loadingAppointmentPlanAdmin: loading,
@@ -254,6 +257,7 @@ export const useAppointmentEnrollmentCollection = (
             }
             reschedule_amount
             reschedule_type
+            meeting_link_url
           }
           member {
             id
@@ -314,6 +318,7 @@ export const useAppointmentEnrollmentCollection = (
         rescheduleAmount: v.appointment_plan?.reschedule_amount,
         rescheduleType: v.appointment_plan?.reschedule_type,
         defaultMeetGateway: v.appointment_plan?.default_meet_gateway as MeetGateway,
+        meetingLinkUrl: v.appointment_plan?.meeting_link_url || null,
       } as AppointmentPeriodPlanProps,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),
@@ -325,6 +330,7 @@ export const useAppointmentEnrollmentCollection = (
       },
       orderProduct: { id: v.order_product_id, options: v.order_product?.options },
       meetGenerationMethod: (v.appointment_plan?.meet_generation_method as MeetGenerationMethod) || 'auto',
+      meetingLinkUrl: v.appointment_plan?.meeting_link_url || null,
     })) || []
 
   const loadMoreAppointmentEnrollments =
@@ -399,9 +405,13 @@ export const useCancelAppointment = () => {
   }
 }
 
-export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, startedAt: Date, endedAt: Date) => {
+export const useMeetByAppointmentPlanIdAndPeriod = (
+  appointmentPlanId: string,
+  startedAt: Date | null,
+  endedAt: Date | null,
+) => {
   const { id: appId } = useApp()
-  const { loading, data, error } = useQuery<
+  const { loading, data, error, refetch } = useQuery<
     hasura.GetMeetByAppointmentPlanIdAndPeriod,
     hasura.GetMeetByAppointmentPlanIdAndPeriodVariables
   >(
@@ -423,14 +433,113 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
           }
         ) {
           id
+          target
+          type
           host_member_id
           options
+          service_id
           recording_url
           recording_type
+          started_at
+          ended_at
+          nbf_at
+          exp_at
+          auto_recording
           meet_members {
             id
             member_id
           }
+          gateway
+        }
+      }
+    `,
+    {
+      variables: {
+        target: appointmentPlanId,
+        startedAt: startedAt?.toISOString(),
+        endedAt: endedAt?.toISOString(),
+        appId,
+      },
+    },
+  )
+  const meet: Meet | null = data?.meet?.[0]
+    ? {
+        id: data.meet[0].id,
+        hostMemberId: data.meet[0].host_member_id,
+        recordingUrl: data.meet[0].recording_url || null,
+        recordingType: data.meet[0].recording_type || null,
+        options: data.meet[0].options,
+        meetMembers: data.meet[0].meet_members.map(v => ({
+          id: v.id,
+          memberId: v.member_id,
+        })),
+        gateway: data.meet[0].gateway,
+        nbfAt: data.meet[0].nbf_at,
+        startedAt: data.meet[0].started_at,
+        endedAt: data.meet[0].ended_at,
+        expAt: data.meet[0].exp_at,
+        target: data.meet[0].target,
+        autoRecording: data.meet[0].auto_recording,
+        type: data.meet[0].type,
+        serviceId: data.meet[0].service_id,
+      }
+    : null
+
+  return {
+    loading,
+    meet,
+    error,
+    refetch,
+  }
+}
+
+export const useMeetByAppointmentPlanIdAndMemberPeriod = (
+  appointmentPlanId: string,
+  startedAt: Date,
+  endedAt: Date,
+  memberId: string,
+) => {
+  const { id: appId } = useApp()
+  const { loading, data, error, refetch } = useQuery<
+    hasura.GetMeetByAppointmentPlanIdAndMemberPeriod,
+    hasura.GetMeetByAppointmentPlanIdAndMemberPeriodVariables
+  >(
+    gql`
+      query GetMeetByAppointmentPlanIdAndMemberPeriod(
+        $target: uuid!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+        $appId: String!
+        $memberId: String!
+      ) {
+        meet(
+          where: {
+            target: { _eq: $target }
+            started_at: { _eq: $startedAt }
+            ended_at: { _eq: $endedAt }
+            app_id: { _eq: $appId }
+            deleted_at: { _is_null: true }
+            meet_members: { member_id: { _eq: $memberId }, deleted_at: { _is_null: true } }
+          }
+        ) {
+          id
+          target
+          type
+          host_member_id
+          options
+          service_id
+          recording_url
+          recording_type
+          started_at
+          ended_at
+          nbf_at
+          exp_at
+          auto_recording
+          meet_members {
+            id
+            member_id
+          }
+          gateway
         }
       }
     `,
@@ -440,27 +549,30 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
         startedAt: startedAt.toISOString(),
         endedAt: endedAt.toISOString(),
         appId,
+        memberId,
       },
     },
   )
-  const meet: {
-    id: string
-    hostMemberId: string
-    recording_url: string | null
-    recording_type: string | null
-    options: any
-    meetMembers: { id: string; memberId: string }[]
-  } | null = data?.meet?.[0]
+  const meet: Meet | null = data?.meet?.[0]
     ? {
         id: data.meet[0].id,
         hostMemberId: data.meet[0].host_member_id,
-        recording_url: data.meet[0].recording_url || null,
-        recording_type: data.meet[0].recording_type || null,
+        recordingUrl: data.meet[0].recording_url || null,
+        recordingType: data.meet[0].recording_type || null,
         options: data.meet[0].options,
         meetMembers: data.meet[0].meet_members.map(v => ({
           id: v.id,
           memberId: v.member_id,
         })),
+        gateway: data.meet[0].gateway,
+        nbfAt: data.meet[0].nbf_at,
+        startedAt: data.meet[0].started_at,
+        endedAt: data.meet[0].ended_at,
+        expAt: data.meet[0].exp_at,
+        target: data.meet[0].target,
+        autoRecording: data.meet[0].auto_recording,
+        type: data.meet[0].type,
+        serviceId: data.meet[0].service_id,
       }
     : null
 
@@ -468,6 +580,7 @@ export const useMeetByAppointmentPlanIdAndPeriod = (appointmentPlanId: string, s
     loading,
     meet,
     error,
+    refetch,
   }
 }
 

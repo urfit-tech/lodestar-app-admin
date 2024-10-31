@@ -707,6 +707,10 @@ const SalesLeadTabs: React.VFC<{
             <div
               onClick={() => {
                 setSelectedRowKeys([])
+                setDemoTabState(null)
+                setContactedTabState(null)
+                setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.resubmissionLead)}

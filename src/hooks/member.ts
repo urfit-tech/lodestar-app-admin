@@ -320,7 +320,12 @@ export const useMemberNotesAdmin = (
     hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!]!, $condition: member_note_bool_exp, $offset: Int!, $limit: Int!) {
+      query GET_MEMBER_NOTES_ADMIN(
+        $orderBy: [member_note_order_by!]!
+        $condition: member_note_bool_exp
+        $offset: Int!
+        $limit: Int!
+      ) {
         member_note_aggregate(where: $condition) {
           aggregate {
             count

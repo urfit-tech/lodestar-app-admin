@@ -425,6 +425,8 @@
   "appointment.label.status": "상태",
   "appointment.label.unReschedule": "변경 불가",
   "appointment.label.unlimited": "제한 없음",
+  "appointment.label.meetingLinkUrl": "고정 링크",
+  "appointment.text.validURL": "유효한 URL이어야 합니다.",
   "appointment.status.aboutToStart": "곧 시작",
   "appointment.status.available": "예약 가능",
   "appointment.status.canceled": "취소됨",

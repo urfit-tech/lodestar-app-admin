@@ -58,8 +58,8 @@ const AppointmentPeriodItem: React.FC<{
     defaultMeetGateway: string
   }
   period: {
-    startedAt: Date
-    endedAt: Date
+    startedAt: Date | null
+    endedAt: Date | null
   }
   services: { id: string; gateway: string }[]
   loadingServices: boolean
@@ -125,8 +125,8 @@ const AppointmentPeriodItem: React.FC<{
   return (
     <StyledItemWrapper variant={variant} onClick={variant === 'bookable' ? onClick : undefined}>
       <StyledItemTitle>
-        {period.startedAt.getHours().toString().padStart(2, '0')}:
-        {period.startedAt.getMinutes().toString().padStart(2, '0')}
+        {period?.startedAt?.getHours().toString().padStart(2, '0')}:
+        {period?.startedAt?.getMinutes().toString().padStart(2, '0')}
       </StyledItemTitle>
       {loadingMeetMembers || loadingOverlapMeet || loadingServices ? (
         <Spinner />
