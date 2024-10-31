@@ -361,42 +361,30 @@ export const call = async ({
   authToken,
   phone,
   salesTelephone,
+  confirmMessage,
 }: {
   appId: string
 
   authToken: string | null
   phone: string
   salesTelephone: string
-}) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { formatMessage } = useIntl()
-  if (!window.confirm(`${formatMessage(salesMessages.confirmCallPhone)}${phone}`)) {
-    return
+  confirmMessage: string
+}): Promise<{ data: { code: string } }> => {
+  if (!window.confirm(confirmMessage)) {
+    return { data: { code: 'CANCELED' } }
   }
 
-  axios
-    .post(
-      `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
-      {
-        appId,
-        callFrom: salesTelephone,
-        callTo: phone,
-      },
-      {
-        headers: { authorization: `Bearer ${authToken}` },
-      },
-    )
-    .then(({ data: { code } }) => {
-      if (code === 'SUCCESS') {
-        message.success(formatMessage(salesMessages.phoneLinkSuccess))
-      } else {
-        message.error(formatMessage(salesMessages.phoneError))
-      }
-    })
-    .catch(error => {
-      process.env.NODE_ENV === 'development' && console.error(error)
-      message.error(formatMessage(salesMessages.connectionError))
-    })
+  return axios.post(
+    `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
+    {
+      appId,
+      callFrom: salesTelephone,
+      callTo: phone,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
 }
 
 export const getVideoIDByURL = (url: string, source: string) => {

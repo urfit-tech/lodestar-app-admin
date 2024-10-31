@@ -12,8 +12,10 @@ import {
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
+import { Text } from '@chakra-ui/react'
 import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
-import { ColumnProps, ColumnsType } from 'antd/lib/table'
+import ButtonGroup from 'antd/lib/button/button-group'
+import { ColumnProps, ColumnsType, TableProps } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -25,13 +27,14 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
+import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import { useLeadStatusCategory } from '../../hooks/sales'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
+import AdminModal from '../admin/AdminModal'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import AddListModal from './AddListModal'
@@ -85,23 +88,26 @@ const StyledDelPhone = styled.p`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'followed' | 'completed'
+  variant?: 'followed' | 'completed' | 'resubmission'
   manager: Manager
   leads: SalesLeadMember[]
-  followedLeads: SalesLeadMember[]
+  followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
   isLoading: boolean
   onRefetch: () => Promise<void>
   title?: string
+  onTableChange: TableProps<SalesLeadMember>['onChange']
   selectedLeadStatusCategoryId?: string
   selectedRowKeys: React.Key[]
   onSelectChange: (newSelectedRowKeys: React.Key[]) => void
   onIsOpenAddListModalChange: (isOpenAddListModal: boolean) => void
   onIsOpenManagerListModalChange: (isOpenManagerListModal: boolean) => void
+  dataCount: number
 }> = ({
   variant,
   manager,
   leads,
   onRefetch,
+  onTableChange,
   isLoading,
   title,
   selectedLeadStatusCategoryId,
@@ -109,13 +115,16 @@ const SalesLeadTable: React.VFC<{
   onSelectChange,
   onIsOpenAddListModalChange,
   onIsOpenManagerListModalChange,
+  dataCount,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
   const { authToken } = useAuth()
+  const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
+  const { deleteMemberProperty } = useDeleteMemberProperty()
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
@@ -233,7 +242,7 @@ const SalesLeadTable: React.VFC<{
         },
       })
         .then(() => {
-          message.success(formatMessage(saleMessages.SalesLeadTable.successfullySaved))
+          message.success(formatMessage(saleMessages.SalesLeadTable.savedSuccessfully))
           onRefetch()
           setRefetchLoading(false)
           setFullNameValue('')
@@ -241,6 +250,30 @@ const SalesLeadTable: React.VFC<{
         })
         .catch(handleError)
     }
+  }
+
+  const handleLeaveResubmission = (memberIds: string[]) => {
+    setRefetchLoading(true)
+    const resubmissionProperty = properties.find(property => property.name === '最新填寫日期')
+    if (!resubmissionProperty) return
+    deleteMemberProperty({
+      variables: {
+        memberIds,
+        propertyId: resubmissionProperty?.id,
+      },
+    })
+      .then(() => {
+        if (confirmModalVisibleType === 'leaveResubmission') {
+          message.success(formatMessage(saleMessages.SalesLeadTable.leaveTabSuccess))
+        }
+        setConfirmModalVisibleType('')
+        onSelectChange([])
+        onRefetch()
+      })
+      .finally(() => {
+        setRefetchLoading(false)
+      })
+      .catch(handleError)
   }
 
   const handleLeadStatus = (
@@ -353,7 +386,7 @@ const SalesLeadTable: React.VFC<{
                 updateLeadsSetObject = {
                   manager_id: manager.id,
                   star: updateLeadsSetObject.star,
-                  followed_at: updateLeadsSetObject.followed_at,
+                  followed_at: null,
                   completed_at: dayjs().utc().toISOString(),
                   closed_at: updateLeadsSetObject.closed_at,
                   excluded_at: updateLeadsSetObject.excluded_at,
@@ -439,6 +472,7 @@ const SalesLeadTable: React.VFC<{
         }
       })
     }
+    handleLeaveResubmission(memberIds)
   }
 
   const dataSource = leads
@@ -615,9 +649,9 @@ const SalesLeadTable: React.VFC<{
                   <del>{phone.phoneNumber}</del>
                 </StyledDelPhone>
               ) : (
-                <a
+                <button
                   key={idx}
-                  href="#!"
+                  // href="#!"
                   className="m-0 mr-1 cursor-pointer d-flex"
                   onClick={() => {
                     call({
@@ -625,11 +659,23 @@ const SalesLeadTable: React.VFC<{
                       authToken,
                       phone: phone.phoneNumber,
                       salesTelephone: manager.telephone,
+                      confirmMessage: `${formatMessage(salesMessages.confirmCallPhone)}${phone.phoneNumber}`,
                     })
+                      .then(({ data: { code } }) => {
+                        if (code === 'SUCCESS') {
+                          message.success(formatMessage(salesMessages.phoneLinkSuccess))
+                        } else {
+                          message.error(formatMessage(salesMessages.phoneError))
+                        }
+                      })
+                      .catch(error => {
+                        process.env.NODE_ENV === 'development' && console.error(error)
+                        message.error(formatMessage(salesMessages.connectionError))
+                      })
                   }}
                 >
                   {phone.phoneNumber}
-                </a>
+                </button>
               ),
             )}
           </div>
@@ -703,7 +749,7 @@ const SalesLeadTable: React.VFC<{
       ),
     },
     {
-      key: 'createdAt',
+      key: 'created_at',
       dataIndex: 'createdAt',
       title: formatMessage(saleMessages.SalesLeadTable.createdAt),
       sorter: {
@@ -713,7 +759,7 @@ const SalesLeadTable: React.VFC<{
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     {
-      key: 'recentContactedAt',
+      key: 'last_member_note_called',
       dataIndex: 'recentContactedAt',
       title: formatMessage(saleMessages.SalesLeadTable.recentContactedAt),
       sorter: {
@@ -723,7 +769,7 @@ const SalesLeadTable: React.VFC<{
       render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
     },
     {
-      key: 'recentAnsweredAt',
+      key: 'last_member_note_answered',
       dataIndex: 'recentAnsweredAt',
       title: formatMessage(saleMessages.SalesLeadTable.recentAnsweredAt),
       sorter: {
@@ -739,6 +785,32 @@ const SalesLeadTable: React.VFC<{
 
   return (
     <StyledAdminCard>
+      <AdminModal
+        title={formatMessage(saleMessages.SalesLeadTable.leaveTab)}
+        visible={confirmModalVisibleType === 'leaveResubmission'}
+        onCancel={() => setConfirmModalVisibleType('')}
+        footer={null}
+        renderFooter={() => (
+          <ButtonGroup>
+            <Button className="mr-2" onClick={() => setConfirmModalVisibleType('')}>
+              {formatMessage(commonMessages.ui.cancel)}
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => handleLeaveResubmission(selectedRowLeads.map(selectedRowLead => selectedRowLead.id))}
+              loading={refetchLoading}
+            >
+              {formatMessage(commonMessages.ui.confirm)}
+            </Button>
+          </ButtonGroup>
+        )}
+      >
+        <Text marginBottom="20px">
+          {formatMessage(saleMessages.SalesLeadTable.leaveTabInfo, {
+            tab: formatMessage(saleMessages.SalesLeadTable.leaveTab),
+          })}
+        </Text>
+      </AdminModal>
       {selectedMember && (
         <MemberPropertyModal
           visible={propertyModalVisible}
@@ -831,6 +903,16 @@ const SalesLeadTable: React.VFC<{
               })}
             </b>
             <div className="d-flex flex-row align-items-center">
+              {variant === 'resubmission' && (
+                <Button
+                  className="mr-2"
+                  onClick={() => {
+                    setConfirmModalVisibleType('leaveResubmission')
+                  }}
+                >
+                  {formatMessage(saleMessages.SalesLeadTable.leaveTab)}
+                </Button>
+              )}
               {variant !== 'followed' && (
                 <Dropdown
                   className="mr-2"
@@ -962,7 +1044,7 @@ const SalesLeadTable: React.VFC<{
                     )
                   }
                 >
-                  {formatMessage(saleMessages.SalesLeadTable.complete)}
+                  {formatMessage(saleMessages.SalesLeadTable.completed)}
                 </Button>
               )}
               {variant === 'completed' && (
@@ -1062,7 +1144,9 @@ const SalesLeadTable: React.VFC<{
                 ? settingPageSizeOptions.split(',')
                 : ['20', '50', '100', '300', '500', '1000']
               : ['20', '50', '100', '300', '500', '1000'],
+            total: dataCount,
           }}
+          onChange={onTableChange}
           className="mb-3"
         />
       </TableWrapper>

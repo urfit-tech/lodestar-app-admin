@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -54,9 +55,7 @@ const checkMeetingMember = ({
   formMemberId: string
   formMeetingGateway?: string
 }) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { formatMessage } = useIntl()
-  let message = ''
+  let isAvailable = true
   // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
   if (formMeetingGateway !== 'google-meet') {
     if (
@@ -64,7 +63,7 @@ const checkMeetingMember = ({
         overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
       ).length > 0
     ) {
-      message = formatMessage(taskMessages.MemberTaskAdminModal.executorNotAvailable)
+      isAvailable = false
     }
   }
 
@@ -76,10 +75,11 @@ const checkMeetingMember = ({
         overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
     ).length > 0
   ) {
-    message = formatMessage(taskMessages.MemberTaskAdminModal.memberNotAvailable)
+    isAvailable = false
   }
+
   return {
-    message,
+    isAvailable,
   }
 }
 
@@ -193,15 +193,16 @@ const MemberTaskAdminModal: React.FC<
           })
         }
 
-        const { message } = checkMeetingMember({
+        const { isAvailable } = checkMeetingMember({
           overlapMeets,
           memberTaskId,
           formExecutorId,
           formMemberId,
           formMeetingGateway,
         })
-        if (!!message) {
-          return handleError({ message })
+
+        if (!isAvailable) {
+          return handleError({ message: formatMessage(taskMessages.MemberTaskAdminModal.executorNotAvailable) })
         }
       }
 
@@ -385,13 +386,6 @@ const MemberTaskAdminModal: React.FC<
         layout="vertical"
         colon={false}
         hideRequiredMark
-        // onValuesChange={(changedValues, allValues) => {
-        //   console.log(changedValues)
-
-        //   if ('isPrivate' in changedValues) {
-        //     form.setFieldsValue({ isPrivate: changedValues.isPrivate })
-        //   }
-        // }}
         initialValues={{
           title: memberTask?.title || '',
           categoryId: memberTask?.category?.id,
@@ -610,21 +604,25 @@ const MemberTaskAdminModal: React.FC<
             <Form.Item name="meetingGateway">
               <Radio.Group>
                 <Stack direction="row">
-                  <Radio
-                    value="google-meet"
-                    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-                    // disabled={invalidGateways.includes('google-meet')}
-                    onChange={e => setMeetingGateWay(e.target.value)}
-                  >
-                    Google meet
-                  </Radio>
-                  <Radio
-                    value="zoom"
-                    disabled={invalidGateways.includes('zoom')}
-                    onChange={e => setMeetingGateWay(e.target.value)}
-                  >
-                    Zoom
-                  </Radio>
+                  {uniq(services.map(service => service.gateway)).includes('google-meet') ? (
+                    <Radio
+                      value="google-meet"
+                      // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+                      // disabled={invalidGateways.includes('google-meet')}
+                      onChange={e => setMeetingGateWay(e.target.value)}
+                    >
+                      Google meet
+                    </Radio>
+                  ) : null}
+                  {uniq(services.map(service => service.gateway)).includes('zoom') ? (
+                    <Radio
+                      value="zoom"
+                      disabled={invalidGateways.includes('zoom')}
+                      onChange={e => setMeetingGateWay(e.target.value)}
+                    >
+                      Zoom
+                    </Radio>
+                  ) : null}
                   <Radio value="jitsi" onChange={e => setMeetingGateWay(e.target.value)}>
                     Jitsi
                   </Radio>

@@ -1,8 +1,8 @@
 import Icon, { CheckOutlined, DownOutlined, PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Flex } from '@chakra-ui/react'
 import { Button, Dropdown, Menu, notification, Skeleton, Spin, Tabs } from 'antd'
+import { SorterResult, TablePaginationConfig } from 'antd/lib/table/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -18,7 +18,7 @@ import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
 import { useLeadStatusCategory, useManagerLeads, useManagers } from '../hooks/sales'
-import { LeadStatus, Manager } from '../types/sales'
+import { LeadStatus, Manager, SalesLeadMember } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
@@ -56,7 +56,7 @@ const SalesLeadPage: React.VFC = () => {
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
   const { managers } = useManagers(SalesLeadManagerSelectorStatus())
-  const [activeKey, setActiveKey] = useState('followed')
+  const [activeKey, setActiveKey] = useState('FOLLOWED')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
   const [selectedLeadStatusCategory, setSelectedLeadStatusCategory] = useState<SelectedLeadStatusCategory | null>(null)
@@ -117,25 +117,34 @@ const SalesLeadTabs: React.VFC<{
   onActiveKeyChanged: (activeKey: string) => void
   onSelectedLeadStatusCategoryChange: (selectedLeadStatusCategory: SelectedLeadStatusCategory | null) => void
 }> = ({ activeKey, manager, onActiveKeyChanged, selectedLeadStatusCategory, onSelectedLeadStatusCategoryChange }) => {
+  const { settings } = useApp()
   const [refetchLoading, setRefetchLoading] = useState(true)
-  const [demoTabState, setDemoTabState] = useState<'invited' | 'presented' | null>(null)
-  const [contactedTabState, setContactedTabState] = useState<'answered' | 'contacted' | null>(null)
+  const [demoTabState, setDemoTabState] = useState<'INVITED' | 'PRESENTED' | null>(null)
+  const [contactedTabState, setContactedTabState] = useState<'ANSWERED' | 'CONTACTED' | null>(null)
+  const [pagination, setPagination] = useState<TablePaginationConfig>()
+  const [sorter, setSorter] = useState<SorterResult<SalesLeadMember> | SorterResult<SalesLeadMember>[]>()
+
+  const settingDefaultPageSize = settings['sale_lead.sale_lead_table.default_page_size']
+  const settingPageSizeOptions = settings['sale_lead.sale_lead_table.page_size_options']
+
+  const defaultPageSize = settingDefaultPageSize
+    ? Number(settingDefaultPageSize)
+    : settingPageSizeOptions
+    ? settingPageSizeOptions.split(',').length > 0
+      ? Number(settingPageSizeOptions.split(',')[0])
+      : 100
+    : 100
 
   const { formatMessage } = useIntl()
-  const {
-    refetch,
-    followedLeads,
-    totalLeads,
-    idledLeads,
-    contactedLeads,
-    answeredLeads,
-    invitedLeads,
-    presentedLeads,
-    signedLeads,
-    closedLeads,
-    completedLeads,
-    loading,
-  } = useManagerLeads(manager)
+  const { refetch, loading, salesLeadMembersData } = useManagerLeads(
+    manager,
+    pagination?.current || 1,
+    pagination?.pageSize || defaultPageSize,
+    demoTabState || contactedTabState || activeKey,
+    selectedLeadStatusCategory?.id || null,
+    sorter,
+  )
+
   const [isOpenAddListModal, setIsOpenAddListModal] = useState(false)
   const [isOpenManagerListModal, setIsOpenManagerListModal] = useState(false)
   const [listStatus, setListStatus] = useState<LeadStatus>('FOLLOWED')
@@ -165,7 +174,7 @@ const SalesLeadTabs: React.VFC<{
     }
   }, [loading])
 
-  const followLeadStatusCategoryLists = followedLeads.filter((lead: { leadStatusCategoryId: string }) =>
+  const followLeadStatusCategoryLists = salesLeadMembersData?.followedLeads.filter(lead =>
     selectedLeadStatusCategory
       ? selectedLeadStatusCategory.id === lead.leadStatusCategoryId
       : !lead.leadStatusCategoryId,
@@ -188,7 +197,7 @@ const SalesLeadTabs: React.VFC<{
         }
       >
         <Tabs.TabPane
-          key="followed"
+          key="FOLLOWED"
           tab={
             <Dropdown
               overlay={
@@ -197,20 +206,20 @@ const SalesLeadTabs: React.VFC<{
                     onClick={() => {
                       onSelectedLeadStatusCategoryChange(null)
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
-                    <Flex alignContent="center">
-                      {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" style={{ margin: 'auto' }} />}
-                      {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
-                      <span>
-                        (
-                        {
-                          followedLeads.filter((lead: { leadStatusCategoryId: string }) => !lead.leadStatusCategoryId)
-                            .length
-                        }
-                        )
-                      </span>
-                    </Flex>
+                    {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
+                    {formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)}
+                    <span>
+                      (
+                      {
+                        salesLeadMembersData?.followedLeads.filter(
+                          (lead: { leadStatusCategoryId: string | null }) => !lead.leadStatusCategoryId,
+                        ).length
+                      }
+                      )
+                    </span>
                   </Menu.Item>
                   {leadStatusCategories.map(leadStatusCategory => (
                     <Menu.Item
@@ -222,6 +231,7 @@ const SalesLeadTabs: React.VFC<{
                           categoryId: leadStatusCategory.categoryId,
                         })
                         setSelectedRowKeys([])
+                        setPagination(undefined)
                       }}
                     >
                       {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}
@@ -229,9 +239,8 @@ const SalesLeadTabs: React.VFC<{
                       <span>
                         (
                         {
-                          followedLeads.filter(
-                            (lead: { leadStatusCategoryId: string }) =>
-                              leadStatusCategory.id === lead.leadStatusCategoryId,
+                          salesLeadMembersData?.followedLeads.filter(
+                            lead => leadStatusCategory.id === lead.leadStatusCategoryId,
                           ).length
                         }
                         )
@@ -252,22 +261,180 @@ const SalesLeadTabs: React.VFC<{
             >
               <Center
                 onClick={() => {
-                  setContactedTabState(null)
                   setSelectedRowKeys([])
+                  setDemoTabState(null)
+                  setContactedTabState(null)
+                  setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.followedLead)}
+                <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.followedLeadsCount})</span>
+                <DownOutlined className="mr-0 ml-1" />
+              </Center>
+            </Dropdown>
+          }
+        >
+          {activeKey === 'FOLLOWED' && (
+            <SalesLeadTable
+              title={`${
+                selectedLeadStatusCategory?.categoryName ||
+                formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)
+              }(${followLeadStatusCategoryLists?.length || 0})`}
+              variant="followed"
+              manager={manager}
+              selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              isLoading={refetchLoading}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={
+                salesLeadMembersData?.followedLeads.filter(lead =>
+                  !selectedLeadStatusCategory?.id
+                    ? !lead.leadStatusCategoryId
+                    : lead.leadStatusCategoryId === selectedLeadStatusCategory?.id,
+                ).length || 0
+              }
+            />
+          )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          key="ALL"
+          tab={
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+                setDemoTabState(null)
+                setContactedTabState(null)
+                setSorter(undefined)
+                setPagination(undefined)
+              }}
+            >
+              {formatMessage(salesMessages.totalLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.totalCount})</span>
+            </div>
+          }
+        >
+          {activeKey === 'ALL' && (
+            <SalesLeadTable
+              manager={manager}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.totalCount || 0}
+            />
+          )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          key="IDLED"
+          tab={
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+                setDemoTabState(null)
+                setContactedTabState(null)
+                setSorter(undefined)
+                setPagination(undefined)
+              }}
+            >
+              {formatMessage(salesMessages.idledLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.idLedLeadsCount})</span>
+            </div>
+          }
+        >
+          {activeKey === 'IDLED' && (
+            <SalesLeadTable
+              manager={manager}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.idLedLeadsCount || 0}
+            />
+          )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          key="CALLED"
+          tab={
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    onClick={() => {
+                      setContactedTabState('CONTACTED')
+                      setSelectedRowKeys([])
+                      setPagination(undefined)
+                    }}
+                  >
+                    <Center>
+                      {'CONTACTED' === contactedTabState && <CheckOutlined className="mr-1" />}
+                      {formatMessage(salesMessages.contactedLead)}
+                      <span>({salesLeadMembersData?.contactedLeadsCount})</span>
+                    </Center>
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      setContactedTabState('ANSWERED')
+                      setSelectedRowKeys([])
+                      setPagination(undefined)
+                    }}
+                  >
+                    <Center>
+                      {'ANSWERED' === contactedTabState && <CheckOutlined className="mr-1" />}
+                      {formatMessage(salesMessages.answeredLeads)}
+                      <span>({salesLeadMembersData?.answeredLeadsCount || 0})</span>
+                    </Center>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Center
+                onClick={() => {
+                  setSelectedRowKeys([])
+                  setDemoTabState(null)
+                  setContactedTabState(null)
+                  setSorter(undefined)
+                  setPagination(undefined)
+                }}
+              >
+                {formatMessage(salesMessages.calledLead)}
                 <span>
                   (
                   {refetchLoading ? (
                     <Spin size="small" />
                   ) : (
-                    followedLeads.filter(
-                      followedLead =>
-                        leadStatusCategories.find(
-                          leadStatusCategory => leadStatusCategory.id === followedLead.leadStatusCategoryId,
-                        )?.memberId === manager.id || !followedLead.leadStatusCategoryId,
-                    ).length
+                    (salesLeadMembersData?.contactedLeadsCount || 0) + (salesLeadMembersData?.answeredLeadsCount || 0)
                   )}
                   )
                 </span>
@@ -276,198 +443,97 @@ const SalesLeadTabs: React.VFC<{
             </Dropdown>
           }
         >
-          {activeKey === 'followed' && (
+          {null === contactedTabState && activeKey === 'CALLED' && (
             <SalesLeadTable
-              title={`${
-                selectedLeadStatusCategory?.categoryName ||
-                formatMessage(salesMessages.followedLead) + formatMessage(salesMessages.list)
-              }(${followLeadStatusCategoryLists.length})`}
-              variant="followed"
               manager={manager}
-              selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
-              leads={followLeadStatusCategoryLists}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              isLoading={refetchLoading}
-              followedLeads={followedLeads}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
-            />
-          )}
-        </Tabs.TabPane>
-
-        <Tabs.TabPane
-          key="total"
-          tab={
-            <div
-              onClick={() => {
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
                 setSelectedRowKeys([])
               }}
-            >
-              {formatMessage(salesMessages.totalLead)}
-              <span>({refetchLoading ? <Spin size="small" /> : totalLeads.length})</span>
-            </div>
-          }
-        >
-          {activeKey === 'total' && (
-            <SalesLeadTable
-              manager={manager}
-              leads={totalLeads}
-              onRefetch={async () => await refetch?.()}
-              isLoading={refetchLoading}
-              followedLeads={followedLeads}
-              selectedRowKeys={selectedRowKeys}
-              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
-            />
-          )}
-        </Tabs.TabPane>
-
-        <Tabs.TabPane
-          key="idled"
-          tab={
-            <div
-              onClick={() => {
-                setSelectedRowKeys([])
-              }}
-            >
-              {formatMessage(salesMessages.idledLead)}
-              <span>({refetchLoading ? <Spin size="small" /> : idledLeads.length})</span>
-            </div>
-          }
-        >
-          {activeKey === 'idled' && (
-            <SalesLeadTable
-              manager={manager}
-              leads={idledLeads}
-              onRefetch={async () => await refetch?.()}
-              isLoading={refetchLoading}
-              followedLeads={followedLeads}
-              selectedRowKeys={selectedRowKeys}
-              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
-            />
-          )}
-        </Tabs.TabPane>
-
-        <Tabs.TabPane
-          key="called"
-          tab={
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item
-                    onClick={() => {
-                      setContactedTabState('contacted')
-                      setSelectedRowKeys([])
-                    }}
-                  >
-                    <Center>
-                      {'contacted' === contactedTabState && <CheckOutlined className="mr-1" />}
-                      {formatMessage(salesMessages.contactedLead)}
-                      <span>({contactedLeads.length})</span>
-                    </Center>
-                  </Menu.Item>
-                  <Menu.Item
-                    onClick={() => {
-                      setContactedTabState('answered')
-                      setSelectedRowKeys([])
-                    }}
-                  >
-                    <Center>
-                      {'answered' === contactedTabState && <CheckOutlined className="mr-1" />}
-                      {formatMessage(salesMessages.answeredLeads)}
-                      <span>({answeredLeads.length})</span>
-                    </Center>
-                  </Menu.Item>
-                </Menu>
+              dataCount={
+                (salesLeadMembersData?.contactedLeadsCount || 0) + (salesLeadMembersData?.answeredLeadsCount || 0)
               }
-            >
-              <Center
-                onClick={() => {
-                  setContactedTabState(null)
-                  setSelectedRowKeys([])
-                }}
-              >
-                {formatMessage(salesMessages.calledLead)}
-                <span>({refetchLoading ? <Spin size="small" /> : contactedLeads.length + answeredLeads.length})</span>
-                <DownOutlined className="mr-0 ml-1" />
-              </Center>
-            </Dropdown>
-          }
-        >
-          {null === contactedTabState && activeKey === 'called' && (
-            <SalesLeadTable
-              manager={manager}
-              leads={[...contactedLeads, ...answeredLeads]}
-              onRefetch={async () => await refetch?.()}
-              isLoading={refetchLoading}
-              followedLeads={followedLeads}
-              selectedRowKeys={selectedRowKeys}
-              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
-              onIsOpenAddListModalChange={setIsOpenAddListModal}
-              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
             />
           )}
-          {'contacted' === contactedTabState && (
+          {'CONTACTED' === contactedTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={contactedLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.contactedLeadsCount || 0}
             />
           )}
-          {'answered' === contactedTabState && (
+          {'ANSWERED' === contactedTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={answeredLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.answeredLeadsCount || 0}
             />
           )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
-          key="demo"
+          key="DEMO"
           tab={
             <Dropdown
               overlay={
                 <Menu>
                   <Menu.Item
                     onClick={() => {
-                      setDemoTabState('invited')
+                      setDemoTabState('INVITED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center>
-                      {'invited' === demoTabState && <CheckOutlined className="mr-1" />}
+                      {'INVITED' === demoTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.invitedLead)}
-                      <span>({invitedLeads.length})</span>
+                      <span>({salesLeadMembersData?.invitedLeadsCount})</span>
                     </Center>
                   </Menu.Item>
                   <Menu.Item
                     onClick={() => {
-                      setDemoTabState('presented')
+                      setDemoTabState('PRESENTED')
                       setSelectedRowKeys([])
+                      setPagination(undefined)
                     }}
                   >
                     <Center onClick={() => setSelectedRowKeys([])}>
-                      {'presented' === demoTabState && <CheckOutlined className="mr-1" />}
+                      {'PRESENTED' === demoTabState && <CheckOutlined className="mr-1" />}
                       {formatMessage(salesMessages.presentedLead)}
-                      <span>({presentedLeads.length})</span>
+                      <span>({salesLeadMembersData?.presentedLeadsCount})</span>
                     </Center>
                   </Menu.Item>
                 </Menu>
@@ -475,140 +541,236 @@ const SalesLeadTabs: React.VFC<{
             >
               <Center
                 onClick={() => {
-                  setDemoTabState(null)
                   setSelectedRowKeys([])
+                  setDemoTabState(null)
+                  setContactedTabState(null)
+                  setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.demoReservation)}
-                <span>({refetchLoading ? <Spin size="small" /> : invitedLeads.length + presentedLeads.length})</span>
+                <span>
+                  (
+                  {refetchLoading ? (
+                    <Spin size="small" />
+                  ) : (
+                    (salesLeadMembersData?.invitedLeadsCount || 0) + (salesLeadMembersData?.presentedLeadsCount || 0)
+                  )}
+                  )
+                </span>
                 <DownOutlined className="mr-0 ml-1" />
               </Center>
             </Dropdown>
           }
         >
-          {null === demoTabState && activeKey === 'demo' && (
+          {null === demoTabState && activeKey === 'DEMO' && (
             <SalesLeadTable
               manager={manager}
-              leads={[...invitedLeads, ...presentedLeads]}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={
+                (salesLeadMembersData?.invitedLeadsCount || 0) + (salesLeadMembersData?.presentedLeadsCount || 0)
+              }
             />
           )}
-          {'invited' === demoTabState && (
+          {'INVITED' === demoTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={invitedLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.invitedLeadsCount || 0}
             />
           )}
-          {'presented' === demoTabState && (
+          {'PRESENTED' === demoTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={presentedLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.presentedLeadsCount || 0}
             />
           )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
-          key="completed"
+          key="COMPLETED"
           tab={
             <div
               onClick={() => {
                 setSelectedRowKeys([])
+                setDemoTabState(null)
+                setContactedTabState(null)
+                setSorter(undefined)
+                setPagination(undefined)
               }}
             >
               {formatMessage(salesMessages.completedLead)}
-              <span>({refetchLoading ? <Spin size="small" /> : completedLeads.length})</span>
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.completedLeadsCount})</span>
             </div>
           }
         >
-          {activeKey === 'completed' && (
+          {activeKey === 'COMPLETED' && (
             <SalesLeadTable
               variant="completed"
               manager={manager}
-              leads={completedLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.completedLeadsCount || 0}
             />
           )}
         </Tabs.TabPane>
 
         <Tabs.TabPane
-          key="signed"
+          key="SIGNED"
+          tab={
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+                setDemoTabState(null)
+                setContactedTabState(null)
+                setSorter(undefined)
+                setPagination(undefined)
+              }}
+            >
+              {formatMessage(salesMessages.signedLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.signedLeadsCount})</span>
+            </div>
+          }
+        >
+          {activeKey === 'SIGNED' && (
+            <SalesLeadTable
+              manager={manager}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.signedLeadsCount || 0}
+            />
+          )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          key="RESUBMISSION"
           tab={
             <div
               onClick={() => {
                 setSelectedRowKeys([])
               }}
             >
-              {formatMessage(salesMessages.signedLead)}
-              <span>({refetchLoading ? <Spin size="small" /> : signedLeads.length})</span>
+              {formatMessage(salesMessages.resubmissionLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.resubmissionCount})</span>
             </div>
           }
         >
-          {activeKey === 'signed' && (
+          {activeKey === 'RESUBMISSION' && (
             <SalesLeadTable
+              variant="resubmission"
               manager={manager}
-              leads={signedLeads}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={followedLeads}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.resubmissionCount || 0}
             />
           )}
         </Tabs.TabPane>
 
-        {closedLeads.length > 0 && (
+        {(salesLeadMembersData?.closedLeadsCount || 0) > 0 && (
           <Tabs.TabPane
-            key="closed"
+            key="CLOSED"
             tab={
               <div
                 onClick={() => {
                   setSelectedRowKeys([])
+                  setDemoTabState(null)
+                  setContactedTabState(null)
+                  setSorter(undefined)
+                  setPagination(undefined)
                 }}
               >
                 {formatMessage(salesMessages.closedLead)}
-                <span>({refetchLoading ? <Spin size="small" /> : closedLeads.length})</span>
+                <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.closedLeadsCount})</span>
               </div>
             }
           >
-            {activeKey === 'closed' && (
+            {activeKey === 'CLOSED' && (
               <SalesLeadTable
                 manager={manager}
-                leads={closedLeads}
+                leads={salesLeadMembersData?.salesLeadMembers || []}
                 onRefetch={async () => await refetch?.()}
                 isLoading={refetchLoading}
-                followedLeads={followedLeads}
+                followedLeads={salesLeadMembersData?.followedLeads || []}
                 selectedRowKeys={selectedRowKeys}
                 onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
                 onIsOpenAddListModalChange={setIsOpenAddListModal}
                 onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+                onTableChange={(pagination, filters, sorter) => {
+                  setPagination(pagination)
+                  setSorter(sorter)
+                  setSelectedRowKeys([])
+                }}
+                dataCount={salesLeadMembersData?.closedLeadsCount || 0}
               />
             )}
           </Tabs.TabPane>
@@ -661,7 +823,7 @@ const SalesLeadTabs: React.VFC<{
             }
           }}
           leadStatusCategories={leadStatusCategories}
-          leads={followedLeads} // TODO: 這邊要改成所有的leads
+          leads={salesLeadMembersData?.salesLeadMembers || []} // TODO: 這邊要改成所有的leads
         />
       )}
     </>

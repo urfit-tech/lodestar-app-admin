@@ -68,22 +68,22 @@ export const useMember = (memberId: string) => {
     loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data.member_by_pk.id || '',
-          name: data.member_by_pk.name || '',
-          email: data.member_by_pk.email || '',
-          username: data.member_by_pk.username || '',
-          pictureUrl: data.member_by_pk.picture_url || '',
-          description: data.member_by_pk.description || '',
-          abstract: data.member_by_pk.abstract || '',
-          title: data.member_by_pk.title || '',
-          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          creatorCategoryIds: data.member_by_pk.creator_categories.map(v => v.category_id),
-          memberTags: data.member_by_pk.member_tags.map(tag => ({
-            id: tag.id || '',
-            tagName: tag.tag_name || '',
-          })),
-          role: data.member_by_pk.role || '',
-        }
+        id: data.member_by_pk.id || '',
+        name: data.member_by_pk.name || '',
+        email: data.member_by_pk.email || '',
+        username: data.member_by_pk.username || '',
+        pictureUrl: data.member_by_pk.picture_url || '',
+        description: data.member_by_pk.description || '',
+        abstract: data.member_by_pk.abstract || '',
+        title: data.member_by_pk.title || '',
+        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+        creatorCategoryIds: data.member_by_pk.creator_categories.map(v => v.category_id),
+        memberTags: data.member_by_pk.member_tags.map(tag => ({
+          id: tag.id || '',
+          tagName: tag.tag_name || '',
+        })),
+        role: data.member_by_pk.role || '',
+      }
 
   return {
     loadingMember: loading,
@@ -210,72 +210,72 @@ export const useMemberAdmin = (memberId: string) => {
 
   const memberAdmin:
     | (MemberAdminProps & {
-        noAgreedContract: boolean
-        permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
-      })
+      noAgreedContract: boolean
+      permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
+    })
     | null =
     loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk.picture_url || null,
-          username: data.member_by_pk.username,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          star: data.member_by_pk.star,
-          role: data.member_by_pk.role as UserRole,
-          title: data.member_by_pk.title || '',
-          description: data.member_by_pk.description || '',
-          abstract: data.member_by_pk.abstract || '',
-          createdAt: new Date(data.member_by_pk.created_at),
-          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
-          assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
-          manager: data.member_by_pk.manager
-            ? {
-                id: data.member_by_pk.manager.id,
-                email: data.member_by_pk.manager.email,
-                name: data.member_by_pk.manager.name,
-                avatarUrl: data.member_by_pk.manager.picture_url || null,
-              }
-            : null,
-          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => ({
-            isValid: v.is_valid,
-            phoneNumber: v.phone,
-          })),
-          lastRejectedNote: data.member_by_pk.member_notes[0]
-            ? {
-                author: {
-                  name: data.member_by_pk.member_notes[0].author.name,
-                },
-                description: data.member_by_pk.member_notes[0].description || '',
-                rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
-              }
-            : null,
-          noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
-          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: Math.max(
-            sum(
-              data.member_by_pk.order_logs.map(
-                orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
-              ),
+        id: data.member_by_pk.id,
+        avatarUrl: data.member_by_pk.picture_url || null,
+        username: data.member_by_pk.username,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        star: data.member_by_pk.star,
+        role: data.member_by_pk.role as UserRole,
+        title: data.member_by_pk.title || '',
+        description: data.member_by_pk.description || '',
+        abstract: data.member_by_pk.abstract || '',
+        createdAt: new Date(data.member_by_pk.created_at),
+        loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+        assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
+        manager: data.member_by_pk.manager
+          ? {
+            id: data.member_by_pk.manager.id,
+            email: data.member_by_pk.manager.email,
+            name: data.member_by_pk.manager.name,
+            avatarUrl: data.member_by_pk.manager.picture_url || null,
+          }
+          : null,
+        tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+        phones: data.member_by_pk.member_phones.map(v => ({
+          isValid: v.is_valid,
+          phoneNumber: v.phone,
+        })),
+        lastRejectedNote: data.member_by_pk.member_notes[0]
+          ? {
+            author: {
+              name: data.member_by_pk.member_notes[0].author.name,
+            },
+            description: data.member_by_pk.member_notes[0].description || '',
+            rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
+          }
+          : null,
+        noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
+        permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
+        consumption: Math.max(
+          sum(
+            data.member_by_pk.order_logs.map(
+              orderLog => orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
             ),
           ),
-          coins: coinStatusRemainingData?.coin_status_aggregate
-            ? coinStatusRemainingData?.coin_status_aggregate?.aggregate?.sum?.remaining
-            : 0,
-          categories: data.member_by_pk.member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-          permissionGroups: data.member_by_pk.member_permission_groups.map(v => ({
-            id: v.permission_group.id,
-            name: v.permission_group.name,
-          })),
-          lastMemberNoteAnswered: data.member_by_pk.last_member_note_answered,
-          lastMemberNoteCalled: data.member_by_pk.last_member_note_called,
-        }
+        ),
+        coins: coinStatusRemainingData?.coin_status_aggregate
+          ? coinStatusRemainingData?.coin_status_aggregate?.aggregate?.sum?.remaining
+          : 0,
+        categories: data.member_by_pk.member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+        permissionGroups: data.member_by_pk.member_permission_groups.map(v => ({
+          id: v.permission_group.id,
+          name: v.permission_group.name,
+        })),
+        lastMemberNoteAnswered: data.member_by_pk.last_member_note_answered,
+        lastMemberNoteCalled: data.member_by_pk.last_member_note_called,
+      }
 
   return {
     loadingMemberAdmin: loading,
@@ -306,10 +306,10 @@ export const useMemberNotesAdmin = (
       permissions.VIEW_ALL_MEMBER_NOTE || permissions.MEMBER_NOTE_ADMIN
         ? undefined
         : {
-            id: {
-              _eq: currentMemberId,
-            },
+          id: {
+            _eq: currentMemberId,
           },
+        },
     member: filters?.member ? { id: { _eq: filters.member } } : undefined,
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
@@ -532,21 +532,21 @@ export const usePublicMember = (memberId: string) => {
   const member: MemberPublicProps =
     loading || error || !data
       ? {
-          id: '',
-          name: '',
-          username: '',
-          pictureUrl: '',
-          description: '',
-          role: '',
-        }
+        id: '',
+        name: '',
+        username: '',
+        pictureUrl: '',
+        description: '',
+        role: '',
+      }
       : data.member_public.map(member => ({
-          id: member.id || '',
-          name: member.name || '',
-          username: member.name || '',
-          pictureUrl: member.picture_url || '',
-          description: member.description || '',
-          role: member.role || '',
-        }))[0]
+        id: member.id || '',
+        name: member.name || '',
+        username: member.name || '',
+        pictureUrl: member.picture_url || '',
+        description: member.description || '',
+        role: member.role || '',
+      }))[0]
 
   return {
     member,
@@ -607,10 +607,10 @@ export const useMemberRoleCount = (
       permissionGroup: filter.permissionGroup ? `${filter.permissionGroup}` : undefined,
       properties: filter.properties?.length
         ? filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              [property.id]: `%${property.value}%`,
-            }))
+          .filter(property => property.value)
+          .map(property => ({
+            [property.id]: `%${property.value}%`,
+          }))
         : undefined,
     }
 
@@ -626,48 +626,48 @@ export const useMemberRoleCount = (
 
   useEffect(() => {
     setLoading(true)
-    ;(async () => {
-      try {
-        const { data } = await fetchMemberRoleCount(filter)
-        if (data) {
-          const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0)
-          const roleCounts: { 'app-owner': number; 'content-creator': number; 'general-member': number } = {
-            'app-owner': 0,
-            'content-creator': 0,
-            'general-member': 0,
+      ; (async () => {
+        try {
+          const { data } = await fetchMemberRoleCount(filter)
+          if (data) {
+            const totalMembers = data.reduce((sum: number, item: { count: number }) => sum + item.count, 0)
+            const roleCounts: { 'app-owner': number; 'content-creator': number; 'general-member': number } = {
+              'app-owner': 0,
+              'content-creator': 0,
+              'general-member': 0,
+            }
+            data.forEach((item: { role: 'app-owner' | 'content-creator' | 'general-member'; count: number }) => {
+              roleCounts[item.role] = item.count
+            })
+            setMenu([
+              {
+                role: null,
+                count: totalMembers,
+                intlKey: commonMessages.label.allMembers,
+              },
+              {
+                role: 'app-owner',
+                count: roleCounts['app-owner'],
+                intlKey: commonMessages.label.appOwner,
+              },
+              {
+                role: 'content-creator',
+                count: roleCounts['content-creator'],
+                intlKey: commonMessages.label.contentCreator,
+              },
+              {
+                role: 'general-member',
+                count: roleCounts['general-member'],
+                intlKey: commonMessages.label.generalMember,
+              },
+            ])
           }
-          data.forEach((item: { role: 'app-owner' | 'content-creator' | 'general-member'; count: number }) => {
-            roleCounts[item.role] = item.count
-          })
-          setMenu([
-            {
-              role: null,
-              count: totalMembers,
-              intlKey: commonMessages.label.allMembers,
-            },
-            {
-              role: 'app-owner',
-              count: roleCounts['app-owner'],
-              intlKey: commonMessages.label.appOwner,
-            },
-            {
-              role: 'content-creator',
-              count: roleCounts['content-creator'],
-              intlKey: commonMessages.label.contentCreator,
-            },
-            {
-              role: 'general-member',
-              count: roleCounts['general-member'],
-              intlKey: commonMessages.label.generalMember,
-            },
-          ])
+        } catch (error) {
+          setError(error)
+        } finally {
+          setLoading(false)
         }
-      } catch (error) {
-        setError(error)
-      } finally {
-        setLoading(false)
-      }
-    })()
+      })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, appId, JSON.stringify(filter)])
 
@@ -734,32 +734,32 @@ export const useMembers = (authToken: string, limit: number, filter?: FieldFilte
 
   useEffect(() => {
     setLoading(true)
-    ;(async () => {
-      try {
-        const res = await fetchMembers(filter, {
-          limit,
-        })
-        setMembers(() =>
-          res.data.map(v => ({
-            id: v.id,
-            pictureUrl: v.picture_url,
-            name: v.name,
-            email: v.email,
-            role: v.role,
-            createdAt: new Date(v.created_at),
-            username: v.username,
-            loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-            managerId: v.manager_id,
-          })),
-        )
-        setPrevToken(() => res.cursor.beforeCursor)
-        setNextToken(() => res.cursor.afterCursor)
-      } catch (error) {
-        setError(error)
-      } finally {
-        setLoading(false)
-      }
-    })()
+      ; (async () => {
+        try {
+          const res = await fetchMembers(filter, {
+            limit,
+          })
+          setMembers(() =>
+            res.data.map(v => ({
+              id: v.id,
+              pictureUrl: v.picture_url,
+              name: v.name,
+              email: v.email,
+              role: v.role,
+              createdAt: new Date(v.created_at),
+              username: v.username,
+              loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+              managerId: v.manager_id,
+            })),
+          )
+          setPrevToken(() => res.cursor.beforeCursor)
+          setNextToken(() => res.cursor.afterCursor)
+        } catch (error) {
+          setError(error)
+        } finally {
+          setLoading(false)
+        }
+      })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, limit, JSON.stringify(filter)])
 
@@ -940,17 +940,17 @@ export const useMemberCollection = (members: MemberCollectionProps[]) => {
             .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
             .map(memberOrderProduct => memberOrderProduct.price),
         ) -
-          sum(
-            memberOrderDiscountPrice
-              .filter(memberOrderDiscount => memberOrderDiscount.memberId === v.id)
-              .map(memberOrderDiscount => memberOrderDiscount.price),
-          ),
+        sum(
+          memberOrderDiscountPrice
+            .filter(memberOrderDiscount => memberOrderDiscount.memberId === v.id)
+            .map(memberOrderDiscount => memberOrderDiscount.price),
+        ),
       ),
       manager: managerInfoData?.member.find(manager => manager.id === v.managerId)
         ? {
-            id: managerInfoData?.member.find(manager => manager.id === v.managerId)?.id || '',
-            name: managerInfoData?.member.find(manager => manager.id === v.managerId)?.name || '',
-          }
+          id: managerInfoData?.member.find(manager => manager.id === v.managerId)?.id || '',
+          name: managerInfoData?.member.find(manager => manager.id === v.managerId)?.name || '',
+        }
         : null,
       categories:
         memberCategoriesData?.member_category
@@ -1006,12 +1006,12 @@ export const useMemberSummaryCollection = () => {
     loading || error || !data
       ? []
       : data.member.map(member => ({
-          id: member.id,
-          avatarUrl: member.picture_url || null,
-          name: member.name,
-          username: member.username,
-          email: member.email,
-        }))
+        id: member.id,
+        avatarUrl: member.picture_url || null,
+        name: member.name,
+        username: member.username,
+        email: member.email,
+      }))
 
   return {
     loadingMembers: loading,
@@ -1125,6 +1125,17 @@ export const useMutateMemberProperty = () => {
     }
   `)
   return { updateMemberProperty }
+}
+
+export const useDeleteMemberProperty = () => {
+  const [deleteMemberProperty] = useMutation<hasura.deleteMemberProperties, hasura.deleteMemberPropertiesVariables>(gql`
+    mutation deleteMemberProperties($memberIds: [String!], $propertyId: uuid!) {
+      delete_member_property(where: { member_id: { _in: $memberIds }, property_id: { _eq: $propertyId } }) {
+        affected_rows
+      }
+    }
+  `)
+  return { deleteMemberProperty }
 }
 
 export const useMemberPermissionGroups = (memberId: string) => {

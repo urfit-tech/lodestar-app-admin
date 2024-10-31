@@ -12,6 +12,8 @@ export type Meet = {
   gateway: string
   serviceId: string
   meetMembers: MeetMember[]
+  recordingUrl: string | null
+  recordingType: string | null
 }
 export type MeetMember = {
   id: String
