@@ -8,7 +8,7 @@ import { CommonTitleMixin, MultiLineTruncationMixin } from 'lodestar-app-element
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { groupBy } from 'ramda'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -209,6 +209,7 @@ const AppointmentRescheduleModal: React.VFC<
         centered
         footer={null}
         visible={rescheduleModalVisible && rescheduleAppointment.status === 'period'}
+        onCancel={handleCancel}
       >
         <div className="d-flex align-self-start mb-4">
           <div className="flex-shrink-0">
@@ -248,19 +249,20 @@ const AppointmentRescheduleModal: React.VFC<
         ) : (
           <>
             {Object.values(periodCollections).map(periods => {
+              if (!periods || periods.length === 0) return null
               return (
-                <>
-                  <StyledScheduleTitle>{moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
+                <Fragment key={periods?.[0].startedAt.toISOString()}>
+                  <StyledScheduleTitle>{moment(periods?.[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledScheduleTitle>
                   <Flex alignItems="center" justifyContent="flex-start" flexWrap="wrap" mb="2rem">
                     {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
                       .map(periods =>
-                        periods.sort(
+                        periods?.sort(
                           (a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime(),
                         ),
                       )
-                      .map(periods => periods[0])
+                      .map(periods => periods?.[0])
                       .map((period, index) => (
-                        <div key={`${period.appointmentPlanId}-${index}`}>
+                        <div key={`${period?.appointmentPlanId}-${index}`}>
                           <AppointmentPeriodItem
                             creatorId={appointmentPlan.creatorId}
                             appointmentPlan={{
@@ -269,19 +271,19 @@ const AppointmentRescheduleModal: React.VFC<
                               defaultMeetGateway: appointmentPlan.defaultMeetGateway,
                             }}
                             period={{
-                              startedAt: period.startedAt,
-                              endedAt: period.endedAt,
+                              startedAt: period?.startedAt || null,
+                              endedAt: period?.endedAt || null,
                             }}
                             services={services}
                             loadingServices={loadingServices}
-                            isPeriodExcluded={period.isExcluded}
-                            isEnrolled={period.targetMemberBooked}
+                            isPeriodExcluded={period?.isExcluded}
+                            isEnrolled={period?.targetMemberBooked}
                             onClick={() => {
-                              if (!period.isBookedReachLimit && !period.targetMemberBooked && !period.isExcluded) {
+                              if (!period?.isBookedReachLimit && !period?.targetMemberBooked && !period?.isExcluded) {
                                 setRescheduleAppointment({
                                   status: 'confirm',
-                                  periodStartedAt: period.startedAt,
-                                  periodEndedAt: period.endedAt,
+                                  periodStartedAt: period?.startedAt || null,
+                                  periodEndedAt: period?.endedAt || null,
                                 })
                               }
                             }}
@@ -289,7 +291,7 @@ const AppointmentRescheduleModal: React.VFC<
                         </div>
                       ))}
                   </Flex>
-                </>
+                </Fragment>
               )
             })}
           </>

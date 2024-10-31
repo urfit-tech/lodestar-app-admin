@@ -1,12 +1,13 @@
-import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { Meet } from '../../types/meet'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { StyledModalTitle } from '../common'
 import appointmentMessages from './translation'
@@ -25,43 +26,80 @@ const StyledLabel = styled.div`
 const AppointmentConfigureMeetingRoomModal: React.VFC<
   AdminModalProps & {
     appointmentEnrollmentId: string
+    appointmentId: string
+    meetingLinkUrl: string
+    meetId: string
+    meet: Meet | null
+    memberId: string
     onRefetch?: () => void
     orderProduct: { id: string; options: any }
+    onModalVisibleTypeChange: (type: '') => void
   }
-> = ({ appointmentEnrollmentId, onRefetch, orderProduct, ...props }) => {
+> = ({
+  appointmentId,
+  memberId,
+  appointmentEnrollmentId,
+  meetingLinkUrl,
+  meetId,
+  meet,
+  onRefetch,
+  onModalVisibleTypeChange,
+  orderProduct,
+  ...props
+}) => {
+  const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const { formatMessage } = useIntl()
+  const { insertMeet } = useMutateMeet()
+  const { updateMeetMember } = useMutateMeetMember()
 
-  const [updateAppointmentJoinUrl] = useMutation<
-    hasura.UPDATE_APPOINTMENT_JOIN_URL,
-    hasura.UPDATE_APPOINTMENT_JOIN_URLVariables
-  >(UPDATE_APPOINTMENT_JOIN_URL)
-
-  const handleSubmit = (onSuccess: () => void) => {
-    form
-      .validateFields()
-      .then(() => {
-        setLoading(true)
-        const values = form.getFieldsValue()
-        updateAppointmentJoinUrl({
-          variables: {
-            orderProductId: orderProduct.id,
-            data: {
-              ...orderProduct.options,
+  const handleSubmit = async (onSuccess: () => void) => {
+    try {
+      await form.validateFields()
+      setLoading(true)
+      const values = form.getFieldsValue()
+      const { data: insertMeetData } = await insertMeet({
+        variables: {
+          meet: {
+            started_at: meet?.startedAt,
+            ended_at: meet?.endedAt,
+            nbf_at: meet?.nbfAt,
+            exp_at: meet?.expAt,
+            auto_recording: false,
+            target: appointmentId,
+            type: 'appointmentPlan',
+            app_id: appId,
+            host_member_id: meet?.hostMemberId,
+            gateway: 'jitsi',
+            service_id: null,
+            options: {
+              startUrl: values.joinUrl,
               joinUrl: values.joinUrl,
             },
           },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onSuccess()
-            onRefetch?.()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+        },
       })
-      .catch(() => {})
+
+      await updateMeetMember({
+        variables: {
+          meetId: meet?.id,
+          memberId,
+          meetMemberData: {
+            meet_id: insertMeetData?.insert_meet_one?.id,
+          },
+        },
+      })
+
+      message.success(formatMessage(commonMessages.event.successfullySaved))
+      onSuccess()
+      form.resetFields()
+      onRefetch?.()
+    } catch (err) {
+      handleError(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -69,12 +107,23 @@ const AppointmentConfigureMeetingRoomModal: React.VFC<
       width={520}
       centered
       footer={null}
-      renderFooter={({ setVisible }) => (
+      onCancel={() => onModalVisibleTypeChange('')}
+      renderFooter={() => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <Button className="mr-2" onClick={() => onModalVisibleTypeChange('')}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={() => {
+              if (form.getFieldValue('joinUrl') !== meet?.options?.startUrl) {
+                handleSubmit(() => onModalVisibleTypeChange(''))
+              } else {
+                onModalVisibleTypeChange('')
+              }
+            }}
+          >
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
@@ -90,7 +139,7 @@ const AppointmentConfigureMeetingRoomModal: React.VFC<
       <Form
         form={form}
         initialValues={{
-          joinUrl: orderProduct.options?.joinUrl,
+          joinUrl: meetingLinkUrl,
         }}
       >
         <Form.Item name="joinUrl">
@@ -100,13 +149,5 @@ const AppointmentConfigureMeetingRoomModal: React.VFC<
     </AdminModal>
   )
 }
-
-const UPDATE_APPOINTMENT_JOIN_URL = gql`
-  mutation UPDATE_APPOINTMENT_JOIN_URL($orderProductId: uuid!, $data: jsonb) {
-    update_order_product(where: { id: { _eq: $orderProductId } }, _set: { options: $data }) {
-      affected_rows
-    }
-  }
-`
 
 export default AppointmentConfigureMeetingRoomModal

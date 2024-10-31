@@ -66,6 +66,7 @@ type AppointmentPlanProps = {
   currencyId: string
   enrollments: number
   isPublished: boolean
+  meetingLinkUrl: string
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
@@ -215,6 +216,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GetAppointmentPlanCollection
           price
           currency_id
           published_at
+          meeting_link_url
         }
       }
     `,
@@ -240,6 +242,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GetAppointmentPlanCollection
       enrollments: 0,
       // enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate?.count || 0,
       isPublished: !!appointmentPlan.published_at,
+      meetingLinkUrl: appointmentPlan.meeting_link_url || '',
     })) || []
 
   return {
