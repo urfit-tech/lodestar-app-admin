@@ -59,8 +59,6 @@ type FieldProps = {
   skipIssueInvoice: boolean
   uniformTitle: string
   invoiceEmail: string
-  language: string
-  destinationEmail: string
 }
 
 type ContractInfo = {
@@ -73,10 +71,6 @@ type ContractInfo = {
       name: string
       placeholder: string
       value: string | null
-    }[]
-    agreedAndUnexpiredContracts: {
-      ended_at: Date
-      type: string
     }[]
   }
   contracts: {
@@ -178,15 +172,9 @@ const MemberContractCreationPage: React.VFC = () => {
               paymentMethod: paymentMethods[0],
               paymentMode: paymentModes[0],
               invoiceEmail: member.email,
-              destinationEmail: member.email,
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
-              if (values.startedAt) {
-                form?.setFieldsValue({
-                  endedAt: moment(values.startedAt).add(1, 'y').endOf('day'),
-                })
-              }
             }}
             products={products?.products || []}
             contracts={contracts}
@@ -260,14 +248,6 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_contracts(
-            where: { agreed_at: { _is_null: false }, ended_at: { _gt: "now()" }, revoked_at: { _is_null: true } }
-          ) {
-            ended_at
-            contract {
-              options
-            }
-          }
           member_properties {
             id
             value
@@ -311,10 +291,6 @@ const useContractInfo = (appId: string, memberId: string) => {
               name: p.name,
               placeholder: p.placeholder || '',
               value: data.member_by_pk?.member_properties.find(mp => mp.property_id === p.id)?.value || null,
-            })),
-            agreedAndUnexpiredContracts: data.member_by_pk.member_contracts.map(c => ({
-              ended_at: c.ended_at,
-              type: c.contract.options.type,
             })),
           },
           contracts: data.contract.map(c => ({
