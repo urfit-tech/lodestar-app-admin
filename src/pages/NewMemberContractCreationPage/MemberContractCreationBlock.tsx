@@ -204,13 +204,7 @@ const MemberContractCreationBlock: React.FC<{
 
   const handleMemberContractCreate = async () => {
     const isContract =
-      !isMemberTypeBG &&
-      selectedProducts.filter(
-        p =>
-          p.productId.includes('AppointmentPlan_') &&
-          ((p.options.language === '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'teacher')) ||
-            (p.options.language !== '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'normal'))),
-      ).length > 0
+      !isMemberTypeBG && selectedProducts.some(product => product.productId.includes('AppointmentPlan_'))
     if (isContract && !fieldValue.contractId) {
       message.warn('請選擇合約')
       return
@@ -311,9 +305,7 @@ const MemberContractCreationBlock: React.FC<{
     }
     const options = {
       ...fieldValue,
-      language: fieldValue.language
-        ? fieldValue.language
-        : contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
+      language: contracts.find(c => c.id === fieldValue.contractId)?.options?.language || 'zh-tw',
       isBG: isMemberTypeBG,
       executor: sales.find(s => s.id === fieldValue.executorId),
     }
@@ -325,51 +317,50 @@ const MemberContractCreationBlock: React.FC<{
       installmentPlans,
     }
     setLoading(true)
-    let memberContractId
 
     if (isContract) {
-      try {
-        const addMemberContractResult = await addMemberContract({
-          variables: {
+      addMemberContract({
+        variables: {
+          memberId: member.id,
+          contractId: fieldValue.contractId,
+          startedAt: moment(fieldValue.startedAt).add(1, 'days'),
+          endedAt: fieldValue.endedAt,
+          authorId: fieldValue.executorId,
+          values: {
             memberId: member.id,
-            contractId: fieldValue.contractId,
-            startedAt: moment(fieldValue.startedAt).add(1, 'days'),
-            endedAt: fieldValue.endedAt,
-            authorId: fieldValue.executorId,
-            values: {
-              memberId: member.id,
-              invoice: invoiceInfo,
-              price: totalPrice,
-              orderProducts: selectedProducts.map(v => {
-                return {
-                  name: v.title,
-                  price: v.price,
-                  totalPrice: v.totalPrice,
-                  started_at: moment(fieldValue.startedAt).add(1, 'days'),
-                  ended_at: fieldValue.endedAt,
-                  product_id: v.productId,
-                  options: { quantity: v.amount, ...v.options },
-                  delivered_at: new Date(),
-                }
-              }),
-              paymentOptions,
-              maxLeaveDays: Math.ceil(
-                selectedProducts
-                  .filter(p => p.productId.includes('AppointmentPlan_'))
-                  .reduce((sum, product) => sum + product.amount, 0) * 0.1,
-              ),
-              options,
-            },
+            invoice: invoiceInfo,
+            price: totalPrice,
+            orderProducts: selectedProducts.map(v => {
+              return {
+                name: v.title,
+                price: v.price,
+                totalPrice: v.totalPrice,
+                started_at: moment(fieldValue.startedAt).add(1, 'days'),
+                ended_at: fieldValue.endedAt,
+                product_id: v.productId,
+                options: { quantity: v.amount, ...v.options },
+                delivered_at: new Date(),
+              }
+            }),
+            paymentOptions,
+            maxLeaveDays: Math.ceil(
+              selectedProducts
+                .filter(p => p.productId.includes('AppointmentPlan_'))
+                .reduce((sum, product) => sum + product.amount, 0) * 0.1,
+            ),
+            options,
           },
+        },
+      })
+        .then(({ data }) => {
+          const contractId = data?.insert_member_contract_one?.id
+          setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
+          message.success('成功產生合約')
         })
-        memberContractId = addMemberContractResult.data?.insert_member_contract_one?.id
-        // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
-        message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
-      } catch (error) {
-        message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${error}`)
-      } finally {
-        setLoading(false)
-      }
+        .catch(err =>
+          message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${err}`),
+        )
+        .finally(() => setLoading(false))
     }
     let productOptions: { [key: string]: any } = {}
 
@@ -386,13 +377,11 @@ const MemberContractCreationBlock: React.FC<{
           invoice: invoiceInfo,
           memberId: member.id,
           invoiceGatewayId: paymentCompany?.invoiceGatewayId,
-          skipPayForm: true,
           options: {
             ...options,
             ...productOptions,
             installmentPlans,
             paymentMode,
-            memberContractId,
           },
         },
         {
@@ -402,39 +391,23 @@ const MemberContractCreationBlock: React.FC<{
       .then(res => {
         if (res.data.code === 'SUCCESS') {
           message.success('訂單建立成功')
-          axios
-            .post(
-              `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
-              {
-                memberId: member.id,
-                executorId: fieldValue.executorId,
-                destinationEmail: fieldValue.destinationEmail,
-                language: fieldValue.language,
-              },
-              {
-                headers: { authorization: `Bearer ${authToken}` },
-              },
+          const paymentNo = res.data.result.paymentNo
+          const payToken = res.data.result.payToken
+          const orderId = res.data.result.orderId
+          if (paymentGateway.includes('spgateway') && orderId) {
+            setPaymentUrl(
+              paymentNo
+                ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+                : `${window.origin}/orders/${orderId}?tracking=1`,
             )
-            .then(res => {
-              message.success('信件已發送成功')
-            })
-          // const paymentNo = res.data.result.paymentNo
-          // const payToken = res.data.result.payToken
-          // const orderId = res.data.result.orderId
-          // if (paymentGateway.includes('spgateway') && orderId) {
-          //   setPaymentUrl(
-          //     paymentNo
-          //       ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
-          //       : `${window.origin}/orders/${orderId}?tracking=1`,
-          //   )
-          // }
-          // if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
-          //   setPaymentUrl(
-          //     paymentNo
-          //       ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
-          //       : `${window.origin}/orders/${orderId}?tracking=1`,
-          //   )
-          // }
+          }
+          if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
+            setPaymentUrl(
+              paymentNo
+                ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
+                : `${window.origin}/orders/${orderId}?tracking=1`,
+            )
+          }
         }
       })
       .catch(error => {
