@@ -1497,6 +1497,7 @@ export const permissionGroupsAdminMessages = {
 }
 
 export const salesMessages = defineMessages({
+  callbackedLead: { id: 'sales.label.callbackedLead', defaultMessage: '名單回撥' },
   answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通' },
   demoReservation: { id: 'sales.label.demoReservation', defaultMessage: '預約Demo' },
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '未接通' },

@@ -3534,5 +3534,9 @@
   "voucher.status.redeemable": "Redeemable",
   "voucher.text.fromNow": "From now on",
   "voucher.text.items": "items",
-  "voucher.text.noUsePeriod": "No UsePeriod"
+  "voucher.text.noUsePeriod": "No UsePeriod",
+  "sales.label.callbackedLead": "callback",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "Leave the tab",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "Are you sure to leave this tab?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "Left the tab successfully"
 }

@@ -3470,5 +3470,9 @@
   "voucher.status.redeemable": "可兌換",
   "voucher.text.fromNow": "即日起",
   "voucher.text.items": "個項目",
-  "voucher.text.noUsePeriod": "無使用期限"
+  "voucher.text.noUsePeriod": "無使用期限",
+  "sales.label.callbackedLead": "回撥",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "離開此標籤",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "您確定要離開此標籤嗎？",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "成功離開標籤"
 }

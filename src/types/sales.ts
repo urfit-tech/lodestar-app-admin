@@ -217,4 +217,5 @@ export type SalesLeadMember = {
   latestNoteDescription: string
   categoryNames: string[]
   status: LeadStatus
+  callbackedAt: Date | null
 }
