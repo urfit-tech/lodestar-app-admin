@@ -1,9 +1,8 @@
 import { DragOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
-import { find, propEq } from 'ramda'
+import { filter, head, map, pipe, prop, propEq } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DraggableItemCollectionBlock from './DraggableItemCollectionBlock'
@@ -63,9 +62,10 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
     >
       <DraggableItemCollectionBlock
         items={sortingItems.map(v => ({ id: v.id, description: v.title }))}
-        onSort={newItems => {
-          setSortingItems(newItems.map(v => find<typeof items[0]>(propEq('id', v.id))(sortingItems)).filter(notEmpty))
-        }}
+        onSort={pipe(
+          map((pipe as any)(prop('id'), (id: string) => filter(propEq(id, 'id'))(sortingItems), head)),
+          setSortingItems,
+        )}
       />
     </AdminModal>
   )
