@@ -49,7 +49,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
       orderBy:
         projectType === 'portfolio'
           ? { published_at: 'desc' as hasura.order_by }
-          : [{ published_at: 'desc' as hasura.order_by }, { position: 'asc' as hasura.order_by }],
+          : { position: 'asc' as hasura.order_by },
       withSortingButton: true,
     },
     {
