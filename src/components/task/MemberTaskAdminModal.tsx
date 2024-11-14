@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -607,21 +608,25 @@ const MemberTaskAdminModal: React.FC<
             <Form.Item name="meetingGateway">
               <Radio.Group>
                 <Stack direction="row">
-                  <Radio
-                    value="google-meet"
-                    // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
-                    // disabled={invalidGateways.includes('google-meet')}
-                    onChange={e => setMeetingGateWay(e.target.value)}
-                  >
-                    Google meet
-                  </Radio>
-                  <Radio
-                    value="zoom"
-                    disabled={invalidGateways.includes('zoom')}
-                    onChange={e => setMeetingGateWay(e.target.value)}
-                  >
-                    Zoom
-                  </Radio>
+                  {uniq(services.map(service => service.gateway)).includes('google-meet') ? (
+                    <Radio
+                      value="google-meet"
+                      // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
+                      // disabled={invalidGateways.includes('google-meet')}
+                      onChange={e => setMeetingGateWay(e.target.value)}
+                    >
+                      Google meet
+                    </Radio>
+                  ) : null}
+                  {uniq(services.map(service => service.gateway)).includes('zoom') ? (
+                    <Radio
+                      value="zoom"
+                      disabled={invalidGateways.includes('zoom')}
+                      onChange={e => setMeetingGateWay(e.target.value)}
+                    >
+                      Zoom
+                    </Radio>
+                  ) : null}
                   <Radio value="jitsi" onChange={e => setMeetingGateWay(e.target.value)}>
                     Jitsi
                   </Radio>
