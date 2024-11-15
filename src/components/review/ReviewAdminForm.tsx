@@ -1,9 +1,8 @@
-import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, message, Radio, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useReviewable } from 'lodestar-app-element/src/hooks/review'
+import { useAdaptedReviewable } from 'lodestar-app-element/src/hooks/review'
 import { FC, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -22,18 +21,13 @@ const ReviewAdminForm: FC<{
   path: string
   onRefetch?: () => void
 }> = ({ path, onRefetch }) => {
-  const {
-    id: appId,
-    enabledModules: { customer_review },
-  } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
   const [loading, setLoading] = useState(false)
 
-  const { data, loading: loadingAdmin } = useReviewable(path, appId)
-
-  const reviewableAdmin = data?.reviewable?.[0] ?? undefined
+  const { data: reviewable, loading: reviewableLoading } = useAdaptedReviewable(path, appId)
 
   const [upsertReviewable] = useMutation<hasura.UPSERT_REVIEWABLE, hasura.UPSERT_REVIEWABLEVariables>(UPSERT_REVIEWABLE)
 
@@ -54,11 +48,11 @@ const ReviewAdminForm: FC<{
       .finally(() => setLoading(false))
   }
 
-  if (!path || !appId || loadingAdmin) {
+  if (!path || !appId || reviewableLoading) {
     return <Skeleton active />
   }
 
-  return !customer_review ? (
+  return !enabledModules.customer_review ? (
     <></>
   ) : (
     <AdminBlock>
@@ -71,9 +65,9 @@ const ReviewAdminForm: FC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          isWritable: reviewableAdmin?.is_writable ?? true,
-          isItemViewable: reviewableAdmin?.is_item_viewable ?? true,
-          isScoreViewable: reviewableAdmin?.is_score_viewable ?? true,
+          isWritable: reviewable?.is_writable,
+          isItemViewable: reviewable?.is_item_viewable,
+          isScoreViewable: reviewable?.is_score_viewable,
         }}
         onFinish={handleSubmit}
       >
@@ -81,7 +75,6 @@ const ReviewAdminForm: FC<{
           label={
             <span className="d-flex align-items-center">
               {formatMessage(ReviewAdminFormMessages.option.isWritable)}
-              <QuestionCircleFilled className="ml-2" />
             </span>
           }
           name="isWritable"
@@ -96,7 +89,6 @@ const ReviewAdminForm: FC<{
           label={
             <span className="d-flex align-items-center">
               {formatMessage(ReviewAdminFormMessages.option.isItemViewable)}
-              <QuestionCircleFilled className="ml-2" />
             </span>
           }
           name="isItemViewable"
@@ -111,7 +103,6 @@ const ReviewAdminForm: FC<{
           label={
             <span className="d-flex align-items-center">
               {formatMessage(ReviewAdminFormMessages.option.isScoreViewable)}
-              <QuestionCircleFilled className="ml-2" />
             </span>
           }
           name="isScoreViewable"
