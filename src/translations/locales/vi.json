@@ -1830,6 +1830,7 @@
   "member.label.線上課程服務約款": "Hợp đồng dịch vụ khóa học trực tuyến",
   "member.text.markAsRejection": "Đánh dấu là từ chối",
   "member.text.removeMember": " Trạng thái của sinh viên sẽ được thay đổi thành Bị Từ chối và bị xóa khỏi danh sách\" Đang phát triển \". ",
+  "member.text.urlSpacingHint": "Nếu văn bản có chứa URL, hãy thêm khoảng trắng sau URL",
   "member.ui.memberReject": "Thành viên bị Từ chối ",
   "member.ui.switchCalendar": " Chuyển Chế độ Lịch ",
   "member.ui.switchTable": " Chuyển Chế độ Danh sách ",

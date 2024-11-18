@@ -1820,6 +1820,7 @@
   "member.label.線上課程服務約款": "온라인 강의 서비스 약관",
   "member.text.markAsRejection": "거부로 표시",
   "member.text.removeMember": "회원 상태가 거부로 변경되고 '개발 중' 목록에서 삭제됩니다.",
+  "member.text.urlSpacingHint": "문자에 URL이 포함된 경우 URL 뒤에 공백을 추가하세요",
   "member.ui.memberReject": "회원 거부",
   "member.ui.switchCalendar": "캘린더 모드로 전환",
   "member.ui.switchTable": "목록 모드로 전환",
