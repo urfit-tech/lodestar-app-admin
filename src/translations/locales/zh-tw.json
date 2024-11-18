@@ -1804,6 +1804,7 @@
   "member.label.線上課程服務約款": "線上課程服務約款",
   "member.text.markAsRejection": "標註為拒絕",
   "member.text.removeMember": "學員狀態將改為已拒絕，並從「開發中」的名單內抽離。",
+  "member.text.urlSpacingHint": "若文字中有含網址，請於網址後方加上空格",
   "member.ui.memberReject": "學員拒絕",
   "member.ui.switchCalendar": "切換月曆模式",
   "member.ui.switchTable": "切換列表模式",

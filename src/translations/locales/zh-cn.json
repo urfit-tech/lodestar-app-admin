@@ -1782,6 +1782,7 @@
   "member.text.markAsRejection": "标注为拒绝",
   "member.text.removeMember": "学员状态将改为已拒绝，并从「开发中」的名单内抽离。 ",
   "member.text.deleteMemberConfirmation": "会员一经删除即不可恢复，会将该会员的相关资料与权限移除，确定要删除吗？",
+  "member.text.urlSpacingHint": "若文字中包含网址，请在网址后方加上空格",
   "member.ui.memberReject": "学员拒绝",
   "member.ui.switchCalendar": "切换月历模式",
   "member.ui.switchTable": "切换列表模式",

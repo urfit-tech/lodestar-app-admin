@@ -1778,6 +1778,7 @@
   "member.label.線上課程服務約款": "Kontrak layanan kursus online",
   "member.text.markAsRejection": "Tandai Sebagai Penolakan",
   "member.text.removeMember": "Status siswa akan diubah menjadi Ditolak dan dihapus dari daftar \"Dalam Pengembangan\".",
+  "member.text.urlSpacingHint": "Jika teks berisi URL, tambahkan spasi setelah URL",
   "member.ui.memberReject": "Anggota Ditolak",
   "member.ui.switchCalendar": "Ganti Mode Kalender",
   "member.ui.switchTable": "Ganti Mode Daftar",
