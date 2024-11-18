@@ -17,7 +17,7 @@ import ManagerListModal from '../components/sale/ManagerListModal'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
-import { useLeadStatusCategory, useManagerLeads, useManagers } from '../hooks/sales'
+import { Filter, useLeadStatusCategory, useManagerLeads, useManagers } from '../hooks/sales'
 import { LeadStatus, Manager, SalesLeadMember } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
@@ -121,6 +121,7 @@ const SalesLeadTabs: React.VFC<{
   const [refetchLoading, setRefetchLoading] = useState(true)
   const [demoTabState, setDemoTabState] = useState<'INVITED' | 'PRESENTED' | null>(null)
   const [contactedTabState, setContactedTabState] = useState<'ANSWERED' | 'CONTACTED' | null>(null)
+  const [filter, setFilter] = useState<Filter>({})
   const [pagination, setPagination] = useState<TablePaginationConfig>()
   const [sorter, setSorter] = useState<SorterResult<SalesLeadMember> | SorterResult<SalesLeadMember>[]>()
 
@@ -143,12 +144,14 @@ const SalesLeadTabs: React.VFC<{
     demoTabState || contactedTabState || activeKey,
     selectedLeadStatusCategory?.id || null,
     sorter,
+    filter,
   )
 
   const [isOpenAddListModal, setIsOpenAddListModal] = useState(false)
   const [isOpenManagerListModal, setIsOpenManagerListModal] = useState(false)
   const [listStatus, setListStatus] = useState<LeadStatus>('FOLLOWED')
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+
   const {
     leadStatusCategories,
     refetchLeadStatusCategory,
@@ -207,6 +210,7 @@ const SalesLeadTabs: React.VFC<{
                       onSelectedLeadStatusCategoryChange(null)
                       setSelectedRowKeys([])
                       setPagination(undefined)
+                      setFilter({})
                     }}
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
@@ -232,6 +236,7 @@ const SalesLeadTabs: React.VFC<{
                         })
                         setSelectedRowKeys([])
                         setPagination(undefined)
+                        setFilter({})
                       }}
                     >
                       {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}
@@ -266,6 +271,7 @@ const SalesLeadTabs: React.VFC<{
                   setContactedTabState(null)
                   setSorter(undefined)
                   setPagination(undefined)
+                  setFilter({})
                 }}
               >
                 {formatMessage(salesMessages.followedLead)}
@@ -292,18 +298,19 @@ const SalesLeadTabs: React.VFC<{
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
               followedLeads={salesLeadMembersData?.followedLeads || []}
+              onFilter={setFilter}
+              filter={filter}
               onTableChange={(pagination, filters, sorter) => {
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={
-                salesLeadMembersData?.followedLeads.filter(lead =>
-                  !selectedLeadStatusCategory?.id
-                    ? !lead.leadStatusCategoryId
-                    : lead.leadStatusCategoryId === selectedLeadStatusCategory?.id,
-                ).length || 0
-              }
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -318,6 +325,7 @@ const SalesLeadTabs: React.VFC<{
                 setContactedTabState(null)
                 setSorter(undefined)
                 setPagination(undefined)
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.totalLead)}
@@ -340,8 +348,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.totalCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -356,6 +371,7 @@ const SalesLeadTabs: React.VFC<{
                 setContactedTabState(null)
                 setSorter(undefined)
                 setPagination(undefined)
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.idledLead)}
@@ -378,8 +394,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.idLedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -395,6 +418,7 @@ const SalesLeadTabs: React.VFC<{
                       setContactedTabState('CONTACTED')
                       setSelectedRowKeys([])
                       setPagination(undefined)
+                      setFilter({})
                     }}
                   >
                     <Center>
@@ -408,6 +432,7 @@ const SalesLeadTabs: React.VFC<{
                       setContactedTabState('ANSWERED')
                       setSelectedRowKeys([])
                       setPagination(undefined)
+                      setFilter({})
                     }}
                   >
                     <Center>
@@ -426,6 +451,7 @@ const SalesLeadTabs: React.VFC<{
                   setContactedTabState(null)
                   setSorter(undefined)
                   setPagination(undefined)
+                  setFilter({})
                 }}
               >
                 {formatMessage(salesMessages.calledLead)}
@@ -458,10 +484,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={
-                (salesLeadMembersData?.contactedLeadsCount || 0) + (salesLeadMembersData?.answeredLeadsCount || 0)
-              }
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'CONTACTED' === contactedTabState && (
@@ -479,8 +510,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.contactedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'ANSWERED' === contactedTabState && (
@@ -498,8 +536,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.answeredLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -515,6 +560,7 @@ const SalesLeadTabs: React.VFC<{
                       setDemoTabState('INVITED')
                       setSelectedRowKeys([])
                       setPagination(undefined)
+                      setFilter({})
                     }}
                   >
                     <Center>
@@ -528,6 +574,7 @@ const SalesLeadTabs: React.VFC<{
                       setDemoTabState('PRESENTED')
                       setSelectedRowKeys([])
                       setPagination(undefined)
+                      setFilter({})
                     }}
                   >
                     <Center onClick={() => setSelectedRowKeys([])}>
@@ -546,6 +593,7 @@ const SalesLeadTabs: React.VFC<{
                   setContactedTabState(null)
                   setSorter(undefined)
                   setPagination(undefined)
+                  setFilter({})
                 }}
               >
                 {formatMessage(salesMessages.demoReservation)}
@@ -578,10 +626,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={
-                (salesLeadMembersData?.invitedLeadsCount || 0) + (salesLeadMembersData?.presentedLeadsCount || 0)
-              }
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'INVITED' === demoTabState && (
@@ -599,8 +652,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.invitedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'PRESENTED' === demoTabState && (
@@ -618,8 +678,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.presentedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -634,6 +701,7 @@ const SalesLeadTabs: React.VFC<{
                 setContactedTabState(null)
                 setSorter(undefined)
                 setPagination(undefined)
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.completedLead)}
@@ -657,8 +725,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.completedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -673,6 +748,7 @@ const SalesLeadTabs: React.VFC<{
                 setContactedTabState(null)
                 setSorter(undefined)
                 setPagination(undefined)
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.signedLead)}
@@ -695,8 +771,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.signedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -707,6 +790,7 @@ const SalesLeadTabs: React.VFC<{
             <div
               onClick={() => {
                 setSelectedRowKeys([])
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.resubmissionLead)}
@@ -730,8 +814,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.resubmissionCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -745,6 +836,7 @@ const SalesLeadTabs: React.VFC<{
                 setDemoTabState(null)
                 setContactedTabState(null)
                 setSorter(undefined)
+                setFilter({})
               }}
             >
               {formatMessage(salesMessages.callbackedLead)}
@@ -768,8 +860,15 @@ const SalesLeadTabs: React.VFC<{
                 setPagination(pagination)
                 setSorter(sorter)
                 setSelectedRowKeys([])
+                setFilter({
+                  ...filter,
+                  categoryName: filters.categoryNames,
+                  leadLevel: filters.leadLevel,
+                })
               }}
-              dataCount={salesLeadMembersData?.callbackedLeadsCount || 0}
+              onFilter={setFilter}
+              filter={filter}
+              dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
         </Tabs.TabPane>
@@ -785,6 +884,7 @@ const SalesLeadTabs: React.VFC<{
                   setContactedTabState(null)
                   setSorter(undefined)
                   setPagination(undefined)
+                  setFilter({})
                 }}
               >
                 {formatMessage(salesMessages.closedLead)}
@@ -807,8 +907,15 @@ const SalesLeadTabs: React.VFC<{
                   setPagination(pagination)
                   setSorter(sorter)
                   setSelectedRowKeys([])
+                  setFilter({
+                    ...filter,
+                    categoryName: filters.categoryNames,
+                    leadLevel: filters.leadLevel,
+                  })
                 }}
-                dataCount={salesLeadMembersData?.closedLeadsCount || 0}
+                onFilter={setFilter}
+                filter={filter}
+                dataCount={salesLeadMembersData?.filterCount || 0}
               />
             )}
           </Tabs.TabPane>
