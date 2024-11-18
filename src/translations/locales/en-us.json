@@ -1852,6 +1852,7 @@
   "member.text.markAsRejection": "Mark As Rejection",
   "member.text.removeMember": "The student status will be changed to Rejected and removed from the \"In Development\" list.",
   "member.text.deleteMemberConfirmation": "Once a member is deleted, it cannot be restored, and the member's relevant information and permissions will be removed. Are you sure you want to delete it?",
+  "member.text.urlSpacingHint": "If the text contains a URL, please add a space after the URL",
   "member.ui.memberReject": "Member Rejected",
   "member.ui.switchCalendar": "Switch Calendar Mode",
   "member.ui.switchTable": "Switch List Mode",
