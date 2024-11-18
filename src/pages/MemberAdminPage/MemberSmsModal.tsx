@@ -98,6 +98,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string; name: string 
           }}
         />
       </Form.Item>
+      <div className="mb-3">*{formatMessage(memberMessages.text.urlSpacingHint)}</div>
       <DatePicker
         style={{ width: '100%' }}
         showTime

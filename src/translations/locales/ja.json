@@ -1820,6 +1820,7 @@
   "member.label.線上課程服務約款": "オンラインコース利用規約",
   "member.text.markAsRejection": "拒否としてマーク",
   "member.text.removeMember": "会員の状態が拒否に変更され、「開発中」のリストから削除されます。",
+  "member.text.urlSpacingHint": "テキストにURLが含まれている場合、URLの後にスペースを追加してください",
   "member.ui.memberReject": "会員拒否",
   "member.ui.switchCalendar": "カレンダーモードに切り替え",
   "member.ui.switchTable": "リストモードに切り替え",

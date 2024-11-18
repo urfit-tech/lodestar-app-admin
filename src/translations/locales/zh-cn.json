@@ -1833,6 +1833,7 @@
   "member.label.線上課程服務約款": "线上课程服务条款",
   "member.text.markAsRejection": "标记为拒绝",
   "member.text.removeMember": "学员状态将更改为已拒绝，并从“开发中”名单中移除。",
+  "member.text.urlSpacingHint": "若文字中包含网址，请在网址后方加上空格",
   "member.ui.memberReject": "学员拒绝",
   "member.ui.switchCalendar": "切换月历模式",
   "member.ui.switchTable": "切换列表模式",
