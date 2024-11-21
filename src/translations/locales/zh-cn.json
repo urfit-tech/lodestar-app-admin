@@ -1834,6 +1834,12 @@
   "member.ui.memberReject": "学员拒绝",
   "member.ui.switchCalendar": "切换月历模式",
   "member.ui.switchTable": "切换列表模式",
+  "member.status.statusPending": "待处理",
+  "member.status.statusInProgress": "处理中",
+  "member.status.statusDone": "已解决",
+  "member.status.priorityLow": "Low",
+  "member.status.priorityMedium": "Medium",
+  "member.status.priorityHigh": "High",
   "memberMessages.label.createMember": "添加会员",
   "memberMessages.label.presentCall": "本次通话",
   "memberMessages.label.roleSettings": "添加身份",
@@ -3438,5 +3444,9 @@
   "voucher.status.redeemable": "可兑换",
   "voucher.text.fromNow": "即日起",
   "voucher.text.items": "个项目",
-  "voucher.text.noUsePeriod": "无使用期限"
+  "voucher.text.noUsePeriod": "无使用期限",
+  "sales.label.callbackedLead": "回拨",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "离开此选项卡",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "您确定要离开此选项卡吗？",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "成功离开选项卡"
 }

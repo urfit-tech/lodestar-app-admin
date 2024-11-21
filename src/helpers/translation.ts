@@ -1198,9 +1198,9 @@ export const memberMessages = {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
     priorityMedium: { id: 'member.status.priorityMedium', defaultMessage: 'Medium' },
     priorityLow: { id: 'member.status.priorityLow', defaultMessage: 'Low' },
-    statusPending: { id: 'member.status.statusPending', defaultMessage: '待處理' },
-    statusInProgress: { id: 'member.status.statusInProgress', defaultMessage: '處理中' },
-    statusDone: { id: 'member.status.statusDone', defaultMessage: '已解決' },
+    statusPending: { id: 'member.status.statusPending', defaultMessage: 'Pending' },
+    statusInProgress: { id: 'member.status.statusInProgress', defaultMessage: 'InProgress' },
+    statusDone: { id: 'member.status.statusDone', defaultMessage: 'Done' },
   },
   label: defineMessages({
     profile: { id: 'member.label.profile', defaultMessage: '個人資料' },
@@ -1478,6 +1478,7 @@ export const permissionGroupsAdminMessages = {
 }
 
 export const salesMessages = defineMessages({
+  callbackedLead: { id: 'sales.label.callbackedLead', defaultMessage: '名單回撥' },
   answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通' },
   demoReservation: { id: 'sales.label.demoReservation', defaultMessage: '預約Demo' },
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '未接通' },

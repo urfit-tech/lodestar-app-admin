@@ -30,7 +30,8 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
-import { useLeadStatusCategory } from '../../hooks/sales'
+import { Filter, useLeadStatusCategory } from '../../hooks/sales'
+import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
@@ -88,7 +89,7 @@ const StyledDelPhone = styled.p`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'followed' | 'completed' | 'resubmission'
+  variant?: 'followed' | 'completed' | 'resubmission' | 'callbacked'
   manager: Manager
   leads: SalesLeadMember[]
   followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
@@ -102,6 +103,8 @@ const SalesLeadTable: React.VFC<{
   onIsOpenAddListModalChange: (isOpenAddListModal: boolean) => void
   onIsOpenManagerListModalChange: (isOpenManagerListModal: boolean) => void
   dataCount: number
+  onFilter: (filter: Filter) => void
+  filter?: Filter
 }> = ({
   variant,
   manager,
@@ -116,6 +119,8 @@ const SalesLeadTable: React.VFC<{
   onIsOpenAddListModalChange,
   onIsOpenManagerListModalChange,
   dataCount,
+  onFilter,
+  filter,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
@@ -126,18 +131,6 @@ const SalesLeadTable: React.VFC<{
   const { updateMemberProperty } = useMutateMemberProperty()
   const { deleteMemberProperty } = useDeleteMemberProperty()
   const uploadAttachments = useUploadAttachments()
-
-  const [filters, setFilters] = useState<{
-    nameAndEmail?: string
-    fullName?: string
-    phone?: string
-    lastTaskCategoryName?: string
-    leadLevel?: string
-    categoryName?: string
-    materialName?: string
-    memberNote?: string
-    status?: string
-  }>({})
   const { permissions } = useAuth()
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
@@ -280,7 +273,16 @@ const SalesLeadTable: React.VFC<{
     memberIds: string[],
     managerId: string,
     leads: SalesLeadMember[],
-    status: 'followed' | 'removeFollowed' | 'specificList' | 'completed' | 'cancel' | 'recycle' | 'reject' | 'delete',
+    status:
+      | 'followed'
+      | 'removeFollowed'
+      | 'specificList'
+      | 'completed'
+      | 'cancel'
+      | 'recycle'
+      | 'reject'
+      | 'delete'
+      | 'leaveTheCallbackTab',
     leadStatusCategory?: { id: string; categoryName: string },
   ) => {
     const statusMessages: Record<typeof status, { confirm: string; success: string }> = {
@@ -318,6 +320,10 @@ const SalesLeadTable: React.VFC<{
         confirm: formatMessage(saleMessages.SalesLeadTable.deleteLeadConfirm),
         success: formatMessage(saleMessages.SalesLeadTable.deletedSuccessfully),
       },
+      leaveTheCallbackTab: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabSuccessfully),
+      },
     }
 
     const { confirm: confirmText, success: eventSuccessMessage } = statusMessages[status]
@@ -326,6 +332,8 @@ const SalesLeadTable: React.VFC<{
       updateLeads({
         variables: {
           updateLeads: memberIds.map(memberId => {
+            const lead = leads.find(lead => lead.id === memberId)
+
             let updateLeadsSetObject: {
               manager_id: string | null
               star: number | null
@@ -334,128 +342,94 @@ const SalesLeadTable: React.VFC<{
               closed_at: Date | string | null
               excluded_at: Date | string | null
               recycled_at: Date | string | null
-              lead_status_category_id?: string | null
+              callbacked_at: Date | string | null
+              lead_status_category_id: string | null
             } = {
-              manager_id: managerId,
-              star: leads.find(lead => lead.id === memberId)?.star || null,
-              followed_at: leads.find(lead => lead.id === memberId)?.followedAt || null,
-              completed_at: leads.find(lead => lead.id === memberId)?.completedAt || null,
-              closed_at: leads.find(lead => lead.id === memberId)?.closedAt || null,
-              excluded_at: leads.find(lead => lead.id === memberId)?.excludedAt || null,
-              recycled_at: leads.find(lead => lead.id === memberId)?.recycledAt || null,
+              manager_id: managerId || null,
+              star: lead?.star || null,
+              followed_at: lead?.followedAt || null,
+              completed_at: lead?.completedAt || null,
+              closed_at: lead?.closedAt || null,
+              excluded_at: lead?.excludedAt || null,
+              recycled_at: lead?.recycledAt || null,
+              callbacked_at: lead?.callbackedAt || null,
+              lead_status_category_id: lead?.leadStatusCategoryId || null,
             }
 
-            switch (status) {
-              case 'followed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: dayjs().utc().toISOString(),
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                }
-                break
-              case 'removeFollowed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                }
-                break
-              case 'specificList':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: dayjs().utc().toISOString(),
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: leadStatusCategory?.id ? leadStatusCategory.id : null,
-                }
-                break
-              case 'completed':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: dayjs().utc().toISOString(),
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                }
-                break
-              case 'cancel':
-                updateLeadsSetObject = {
-                  manager_id: manager.id,
-                  star: updateLeadsSetObject.star,
-                  followed_at: updateLeadsSetObject.followed_at,
-                  completed_at: null,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                }
-                break
-              case 'recycle':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: updateLeadsSetObject.star,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: dayjs().utc().toISOString(),
-                  lead_status_category_id: null,
-                }
-                break
-              case 'reject':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: -999,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: dayjs().utc().toISOString(),
-                  excluded_at: updateLeadsSetObject.excluded_at,
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                }
-                break
-              case 'delete':
-                updateLeadsSetObject = {
-                  manager_id: null,
-                  star: -9999,
-                  followed_at: null,
-                  completed_at: updateLeadsSetObject.completed_at,
-                  closed_at: updateLeadsSetObject.closed_at,
-                  excluded_at: dayjs().utc().toISOString(),
-                  recycled_at: updateLeadsSetObject.recycled_at,
-                  lead_status_category_id: null,
-                }
-                break
+            const updateFieldsByStatus = (status: string) => {
+              switch (status) {
+                case 'followed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'removeFollowed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: null,
+                    lead_status_category_id: null,
+                  }
+                case 'specificList':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    followed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: leadStatusCategory?.id || null,
+                  }
+                case 'completed':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: manager.id,
+                    completed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'cancel':
+                  return { ...updateLeadsSetObject, manager_id: manager.id, completed_at: null, callbacked_at: null }
+                case 'recycle':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    followed_at: null,
+                    recycled_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'reject':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    star: -999,
+                    followed_at: null,
+                    closed_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
+                case 'delete':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    star: -9999,
+                    followed_at: null,
+                    excluded_at: dayjs().utc().toDate(),
+                    lead_status_category_id: null,
+                  }
+                case 'leaveTheCallbackTab':
+                  return { ...updateLeadsSetObject, callbacked_at: null }
+                default:
+                  return updateLeadsSetObject
+              }
             }
+
+            updateLeadsSetObject = updateFieldsByStatus(status)
+
             return {
-              where: {
-                id: { _eq: memberId },
-              },
-              _set: {
-                manager_id: updateLeadsSetObject.manager_id,
-                star: updateLeadsSetObject.star,
-                followed_at: updateLeadsSetObject.followed_at,
-                completed_at: updateLeadsSetObject.completed_at,
-                closed_at: updateLeadsSetObject.closed_at,
-                excluded_at: updateLeadsSetObject.excluded_at,
-                recycled_at: updateLeadsSetObject.recycled_at,
-                lead_status_category_id: updateLeadsSetObject.lead_status_category_id,
-              },
+              where: { id: { _eq: memberId } },
+              _set: updateLeadsSetObject,
             }
           }),
         },
@@ -475,42 +449,15 @@ const SalesLeadTable: React.VFC<{
     handleLeaveResubmission(memberIds)
   }
 
-  const dataSource = leads
-    .filter(v => {
-      const { nameAndEmail, phone, categoryName, materialName, memberNote } = filters
-      const { name, email, phones, categoryNames, latestNoteDescription, properties } = v
-      const fullName = properties.find(property => property.name === '本名')?.value || ''
-      const matchesFilter = (filterValue: string | undefined) => (filterData: string) =>
-        !filterValue || filterData.trim().toLowerCase().includes(filterValue.trim().toLowerCase())
-
-      const nameAndEmailMatch = matchesFilter(nameAndEmail)(name + email + fullName)
-
-      const phoneMatch = matchesFilter(phone)(
-        phones
-          .filter(phone => phone.isValid)
-          .map(phone => phone.phoneNumber)
-          .join(''),
-      )
-
-      const categoryNameMatch = matchesFilter(categoryName)(categoryNames.join(''))
-
-      const materialNameMatch = matchesFilter(materialName)(
-        properties.find(property => property.name === '廣告素材')?.value || '',
-      )
-
-      const memberNoteMatch = matchesFilter(memberNote)(latestNoteDescription)
-
-      return nameAndEmailMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
-    })
-    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
+  const dataSource = leads.map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
   const hasFullNameProperty = properties.some(p => p.name === '本名')
 
   const columns: ColumnsType<SalesLeadMember> = [
     {
-      key: 'memberId',
-      dataIndex: 'id',
+      key: 'leadLevel',
+      dataIndex: 'leadLevel',
       width: 80,
       title: formatMessage(saleMessages.SalesLeadTable.leadLevel),
       filters: [
@@ -544,8 +491,7 @@ const SalesLeadTable: React.VFC<{
         multiple: 1,
       },
       // defaultSortOrder: 'descend',
-      onFilter: (value, lead) =>
-        value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
+      onFilter: () => true,
       render: (_, record) => (
         <div className="d-flex flex-row justify-content-end">
           <Tooltip placement="bottom" title={formatMessage(saleMessages.SalesLeadTable.newTask)}>
@@ -589,8 +535,8 @@ const SalesLeadTable: React.VFC<{
       width: 200,
       title: formatMessage(saleMessages.SalesLeadTable.memberNickName),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           nameAndEmail: value,
         }),
       ),
@@ -697,8 +643,8 @@ const SalesLeadTable: React.VFC<{
         </StyledPhones>
       ),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           phone: value,
         }),
       ),
@@ -711,7 +657,7 @@ const SalesLeadTable: React.VFC<{
         text: categoryName,
         value: categoryName,
       })),
-      onFilter: (value, lead) => lead.categoryNames.includes(value.toString()),
+      onFilter: () => true,
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -720,8 +666,8 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'properties',
       title: formatMessage(saleMessages.SalesLeadTable.adMaterial),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           materialName: value,
         }),
       ),
@@ -737,8 +683,8 @@ const SalesLeadTable: React.VFC<{
       width: 300,
       title: formatMessage(saleMessages.SalesLeadTable.memberNote),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           memberNote: value,
         }),
       ),
@@ -911,6 +857,22 @@ const SalesLeadTable: React.VFC<{
                   }}
                 >
                   {formatMessage(saleMessages.SalesLeadTable.leaveTab)}
+                </Button>
+              )}
+              {variant === 'callbacked' && (
+                <Button
+                  icon={<LeaveTheTab style={{ marginRight: '8px', verticalAlign: 'middle' }} />}
+                  className="mr-3"
+                  onClick={() =>
+                    handleLeadStatus(
+                      selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                      manager.id,
+                      leads,
+                      'leaveTheCallbackTab',
+                    )
+                  }
+                >
+                  {formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTab)}
                 </Button>
               )}
               {variant !== 'followed' && (

@@ -394,6 +394,18 @@ const saleMessages = {
     confirm: { id: 'sale.TransferModal.confirm', defaultMessage: 'confirm' },
   }),
   SalesLeadTable: defineMessages({
+    leaveTheCallbackTab: {
+      id: 'sale.SalesLeadTable.leaveTheCallbackTab',
+      defaultMessage: 'Leave the tab',
+    },
+    leaveTheCallbackTabConfirm: {
+      id: 'sale.SalesLeadTable.leaveTheCallbackTabConfirm',
+      defaultMessage: 'Are you sure to leave this tab?',
+    },
+    leaveTheCallbackTabSuccessfully: {
+      id: 'sale.SalesLeadTable.leaveTheCallbackTabSuccessfully',
+      defaultMessage: 'Left the tab successfully',
+    },
     adMaterial: { id: 'sale.SalesLeadTable.adMaterial', defaultMessage: 'Ad Material' },
     addList: { id: 'sale.SalesLeadTable.addList', defaultMessage: 'Add List' },
     additionFailed: { id: 'sale.SalesLeadTable.additionFailed', defaultMessage: 'Addition Failed' },

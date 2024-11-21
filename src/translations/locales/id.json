@@ -1834,6 +1834,12 @@
   "member.ui.memberReject": "Anggota Ditolak",
   "member.ui.switchCalendar": "Ganti Mode Kalender",
   "member.ui.switchTable": "Ganti Mode Daftar",
+  "member.status.statusPending": "Tertunda",
+  "member.status.statusInProgress": "Sedang Memproses",
+  "member.status.statusDone": "Terselesaikan",
+  "member.status.priorityLow": "Rendah",
+  "member.status.priorityMedium": "Sedang",
+  "member.status.priorityHigh": "Tinggi",
   "memberMessages.label.createMember": "Tambah Anggota",
   "memberMessages.label.presentCall": "Panggilan ini",
   "memberMessages.label.roleSettings": "Tambahkan Identitas",
@@ -3438,5 +3444,9 @@
   "voucher.status.redeemable": "Dapat ditukarkan",
   "voucher.text.fromNow": "Mulai sekarang",
   "voucher.text.items": "item",
-  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan"
+  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan",
+  "sales.label.callbackedLead": "panggilan balik",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "Tinggalkan tab",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "Apakah Anda yakin ingin meninggalkan tab ini?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "Berhasil meninggalkan tab"
 }

@@ -1824,6 +1824,12 @@
   "member.ui.memberReject": "회원 거부",
   "member.ui.switchCalendar": "캘린더 모드로 전환",
   "member.ui.switchTable": "목록 모드로 전환",
+  "member.status.statusPending": "보류 중",
+  "member.status.statusInProgress": "처리 중",
+  "member.status.statusDone": "해결됨",
+  "member.status.priorityLow": "낮음",
+  "member.status.priorityMedium": "중간",
+  "member.status.priorityHigh": "높음",
   "memberMessages.label.createMember": "회원 추가",
   "memberMessages.label.presentCall": "이번 통화",
   "memberMessages.label.roleSettings": "역할 추가",
@@ -3424,5 +3430,9 @@
   "voucher.status.redeemable": "교환 가능",
   "voucher.text.fromNow": "즉시",
   "voucher.text.items": "개 항목",
-  "voucher.text.noUsePeriod": "사용 기한 없음"
+  "voucher.text.noUsePeriod": "사용 기한 없음",
+  "sales.label.callbackedLead": "콜백",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "탭 나가기",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "이 탭을 나가시겠습니까?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "탭을 성공적으로 나갔습니다"
 }

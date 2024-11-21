@@ -1834,6 +1834,12 @@
   "member.ui.memberReject": "Thành viên bị Từ chối ",
   "member.ui.switchCalendar": " Chuyển Chế độ Lịch ",
   "member.ui.switchTable": " Chuyển Chế độ Danh sách ",
+  "member.status.statusPending": "Đang chờ xử lý",
+  "member.status.statusInProgress": "Đang xử lý",
+  "member.status.statusDone": "Đã giải quyết",
+  "member.status.priorityLow": "Thấp",
+  "member.status.priorityMedium": "Trung bình",
+  "member.status.priorityHigh": "Cao",
   "memberMessages.label.createMember": " Thêm thành viên ",
   "memberMessages.label.presentCall": " Cuộc gọi này ",
   "memberMessages.label.roleSettings": " Thêm danh tính ",
@@ -3438,5 +3444,9 @@
   "voucher.status.redeemable": "Có thể đổi",
   "voucher.text.fromNow": "Bắt đầu ngay",
   "voucher.text.items": "mục",
-  "voucher.text.noUsePeriod": "Không có thời gian sử dụng"
+  "voucher.text.noUsePeriod": "Không có thời gian sử dụng",
+  "sales.label.callbackedLead": "gọi lại",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "Rời tab",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "Bạn có chắc chắn muốn rời tab này không?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "Rời tab thành công"
 }

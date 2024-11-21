@@ -1834,6 +1834,12 @@
   "member.ui.memberReject": "Member Rejected",
   "member.ui.switchCalendar": "Switch Calendar Mode",
   "member.ui.switchTable": "Switch List Mode",
+  "member.status.statusPending": "Pending",
+  "member.status.statusInProgress": "InProgress",
+  "member.status.statusDone": "Done",
+  "member.status.priorityLow": "Low",
+  "member.status.priorityMedium": "Medium",
+  "member.status.priorityHigh": "High",
   "memberMessages.label.createMember": "Add Member",
   "memberMessages.label.presentCall": "This call",
   "memberMessages.label.roleSettings": "Add Identity",
@@ -3438,5 +3444,9 @@
   "voucher.status.redeemable": "Redeemable",
   "voucher.text.fromNow": "From now on",
   "voucher.text.items": "items",
-  "voucher.text.noUsePeriod": "No UsePeriod"
+  "voucher.text.noUsePeriod": "No UsePeriod",
+  "sales.label.callbackedLead": "callback",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "Leave the tab",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "Are you sure to leave this tab?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "Left the tab successfully"
 }

@@ -270,6 +270,17 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
     refetchMembers: refetch,
   }
 }
+export type Filter = {
+  nameAndEmail?: string
+  fullName?: string
+  phone?: string
+  lastTaskCategoryName?: string
+  leadLevel?: (boolean | React.Key)[] | null
+  categoryName?: (boolean | React.Key)[] | null
+  materialName?: string
+  memberNote?: string
+  status?: string
+}
 
 export const useManagerLeads = (
   manager: Manager,
@@ -278,6 +289,7 @@ export const useManagerLeads = (
   status: string,
   leadStatusCategoryId: string | null,
   sorter?: SorterResult<SalesLeadMember> | SorterResult<SalesLeadMember>[],
+  filter?: Filter,
 ) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -287,6 +299,7 @@ export const useManagerLeads = (
   const [salesLeadMembersData, setSalesLeadMembersData] = useState<{
     totalPages: number
     totalCount: number
+    filterCount: number
     followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
     followedLeadsCount: number
     signedLeadsCount: number
@@ -299,14 +312,23 @@ export const useManagerLeads = (
     answeredLeadsCount: number
     contactedLeadsCount: number
     idLedLeadsCount: number
+    callbackedLeadsCount: number
     salesLeadMembers: SalesLeadMember[]
   }>()
   const [error, setError] = useState<any>(null)
   const [loading, setLoading] = useState(false)
-
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
+
+    const condition = {
+      nameAndEmail: filter?.nameAndEmail ? `%${filter?.nameAndEmail}%` : undefined,
+      phone: filter?.phone ? `%${filter?.phone}%` : undefined,
+      memberNote: filter?.memberNote ? filter?.memberNote : undefined,
+      materialName: filter?.materialName ? `%${filter?.materialName}%` : undefined,
+      categoryName: filter?.categoryName ? filter?.categoryName : undefined,
+      leadLevel: filter?.leadLevel ? filter?.leadLevel : undefined,
+    }
 
     if (authToken && manager && manager.id && appId) {
       try {
@@ -329,6 +351,7 @@ export const useManagerLeads = (
                       order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
                     }
                 : undefined,
+              condition,
             },
             {
               headers: { authorization: `Bearer ${authToken}` },
@@ -338,6 +361,7 @@ export const useManagerLeads = (
             const result: {
               totalPages: number
               totalCount: number
+              filterCount: number
               followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
               followedLeadsCount: number
               signedLeadsCount: number
@@ -350,10 +374,12 @@ export const useManagerLeads = (
               answeredLeadsCount: number
               contactedLeadsCount: number
               idLedLeadsCount: number
+              callbackedLeadsCount: number
               salesLeadMembers: SalesLeadMember[]
             } = {
               totalPages: data.totalPages || 0,
               totalCount: data.totalCount || 0,
+              filterCount: data.filterCount || 0,
               followedLeads: data.followedLeads || 0,
               followedLeadsCount: data.followedLeadsCount || 0,
               signedLeadsCount: data.signedLeadsCount || 0,
@@ -366,6 +392,7 @@ export const useManagerLeads = (
               answeredLeadsCount: data.answeredLeadsCount || 0,
               contactedLeadsCount: data.contactedLeadsCount || 0,
               idLedLeadsCount: data.idLedLeadsCount || 0,
+              callbackedLeadsCount: data.callbackedLeadsCount,
               salesLeadMembers: data.salesLeadMembers.map((salesLeadMember: SalesLeadMember) => ({
                 id: salesLeadMember.id,
                 appId: salesLeadMember.appId,
@@ -400,6 +427,7 @@ export const useManagerLeads = (
                 recentAnsweredAt: salesLeadMember.recentAnsweredAt
                   ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
                   : null,
+                callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
               })),
             }
             setSalesLeadMembersData(result)
@@ -413,7 +441,22 @@ export const useManagerLeads = (
     } else {
       setLoading(false)
     }
-  }, [appId, authToken, currentPage, currentPageSize, leadStatusCategoryId, manager, sorter, status])
+  }, [
+    appId,
+    authToken,
+    currentPage,
+    currentPageSize,
+    filter?.categoryName,
+    filter?.leadLevel,
+    filter?.materialName,
+    filter?.memberNote,
+    filter?.nameAndEmail,
+    filter?.phone,
+    leadStatusCategoryId,
+    manager,
+    sorter,
+    status,
+  ])
 
   useEffect(() => {
     lastFetchedStatus.current = status
