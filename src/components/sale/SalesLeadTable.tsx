@@ -30,7 +30,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
-import { useLeadStatusCategory } from '../../hooks/sales'
+import { Filter, useLeadStatusCategory } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
@@ -103,6 +103,8 @@ const SalesLeadTable: React.VFC<{
   onIsOpenAddListModalChange: (isOpenAddListModal: boolean) => void
   onIsOpenManagerListModalChange: (isOpenManagerListModal: boolean) => void
   dataCount: number
+  onFilter: (filter: Filter) => void
+  filter?: Filter
 }> = ({
   variant,
   manager,
@@ -117,28 +119,19 @@ const SalesLeadTable: React.VFC<{
   onIsOpenAddListModalChange,
   onIsOpenManagerListModalChange,
   dataCount,
+  onFilter,
+  filter,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
-  const { permissions, authToken } = useAuth()
+  const { authToken } = useAuth()
   const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
   const { deleteMemberProperty } = useDeleteMemberProperty()
   const uploadAttachments = useUploadAttachments()
-
-  const [filters, setFilters] = useState<{
-    nameAndEmail?: string
-    fullName?: string
-    phone?: string
-    lastTaskCategoryName?: string
-    leadLevel?: string
-    categoryName?: string
-    materialName?: string
-    memberNote?: string
-    status?: string
-  }>({})
+  const { permissions } = useAuth()
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const { properties } = useProperty()
@@ -456,42 +449,15 @@ const SalesLeadTable: React.VFC<{
     handleLeaveResubmission(memberIds)
   }
 
-  const dataSource = leads
-    .filter(v => {
-      const { nameAndEmail, phone, categoryName, materialName, memberNote } = filters
-      const { name, email, phones, categoryNames, latestNoteDescription, properties } = v
-      const fullName = properties.find(property => property.name === '本名')?.value || ''
-      const matchesFilter = (filterValue: string | undefined) => (filterData: string) =>
-        !filterValue || filterData.trim().toLowerCase().includes(filterValue.trim().toLowerCase())
-
-      const nameAndEmailMatch = matchesFilter(nameAndEmail)(name + email + fullName)
-
-      const phoneMatch = matchesFilter(phone)(
-        phones
-          .filter(phone => phone.isValid)
-          .map(phone => phone.phoneNumber)
-          .join(''),
-      )
-
-      const categoryNameMatch = matchesFilter(categoryName)(categoryNames.join(''))
-
-      const materialNameMatch = matchesFilter(materialName)(
-        properties.find(property => property.name === '廣告素材')?.value || '',
-      )
-
-      const memberNoteMatch = matchesFilter(memberNote)(latestNoteDescription)
-
-      return nameAndEmailMatch && phoneMatch && categoryNameMatch && materialNameMatch && memberNoteMatch
-    })
-    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
+  const dataSource = leads.map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
   const hasFullNameProperty = properties.some(p => p.name === '本名')
 
   const columns: ColumnsType<SalesLeadMember> = [
     {
-      key: 'memberId',
-      dataIndex: 'id',
+      key: 'leadLevel',
+      dataIndex: 'leadLevel',
       width: 80,
       title: formatMessage(saleMessages.SalesLeadTable.leadLevel),
       filters: [
@@ -525,8 +491,7 @@ const SalesLeadTable: React.VFC<{
         multiple: 1,
       },
       // defaultSortOrder: 'descend',
-      onFilter: (value, lead) =>
-        value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
+      onFilter: () => true,
       render: (_, record) => (
         <div className="d-flex flex-row justify-content-end">
           <Tooltip placement="bottom" title={formatMessage(saleMessages.SalesLeadTable.newTask)}>
@@ -570,8 +535,8 @@ const SalesLeadTable: React.VFC<{
       width: 200,
       title: formatMessage(saleMessages.SalesLeadTable.memberNickName),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           nameAndEmail: value,
         }),
       ),
@@ -678,8 +643,8 @@ const SalesLeadTable: React.VFC<{
         </StyledPhones>
       ),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           phone: value,
         }),
       ),
@@ -692,7 +657,7 @@ const SalesLeadTable: React.VFC<{
         text: categoryName,
         value: categoryName,
       })),
-      onFilter: (value, lead) => lead.categoryNames.includes(value.toString()),
+      onFilter: () => true,
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -701,8 +666,8 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'properties',
       title: formatMessage(saleMessages.SalesLeadTable.adMaterial),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           materialName: value,
         }),
       ),
@@ -718,8 +683,8 @@ const SalesLeadTable: React.VFC<{
       width: 300,
       title: formatMessage(saleMessages.SalesLeadTable.memberNote),
       ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
+        onFilter({
+          ...filter,
           memberNote: value,
         }),
       ),
