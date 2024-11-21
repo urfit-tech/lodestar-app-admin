@@ -82,7 +82,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           },
         })
         if (appointmentPeriodData.appointment_period.length > 0) {
-          message.error('已有重複的時段')
+          message.error(formatMessage(appointmentMessages.AppointmentPlanScheduleCreationModal.duplicatePeriodError))
           setLoading(false)
           return
         }

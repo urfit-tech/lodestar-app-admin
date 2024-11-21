@@ -1,5 +1,5 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { Button, Divider, Dropdown, Menu, message, Skeleton } from 'antd'
+import { Button, Divider, Dropdown, Menu, Skeleton } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
-import { useMeetByAppointmentPlanIdAndPeriod } from '../../hooks/appointment'
+import { useMeetByAppointmentPlanIdAndMemberPeriod } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AppointmentPeriodCardProps } from '../../types/appointment'
@@ -99,12 +99,13 @@ const AppointmentPeriodCard: React.FC<
   const { authToken, currentMemberId } = useAuth()
   const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false)
   const [cancelModalVisible, setCancelModalVisible] = useState(false)
+  const [modalVisibleType, setModalVisibleType] = useState<'CONFIGURE_MEET_ROOM' | ''>('')
   const [loading, setLoading] = useState(false)
-  const { loading: loadingMeetMembers, meet } = useMeetByAppointmentPlanIdAndPeriod(
-    appointmentPlan.id,
-    startedAt,
-    endedAt,
-  )
+  const {
+    loading: loadingMeet,
+    meet,
+    refetch: refetchMeet,
+  } = useMeetByAppointmentPlanIdAndMemberPeriod(appointmentPlan.id, startedAt, endedAt, member.id)
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
@@ -118,9 +119,9 @@ const AppointmentPeriodCard: React.FC<
       if (!currentMemberId) return
       if (meet?.options?.startUrl) {
         startUrl = meet?.options.startUrl
-      } else if (meetGenerationMethod === 'manual') {
-        return message.info('尚未設定會議連結')
-      } else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
+      }
+      // }
+      else if (enabledModules.meet_service && appointmentPlan.defaultMeetGateway === 'zoom') {
         // create zoom meeting than get startUrl
         const { data: createMeetData } = await axios.post(
           `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -143,6 +144,8 @@ const AppointmentPeriodCard: React.FC<
           },
         )
         startUrl = createMeetData.data?.options?.startUrl
+      } else if (!!appointmentPlan?.meetingLinkUrl) {
+        startUrl = appointmentPlan?.meetingLinkUrl
       } else {
         // default jitsi
         startUrl = `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
@@ -187,12 +190,12 @@ const AppointmentPeriodCard: React.FC<
             <Button
               type="link"
               size="small"
-              disabled={!meet?.recording_url || !meet.recording_type}
+              disabled={!meet?.recordingUrl || !meet.recordingType}
               onClick={
                 meet
                   ? async () => {
                       const link = await getFileDownloadableLink(
-                        meet.recording_url ? meet.recording_url : `meets/${meet.id}.${meet.recording_type}`,
+                        meet.recordingUrl ? meet.recordingUrl : `meets/${meet.id}.${meet.recordingType}`,
                         authToken,
                       )
                       return downloadFile(
@@ -239,23 +242,40 @@ const AppointmentPeriodCard: React.FC<
         />
         <Divider type="vertical" />
 
-        <AppointmentConfigureMeetingRoomModal
-          renderTrigger={({ setVisible }) =>
-            meetGenerationMethod === 'manual' && loadingMeetMembers ? (
-              <Skeleton />
-            ) : (
-              <Button type="link" size="small" onClick={() => setVisible(true)} className="position-relative">
-                {formatMessage(appointmentMessages['*'].appointmentConfigureMeetingRoom)}
-                {meetGenerationMethod === 'manual' && (!meet?.options.startUrl || !orderProduct.options?.joinUrl) && (
-                  <StyledDot></StyledDot>
-                )}
-              </Button>
-            )
-          }
-          appointmentEnrollmentId={id}
-          onRefetch={onRefetch}
-          orderProduct={orderProduct}
-        />
+        {loadingMeet ? (
+          <Skeleton />
+        ) : (
+          <>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => setModalVisibleType('CONFIGURE_MEET_ROOM')}
+              className="position-relative"
+            >
+              {formatMessage(appointmentMessages['*'].appointmentConfigureMeetingRoom)}
+              {meetGenerationMethod === 'manual' && !meet?.options.startUrl && !appointmentPlan?.meetingLinkUrl && (
+                <StyledDot></StyledDot>
+              )}
+            </Button>
+          </>
+        )}
+        {modalVisibleType === 'CONFIGURE_MEET_ROOM' && (
+          <AppointmentConfigureMeetingRoomModal
+            visible={modalVisibleType === 'CONFIGURE_MEET_ROOM'}
+            onModalVisibleTypeChange={(type: '') => setModalVisibleType(type)}
+            appointmentEnrollmentId={id}
+            meetingLinkUrl={meet?.options.startUrl || appointmentPlan.meetingLinkUrl}
+            meetId={meet?.id || ''}
+            meet={meet}
+            appointmentId={appointmentPlan?.id}
+            memberId={member.id}
+            onRefetch={async () => {
+              onRefetch?.()
+              await refetchMeet()
+            }}
+            orderProduct={orderProduct}
+          />
+        )}
 
         <Divider type="vertical" />
 
@@ -280,7 +300,7 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl ? (
+            {meetGenerationMethod === 'manual' && !meet?.options.startUrl && !appointmentPlan?.meetingLinkUrl ? (
               <StyledCanceledText className="ml-2">
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.notYetConfigured)}
               </StyledCanceledText>
@@ -313,7 +333,6 @@ const AppointmentPeriodCard: React.FC<
               visible={rescheduleModalVisible}
               onRefetch={onRefetch}
               onRescheduleModalVisible={status => setRescheduleModalVisible(status)}
-              onCancel={() => setRescheduleModalVisible(false)}
             />
             <Dropdown
               overlay={

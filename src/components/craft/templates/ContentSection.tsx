@@ -7,8 +7,11 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const FeatureSection: React.VFC = () => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -38,7 +41,7 @@ const FeatureSection: React.VFC = () => {
       >
         <Element is={CraftSection}>
           <CraftTitle
-            title="屹立不搖的組織都有相同的模式"
+            title={formatMessage(craftMessages.ContentSection.sectionTitle)}
             customStyle={{
               fontSize: 20,
               margin: '0 0 24 0',
@@ -48,7 +51,7 @@ const FeatureSection: React.VFC = () => {
             }}
           />
           <CraftParagraph
-            content="但是什麼時候該理想，什麼時候該現實，什麼時候該堅持，什麼時候該妥協，又是一門藝術了，而這中間的拿捏，也是「初階的管理人才」與「進階的管理人才」之間的差別吧！但是什麼時候該理想，什麼時候該現實，什麼時候該堅持，什麼時候該妥協，又是一門藝術了，而這中間的拿捏，也是「初階的管理人才」與「進階的管理人才」之間的差別吧！"
+            content={formatMessage(craftMessages.ContentSection.sectionContent)}
             customStyle={{
               fontSize: 16,
               lineHeight: 1.69,

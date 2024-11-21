@@ -19,6 +19,12 @@ const postMessages = {
     dataDisplay: { id: 'program.ProgramCollectionSelector.dataDisplay', defaultMessage: '資料顯示' },
     addItem: { id: 'post.PostCollectionSelector.addItem', defaultMessage: '新增項目' },
   }),
+  BlogPostCard: defineMessages({
+    views: {
+      id: 'post.BlogPostCard.views',
+      defaultMessage: '瀏覽',
+    },
+  }),
 }
 
 export default postMessages

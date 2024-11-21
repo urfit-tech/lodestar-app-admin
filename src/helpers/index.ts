@@ -6,6 +6,10 @@ import queryString from 'query-string'
 import { css, FlattenSimpleInterpolation } from 'styled-components'
 import { BREAK_POINT } from '../components/common/Responsive'
 import { PeriodType } from '../types/general'
+import { useIntl } from 'react-intl'
+import { errorMessages } from './translation'
+import { salesMessages } from './translation'
+import { memberMessages } from './translation'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -31,14 +35,16 @@ export const getBase64 = (img: File, callback: (result: FileReader['result']) =>
 }
 
 export const validateImage = (file: RcFile, fileSize?: number) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { formatMessage } = useIntl()
   const isImage = file.type.startsWith('image')
   if (!isImage) {
-    message.error('請上傳圖片格式')
+    message.error(formatMessage(errorMessages.text.uploadImageError))
   }
   const size = fileSize || 2 * 1024 * 1024
   const inSize = file.size < size
   if (!inSize) {
-    message.error(`圖片大小請小於 ${(size / 1024 / 1024).toFixed(0)}MB`)
+    message.error(formatMessage(errorMessages.text.imageSizeError, { size: (size / 1024 / 1024).toFixed(0) }))
   }
   return isImage && inSize
 }
@@ -356,40 +362,30 @@ export const call = async ({
   authToken,
   phone,
   salesTelephone,
+  confirmMessage,
 }: {
   appId: string
 
   authToken: string | null
   phone: string
   salesTelephone: string
-}) => {
-  if (!window.confirm(`撥打號碼：${phone}`)) {
-    return
+  confirmMessage: string
+}): Promise<{ data: { code: string } }> => {
+  if (!window.confirm(confirmMessage)) {
+    return { data: { code: 'CANCELED' } }
   }
 
-  axios
-    .post(
-      `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
-      {
-        appId,
-        callFrom: salesTelephone,
-        callTo: phone,
-      },
-      {
-        headers: { authorization: `Bearer ${authToken}` },
-      },
-    )
-    .then(({ data: { code } }) => {
-      if (code === 'SUCCESS') {
-        message.success('話機連結成功')
-      } else {
-        message.error('電話錯誤')
-      }
-    })
-    .catch(error => {
-      process.env.NODE_ENV === 'development' && console.error(error)
-      message.error('連線異常，請再嘗試')
-    })
+  return axios.post(
+    `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
+    {
+      appId,
+      callFrom: salesTelephone,
+      callTo: phone,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
 }
 
 export const getVideoIDByURL = (url: string, source: string) => {
@@ -492,6 +488,8 @@ export const updateMeeting = async (
   appId: string,
   authToken: string | null,
 ) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { formatMessage } = useIntl()
   if (!meetId) return
   try {
     await axios.put(
@@ -518,9 +516,7 @@ export const updateMeeting = async (
     // if service not found, means the user does not use zoom , webex etc,
     // jitsi will be default meeting service, so don't need alert
     if ('E_MEET_SERVICES_NOTFOUND' === errorMessage) return { meetId: null, continueInsertTask: true }
-    const continueInsertTask = window.confirm(
-      `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議`,
-    )
+    const continueInsertTask = window.confirm(formatMessage(memberMessages.text.zoomMeetingLimitReached))
     return { meetId: null, continueInsertTask }
   }
 }
@@ -531,6 +527,8 @@ export const createMeeting = async (
   appId: string,
   authToken: string | null,
 ) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { formatMessage } = useIntl()
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -555,9 +553,7 @@ export const createMeeting = async (
     // if service not found, means the user does not use zoom , webex etc,
     // jitsi will be default meeting service, so don't need alert
     if ('E_MEET_SERVICES_NOTFOUND' === errorMessage) return { meetId: null, continueInsertTask: true }
-    const continueInsertTask = window.confirm(
-      `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議\n`,
-    )
+    const continueInsertTask = window.confirm(`${formatMessage(memberMessages.text.zoomMeetingLimitReached)}\n`)
     return { meetId: null, continueInsertTask }
   }
 }

@@ -6,10 +6,13 @@ import {
   CraftTitle,
 } from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import craftMessages from '../translation'
 
 const CTASection: React.VFC<{
   variant?: 'default' | 'dark'
 }> = ({ variant = 'default' }) => {
+  const { formatMessage } = useIntl()
   return (
     <Element
       id="CraftSection"
@@ -42,7 +45,7 @@ const CTASection: React.VFC<{
         canvas
       >
         <CraftTitle
-          title="還在等什麼？立即查看課程"
+          title={formatMessage(craftMessages.CTASection.whatAreYouWaitingFor)}
           customStyle={{
             fontSize: 28,
             margin: 0,
@@ -52,7 +55,7 @@ const CTASection: React.VFC<{
           }}
         />
         <CraftButton
-          title="馬上查看"
+          title={formatMessage(craftMessages.CTASection.viewNow)}
           link=""
           openNewTab={false}
           size="md"

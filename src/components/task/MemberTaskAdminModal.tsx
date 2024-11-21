@@ -24,6 +24,7 @@ import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
+import taskMessages from './translation'
 
 const StyledLinkIconWrapper = styled.span`
   cursor: pointer;
@@ -54,7 +55,7 @@ const checkMeetingMember = ({
   formMemberId: string
   formMeetingGateway?: string
 }) => {
-  let message = ''
+  let isAvailable = true
   // FIXME:因應業務需求, 先跳過 google meet 的指派執行人員檢查
   if (formMeetingGateway !== 'google-meet') {
     if (
@@ -62,7 +63,7 @@ const checkMeetingMember = ({
         overlapMeet => overlapMeet.target !== memberTaskId && overlapMeet.hostMemberId === formExecutorId,
       ).length > 0
     ) {
-      message = '此時段不可指派此執行人員'
+      isAvailable = false
     }
   }
 
@@ -74,10 +75,11 @@ const checkMeetingMember = ({
         overlapMeet.meetMembers.map(v => v.memberId).includes(formMemberId),
     ).length > 0
   ) {
-    message = '此時段不可指派此學員'
+    isAvailable = false
   }
+
   return {
-    message,
+    isAvailable,
   }
 }
 
@@ -191,15 +193,16 @@ const MemberTaskAdminModal: React.FC<
           })
         }
 
-        const { message } = checkMeetingMember({
+        const { isAvailable } = checkMeetingMember({
           overlapMeets,
           memberTaskId,
           formExecutorId,
           formMemberId,
           formMeetingGateway,
         })
-        if (!!message) {
-          return handleError({ message })
+
+        if (!isAvailable) {
+          return handleError({ message: formatMessage(taskMessages.MemberTaskAdminModal.executorNotAvailable) })
         }
       }
 
@@ -383,13 +386,6 @@ const MemberTaskAdminModal: React.FC<
         layout="vertical"
         colon={false}
         hideRequiredMark
-        // onValuesChange={(changedValues, allValues) => {
-        //   console.log(changedValues)
-
-        //   if ('isPrivate' in changedValues) {
-        //     form.setFieldsValue({ isPrivate: changedValues.isPrivate })
-        //   }
-        // }}
         initialValues={{
           title: memberTask?.title || '',
           categoryId: memberTask?.category?.id,

@@ -39,7 +39,7 @@ export const GetMeetById = gql`
   }
 `
 
-export const useOverlapMeets = (startedAt: Date, endedAt: Date) => {
+export const useOverlapMeets = (startedAt: Date | null, endedAt: Date | null) => {
   const { id: appId } = useApp()
   const { loading, data } = useQuery<hasura.GetOverlapMeets, hasura.GetOverlapMeetsVariables>(GetOverlapMeets, {
     variables: { appId, startedAt, endedAt },
@@ -103,9 +103,18 @@ export const useMutateMeetMember = () => {
       }
     }
   `)
+
+  const [updateMeetMember] = useMutation<hasura.UpdateMeetMember, hasura.UpdateMeetMemberVariables>(gql`
+    mutation UpdateMeetMember($meetId: uuid!, $memberId: String!, $meetMemberData: meet_member_set_input!) {
+      update_meet_member(where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } }, _set: $meetMemberData) {
+        affected_rows
+      }
+    }
+  `)
   return {
     insertMeetMember,
     deleteMeetMember,
+    updateMeetMember,
   }
 }
 

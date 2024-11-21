@@ -284,18 +284,40 @@ const SaleCollectionExpandRow = ({
               {settings['payment.v2'] === '1' ? (
                 <>
                   {record.options?.executor && record.options.executor.name ? (
-                    <div>結帳人員：{`${record.options?.executor.name} (${record.options?.executor.email || ''})`}</div>
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.cashierInfo)}
+                      {`${record.options?.executor.name} (${record.options?.executor.email || ''})`}
+                    </div>
                   ) : null}
-                  {record.options?.company && <div>結帳公司：{record.options.company}</div>}
+                  {record.options?.company && (
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.companyInfo, {
+                        company: record.options.company,
+                      })}
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
                   {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] ? (
-                    <div>承辦人：{orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}</div>
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.executorsInfo)}
+                      {orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}
+                    </div>
                   ) : null}
-                  {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? <div>付款方式：{paymentMethod}</div> : null}
+                  {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? (
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.paymentMethod, {
+                        paymentMethod: paymentMethod,
+                      })}{' '}
+                    </div>
+                  ) : null}
                   {orderLog.expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
-                    <div>付款期限：{dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD')}</div>
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.paymentDeadline, {
+                        date: dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD'),
+                      })}
+                    </div>
                   )}
                 </>
               )}
@@ -364,7 +386,7 @@ const SaleCollectionExpandRow = ({
           <ModifyOrderStatusModal
             renderTrigger={({ setVisible }) => (
               <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
-                變更訂單狀態
+                {formatMessage(saleMessages.SaleCollectionExpandRow.changeOrderStatus)}
               </Button>
             )}
             orderLogId={orderLogId}
@@ -534,10 +556,10 @@ const ManualIssueInvoiceModal: React.VFC<{
             setVisible(true)
           }}
         >
-          <div>手開發票</div>
+          <div>{formatMessage(saleMessages.SaleCollectionExpandRow.manualInvoice)}</div>
         </Button>
       )}
-      title={'手開發票'}
+      title={formatMessage(saleMessages.SaleCollectionExpandRow.manualInvoice)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
@@ -645,12 +667,27 @@ const ManualIssueInvoiceModal: React.VFC<{
                     <div style={{ fontSize: 18, fontWeight: 500, padding: '4px 0' }}>發票{idx + 1}</div>
                     <div className="row">
                       <div className="col-6">
-                        <Form.Item label={'課稅別'} name={[field.name, 'TaxType']}>
+                        <Form.Item
+                          label={formatMessage(saleMessages.SaleCollectionExpandRow.taxType)}
+                          name={[field.name, 'TaxType']}
+                        >
                           <Select<string>>
-                            <Select.Option value="1">應稅</Select.Option>
-                            <Select.Option value="2">零稅</Select.Option>
-                            <Select.Option value="3">免稅</Select.Option>
-                            <Select.Option value="9">混合稅</Select.Option>
+                            <Select.Option value="1">
+                              {' '}
+                              {formatMessage(saleMessages.SaleCollectionExpandRow.taxable)}
+                            </Select.Option>
+                            <Select.Option value="2">
+                              {' '}
+                              {formatMessage(saleMessages.SaleCollectionExpandRow.zeroTax)}
+                            </Select.Option>
+                            <Select.Option value="3">
+                              {' '}
+                              {formatMessage(saleMessages.SaleCollectionExpandRow.taxExempt)}
+                            </Select.Option>
+                            <Select.Option value="9">
+                              {' '}
+                              {formatMessage(saleMessages.SaleCollectionExpandRow.mixedTax)}
+                            </Select.Option>
                           </Select>
                         </Form.Item>
                       </div>

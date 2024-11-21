@@ -19,6 +19,7 @@ import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import ForbiddenPage from '../ForbiddenPage'
+import pageMessages from '../translation'
 
 export type MemberContract = {
   id: string
@@ -143,7 +144,7 @@ const SalesPerformancePage: React.VFC = () => {
             style={{ width: 200 }}
             showSearch
             allowClear
-            placeholder="機構"
+            placeholder={formatMessage(pageMessages.SalesPerformancePage.departmentPlaceholder)}
             value={activeDepartment}
             optionFilterProp="children"
             onChange={v => {
@@ -172,7 +173,7 @@ const SalesPerformancePage: React.VFC = () => {
             style={{ width: 200 }}
             showSearch
             allowClear
-            placeholder="組別"
+            placeholder={formatMessage(pageMessages.SalesPerformancePage.groupPlaceholder)}
             value={activeGroupName}
             optionFilterProp="children"
             onChange={v => {
@@ -196,7 +197,7 @@ const SalesPerformancePage: React.VFC = () => {
             style={{ width: 300 }}
             allowClear
             showSearch
-            placeholder="業務顧問"
+            placeholder={formatMessage(pageMessages.SalesPerformancePage.managerPlaceholder)}
             value={activeManagerId}
             optionFilterProp="children"
             onChange={id => setActiveManagerId(id)}
@@ -231,39 +232,40 @@ const SalesPerformanceTable: React.VFC<{
   loading: boolean
   memberContracts: MemberContract[]
 }> = ({ loading, memberContracts }) => {
+  const { formatMessage } = useIntl()
   const columns: ColumnsType<MemberContract> = [
     {
-      title: '簽署日',
+      title: formatMessage(pageMessages.SalesPerformancePage.signedDate),
       dataIndex: 'agreedAt',
       key: 'agreedAt',
       render: v => v && moment(v).format('MM/DD'),
     },
     {
-      title: '通過日',
+      title: formatMessage(pageMessages.SalesPerformancePage.approvedDate),
       dataIndex: 'approvedAt',
       key: 'approvedAt',
       render: v => v && moment(v).format('MM/DD'),
     },
     {
-      title: '取消日',
+      title: formatMessage(pageMessages.SalesPerformancePage.canceledDate),
       dataIndex: 'canceledAt',
       key: 'canceledAt',
       render: v => v && moment(v).format('MM/DD'),
     },
     {
-      title: '解約日',
+      title: formatMessage(pageMessages.SalesPerformancePage.revokedDate),
       dataIndex: 'revokedAt',
       key: 'revokedAt',
       render: v => v && moment(v).format('MM/DD'),
     },
     {
-      title: '顧問',
+      title: formatMessage(pageMessages.SalesPerformancePage.consultant),
       dataIndex: 'executor',
       key: 'executor',
       render: v => v.name,
     },
     {
-      title: '學員',
+      title: formatMessage(pageMessages.SalesPerformancePage.member),
       dataIndex: 'member',
       key: 'member',
       render: v => (
@@ -273,35 +275,35 @@ const SalesPerformanceTable: React.VFC<{
       ),
     },
     {
-      title: '訂單金額',
+      title: formatMessage(pageMessages.SalesPerformancePage.orderAmount),
       dataIndex: 'performance',
       key: 'performance',
       render: v => v.toFixed(0),
     },
     {
-      title: '績效金額',
+      title: formatMessage(pageMessages.SalesPerformancePage.performanceAmount),
       dataIndex: 'recognizePerformance',
       key: 'recognizePerformance',
       render: v => v.toFixed(0),
     },
     {
-      title: '產品',
+      title: formatMessage(pageMessages.SalesPerformancePage.products),
       dataIndex: 'products',
       key: 'products',
       render: v => v?.join('、'),
     },
     {
-      title: '付款方式',
+      title: formatMessage(pageMessages.SalesPerformancePage.paymentMethod),
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
     },
     {
-      title: '金流編號',
+      title: formatMessage(pageMessages.SalesPerformancePage.paymentNumber),
       dataIndex: 'paymentNumber',
       key: 'paymentNumber',
     },
     {
-      title: '備註',
+      title: formatMessage(pageMessages.SalesPerformancePage.notes),
       dataIndex: 'note',
       key: 'note',
     },
@@ -334,12 +336,30 @@ const SalesPerformanceTable: React.VFC<{
       <Table
         title={() => (
           <div className="d-flex">
-            <span className="mr-3">目前績效：{new Intl.NumberFormat('zh').format(performance.currentPerformance)}</span>
-            <span className="mr-3">審核中：{new Intl.NumberFormat('zh').format(performance.agreed)}</span>
-            <span className="mr-3">審核通過：{new Intl.NumberFormat('zh').format(performance.approved)}</span>
-            <span className="mr-3">提出退費：{new Intl.NumberFormat('zh').format(performance.refundApplied)}</span>
-            <span className="mr-3">解約：{new Intl.NumberFormat('zh').format(performance.revoked)}</span>
-            <span className="mr-3">取消：{new Intl.NumberFormat('zh').format(performance.canceled)}</span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.currentPerformance)}：
+              {new Intl.NumberFormat('zh').format(performance.currentPerformance)}
+            </span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.underReview)}：
+              {new Intl.NumberFormat('zh').format(performance.agreed)}
+            </span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.approved)}：
+              {new Intl.NumberFormat('zh').format(performance.approved)}
+            </span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.refundApplied)}：
+              {new Intl.NumberFormat('zh').format(performance.refundApplied)}
+            </span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.revoked)}：
+              {new Intl.NumberFormat('zh').format(performance.revoked)}
+            </span>
+            <span className="mr-3">
+              {formatMessage(pageMessages.SalesPerformancePage.canceled)}：
+              {new Intl.NumberFormat('zh').format(performance.canceled)}
+            </span>
           </div>
         )}
         loading={loading}

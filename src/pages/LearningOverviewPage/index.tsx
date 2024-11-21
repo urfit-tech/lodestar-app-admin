@@ -11,6 +11,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import ForbiddenPage from '../ForbiddenPage'
+import pageMessages from '../translation'
 import LearningDualChart from './LearningDualChart'
 import LearningHeatmap from './LearningHeatmap'
 import LearningRadar from './LearningRadar'
@@ -51,7 +52,11 @@ const LearningOverviewPage: React.VFC = () => {
             {loadingLearningStatus ? (
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
-              <Statistic title="近三十天學習人數" value={recentLearningCount} suffix="人" />
+              <Statistic
+                title={formatMessage(pageMessages.LearningOverviewPage.recentLearningCount)}
+                value={recentLearningCount}
+                suffix={formatMessage(pageMessages.LearningOverviewPage.peopleSuffix)}
+              />
             )}
           </Card>
         </div>
@@ -61,10 +66,10 @@ const LearningOverviewPage: React.VFC = () => {
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
               <Statistic
-                title="近三十天學習時數"
+                title={formatMessage(pageMessages.LearningOverviewPage.recentLearningDuration)}
                 value={recentLearningDuration / 60 / 60}
                 precision={0}
-                suffix="小時"
+                suffix={formatMessage(pageMessages.LearningOverviewPage.hoursSuffix)}
               />
             )}
           </Card>
@@ -75,7 +80,7 @@ const LearningOverviewPage: React.VFC = () => {
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
               <Statistic
-                title="平均完課率"
+                title={formatMessage(pageMessages.LearningOverviewPage.averageCompletionRate)}
                 value={(sum(programCategoryCompleteness.map(v => v.rate)) / programCategoryCompleteness.length) * 100}
                 precision={2}
                 suffix="%"
@@ -89,7 +94,7 @@ const LearningOverviewPage: React.VFC = () => {
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
               <Statistic
-                title="測驗通過率"
+                title={formatMessage(pageMessages.LearningOverviewPage.testPassRate)}
                 value={exercisedMemberCount <= 0 ? 0 : (passedMemberCount / exercisedMemberCount) * 100}
                 precision={2}
                 suffix="%"
@@ -100,14 +105,17 @@ const LearningOverviewPage: React.VFC = () => {
       </div>
       <div className="row">
         <div className="col-12">
-          <Card className="mb-3" title="學習人數與平均時數">
+          <Card
+            className="mb-3"
+            title={formatMessage(pageMessages.LearningOverviewPage.learningCountAndAverageDuration)}
+          >
             {loadingLearningStatus ? <Skeleton active /> : <LearningDualChart values={learningStatus} />}
           </Card>
         </div>
       </div>
       <div className="row">
         <div className="col-12 col-md-6">
-          <Card className="mb-3" title="完課率分佈">
+          <Card className="mb-3" title={formatMessage(pageMessages.LearningOverviewPage.completionRateDistribution)}>
             <div className="mx-auto" style={{ width: '90%' }}>
               {loadingProgramCategoryCompleteness ? (
                 <Skeleton active />
@@ -118,16 +126,25 @@ const LearningOverviewPage: React.VFC = () => {
           </Card>
         </div>
         <div className="col-12 col-md-6">
-          <Card className="mb-3" title="學員狀況">
+          <Card className="mb-3" title={formatMessage(pageMessages.LearningOverviewPage.memberStatus)}>
             {loadingLearningOverview ? (
               <Skeleton active />
             ) : (
               <ProgressFunnel
                 values={[
-                  { stage: '所有人數', count: totalMemberCount },
-                  { stage: '上課人數', count: enrolledMemberCount },
-                  { stage: '測驗人數', count: exercisedMemberCount },
-                  { stage: '通過人數', count: passedMemberCount },
+                  { stage: formatMessage(pageMessages.LearningOverviewPage.totalMemberCount), count: totalMemberCount },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.enrolledMemberCount),
+                    count: enrolledMemberCount,
+                  },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.exercisedMemberCount),
+                    count: exercisedMemberCount,
+                  },
+                  {
+                    stage: formatMessage(pageMessages.LearningOverviewPage.passedMemberCount),
+                    count: passedMemberCount,
+                  },
                 ]}
               />
             )}
@@ -136,7 +153,7 @@ const LearningOverviewPage: React.VFC = () => {
       </div>
       <div className="row">
         <div className="col-12">
-          <Card className="mb-3" title="學習熱度">
+          <Card className="mb-3" title={formatMessage(pageMessages.LearningOverviewPage.learningHeat)}>
             {loadingLearningStatus ? <Skeleton active /> : <LearningHeatmap values={learningStatus} />}
           </Card>
         </div>

@@ -1824,6 +1824,12 @@
   "member.ui.memberReject": "회원 거부",
   "member.ui.switchCalendar": "캘린더 모드로 전환",
   "member.ui.switchTable": "목록 모드로 전환",
+  "member.status.statusPending": "보류 중",
+  "member.status.statusInProgress": "처리 중",
+  "member.status.statusDone": "해결됨",
+  "member.status.priorityLow": "낮음",
+  "member.status.priorityMedium": "중간",
+  "member.status.priorityHigh": "높음",
   "memberMessages.label.createMember": "회원 추가",
   "memberMessages.label.presentCall": "이번 통화",
   "memberMessages.label.roleSettings": "역할 추가",
@@ -3299,6 +3305,9 @@
   "sale.SalesLeadTable.saveSuccess": "즐겨찾기 성공!",
   "sale.SalesLeadTable.systemError": "시스템 오류",
   "sale.SalesLeadTable.unsaveSuccess": "즐겨찾기 취소 성공!",
+  "sale.SalesLeadTable.leaveTab": "이 탭에서 나가기",
+  "sale.SalesLeadTable.leaveTabInfo": "목록이 '{tab}' 영역을 떠나 원래 위치로 돌아갑니다.",
+  "sale.SalesLeadTable.leaveTabSuccess": "이 탭에서 성공적으로 나가세요!",
   "sale.TransferModal.confirm": "확인",
   "sale.TransferModal.inputPlaceHolder": "최소 두 개의 키워드를 입력하세요",
   "sale.TransferModal.modalTitle": "이 명단을 어떤 담당자 번호로 이동하시겠습니까?",
@@ -3421,5 +3430,9 @@
   "voucher.status.redeemable": "교환 가능",
   "voucher.text.fromNow": "즉시",
   "voucher.text.items": "개 항목",
-  "voucher.text.noUsePeriod": "사용 기한 없음"
+  "voucher.text.noUsePeriod": "사용 기한 없음",
+  "sales.label.callbackedLead": "콜백",
+  "sale.SalesLeadTable.leaveTheCallbackTab": "탭 나가기",
+  "sale.SalesLeadTable.leaveTheCallbackTabConfirm": "이 탭을 나가시겠습니까?",
+  "sale.SalesLeadTable.leaveTheCallbackTabSuccessfully": "탭을 성공적으로 나갔습니다"
 }

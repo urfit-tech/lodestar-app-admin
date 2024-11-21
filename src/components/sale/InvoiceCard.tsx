@@ -5,7 +5,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { render } from 'mustache'
-import { sum } from 'ramda'
+import { defaultTo, pipe, prop, sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -282,6 +282,8 @@ const InvoiceCard: React.FC<{
     '12': '11-12',
   }
 
+  console.log(invoiceResponse)
+  const getMinGuoYear = (date: Date) => date.getFullYear() - 1911
   const currentMonth = new Date().getMonth() + 1
 
   return (
@@ -301,7 +303,7 @@ const InvoiceCard: React.FC<{
         <>
           {enabledModules.invoice_printer && (
             <>
-              <Button onClick={handlePrint}>列印發票</Button>
+              <Button onClick={handlePrint}>{formatMessage(saleMessages.InvoiceCard.printInvoice)}</Button>
               {showInvoice && (
                 <div id="print-content" style={{ display: 'none' }}>
                   <div className="no-break">
@@ -309,8 +311,18 @@ const InvoiceCard: React.FC<{
                       ref={receiptRef1}
                       template={JSON.parse(settings['invoice.template'])?.main || ''}
                       templateVariables={{
-                        year: new Date().getFullYear() - 1911,
-                        month: INVOICE_RANGE[currentMonth.toString()],
+                        year: pipe(
+                          (prop as any)('CreateTime'),
+                          (defaultTo as any)(new Date()),
+                          (_: string | Date) => new Date(_),
+                          getMinGuoYear,
+                        )(invoiceResponse),
+                        month:
+                          INVOICE_RANGE[
+                            invoiceResponse?.CreateTime
+                              ? (new Date(invoiceResponse?.CreateTime).getMonth() + 1).toString()
+                              : currentMonth.toString()
+                          ],
                         createdAt: invoiceResponse?.CreateTime,
                         randomNumber: invoiceResponse?.RandomNum,
                         sellerUniformNumber: companyUniformNumber,
@@ -428,7 +440,7 @@ const InvoiceCard: React.FC<{
                   .then(r => {
                     if (r.data.code === 'SUCCESS') {
                       onClose?.()
-                      message.success('發票作廢成功')
+                      message.success(formatMessage(saleMessages.InvoiceCard.voidInvoiceSuccess))
                     }
                   })
                   .catch(handleError)
@@ -437,7 +449,7 @@ const InvoiceCard: React.FC<{
                   })
               }}
             >
-              作廢發票
+              {formatMessage(saleMessages.InvoiceCard.voidInvoice)}
             </Button>
           )}
         </>

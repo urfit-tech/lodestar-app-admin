@@ -8,9 +8,11 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
 import { memberMessages } from '../../helpers/translation'
+import pageMessages from '../translation'
 
 const ONLY_GSM_ALPHABET_MAX_LENGTH = 159
 const MAX_LENGTH = 69
+
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
   const regex = new RegExp(rule, 'ig')
@@ -37,7 +39,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string; name: string 
 
   return (
     <AdminModal
-      okText="寄送"
+      okText={formatMessage(pageMessages.MemberSmsModal.send)}
       okButtonProps={{
         disabled: isTooLong || content === '',
       }}

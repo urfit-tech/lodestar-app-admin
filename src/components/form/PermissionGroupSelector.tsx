@@ -1,7 +1,9 @@
 import { Select } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { usePermissionGroupCollection } from '../../hooks/permission'
+import formMessages from './translation'
 
 const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
   width: 100%;
@@ -29,6 +31,8 @@ const PermissionGroupSelector: React.FC<{
   onChange?: (value: string) => void
   onClear?: () => void
 }> = ({ single, value, onChange, onClear }) => {
+  const { formatMessage } = useIntl()
+
   const { loadingPermissionGroups, permissionGroups } = usePermissionGroupCollection()
 
   return (
@@ -39,7 +43,7 @@ const PermissionGroupSelector: React.FC<{
       value={value}
       onChange={onChange}
       onClear={onClear}
-      placeholder="請選擇權限群組"
+      placeholder={formatMessage(formMessages.PermissionGroupSelector.selectPermissionGroup)}
     >
       {permissionGroups.map(permissionGroup => (
         <Select.Option key={permissionGroup.id} value={permissionGroup.id || ''} style={{ borderRadius: '4px' }}>

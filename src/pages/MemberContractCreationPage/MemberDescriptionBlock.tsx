@@ -10,6 +10,7 @@ import { ContractInfo } from '.'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateMemberProperty } from '../../hooks/member'
+import pageMessages from '../translation'
 
 type FieldProps = {
   [propertyId: string]: string
@@ -70,18 +71,18 @@ const MemberDescriptionBlock: React.FC<{
 
     return (
       <div ref={memberBlockRef}>
-        <Descriptions title="學生資料" bordered className="mb-3">
-          <Descriptions.Item label="學員稱呼">
+        <Descriptions title={formatMessage(pageMessages.MemberDescriptionBlock.info)} bordered className="mb-3">
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.name)}>
             <Typography.Text editable={{ onChange: v => handleChange({ name: v }) }}>{member.name}</Typography.Text>
           </Descriptions.Item>
-          <Descriptions.Item label="學員信箱">
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.email)}>
             <Typography.Text editable={{ onChange: v => handleChange({ email: v }) }}>{member.email}</Typography.Text>
           </Descriptions.Item>
-          <Descriptions.Item label="學員電話">
+          <Descriptions.Item label={formatMessage(pageMessages.MemberDescriptionBlock.phone)}>
             {!!length(member.phones) ? (
               member.phones.map((v, index) => <Tag key={index}>{v}</Tag>)
             ) : (
-              <Alert type="error" message="未設定" />
+              <Alert type="error" message={formatMessage(pageMessages.MemberDescriptionBlock.notSet)} />
             )}
           </Descriptions.Item>
         </Descriptions>

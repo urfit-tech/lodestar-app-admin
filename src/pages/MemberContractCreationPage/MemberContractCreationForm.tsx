@@ -4,11 +4,13 @@ import { FormProps } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 import { installmentPlans } from '../../constants'
 import { useAppCustom } from '../../hooks'
+import pageMessages from '../translation'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
 
@@ -61,6 +63,7 @@ const MemberContractCreationForm: React.FC<
   }) => {
     const { id: appId, settings } = useApp()
     const appCustom = useAppCustom()
+    const { formatMessage } = useIntl()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
     const contractDealerOptions: string[] =
@@ -75,7 +78,7 @@ const MemberContractCreationForm: React.FC<
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <div className="mb-5">
-          <AdminBlockTitle>合約內容</AdminBlockTitle>
+          <AdminBlockTitle>{formatMessage(pageMessages.MemberContractCreationForm.contractContent)}</AdminBlockTitle>
           <Form.List name="contractProducts">
             {(fields, { add, remove }) => {
               return (
@@ -89,9 +92,20 @@ const MemberContractCreationForm: React.FC<
                       <div key={field.key} className="d-flex align-items-center justify-content-start">
                         <Form.Item
                           name={[field.name, 'id']}
-                          rules={[{ required: true, message: '請選擇合約' }]}
+                          rules={[
+                            {
+                              required: true,
+                              message: formatMessage(pageMessages.MemberContractCreationForm.selectContract),
+                            },
+                          ]}
                           fieldKey={[field.fieldKey, 'id']}
-                          label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
+                          label={
+                            index === 0 ? (
+                              <StyledFieldLabel>
+                                {formatMessage(pageMessages.MemberContractCreationForm.itemName)}
+                              </StyledFieldLabel>
+                            ) : undefined
+                          }
                           initialValue={products[0].id}
                         >
                           <Select<string>
@@ -100,7 +114,7 @@ const MemberContractCreationForm: React.FC<
                             showSearch
                             allowClear
                             filterOption={false}
-                            placeholder="請選擇項目 (搜尋請輸入至少兩個關鍵字)"
+                            placeholder={formatMessage(pageMessages.MemberContractCreationForm.itemPlaceholder)}
                             onSearch={val => matchProduct(val, products)}
                             onBlur={() => setFilterProducts(products)}
                             onClear={() => setFilterProducts(products)}
@@ -118,7 +132,15 @@ const MemberContractCreationForm: React.FC<
                           </Select>
                         </Form.Item>
 
-                        <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
+                        <Form.Item
+                          label={
+                            index === 0 ? (
+                              <StyledFieldLabel>
+                                {formatMessage(pageMessages.MemberContractCreationForm.unitPrice)}
+                              </StyledFieldLabel>
+                            ) : undefined
+                          }
+                        >
                           <div style={{ width: '150px' }}>
                             {contractProduct?.name === '業師諮詢' && isAppointmentOnly
                               ? contractProduct?.price
@@ -129,7 +151,13 @@ const MemberContractCreationForm: React.FC<
                         <Form.Item
                           name={[field.name, 'amount']}
                           fieldKey={[field.fieldKey, 'amount']}
-                          label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
+                          label={
+                            index === 0 ? (
+                              <StyledFieldLabel>
+                                {formatMessage(pageMessages.MemberContractCreationForm.quantity)}
+                              </StyledFieldLabel>
+                            ) : undefined
+                          }
                         >
                           <InputNumber min={1} className="mr-3" />
                         </Form.Item>
@@ -143,15 +171,21 @@ const MemberContractCreationForm: React.FC<
                     )
                   })}
                   <Button icon={<PlusOutlined />} onClick={() => add({ id: products[0].id, amount: 1 })}>
-                    新增項目
+                    {formatMessage(pageMessages.MemberContractCreationForm.addItem)}
                   </Button>
                 </>
               )
             }}
           </Form.List>
           <Descriptions column={1} bordered className="mb-5 mt-3">
-            <Descriptions.Item label="合約項目">
-              <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
+            <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.contractItem)}>
+              <Form.Item
+                className="mb-0"
+                name="contractId"
+                rules={[
+                  { required: true, message: formatMessage(pageMessages.MemberContractCreationForm.selectContract) },
+                ]}
+              >
                 <Select<string>>
                   {contracts.map(v => (
                     <Select.Option key={v.id} value={v.id}>
@@ -176,7 +210,7 @@ const MemberContractCreationForm: React.FC<
               </Descriptions.Item>
             )}
 
-            <Descriptions.Item label="合約期間">
+            <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.contractPeriod)}>
               {moment(startedAt).format('YYYY-MM-DD')}
               <span className="mx-1">~</span>
               {endedAt ? moment(endedAt).format('YYYY-MM-DD') : ''}
@@ -207,12 +241,15 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item> */}
 
-            <Descriptions.Item label="學員身份" className="m-0">
+            <Descriptions.Item
+              label={formatMessage(pageMessages.MemberContractCreationForm.memberStatus)}
+              className="m-0"
+            >
               <div className="d-flex align-items-center">
                 <Form.Item name="identity" noStyle>
                   <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                    <Radio value="normal">一般</Radio>
-                    <Radio value="student">學生</Radio>
+                    <Radio value="normal">{formatMessage(pageMessages.MemberContractCreationForm.normal)}</Radio>
+                    <Radio value="student">{formatMessage(pageMessages.MemberContractCreationForm.student)}</Radio>
                   </Radio.Group>
                 </Form.Item>
                 {identity === 'student' && (
@@ -225,7 +262,7 @@ const MemberContractCreationForm: React.FC<
               </div>
             </Descriptions.Item>
 
-            <Descriptions.Item label="介紹人">
+            <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.referrer)}>
               <Form.Item name="referralMemberId" noStyle>
                 <ReferralMemberSelector />
               </Form.Item>
@@ -239,7 +276,7 @@ const MemberContractCreationForm: React.FC<
             <div className="d-flex align-items-center">
               <div className="flex-shrink-0">
                 <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
-                  <Checkbox>使用鑑賞期</Checkbox>
+                  <Checkbox>{formatMessage(pageMessages.MemberContractCreationForm.useAppreciationPeriod)}</Checkbox>
                 </Form.Item>
               </div>
               <div className="flex-grow-1 ml-2">
@@ -271,9 +308,19 @@ const MemberContractCreationForm: React.FC<
           </Descriptions>
         </div>
 
-        <Descriptions title="付款方式" bordered className="mb-5" column={6}>
-          <Descriptions.Item label="付款方式" span={4}>
-            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
+        <Descriptions
+          title={formatMessage(pageMessages.MemberContractCreationForm.paymentMethod)}
+          bordered
+          className="mb-5"
+        >
+          <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.paymentMethod)}>
+            <Form.Item
+              className="mb-0"
+              name="paymentMethod"
+              rules={[
+                { required: true, message: formatMessage(pageMessages.MemberContractCreationForm.selectPaymentMethod) },
+              ]}
+            >
               <Select<string> style={{ width: 240 }}>
                 {appCustom.paymentMethods
                   .filter(paymentMethod => !paymentMethod.hidden)
@@ -286,8 +333,17 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="分期期數" span={2}>
-            <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
+          <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.installmentPeriod)} span={2}>
+            <Form.Item
+              className="mb-0"
+              name="installmentPlan"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(pageMessages.MemberContractCreationForm.selectInstallmentPeriod),
+                },
+              ]}
+            >
               <Select<string> style={{ width: 120 }}>
                 {installmentPlans.map(installmentPlan => (
                   <Select.Option key={installmentPlan} value={installmentPlan}>
@@ -304,10 +360,26 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item> */}
 
-          <Descriptions.Item label="承辦人 / 分潤" span={6}>
+          <Descriptions.Item
+            label={formatMessage(pageMessages.MemberContractCreationForm.contractManagerAndProfit)}
+            span={3}
+          >
             <Space align="center" className="d-flex mb-3">
-              <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
-                <Select<string> showSearch placeholder="承辦人" style={{ width: '250px' }} optionFilterProp="label">
+              <Form.Item
+                name="orderExecutorId"
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage(pageMessages.MemberContractCreationForm.fillContractManager),
+                  },
+                ]}
+              >
+                <Select<string>
+                  showSearch
+                  placeholder={formatMessage(pageMessages.MemberContractCreationForm.contractManager)}
+                  style={{ width: '250px' }}
+                  optionFilterProp="label"
+                >
                   {managers.map(manager => (
                     <Select.Option key={manager.id} value={manager.id} label={`${manager.id} ${manager.name}`}>
                       {manager.name}
@@ -330,11 +402,16 @@ const MemberContractCreationForm: React.FC<
                         {...field}
                         name={[field.name, 'memberId']}
                         fieldKey={[field.fieldKey, 'memberId']}
-                        rules={[{ required: true, message: '請填寫承辦人' }]}
+                        rules={[
+                          {
+                            required: true,
+                            message: formatMessage(pageMessages.MemberContractCreationForm.fillContractManager),
+                          },
+                        ]}
                       >
                         <Select<string>
                           showSearch
-                          placeholder="承辦人"
+                          placeholder={formatMessage(pageMessages.MemberContractCreationForm.contractManager)}
                           style={{ width: '150px' }}
                           optionFilterProp="label"
                         >
@@ -353,7 +430,7 @@ const MemberContractCreationForm: React.FC<
                   ))}
 
                   <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
-                    <PlusOutlined /> 加入
+                    <PlusOutlined /> {formatMessage(pageMessages.MemberContractCreationForm.addManager)}
                   </Button>
                 </div>
               )}

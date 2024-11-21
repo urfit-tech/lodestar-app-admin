@@ -2,14 +2,17 @@ import { gql, useQuery } from '@apollo/client'
 import { Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import MemberSelector from '../form/MemberSelector'
+import commonMessages from './translation'
 
 const SalesMemberInput: React.FC<{
   value?: string
   onChange?: (value: string) => void
   disabled?: boolean
 }> = ({ value, onChange, disabled }) => {
+  const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { loading, error, data } = useQuery<hasura.GET_SALES_MEMBERS>(GET_SALES_MEMBERS, { variables: { appId } })
 
@@ -18,7 +21,7 @@ const SalesMemberInput: React.FC<{
   }
 
   if (error || !data) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(commonMessages.SalesMemberInput.loadError)}</div>
   }
 
   return (
