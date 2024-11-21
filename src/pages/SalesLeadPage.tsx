@@ -701,6 +701,41 @@ const SalesLeadTabs: React.VFC<{
           )}
         </Tabs.TabPane>
 
+        <Tabs.TabPane
+          key="RESUBMISSION"
+          tab={
+            <div
+              onClick={() => {
+                setSelectedRowKeys([])
+              }}
+            >
+              {formatMessage(salesMessages.resubmissionLead)}
+              <span>({refetchLoading ? <Spin size="small" /> : salesLeadMembersData?.resubmissionCount})</span>
+            </div>
+          }
+        >
+          {activeKey === 'RESUBMISSION' && (
+            <SalesLeadTable
+              variant="resubmission"
+              manager={manager}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              onRefetch={async () => await refetch?.()}
+              isLoading={refetchLoading}
+              followedLeads={salesLeadMembersData?.followedLeads || []}
+              selectedRowKeys={selectedRowKeys}
+              onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
+              onIsOpenAddListModalChange={setIsOpenAddListModal}
+              onIsOpenManagerListModalChange={setIsOpenManagerListModal}
+              onTableChange={(pagination, filters, sorter) => {
+                setPagination(pagination)
+                setSorter(sorter)
+                setSelectedRowKeys([])
+              }}
+              dataCount={salesLeadMembersData?.resubmissionCount || 0}
+            />
+          )}
+        </Tabs.TabPane>
+
         {(salesLeadMembersData?.closedLeadsCount || 0) > 0 && (
           <Tabs.TabPane
             key="CLOSED"

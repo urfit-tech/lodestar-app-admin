@@ -554,6 +554,18 @@ const saleMessages = {
       id: 'sale.SalesLeadTable.cancelCollect',
       defaultMessage: '取消收藏',
     },
+    leaveTab: {
+      id: 'sale.SalesLeadTable.leaveTab',
+      defineMessages: 'Leave This Tab',
+    },
+    leaveTabInfo: {
+      id: 'sale.SalesLeadTable.leaveTabInfo',
+      defaultMessage: 'The list will leave the "Resubmission" area and return to its original position.',
+    },
+    leaveTabSuccess: {
+      id: 'sale.SalesLeadTable.leaveTabSuccess',
+      defaultMessage: 'Leave this tab successfully!',
+    },
   }),
   MemberPhoneModal: defineMessages({
     phoneDuplicateError: {
