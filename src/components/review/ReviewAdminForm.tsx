@@ -29,7 +29,7 @@ const ReviewAdminForm: FC<{
 
   const { data: reviewable, loading: reviewableLoading } = useAdaptedReviewable(path, appId)
 
-  const [upsertReviewable] = useMutation<hasura.UPSERT_REVIEWABLE, hasura.UPSERT_REVIEWABLEVariables>(UPSERT_REVIEWABLE)
+  const [upsertReviewable] = useMutation<hasura.UpsertReviewable, hasura.UpsertReviewableVariables>(UpsertReviewable)
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -126,18 +126,8 @@ const ReviewAdminForm: FC<{
   )
 }
 
-const GET_REVIEWABLE = gql`
-  query GET_REVIEWABLE($path: String!, $appId: String!) {
-    reviewable(where: { path: { _eq: $path }, app_id: { _eq: $appId } }) {
-      is_item_viewable
-      is_score_viewable
-      is_writable
-    }
-  }
-`
-
-const UPSERT_REVIEWABLE = gql`
-  mutation UPSERT_REVIEWABLE(
+const UpsertReviewable = gql`
+  mutation UpsertReviewable(
     $path: String!
     $appId: String!
     $isWritable: Boolean
