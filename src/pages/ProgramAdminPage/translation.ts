@@ -14,6 +14,7 @@ const ProgramAdminPageMessages = {
     programSettings: { id: 'ProgramAdminPage.*.programSettings', defaultMessage: '課程設定' },
     otherSettings: { id: 'ProgramAdminPage.*.otherSettings', defaultMessage: 'Other settings' },
     basicSettings: { id: 'ProgramAdminPage.*.basicSettings', defaultMessage: '基本設定' },
+    reviewSettings: { id: 'ProgramAdminPage.*.reviewSettings', defaultMessage: '評論設定' },
     programIntroduction: { id: 'ProgramAdminPage.*.programIntroduction', defaultMessage: '課程介紹' },
     salesPlan: { id: 'ProgramAdminPage.*.salesPlan', defaultMessage: '銷售方案' },
     sharingCode: { id: 'ProgramAdminPage.*.sharingCode', defaultMessage: '推廣網址' },
