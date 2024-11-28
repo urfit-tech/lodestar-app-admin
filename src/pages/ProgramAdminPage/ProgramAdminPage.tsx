@@ -20,6 +20,7 @@ import MetaProductDeletionBlock from '../../components/common/MetaProductDeletio
 import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import ReviewAdminForm from '../../components/review/ReviewAdminForm'
 import { useMutateProgram, useProgram } from '../../hooks/program'
 import pageMessages from '../translation'
 import ProgramAdditionalSettingsForm from './ProgramAdditionalSettingsForm'
@@ -102,6 +103,8 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].basicSettings)}</AdminBlockTitle>
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
+
+              <ReviewAdminForm path={`/programs/${programId}`} />
 
               {isShowProgramAdditionalSettingsForm ? (
                 <AdminBlock>
