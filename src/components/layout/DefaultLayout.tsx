@@ -108,7 +108,7 @@ export const DefaultLayoutHeader: React.FC<{
 }> = ({ renderTitle }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions, currentUserRole } = useAuth()
-  const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions } = useApp()
+  const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions, settings } = useApp()
   const { appPlan, appPlanLoading } = useAppPlan()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
   const {
@@ -119,6 +119,21 @@ export const DefaultLayoutHeader: React.FC<{
   const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
     UPDATE_APP_OPTIONS,
   )
+
+  let settingLanguageList: string[] = []
+  if (!!settings['layout.language_sorted_list']) {
+    try {
+      settingLanguageList = JSON.parse(settings['layout.language_sorted_list'])
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  const sortedLanguagesList = SUPPORTED_LOCALES.filter(language => settingLanguageList.includes(language.label)).sort(
+    (a, b) => {
+      return settingLanguageList.indexOf(a.label) - settingLanguageList.indexOf(b.label)
+    },
+  )
+  const languagesList = sortedLanguagesList.length > 0 ? sortedLanguagesList : SUPPORTED_LOCALES
 
   const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
   const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
@@ -198,7 +213,7 @@ export const DefaultLayoutHeader: React.FC<{
                 trigger={['click']}
                 overlay={
                   <Menu>
-                    {SUPPORTED_LOCALES.map(supportedLocale => (
+                    {languagesList.map(supportedLocale => (
                       <Menu.Item key={supportedLocale.locale}>
                         <StyledButton
                           type="link"
