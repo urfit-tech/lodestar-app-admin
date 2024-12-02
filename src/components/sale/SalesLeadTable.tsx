@@ -175,48 +175,50 @@ const SalesLeadTable: React.VFC<{
     setListStatus(status)
   }
 
-  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<SalesLeadMember> =
-    onSetFilter => ({
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div className="p-2">
-          <Input
-            value={selectedKeys[0]}
-            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => {
+  const getColumnSearchProps: (
+    onSetFilter: (value?: string) => void,
+    filterValue?: string,
+  ) => ColumnProps<SalesLeadMember> = (onSetFilter, filterValue) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2">
+        <Input
+          value={filterValue} // The filterValue is to ensure that when changing the tab, it can be same with the filter state of the parent component, that is, the filter should also be cleared when it is cleared.
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => {
+            confirm()
+            onSetFilter(selectedKeys[0] as string)
+          }}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <div>
+          <Button
+            type="primary"
+            onClick={() => {
               confirm()
               onSetFilter(selectedKeys[0] as string)
             }}
-            style={{ width: 188, marginBottom: 8, display: 'block' }}
-          />
-          <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                confirm()
-                onSetFilter(selectedKeys[0] as string)
-              }}
-              icon={<SearchOutlined />}
-              size="small"
-              className="mr-2"
-              style={{ width: 90 }}
-            >
-              {formatMessage(saleMessages.SalesLeadTable.search)}
-            </Button>
-            <Button
-              onClick={() => {
-                clearFilters && clearFilters()
-                onSetFilter(undefined)
-              }}
-              size="small"
-              style={{ width: 90 }}
-            >
-              {formatMessage(saleMessages.SalesLeadTable.reset)}
-            </Button>
-          </div>
+            icon={<SearchOutlined />}
+            size="small"
+            className="mr-2"
+            style={{ width: 90 }}
+          >
+            {formatMessage(saleMessages.SalesLeadTable.search)}
+          </Button>
+          <Button
+            onClick={() => {
+              clearFilters && clearFilters()
+              onSetFilter(undefined)
+            }}
+            size="small"
+            style={{ width: 90 }}
+          >
+            {formatMessage(saleMessages.SalesLeadTable.reset)}
+          </Button>
         </div>
-      ),
-      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    })
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered && !!filterValue ? '#1890ff' : undefined }} />,
+  })
 
   const handleEditFullName = (lead: SalesLeadMember) => {
     setEditFullNameMemberId(lead.id)
@@ -490,7 +492,7 @@ const SalesLeadTable: React.VFC<{
             : -1,
         multiple: 1,
       },
-      // defaultSortOrder: 'descend',
+      filteredValue: filter?.leadLevel as React.Key[],
       onFilter: () => true,
       render: (_, record) => (
         <div className="d-flex flex-row justify-content-end">
@@ -534,11 +536,13 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'nameAndEmail',
       width: 200,
       title: formatMessage(saleMessages.SalesLeadTable.memberNickName),
-      ...getColumnSearchProps((value?: string) =>
-        onFilter({
-          ...filter,
-          nameAndEmail: value,
-        }),
+      ...getColumnSearchProps(
+        (value?: string) =>
+          onFilter({
+            ...filter,
+            nameAndEmail: value,
+          }),
+        filter?.nameAndEmail,
       ),
       render: (nameAndEmail, lead) => {
         const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
@@ -642,11 +646,13 @@ const SalesLeadTable: React.VFC<{
           )}
         </StyledPhones>
       ),
-      ...getColumnSearchProps((value?: string) =>
-        onFilter({
-          ...filter,
-          phone: value,
-        }),
+      ...getColumnSearchProps(
+        (value?: string) =>
+          onFilter({
+            ...filter,
+            phone: value,
+          }),
+        filter?.phone,
       ),
     },
     {
@@ -657,6 +663,7 @@ const SalesLeadTable: React.VFC<{
         text: categoryName,
         value: categoryName,
       })),
+      filteredValue: filter?.categoryName as React.Key[],
       onFilter: () => true,
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
@@ -665,11 +672,13 @@ const SalesLeadTable: React.VFC<{
       key: 'materialNames',
       dataIndex: 'properties',
       title: formatMessage(saleMessages.SalesLeadTable.adMaterial),
-      ...getColumnSearchProps((value?: string) =>
-        onFilter({
-          ...filter,
-          materialName: value,
-        }),
+      ...getColumnSearchProps(
+        (value?: string) =>
+          onFilter({
+            ...filter,
+            materialName: value,
+          }),
+        filter?.materialName,
       ),
       render: (properties: { id: string; name: string; value: string }[]) =>
         properties
@@ -682,11 +691,13 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'memberNote',
       width: 300,
       title: formatMessage(saleMessages.SalesLeadTable.memberNote),
-      ...getColumnSearchProps((value?: string) =>
-        onFilter({
-          ...filter,
-          memberNote: value,
-        }),
+      ...getColumnSearchProps(
+        (value?: string) =>
+          onFilter({
+            ...filter,
+            memberNote: value,
+          }),
+        filter?.memberNote,
       ),
       render: (_, lead) => (
         <StyledMemberNote>
