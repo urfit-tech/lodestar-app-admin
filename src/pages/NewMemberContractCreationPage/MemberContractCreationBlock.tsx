@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
-import { copyToClipboard } from '../../helpers'
+import { copyToClipboard, signShortUrl } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
@@ -511,8 +511,8 @@ const MemberContractCreationBlock: React.FC<{
               type="primary"
               icon={<CopyOutlined />}
               className="mt-3"
-              onClick={() => {
-                copyToClipboard(memberContractUrl)
+              onClick={async () => {
+                copyToClipboard(await signShortUrl(memberContractUrl, authToken))
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
@@ -525,8 +525,8 @@ const MemberContractCreationBlock: React.FC<{
               type="primary"
               icon={<CopyOutlined />}
               className="mt-3"
-              onClick={() => {
-                copyToClipboard(paymentUrl)
+              onClick={async () => {
+                copyToClipboard(await signShortUrl(paymentUrl, authToken))
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
