@@ -43,7 +43,7 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
       {programs.map(program => (
         <div key={program.id} className="col-md-6 col-lg-4 col-12 mb-5">
           <OverlayWrapper>
-            <StyledCover src={program.program.coverUrl} className="mb-3" />
+            <StyledCover src={program.program.coverThumbnailUrl || program.program.coverUrl} className="mb-3" />
             <OverlayBlock>
               <div>
                 <a href={`/programs/${program.program.id}`} target="_blank" rel="noopener noreferrer">
