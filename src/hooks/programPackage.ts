@@ -304,9 +304,9 @@ export const useDeliverProgramCollection = () => {
 }
 
 export const useProgramPackage = (id: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE, hasura.GET_PROGRAM_PACKAGEVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GetProgramPackage, hasura.GetProgramPackageVariables>(
     gql`
-      query GET_PROGRAM_PACKAGE($id: uuid!) {
+      query GetProgramPackage($id: uuid!) {
         program_package_by_pk(id: $id) {
           id
           title
@@ -321,6 +321,7 @@ export const useProgramPackage = (id: string) => {
               id
               title
               cover_url
+              cover_thumbnail_url
               published_at
             }
             position
@@ -390,6 +391,7 @@ export const useProgramPackage = (id: string) => {
               id: programPackageProgram.program.id,
               title: programPackageProgram.program.title || '',
               coverUrl: programPackageProgram.program.cover_url || null,
+              coverThumbnailUrl: programPackageProgram.program.cover_thumbnail_url || null,
               publishedAt: programPackageProgram.program.published_at,
             },
             position: programPackageProgram.position,
