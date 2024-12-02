@@ -593,3 +593,26 @@ export const convertPxToUnit = (value: number, unit: string) => {
       return `${value}px`
   }
 }
+
+
+export const signShortUrl = async (url: string, authToken: string | null) => {
+  return await axios.post(
+    `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-short-url`,
+    {
+      url,
+    },
+    {
+      headers: {
+        authorization: `Bearer ${authToken}`,
+      },
+    },
+  )
+    .then(res => {
+      console.log(res.data.result)
+      return res.data.result
+    })
+    .catch(err => {
+      console.error(err)
+      return url
+    })
+}
