@@ -163,9 +163,9 @@ const OrderDetailDrawer: React.FC<{
                         i.createdAt ? dayjs(i.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss') : ''
                       }
                       invoiceNumber={i.no}
-                      invoiceName={i.options?.Result?.['BuyerName'] || ''}
+                      invoiceName={orderLog.invoiceOptions?.name || ''}
                       invoicePhone={orderLog.invoiceOptions?.phone || ''}
-                      invoiceEmail={i.options?.Result?.['BuyerEmail'] || ''}
+                      invoiceEmail={orderLog.invoiceOptions?.email || ''}
                       invoiceTarget={
                         orderLog.invoiceOptions?.donationCode
                           ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetDonation)
@@ -181,14 +181,14 @@ const OrderDetailDrawer: React.FC<{
                           ? formatMessage(saleMessages.OrderDetailDrawer.citizenCode)
                           : ''
                       }
-                      uniformNumber={i.options?.Result?.['BuyerUBN'] || ''}
-                      uniformTitle={i.options?.Result?.['BuyerName'] || ''}
+                      uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
+                      uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
                       invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
                         orderLog.invoiceOptions?.address || ''
                       }`}
                       invoiceComment={i.options?.Result?.Comment || orderLog.invoiceOptions?.invoiceComment}
                       invoicePrice={i.price}
-                      invoiceRandomNumber={i.options?.Result?.['BuyerName'] || ''}
+                      invoiceRandomNumber={i.options?.Result?.RandomNum || ''}
                       onClose={() => {
                         onClose()
                         orderDetailRefetch()

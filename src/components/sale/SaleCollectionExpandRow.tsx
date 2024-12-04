@@ -1,4 +1,3 @@
-import { CopyOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -14,7 +13,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { copyToClipboard, currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
+import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogExpandRow } from '../../hooks/order'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
@@ -114,11 +113,10 @@ const SaleCollectionExpandRow = ({
   onRefetchOrderLog?: () => void
 }) => {
   const { formatMessage } = useIntl()
-  const { settings, id: appId, enabledModules } = useApp()
+  const { settings } = useApp()
   const { currentUserRole, permissions } = useAuth()
   const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
   const [issueInvoiceResults, setIssueInvoiceResults] = useState<IssueInvoiceResult[] | null>(null)
-  const [generatePaymentLinkLoading, setGeneratePaymentLinkLoading] = useState(false)
   const orderLogId = record.id
   const orderStatus = record.status
   const totalPrice = record.totalPrice
@@ -432,32 +430,6 @@ const SaleCollectionExpandRow = ({
               setIssueInvoiceResults(prev => [...(prev || []), result])
             }}
           />
-        )}
-        {enabledModules.order_payment_link_module && (
-          <Button
-            disabled={generatePaymentLinkLoading}
-            loading={generatePaymentLinkLoading}
-            size="middle"
-            icon={<CopyOutlined />}
-            className="ml-2"
-            onClick={() => {
-              setGeneratePaymentLinkLoading(true)
-              axios
-                .post(`${process.env.REACT_APP_API_BASE_ROOT}/order/${orderLogId}/payment/link`, { appId })
-                .then(r => {
-                  if (r.data.code === 'SUCCESS') {
-                    copyToClipboard(r.data.result.link)
-                    message.success(formatMessage(commonMessages.text.copiedToClipboard))
-                  }
-                })
-                .catch(handleError)
-                .finally(() => {
-                  setGeneratePaymentLinkLoading(false)
-                })
-            }}
-          >
-            複製付款連結
-          </Button>
         )}
         <AdminModal
           visible={!!issueInvoiceResults}
