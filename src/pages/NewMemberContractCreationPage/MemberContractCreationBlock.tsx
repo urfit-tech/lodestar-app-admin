@@ -394,10 +394,14 @@ const MemberContractCreationBlock: React.FC<{
           const paymentNo = res.data.result.paymentNo
           const payToken = res.data.result.payToken
           const orderId = res.data.result.orderId
+          const cacheToken = res.data.result.cacheToken
+
           if (paymentGateway.includes('spgateway') && orderId) {
             setPaymentUrl(
               paymentNo
-                ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+                ? cacheToken
+                  ? `${window.origin}/payments/${paymentNo}?cacheToken=${cacheToken}`
+                  : `${window.origin}/payments/${paymentNo}?token=${payToken}`
                 : `${window.origin}/orders/${orderId}?tracking=1`,
             )
           }
@@ -499,7 +503,7 @@ const MemberContractCreationBlock: React.FC<{
               icon={<CopyOutlined />}
               className="mt-3"
               onClick={async () => {
-                copyToClipboard(await signShortUrl(paymentUrl, authToken))
+                copyToClipboard(paymentUrl)
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
