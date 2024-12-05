@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
-import { copyToClipboard } from '../../helpers'
+import { copyToClipboard, signShortUrl } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
@@ -394,10 +394,14 @@ const MemberContractCreationBlock: React.FC<{
           const paymentNo = res.data.result.paymentNo
           const payToken = res.data.result.payToken
           const orderId = res.data.result.orderId
+          const cacheToken = res.data.result.cacheToken
+
           if (paymentGateway.includes('spgateway') && orderId) {
             setPaymentUrl(
               paymentNo
-                ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
+                ? cacheToken
+                  ? `${window.origin}/payments/${paymentNo}?cacheToken=${cacheToken}`
+                  : `${window.origin}/payments/${paymentNo}?token=${payToken}`
                 : `${window.origin}/orders/${orderId}?tracking=1`,
             )
           }
@@ -484,8 +488,8 @@ const MemberContractCreationBlock: React.FC<{
               type="primary"
               icon={<CopyOutlined />}
               className="mt-3"
-              onClick={() => {
-                copyToClipboard(memberContractUrl)
+              onClick={async () => {
+                copyToClipboard(await signShortUrl(memberContractUrl, authToken))
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
             >
@@ -498,7 +502,7 @@ const MemberContractCreationBlock: React.FC<{
               type="primary"
               icon={<CopyOutlined />}
               className="mt-3"
-              onClick={() => {
+              onClick={async () => {
                 copyToClipboard(paymentUrl)
                 message.success(formatMessage(commonMessages.text.copiedToClipboard))
               }}
