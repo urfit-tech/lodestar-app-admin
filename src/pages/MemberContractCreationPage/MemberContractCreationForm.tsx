@@ -1,6 +1,7 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { last } from 'ramda'
 import React, { memo, useState } from 'react'
@@ -48,10 +49,19 @@ const MemberContractCreationForm: React.FC<
     form,
     ...formProps
   }) => {
+    const { settings } = useApp()
     const { formatMessage } = useIntl()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
     const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
+    let contractStudentIdentityEnable = 1
+    if (!!settings['contract.student_identity.enable']) {
+      try {
+        contractStudentIdentityEnable = JSON.parse(settings['contract.student_identity.enable'])
+      } catch (err) {
+        console.log(err)
+      }
+    }
 
     const matchProduct = (params: string, products: ContractInfo['products']) => {
       if (params.length < 2) return setFilterProducts(products)
@@ -203,29 +213,31 @@ const MemberContractCreationForm: React.FC<
             }}
           </Form.List>
         </div>
-
         <Descriptions column={1} bordered className="mb-5">
-          <Descriptions.Item
-            label={formatMessage(pageMessages.MemberContractCreationForm.memberStatus)}
-            className="m-0"
-          >
-            <div className="d-flex align-items-center">
-              <Form.Item name="identity" noStyle>
-                <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                  <Radio value="normal">{formatMessage(pageMessages.MemberContractCreationForm.normal)}</Radio>
-                  <Radio value="student">{formatMessage(pageMessages.MemberContractCreationForm.student)}</Radio>
-                </Radio.Group>
-              </Form.Item>
+          {contractStudentIdentityEnable === 1 && (
+            <Descriptions.Item
+              label={formatMessage(pageMessages.MemberContractCreationForm.memberStatus)}
+              className="m-0"
+            >
+              <div className="d-flex align-items-center">
+                <Form.Item name="identity" noStyle>
+                  <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                    <Radio value="normal">{formatMessage(pageMessages.MemberContractCreationForm.normal)}</Radio>
 
-              <Form.Item name="certification" noStyle>
-                {identity === 'student' && (
-                  <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
-                )}
-              </Form.Item>
+                    <Radio value="student">{formatMessage(pageMessages.MemberContractCreationForm.student)}</Radio>
+                  </Radio.Group>
+                </Form.Item>
 
-              {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
-            </div>
-          </Descriptions.Item>
+                <Form.Item name="certification" noStyle>
+                  {identity === 'student' && (
+                    <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+                  )}
+                </Form.Item>
+
+                {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
+              </div>
+            </Descriptions.Item>
+          )}
 
           <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.referrer)}>
             <Form.Item name="referralMemberId" noStyle>
