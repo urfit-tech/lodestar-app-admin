@@ -198,7 +198,11 @@ const IssueReplyItem: React.FC<{
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn: createUploadFn(appId, authToken), accepts: { video: false, audio: false } }}
+                media={{
+                uploadFn: createUploadFn(appId, authToken),
+                accepts: { video: false, audio: false },
+                externals: { video: false, audio: false },
+              }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>
