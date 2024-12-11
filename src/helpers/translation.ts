@@ -1275,7 +1275,7 @@ export const memberMessages = {
     urlSpacingHint: { id: 'member.text.urlSpacingHint', defaultMessage: '若文字中有含網址，請於網址後方加上空格' },
   },
   placeholder: {
-    smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
+    smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過63字' },
     smsSchedule: { id: 'member.placeholder.smsSchedule', defaultMessage: '排程發送時間（選填）' },
   },
 }
