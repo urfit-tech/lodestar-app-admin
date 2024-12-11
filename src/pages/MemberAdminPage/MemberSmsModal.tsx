@@ -11,7 +11,7 @@ import { memberMessages } from '../../helpers/translation'
 import pageMessages from '../translation'
 
 const ONLY_GSM_ALPHABET_MAX_LENGTH = 159
-const MAX_LENGTH = 60
+const MAX_LENGTH = 63
 
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
