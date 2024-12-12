@@ -21,11 +21,7 @@ const PriceDescriptionItem: React.FC<PlanDescriptionProps> = ({ label, name }) =
     <Form.Item label={_label} name={name}>
       <StyledBraftEditor
         controls={['bold', 'italic', 'underline', 'strike-through', 'remove-styles', 'separator', 'media']}
-        media={{
-          uploadFn: createUploadFn(appId, authToken),
-          accepts: { video: false, audio: false },
-          externals: { video: false, audio: false },
-        }}
+        media={{ uploadFn: createUploadFn(appId, authToken), accepts: { video: false, audio: false } }}
       />
     </Form.Item>
   )

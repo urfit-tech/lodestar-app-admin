@@ -4,7 +4,6 @@ import { Button, Dropdown, Form, Input, Menu, Tag, Typography } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -18,7 +17,6 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramRoleProps } from '../../types/program'
 import MemberAvatar from '../common/MemberAvatar'
 import { ProgramRoleLabel } from '../common/UserRole'
-import { createUploadFn } from '../form/AdminBraftEditor'
 import IssueReplyCollectionBlock from './IssueReplyCollectionBlock'
 import { StyledEditor } from './IssueReplyCreationBlock'
 
@@ -99,8 +97,7 @@ const IssueItem: React.FC<{
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
-  const { currentMemberId, currentUserRole, authToken } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
   const theme = useAppTheme()
 
   const [updateIssue] = useMutation<hasura.UPDATE_ISSUE, hasura.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
@@ -267,14 +264,7 @@ const IssueItem: React.FC<{
               <Input />
             </Form.Item>
             <Form.Item name="description">
-              <StyledEditor
-                controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{
-                  uploadFn: createUploadFn(appId, authToken),
-                  accepts: { video: false, audio: false },
-                  externals: { video: false, audio: false },
-                }}
-              />
+              <StyledEditor controls={['bold', 'italic', 'underline', 'separator', 'media']} />
             </Form.Item>
 
             <Form.Item>
