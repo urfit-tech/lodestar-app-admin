@@ -76,7 +76,7 @@ const IssueReplyCreationBlock: React.FC<{
         <StyledEditor
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
-          media={{ uploadFn: createUploadFn(appId, authToken), accepts: { video: false, audio: false } }}
+          media={{ uploadFn: createUploadFn(appId, authToken) }}
         />
       </Form.Item>
       <Form.Item className="text-right">
