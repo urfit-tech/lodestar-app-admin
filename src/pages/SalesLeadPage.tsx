@@ -210,7 +210,6 @@ const SalesLeadTabs: React.VFC<{
                       onSelectedLeadStatusCategoryChange(null)
                       setSelectedRowKeys([])
                       setPagination(undefined)
-                      setFilter({})
                     }}
                   >
                     {!selectedLeadStatusCategory && <CheckOutlined className="mr-1" />}
@@ -236,7 +235,6 @@ const SalesLeadTabs: React.VFC<{
                         })
                         setSelectedRowKeys([])
                         setPagination(undefined)
-                        setFilter({})
                       }}
                     >
                       {selectedLeadStatusCategory?.id === leadStatusCategory.id && <CheckOutlined className="mr-1" />}

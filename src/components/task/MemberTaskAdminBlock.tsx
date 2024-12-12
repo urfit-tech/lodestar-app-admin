@@ -30,6 +30,8 @@ import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
 import PermissionGroupSelector from '../form/PermissionGroupSelector'
+import { MeetingError, MeetingLinkStrategyFactory, MeetingServiceType } from './meetingLinkStrategy'
+import taskMessages from './translation'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -241,61 +243,52 @@ const MemberTaskAdminBlock: React.FC<{
     memberId: string,
     hostMemberName: string,
   ) => {
-    const jitsiUrl = 'https://meet.jit.si/ROOM_NAME#config.startWithVideoMuted=true&userInfo.displayName="MEMBER_NAME"'
-      .replace('ROOM_NAME', `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`)
-      .replace('MEMBER_NAME', hostMemberName)
-
-    // jitsi or zoom or google-meet
     const { data } = await apolloClient.query<hasura.GetMeetById, hasura.GetMeetByIdVariables>({
       query: GetMeetById,
       variables: { meetId },
     })
-    const isCurrentTimeInMeetingPeriod = moment(new Date()).isBetween(nbfAt, expAt, null, '[)')
-    if (!isCurrentTimeInMeetingPeriod) {
-      return message.error('非會議時間')
+    const service: MeetingServiceType = (data.meet_by_pk?.gateway as MeetingServiceType) || MeetingServiceType.JITSI
+
+    const strategy = new MeetingLinkStrategyFactory(
+      service,
+      {
+        memberId,
+        startedAt,
+        endedAt,
+        nbfAt,
+        expAt,
+        hostMemberId: currentMemberId || '',
+        memberTaskId,
+        meetType: data.meet_by_pk?.type || '',
+        hostMemberName,
+      },
+      appId,
+      authToken,
+      !!enabledModules.meet_service,
+    ).create()
+
+    if (!strategy) {
+      return message.error(formatMessage(taskMessages.MeetingLinkStrategy.notSupportMeetingSystem))
     }
-    let startUrl
-    if (
-      enabledModules.meet_service &&
-      (data.meet_by_pk?.gateway === 'zoom' || data.meet_by_pk?.gateway === 'google-meet')
-    ) {
-      // create meeting than get startUrl
-      try {
-        const { data: createMeetData } = await axios.post(
-          `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
-          {
-            memberId: memberId,
-            startedAt: startedAt,
-            endedAt: endedAt,
-            autoRecording: true,
-            nbfAt: dayjs(startedAt).subtract(10, 'minutes').toDate(),
-            expAt: endedAt,
-            service: data.meet_by_pk.gateway,
-            target: memberTaskId,
-            hostMemberId: currentMemberId,
-            type: `${data.meet_by_pk?.type}`,
-          },
-          {
-            headers: {
-              authorization: `Bearer ${authToken}`,
-            },
-          },
-        )
-        startUrl = createMeetData.data?.options?.startUrl
-      } catch (error) {
-        handleError(error)
-      }
-      if (startUrl) {
-        window.open(startUrl, '_blank')
-      } else {
-        window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
-        // setJitsiModalVisible(true)
-      }
-    } else {
-      // module meet_service not enabled, default jitsi
-      window.open(jitsiUrl, '_blank', 'noopener,noreferrer')
-      // setJitsiModalVisible(true)
+
+    const { meetingUrl, error } = await strategy.getMeetingUrl()
+
+    const errorMessages = {
+      [MeetingError.NOT_IN_MEETING_PERIOD]: taskMessages.MeetingLinkStrategy.notInMeetingPeriod,
+      [MeetingError.CREATE_MEET_ERROR]: taskMessages.MeetingLinkStrategy.createMeetError,
+      [MeetingError.MEET_SERVICE_MODULE_NOT_ENABLED]: taskMessages.MeetingLinkStrategy.meetServiceModuleNotEnabled,
     }
+
+    if (error) {
+      const errorMessage = errorMessages[error] || error
+      return message.error(formatMessage(errorMessage))
+    }
+
+    if (!meetingUrl) {
+      return message.error(formatMessage(taskMessages.MeetingLinkStrategy.cannotGetMeetingUrl))
+    }
+
+    window.open(meetingUrl, '_blank', 'noopener,noreferrer')
   }
 
   const columns: ColumnProps<MemberTaskProps>[] = [
