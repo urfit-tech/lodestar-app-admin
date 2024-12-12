@@ -1,17 +1,13 @@
-import { FileAddOutlined, ImportOutlined } from '@ant-design/icons'
+import { FileAddOutlined, UploadOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Upload } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, message, Radio, Space, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import axios from 'axios'
-import dayjs from 'dayjs'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import * as XLSX from 'xlsx'
 import hasura from '../../hasura'
-import { handleError, uploadFileV2 } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMemberSummaryCollection } from '../../hooks/member'
 import AdminModal from '../admin/AdminModal'
@@ -21,9 +17,7 @@ const messages = defineMessages({
   sendingCoin: { id: 'promotion.label.sendingCoin', defaultMessage: '發送代幣' },
   sendCoin: { id: 'promotion.ui.sendCoin', defaultMessage: '發送代幣' },
   selectMember: { id: 'promotion.label.selectMember', defaultMessage: '選擇會員' },
-  batchSendCoin: { id: 'promotion.label.batchSendCoin', defaultMessage: 'Batch Send Coin' },
-  manualSendCoin: { id: 'promotion.label.manualSendCoin', defaultMessage: 'Manual Send Coin' },
-  downloadSampleCsv: { id: 'promotion.label.downloadSampleCsv', defaultMessage: 'Download Sample Csv' },
+  bathSelectMember: { id: 'promotion.label.bathSelectMember', defaultMessage: '批次選擇名單' },
   uploadMember: { id: 'promotion.label.uploadMember', defaultMessage: '上傳名單' },
   title: { id: 'promotion.label.title', defaultMessage: '項目' },
   scheme: { id: 'promotion.label.scheme', defaultMessage: '格式' },
@@ -45,24 +39,10 @@ type FieldProps = {
   note: string
 }
 
-const downloadSampleCsv = () => {
-  const workbook = XLSX.utils.book_new()
-  const worksheet = XLSX.utils.aoa_to_sheet([
-    ['信箱', '項目', '代幣數量', '代幣開始時間', '代幣結束時間', '備註', '描述', '領取時間', '建立時間'],
-    ['email', 'title', 'amount', 'startedAt', 'endedAt', 'note', 'description', 'claimedAt', 'createdAt'],
-    ['member1@sample.com', '範例-A', '100', '', '', '', '', '2024-11-12', ''],
-    ['member2@sample.com', '範例-B', '-0.2', '2024-11-12T10:00:00', '', '', '', '', ''],
-  ])
-  XLSX.utils.book_append_sheet(workbook, worksheet)
-  XLSX.writeFile(workbook, 'sample_coins.csv')
-}
-
 const CoinSendingModal: React.FC<{
   onRefetch?: () => Promise<any>
 }> = ({ onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
-  const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
   const { members } = useMemberSummaryCollection()
   const [insertCoinLogCollection] = useMutation<
@@ -70,7 +50,7 @@ const CoinSendingModal: React.FC<{
     hasura.INSERT_COIN_LOG_COLLECTIONVariables
   >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
-  const [modelDisplayType, setModalDisplayType] = useState<'manual' | 'batch' | null>()
+  const [memberSelectionMode, setMemberSelectionMode] = useState<'selector' | 'uploader'>('selector')
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -95,6 +75,7 @@ const CoinSendingModal: React.FC<{
             onRefetch?.().then(() => {
               onSuccess()
               form.resetFields()
+              setMemberSelectionMode('selector')
             }),
           )
           .catch(handleError)
@@ -107,146 +88,137 @@ const CoinSendingModal: React.FC<{
     <AdminModal
       title={formatMessage(messages.sendingCoin)}
       renderTrigger={({ setVisible }) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item
-                onClick={() => {
-                  setVisible(true)
-                  setModalDisplayType('manual')
-                }}
-              >
-                {formatMessage(messages.manualSendCoin)}
-              </Menu.Item>
-              <Menu.Item
-                onClick={() => {
-                  setVisible(true)
-                  setModalDisplayType('batch')
-                }}
-              >
-                {formatMessage(messages.batchSendCoin)}
-              </Menu.Item>
-            </Menu>
-          }
-        >
-          <Button type="primary" icon={<FileAddOutlined />}>
-            {formatMessage(messages.sendCoin)}
-          </Button>
-        </Dropdown>
+        <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+          {formatMessage(messages.sendCoin)}
+        </Button>
       )}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
-          {modelDisplayType !== 'batch' && (
-            <>
-              <Button className="mr-2" onClick={() => setVisible(false)}>
-                {formatMessage(commonMessages.ui.cancel)}
-              </Button>
-              <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-                {formatMessage(commonMessages.ui.confirm)}
-              </Button>
-            </>
-          )}
+          <Button className="mr-2" onClick={() => setVisible(false)}>
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
+            {formatMessage(commonMessages.ui.confirm)}
+          </Button>
         </>
       )}
     >
-      {modelDisplayType === 'manual' && (
-        <Form
-          form={form}
-          layout="vertical"
-          colon={false}
-          hideRequiredMark
-          initialValues={{ description: '', amount: 1 }}
+      <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{ description: '', amount: 1 }}>
+        <Form.Item
+          label={formatMessage(messages.title)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(messages.title),
+              }),
+            },
+          ]}
         >
-          <Form.Item
-            label={formatMessage(messages.title)}
-            name="title"
-            rules={[
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.title),
-                }),
-              },
-            ]}
-          >
-            <Input placeholder={formatMessage(messages.titlePlaceholder)} />
-          </Form.Item>
-          <Form.Item
-            name="memberIds"
-            rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
-            label={formatMessage(messages.selectMember)}
-          >
-            <MemberSelector mode="multiple" members={members} maxTagCount={1000} />
-          </Form.Item>
-          <Form.Item
-            className="d-none"
-            label={formatMessage(messages.description)}
-            name="description"
-            rules={[
-              {
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.description),
-                }),
-              },
-            ]}
-          >
-            <Input placeholder={formatMessage(messages.descriptionPlaceholder)} />
-          </Form.Item>
-          <Form.Item label={formatMessage(messages.increaseCoins)} name="amount">
-            <InputNumber formatter={value => (Number(`${value}`) > 0 ? `+${value}` : `${value}`)} />
-          </Form.Item>
-          <Form.Item label={formatMessage(messages.availableDateRange)}>
-            <Input.Group compact>
-              <Form.Item name="startedAt">
-                <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.startedAt)} />
+          <Input placeholder={formatMessage(messages.titlePlaceholder)} />
+        </Form.Item>
+        <Radio.Group
+          buttonStyle="solid"
+          value={memberSelectionMode}
+          onChange={e => setMemberSelectionMode(e.target.value)}
+          style={{ width: '100%' }}
+        >
+          <Space direction="vertical" className="mb-4" style={{ width: '100%' }}>
+            <Radio value="selector">{formatMessage(messages.selectMember)}</Radio>
+            {memberSelectionMode === 'selector' && (
+              <Form.Item
+                name="memberIds"
+                rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
+              >
+                <MemberSelector mode="multiple" members={members} maxTagCount={1000} />
               </Form.Item>
-              <Form.Item name="endedAt">
-                <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.endedAt)} />
-              </Form.Item>
-            </Input.Group>
-          </Form.Item>
-          <Form.Item label={formatMessage(messages.noteForAdmins)} name="note">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-        </Form>
-      )}
-      {modelDisplayType === 'batch' && (
-        <>
-          <div>
-            <Button style={{ padding: 0 }} type="link" onClick={() => downloadSampleCsv()}>
-              {formatMessage(messages.downloadSampleCsv)}
-            </Button>
-          </div>
-          <Upload
-            multiple
-            customRequest={async ({ file, onSuccess, onProgress, onError }) => {
-              const key = `coinImport/coin_import_${dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ[Z]')}`
-              const s3UploadRes = await uploadFileV2(key, file, 'import', authToken, appId)
-              const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
-              await axios
-                .post(
-                  `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/coins/import`,
-                  {
-                    appId,
-                    fileInfos: [{ key, checksum: eTag }],
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${authToken}`,
-                    },
-                  },
+            )}
+            <Space direction="horizontal" align="center">
+              <Radio value="uploader">
+                {formatMessage(messages.bathSelectMember)} ({formatMessage(messages.scheme)}
+                <Button
+                  className="p-0"
+                  type="link"
+                  onClick={() =>
+                    (window.location.href = `https://${process.env.REACT_APP_S3_BUCKET}/public/sample_members.csv`)
+                  }
+                >
+                  {formatMessage(commonMessages.label.example)}
+                </Button>
                 )
-                .then(res => onSuccess(res, file))
-                .catch(error => onError(error))
-            }}
-            accept=".csv,.xlsx,.xls"
-          >
-            <Button icon={<ImportOutlined />}>{formatMessage(commonMessages.ui.upload)}</Button>
-          </Upload>
-        </>
-      )}
+              </Radio>
+              {memberSelectionMode === 'uploader' && (
+                <Form.Item
+                  name="memberIds"
+                  noStyle
+                  rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
+                >
+                  <MemberUploader />
+                </Form.Item>
+              )}
+            </Space>
+          </Space>
+        </Radio.Group>
+        <Form.Item
+          className="d-none"
+          label={formatMessage(messages.description)}
+          name="description"
+          rules={[
+            {
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(messages.description),
+              }),
+            },
+          ]}
+        >
+          <Input placeholder={formatMessage(messages.descriptionPlaceholder)} />
+        </Form.Item>
+        <Form.Item label={formatMessage(messages.increaseCoins)} name="amount">
+          <InputNumber formatter={value => (Number(`${value}`) > 0 ? `+${value}` : `${value}`)} />
+        </Form.Item>
+        <Form.Item label={formatMessage(messages.availableDateRange)}>
+          <Input.Group compact>
+            <Form.Item name="startedAt">
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.startedAt)} />
+            </Form.Item>
+            <Form.Item name="endedAt">
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.endedAt)} />
+            </Form.Item>
+          </Input.Group>
+        </Form.Item>
+        <Form.Item label={formatMessage(messages.noteForAdmins)} name="note">
+          <Input.TextArea rows={3} />
+        </Form.Item>
+      </Form>
     </AdminModal>
+  )
+}
+
+const MemberUploader: React.VFC<{
+  onChange?: (memberIds: string[]) => void
+}> = ({ onChange }) => {
+  const { authToken } = useAuth()
+  const { formatMessage } = useIntl()
+  return (
+    <Upload
+      name="memberList"
+      method="POST"
+      action={`${process.env.REACT_APP_API_BASE_ROOT}/sys/import-leads`}
+      headers={{ authorization: `Bearer ${authToken}` }}
+      accept=".csv"
+      onChange={info => {
+        if (info.file.status === 'done') {
+          const response = info.file.response
+          Array.isArray(response?.result?.leadIds) && onChange?.(response.result.leadIds)
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.name} file upload failed.`)
+        }
+      }}
+    >
+      <Button icon={<UploadOutlined />}>{formatMessage(messages.uploadMember)}</Button>
+    </Upload>
   )
 }
 
