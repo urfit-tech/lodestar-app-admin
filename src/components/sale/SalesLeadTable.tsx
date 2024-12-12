@@ -482,15 +482,8 @@ const SalesLeadTable: React.VFC<{
           value: 'C',
         },
       ],
-      sorter: {
-        compare: (a, b) =>
-          (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
-          (b.properties.find(property => property.name === '名單分級')?.value || 'N')
-            ? 1
-            : -1,
-        multiple: 1,
-      },
-      // defaultSortOrder: 'descend',
+      sorter: {},
+      // filteredValue: filter?.leadLevel as React.Key[],
       onFilter: () => true,
       render: (_, record) => (
         <div className="d-flex flex-row justify-content-end">

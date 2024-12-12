@@ -478,7 +478,7 @@ const usePrivateTeachContractInfo = (
         }
         contract(
           where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }
-          order_by: { created_at: desc }
+          order_by: { published_at: desc }
         ) {
           id
           name
