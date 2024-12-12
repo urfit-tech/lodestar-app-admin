@@ -69,6 +69,14 @@ const MemberContractCreationForm: React.FC<
     const contractDealerOptions: string[] =
       (settings['contract.dealer.options'] && JSON.parse(settings['contract.dealer.options'])) || []
     const [filterProducts, setFilterProducts] = useState<ContractInfo['products']>(products)
+    let contractStudentIdentityEnable = 1
+    if (!!settings['contract.student_identity.enable']) {
+      try {
+        contractStudentIdentityEnable = JSON.parse(settings['contract.student_identity.enable'])
+      } catch (err) {
+        console.log(err)
+      }
+    }
 
     const matchProduct = (params: string, products: ContractInfo['products']) => {
       if (params.length < 2) return setFilterProducts(products)
@@ -241,26 +249,28 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item> */}
 
-            <Descriptions.Item
-              label={formatMessage(pageMessages.MemberContractCreationForm.memberStatus)}
-              className="m-0"
-            >
-              <div className="d-flex align-items-center">
-                <Form.Item name="identity" noStyle>
-                  <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                    <Radio value="normal">{formatMessage(pageMessages.MemberContractCreationForm.normal)}</Radio>
-                    <Radio value="student">{formatMessage(pageMessages.MemberContractCreationForm.student)}</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                {identity === 'student' && (
-                  <Form.Item name="certification" valuePropName="fileList" noStyle>
-                    <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+            {contractStudentIdentityEnable === 1 && (
+              <Descriptions.Item
+                label={formatMessage(pageMessages.MemberContractCreationForm.memberStatus)}
+                className="m-0"
+              >
+                <div className="d-flex align-items-center">
+                  <Form.Item name="identity" noStyle>
+                    <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                      <Radio value="normal">{formatMessage(pageMessages.MemberContractCreationForm.normal)}</Radio>
+                      <Radio value="student">{formatMessage(pageMessages.MemberContractCreationForm.student)}</Radio>
+                    </Radio.Group>
                   </Form.Item>
-                )}
+                  {identity === 'student' && (
+                    <Form.Item name="certification" valuePropName="fileList" noStyle>
+                      <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+                    </Form.Item>
+                  )}
 
-                {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
-              </div>
-            </Descriptions.Item>
+                  {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
+                </div>
+              </Descriptions.Item>
+            )}
 
             <Descriptions.Item label={formatMessage(pageMessages.MemberContractCreationForm.referrer)}>
               <Form.Item name="referralMemberId" noStyle>

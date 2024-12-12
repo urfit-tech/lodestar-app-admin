@@ -11,7 +11,7 @@ import { memberMessages } from '../../helpers/translation'
 import pageMessages from '../translation'
 
 const ONLY_GSM_ALPHABET_MAX_LENGTH = 159
-const MAX_LENGTH = 69
+const MAX_LENGTH = 63
 
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
@@ -85,7 +85,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string; name: string 
       <Form.Item
         className="mb-3"
         validateStatus={isTooLong ? 'error' : ''}
-        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong, { charactersLimit: MAX_LENGTH }) : undefined}
+        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong) : undefined}
       >
         <TextArea
           placeholder={formatMessage(memberMessages.placeholder.smsContent)}
