@@ -48,10 +48,34 @@ type FieldProps = {
 const downloadSampleCsv = () => {
   const workbook = XLSX.utils.book_new()
   const worksheet = XLSX.utils.aoa_to_sheet([
-    ['信箱', '項目', '代幣數量', '代幣開始時間', '代幣結束時間', '備註', '描述', '領取時間', '建立時間'],
-    ['email', 'title', 'amount', 'startedAt', 'endedAt', 'note', 'description', 'claimedAt', 'createdAt'],
-    ['member1@sample.com', '範例-A', '100', '', '', '', '', '2024-11-12', ''],
-    ['member2@sample.com', '範例-B', '-0.2', '2024-11-12T10:00:00', '', '', '', '', ''],
+    [
+      '信箱',
+      '項目',
+      '代幣數量',
+      '代幣開始時間',
+      '代幣結束時間',
+      '備註',
+      '描述',
+      '領取時間',
+      '領取開始時間',
+      '領取結束時間',
+      '建立時間',
+    ],
+    [
+      'email',
+      'title',
+      'amount',
+      'startedAt',
+      'endedAt',
+      'note',
+      'description',
+      'claimedAt',
+      'claimStartedAt',
+      'claimEndedAt',
+      'createdAt',
+    ],
+    ['member1@sample.com', '範例-A', '100', '', '', '', '', '2024-11-12 10:00:00', '', '', ''],
+    ['member2@sample.com', '範例-B', '-0.2', '2024-11-12 10:00:00', '', '', '', '2024-11-12 10:00:00', '', '', ''],
   ])
   XLSX.utils.book_append_sheet(workbook, worksheet)
   XLSX.writeFile(workbook, 'sample_coins.csv')
