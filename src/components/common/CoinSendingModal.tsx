@@ -1,6 +1,7 @@
 import { FileAddOutlined, ImportOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Upload } from 'antd'
+import { Box } from '@chakra-ui/react'
+import { Alert, Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -33,6 +34,18 @@ const messages = defineMessages({
   noteForAdmins: { id: 'promotion.label.noteForAdmins', defaultMessage: '備註(僅供管理員檢視)' },
   titlePlaceholder: { id: 'promotion.text.titlePlaceholder', defaultMessage: '請填寫項目名稱' },
   descriptionPlaceholder: { id: 'promotion.text.descriptionPlaceholder', defaultMessage: '請填寫項目描述' },
+  uploadSuccess: {
+    id: 'member.MemberImportModal.uploadSuccess',
+    defaultMessage: '{name} 上傳成功!',
+  },
+  uploadFail: {
+    id: 'member.MemberImportModal.uploadFail',
+    defaultMessage: '{name} 上傳失敗!',
+  },
+  importResultNotification: {
+    id: 'member.MemberImportModal.importResultNotification',
+    defaultMessage: '匯入結果將會以信件寄出',
+  },
 })
 
 type FieldProps = {
@@ -94,6 +107,14 @@ const CoinSendingModal: React.FC<{
     hasura.INSERT_COIN_LOG_COLLECTIONVariables
   >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
+  const [responseList, setResponseList] = useState<
+    {
+      status: number
+      statusText: string
+      data: string | null
+      name: string | null
+    }[]
+  >([])
   const [modelDisplayType, setModalDisplayType] = useState<'manual' | 'batch' | null>()
 
   const handleSubmit = (onSuccess: () => void) => {
@@ -265,9 +286,39 @@ const CoinSendingModal: React.FC<{
                 .catch(error => onError(error))
             }}
             accept=".csv,.xlsx,.xls"
+            onChange={info => {
+              if (info.file.status === 'done') {
+                const response = info.file.response
+                response.name = info.file.name
+                setResponseList(state => [...state, response])
+                onRefetch?.()
+              } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`)
+              }
+            }}
           >
             <Button icon={<ImportOutlined />}>{formatMessage(commonMessages.ui.upload)}</Button>
           </Upload>
+          <Box marginTop="10px">
+            {responseList.map(response => {
+              switch (response.status) {
+                case 201:
+                  return (
+                    <Alert
+                      message={formatMessage(messages.uploadSuccess, { name: response.name })}
+                      type="success"
+                      description={
+                        <div>
+                          <div>{formatMessage(messages.importResultNotification)}</div>
+                        </div>
+                      }
+                    />
+                  )
+                default:
+                  return <Alert message={formatMessage(messages.uploadFail, { name: response.name })} type="error" />
+              }
+            })}
+          </Box>
         </>
       )}
     </AdminModal>
