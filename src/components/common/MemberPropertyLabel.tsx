@@ -3,7 +3,11 @@ import gql from 'graphql-tag'
 import React from 'react'
 import hasura from '../../hasura'
 
-const MemberPropertyLabel: React.FC<{ memberId: string; propertyName: string }> = ({ memberId, propertyName }) => {
+const MemberPropertyLabel: React.FC<{ memberId: string; propertyName: string; suffix?: string }> = ({
+  memberId,
+  propertyName,
+  suffix,
+}) => {
   const { data } = useQuery<
     hasura.GetMemberPropertyByMEmberIdAndPropertyName,
     hasura.GetMemberPropertyByMEmberIdAndPropertyNameVariables
@@ -22,8 +26,14 @@ const MemberPropertyLabel: React.FC<{ memberId: string; propertyName: string }> 
     `,
     { variables: { memberId, propertyName }, skip: !memberId || !propertyName },
   )
+  const propertyValue: string | undefined = data?.member_property?.map(property => property.value)[0]
 
-  return <span>{data?.member_property?.map(property => property.value)[0]}</span>
+  return (
+    <span>
+      {propertyValue}
+      {!!propertyValue && suffix}
+    </span>
+  )
 }
 
 export default MemberPropertyLabel

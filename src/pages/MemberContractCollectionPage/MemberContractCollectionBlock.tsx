@@ -435,8 +435,7 @@ export const MemberContractCollectionBlock: React.FC<{
         record.orderExecutors?.map(({ memberId, ratio }, index) => {
           return (
             <div key={memberId}>
-              <MemberPropertyLabel memberId={memberId} propertyName="組別" />
-              {'-'}
+              <MemberPropertyLabel memberId={memberId} propertyName="組別" suffix={'-'} />
               <MemberNameLabel memberId={memberId} />
               <span className="ml-2">{Math.floor(ratio * 100)}%</span>
             </div>
