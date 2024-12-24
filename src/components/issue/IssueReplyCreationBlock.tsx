@@ -80,7 +80,7 @@ const IssueReplyCreationBlock: React.FC<{
           media={{
                 uploadFn: createUploadFn(appId, authToken),
                 accepts: { video: false, audio: false },
-                externals: { image: true, video: false, audio: false, embed: false },
+                externals: { image: true, video: false, audio: false, embed: true },
               }}
         />
       </Form.Item>
