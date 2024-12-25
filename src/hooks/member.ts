@@ -1212,3 +1212,21 @@ export const useTransferManagers = () => {
     transferLeads,
   }
 }
+
+export const useMemberRating = () => {
+  const [upsertMemberRating] = useMutation<hasura.UpsertMemberRating, hasura.UpsertMemberRatingVariables>(
+    gql`
+      mutation UpsertMemberRating($managerId: String!, $memberId: String!, $rating: numeric) {
+        insert_member_rating_one(
+          object: { manager_id: $managerId, member_id: $memberId, rating: $rating }
+          on_conflict: { constraint: member_rating_manager_id_member_id_key, update_columns: [rating] }
+        ) {
+          id
+        }
+      }
+    `,
+  )
+  return {
+    upsertMemberRating,
+  }
+}
