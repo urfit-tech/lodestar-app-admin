@@ -137,7 +137,7 @@ const SalesLeadTabs: React.VFC<{
     : 100
 
   const { formatMessage } = useIntl()
-  const { refetch, loading, salesLeadMembersData } = useManagerLeads(
+  const { refetch, loading, salesLeadMembersData, setSalesLeadMembersData } = useManagerLeads(
     manager,
     pagination?.current || 1,
     pagination?.pageSize || defaultPageSize,
@@ -288,14 +288,12 @@ const SalesLeadTabs: React.VFC<{
               variant="followed"
               manager={manager}
               selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               isLoading={refetchLoading}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
               onIsOpenManagerListModalChange={setIsOpenManagerListModal}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               onFilter={setFilter}
               filter={filter}
               onTableChange={(pagination, filters, sorter) => {
@@ -308,6 +306,9 @@ const SalesLeadTabs: React.VFC<{
                   leadLevel: filters.leadLevel,
                 })
               }}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -334,10 +335,8 @@ const SalesLeadTabs: React.VFC<{
           {activeKey === 'ALL' && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -352,8 +351,11 @@ const SalesLeadTabs: React.VFC<{
                   leadLevel: filters.leadLevel,
                 })
               }}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
               onFilter={setFilter}
               filter={filter}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -380,10 +382,8 @@ const SalesLeadTabs: React.VFC<{
           {activeKey === 'IDLED' && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -400,6 +400,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              salesLeadMembersData={salesLeadMembersData}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -470,10 +473,8 @@ const SalesLeadTabs: React.VFC<{
           {null === contactedTabState && activeKey === 'CALLED' && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -490,16 +491,17 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'CONTACTED' === contactedTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -516,16 +518,17 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'ANSWERED' === contactedTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -542,6 +545,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -612,10 +618,8 @@ const SalesLeadTabs: React.VFC<{
           {null === demoTabState && activeKey === 'DEMO' && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -632,16 +636,17 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'INVITED' === demoTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -658,16 +663,17 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
           {'PRESENTED' === demoTabState && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -684,6 +690,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -711,10 +720,8 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               variant="completed"
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -731,6 +738,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -757,10 +767,8 @@ const SalesLeadTabs: React.VFC<{
           {activeKey === 'SIGNED' && (
             <SalesLeadTable
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -777,6 +785,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -800,10 +811,8 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               variant="resubmission"
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -820,6 +829,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -846,10 +858,8 @@ const SalesLeadTabs: React.VFC<{
             <SalesLeadTable
               variant="callbacked"
               manager={manager}
-              leads={salesLeadMembersData?.salesLeadMembers || []}
               onRefetch={async () => await refetch?.()}
               isLoading={refetchLoading}
-              followedLeads={salesLeadMembersData?.followedLeads || []}
               selectedRowKeys={selectedRowKeys}
               onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
               onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -866,6 +876,9 @@ const SalesLeadTabs: React.VFC<{
               }}
               onFilter={setFilter}
               filter={filter}
+              onSaleLeadChange={data => setSalesLeadMembersData(data)}
+              leads={salesLeadMembersData?.salesLeadMembers || []}
+              salesLeadMembersData={salesLeadMembersData}
               dataCount={salesLeadMembersData?.filterCount || 0}
             />
           )}
@@ -893,10 +906,8 @@ const SalesLeadTabs: React.VFC<{
             {activeKey === 'CLOSED' && (
               <SalesLeadTable
                 manager={manager}
-                leads={salesLeadMembersData?.salesLeadMembers || []}
                 onRefetch={async () => await refetch?.()}
                 isLoading={refetchLoading}
-                followedLeads={salesLeadMembersData?.followedLeads || []}
                 selectedRowKeys={selectedRowKeys}
                 onSelectChange={newSelectedRowKeys => setSelectedRowKeys(newSelectedRowKeys)}
                 onIsOpenAddListModalChange={setIsOpenAddListModal}
@@ -913,6 +924,9 @@ const SalesLeadTabs: React.VFC<{
                 }}
                 onFilter={setFilter}
                 filter={filter}
+                onSaleLeadChange={data => setSalesLeadMembersData(data)}
+                leads={salesLeadMembersData?.salesLeadMembers || []}
+                salesLeadMembersData={salesLeadMembersData}
                 dataCount={salesLeadMembersData?.filterCount || 0}
               />
             )}
@@ -966,7 +980,7 @@ const SalesLeadTabs: React.VFC<{
             }
           }}
           leadStatusCategories={leadStatusCategories}
-          leads={salesLeadMembersData?.salesLeadMembers || []} // TODO: 這邊要改成所有的leads
+          leads={salesLeadMembersData?.salesLeadMembers || []}
         />
       )}
     </>
@@ -1034,7 +1048,7 @@ const useMemberContractNotification = () => {
         ),
       })
     })
-  }, [data])
+  }, [data, formatMessage])
 }
 
 export default SalesLeadPage

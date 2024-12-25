@@ -30,7 +30,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
-import { Filter, useLeadStatusCategory } from '../../hooks/sales'
+import { Filter, ManagerLead, useLeadStatusCategory } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
@@ -92,7 +92,6 @@ const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed' | 'resubmission' | 'callbacked'
   manager: Manager
   leads: SalesLeadMember[]
-  followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
   isLoading: boolean
   onRefetch: () => Promise<void>
   title?: string
@@ -105,6 +104,8 @@ const SalesLeadTable: React.VFC<{
   dataCount: number
   onFilter: (filter: Filter) => void
   filter?: Filter
+  onSaleLeadChange: (data: ManagerLead) => void
+  salesLeadMembersData?: ManagerLead
 }> = ({
   variant,
   manager,
@@ -121,6 +122,8 @@ const SalesLeadTable: React.VFC<{
   dataCount,
   onFilter,
   filter,
+  salesLeadMembersData,
+  onSaleLeadChange,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
@@ -819,7 +822,18 @@ const SalesLeadTable: React.VFC<{
                 message.success(formatMessage(saleMessages.SalesLeadTable.successfullyCreated))
               })
               .catch(handleError)
-              .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
+              .finally(() => {
+                const updateLeadMembers = leads.map(lead =>
+                  lead.id === selectedMember.id ? { ...lead, latestNoteDescription: description } : lead,
+                )
+                !!salesLeadMembersData &&
+                  onSaleLeadChange?.({
+                    ...salesLeadMembersData,
+                    salesLeadMembers: updateLeadMembers,
+                  })
+
+                setMemberNoteModalVisible(false)
+              })
           }
         />
       )}
