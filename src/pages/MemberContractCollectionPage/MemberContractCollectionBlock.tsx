@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
+import MemberPropertyLabel from '../../components/common/MemberPropertyLabel'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection, useMemberContractPriceAmount } from '../../hooks'
@@ -431,12 +432,15 @@ export const MemberContractCollectionBlock: React.FC<{
       dataIndex: 'orderExecutors',
       key: 'orderExecutors',
       render: (text, record, index) =>
-        record.orderExecutors?.map(({ memberId, ratio }, index) => (
-          <div>
-            <MemberNameLabel key={index} memberId={memberId} />
-            <span className="ml-2">{Math.floor(ratio * 100)}%</span>
-          </div>
-        )),
+        record.orderExecutors?.map(({ memberId, ratio }, index) => {
+          return (
+            <div key={memberId}>
+              <MemberPropertyLabel memberId={memberId} propertyName="組別" suffix={'-'} />
+              <MemberNameLabel memberId={memberId} />
+              <span className="ml-2">{Math.floor(ratio * 100)}%</span>
+            </div>
+          )
+        }),
     },
 
     // marketing
