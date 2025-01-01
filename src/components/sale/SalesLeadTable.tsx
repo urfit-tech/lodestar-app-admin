@@ -808,7 +808,8 @@ const SalesLeadTable: React.VFC<{
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
-            onRefetch().then(() => setTaskModalVisible(false))
+            onRefetch()
+            setTaskModalVisible(false)
           }}
           afterClose={() => {
             setSelectedMember(null)
