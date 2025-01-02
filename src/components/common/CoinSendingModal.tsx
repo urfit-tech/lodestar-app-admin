@@ -1,7 +1,6 @@
 import { FileAddOutlined, ImportOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Box } from '@chakra-ui/react'
-import { Alert, Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Upload } from 'antd'
+import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -34,18 +33,6 @@ const messages = defineMessages({
   noteForAdmins: { id: 'promotion.label.noteForAdmins', defaultMessage: '備註(僅供管理員檢視)' },
   titlePlaceholder: { id: 'promotion.text.titlePlaceholder', defaultMessage: '請填寫項目名稱' },
   descriptionPlaceholder: { id: 'promotion.text.descriptionPlaceholder', defaultMessage: '請填寫項目描述' },
-  uploadSuccess: {
-    id: 'member.MemberImportModal.uploadSuccess',
-    defaultMessage: '{name} 上傳成功!',
-  },
-  uploadFail: {
-    id: 'member.MemberImportModal.uploadFail',
-    defaultMessage: '{name} 上傳失敗!',
-  },
-  importResultNotification: {
-    id: 'member.MemberImportModal.importResultNotification',
-    defaultMessage: '匯入結果將會以信件寄出',
-  },
 })
 
 type FieldProps = {
@@ -61,34 +48,10 @@ type FieldProps = {
 const downloadSampleCsv = () => {
   const workbook = XLSX.utils.book_new()
   const worksheet = XLSX.utils.aoa_to_sheet([
-    [
-      '信箱',
-      '項目',
-      '代幣數量',
-      '代幣開始時間',
-      '代幣結束時間',
-      '備註',
-      '描述',
-      '領取時間',
-      '領取開始時間',
-      '領取結束時間',
-      '建立時間',
-    ],
-    [
-      'email',
-      'title',
-      'amount',
-      'startedAt',
-      'endedAt',
-      'note',
-      'description',
-      'claimedAt',
-      'claimStartedAt',
-      'claimEndedAt',
-      'createdAt',
-    ],
-    ['member1@sample.com', '範例-A', '100', '', '', '', '', '2024-11-12 10:00:00', '', '', ''],
-    ['member2@sample.com', '範例-B', '-0.2', '2024-11-12 10:00:00', '', '', '', '2024-11-12 10:00:00', '', '', ''],
+    ['信箱', '項目', '代幣數量', '代幣開始時間', '代幣結束時間', '備註', '描述', '領取時間', '建立時間'],
+    ['email', 'title', 'amount', 'startedAt', 'endedAt', 'note', 'description', 'claimedAt', 'createdAt'],
+    ['member1@sample.com', '範例-A', '100', '', '', '', '', '2024-11-12', ''],
+    ['member2@sample.com', '範例-B', '-0.2', '2024-11-12T10:00:00', '', '', '', '', ''],
   ])
   XLSX.utils.book_append_sheet(workbook, worksheet)
   XLSX.writeFile(workbook, 'sample_coins.csv')
@@ -107,14 +70,6 @@ const CoinSendingModal: React.FC<{
     hasura.INSERT_COIN_LOG_COLLECTIONVariables
   >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
-  const [responseList, setResponseList] = useState<
-    {
-      status: number
-      statusText: string
-      data: string | null
-      name: string | null
-    }[]
-  >([])
   const [modelDisplayType, setModalDisplayType] = useState<'manual' | 'batch' | null>()
 
   const handleSubmit = (onSuccess: () => void) => {
@@ -286,39 +241,9 @@ const CoinSendingModal: React.FC<{
                 .catch(error => onError(error))
             }}
             accept=".csv,.xlsx,.xls"
-            onChange={info => {
-              if (info.file.status === 'done') {
-                const response = info.file.response
-                response.name = info.file.name
-                setResponseList(state => [...state, response])
-                onRefetch?.()
-              } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`)
-              }
-            }}
           >
             <Button icon={<ImportOutlined />}>{formatMessage(commonMessages.ui.upload)}</Button>
           </Upload>
-          <Box marginTop="10px">
-            {responseList.map(response => {
-              switch (response.status) {
-                case 201:
-                  return (
-                    <Alert
-                      message={formatMessage(messages.uploadSuccess, { name: response.name })}
-                      type="success"
-                      description={
-                        <div>
-                          <div>{formatMessage(messages.importResultNotification)}</div>
-                        </div>
-                      }
-                    />
-                  )
-                default:
-                  return <Alert message={formatMessage(messages.uploadFail, { name: response.name })} type="error" />
-              }
-            })}
-          </Box>
         </>
       )}
     </AdminModal>
