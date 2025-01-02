@@ -412,7 +412,6 @@ export const useManagerLeads = (
                   ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
                   : null,
                 callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
-                rating: salesLeadMember.rating,
               })),
             }
             setSalesLeadMembersData(result)

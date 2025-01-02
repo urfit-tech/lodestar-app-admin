@@ -218,5 +218,4 @@ export type SalesLeadMember = {
   categoryNames: string[]
   status: LeadStatus
   callbackedAt: Date | null
-  rating: number
 }
