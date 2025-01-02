@@ -282,6 +282,26 @@ export type Filter = {
   status?: string
 }
 
+export type ManagerLead = {
+  totalPages: number
+  totalCount: number
+  filterCount: number
+  followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
+  followedLeadsCount: number
+  signedLeadsCount: number
+  resubmissionCount: number
+  completedLeadsCount: number
+  deadLeadsCount: number
+  closedLeadsCount: number
+  presentedLeadsCount: number
+  invitedLeadsCount: number
+  answeredLeadsCount: number
+  contactedLeadsCount: number
+  idLedLeadsCount: number
+  callbackedLeadsCount: number
+  salesLeadMembers: SalesLeadMember[]
+}
+
 export const useManagerLeads = (
   manager: Manager,
   currentPage: number,
@@ -296,25 +316,7 @@ export const useManagerLeads = (
 
   const lastFetchedStatus = useRef(status)
 
-  const [salesLeadMembersData, setSalesLeadMembersData] = useState<{
-    totalPages: number
-    totalCount: number
-    filterCount: number
-    followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
-    followedLeadsCount: number
-    signedLeadsCount: number
-    resubmissionCount: number
-    completedLeadsCount: number
-    deadLeadsCount: number
-    closedLeadsCount: number
-    presentedLeadsCount: number
-    invitedLeadsCount: number
-    answeredLeadsCount: number
-    contactedLeadsCount: number
-    idLedLeadsCount: number
-    callbackedLeadsCount: number
-    salesLeadMembers: SalesLeadMember[]
-  }>()
+  const [salesLeadMembersData, setSalesLeadMembersData] = useState<ManagerLead>()
   const [error, setError] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const fetchData = useCallback(async () => {
@@ -350,7 +352,7 @@ export const useManagerLeads = (
                       columnKey: sorter?.columnKey,
                       order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
                     }
-                : undefined,
+                : { columnKey: 'member.assignedAt', order: 'DESC' },
               condition,
             },
             {
@@ -358,25 +360,7 @@ export const useManagerLeads = (
             },
           )
           .then(({ data }) => {
-            const result: {
-              totalPages: number
-              totalCount: number
-              filterCount: number
-              followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
-              followedLeadsCount: number
-              signedLeadsCount: number
-              resubmissionCount: number
-              completedLeadsCount: number
-              deadLeadsCount: number
-              closedLeadsCount: number
-              presentedLeadsCount: number
-              invitedLeadsCount: number
-              answeredLeadsCount: number
-              contactedLeadsCount: number
-              idLedLeadsCount: number
-              callbackedLeadsCount: number
-              salesLeadMembers: SalesLeadMember[]
-            } = {
+            const result: ManagerLead = {
               totalPages: data.totalPages || 0,
               totalCount: data.totalCount || 0,
               filterCount: data.filterCount || 0,
@@ -428,6 +412,7 @@ export const useManagerLeads = (
                   ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
                   : null,
                 callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
+                rating: salesLeadMember.rating,
               })),
             }
             setSalesLeadMembersData(result)
@@ -475,6 +460,7 @@ export const useManagerLeads = (
     error,
     refetch,
     salesLeadMembersData,
+    setSalesLeadMembersData,
   }
 }
 
