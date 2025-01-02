@@ -157,7 +157,11 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
               language="zh-hant"
               className="mb-3"
               controls={['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media']}
-              media={{ uploadFn: createUploadFn(appId, authToken) }}
+              media={{
+                uploadFn: createUploadFn(appId, authToken),
+                accepts: { video: false, audio: false },
+                externals: { image: true, video: false, audio: false, embed: true },
+              }}
               placeholder={formatMessage(messages.messageContent)}
             />
           </Form.Item>
