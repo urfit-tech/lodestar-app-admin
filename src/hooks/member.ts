@@ -23,7 +23,6 @@ import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 interface MenuItem {
   role: string | null
@@ -1211,79 +1210,5 @@ export const useTransferManagers = () => {
     error,
     transferManagers,
     transferLeads,
-  }
-}
-
-export const useMemberMetadataByEmailAndKey = (email: string, metadataKey: string) => {
-  const { id: appId } = useApp()
-  const { loading, data, error, refetch } = useQuery<hasura.GetMemberByEmail, hasura.GetMemberByEmailVariables>(
-    gql`
-      query GetMemberByEmail($appId: String!, $email: String!, $metadataKey: String) {
-        member(
-          where: { email: { _eq: $email }, app_id: { _eq: $appId }, metadata: { _has_key: $metadataKey } }
-          limit: 1
-        ) {
-          id
-          name
-          email
-          metadata
-          created_at
-          member_phones {
-            phone
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        appId,
-        email,
-        metadataKey,
-      },
-    },
-  )
-
-  const member: {
-    id: string
-    name: string
-    email: string
-    phones: string[]
-    createdAt: Date
-    metadata: any
-  } | null =
-    loading || error || !data
-      ? null
-      : data.member.map(v => ({
-          id: v.id,
-          name: v.name,
-          email: v.email,
-          phones: v.member_phones.map(w => w.phone),
-          createdAt: new Date(v.created_at),
-          metadata: v.metadata,
-        }))[0]
-
-  return {
-    loadingMember: loading,
-    errorMember: error,
-    member,
-    refetchMember: refetch,
-  }
-}
-
-export const useMemberRating = () => {
-  const [upsertMemberRating] = useMutation<hasura.UpsertMemberRating, hasura.UpsertMemberRatingVariables>(
-    gql`
-      mutation UpsertMemberRating($managerId: String!, $memberId: String!, $rating: numeric) {
-        insert_member_rating_one(
-          object: { manager_id: $managerId, member_id: $memberId, rating: $rating }
-          on_conflict: { constraint: member_rating_manager_id_member_id_key, update_columns: [rating] }
-        ) {
-          id
-        }
-      }
-    `,
-  )
-  return {
-    upsertMemberRating,
   }
 }
