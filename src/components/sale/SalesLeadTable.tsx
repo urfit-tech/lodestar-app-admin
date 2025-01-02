@@ -29,13 +29,20 @@ import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
-import { Filter, useLeadStatusCategory } from '../../hooks/sales'
+import {
+  useDeleteMemberProperty,
+  useMutateMemberNote,
+  useMutateMemberProperty,
+  useProperty,
+  useMemberRating,
+} from '../../hooks/member'
+import { Filter, ManagerLead, useLeadStatusCategory } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import AdminModal from '../admin/AdminModal'
+import StarRating from '../common/StarRating'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import AddListModal from './AddListModal'
@@ -92,7 +99,6 @@ const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed' | 'resubmission' | 'callbacked'
   manager: Manager
   leads: SalesLeadMember[]
-  followedLeads: { memberId: string; status: string; leadStatusCategoryId: string | null }[]
   isLoading: boolean
   onRefetch: () => Promise<void>
   title?: string
@@ -105,6 +111,8 @@ const SalesLeadTable: React.VFC<{
   dataCount: number
   onFilter: (filter: Filter) => void
   filter?: Filter
+  onSaleLeadChange: (data: ManagerLead) => void
+  salesLeadMembersData?: ManagerLead
 }> = ({
   variant,
   manager,
@@ -121,12 +129,15 @@ const SalesLeadTable: React.VFC<{
   dataCount,
   onFilter,
   filter,
+  salesLeadMembersData,
+  onSaleLeadChange,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
   const { authToken } = useAuth()
   const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
+  const { upsertMemberRating } = useMemberRating()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
   const { deleteMemberProperty } = useDeleteMemberProperty()
@@ -546,6 +557,30 @@ const SalesLeadTable: React.VFC<{
               </span>
             </a>
             <small>{lead?.email}</small>
+            {
+              <div>
+                <StarRating
+                  value={
+                    salesLeadMembersData?.salesLeadMembers.find(salesLeadMember => salesLeadMember.id === lead.id)
+                      ?.rating || 0
+                  }
+                  onStarClick={(value: number) =>
+                    upsertMemberRating({ variables: { managerId: manager.id, memberId: lead.id, rating: value } })
+                  }
+                  onStarHover={(value: number) => {
+                    const updateSalesLeadMembers =
+                      salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
+                        salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
+                      ) || []
+                    !!salesLeadMembersData &&
+                      onSaleLeadChange?.({
+                        ...salesLeadMembersData,
+                        salesLeadMembers: updateSalesLeadMembers,
+                      })
+                  }}
+                />
+              </div>
+            }
             {hasFullNameProperty ? (
               <div className="d-flex align-items-center">
                 <p>{`${formatMessage(saleMessages.SalesLeadTable.memberFullName)}：`}</p>
@@ -773,7 +808,8 @@ const SalesLeadTable: React.VFC<{
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
           onRefetch={() => {
-            onRefetch().then(() => setTaskModalVisible(false))
+            onRefetch()
+            setTaskModalVisible(false)
           }}
           afterClose={() => {
             setSelectedMember(null)
@@ -819,7 +855,18 @@ const SalesLeadTable: React.VFC<{
                 message.success(formatMessage(saleMessages.SalesLeadTable.successfullyCreated))
               })
               .catch(handleError)
-              .finally(() => onRefetch().then(() => setMemberNoteModalVisible(false)))
+              .finally(() => {
+                const updateLeadMembers = leads.map(lead =>
+                  lead.id === selectedMember.id ? { ...lead, latestNoteDescription: description } : lead,
+                )
+                !!salesLeadMembersData &&
+                  onSaleLeadChange?.({
+                    ...salesLeadMembersData,
+                    salesLeadMembers: updateLeadMembers,
+                  })
+
+                setMemberNoteModalVisible(false)
+              })
           }
         />
       )}

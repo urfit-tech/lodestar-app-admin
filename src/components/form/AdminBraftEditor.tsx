@@ -125,7 +125,11 @@ const AdminBraftEditor: React.FC<{
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={customControls ?? controls[variant || 'default']}
-      media={{ uploadFn: createUploadFn(appId, authToken) }}
+      media={{
+                uploadFn: createUploadFn(appId, authToken),
+                accepts: { video: false, audio: false },
+                externals: { image: true, video: false, audio: false, embed: true },
+              }}
       imageControls={variant === 'question' ? ['remove'] : undefined}
       imageResizable={variant === 'question' ? false : undefined}
     />

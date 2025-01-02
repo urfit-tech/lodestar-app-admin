@@ -1,9 +1,10 @@
 import Icon from '@ant-design/icons'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Form, message, Modal } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
+import { gql } from '@apollo/client'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -157,7 +158,11 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
               language="zh-hant"
               className="mb-3"
               controls={['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media']}
-              media={{ uploadFn: createUploadFn(appId, authToken) }}
+              media={{
+                uploadFn: createUploadFn(appId, authToken),
+                accepts: { video: false, audio: false },
+                externals: { image: true, video: false, audio: false, embed: true },
+              }}
               placeholder={formatMessage(messages.messageContent)}
             />
           </Form.Item>

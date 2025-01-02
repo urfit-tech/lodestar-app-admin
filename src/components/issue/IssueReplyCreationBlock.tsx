@@ -1,7 +1,8 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -76,7 +77,11 @@ const IssueReplyCreationBlock: React.FC<{
         <StyledEditor
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
-          media={{ uploadFn: createUploadFn(appId, authToken) }}
+          media={{
+                uploadFn: createUploadFn(appId, authToken),
+                accepts: { video: false, audio: false },
+                externals: { image: true, video: false, audio: false, embed: true },
+              }}
         />
       </Form.Item>
       <Form.Item className="text-right">
