@@ -134,7 +134,7 @@ const SalesLeadTable: React.VFC<{
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
   const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const { upsertMemberRating } = useMemberRating()
@@ -565,7 +565,7 @@ const SalesLeadTable: React.VFC<{
                       ?.rating || 0
                   }
                   onStarClick={(value: number) =>
-                    upsertMemberRating({ variables: { managerId: manager.id, memberId: lead.id, rating: value } })
+                    upsertMemberRating({ variables: { managerId: currentMemberId, memberId: lead.id, rating: value } })
                   }
                   onStarHover={(value: number) => {
                     const updateSalesLeadMembers =
