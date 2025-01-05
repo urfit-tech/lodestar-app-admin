@@ -246,6 +246,26 @@ const ProgramContentSectionAdminCard: React.FC<{
                 {formatMessage(programMessages.ProgramContentSectionAdminCard.programExercise)}
               </StyledMenuItem>
             )}
+            {enabledModules['external_link'] && (
+              <StyledMenuItem
+                onClick={async () => {
+                  createProgramContent({
+                    variables: {
+                      programContentSectionId: programContentSection.id,
+                      title: 'untitled',
+                      position: programContentSection.programContents.length,
+                      programContentType: 'link',
+                      publishedAt: isProgramPublished ? new Date() : null,
+                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                    },
+                  })
+                    .then(() => onRefetch?.())
+                    .catch(handleError)
+                }}
+              >
+                {formatMessage(programMessages.ProgramContentSectionAdminCard.externalLinkContent)}
+              </StyledMenuItem>
+            )}
           </Menu>
         }
         placement="topCenter"
