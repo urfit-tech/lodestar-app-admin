@@ -9,6 +9,7 @@ import moment from 'moment'
 import { sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
@@ -42,6 +43,7 @@ const MemberContractCreationBlock: React.FC<{
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [paymentUrl, setPaymentUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const history = useHistory()
 
   const fieldValue = form.getFieldsValue()
 
@@ -402,22 +404,27 @@ const MemberContractCreationBlock: React.FC<{
       .then(res => {
         if (res.data.code === 'SUCCESS') {
           message.success('訂單建立成功')
-          axios
-            .post(
-              `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
-              {
-                memberId: member.id,
-                executorId: fieldValue.executorId,
-                destinationEmail: fieldValue.destinationEmail,
-                language: fieldValue.language,
-              },
-              {
-                headers: { authorization: `Bearer ${authToken}` },
-              },
-            )
-            .then(res => {
-              message.success('信件已發送成功')
-            })
+
+          history.push(`/members/${member.id}/order`)
+
+          // axios
+          //   .post(
+          //     `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
+          //     {
+          //       memberId: member.id,
+          //       executorId: fieldValue.executorId,
+          //       destinationEmail: fieldValue.destinationEmail,
+          //       language: fieldValue.language,
+          //     },
+          //     {
+          //       headers: { authorization: `Bearer ${authToken}` },
+          //     },
+          //   )
+          //   .then(res => {
+
+          //     message.success('信件已發送成功')
+          //   })
+
           // const paymentNo = res.data.result.paymentNo
           // const payToken = res.data.result.payToken
           // const orderId = res.data.result.orderId
