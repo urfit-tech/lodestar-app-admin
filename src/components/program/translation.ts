@@ -5,6 +5,9 @@ const programMessages = {
     save: { id: 'program.*.save', defaultMessage: '儲存' },
     cancel: { id: 'program.*.cancel', defaultMessage: '取消' },
     confirm: { id: 'program.*.confirm', defaultMessage: '確認' },
+    add: { id: 'program.*.add', defaultMessage: 'Add' },
+    on: { id: 'program.*.on', defaultMessage: 'ON' },
+    off: { id: 'program.*.off', defaultMessage: 'OFF' },
     isRequired: { id: 'program.*.isRequired', defaultMessage: '*此欄位必填' },
     exerciseTitle: { id: 'program.*.exerciseTitle', defaultMessage: '標題' },
     deleteContent: { id: 'program.*.deleteContent', defaultMessage: '刪除內容' },
@@ -227,6 +230,20 @@ const programMessages = {
     pointPerQuestion: { id: 'program.ExamQuestionSettingForm.pointPerQuestion', defaultMessage: '每題分數' },
     passingScore: { id: 'program.ExamQuestionSettingForm.passingScore', defaultMessage: '及格分數' },
   }),
+  ExternalLinkForm: defineMessages({
+    title: { id: 'program.ExternalLinkForm.title', defaultMessage: 'Examination paper name' },
+    link: { id: 'program.ExternalLinkForm.link', defaultMessage: 'Exam paper/test link' },
+    typeLabel: { id: 'program.ExternalLinkForm.typeLabel', defaultMessage: 'Type' },
+    linkLabel: { id: 'program.ExternalLinkForm.linkLabel', defaultMessage: 'Link' },
+    programPackageCompleteRatio: {
+      id: 'program.ExternalLinkForm.programPackageCompleteRatio',
+      defaultMessage: 'Eligibility for admission (view the total progress of the course)',
+    },
+    isOn: {
+      id: 'program.ExternalLinkForm.isOn',
+      defaultMessage: 'Usage status',
+    },
+  }),
   ProgramContentSectionAdminCard: defineMessages({
     deleteSectionWarning: {
       id: 'program.ProgramContentSectionAdminCard.deleteSectionWarning',
@@ -241,6 +258,10 @@ const programMessages = {
     programExercise: {
       id: 'program.ProgramContentSectionAdminCard.programExercise',
       defaultMessage: 'Program exercise',
+    },
+    externalLinkContent: {
+      id: 'program.ProgramContentSectionAdminCard.externalLinkContent',
+      defaultMessage: 'External Link Content',
     },
     expandChapter: {
       id: 'program.ProgramContentSectionAdminCard.expandChapter',

@@ -55,6 +55,7 @@ import type { NavItem } from 'epubjs/types/navigation'
 import { DeepPick } from 'ts-deep-pick/lib'
 import { ProgramContent } from '../../types/program'
 import { FormInstance } from 'antd/lib/form'
+import ExternalLinkAdminModalBlock from './ExternalLinkAdminModalBlock'
 
 const StyledRadio = styled(Radio)`
   && .ant-radio {
@@ -393,7 +394,7 @@ const ProgramContentAdminBlock: React.FC<{
 
   return (
     <>
-      <EditOutlined onClick={() => setVisible(true)} />
+      <EditOutlined onClick={() => setVisible(true)} disabled={loading} />
 
       <Modal
         width="70vw"
@@ -402,6 +403,7 @@ const ProgramContentAdminBlock: React.FC<{
         maskClosable={false}
         closable={false}
         visible={visible}
+        destroyOnClose={true}
       >
         <>
           {programContent &&
@@ -411,11 +413,11 @@ const ProgramContentAdminBlock: React.FC<{
                 programContent={programContent}
                 displayMode={displayMode}
                 onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
-                onRefetch={onProgramContentRefetch}
-                onClose={() => {
-                  setVisible(false)
-                  setDisplayMode(programContent.displayMode)
+                onRefetch={() => {
+                  onRefetch?.()
+                  onProgramContentRefetch?.()
                 }}
+                onClose={() => setVisible(false)}
               />
             ) : contentType === 'practice' ? (
               <PracticeAdminModalBlock
@@ -423,11 +425,23 @@ const ProgramContentAdminBlock: React.FC<{
                 programContent={programContent}
                 displayMode={displayMode}
                 onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
-                onRefetch={onProgramContentRefetch}
-                onClose={() => {
-                  setVisible(false)
-                  setDisplayMode(programContent.displayMode)
+                onRefetch={() => {
+                  onRefetch?.()
+                  onProgramContentRefetch?.()
                 }}
+                onClose={() => setVisible(false)}
+              />
+            ) : contentType === 'link' ? (
+              <ExternalLinkAdminModalBlock
+                programContentId={programContentId}
+                programContent={programContent}
+                displayMode={displayMode}
+                onDisplayModeChange={(displayMode: DisplayMode) => setDisplayMode(displayMode)}
+                onRefetch={() => {
+                  onRefetch?.()
+                  onProgramContentRefetch?.()
+                }}
+                onClose={() => setVisible(false)}
               />
             ) : (
               <Form
