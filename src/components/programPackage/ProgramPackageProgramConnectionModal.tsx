@@ -27,6 +27,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
+  const { includesBodyTypePrograms } = useGetIncludesBodyTypeProgramCollection(appId, 'link')
   const [insertProgramPackageProgram] = useMutation<
     hasura.INSERT_PROGRAM_PACKAGE_PROGRAM,
     hasura.INSERT_PROGRAM_PACKAGE_PROGRAMVariables
@@ -106,8 +107,15 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                 title: formatMessage(programPackageMessages.form.allPerpetualPrograms),
                 children: availablePrograms
                   .filter(program => !program.isSubscription)
+                  .filter(program => {
+                    const matchProgram = includesBodyTypePrograms.find(item => item.programId === program.id)
+                    if (matchProgram && matchProgram.programPackageProgram.length > 0) {
+                      return false
+                    }
+                    return true
+                  })
                   .map(program => ({
-                    key: program.id,
+                    key: `${program.id}_${program.title}`,
                     title: program.publishedAt
                       ? program.title
                       : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
@@ -120,7 +128,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                 children: availablePrograms
                   .filter(program => program.isSubscription)
                   .map(program => ({
-                    key: program.id,
+                    key: `${program.id}_${program.title}`,
                     title: program.publishedAt
                       ? program.title
                       : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
@@ -137,11 +145,11 @@ const ProgramPackageProgramConnectionModal: React.FC<{
 
 const useGetAvailableProgramCollection = (appId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    hasura.GET_AVAILABLE_PROGRAM_COLLECTION,
-    hasura.GET_AVAILABLE_PROGRAM_COLLECTIONVariables
+    hasura.GetAvailableProgramCollection,
+    hasura.GetAvailableProgramCollectionVariables
   >(
     gql`
-      query GET_AVAILABLE_PROGRAM_COLLECTION($appId: String!) {
+      query GetAvailableProgramCollection($appId: String!) {
         program(where: { is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
           id
           title
@@ -167,12 +175,70 @@ const useGetAvailableProgramCollection = (appId: string) => {
           isSubscription: program.is_subscription,
           publishedAt: program.published_at,
         }))
-
   return {
     loading,
     error,
     availablePrograms,
     refetch,
+  }
+}
+
+const useGetIncludesBodyTypeProgramCollection = (appId: string, includesBodyType: string) => {
+  const { loading, error, data } = useQuery<
+    hasura.GetIncludesBodyTypeProgramCollection,
+    hasura.GetIncludesBodyTypeProgramCollectionVariables
+  >(
+    gql`
+      query GetIncludesBodyTypeProgramCollection($appId: String!, $includesBodyType: String) {
+        program(
+          where: {
+            program_content_sections: {
+              program_contents: { program_content_body: { type: { _eq: $includesBodyType } } }
+            }
+            is_deleted: { _eq: false }
+            app_id: { _eq: $appId }
+          }
+        ) {
+          id
+          program_package_programs {
+            program_package_id
+          }
+          program_content_sections {
+            program_contents {
+              program_content_body {
+                type
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        appId,
+        includesBodyType,
+      },
+    },
+  )
+  const includesBodyTypePrograms: {
+    programId: string
+    programPackageProgram: { programPackageId: string }[]
+    programContentBodyTypes: (string | null | undefined)[]
+  }[] =
+    loading || error || !data
+      ? []
+      : data?.program.map(program => ({
+          programId: program.id,
+          programPackageProgram: program.program_package_programs.map(programPackage => ({
+            programPackageId: programPackage?.program_package_id,
+          })),
+          programContentBodyTypes: program.program_content_sections
+            .map(section => section.program_contents.map(content => content.program_content_body.type))
+            .flat(),
+        }))
+
+  return {
+    includesBodyTypePrograms,
   }
 }
 
