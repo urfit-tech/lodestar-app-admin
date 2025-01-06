@@ -565,7 +565,9 @@ const SalesLeadTable: React.VFC<{
                       ?.rating || 0
                   }
                   onStarClick={(value: number) =>
-                    upsertMemberRating({ variables: { managerId: currentMemberId, memberId: lead.id, rating: value } })
+                    upsertMemberRating({
+                      variables: { managerId: currentMemberId || '', memberId: lead.id, rating: value },
+                    })
                   }
                   onStarHover={(value: number) => {
                     const updateSalesLeadMembers =
