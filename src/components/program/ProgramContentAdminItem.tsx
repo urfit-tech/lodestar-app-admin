@@ -9,6 +9,7 @@ import { MicrophoneIcon } from '../../images/icon'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { BookHollowIcon } from '../../images/icon/index'
+import { IoIosLink } from 'react-icons/io'
 import PinIcon from '../../images/icon/pin-v-2.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
@@ -98,6 +99,8 @@ const ProgramContentAdminItem: React.FC<{
                     <QuizIcon />
                   ) : programContent.programContentType === 'ebook' ? (
                     <BookHollowIcon />
+                  ) : programContent.programContentType === 'link' ? (
+                    <IoIosLink />
                   ) : null
                 }
               />
