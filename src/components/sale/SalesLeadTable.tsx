@@ -98,6 +98,7 @@ const StyledDelPhone = styled.p`
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed' | 'resubmission' | 'callbacked'
   manager: Manager
+  currentMemberIsManager: boolean
   leads: SalesLeadMember[]
   isLoading: boolean
   onRefetch: () => Promise<void>
@@ -116,6 +117,7 @@ const SalesLeadTable: React.VFC<{
 }> = ({
   variant,
   manager,
+  currentMemberIsManager,
   leads,
   onRefetch,
   onTableChange,
@@ -557,7 +559,7 @@ const SalesLeadTable: React.VFC<{
               </span>
             </a>
             <small>{lead?.email}</small>
-            {
+            {currentMemberIsManager ? (
               <div>
                 <StarRating
                   value={
@@ -580,7 +582,7 @@ const SalesLeadTable: React.VFC<{
                   }}
                 />
               </div>
-            }
+            ) : null}
             {hasFullNameProperty ? (
               <div className="d-flex align-items-center">
                 <p>{`${formatMessage(saleMessages.SalesLeadTable.memberFullName)}：`}</p>
