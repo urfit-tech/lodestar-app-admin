@@ -918,6 +918,7 @@ const MemberContractCreationForm: React.FC<
                             <InputNumber
                               min={1}
                               value={totalAmount}
+                              step={0.1}
                               onChange={e => {
                                 setTotalAmount(Number(e))
                                 setCategory({
