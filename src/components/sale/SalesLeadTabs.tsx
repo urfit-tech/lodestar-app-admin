@@ -21,11 +21,19 @@ export type SelectedLeadStatusCategory = {
 
 const SalesLeadTabs: React.VFC<{
   manager: Manager
+  currentMemberIsManager: boolean
   activeKey: string
   selectedLeadStatusCategory: SelectedLeadStatusCategory | null
   onActiveKeyChanged: (activeKey: string) => void
   onSelectedLeadStatusCategoryChange: (selectedLeadStatusCategory: SelectedLeadStatusCategory | null) => void
-}> = ({ activeKey, manager, onActiveKeyChanged, selectedLeadStatusCategory, onSelectedLeadStatusCategoryChange }) => {
+}> = ({
+  activeKey,
+  manager,
+  currentMemberIsManager,
+  onActiveKeyChanged,
+  selectedLeadStatusCategory,
+  onSelectedLeadStatusCategoryChange,
+}) => {
   const { settings } = useApp()
   const [demoTabState, setDemoTabState] = useState<'INVITED' | 'PRESENTED' | null>(null)
   const [contactedTabState, setContactedTabState] = useState<'ANSWERED' | 'CONTACTED' | null>(null)
@@ -117,6 +125,7 @@ const SalesLeadTabs: React.VFC<{
     <SalesLeadTable
       title={salesLeadTableTitle}
       variant={salesLeadTableVariant}
+      currentMemberIsManager={currentMemberIsManager}
       manager={manager}
       selectedLeadStatusCategoryId={selectedLeadStatusCategory?.categoryId}
       onRefetch={async () => await refetch?.()}

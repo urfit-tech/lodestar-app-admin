@@ -53,6 +53,8 @@ const SalesLeadPage: React.VFC = () => {
   const manager =
     managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
 
+  const currentMemberIsManager = managers.some(manager => manager.id === currentMemberId)
+
   if (!enabledModules.sales || (!permissions.SALES_LEAD_ADMIN && !permissions.SALES_LEAD_NORMAL && !manager)) {
     return <ForbiddenPage />
   }
@@ -86,6 +88,7 @@ const SalesLeadPage: React.VFC = () => {
         <SalesLeadTabs
           activeKey={activeKey}
           manager={manager}
+          currentMemberIsManager={currentMemberIsManager}
           onActiveKeyChanged={setActiveKey}
           selectedLeadStatusCategory={selectedLeadStatusCategory}
           onSelectedLeadStatusCategoryChange={selectedLeadStatusCategory =>
