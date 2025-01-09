@@ -14,13 +14,15 @@ const StarRating: React.FC<{
   value: number
   onStarClick: (nextValue: number, prevValue: number, name: string) => void
   onStarHover: (nextValue: number, prevValue: number, name: string) => void
-}> = ({ value, onStarClick, onStarHover }) => {
+  onStarHoverOut?: (nextValue: number, prevValue: number, name: string) => void
+}> = ({ value, onStarClick, onStarHover, onStarHoverOut }) => {
   return (
     <ReactStarsWrapper
       name="starRating"
       value={value}
       onStarClick={onStarClick}
       onStarHover={onStarHover}
+      onStarHoverOut={onStarHoverOut}
       renderStarIcon={(nextValue, prevValue) => (nextValue > prevValue ? <StarGrayIcon /> : <StarIcon />)}
     />
   )
