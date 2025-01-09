@@ -31,10 +31,10 @@ import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import {
   useDeleteMemberProperty,
+  useMemberRating,
   useMutateMemberNote,
   useMutateMemberProperty,
   useProperty,
-  useMemberRating,
 } from '../../hooks/member'
 import { Filter, ManagerLead, useLeadStatusCategory } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
@@ -140,7 +140,7 @@ const SalesLeadTable: React.VFC<{
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
   const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const { upsertMemberRating } = useMemberRating()
@@ -571,7 +571,7 @@ const SalesLeadTable: React.VFC<{
                       ?.rating || 0
                   }
                   onStarClick={(value: number) => {
-                    upsertMemberRating({ variables: { managerId: manager.id, memberId: lead.id, rating: value } })
+                    upsertMemberRating({ variables: { managerId: currentMemberId, memberId: lead.id, rating: value } })
                     const updateSalesLeadMembers =
                       salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
                         salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
