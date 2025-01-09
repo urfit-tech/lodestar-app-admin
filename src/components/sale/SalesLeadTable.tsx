@@ -114,6 +114,8 @@ const SalesLeadTable: React.VFC<{
   filter?: Filter
   onSaleLeadChange: (data: ManagerLead) => void
   salesLeadMembersData?: ManagerLead
+  defaultSalesLeadMembers?: SalesLeadMember[]
+  onDefaultSalesLeadMembersChange?: (data: SalesLeadMember[]) => void
 }> = ({
   variant,
   manager,
@@ -133,6 +135,8 @@ const SalesLeadTable: React.VFC<{
   filter,
   salesLeadMembersData,
   onSaleLeadChange,
+  defaultSalesLeadMembers,
+  onDefaultSalesLeadMembersChange,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, settings } = useApp()
@@ -566,9 +570,19 @@ const SalesLeadTable: React.VFC<{
                     salesLeadMembersData?.salesLeadMembers.find(salesLeadMember => salesLeadMember.id === lead.id)
                       ?.rating || 0
                   }
-                  onStarClick={(value: number) =>
+                  onStarClick={(value: number) => {
                     upsertMemberRating({ variables: { managerId: manager.id, memberId: lead.id, rating: value } })
-                  }
+                    const updateSalesLeadMembers =
+                      salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
+                        salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
+                      ) || []
+                    !!salesLeadMembersData &&
+                      onSaleLeadChange?.({
+                        ...salesLeadMembersData,
+                        salesLeadMembers: updateSalesLeadMembers,
+                      })
+                    onDefaultSalesLeadMembersChange?.(updateSalesLeadMembers)
+                  }}
                   onStarHover={(value: number) => {
                     const updateSalesLeadMembers =
                       salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
@@ -580,6 +594,14 @@ const SalesLeadTable: React.VFC<{
                         salesLeadMembers: updateSalesLeadMembers,
                       })
                   }}
+                  onStarHoverOut={() =>
+                    salesLeadMembersData &&
+                    defaultSalesLeadMembers &&
+                    onSaleLeadChange?.({
+                      ...salesLeadMembersData,
+                      salesLeadMembers: defaultSalesLeadMembers,
+                    })
+                  }
                 />
               </div>
             ) : null}
