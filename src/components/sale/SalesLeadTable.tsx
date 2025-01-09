@@ -571,7 +571,10 @@ const SalesLeadTable: React.VFC<{
                       ?.rating || 0
                   }
                   onStarClick={(value: number) => {
-                    upsertMemberRating({ variables: { managerId: currentMemberId, memberId: lead.id, rating: value } })
+                    currentMemberId &&
+                      upsertMemberRating({
+                        variables: { managerId: currentMemberId, memberId: lead.id, rating: value },
+                      })
                     const updateSalesLeadMembers =
                       salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
                         salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
