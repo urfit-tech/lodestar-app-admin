@@ -53,7 +53,14 @@ const SalesLeadTabs: React.VFC<{
     : 100
 
   const { formatMessage } = useIntl()
-  const { refetch, loading, salesLeadMembersData, setSalesLeadMembersData } = useManagerLeads(
+  const {
+    refetch,
+    loading,
+    salesLeadMembersData,
+    setSalesLeadMembersData,
+    defaultSalesLeadMembers,
+    setDefaultSalesLeadMembers,
+  } = useManagerLeads(
     manager,
     pagination?.current || 1,
     pagination?.pageSize || defaultPageSize,
@@ -143,6 +150,8 @@ const SalesLeadTabs: React.VFC<{
       leads={salesLeadMembersData?.salesLeadMembers || []}
       salesLeadMembersData={salesLeadMembersData}
       dataCount={salesLeadMembersData?.filterCount || 0}
+      defaultSalesLeadMembers={defaultSalesLeadMembers}
+      onDefaultSalesLeadMembersChange={data => setDefaultSalesLeadMembers(data)}
     />
   )
 
