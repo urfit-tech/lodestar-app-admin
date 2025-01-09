@@ -29,13 +29,20 @@ import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useDeleteMemberProperty, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
+import {
+  useDeleteMemberProperty,
+  useMemberRating,
+  useMutateMemberNote,
+  useMutateMemberProperty,
+  useProperty,
+} from '../../hooks/member'
 import { Filter, ManagerLead, useLeadStatusCategory } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import AdminModal from '../admin/AdminModal'
+import StarRating from '../common/StarRating'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import AddListModal from './AddListModal'
@@ -91,6 +98,7 @@ const StyledDelPhone = styled.p`
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed' | 'resubmission' | 'callbacked'
   manager: Manager
+  currentMemberIsManager: boolean
   leads: SalesLeadMember[]
   isLoading: boolean
   onRefetch: () => Promise<void>
@@ -109,6 +117,7 @@ const SalesLeadTable: React.VFC<{
 }> = ({
   variant,
   manager,
+  currentMemberIsManager,
   leads,
   onRefetch,
   onTableChange,
@@ -130,6 +139,7 @@ const SalesLeadTable: React.VFC<{
   const { authToken } = useAuth()
   const [confirmModalVisibleType, setConfirmModalVisibleType] = useState<'leaveResubmission' | ''>('')
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
+  const { upsertMemberRating } = useMemberRating()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const { updateMemberProperty } = useMutateMemberProperty()
   const { deleteMemberProperty } = useDeleteMemberProperty()
@@ -549,6 +559,30 @@ const SalesLeadTable: React.VFC<{
               </span>
             </a>
             <small>{lead?.email}</small>
+            {currentMemberIsManager ? (
+              <div>
+                <StarRating
+                  value={
+                    salesLeadMembersData?.salesLeadMembers.find(salesLeadMember => salesLeadMember.id === lead.id)
+                      ?.rating || 0
+                  }
+                  onStarClick={(value: number) =>
+                    upsertMemberRating({ variables: { managerId: manager.id, memberId: lead.id, rating: value } })
+                  }
+                  onStarHover={(value: number) => {
+                    const updateSalesLeadMembers =
+                      salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
+                        salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
+                      ) || []
+                    !!salesLeadMembersData &&
+                      onSaleLeadChange?.({
+                        ...salesLeadMembersData,
+                        salesLeadMembers: updateSalesLeadMembers,
+                      })
+                  }}
+                />
+              </div>
+            ) : null}
             {hasFullNameProperty ? (
               <div className="d-flex align-items-center">
                 <p>{`${formatMessage(saleMessages.SalesLeadTable.memberFullName)}：`}</p>
