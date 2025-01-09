@@ -317,8 +317,10 @@ export const useManagerLeads = (
   const lastFetchedStatus = useRef(status)
 
   const [salesLeadMembersData, setSalesLeadMembersData] = useState<ManagerLead>()
+  const [defaultSalesLeadMembers, setDefaultSalesLeadMembers] = useState<SalesLeadMember[]>([])
   const [error, setError] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -415,6 +417,7 @@ export const useManagerLeads = (
                 rating: salesLeadMember.rating,
               })),
             }
+            setDefaultSalesLeadMembers(result.salesLeadMembers)
             setSalesLeadMembersData(result)
           })
           .catch(error => setError(error))
@@ -461,6 +464,8 @@ export const useManagerLeads = (
     refetch,
     salesLeadMembersData,
     setSalesLeadMembersData,
+    defaultSalesLeadMembers,
+    setDefaultSalesLeadMembers,
   }
 }
 
