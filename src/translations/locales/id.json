@@ -2823,6 +2823,7 @@
   "program.ui.uploadCaptions": "Unggah Teks",
   "program.ui.uploadExample": "Contoh materi",
   "program.ui.uploadedCaptions": "Teks yang Diunggah",
+  "programPackage.alertMessage.oneLinkError": "Hanya ada satu kursus pengujian eksternal, harap konfirmasi ulang",
   "programPackage.ProgramPackageBasicFrom.tag": "menandai",
   "programPackage.ProgramPackagePlanAdminModal.productLevel": "Tingkat paket",
   "programPackage.ProgramPackagePlanCollectionBlock.editPlan": "Edit paket",

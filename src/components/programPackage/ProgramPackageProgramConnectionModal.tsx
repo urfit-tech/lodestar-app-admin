@@ -27,7 +27,8 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
-  const { includesBodyTypePrograms } = useGetIncludesBodyTypeProgramCollection(appId, 'link')
+  const { includesBodyTypePrograms, refetch: refetchInCludesBodyTypeProgramCollection } =
+    useGetIncludesBodyTypeProgramCollection(appId, 'link')
   const [insertProgramPackageProgram] = useMutation<
     hasura.INSERT_PROGRAM_PACKAGE_PROGRAM,
     hasura.INSERT_PROGRAM_PACKAGE_PROGRAMVariables
@@ -41,16 +42,23 @@ const ProgramPackageProgramConnectionModal: React.FC<{
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
-        const programsId = values.programValues.map((value: string) => value.split('_')[0])
+        const programsIds = values.programValues.map((value: string) => value.split('_')[0])
+        const matchBodyTypeIncludesLinkPrograms = availablePrograms
+          .filter(program => programsIds.includes(program.id))
+          .filter(program => program.programContentBody.includes('link'))
+        if (matchBodyTypeIncludesLinkPrograms.length > 1) {
+          setLoading(false)
+          return window.alert(formatMessage(programPackageMessages.alertMessage.oneLinkError))
+        }
         insertProgramPackageProgram({
           variables: {
-            programs: programsId.map((programId: string, index: number) => ({
+            programs: programsIds.map((programId: string, index: number) => ({
               program_package_id: programPackageId,
               program_id: programId,
               position: index,
             })),
             delete_program_package_programs_id: programs
-              .filter(program => !programsId.includes(program.id))
+              .filter(program => !programsIds.includes(program.id))
               .map(program => program.programPackageProgramId),
           },
         })
@@ -58,6 +66,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
             message.success(formatMessage(commonMessages.event.successfullySaved))
             setVisible(false)
             onRefetch?.()
+            refetchInCludesBodyTypeProgramCollection()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -155,6 +164,13 @@ const useGetAvailableProgramCollection = (appId: string) => {
           title
           is_subscription
           published_at
+          program_content_sections {
+            program_contents {
+              program_content_body {
+                type
+              }
+            }
+          }
         }
       }
     `,
@@ -166,6 +182,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
     title: string | null
     isSubscription: boolean
     publishedAt: string
+    programContentBody: (string | null | undefined)[]
   }[] =
     loading || error || !data
       ? []
@@ -174,6 +191,9 @@ const useGetAvailableProgramCollection = (appId: string) => {
           title: program.title || '',
           isSubscription: program.is_subscription,
           publishedAt: program.published_at,
+          programContentBody: program.program_content_sections
+            .map(section => section.program_contents.map(content => content.program_content_body.type))
+            .flat(),
         }))
   return {
     loading,
@@ -184,7 +204,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
 }
 
 const useGetIncludesBodyTypeProgramCollection = (appId: string, includesBodyType: string) => {
-  const { loading, error, data } = useQuery<
+  const { loading, error, data, refetch } = useQuery<
     hasura.GetIncludesBodyTypeProgramCollection,
     hasura.GetIncludesBodyTypeProgramCollectionVariables
   >(
@@ -239,6 +259,7 @@ const useGetIncludesBodyTypeProgramCollection = (appId: string, includesBodyType
 
   return {
     includesBodyTypePrograms,
+    refetch,
   }
 }
 

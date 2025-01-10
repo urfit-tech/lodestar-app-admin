@@ -2823,6 +2823,7 @@
   "program.ui.uploadCaptions": "Upload Captions",
   "program.ui.uploadExample": "Example material",
   "program.ui.uploadedCaptions": "Uploaded Captions",
+  "programPackage.alertMessage.oneLinkError": "Courses that can only have one external test, please reconfirm",
   "programPackage.ProgramPackageBasicFrom.tag": "Tag",
   "programPackage.ProgramPackagePlanAdminModal.productLevel": "Plan Level",
   "programPackage.ProgramPackagePlanCollectionBlock.editPlan": "Edit Plan",

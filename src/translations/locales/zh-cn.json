@@ -2823,6 +2823,7 @@
   "program.ui.uploadCaptions": "上传字幕",
   "program.ui.uploadExample": "示例素材",
   "program.ui.uploadedCaptions": "已上传字幕",
+  "programPackage.alertMessage.oneLinkError": "仅能有一个外部测验的课程，请重新确认",
   "programPackage.ProgramPackageBasicFrom.tag": "标签",
   "programPackage.ProgramPackagePlanAdminModal.productLevel": "方案等级",
   "programPackage.ProgramPackagePlanCollectionBlock.editPlan": "编辑方案",
