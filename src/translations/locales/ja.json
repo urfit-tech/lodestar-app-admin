@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "権限グループを削除",
   "permission.*.editPermissionGroup": "権限グループを編集",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "新しい権限グループを追加",
+  "permission.PermissionGroupAdminModal.duplicateName": "名前はすでに存在します",
   "permission.PermissionGroupAdminModal.isRequired": "{field} を入力してください",
   "permission.PermissionGroupAdminModal.name": "名前",
   "permission.PermissionGroupAdminModal.permissionSettings": "権限設定",

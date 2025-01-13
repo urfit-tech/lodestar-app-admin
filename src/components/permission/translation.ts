@@ -13,6 +13,7 @@ const permissionMessages = {
     },
   }),
   PermissionGroupAdminModal: defineMessages({
+    duplicateName: { id: 'permission.PermissionGroupAdminModal.duplicateName', defaultMessage: 'Name already exists' },
     permissionSettings: {
       id: 'permission.PermissionGroupAdminModal.permissionSettings',
       defaultMessage: 'permission settings',

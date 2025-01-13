@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "Delete permission group",
   "permission.*.editPermissionGroup": "Edit permission group",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "Add new permission group",
+  "permission.PermissionGroupAdminModal.duplicateName": "Name already exists",
   "permission.PermissionGroupAdminModal.isRequired": "Please enter {field}",
   "permission.PermissionGroupAdminModal.name": "name",
   "permission.PermissionGroupAdminModal.permissionSettings": "permission settings",

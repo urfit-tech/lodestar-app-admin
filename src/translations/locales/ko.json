@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "권한 그룹 삭제",
   "permission.*.editPermissionGroup": "권한 그룹 편집",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "새로운 권한 그룹 추가",
+  "permission.PermissionGroupAdminModal.duplicateName": "이름이 이미 존재합니다",
   "permission.PermissionGroupAdminModal.isRequired": "{field}를 입력하세요",
   "permission.PermissionGroupAdminModal.name": "이름",
   "permission.PermissionGroupAdminModal.permissionSettings": "권한 설정",

@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "删除权限组",
   "permission.*.editPermissionGroup": "编辑权限组",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "新增权限组",
+  "permission.PermissionGroupAdminModal.duplicateName": "Name already exists",
   "permission.PermissionGroupAdminModal.isRequired": "请输入{field}",
   "permission.PermissionGroupAdminModal.name": "名称",
   "permission.PermissionGroupAdminModal.permissionSettings": "权限设定",

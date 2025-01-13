@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "Hapus grup izin",
   "permission.*.editPermissionGroup": "Sunting grup izin",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "Tambahkan grup izin baru",
+  "permission.PermissionGroupAdminModal.duplicateName": "Nama sudah ada",
   "permission.PermissionGroupAdminModal.isRequired": "Silakan masukkan {field}",
   "permission.PermissionGroupAdminModal.name": "nama",
   "permission.PermissionGroupAdminModal.permissionSettings": "setelan izin",

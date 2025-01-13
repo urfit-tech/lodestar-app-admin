@@ -2492,6 +2492,7 @@
   "permission.*.deletePermissionGroup": "Xóa nhóm quyền",
   "permission.*.editPermissionGroup": "Chỉnh sửa nhóm quyền",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "Thêm nhóm quyền mới",
+  "permission.PermissionGroupAdminModal.duplicateName": "Tên đã tồn tại",
   "permission.PermissionGroupAdminModal.isRequired": "Vui lòng nhập {field}",
   "permission.PermissionGroupAdminModal.name": "name",
   "permission.PermissionGroupAdminModal.permissionSettings": "cài đặt quyền",
