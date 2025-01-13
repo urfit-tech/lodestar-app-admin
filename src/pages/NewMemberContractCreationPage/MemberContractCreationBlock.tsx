@@ -50,8 +50,8 @@ const MemberContractCreationBlock: React.FC<{
   const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
 
   const paymentCompany = customSetting.paymentCompanies
-    .find(c => !!c.companies.find(company => company.name === fieldValue.company))
-    ?.companies.find(company => company.name === fieldValue.company)
+    ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
+    ?.companies.find(company => company.name === fieldValue.company) || null
 
   console.log(paymentCompany)
   // Invoice Tax Calculation
