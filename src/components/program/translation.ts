@@ -232,7 +232,8 @@ const programMessages = {
   }),
   ExternalLinkForm: defineMessages({
     title: { id: 'program.ExternalLinkForm.title', defaultMessage: 'Examination paper name' },
-    link: { id: 'program.ExternalLinkForm.link', defaultMessage: 'Exam paper/test link' },
+    links: { id: 'program.ExternalLinkForm.links', defaultMessage: 'Test Links' },
+    examLink: { id: 'program.ExternalLinkForm.examLink', defaultMessage: 'Exam Link' },
     typeLabel: { id: 'program.ExternalLinkForm.typeLabel', defaultMessage: 'Type' },
     linkLabel: { id: 'program.ExternalLinkForm.linkLabel', defaultMessage: 'Link' },
     programPackageCompleteRatio: {

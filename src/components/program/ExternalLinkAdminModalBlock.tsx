@@ -10,9 +10,9 @@ import programMessages from './translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import { handleError } from '../../helpers'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
 import { commonMessages } from '../../helpers/translation'
+import moment, { Moment } from 'moment'
 
 type FieldProps = {
   title: string
@@ -23,11 +23,11 @@ type FieldProps = {
   ratio: number
   isOn: boolean
   displayMode: DisplayMode
-  publishedAt: Dayjs
+  publishedAt: Moment
+  assessmentId: string
 }
 
 const linkMap = {
-  assessment: 'exam',
   accessLinks: 'test',
 }
 
@@ -86,6 +86,11 @@ const ExternalLinkAdminModalBlock: React.FC<{
           isNotifyUpdate: false,
           pinnedStatus: false,
           displayMode: values.displayMode,
+          publishedAt: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
         },
       })
       await updateProgramContentBody({
@@ -94,14 +99,9 @@ const ExternalLinkAdminModalBlock: React.FC<{
           data: {
             trigger: 'externalTestRequirement',
             parameters: {
-              assessment: values.link.filter(item => item.type === 'exam').map(item => item.url),
+              assessmentId: values.assessmentId,
               accessLinks: values.link.filter(item => item.type === 'test').map(item => item.url),
               programPackageCompleteRatio: values.ratio,
-              publishedAt: values.publishedAt
-                ? values.publishedAt.toDate()
-                : values.displayMode !== 'conceal'
-                ? new Date()
-                : null,
             },
             isOn: values.isOn,
           },
@@ -126,10 +126,11 @@ const ExternalLinkAdminModalBlock: React.FC<{
         layout="vertical"
         initialValues={{
           title: programContent.title || '',
+          assessmentId: programContent?.programContentBody?.data?.parameters?.assessmentId,
           displayMode: programContent.displayMode,
           isOn: programContent?.programContentBody?.data?.isOn ?? true,
           ratio: programContent?.programContentBody?.data?.parameters?.programPackageCompleteRatio || 0,
-          publishedAt: programContent.publishedAt ? dayjs(programContent.publishedAt) : dayjs().startOf('minute'),
+          publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
           link: transformedData || [{ amount: 1 }],
         }}
         onFinish={handleSubmit}
@@ -192,7 +193,10 @@ const ExternalLinkAdminModalBlock: React.FC<{
         <Form.Item label={formatMessage(programMessages.ExternalLinkForm.title)} name="title">
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(programMessages.ExternalLinkForm.link)}>
+        <Form.Item label={formatMessage(programMessages.ExternalLinkForm.examLink)} name="assessmentId">
+          <Input />
+        </Form.Item>
+        <Form.Item label={formatMessage(programMessages.ExternalLinkForm.links)}>
           <Form.List name="link">
             {(fields, { add, remove }) => (
               <div>
