@@ -597,14 +597,26 @@ const SalesLeadTable: React.VFC<{
                         salesLeadMembers: updateSalesLeadMembers,
                       })
                   }}
-                  onStarHoverOut={() =>
+                  onStarHoverOut={() => {
+                    const oldSalesLeadMember = defaultSalesLeadMembers?.find(
+                      defaultSalesLeadMember => defaultSalesLeadMember.id === lead.id,
+                    )
                     salesLeadMembersData &&
-                    defaultSalesLeadMembers &&
-                    onSaleLeadChange?.({
-                      ...salesLeadMembersData,
-                      salesLeadMembers: defaultSalesLeadMembers,
-                    })
-                  }
+                      defaultSalesLeadMembers &&
+                      onSaleLeadChange?.({
+                        ...salesLeadMembersData,
+                        salesLeadMembers: [
+                          ...salesLeadMembersData.salesLeadMembers.map(salesLeadMember =>
+                            salesLeadMember.id === lead.id
+                              ? {
+                                  ...salesLeadMember,
+                                  rating: oldSalesLeadMember?.rating || 0,
+                                }
+                              : salesLeadMember,
+                          ),
+                        ],
+                      })
+                  }}
                 />
               </div>
             ) : null}
