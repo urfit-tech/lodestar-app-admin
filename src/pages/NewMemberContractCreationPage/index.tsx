@@ -179,6 +179,7 @@ const MemberContractCreationPage: React.VFC = () => {
               paymentMode: paymentModes[0],
               invoiceEmail: member.email,
               destinationEmail: member.email,
+              language: 'zh-tw',
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
