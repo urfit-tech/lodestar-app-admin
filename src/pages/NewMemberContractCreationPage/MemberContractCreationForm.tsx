@@ -486,6 +486,16 @@ const MemberContractCreationForm: React.FC<
     const [loading, setLoading] = useState(false)
     const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
 
+    const validateNumericSessionInput = (value: number) => {
+      const regex = /^\d+(\.\d{0,1})?$/
+      if (!regex.test(value.toString())) {
+        console.error('課程堂數只能輸入小數點後一位')
+        return false
+      }
+
+      return true
+    }
+
     const filterProducts = useMemo(() => {
       return products.filter(product => {
         if (category.project?.includes('自訂')) {
@@ -928,8 +938,17 @@ const MemberContractCreationForm: React.FC<
                             <InputNumber
                               min={1}
                               value={totalAmount}
+                              step={0.1}
                               onChange={e => {
-                                setTotalAmount(Number(e))
+                                const numericValue = Number(e)
+
+                                if (!validateNumericSessionInput(numericValue)) {
+                                  return message.error('課程堂數只能輸入小數點後一位')
+                                }
+
+                                const roundedValue = Math.floor(numericValue * 10) / 10
+
+                                setTotalAmount(roundedValue)
                                 setCategory({
                                   ...category,
                                   name: undefined,
