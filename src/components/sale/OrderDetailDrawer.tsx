@@ -163,9 +163,9 @@ const OrderDetailDrawer: React.FC<{
                         i.createdAt ? dayjs(i.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss') : ''
                       }
                       invoiceNumber={i.no}
-                      invoiceName={orderLog.invoiceOptions?.name || ''}
+                      invoiceName={i.options?.Result?.['BuyerName'] || ''}
                       invoicePhone={orderLog.invoiceOptions?.phone || ''}
-                      invoiceEmail={orderLog.invoiceOptions?.email || ''}
+                      invoiceEmail={i.options?.Result?.['BuyerEmail'] || ''}
                       invoiceTarget={
                         orderLog.invoiceOptions?.donationCode
                           ? formatMessage(saleMessages.OrderDetailDrawer.invoiceTargetDonation)
@@ -181,8 +181,8 @@ const OrderDetailDrawer: React.FC<{
                           ? formatMessage(saleMessages.OrderDetailDrawer.citizenCode)
                           : ''
                       }
-                      uniformNumber={orderLog.invoiceOptions?.uniformNumber || ''}
-                      uniformTitle={orderLog.invoiceOptions?.uniformTitle || ''}
+                      uniformNumber={i.options?.Result?.['BuyerUBN'] || ''}
+                      uniformTitle={i.options?.Result?.['BuyerName'] || ''}
                       invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
                         orderLog.invoiceOptions?.address || ''
                       }`}

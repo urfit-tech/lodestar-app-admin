@@ -268,6 +268,10 @@ const CUSTOM_PRODUCT_OPTIONS_CONFIG = [
         locationType: [{ title: '海內' }],
       },
       {
+        title: '活動',
+        projects: [{ title: '自訂' }],
+      },
+      {
         title: '其他',
         projects: [{ title: '其他收入' }, { title: '外購教材：自訂' }],
       },
