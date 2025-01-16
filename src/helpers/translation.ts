@@ -910,6 +910,12 @@ export const programPackageMessages = {
       defaultMessage: '所有訂閱課程',
     },
   }),
+  alertMessage: defineMessages({
+    oneLinkError: {
+      id: 'programPackage.alertMessage.oneLinkError',
+      defaultMessage: 'Courses that can only have one external test, please reconfirm.',
+    },
+  }),
 }
 
 export const podcastMessages = {

@@ -63,7 +63,15 @@ const ActivityCollectionAdminPage: React.FC = () => {
             />
           </div>
           <ActivityCollectionTabs
-            memberId={permissions.ACTIVITY_ADMIN ? null : permissions.ACTIVITY_NORMAL ? currentMemberId : ''}
+            memberId={
+              currentUserRole === 'content-creator'
+                ? currentMemberId
+                : permissions.ACTIVITY_ADMIN
+                ? null
+                : permissions.ACTIVITY_NORMAL
+                ? currentMemberId
+                : ''
+            }
           />
         </>
       )}
