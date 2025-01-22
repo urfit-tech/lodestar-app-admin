@@ -373,12 +373,6 @@ export type PaymentCompany = {
   }[]
 }
 
-const calculateEndedAt = (startedAt: Date, weeks: number) => {
-  const max = moment(startedAt).add(1, 'y').endOf('day')
-  const endedAt = moment(startedAt).add(weeks + 2, 'weeks')
-  return endedAt.isBefore(max) ? endedAt : max
-}
-
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
@@ -1323,14 +1317,6 @@ const MemberContractCreationForm: React.FC<
                               total_sessions: { max: totalAmount, min: totalAmount },
                             },
                           })
-
-                          category.product === '學費' &&
-                            form?.setFieldsValue({
-                              endedAt: calculateEndedAt(
-                                form.getFieldValue('startedAt'),
-                                Math.ceil(totalAmount / weeklyBatch),
-                              ),
-                            })
                         }
                       }}
                     >
@@ -1391,73 +1377,79 @@ const MemberContractCreationForm: React.FC<
             )
           })}
         </div>
-        {selectedProducts.filter(p => p.productId.includes('AppointmentPlan_')).length > 0 && !isMemberTypeBG && (
-          <Descriptions title="合約內容" column={2} bordered className="mb-5">
-            <Descriptions.Item
-              label={
-                <div>
-                  合約項目<span style={{ color: 'red' }}> *</span>
-                </div>
-              }
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
-                <Select<string>>
-                  {contracts.map(v => (
-                    <Select.Option key={v.id} value={v.id}>
-                      {v.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <div>
-                  合約效期<span style={{ color: 'red' }}> *</span>
-                </div>
-              }
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              依據訂單內容
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <div>
-                  開始時間<span style={{ color: 'red' }}> *</span>
-                </div>
-              }
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              <Form.Item name="startedAt" noStyle>
-                <DatePicker />
-              </Form.Item>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <div>
-                  結束時間<span style={{ color: 'red' }}> *</span>
-                </div>
-              }
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              <Form.Item name="endedAt" noStyle>
-                <DatePicker
-                  // disabledDate={current =>
-                  //   !!current &&
-                  //   form?.getFieldValue('startedAt') &&
-                  //   current < moment(form?.getFieldValue('startedAt')).add(1, 'y').startOf('day')
-                  // }
-                  disabledDate={current =>
-                    !!current &&
-                    (current < moment().startOf('day') ||
-                      current > moment(form?.getFieldValue('startedAt')).add(1, 'y').endOf('day'))
-                  }
-                />
-              </Form.Item>
-            </Descriptions.Item>
-          </Descriptions>
-        )}
+        {selectedProducts.filter(
+          p =>
+            p.productId.includes('AppointmentPlan_') &&
+            ((p.options.language === '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'teacher')) ||
+              (p.options.language !== '師資班' && !member.agreedAndUnexpiredContracts.find(c => c.type === 'normal'))),
+        ).length > 0 &&
+          !isMemberTypeBG && (
+            <Descriptions title="合約內容" column={2} bordered className="mb-5">
+              <Descriptions.Item
+                label={
+                  <div>
+                    合約項目<span style={{ color: 'red' }}> *</span>
+                  </div>
+                }
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
+                  <Select<string>>
+                    {contracts.map(v => (
+                      <Select.Option key={v.id} value={v.id}>
+                        {v.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={
+                  <div>
+                    合約效期<span style={{ color: 'red' }}> *</span>
+                  </div>
+                }
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                依據訂單內容
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={
+                  <div>
+                    開始時間<span style={{ color: 'red' }}> *</span>
+                  </div>
+                }
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                <Form.Item name="startedAt" noStyle>
+                  <DatePicker />
+                </Form.Item>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={
+                  <div>
+                    結束時間<span style={{ color: 'red' }}> *</span>
+                  </div>
+                }
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                <Form.Item name="endedAt" noStyle>
+                  <DatePicker
+                    // disabledDate={current =>
+                    //   !!current &&
+                    //   form?.getFieldValue('startedAt') &&
+                    //   current < moment(form?.getFieldValue('startedAt')).add(1, 'y').startOf('day')
+                    // }
+                    disabledDate={current =>
+                      !!current &&
+                      (current < moment().startOf('day') ||
+                        current > moment(form?.getFieldValue('startedAt')).add(1, 'y').endOf('day'))
+                    }
+                  />
+                </Form.Item>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
 
         <Descriptions title="付款方式" column={2} bordered className="mb-5">
           <Descriptions.Item
@@ -1664,6 +1656,38 @@ const MemberContractCreationForm: React.FC<
                     email: m.email,
                   }))}
               />
+            </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item
+            label={
+              <div>
+                語言<span style={{ color: 'red' }}> *</span>
+              </div>
+            }
+          >
+            <Form.Item className="mb-0" name="language" rules={[{ required: true, message: '請選擇語言' }]}>
+              <Select<string>>
+                {[
+                  { title: '中文', key: 'zh-tw' },
+                  { title: '英文', key: 'en' },
+                  { title: '日文', key: 'jp' },
+                ].map(l => (
+                  <Select.Option key={l.key} value={l.key}>
+                    {l.title}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item
+            label={
+              <div>
+                付款人信箱<span style={{ color: 'red' }}> *</span>
+              </div>
+            }
+          >
+            <Form.Item className="mb-2" name="destinationEmail">
+              <Input />
             </Form.Item>
           </Descriptions.Item>
         </Descriptions>
