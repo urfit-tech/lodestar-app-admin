@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { Button, Select } from 'antd'
+import { Button, Checkbox, Select } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { useOrderReceivableStatusQuery, useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -84,6 +85,14 @@ const PaymentCard: React.FC<{
       }
     }
   `)
+  console.log('order.id', order.id)
+  const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
+  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(isAccountReceivable)
+  const [isCheckboxDisabled, setCheckboxDisabled] = useState(isAccountReceivable)
+
+  console.log('isAccountReceivable', isAccountReceivable)
+  console.dir(notPayYetPaymentLog, { depth: null })
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -373,6 +382,25 @@ const PaymentCard: React.FC<{
                     </Select.Option>
                   ))}
                 </Select>
+                <Checkbox
+                  style={{ marginTop: '16px' }}
+                  checked={isAccountsReceivableChecked}
+                  disabled={isCheckboxDisabled}
+                  onChange={e => {
+                    const isChecked = e.target.checked
+                    console.log(isChecked)
+                    setAccountsReceivableChecked(isChecked)
+                    if (isChecked) {
+                      setCheckboxDisabled(true)
+                      setOrderToReceivableStatusCommand({
+                        orderProductId: order.id,
+                        deliveredAt: new Date(),
+                      })
+                    }
+                  }}
+                >
+                  {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                </Checkbox>
               </AdminModal>
             </StyledCard>
           )
