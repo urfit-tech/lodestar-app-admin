@@ -68,10 +68,10 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
 
   const accountReceivableCondition = (order: Order) => {
 
-    const isNotSuccessOrderStatus = order.orderStatus !== 'SUCCESS'
+    const isNotSuccessOrderStatus = order?.orderStatus !== 'SUCCESS'
 
   
-    const allProductsDelivered = order.orderProducts.every(
+    const allProductsDelivered = order?.orderProducts?.every(
       (orderProduct: any) => orderProduct.deliveredAt !== null
     );
 
@@ -79,7 +79,7 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
   };
 
   const notPayYetPaymentLogCondition = (order: Order) => {
-    return order.paymentLogs.filter((paymentLog: {
+    return order?.paymentLogs?.filter((paymentLog: {
       no: string,
       status: string,
     }) => paymentLog.status !== 'SUCCESS');
