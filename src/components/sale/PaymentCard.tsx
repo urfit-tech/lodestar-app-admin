@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -85,11 +85,17 @@ const PaymentCard: React.FC<{
       }
     }
   `)
-  console.log('order.id', order.id)
   const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
   const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
-  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(isAccountReceivable)
-  const [isCheckboxDisabled, setCheckboxDisabled] = useState(isAccountReceivable)
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
+  const [isCheckboxDisabled, setCheckboxDisabled] = useState(false)
+
+  useEffect(() => {
+    if (isAccountReceivable) {
+      setAccountsReceivableChecked(true)
+      setCheckboxDisabled(true)
+    }
+  }, [isAccountReceivable])
 
   console.log('isAccountReceivable', isAccountReceivable)
   console.dir(notPayYetPaymentLog, { depth: null })
@@ -345,15 +351,29 @@ const PaymentCard: React.FC<{
                             ? 'physicalRemoteCredit'
                             : undefined
 
-                        updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-                          .catch(err => console.log(err))
-                          .finally(() => {
+                        // Execute commands sequentially
+                        const executeCommands = async () => {
+                          try {
+                            await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
+
+                            // Only execute if checkbox is checked
+                            if (isAccountsReceivableChecked) {
+                              await setOrderToReceivableStatusCommand({
+                                orderProductId: order.id,
+                                deliveredAt: new Date(),
+                              })
+                            }
+                          } catch (err) {
+                            console.log(err)
+                          } finally {
                             setIsOpenChangePaymentMethodModal(false)
                             onRefetch?.()
-                          })
+                          }
+                        }
+
+                        executeCommands()
                       }}
                     >
-                      {' '}
                       {formatMessage(saleMessages.PaymentCard.change)}
                     </Button>
                   </div>
@@ -388,15 +408,7 @@ const PaymentCard: React.FC<{
                   disabled={isCheckboxDisabled}
                   onChange={e => {
                     const isChecked = e.target.checked
-                    console.log(isChecked)
                     setAccountsReceivableChecked(isChecked)
-                    if (isChecked) {
-                      setCheckboxDisabled(true)
-                      setOrderToReceivableStatusCommand({
-                        orderProductId: order.id,
-                        deliveredAt: new Date(),
-                      })
-                    }
                   }}
                 >
                   {formatMessage(saleMessages.PaymentCard.accountsReceivable)}

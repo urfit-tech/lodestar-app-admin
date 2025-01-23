@@ -29,7 +29,6 @@ const useSetOrderToReceivableStatusCommand = () => {
 };
 
 const useOrderReceivableStatusQuery = (orderId: string) => {
-  console.log('orderId', orderId)
   const { data, loading, error } = useQuery(GET_ORDER_RECEIVABLE_STATUS, {
     variables: {
       orderId: orderId || ''
@@ -69,24 +68,14 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
 
   const accountReceivableCondition = (order: Order) => {
 
-    const paidAmount = order.paymentLogs.reduce((acc, paymentLog) => {
-      if (paymentLog.status === 'SUCCESS') {
-        return acc + paymentLog.price;
-      }
-      return acc;
-    }, 0);
+    const isNotSuccessOrderStatus = order.orderStatus !== 'SUCCESS'
 
-    const isNotSuccessStatus = order.paymentLogs.some(
-      (paymentLog: { status: string }) => paymentLog.status !== 'SUCCESS'
-    );
-
-    // const orderTotalAmount = order
   
     const allProductsDelivered = order.orderProducts.every(
       (orderProduct: any) => orderProduct.deliveredAt !== null
     );
-  
-    return isNotSuccessStatus && allProductsDelivered;
+
+    return isNotSuccessOrderStatus && allProductsDelivered;
   };
 
   const notPayYetPaymentLogCondition = (order: Order) => {
