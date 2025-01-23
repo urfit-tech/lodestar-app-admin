@@ -306,7 +306,7 @@ const PaymentCard: React.FC<{
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
-                {settings['payment.v2'] === '1' && (
+                {settings['payment.v2'] === '1' && payment.status === 'UNPAID' && (
                   <Button
                     disabled={loading}
                     loading={loading}
@@ -351,12 +351,10 @@ const PaymentCard: React.FC<{
                             ? 'physicalRemoteCredit'
                             : undefined
 
-                        // Execute commands sequentially
                         const executeCommands = async () => {
                           try {
                             await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
 
-                            // Only execute if checkbox is checked
                             if (isAccountsReceivableChecked) {
                               await setOrderToReceivableStatusCommand({
                                 orderProductId: order.id,
