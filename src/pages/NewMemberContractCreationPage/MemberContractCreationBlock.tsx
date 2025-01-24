@@ -35,7 +35,7 @@ const MemberContractCreationBlock: React.FC<{
   isMemberTypeBG: boolean
   isMemberZeroTax: boolean
 }> = ({ member, form, selectedProducts, contracts, installments, sales, isMemberTypeBG, isMemberZeroTax }) => {
-  const { settings } = useApp()
+  const { settings, enabledModules } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
@@ -408,7 +408,7 @@ const MemberContractCreationBlock: React.FC<{
         if (res.data.code === 'SUCCESS') {
           message.success(`訂單建立成功: ${res.data.result.orderId}`)
 
-          if (fieldValue.accountReceivable) {
+          if (enabledModules.account_receivable && fieldValue.accountReceivable) {
             message.info(`應收帳款訂單(${res.data.result.orderId})商品將進行交付`)
             setOrderToReceivableStatusCommand({
               orderProductId: res.data.result.orderId,

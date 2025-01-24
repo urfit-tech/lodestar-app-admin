@@ -411,7 +411,7 @@ const MemberContractCreationForm: React.FC<
   }) => {
     const fieldValue = form?.getFieldsValue()
 
-    const { id: appId, settings } = useApp()
+    const { id: appId, settings, enabledModules } = useApp()
     const { currentMemberId, authToken, currentUserRole } = useAuth()
     const { data: memberPermissionGroups } = useQuery<
       hasura.GetMemberPermissionGroup,
@@ -1469,15 +1469,17 @@ const MemberContractCreationForm: React.FC<
               </Select>
             </Form.Item>
 
-            <Form.Item name="accountReceivable">
-              <Checkbox
-                onChange={e => {
-                  form?.setFieldsValue({ accountReceivable: e.target.checked })
-                }}
-              >
-                應收帳款
-              </Checkbox>
-            </Form.Item>
+            {enabledModules.account_receivable && (
+              <Form.Item name="accountReceivable">
+                <Checkbox
+                  onChange={e => {
+                    form?.setFieldsValue({ accountReceivable: e.target.checked })
+                  }}
+                >
+                  應收帳款
+                </Checkbox>
+              </Form.Item>
+            )}
           </Descriptions.Item>
 
           <Descriptions.Item
