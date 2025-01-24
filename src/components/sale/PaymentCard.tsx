@@ -216,6 +216,15 @@ const PaymentCard: React.FC<{
                     message: payment.gateway,
                     isRender: true,
                   },
+                  ...(enabledModules.account_receivable
+                    ? [
+                        {
+                          title: formatMessage(saleMessages.PaymentCard.accountsReceivable),
+                          message: isAccountReceivable ? '是' : '否',
+                          isRender: true,
+                        },
+                      ]
+                    : []),
                 ]
           return (
             <StyledCard key={payment.no}>
@@ -271,6 +280,16 @@ const PaymentCard: React.FC<{
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
                   </div>
                 )}
+
+                {enabledModules.account_receivable && (
+                  <div className="row mb-2 justify-content-between">
+                    <StyledInfoTitle className="column">
+                      {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                    </StyledInfoTitle>
+                    <StyledInfoMessage className="column">{isAccountReceivable ? '是' : '否'}</StyledInfoMessage>
+                  </div>
+                )}
+
                 {settings['payment.v2'] === '1' &&
                   permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
@@ -293,6 +312,7 @@ const PaymentCard: React.FC<{
                       targetPaymentNo={payment.no}
                     />
                   )}
+
                 {enabledModules.card_reader &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway === 'physical' &&
@@ -306,6 +326,7 @@ const PaymentCard: React.FC<{
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
+
                 {settings['payment.v2'] === '1' && payment.status === 'UNPAID' && (
                   <Button
                     disabled={loading}
@@ -356,10 +377,11 @@ const PaymentCard: React.FC<{
                             await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
 
                             if (isAccountsReceivableChecked) {
-                              await setOrderToReceivableStatusCommand({
-                                orderProductId: order.id,
-                                deliveredAt: new Date(),
-                              })
+                              enabledModules.account_receivable &&
+                                (await setOrderToReceivableStatusCommand({
+                                  orderProductId: order.id,
+                                  deliveredAt: new Date(),
+                                }))
                             }
                           } catch (err) {
                             console.log(err)
@@ -400,17 +422,19 @@ const PaymentCard: React.FC<{
                     </Select.Option>
                   ))}
                 </Select>
-                <Checkbox
-                  style={{ marginTop: '16px' }}
-                  checked={isAccountsReceivableChecked}
-                  disabled={isCheckboxDisabled}
-                  onChange={e => {
-                    const isChecked = e.target.checked
-                    setAccountsReceivableChecked(isChecked)
-                  }}
-                >
-                  {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
-                </Checkbox>
+                {enabledModules.account_receivable && (
+                  <Checkbox
+                    style={{ marginTop: '16px' }}
+                    checked={isAccountsReceivableChecked}
+                    disabled={isCheckboxDisabled}
+                    onChange={e => {
+                      const isChecked = e.target.checked
+                      setAccountsReceivableChecked(isChecked)
+                    }}
+                  >
+                    {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                  </Checkbox>
+                )}
               </AdminModal>
             </StyledCard>
           )
