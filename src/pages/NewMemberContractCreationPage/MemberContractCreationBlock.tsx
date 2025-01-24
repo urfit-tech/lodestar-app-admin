@@ -409,7 +409,6 @@ const MemberContractCreationBlock: React.FC<{
           message.success(`訂單建立成功: ${res.data.result.orderId}`)
 
           if (enabledModules.account_receivable && fieldValue.accountReceivable) {
-            message.info(`應收帳款訂單(${res.data.result.orderId})商品將進行交付`)
             setOrderToReceivableStatusCommand({
               orderProductId: res.data.result.orderId,
               deliveredAt: new Date(),
