@@ -3,10 +3,12 @@ import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { intersection, isNotEmpty, path, pipe, prop } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
+import { useMemberAdmin } from '../../hooks/member'
 import LoadingPage from '../LoadingPage'
 import ContractLayout from './ContractLayout'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
@@ -127,8 +129,9 @@ type ContractSales = {
 }
 
 const MemberContractCreationPage: React.VFC = () => {
-  const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
+  const { memberId } = useParams<{ memberId: string }>()
+  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(memberId)
   const [form] = useForm<FieldProps>()
   const { info, error, loading, refetch } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
@@ -153,11 +156,16 @@ const MemberContractCreationPage: React.VFC = () => {
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [_, setReRender] = useState(0)
 
-  if (loading || !!error || !info) {
+  if (loading || error || !info || loadingMemberAdmin || errorMemberAdmin) {
     return <LoadingPage />
   }
 
   const { member, contracts } = info
+  const permissionGroupIds = memberAdmin?.permissionGroups?.map(prop('id')) || []
+  const productsUnderPermissionGroup = products?.products.filter(
+    pipe((path as any)(['options', 'permissionGroups']), intersection(permissionGroupIds), isNotEmpty),
+  )
+
   const memberType = member.properties.find(p => p.name === '會員類型')?.value
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
@@ -190,7 +198,7 @@ const MemberContractCreationPage: React.VFC = () => {
                 })
               }
             }}
-            products={products?.products || []}
+            products={productsUnderPermissionGroup || []}
             contracts={contracts}
             sales={sales?.sales || []}
             selectedProducts={selectedProducts}
@@ -384,6 +392,7 @@ const useContractProducts = (appId: string) => {
                 weeklyFrequency: v.options.weekly_frequency,
                 totalSessions: v.options.total_sessions,
                 isCustomPrice: v.options.isCustomPrice,
+                permissionGroups: v.options?.permissionGroups ?? [],
               },
               productId: 'AppointmentPlan_' + v.id,
             }))
@@ -405,6 +414,7 @@ const useContractProducts = (appId: string) => {
                   weeklyFrequency: v.options.weekly_frequency,
                   totalSessions: v.options.total_sessions,
                   isCustomPrice: v.options.isCustomPrice,
+                  permissionGroups: v.options?.permissionGroups ?? [],
                 },
                 productId: 'Token_' + v.id,
               })),
