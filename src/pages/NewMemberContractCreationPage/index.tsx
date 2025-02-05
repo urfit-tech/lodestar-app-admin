@@ -131,7 +131,8 @@ type ContractSales = {
 const MemberContractCreationPage: React.VFC = () => {
   const { id: appId } = useApp()
   const { memberId } = useParams<{ memberId: string }>()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(memberId)
+  const { currentMemberId: adminId } = useAuth()
+  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(adminId ?? '')
   const [form] = useForm<FieldProps>()
   const { info, error, loading, refetch } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
