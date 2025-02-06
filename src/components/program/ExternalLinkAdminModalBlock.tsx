@@ -1,18 +1,22 @@
-import { useForm } from 'antd/lib/form/Form'
 import { CloseOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Form, Input, InputNumber, Menu, Modal, Radio, Select, message, Space } from 'antd'
+import { gql, useQuery } from '@apollo/client'
 import { Flex } from '@chakra-ui/react'
-import { useIntl } from 'react-intl'
-import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
-import { DeepPick } from 'ts-deep-pick'
-import { ProgramContent } from '../../types/program'
-import programMessages from './translation'
-import { useMutateProgramContent } from '../../hooks/program'
-import { handleError } from '../../helpers'
+import { Button, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Radio, Select, Space } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import { FormListFieldData } from 'antd/lib/form/FormList'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useState } from 'react'
-import { commonMessages } from '../../helpers/translation'
 import moment, { Moment } from 'moment'
+import { prop } from 'ramda'
+import { useState } from 'react'
+import { useIntl } from 'react-intl'
+import { DeepPick } from 'ts-deep-pick'
+import hasura from '../../hasura'
+import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
+import { useMutateProgramContent } from '../../hooks/program'
+import { ProgramContent } from '../../types/program'
+import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
+import programMessages from './translation'
 
 type FieldProps = {
   title: string
@@ -52,10 +56,50 @@ const ExternalLinkAdminModalBlock: React.FC<{
   onClose: () => void
 }> = ({ programContent, displayMode, programContentId, onDisplayModeChange, onClose, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { id: appId, settings } = useApp()
   const [loading, setLoading] = useState(false)
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const [form] = useForm()
+  const {
+    loading: loadingContentBodyDataWithTypeLink,
+    error: errorOnGettingContentBodyDataWithTypeLink,
+    data: rawContentBodyDataWithTypeLink,
+  } = useQuery<hasura.GetContentBodyDataWithTypeLink, hasura.GetContentBodyDataWithTypeLinkVariables>(
+    GetContentBodyDataWithTypeLink,
+    { variables: { appId } },
+  )
+
+  const transformedData = transformParameters(programContent?.programContentBody?.data?.parameters, linkMap)
+
+  const programContentBodiesExcludingSelf = rawContentBodyDataWithTypeLink?.program_content_body.filter(
+    v => v?.id !== programContent?.programContentBody?.data?.id,
+  )
+
+  const existentAssessmentIds = programContentBodiesExcludingSelf?.flatMap(v => v?.data?.parameters?.assessmentId)
+
+  const existentAccessLinks = programContentBodiesExcludingSelf?.flatMap(v => v?.data?.parameters?.accessLinks)
+
+  const checkWithErrorMessage =
+    <T extends unknown>(payload: { checkCond: (value: T) => boolean; message: string }) =>
+    (_: any, value: T) =>
+      payload.checkCond(value) ? Promise.reject(new Error(payload.message)) : Promise.resolve()
+
+  const checkUniqueAssessmentId = checkWithErrorMessage({
+    checkCond: v => (existentAssessmentIds ?? []).includes(v),
+    message: '考卷連結並非唯一值！',
+  })
+
+  const checkUniqueAccessLinks = (field: FormListFieldData) =>
+    checkWithErrorMessage({
+      checkCond: v =>
+        (existentAccessLinks ?? []).includes(v) ||
+        form
+          .getFieldValue(['link'])
+          .filter((_: any, i: number) => i !== Number(field.key))
+          .map(prop('url'))
+          .includes(v),
+      message: '測驗連結並非唯一值！',
+    })
 
   let linkTypeOptions: { id: string; name: string }[] = []
   if (!!settings['trigger.program_content']) {
@@ -72,8 +116,6 @@ const ExternalLinkAdminModalBlock: React.FC<{
       console.error(err)
     }
   }
-
-  const transformedData = transformParameters(programContent?.programContentBody?.data?.parameters, linkMap)
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
@@ -117,6 +159,10 @@ const ExternalLinkAdminModalBlock: React.FC<{
     } catch (err) {
       console.log(err)
     }
+  }
+
+  if (loadingContentBodyDataWithTypeLink || errorOnGettingContentBodyDataWithTypeLink) {
+    return <></>
   }
 
   return (
@@ -190,10 +236,18 @@ const ExternalLinkAdminModalBlock: React.FC<{
           </Flex>
         </Flex>
 
-        <Form.Item label={formatMessage(programMessages.ExternalLinkForm.title)} name="title">
+        <Form.Item
+          label={formatMessage(programMessages.ExternalLinkForm.title)}
+          name="title"
+          rules={[{ required: true }]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(programMessages.ExternalLinkForm.examLink)} name="assessmentId">
+        <Form.Item
+          label={formatMessage(programMessages.ExternalLinkForm.examLink)}
+          name="assessmentId"
+          rules={[{ required: true }, { validator: checkUniqueAssessmentId }]}
+        >
           <Input />
         </Form.Item>
         <Form.Item label={formatMessage(programMessages.ExternalLinkForm.links)}>
@@ -206,6 +260,7 @@ const ExternalLinkAdminModalBlock: React.FC<{
                       label={field.key === 0 ? formatMessage(programMessages.ExternalLinkForm.typeLabel) : undefined}
                       name={[field.name, 'type']}
                       fieldKey={[field.key, 'type']}
+                      rules={[{ required: true }]}
                     >
                       {linkTypeOptions.length > 0 && (
                         <Select style={{ width: '200px' }}>
@@ -221,6 +276,7 @@ const ExternalLinkAdminModalBlock: React.FC<{
                       label={field.key === 0 ? formatMessage(programMessages.ExternalLinkForm.linkLabel) : undefined}
                       name={[field.name, 'url']}
                       fieldKey={[field.key, 'url']}
+                      rules={[{ required: true }, { validator: checkUniqueAccessLinks(field) }]}
                     >
                       <Input />
                     </Form.Item>
@@ -253,5 +309,19 @@ const ExternalLinkAdminModalBlock: React.FC<{
     </>
   )
 }
+
+const GetContentBodyDataWithTypeLink = gql`
+  query GetContentBodyDataWithTypeLink($appId: String!) {
+    program_content_body(
+      where: {
+        type: { _eq: "link" }
+        program_contents: { program_content_section: { program: { app_id: { _eq: $appId } } } }
+      }
+    ) {
+      id
+      data
+    }
+  }
+`
 
 export default ExternalLinkAdminModalBlock
