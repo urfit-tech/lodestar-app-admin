@@ -41,6 +41,7 @@ export type ProgramPackagePlanProps = {
   publishedAt: Date | null
   isTempoDelivery: boolean
   isParticipantsVisible: boolean
+  isCountdownTimerVisible: boolean
   position: number
   remindPeriodAmount: number | null | undefined
   remindPeriodType: string | null | undefined

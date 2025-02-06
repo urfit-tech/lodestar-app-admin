@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { commonMessages, commonMessages as helperCommonMessages } from '../../helpers/translation'
 import { useProductChannelInfo } from '../../hooks/channel'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
+import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import ProductSkuModal from '../common/ProductSkuModal'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 import programPackageMessages from './translation'
@@ -85,6 +86,11 @@ const StyledLabel = styled.div<{ active?: boolean }>`
     border-radius: 50%;
   }
 `
+
+const StyledCountDownBlock = styled.div`
+  margin-top: 20px;
+`
+
 const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackageId: string; onRefetch?: () => void }> =
   ({
     programPackageId,
@@ -102,6 +108,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
     publishedAt,
     isTempoDelivery,
     isParticipantsVisible,
+    isCountdownTimerVisible,
     position,
     remindPeriodAmount,
     remindPeriodType,
@@ -149,6 +156,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
               publishedAt,
               isTempoDelivery,
               isParticipantsVisible,
+              isCountdownTimerVisible,
               position,
               remindPeriodAmount,
               remindPeriodType,
@@ -163,12 +171,17 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackag
         </StyledTitle>
         <PriceLabel
           listPrice={listPrice}
-          salePrice={isOnSale && salePrice ? salePrice : undefined}
+          salePrice={isOnSale ? salePrice : undefined}
           downPrice={discountDownPrice || undefined}
           periodType={isSubscription ? periodType : undefined}
           periodAmount={periodAmount}
           variant="full-detail"
         />
+        {isCountdownTimerVisible && soldAt && isOnSale && (
+          <StyledCountDownBlock>
+            <CountDownTimeBlock expiredAt={soldAt} icon />
+          </StyledCountDownBlock>
+        )}
         <Divider className="my-3" />
 
         {!isSubscription && periodAmount && periodType && (
