@@ -120,6 +120,7 @@ const ProgramPackagePlanAdminModal: React.FC<
               published_at: values.isPublished ? new Date() : null,
               is_subscription: isSubscription,
               is_participants_visible: values.isParticipantsVisible,
+              is_countdown_timer_visible: values.sale?.isTimerVisible,
               period_amount: values.periodAmount,
               period_type: values.periodType,
               list_price: values.listPrice,
@@ -198,6 +199,7 @@ const ProgramPackagePlanAdminModal: React.FC<
             ? {
                 price: plan.salePrice,
                 soldAt: plan.soldAt,
+                isTimerVisible: plan.isCountdownTimerVisible || false,
               }
             : null,
 
@@ -304,7 +306,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           name="sale"
           rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
         >
-          <SaleInput />
+          <SaleInput withTimer />
         </Form.Item>
 
         {isSubscription && (
@@ -352,6 +354,7 @@ const INSERT_PROGRAM_PACKAGE_PLAN = gql`
           is_tempo_delivery
           is_subscription
           is_participants_visible
+          is_countdown_timer_visible
           published_at
           period_amount
           period_type

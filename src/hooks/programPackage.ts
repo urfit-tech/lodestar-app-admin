@@ -342,6 +342,7 @@ export const useProgramPackage = (id: string) => {
             published_at
             is_tempo_delivery
             is_participants_visible
+            is_countdown_timer_visible
             position
             remind_period_amount
             remind_period_type
@@ -411,6 +412,7 @@ export const useProgramPackage = (id: string) => {
               publishedAt: plan.published_at ? new Date(plan.published_at) : null,
               isTempoDelivery: plan.is_tempo_delivery,
               isParticipantsVisible: plan.is_participants_visible,
+              isCountdownTimerVisible: plan.is_countdown_timer_visible,
               position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
               remindPeriodAmount: plan.remind_period_amount !== undefined ? plan.remind_period_amount : null,
