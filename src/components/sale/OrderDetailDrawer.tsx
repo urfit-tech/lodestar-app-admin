@@ -188,7 +188,7 @@ const OrderDetailDrawer: React.FC<{
                       }`}
                       invoiceComment={i.options?.Result?.Comment || orderLog.invoiceOptions?.invoiceComment}
                       invoicePrice={i.price}
-                      invoiceRandomNumber={i.options?.Result?.['BuyerName'] || ''}
+                      invoiceRandomNumber={i.options?.Result?.RandomNum || ''}
                       onClose={() => {
                         onClose()
                         orderDetailRefetch()
