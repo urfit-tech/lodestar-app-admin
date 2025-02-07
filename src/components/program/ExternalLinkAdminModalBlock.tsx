@@ -89,15 +89,12 @@ const ExternalLinkAdminModalBlock: React.FC<{
     message: '考卷連結並非唯一值！',
   })
 
-  console.log(92, programContent?.programContentBody?.id, programContentBodiesExcludingSelf)
-
   const checkUniqueAccessLinks = (field: FormListFieldData) =>
     checkWithErrorMessage({
       checkCond: v =>
         (existentAccessLinks ?? []).includes(v) ||
         form
           .getFieldValue(['link'])
-          // .map((v: any, i: number) => { console.log(v, i); return v })
           .filter((_: any, i: number) => i !== Number(field.key))
           .map(prop('url'))
           .includes(v),
