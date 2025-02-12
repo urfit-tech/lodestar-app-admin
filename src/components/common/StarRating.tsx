@@ -12,8 +12,8 @@ const ReactStarsWrapper = styled(ReactStars)`
 
 const StarRating: React.FC<{
   value: number
-  onStarClick: (nextValue: number, prevValue: number, name: string) => void
-  onStarHover: (nextValue: number, prevValue: number, name: string) => void
+  onStarClick?: (nextValue: number, prevValue: number, name: string) => void
+  onStarHover?: (nextValue: number, prevValue: number, name: string) => void
   onStarHoverOut?: (nextValue: number, prevValue: number, name: string) => void
 }> = ({ value, onStarClick, onStarHover, onStarHoverOut }) => {
   return (
