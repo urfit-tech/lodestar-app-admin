@@ -550,7 +550,7 @@ const SalesLeadTable: React.VFC<{
           nameAndEmail: value,
         }),
       ),
-      render: (nameAndEmail, lead) => {
+      render: (_, lead) => {
         const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
         const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
@@ -585,37 +585,6 @@ const SalesLeadTable: React.VFC<{
                         salesLeadMembers: updateSalesLeadMembers,
                       })
                     onDefaultSalesLeadMembersChange?.(updateSalesLeadMembers)
-                  }}
-                  onStarHover={(value: number) => {
-                    const updateSalesLeadMembers =
-                      salesLeadMembersData?.salesLeadMembers.map(salesLeadMember =>
-                        salesLeadMember.id === lead.id ? { ...salesLeadMember, rating: value || 0 } : salesLeadMember,
-                      ) || []
-                    !!salesLeadMembersData &&
-                      onSaleLeadChange?.({
-                        ...salesLeadMembersData,
-                        salesLeadMembers: updateSalesLeadMembers,
-                      })
-                  }}
-                  onStarHoverOut={() => {
-                    const oldSalesLeadMember = defaultSalesLeadMembers?.find(
-                      defaultSalesLeadMember => defaultSalesLeadMember.id === lead.id,
-                    )
-                    salesLeadMembersData &&
-                      defaultSalesLeadMembers &&
-                      onSaleLeadChange?.({
-                        ...salesLeadMembersData,
-                        salesLeadMembers: [
-                          ...salesLeadMembersData.salesLeadMembers.map(salesLeadMember =>
-                            salesLeadMember.id === lead.id
-                              ? {
-                                  ...salesLeadMember,
-                                  rating: oldSalesLeadMember?.rating || 0,
-                                }
-                              : salesLeadMember,
-                          ),
-                        ],
-                      })
                   }}
                 />
               </div>
