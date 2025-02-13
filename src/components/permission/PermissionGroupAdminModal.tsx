@@ -45,7 +45,7 @@ const PermissionGroupAdminModal: React.FC<
         setLoading(true)
         const values = form.getFieldsValue()
 
-        if (!id && existedPermissionGroupNames.includes(values.name.trim())) {
+        if (existedPermissionGroupNames.includes(values.name.trim())) {
           return message.error(formatMessage(permissionMessages.PermissionGroupAdminModal.duplicateName))
         }
         const oldName = name
