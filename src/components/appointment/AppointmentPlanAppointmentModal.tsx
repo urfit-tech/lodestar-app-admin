@@ -121,12 +121,14 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
       <StyledWrapper>
         {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
           .map(periods =>
-            periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
+            periods?.sort(
+              (a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime(),
+            ),
           )
-          .map(periods => periods[0])
+          .map(periods => periods?.[0] || null)
           .map((period, index) => (
             <AppointmentPeriodItem
-              key={`${period.appointmentPlanId}-${index}`}
+              key={`${period?.appointmentPlanId}-${index}`}
               creatorId={appointmentPlanAdmin.creatorId}
               appointmentPlan={{
                 id: appointmentPlanAdmin.id,
@@ -134,14 +136,18 @@ const AppointmentPlanPeriodStepBlock: React.VFC<{
                 defaultMeetGateway: appointmentPlanAdmin.defaultMeetGateway,
               }}
               period={{
-                startedAt: period.startedAt,
-                endedAt: period.endedAt,
+                startedAt: period?.startedAt || null,
+                endedAt: period?.endedAt || null,
               }}
               services={services}
               loadingServices={loadingServices}
-              isPeriodExcluded={period.isExcluded}
-              isEnrolled={period.targetMemberBooked}
-              onClick={() => (!period.targetMemberBooked ? handlePeriodSubmit(period.startedAt, period.endedAt) : null)}
+              isPeriodExcluded={period?.isExcluded}
+              isEnrolled={period?.targetMemberBooked}
+              onClick={() =>
+                !period?.targetMemberBooked && period?.startedAt && period?.endedAt
+                  ? handlePeriodSubmit(period.startedAt, period.endedAt)
+                  : null
+              }
             />
           ))}
       </StyledWrapper>
@@ -352,15 +358,17 @@ const AppointmentPlanAppointmentModal: React.FC<
               </StyledPlanTitle>
               <Divider className="my-3" />
               {appointmentStep === 'period' &&
-                Object.values(periodCollections).map(periods => (
-                  <AppointmentPlanPeriodStepBlock
-                    periods={periods}
-                    appointmentPlanAdmin={appointmentPlanAdmin}
-                    services={services}
-                    loadingServices={loadingServices}
-                    handlePeriodSubmit={handlePeriodSubmit}
-                  />
-                ))}
+                Object.values(periodCollections).map(periods =>
+                  periods ? (
+                    <AppointmentPlanPeriodStepBlock
+                      periods={periods}
+                      appointmentPlanAdmin={appointmentPlanAdmin}
+                      services={services}
+                      loadingServices={loadingServices}
+                      handlePeriodSubmit={handlePeriodSubmit}
+                    />
+                  ) : null,
+                )}
               {appointmentStep === 'discount' && (
                 <>
                   <StyledPeriod variant="editable">

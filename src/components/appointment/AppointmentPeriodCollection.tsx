@@ -80,9 +80,11 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
       <StyledWrapper>
         {Object.values(groupBy(period => dayjs(period.startedAt).format('YYYY-MM-DDTHH:mm:00Z'), periods))
           .map(periods =>
-            periods.sort((a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime()),
+            periods?.sort(
+              (a, b) => a.appointmentScheduleCreatedAt.getTime() - b.appointmentScheduleCreatedAt.getTime(),
+            ),
           )
-          .map(periods => periods[0])
+          .map(periods => periods?.[0] || null)
           .map((period, index) => (
             <AppointmentPeriodItem
               key={`${appointmentPlan.id}-${index}`}
@@ -93,15 +95,15 @@ const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = 
                 defaultMeetGateway: appointmentPlan.defaultMeetGateway,
               }}
               period={{
-                startedAt: period.startedAt,
-                endedAt: period.endedAt,
+                startedAt: period?.startedAt || null,
+                endedAt: period?.endedAt || null,
               }}
               services={services}
               loadingServices={loadingServices}
-              isPeriodExcluded={period.isExcluded}
-              isEnrolled={period.isEnrolled}
+              isPeriodExcluded={period?.isExcluded}
+              isEnrolled={period?.isEnrolled}
               onClick={() => {
-                if (!period.isEnrolled) {
+                if (!period?.isEnrolled) {
                   setSelectedPeriod(period)
                   setVisible(true)
                 }
