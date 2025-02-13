@@ -19,8 +19,6 @@ const PermissionGroupAdminPage: React.VFC = () => {
   const { permissions } = useAuth()
   const { enabledModules } = useApp()
 
-  const existedPermissionGroupNames = permissionGroups.map(permissionGroup => permissionGroup.name)
-
   if (!enabledModules.permission_group || !permissions.PERMISSION_GROUP_ADMIN) {
     return <ForbiddenPage />
   }
@@ -36,7 +34,6 @@ const PermissionGroupAdminPage: React.VFC = () => {
 
       <div className="mb-4">
         <PermissionGroupAdminModal
-          existedPermissionGroupNames={existedPermissionGroupNames}
           title={formatMessage(permissionGroupsAdminMessages.ui.createPermissionGroup)}
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
@@ -56,8 +53,6 @@ const PermissionGroupAdminPage: React.VFC = () => {
           key={permissionGroup.id}
           id={permissionGroup.id}
           name={permissionGroup.name}
-          
-          existedPermissionGroupNames={existedPermissionGroupNames}
           permissionGroupPermissions={permissionGroup.permissionGroupPermissions}
           onRefetch={refetchPermissionGroups}
         />
