@@ -205,7 +205,7 @@ export const usePermissionGroupsDropdownMenu = (
     count: number
   }[] = Object.keys(permissionGroups).map(key => ({
     permissionGroup: key,
-    count: permissionGroups[key].length,
+    count: permissionGroups?.[key]?.length || 0,
   }))
 
   return {
