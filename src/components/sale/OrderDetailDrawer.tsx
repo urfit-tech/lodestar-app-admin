@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
+import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
@@ -66,6 +67,8 @@ const OrderDetailDrawer: React.FC<{
   const company = paymentCompanies?.paymentCompanies
     ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
     ?.companies.find(company => company.name === orderLog.options?.company)
+
+  const { isAccountReceivable } = useOrderReceivableStatusQuery(orderLogId || '')
 
   return (
     <>
@@ -153,6 +156,7 @@ const OrderDetailDrawer: React.FC<{
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
+                    isAccountReceivable={isAccountReceivable}
                   />
                 ) : (
                   invoices.map(i => (
@@ -201,6 +205,7 @@ const OrderDetailDrawer: React.FC<{
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
+                      isAccountReceivable={isAccountReceivable}
                     />
                   ))
                 )}
@@ -323,6 +328,7 @@ const OrderDetailDrawer: React.FC<{
                     }`}
                     invoiceComment={orderLog.invoiceOptions?.invoiceComment}
                     invoiceGatewayId={company?.invoiceGatewayId}
+                    isAccountReceivable={isAccountReceivable}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>

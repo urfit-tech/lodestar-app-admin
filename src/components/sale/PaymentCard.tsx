@@ -1,15 +1,16 @@
 import { gql, useMutation } from '@apollo/client'
-import { Button, Select } from 'antd'
+import { Button, Checkbox, Select } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { useOrderReceivableStatusQuery, useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -84,6 +85,20 @@ const PaymentCard: React.FC<{
       }
     }
   `)
+  const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
+  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
+  const [isCheckboxDisabled, setCheckboxDisabled] = useState(false)
+
+  useEffect(() => {
+    if (isAccountReceivable) {
+      setAccountsReceivableChecked(true)
+      setCheckboxDisabled(true)
+    }
+  }, [isAccountReceivable])
+
+  console.log('isAccountReceivable', isAccountReceivable)
+  console.dir(notPayYetPaymentLog, { depth: null })
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -201,6 +216,15 @@ const PaymentCard: React.FC<{
                     message: payment.gateway,
                     isRender: true,
                   },
+                  ...(enabledModules.account_receivable
+                    ? [
+                        {
+                          title: formatMessage(saleMessages.PaymentCard.accountsReceivable),
+                          message: isAccountReceivable ? '是' : '否',
+                          isRender: true,
+                        },
+                      ]
+                    : []),
                 ]
           return (
             <StyledCard key={payment.no}>
@@ -256,6 +280,16 @@ const PaymentCard: React.FC<{
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
                   </div>
                 )}
+
+                {enabledModules.account_receivable && (
+                  <div className="row mb-2 justify-content-between">
+                    <StyledInfoTitle className="column">
+                      {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                    </StyledInfoTitle>
+                    <StyledInfoMessage className="column">{isAccountReceivable ? '是' : '否'}</StyledInfoMessage>
+                  </div>
+                )}
+
                 {settings['payment.v2'] === '1' &&
                   permissions['MODIFY_MEMBER_PAYMENT_STATUS'] &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
@@ -278,6 +312,7 @@ const PaymentCard: React.FC<{
                       targetPaymentNo={payment.no}
                     />
                   )}
+
                 {enabledModules.card_reader &&
                   ['UNPAID', 'FAILED'].includes(payment.status) &&
                   payment.gateway === 'physical' &&
@@ -291,7 +326,8 @@ const PaymentCard: React.FC<{
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
-                {settings['payment.v2'] === '1' && (
+
+                {settings['payment.v2'] === '1' && payment.status === 'UNPAID' && (
                   <Button
                     disabled={loading}
                     loading={loading}
@@ -336,15 +372,28 @@ const PaymentCard: React.FC<{
                             ? 'physicalRemoteCredit'
                             : undefined
 
-                        updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-                          .catch(err => console.log(err))
-                          .finally(() => {
+                        const executeCommands = async () => {
+                          try {
+                            await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
+
+                            if (isAccountsReceivableChecked) {
+                              enabledModules.account_receivable &&
+                                (await setOrderToReceivableStatusCommand({
+                                  orderProductId: order.id,
+                                  deliveredAt: new Date(),
+                                }))
+                            }
+                          } catch (err) {
+                            console.log(err)
+                          } finally {
                             setIsOpenChangePaymentMethodModal(false)
                             onRefetch?.()
-                          })
+                          }
+                        }
+
+                        executeCommands()
                       }}
                     >
-                      {' '}
                       {formatMessage(saleMessages.PaymentCard.change)}
                     </Button>
                   </div>
@@ -373,6 +422,19 @@ const PaymentCard: React.FC<{
                     </Select.Option>
                   ))}
                 </Select>
+                {enabledModules.account_receivable && (
+                  <Checkbox
+                    style={{ marginTop: '16px' }}
+                    checked={isAccountsReceivableChecked}
+                    disabled={isCheckboxDisabled}
+                    onChange={e => {
+                      const isChecked = e.target.checked
+                      setAccountsReceivableChecked(isChecked)
+                    }}
+                  >
+                    {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                  </Checkbox>
+                )}
               </AdminModal>
             </StyledCard>
           )

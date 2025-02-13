@@ -89,7 +89,7 @@ const PermissionInput: React.FC<{
                   ? formatMessage(formMessages.PermissionInput[groupId as keyof typeof formMessages.PermissionInput])
                   : groupId
               }
-              options={sortBy(prop('id'))(permissionGroups[groupId]).map(permission => permission.id)}
+              options={sortBy(prop('id'))(permissionGroups?.[groupId] || []).map(permission => permission.id)}
               fixedOptions={fixOptions}
               value={value}
               onChange={onChange}
