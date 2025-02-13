@@ -5,7 +5,7 @@ import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
-import { PermissionGroupProps } from '../types/general'
+import { PermissionGroup } from '../types/general'
 import {
   MemberPropertyProps,
   MemberAdminProps,
@@ -15,7 +15,6 @@ import {
   MemberPublicProps,
   NoteAdminProps,
   UserRole,
-  MemberNote,
   ResponseMembers,
   MemberCollectionProps,
 } from '../types/member'
@@ -212,7 +211,7 @@ export const useMemberAdmin = (memberId: string) => {
   const memberAdmin:
     | (MemberAdminProps & {
         noAgreedContract: boolean
-        permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
+        permissionGroups: Pick<PermissionGroup, 'id' | 'name'>[]
       })
     | null = data?.member_by_pk
     ? {

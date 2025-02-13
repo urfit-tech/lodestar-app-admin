@@ -117,7 +117,7 @@ export type PaymentLog = {
   options?: any
 }
 
-export type PermissionGroupProps = {
+export type PermissionGroup = {
   id: string
   name: string
   permissionGroupPermissions: PermissionGroupPermission[]

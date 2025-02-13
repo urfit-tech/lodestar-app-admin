@@ -117,6 +117,7 @@ const InvoiceCard: React.FC<{
   companyAddress?: string
   companyPhone?: string
   onClose?: () => void
+  isAccountReceivable?: boolean
 }> = ({
   status,
   invoiceIssuedAt,
@@ -142,6 +143,7 @@ const InvoiceCard: React.FC<{
   companyAddress,
   companyPhone,
   onClose,
+  isAccountReceivable,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -369,6 +371,7 @@ const InvoiceCard: React.FC<{
                         taxBlock:
                           invoiceResponse?.BuyerUBN &&
                           `<div>稅額: ${Number(invoiceResponse?.TaxAmt || 0).toLocaleString()}</div>`,
+                        accountReceivableBlock: isAccountReceivable ? `<div>應收帳款</div>` : '',
                       }}
                     />
                   </div>
@@ -407,6 +410,7 @@ const InvoiceCard: React.FC<{
     <div>稅額</div>
     <div>${Number(invoiceResponse?.TaxAmt || 0).toLocaleString()}</div>
   </div>`,
+                        accountReceivableBlock: isAccountReceivable ? `<div>應收帳款</div>` : '',
                       }}
                     />
                   </div>
