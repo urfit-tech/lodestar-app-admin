@@ -63,7 +63,6 @@ type FieldProps = {
   invoiceEmail: string
   language: string
   destinationEmail: string
-  accountReceivable: boolean
 }
 
 type ContractInfo = {

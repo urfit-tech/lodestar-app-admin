@@ -1468,16 +1468,6 @@ const MemberContractCreationForm: React.FC<
                 ))}
               </Select>
             </Form.Item>
-
-            <Form.Item name="accountReceivable">
-              <Checkbox
-                onChange={e => {
-                  form?.setFieldsValue({ accountReceivable: e.target.checked })
-                }}
-              >
-                應收帳款
-              </Checkbox>
-            </Form.Item>
           </Descriptions.Item>
 
           <Descriptions.Item
