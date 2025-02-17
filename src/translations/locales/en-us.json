@@ -3326,6 +3326,7 @@
   "sale.SalesLeadTable.memberFullName": "Full Name",
   "sale.SalesLeadTable.memberNickName": "Nickname",
   "sale.SalesLeadTable.memberNote": "Last Contact Note",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "Outbound Count",
   "sale.SalesLeadTable.moveTo": "Move To",
   "sale.SalesLeadTable.moveToFollowed": "Move to Followed",
   "sale.SalesLeadTable.moveToSpecificList": "Move to {categoryName}",

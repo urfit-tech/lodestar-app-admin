@@ -3326,6 +3326,7 @@
   "sale.SalesLeadTable.memberFullName": "Họ và tên",
   "sale.SalesLeadTable.memberNickName": "Biệt danh",
   "sale.SalesLeadTable.memberNote": "Ghi chú liên hệ cuối cùng",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "Số lượng gửi đi",
   "sale.SalesLeadTable.moveTo": "Di chuyển đến",
   "sale.SalesLeadTable.moveToFollowed": "Di chuyển đến Đã theo dõi",
   "sale.SalesLeadTable.moveToSpecificList": "Di chuyển đến {categoryName}",
