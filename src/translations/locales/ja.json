@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "予想時間（分）",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "予想セクション数",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "開始予定日",
+  "ProgramAdminPageMes​​sages.ProgramAdditionalSettingsForm.coverLabel": "表紙ラベル",
+  "ProgramAdminPageMes​​sages.ProgramAdditionalSettingsForm.wordLimit": "半角文字を {maxLength} 文字まで入力してください",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "すぐに送信",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "備考（任意）",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "送信備考",

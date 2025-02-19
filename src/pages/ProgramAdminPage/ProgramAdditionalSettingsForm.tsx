@@ -46,8 +46,20 @@ class DateStrategy implements RenderStrategy {
 }
 
 class TextStrategy implements RenderStrategy {
-  render() {
-    return <StyledInputText />
+  render(options: { maxLength?: number; placeholder?: string; formatMessage?: any }) {
+    const placeholder =
+      options?.placeholder && options.formatMessage
+        ? options.formatMessage(
+            ProgramAdminPageMessages.ProgramAdditionalSettingsForm[
+              options.placeholder as keyof typeof ProgramAdminPageMessages.ProgramAdditionalSettingsForm
+            ],
+            {
+              maxLength: options?.maxLength,
+            },
+          )
+        : undefined
+
+    return <StyledInputText maxLength={options?.maxLength || undefined} placeholder={placeholder} />
   }
 }
 
@@ -65,9 +77,9 @@ class RenderStrategyContext {
     TextEditor: new TextEditorStrategy(),
   }
 
-  public renderModuleComponent(type: string, options?: any): JSX.Element | null {
+  public renderModuleComponent(type: string, options: any, formatMessage: any): JSX.Element | null {
     const strategy = this.strategyMap[type]
-    return strategy ? strategy.render(options) : null
+    return strategy ? strategy.render({ ...options, formatMessage }) : null
   }
 }
 
@@ -167,7 +179,7 @@ const ProgramAdditionalSettingsForm: React.FC<{
               )}
               wrapperCol={{ md: { span: v.type === 'TextEditor' ? 20 : 12 } }}
             >
-              {renderContext.renderModuleComponent(v.type, v?.options)}
+              {renderContext.renderModuleComponent(v.type, v?.options, formatMessage)}
             </Form.Item>
           )
         })}

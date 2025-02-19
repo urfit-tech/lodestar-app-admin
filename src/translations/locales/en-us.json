@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "Expected duration(min)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "Expected sections",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "Expected start date",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel": "Cover Label",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit": "Enter up to {maxLength} half-width characters",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "Submit for approval",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "Remarks (optional)",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "Approval Remarks",

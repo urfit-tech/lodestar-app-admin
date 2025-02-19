@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "预计长度(分)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "预计章节",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "预计开课",
+  "ProgramAdminPageMes​​sages.ProgramAdditionalSettingsForm.coverLabel": "封面标签",
+  "ProgramAdminPageMes​​sages.ProgramAdditionalSettingsForm.wordLimit": "最多输入 {maxLength} 个半角字符",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "立即送审",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "备注（非必填）",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "送审备注",

@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "예상 길이(분)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "예상 섹션",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "예정 시작일",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel": "표지 라벨",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit": "최대 {maxLength} 반각 문자를 입력하세요",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "즉시 제출",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "비고(선택 사항)",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "제출 비고",
