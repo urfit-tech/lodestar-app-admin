@@ -399,6 +399,7 @@ export const useManagerLeads = (
                 })),
                 categoryNames: salesLeadMember.categoryNames,
                 latestNoteDescription: salesLeadMember.latestNoteDescription,
+                memberNoteOutboundCount: salesLeadMember.memberNoteOutboundCount,
                 status: salesLeadMember.status as LeadStatus,
                 createdAt: dayjs(salesLeadMember.createdAt).toDate(),
                 assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,

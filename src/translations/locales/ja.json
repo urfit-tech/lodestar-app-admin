@@ -3328,6 +3328,7 @@
   "sale.SalesLeadTable.memberFullName": "フル ネーム",
   "sale.SalesLeadTable.memberNickName": "ニックネーム",
   "sale.SalesLeadTable.memberNote": "最終連絡メモ",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "アウトバウンド数",
   "sale.SalesLeadTable.moveTo": "移動先",
   "sale.SalesLeadTable.moveToFollowed": "フォロー済みに移動",
   "sale.SalesLeadTable.moveToSpecificList": "{categoryName} に移動",
