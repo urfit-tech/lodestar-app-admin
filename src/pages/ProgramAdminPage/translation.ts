@@ -261,6 +261,14 @@ const ProgramAdminPageMessages = {
     },
   }),
   ProgramAdditionalSettingsForm: defineMessages({
+    coverLabel: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel',
+      defaultMessage: 'Cover Label',
+    },
+    wordLimit: {
+      id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit',
+      defaultMessage: 'Enter up to {maxLength} half-width characters',
+    },
     expectedSections: {
       id: 'ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections',
       defaultMessage: 'Expected sections',
