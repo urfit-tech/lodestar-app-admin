@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "預計長度(分)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "預計章節",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "預計開課",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel": "封面行銷小標",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit": "最多輸入 {maxLength} 個半形文字",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "立即送審",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "備註(非必填)",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "送審備註",

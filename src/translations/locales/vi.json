@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "Thời lượng dự kiến(phút)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "Phần dự kiến",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "Ngày bắt đầu dự kiến",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel": "Nhãn bìa",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit": "Nhập tối đa {maxLength} ký tự nửa độ rộng",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "Gửi nó ngay lập tức",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "Nhận xét (không được yêu cầu)",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "Nhận xét",

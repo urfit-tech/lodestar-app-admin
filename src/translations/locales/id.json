@@ -137,6 +137,8 @@
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedDuration": "Durasi yang diharapkan (menit)",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedSections": "Bagian yang diharapkan",
   "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.expectedStartDate": "Tanggal mulai yang diharapkan",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.coverLabel": "Label Sampul",
+  "ProgramAdminPageMessages.ProgramAdditionalSettingsForm.wordLimit": "Masukkan hingga {maxLength} karakter setengah lebar",
   "ProgramAdminPageMessages.ProgramPublishBlock.apply": "Kirim Sekarang",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyDescription": "Keterangan (opsional)",
   "ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle": "Catatan Pengiriman",
