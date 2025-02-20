@@ -2492,7 +2492,7 @@
   "permission.*.deletePermissionGroup": "刪除權限組",
   "permission.*.editPermissionGroup": "編輯權限組",
   "permission.PermissionGroupAdminItem.createPermissionGroup": "新增權限組",
-  "permission.PermissionGroupAdminModal.duplicateName": "名称重复",
+  "permission.PermissionGroupAdminModal.duplicateName": "名稱重複",
   "permission.PermissionGroupAdminModal.isRequired": "請輸入{field}",
   "permission.PermissionGroupAdminModal.name": "名稱",
   "permission.PermissionGroupAdminModal.permissionSettings": "權限設定",
