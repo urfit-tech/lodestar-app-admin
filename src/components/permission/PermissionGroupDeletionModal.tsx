@@ -1,27 +1,63 @@
 import { DeleteOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import { Button, message } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
+import {
+  GetPermissionGroupMembers,
+  useMutationPermissionGroup,
+  useMutationPermissionGroupAuditLog,
+} from '../../hooks/permission'
+import { PermissionGroup } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
+import permissionMessages from './translation'
+import hasura from '../../hasura'
 
-const PermissionGroupDeletionModal: React.VFC<{ id: string; onRefetch?: () => void }> = ({ id, onRefetch }) => {
+const PermissionGroupDeletionModal: React.VFC<PermissionGroup & { onRefetch?: () => void }> = ({
+  id,
+  name,
+  permissionGroupPermissions,
+  onRefetch,
+}) => {
+  const client = useApolloClient()
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
+  const { currentMemberId } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [deletePermissionGroup] = useMutation<hasura.DELETE_PERMISSION_GROUP, hasura.DELETE_PERMISSION_GROUPVariables>(
-    DELETE_PERMISSION_GROUP,
-  )
+  const { deletePermissionGroup } = useMutationPermissionGroup()
+  const { insertPermissionGroupAuditLog } = useMutationPermissionGroupAuditLog()
 
-  const handleDeletion = (onSuccess: () => void) => {
+  const handleDeletion = async (onSuccess: () => void) => {
+    const { data: permissionGroupMembers } = await client.query<hasura.GetPermissionGroupMembers>({
+      query: GetPermissionGroupMembers,
+      variables: { permissionGroupId: id },
+    })
+    const oldPermissionGroupMembers = permissionGroupMembers.member_permission_group.map(v => v.member.id) || []
+
+    insertPermissionGroupAuditLog({
+      variables: {
+        permissionGroupAuditLog: {
+          app_id: appId,
+          target: id,
+          member_id: currentMemberId || '',
+          action: 'DELETE',
+          old: {
+            name,
+            permissionsGroupsPermission: permissionGroupPermissions || [],
+            members: oldPermissionGroupMembers,
+          },
+        },
+      },
+    })
     deletePermissionGroup({ variables: { id: id } })
       .then(() => {
         onSuccess()
         onRefetch?.()
       })
-      .then(() => message.success(formatMessage(commonMessages.event.successfullyDeleted)))
+      .then(() => message.success(formatMessage(permissionMessages.PermissionGroupDeletionModal.successfullyDeleted)))
       .catch(handleError)
       .finally(() => setLoading(false))
   }
@@ -29,38 +65,24 @@ const PermissionGroupDeletionModal: React.VFC<{ id: string; onRefetch?: () => vo
   return (
     <AdminModal
       footer={null}
-      title={formatMessage(permissionGroupsAdminMessages.ui.deletePermissionGroup)}
+      title={formatMessage(permissionMessages['*'].deletePermissionGroup)}
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon={<DeleteOutlined />} onClick={() => setVisible(true)} />
       )}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(permissionMessages['*'].cancel)}
           </Button>
           <Button type="primary" danger loading={loading} onClick={() => handleDeletion(() => setVisible(false))}>
-            {formatMessage(commonMessages.ui.delete)}
+            {formatMessage(permissionMessages.PermissionGroupDeletionModal.delete)}
           </Button>
         </>
       )}
     >
-      <div>{formatMessage(permissionGroupsAdminMessages.text.deletePermissionGroupConfirmation)}</div>
+      <div>{formatMessage(permissionMessages.PermissionGroupDeletionModal.deletePermissionGroupConfirmation)}</div>
     </AdminModal>
   )
 }
-
-const DELETE_PERMISSION_GROUP = gql`
-  mutation DELETE_PERMISSION_GROUP($id: uuid!) {
-    delete_member_permission_group(where: { permission_group_id: { _eq: $id } }) {
-      affected_rows
-    }
-    delete_permission_group_permission(where: { permission_group_id: { _eq: $id } }) {
-      affected_rows
-    }
-    delete_permission_group(where: { id: { _eq: $id } }) {
-      affected_rows
-    }
-  }
-`
 
 export default PermissionGroupDeletionModal
