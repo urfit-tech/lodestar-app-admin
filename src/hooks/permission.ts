@@ -1,9 +1,9 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { groupBy } from 'ramda'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
-import { PermissionGroupProps } from '../types/general'
+import { PermissionGroup } from '../types/general'
 
 export const useDefaultPermissions = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ROLE_PERMISSION>(gql`
@@ -52,7 +52,7 @@ export const usePermissionGroupCollection = () => {
     { variables: { appId } },
   )
 
-  const permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[] =
+  const permissionGroups: Pick<PermissionGroup, 'id' | 'name'>[] =
     data?.permission_group.map(v => ({
       id: v.id,
       name: v.name,
@@ -87,7 +87,7 @@ export const usePermissionGroupAndPermissionGroupPermissionCollection = () => {
     { variables: { appId } },
   )
 
-  const permissionGroups: PermissionGroupProps[] =
+  const permissionGroups: PermissionGroup[] =
     data?.permission_group.map(v => ({
       id: v.id,
       name: v.name,
@@ -215,3 +215,110 @@ export const usePermissionGroupsDropdownMenu = (
     refetch,
   }
 }
+
+export const useMutationPermissionGroup = () => {
+  const [insertPermissionGroup] = useMutation<hasura.InsertPermissionGroup, hasura.InsertPermissionGroupVariables>(gql`
+    mutation InsertPermissionGroup($appId: String, $name: String) {
+      insert_permission_group(objects: { app_id: $appId, name: $name }) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+    }
+  `)
+
+  const [updatePermissionGroup] = useMutation<hasura.UpdatePermissionGroup, hasura.UpdatePermissionGroupVariables>(gql`
+    mutation UpdatePermissionGroup($id: uuid, $name: String) {
+      update_permission_group(where: { id: { _eq: $id } }, _set: { name: $name }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [deletePermissionGroup] = useMutation<hasura.DeletePermissionGroup, hasura.DeletePermissionGroupVariables>(
+    gql`
+      mutation DeletePermissionGroup($id: uuid!) {
+        delete_member_permission_group(where: { permission_group_id: { _eq: $id } }) {
+          affected_rows
+        }
+        delete_permission_group_permission(where: { permission_group_id: { _eq: $id } }) {
+          affected_rows
+        }
+        delete_permission_group(where: { id: { _eq: $id } }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    insertPermissionGroup,
+    updatePermissionGroup,
+    deletePermissionGroup,
+  }
+}
+
+export const useMutationPermissionGroupPermission = () => {
+  const [insertPermissionGroupPermission] = useMutation<
+    hasura.InsertPermissionGroupPermission,
+    hasura.InsertPermissionGroupPermissionVariables
+  >(gql`
+    mutation InsertPermissionGroupPermission(
+      $permissionsGroupPermissions: [permission_group_permission_insert_input!]!
+    ) {
+      insert_permission_group_permission(objects: $permissionsGroupPermissions) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [updatePermissionGroupPermission] = useMutation<
+    hasura.UpdatePermissionGroupPermission,
+    hasura.UpdatePermissionGroupPermissionVariables
+  >(gql`
+    mutation UpdatePermissionGroupPermission(
+      $permissionGroupPermissionId: uuid!
+      $permissionsGroupPermissions: [permission_group_permission_insert_input!]!
+    ) {
+      delete_permission_group_permission(where: { permission_group_id: { _eq: $permissionGroupPermissionId } }) {
+        affected_rows
+      }
+      insert_permission_group_permission(objects: $permissionsGroupPermissions) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    insertPermissionGroupPermission,
+    updatePermissionGroupPermission,
+  }
+}
+
+export const useMutationPermissionGroupAuditLog = () => {
+  const [insertPermissionGroupAuditLog] = useMutation<
+    hasura.InsertPermissionGroupAuditLog,
+    hasura.InsertPermissionGroupAuditLogVariables
+  >(
+    gql`
+      mutation InsertPermissionGroupAuditLog($permissionGroupAuditLog: [permission_group_audit_log_insert_input!]!) {
+        insert_permission_group_audit_log(objects: $permissionGroupAuditLog) {
+          affected_rows
+        }
+      }
+    `,
+  )
+  return {
+    insertPermissionGroupAuditLog,
+  }
+}
+
+export const GetPermissionGroupMembers = gql`
+  query GetPermissionGroupMembers($permissionGroupId: uuid!) {
+    member_permission_group(where: { permission_group_id: { _eq: $permissionGroupId } }) {
+      member {
+        id
+      }
+    }
+  }
+`

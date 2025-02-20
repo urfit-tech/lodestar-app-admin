@@ -16,7 +16,6 @@ import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
 import { copyToClipboard, signShortUrl } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
 
@@ -35,7 +34,7 @@ const MemberContractCreationBlock: React.FC<{
   isMemberTypeBG: boolean
   isMemberZeroTax: boolean
 }> = ({ member, form, selectedProducts, contracts, installments, sales, isMemberTypeBG, isMemberZeroTax }) => {
-  const { settings, enabledModules } = useApp()
+  const { settings } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
@@ -50,10 +49,9 @@ const MemberContractCreationBlock: React.FC<{
 
   const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
 
-  const paymentCompany =
-    customSetting.paymentCompanies
-      ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
-      ?.companies.find(company => company.name === fieldValue.company) || null
+  const paymentCompany = customSetting.paymentCompanies
+    ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
+    ?.companies.find(company => company.name === fieldValue.company) || null
 
   console.log(paymentCompany)
   // Invoice Tax Calculation
@@ -71,7 +69,6 @@ const MemberContractCreationBlock: React.FC<{
           .map(product => product.totalPrice),
       )
   const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
-  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
 
   let invoices: InvoiceRequest[] = []
 
@@ -406,14 +403,7 @@ const MemberContractCreationBlock: React.FC<{
       )
       .then(res => {
         if (res.data.code === 'SUCCESS') {
-          message.success(`訂單建立成功: ${res.data.result.orderId}`)
-
-          if (enabledModules.account_receivable && fieldValue.accountReceivable) {
-            setOrderToReceivableStatusCommand({
-              orderProductId: res.data.result.orderId,
-              deliveredAt: new Date(),
-            })
-          }
+          message.success('訂單建立成功')
 
           history.push(`/members/${member.id}/order`)
 
