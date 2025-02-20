@@ -2,10 +2,10 @@ import { EditOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { permissionGroupsAdminMessages } from '../../helpers/translation'
-import { PermissionGroupProps } from '../../types/general'
+import { PermissionGroup } from '../../types/general'
 import PermissionGroupAdminModal from './PermissionGroupAdminModal'
 import PermissionGroupDeletionModal from './PermissionGroupDeletionModal'
+import permissionMessages from './translation'
 
 const StyledAdminBlock = styled.div`
   margin-bottom: 1.25rem;
@@ -15,11 +15,11 @@ const StyledAdminBlock = styled.div`
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 
-const PermissionGroupAdminItem: React.VFC<
-  PermissionGroupProps & {
+const PermissionGroupAdminItem: React.FC<
+  PermissionGroup & {
     onRefetch?: () => void
-  }
-> = ({ id, name, permissionGroupPermissions, onRefetch }) => {
+  } & { existedPermissionGroupNames: string[] }
+> = ({ id, name, existedPermissionGroupNames, permissionGroupPermissions, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -28,16 +28,22 @@ const PermissionGroupAdminItem: React.VFC<
         <div>{name}</div>
         <div className="d-flex align-items-center">
           <PermissionGroupAdminModal
-            title={formatMessage(permissionGroupsAdminMessages.ui.editPermissionGroup)}
+            title={formatMessage(permissionMessages['*'].editPermissionGroup)}
             renderTrigger={({ setVisible }) => (
               <Button type="link" icon={<EditOutlined />} onClick={() => setVisible(true)} />
             )}
             id={id}
             name={name}
+            existedPermissionGroupNames={existedPermissionGroupNames}
             permissionGroupPermissions={permissionGroupPermissions}
             onRefetch={onRefetch}
           />
-          <PermissionGroupDeletionModal id={id || ''} onRefetch={onRefetch} />
+          <PermissionGroupDeletionModal
+            id={id}
+            name={name}
+            permissionGroupPermissions={permissionGroupPermissions}
+            onRefetch={onRefetch}
+          />
         </div>
       </div>
     </StyledAdminBlock>

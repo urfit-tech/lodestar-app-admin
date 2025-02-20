@@ -225,7 +225,6 @@ const saleMessages = {
     invoiceComment: { id: 'sale.InvoiceCard.invoiceComment', defaultMessage: '發票備註' },
   }),
   PaymentCard: defineMessages({
-    accountsReceivable: { id: 'sale.PaymentCard.accountsReceivable', defaultMessage: '應收帳款' },
     paymentStatus: { id: 'sale.PaymentCard.paymentStatus', defaultMessage: '交易狀態' },
     paidAt: { id: 'sale.PaymentCard.paidAt', defaultMessage: '付款時間' },
     paymentNo: { id: 'sale.PaymentCard.paymentNo', defaultMessage: '交易編號' },

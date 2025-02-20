@@ -1,17 +1,21 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useDefaultPermissions } from '../../hooks/permission'
-import { PermissionGroupProps } from '../../types/general'
+import {
+  useDefaultPermissions,
+  useMutationPermissionGroup,
+  useMutationPermissionGroupAuditLog,
+  useMutationPermissionGroupPermission,
+} from '../../hooks/permission'
+import { PermissionGroup } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PermissionInput from '../form/PermissionInput'
+import permissionMessages from './translation'
 
 type FieldProps = {
   name: string
@@ -20,29 +24,19 @@ type FieldProps = {
 
 const PermissionGroupAdminModal: React.FC<
   AdminModalProps &
-    Partial<PermissionGroupProps> & {
+    Partial<PermissionGroup> & {
       onRefetch?: () => void
-    }
-> = ({ id, name, permissionGroupPermissions, onRefetch, ...props }) => {
+    } & { existedPermissionGroupNames: string[] }
+> = ({ id, name, permissionGroupPermissions, existedPermissionGroupNames, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
+  const { currentMemberId } = useAuth()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const { loadingPermissions, defaultRolePermissions } = useDefaultPermissions()
-  const [insertPermissionGroup] = useMutation<hasura.INSERT_PERMISSION_GROUP, hasura.INSERT_PERMISSION_GROUPVariables>(
-    INSERT_PERMISSION_GROUP,
-  )
-  const [updatePermissionGroup] = useMutation<hasura.UPDATE_PERMISSION_GROUP, hasura.UPDATE_PERMISSION_GROUPVariables>(
-    UPDATE_PERMISSION_GROUP,
-  )
-  const [insertPermissionGroupPermission] = useMutation<
-    hasura.INSERT_PERMISSION_GROUP_PERMISSION,
-    hasura.INSERT_PERMISSION_GROUP_PERMISSIONVariables
-  >(INSERT_PERMISSION_GROUP_PERMISSION)
-  const [updatePermissionGroupPermission] = useMutation<
-    hasura.UPDATE_PERMISSION_GROUP_PERMISSION,
-    hasura.UPDATE_PERMISSION_GROUP_PERMISSIONVariables
-  >(UPDATE_PERMISSION_GROUP_PERMISSION)
+  const { insertPermissionGroup, updatePermissionGroup } = useMutationPermissionGroup()
+  const { insertPermissionGroupPermission, updatePermissionGroupPermission } = useMutationPermissionGroupPermission()
+  const { insertPermissionGroupAuditLog } = useMutationPermissionGroupAuditLog()
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -50,27 +44,76 @@ const PermissionGroupAdminModal: React.FC<
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
+
+        if (!id && existedPermissionGroupNames.includes(values.name.trim())) {
+          return message.error(formatMessage(permissionMessages.PermissionGroupAdminModal.duplicateName))
+        }
+        const oldName = name
+        const oldPermissionGroupPermissions =
+          permissionGroupPermissions?.map(permissionGroupPermission => ({
+            permission_group_id: id,
+            permission_id: permissionGroupPermission.permissionId,
+          })) || []
+        const newPermissionGroupPermissions =
+          values.permissionIds.map(permissionId => ({
+            permission_group_id: id,
+            permission_id: permissionId,
+          })) || []
+        const newName = values.name
+
         if (id) {
-          updatePermissionGroup({ variables: { id: id, name: values.name } })
+          updatePermissionGroup({ variables: { id: id, name: newName } })
+          insertPermissionGroupAuditLog({
+            variables: {
+              permissionGroupAuditLog: {
+                app_id: appId,
+                target: id,
+                member_id: currentMemberId || '',
+                action: 'UPDATE',
+                old: {
+                  name: oldName,
+                  permissionsGroupPermissions: oldPermissionGroupPermissions,
+                },
+                new: {
+                  name: newName,
+                  permissionsGroupPermissions: newPermissionGroupPermissions,
+                },
+              },
+            },
+          })
           updatePermissionGroupPermission({
             variables: {
               permissionGroupPermissionId: id,
-              permissionGroups:
-                values.permissionIds.map(permissionId => ({
-                  permission_group_id: id,
-                  permission_id: permissionId,
-                })) || [],
+              permissionsGroupPermissions: newPermissionGroupPermissions,
             },
           }).then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyEdited))
+            message.success(formatMessage(permissionMessages.PermissionGroupAdminModal.successfullyEdited))
             onRefetch?.()
           })
         } else {
           insertPermissionGroup({ variables: { appId: appId, name: values.name } }).then(({ data }) => {
             const permissionGroupId = data?.insert_permission_group?.returning[0].id
+            insertPermissionGroupAuditLog({
+              variables: {
+                permissionGroupAuditLog: {
+                  app_id: appId,
+                  target: permissionGroupId,
+                  member_id: currentMemberId || '',
+                  action: 'INSERT',
+                  old: {
+                    name: oldName,
+                    permissionsGroupPermissions: oldPermissionGroupPermissions,
+                  },
+                  new: {
+                    name: newName,
+                    permissionsGroupPermissions: newPermissionGroupPermissions,
+                  },
+                },
+              },
+            })
             insertPermissionGroupPermission({
               variables: {
-                permissionGroups: values.permissionIds
+                permissionsGroupPermissions: values.permissionIds
                   ? values.permissionIds.map(permissionId => ({
                       permission_group_id: permissionGroupId,
                       permission_id: permissionId,
@@ -78,7 +121,7 @@ const PermissionGroupAdminModal: React.FC<
                   : [],
               },
             }).then(() => {
-              message.success(formatMessage(commonMessages.event.successfullyCreated))
+              message.success(formatMessage(permissionMessages.PermissionGroupAdminModal.successfullyCreated))
               onRefetch?.()
             })
           })
@@ -86,7 +129,9 @@ const PermissionGroupAdminModal: React.FC<
         form.resetFields()
         onSuccess()
       })
-      .catch(handleError)
+      .catch(error => {
+        handleError(error)
+      })
       .finally(() => setLoading(false))
   }
 
@@ -102,10 +147,10 @@ const PermissionGroupAdminModal: React.FC<
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(permissionMessages['*'].cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(commonMessages.ui.save)}
+            {formatMessage(permissionMessages.PermissionGroupAdminModal.save)}
           </Button>
         </>
       )}
@@ -124,64 +169,28 @@ const PermissionGroupAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(commonMessages.label.name)}
+          label={formatMessage(permissionMessages.PermissionGroupAdminModal.name)}
           name="name"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.label.name),
+              message: formatMessage(permissionMessages.PermissionGroupAdminModal.isRequired, {
+                field: formatMessage(permissionMessages.PermissionGroupAdminModal.name),
               }),
             },
           ]}
         >
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.permissionSettings)} name="permissionIds">
+        <Form.Item
+          label={formatMessage(permissionMessages.PermissionGroupAdminModal.permissionSettings)}
+          name="permissionIds"
+        >
           <PermissionInput />
         </Form.Item>
       </Form>
     </AdminModal>
   )
 }
-
-const INSERT_PERMISSION_GROUP = gql`
-  mutation INSERT_PERMISSION_GROUP($appId: String, $name: String) {
-    insert_permission_group(objects: { app_id: $appId, name: $name }) {
-      affected_rows
-      returning {
-        id
-      }
-    }
-  }
-`
-const UPDATE_PERMISSION_GROUP = gql`
-  mutation UPDATE_PERMISSION_GROUP($id: uuid, $name: String) {
-    update_permission_group(where: { id: { _eq: $id } }, _set: { name: $name }) {
-      affected_rows
-    }
-  }
-`
-
-const INSERT_PERMISSION_GROUP_PERMISSION = gql`
-  mutation INSERT_PERMISSION_GROUP_PERMISSION($permissionGroups: [permission_group_permission_insert_input!]!) {
-    insert_permission_group_permission(objects: $permissionGroups) {
-      affected_rows
-    }
-  }
-`
-const UPDATE_PERMISSION_GROUP_PERMISSION = gql`
-  mutation UPDATE_PERMISSION_GROUP_PERMISSION(
-    $permissionGroupPermissionId: uuid!
-    $permissionGroups: [permission_group_permission_insert_input!]!
-  ) {
-    delete_permission_group_permission(where: { permission_group_id: { _eq: $permissionGroupPermissionId } }) {
-      affected_rows
-    }
-    insert_permission_group_permission(objects: $permissionGroups) {
-      affected_rows
-    }
-  }
-`
 
 export default PermissionGroupAdminModal
