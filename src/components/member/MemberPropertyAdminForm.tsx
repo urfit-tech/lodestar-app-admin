@@ -65,13 +65,19 @@ const MemberPropertyAdminForm: React.FC<{
       {properties.map(property => (
         <Form.Item key={property.id} label={property.name} name={property.id}>
           {property?.placeholder?.includes('/') ? (
-            <Select>
-              {property?.placeholder?.split('/').map((value: string, idx: number) => (
-                <Select.Option key={idx} value={value}>
-                  {value}
-                </Select.Option>
-              ))}
-            </Select>
+            <>
+              <Select
+                allowClear
+                defaultValue={memberProperties.find(v => v.id === property.id)?.value}
+                onChange={v => form.setFieldsValue({ [property.id]: v ? v.toString() : '' })}
+              >
+                {property?.placeholder?.split('/').map((value: string, idx: number) => (
+                  <Select.Option key={idx} value={value}>
+                    {value}
+                  </Select.Option>
+                ))}
+              </Select>
+            </>
           ) : (
             <Input />
           )}
