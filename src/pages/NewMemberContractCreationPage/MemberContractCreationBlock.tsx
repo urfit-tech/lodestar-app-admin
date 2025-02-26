@@ -1,6 +1,5 @@
-import { CopyOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Alert, Button, message } from 'antd'
+import { Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -14,8 +13,6 @@ import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
-import { copyToClipboard, signShortUrl } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import { useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
@@ -41,8 +38,6 @@ const MemberContractCreationBlock: React.FC<{
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
     CREATE_MEMBER_CONTRACT,
   )
-  const [memberContractUrl, setMemberContractUrl] = useState('')
-  const [paymentUrl, setPaymentUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
@@ -55,7 +50,6 @@ const MemberContractCreationBlock: React.FC<{
       ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
       ?.companies.find(company => company.name === fieldValue.company) || null
 
-  console.log(paymentCompany)
   // Invoice Tax Calculation
   const category = fieldValue.uniformNumber ? 'B2B' : 'B2C'
   const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
@@ -197,17 +191,11 @@ const MemberContractCreationBlock: React.FC<{
     }
   }
 
-  console.log({
-    category,
-    totalPrice,
-    totalPriceWithTax,
-    totalPriceWithoutTax,
-    totalPriceWithFreeTax,
-    tax,
-    invoices,
-  })
-
   const handleMemberContractCreate = async () => {
+    const memberType = member.properties.find(p => p.name === '會員類型')?.value
+    if (fieldValue.accountReceivable && (!memberType || !/^B|G/.test(memberType.trim()))) {
+      return message.warn('此會員無法使用應收帳款')
+    }
     const isContract =
       !isMemberTypeBG &&
       selectedProducts.filter(
@@ -463,7 +451,7 @@ const MemberContractCreationBlock: React.FC<{
         }
       })
       .catch(error => {
-        console.log(error)
+        console.error(error)
         message.error(formatMessage(pageMessages.MemberContractCreationBlock.orderCreateFail))
       })
       .finally(() => {
@@ -528,47 +516,9 @@ const MemberContractCreationBlock: React.FC<{
         </div>
       </StyledOrder>
 
-      {memberContractUrl || paymentUrl ? (
-        <>
-          {memberContractUrl && (
-            <Button
-              size="middle"
-              type="primary"
-              icon={<CopyOutlined />}
-              className="mt-3"
-              onClick={async () => {
-                copyToClipboard(await signShortUrl(memberContractUrl, authToken))
-                message.success(formatMessage(commonMessages.text.copiedToClipboard))
-              }}
-            >
-              {formatMessage(pageMessages.MemberContractCreationBlock.copyContractLink)}
-            </Button>
-          )}
-          {paymentUrl && (
-            <Button
-              size="middle"
-              type="primary"
-              icon={<CopyOutlined />}
-              className="mt-3"
-              onClick={async () => {
-                copyToClipboard(paymentUrl)
-                message.success(formatMessage(commonMessages.text.copiedToClipboard))
-              }}
-            >
-              {formatMessage(pageMessages.MemberContractCreationBlock.copyPaymentLink)}
-            </Button>
-          )}
-          <Alert
-            message={formatMessage(pageMessages.MemberContractCreationBlock.contractOrderLinkCreated)}
-            type="success"
-            showIcon
-          />
-        </>
-      ) : (
-        <Button size="large" block type="primary" loading={loading} onClick={handleMemberContractCreate}>
-          {formatMessage(pageMessages.MemberContractCreationBlock.generateContract)}
-        </Button>
-      )}
+      <Button size="large" block type="primary" loading={loading} onClick={handleMemberContractCreate}>
+        {formatMessage(pageMessages.MemberContractCreationBlock.generateContract)}
+      </Button>
     </>
   )
 }

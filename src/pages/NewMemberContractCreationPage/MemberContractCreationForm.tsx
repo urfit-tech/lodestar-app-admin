@@ -410,9 +410,10 @@ const MemberContractCreationForm: React.FC<
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
-
     const { id: appId, settings, enabledModules } = useApp()
     const { currentMemberId, authToken, currentUserRole } = useAuth()
+    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+
     const { data: memberPermissionGroups } = useQuery<
       hasura.GetMemberPermissionGroup,
       hasura.GetMemberPermissionGroupVariables
@@ -426,9 +427,6 @@ const MemberContractCreationForm: React.FC<
       `,
       { variables: { memberId: currentMemberId || '' }, skip: !currentMemberId || !authToken },
     )
-
-    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
-
     const [insertAppointmentPlan] = useMutation<
       hasura.CreateAppointmentPlan,
       hasura.CreateAppointmentPlanVariables
@@ -466,11 +464,6 @@ const MemberContractCreationForm: React.FC<
       classType: '個人班',
       locationType: '海內',
     })
-
-    const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
-
-    const options = productOptions?.find((v: any) => v.title === category.product)
-
     const [weeklyBatch, setWeeklyBatch] = useState(10)
     const [week, setWeek] = useState(13)
     const [totalAmount, setTotalAmount] = useState(60)
@@ -480,13 +473,15 @@ const MemberContractCreationForm: React.FC<
     const [loading, setLoading] = useState(false)
     const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
 
+    const memberType = member.properties.find(p => p.name === '會員類型')?.value
+    const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
+    const options = productOptions?.find((v: any) => v.title === category.product)
     const validateNumericSessionInput = (value: number) => {
       const regex = /^\d+(\.\d{0,1})?$/
       if (!regex.test(value.toString())) {
         console.error('課程堂數只能輸入小數點後一位')
         return false
       }
-
       return true
     }
 
@@ -578,9 +573,6 @@ const MemberContractCreationForm: React.FC<
         setZeroTaxPrice(Math.round((customTotalPrice || customPrice || selectedProduct?.price || 0) / 1.05))
     }, [customPrice, isMemberZeroTax, selectedProduct?.price, customTotalPrice, category])
 
-    console.log({ category })
-    console.log({ products })
-    console.log({ filterProducts })
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
@@ -1468,10 +1460,10 @@ const MemberContractCreationForm: React.FC<
                 ))}
               </Select>
             </Form.Item>
-
             {enabledModules.account_receivable && (
               <Form.Item name="accountReceivable">
                 <Checkbox
+                  disabled={!memberType || !/^B|G/.test(memberType.trim())}
                   onChange={e => {
                     form?.setFieldsValue({ accountReceivable: e.target.checked })
                   }}
