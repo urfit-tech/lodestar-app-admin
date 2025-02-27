@@ -459,6 +459,7 @@ const saleMessages = {
     memberFullName: { id: 'sale.SalesLeadTable.memberFullName', defaultMessage: 'Full Name' },
     memberNickName: { id: 'sale.SalesLeadTable.memberNickName', defaultMessage: 'Nickname' },
     memberNote: { id: 'sale.SalesLeadTable.memberNote', defaultMessage: 'Last Contact Note' },
+    memberNoteOutboundCount: { id: 'sale.SalesLeadTable.memberNoteOutboundCount', defaultMessage: 'Outbound Count' },
     moveTo: { id: 'sale.SalesLeadTable.moveTo', defaultMessage: 'Move To' },
     moveToFollowed: { id: 'sale.SalesLeadTable.moveToFollowed', defaultMessage: 'Move to Followed' },
     moveToSpecificList: { id: 'sale.SalesLeadTable.moveToSpecificList', defaultMessage: 'Move to {categoryName}' },
