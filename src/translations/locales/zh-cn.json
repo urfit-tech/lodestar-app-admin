@@ -3335,6 +3335,7 @@
   "sale.SalesLeadTable.memberFullName": "本名",
   "sale.SalesLeadTable.memberNickName": "名称",
   "sale.SalesLeadTable.memberNote": "最后联系纪录",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "呼叫次数",
   "sale.SalesLeadTable.moveTo": "移至",
   "sale.SalesLeadTable.moveToFollowed": "移至收藏",
   "sale.SalesLeadTable.moveToSpecificList": "移至 {categoryName}",
