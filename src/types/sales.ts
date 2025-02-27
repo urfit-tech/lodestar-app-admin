@@ -215,6 +215,7 @@ export type SalesLeadMember = {
     isValid: boolean
   }[]
   latestNoteDescription: string
+  memberNoteOutboundCount: number
   categoryNames: string[]
   status: LeadStatus
   callbackedAt: Date | null

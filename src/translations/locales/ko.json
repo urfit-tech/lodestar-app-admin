@@ -3368,6 +3368,7 @@
   "sale.SalesLeadTable.memberFullName": "성함",
   "sale.SalesLeadTable.memberNickName": "별명",
   "sale.SalesLeadTable.memberNote": "마지막 연락처 메모",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "아웃바운드 개수",
   "sale.SalesLeadTable.moveTo": "이동",
   "sale.SalesLeadTable.moveToFollowed": "팔로우됨으로 이동",
   "sale.SalesLeadTable.moveToSpecificList": "{categoryName}으로 이동",

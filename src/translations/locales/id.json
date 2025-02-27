@@ -3381,6 +3381,7 @@
   "sale.SalesLeadTable.memberFullName": "Nama Lengkap",
   "sale.SalesLeadTable.memberNickName": "Nama Panggilan",
   "sale.SalesLeadTable.memberNote": "Catatan Kontak Terakhir",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "Jumlah Keluar",
   "sale.SalesLeadTable.moveTo": "Pindah Ke",
   "sale.SalesLeadTable.moveToFollowed": "Pindah ke Diikuti",
   "sale.SalesLeadTable.moveToSpecificList": "Pindah ke {categoryName}",

@@ -3401,6 +3401,7 @@
   "sale.SalesLeadTable.memberFullName": "本名",
   "sale.SalesLeadTable.memberNickName": "名稱",
   "sale.SalesLeadTable.memberNote": "最後聯繫紀錄",
+  "sale.SalesLeadTable.memberNoteOutboundCount": "撥打次數",
   "sale.SalesLeadTable.moveTo": "移至",
   "sale.SalesLeadTable.moveToFollowed": "移至收藏",
   "sale.SalesLeadTable.moveToSpecificList": "移至 {categoryName}",
