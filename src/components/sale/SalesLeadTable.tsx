@@ -402,6 +402,7 @@ const SalesLeadTable: React.VFC<{
                     ...updateLeadsSetObject,
                     manager_id: manager.id,
                     completed_at: dayjs().utc().toDate(),
+                    followed_at: null,
                     lead_status_category_id: null,
                     callbacked_at: null,
                   }
