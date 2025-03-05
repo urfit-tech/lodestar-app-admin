@@ -134,7 +134,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const { currentMemberId: adminId } = useAuth()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(adminId ?? '')
   const [form] = useForm<FieldProps>()
-  const { info, error, loading, refetch } = useContractInfo(appId, memberId)
+  const { info, error, loading } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
@@ -171,8 +171,6 @@ const MemberContractCreationPage: React.VFC = () => {
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
   const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
-
-  console.log({ selectedProducts })
 
   return (
     <ContractLayout member={member} isMemberTypeBG={isMemberTypeBG}>
@@ -245,7 +243,6 @@ const MemberContractCreationPage: React.VFC = () => {
             isMemberTypeBG={isMemberTypeBG}
             isMemberZeroTax={isMemberZeroTax}
           />
-
           <MemberContractCreationBlock
             form={form}
             member={member}
