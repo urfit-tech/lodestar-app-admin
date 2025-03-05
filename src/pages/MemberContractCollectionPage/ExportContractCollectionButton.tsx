@@ -12,6 +12,19 @@ import { commonMessages, memberContractMessages } from '../../helpers/translatio
 import { GET_MEMBER_PRIVATE_TEACH_CONTRACT, useAppCustom } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 
+const GetSalesNamesAndGroupName = gql`
+  query GetSalesNamesAndGroupName($salesIds: [String!]!) {
+    member_public(where: { id: { _in: $salesIds } }) {
+      id
+      name
+      username
+      member_properties(where: { property: { name: { _eq: "組別" } } }) {
+        value
+      }
+    }
+  }
+`
+
 const ExportContractCollectionButton: React.FC<{
   visibleFields: string[]
   columns: ColumnProps<MemberContractProps>[]
@@ -158,8 +171,8 @@ const ExportContractCollectionButton: React.FC<{
         )
         .flat()
 
-      const { data: salesNames } = await apolloClient.query<hasura.GET_SALES_NAMES>({
-        query: GET_SALES_NAMES,
+      const { data: salesNamesAndGroupName } = await apolloClient.query<hasura.GetSalesNamesAndGroupName>({
+        query: GetSalesNamesAndGroupName,
         variables: { salesIds },
       })
 
@@ -226,8 +239,11 @@ const ExportContractCollectionButton: React.FC<{
                 return (
                   contract.orderExecutors
                     ?.map(v => {
-                      const member = salesNames.member_public.find(member => member.id === v.memberId)
-                      return `${member?.name || member?.username || v.memberId} ${Math.floor(v.ratio * 100)}%`
+                      const member = salesNamesAndGroupName.member_public.find(member => member.id === v.memberId)
+                      const groupName = member?.member_properties[0].value
+                      return `${!!groupName && groupName + '-'}${
+                        member?.name || member?.username || v.memberId
+                      } ${Math.floor(v.ratio * 100)}%`
                     })
                     .join('\n') || ''
                 )
@@ -267,15 +283,5 @@ const ExportContractCollectionButton: React.FC<{
     </Button>
   )
 }
-
-const GET_SALES_NAMES = gql`
-  query GET_SALES_NAMES($salesIds: [String!]!) {
-    member_public(where: { id: { _in: $salesIds } }) {
-      id
-      name
-      username
-    }
-  }
-`
 
 export default ExportContractCollectionButton
