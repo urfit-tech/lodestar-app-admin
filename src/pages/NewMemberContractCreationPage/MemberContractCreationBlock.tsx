@@ -49,9 +49,10 @@ const MemberContractCreationBlock: React.FC<{
 
   const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
 
-  const paymentCompany = customSetting.paymentCompanies
-    ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
-    ?.companies.find(company => company.name === fieldValue.company) || null
+  const paymentCompany =
+    customSetting.paymentCompanies
+      ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
+      ?.companies.find(company => company.name === fieldValue.company) || null
 
   console.log(paymentCompany)
   // Invoice Tax Calculation
@@ -122,20 +123,20 @@ const MemberContractCreationBlock: React.FC<{
       : '1'
     const taxRate = taxType === '3' || taxType === '2' ? 0 : 5
     invoices.push({
-      TaxType: taxType,
       Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
+      ItemName: items.map(v => v.name).join('|'),
+      ItemCount: items.map(v => v.count).join('|'),
+      ItemUnit: items.map(v => v.unit).join('|'),
+      ItemPrice: items.map(v => v.price).join('|'),
+      ItemAmt: items.map(v => v.amt).join('|'),
+      TaxType: taxType,
       TaxAmt: taxType === '3' || taxType === '2' ? 0 : tax,
       TotalAmt: totalPrice,
       TaxRate: taxRate,
       AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
       AmtFree: taxType === '9' ? totalPriceWithFreeTax : undefined,
       AmtZero: taxType === '9' ? 0 : undefined,
-      ItemName: items.map(v => v.name).join('|'),
-      ItemCount: items.map(v => v.count).join('|'),
-      ItemUnit: items.map(v => v.unit).join('|'),
-      ItemPrice: items.map(v => v.price).join('|'),
       ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
-      ItemAmt: items.map(v => v.amt).join('|'),
       MerchantOrderNo: new Date().getTime().toString() + taxType,
       BuyerEmail: fieldValue.invoiceEmail || member.email,
       BuyerName: fieldValue.uniformTitle || member.name,
@@ -151,15 +152,15 @@ const MemberContractCreationBlock: React.FC<{
       const filteredItems = items.filter(v => v.taxType === '1')
       invoices.push({
         TaxType: '1',
-        Amt: totalPriceWithoutTax,
-        TaxAmt: tax,
-        TotalAmt: totalPrice - totalPriceWithFreeTax,
-        TaxRate: 5,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
         ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        Amt: totalPriceWithoutTax,
+        TaxAmt: tax,
+        TotalAmt: totalPrice - totalPriceWithFreeTax,
+        TaxRate: 5,
         MerchantOrderNo: new Date().getTime().toString() + '1',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
@@ -175,14 +176,14 @@ const MemberContractCreationBlock: React.FC<{
       invoices.push({
         TaxType: '3',
         Amt: totalPriceWithFreeTax,
-        TaxAmt: 0,
-        TotalAmt: totalPriceWithFreeTax,
-        TaxRate: 0,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
         ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        TaxAmt: 0,
+        TotalAmt: totalPriceWithFreeTax,
+        TaxRate: 0,
         MerchantOrderNo: new Date().getTime().toString() + '3',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
