@@ -562,10 +562,11 @@ const MemberContractCreationForm: React.FC<
     const options = productOptions?.find((v: any) => v.title === category.product)
 
     const getTargetProduct = (category: Category) => products.find(p => p.title === category.name)
-    const getTargetProductPrice = (product: SingleContractProduct | undefined) => product?.price ?? 0
+    const getTargetProductPrice = (product: SingleContractProduct | undefined) =>
+      (product?.price ?? 0) > 0 ? product?.price ?? 0 : calculateMinPrice(category, weeklyBatch, totalAmount)
     const getTargetProductTotalPrice = (product: SingleContractProduct | undefined) =>
-      getTargetProductPrice(product) * totalAmount
-    const [customPrice, setCustomPrice] = useState(getTargetProductPrice(targetProduct))
+      (getTargetProductPrice(product) ?? 0) * totalAmount
+    const [customPrice, setCustomPrice] = useState<number>(getTargetProductPrice(targetProduct))
     const [customTotalPrice, setCustomTotalPrice] = useState(getTargetProductTotalPrice(targetProduct))
     const [newProductName, setNewProductName] = useState('')
     const [loading, setLoading] = useState(false)
@@ -573,12 +574,12 @@ const MemberContractCreationForm: React.FC<
 
     const handleCustomPriceChange = (value: number) => {
       setCustomPrice(value)
-      setCustomTotalPrice(value * totalAmount)
+      setCustomTotalPrice(Math.round(value * totalAmount))
     }
 
     const handleCustomTotalPriceChange = (value: number) => {
-      setCustomTotalPrice(value)
-      setCustomPrice(value / totalAmount)
+      setCustomTotalPrice(Math.floor(value))
+      setCustomPrice(Math.floor(value) / totalAmount)
     }
 
     const handleCategoryChange = (category: Category) => {

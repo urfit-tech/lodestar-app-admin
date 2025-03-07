@@ -5,23 +5,7 @@ import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import {
-  always,
-  append,
-  apply,
-  converge,
-  evolve,
-  flip,
-  identity,
-  join,
-  map,
-  multiply,
-  pipe,
-  prop,
-  props,
-  sum,
-  zipObj,
-} from 'ramda'
+import { sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -85,49 +69,6 @@ const MemberContractCreationBlock: React.FC<{
 
   let invoices: InvoiceRequest[] = []
 
-  type RoundMethod = 'round' | 'ceil' | 'floor'
-  type RoundMethodsForCompensation = {
-    itemNumberRoundMethod: RoundMethod
-    itemQuantityRoundMethod: RoundMethod
-    totalRoundMethod: RoundMethod
-  }
-  type ItemForCompensation = { number: number; quantity: number; amount: number }
-  type CompensationResult<T> = { roundedList: T[]; compensation: Partial<T> }
-
-  const getRoundedListWithCompensation: <T extends Record<string, any>, K extends keyof T>(
-    roundMethods: RoundMethodsForCompensation,
-  ) => (keyMap: Record<keyof ItemForCompensation, K>) => (list: T[]) => { roundedList: T[]; compensation: any } =
-    ({ itemNumberRoundMethod, itemQuantityRoundMethod, totalRoundMethod }) =>
-    keyMap =>
-    list => {
-      const getTargetKeys = flip(props)(keyMap) as any
-      const getAmt = pipe((props as any)(getTargetKeys(['number', 'quantity'])), apply(multiply))
-      const roundedList = map(
-        pipe(
-          evolve(
-            zipObj(getTargetKeys(['number', 'quantity']), [Math[itemNumberRoundMethod], Math[itemQuantityRoundMethod]]),
-          ),
-          converge(evolve, [
-            (converge as any)(zipObj, [always(getTargetKeys(['amount'])), pipe(getAmt, always, flip(append)([]))]),
-            identity,
-          ]),
-        ),
-      )(list) as any
-
-      const getTotal = pipe(map(getAmt), sum)
-
-      const compensation = zipObj(getTargetKeys(['number', 'quantity', 'amount']), [
-        getTotal(roundedList) - Math[totalRoundMethod](getTotal(list)),
-        1,
-        getTotal(roundedList) - Math[totalRoundMethod](getTotal(list)),
-      ])
-
-      return {
-        roundedList,
-        compensation,
-      }
-    }
-
   const items = selectedProducts.map(p => {
     const taxType = isMemberZeroTax ? '2' : ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
     const name = ['學費', '註冊費'].includes(p.options.product) ? p.options.language + p.options.product : p.title
@@ -167,52 +108,6 @@ const MemberContractCreationBlock: React.FC<{
         }
   })
 
-  type InvoiceItem = {
-    name: string
-    count: number
-    unit: string
-    price: number
-    taxType: string
-    amt: number
-  }
-
-  // make it flexible in the future
-  const roundMap: RoundMethodsForCompensation = {
-    itemNumberRoundMethod: 'ceil',
-    itemQuantityRoundMethod: 'ceil',
-    totalRoundMethod: 'round',
-  }
-
-  const getCompensatedItems: (items: InvoiceItem[]) => InvoiceItem[] = items => {
-    const { roundedList, compensation } = getRoundedListWithCompensation(roundMap)({
-      number: 'price',
-      quantity: 'count',
-      amount: 'amt',
-    })(items)
-    return roundedList.concat({
-      ...roundedList[0],
-      name: '化整溢價補償',
-      ...compensation,
-    }) as any
-  }
-
-  const generateInvoiceString = (key: string) => pipe(getCompensatedItems, map((prop as any)(key)), join('|'))
-
-  const getCompensatedInvoiceItems = (items: InvoiceItem[]) => ({
-    ItemName: generateInvoiceString('name')(items),
-    ItemCount: generateInvoiceString('count')(items),
-    ItemUnit: generateInvoiceString('unit')(items),
-    ItemPrice: generateInvoiceString('price')(items),
-    ItemAmt: generateInvoiceString('amt')(items),
-  })
-
-  const getRoundedAmount = pipe(
-    getRoundedListWithCompensation(roundMap)({ number: 'price', quantity: 'count', amount: 'amt' }),
-    prop('roundedList'),
-    map(prop('amt')),
-    sum,
-  )
-
   if (category === 'B2C') {
     // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
     const taxType = isMemberZeroTax
@@ -224,21 +119,20 @@ const MemberContractCreationBlock: React.FC<{
       : '1'
     const taxRate = taxType === '3' || taxType === '2' ? 0 : 5
     invoices.push({
-      ...getCompensatedInvoiceItems(items),
+      Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
+      ItemName: items.map(v => v.name).join('|'),
+      ItemCount: items.map(v => v.count).join('|'),
+      ItemUnit: items.map(v => v.unit).join('|'),
+      ItemPrice: items.map(v => v.price).join('|'),
+      ItemAmt: items.map(v => v.amt).join('|'),
       TaxType: taxType,
-      Amt: getRoundedAmount(items),
       TaxAmt: taxType === '3' || taxType === '2' ? 0 : tax,
       TotalAmt: totalPrice,
       TaxRate: taxRate,
       AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
       AmtFree: taxType === '9' ? totalPriceWithFreeTax : undefined,
       AmtZero: taxType === '9' ? 0 : undefined,
-      ItemName: items.map(v => v.name).join('|'),
-      ItemCount: items.map(v => v.count).join('|'),
-      ItemUnit: items.map(v => v.unit).join('|'),
-      ItemPrice: items.map(v => v.price).join('|'),
       ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
-      ItemAmt: items.map(v => v.amt).join('|'),
       MerchantOrderNo: new Date().getTime().toString() + taxType,
       BuyerEmail: fieldValue.invoiceEmail || member.email,
       BuyerName: fieldValue.uniformTitle || member.name,
@@ -253,17 +147,16 @@ const MemberContractCreationBlock: React.FC<{
     if (totalPriceWithTax > 0) {
       const filteredItems = items.filter(v => v.taxType === '1')
       invoices.push({
-        ...getCompensatedInvoiceItems(filteredItems),
         TaxType: '1',
-        Amt: getRoundedAmount(filteredItems),
-        TaxAmt: tax,
-        TotalAmt: totalPrice - totalPriceWithFreeTax,
-        TaxRate: 5,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
         ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        Amt: totalPriceWithoutTax,
+        TaxAmt: tax,
+        TotalAmt: totalPrice - totalPriceWithFreeTax,
+        TaxRate: 5,
         MerchantOrderNo: new Date().getTime().toString() + '1',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
@@ -277,17 +170,16 @@ const MemberContractCreationBlock: React.FC<{
     if (totalPriceWithFreeTax > 0) {
       const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
       invoices.push({
-        ...getCompensatedInvoiceItems(filteredItems),
         TaxType: '3',
-        Amt: getRoundedAmount(filteredItems),
-        TaxAmt: 0,
-        TotalAmt: totalPriceWithFreeTax,
-        TaxRate: 0,
+        Amt: totalPriceWithFreeTax,
         ItemName: filteredItems.map(v => v.name).join('|'),
         ItemCount: filteredItems.map(v => v.count).join('|'),
         ItemUnit: filteredItems.map(v => v.unit).join('|'),
         ItemPrice: filteredItems.map(v => v.price).join('|'),
         ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        TaxAmt: 0,
+        TotalAmt: totalPriceWithFreeTax,
+        TaxRate: 0,
         MerchantOrderNo: new Date().getTime().toString() + '3',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
