@@ -119,6 +119,9 @@ type ContractProduct = {
   }[]
 }
 
+type GetTypeFromSingleItem<T> = T extends Array<infer Item> ? Item : never
+type SingleContractProduct = GetTypeFromSingleItem<ContractProduct['products']>
+
 type ContractSales = {
   sales: {
     id: string
@@ -139,6 +142,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const { sales } = useContractSales(appId)
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
   const [installments, setInstallments] = useState<{ index: number; price: number; endedAt: Date }[]>([])
+  const [targetProduct, setTargetProduct] = useState<SingleContractProduct>()
 
   const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
     setInstallments(prevInstallments =>
@@ -242,6 +246,8 @@ const MemberContractCreationPage: React.VFC = () => {
             member={member}
             isMemberTypeBG={isMemberTypeBG}
             isMemberZeroTax={isMemberZeroTax}
+            targetProduct={targetProduct}
+            setTargetProduct={setTargetProduct}
           />
           <MemberContractCreationBlock
             form={form}
