@@ -18,8 +18,8 @@ import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import { prop, uniqBy } from 'ramda'
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import { allPass, always, divide, flip, gte, identity, ifElse, lte, multiply, pipe, prop, uniqBy } from 'ramda'
+import React, { Dispatch, memo, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import {
@@ -373,6 +373,9 @@ export type PaymentCompany = {
   }[]
 }
 
+type GetTypeFromSingleItem<T> = T extends Array<infer Item> ? Item : never
+type SingleContractProduct = GetTypeFromSingleItem<ContractProduct['products']>
+
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
@@ -389,6 +392,8 @@ const MemberContractCreationForm: React.FC<
     member: ContractInfo['member']
     isMemberTypeBG: boolean
     isMemberZeroTax: boolean
+    targetProduct: SingleContractProduct | undefined
+    setTargetProduct: Dispatch<SetStateAction<SingleContractProduct | undefined>>
   }
 > = memo(
   ({
@@ -407,6 +412,8 @@ const MemberContractCreationForm: React.FC<
     removeInstallment,
     isMemberTypeBG,
     isMemberZeroTax,
+    targetProduct,
+    setTargetProduct,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
@@ -445,7 +452,7 @@ const MemberContractCreationForm: React.FC<
       }
     `)
 
-    const [category, setCategory] = useState<{
+    type Category = {
       language: string
       product: string
       programType?: string
@@ -456,7 +463,8 @@ const MemberContractCreationForm: React.FC<
       onceSessions?: string
       project?: string
       name?: string
-    }>({
+    }
+    const [category, setCategory] = useState<Category>({
       language: '中文',
       product: '學費',
       programType: '標準時數',
@@ -467,23 +475,6 @@ const MemberContractCreationForm: React.FC<
     const [weeklyBatch, setWeeklyBatch] = useState(10)
     const [week, setWeek] = useState(13)
     const [totalAmount, setTotalAmount] = useState(60)
-    const [customPrice, setCustomPrice] = useState(0)
-    const [customTotalPrice, setCustomTotalPrice] = useState(0)
-    const [newProductName, setNewProductName] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
-
-    const memberType = member.properties.find(p => p.name === '會員類型')?.value
-    const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
-    const options = productOptions?.find((v: any) => v.title === category.product)
-    const validateNumericSessionInput = (value: number) => {
-      const regex = /^\d+(\.\d{0,1})?$/
-      if (!regex.test(value.toString())) {
-        console.error('課程堂數只能輸入小數點後一位')
-        return false
-      }
-      return true
-    }
 
     const filterProducts = useMemo(() => {
       return products.filter(product => {
@@ -566,13 +557,63 @@ const MemberContractCreationForm: React.FC<
       })
     }, [category, weeklyBatch, totalAmount, products])
 
-    const selectedProduct = filterProducts.find(p => p.title === category.name)
-    useEffect(() => {
-      isMemberZeroTax &&
-        !['註冊費', '學費'].includes(category.product) &&
-        setZeroTaxPrice(Math.round((customTotalPrice || customPrice || selectedProduct?.price || 0) / 1.05))
-    }, [customPrice, isMemberZeroTax, selectedProduct?.price, customTotalPrice, category])
+    const memberType = member.properties.find(p => p.name === '會員類型')?.value
+    const productOptions: any = CUSTOM_PRODUCT_OPTIONS_CONFIG.find(v => v.language === category.language)?.products
+    const options = productOptions?.find((v: any) => v.title === category.product)
 
+    const getTargetProduct = (category: Category) => products.find(p => p.title === category.name)
+    const getTargetProductPrice = (product: SingleContractProduct | undefined) =>
+      (product?.price ?? 0) > 0 ? product?.price ?? 0 : calculateMinPrice(category, weeklyBatch, totalAmount)
+    const getTargetProductTotalPrice = (product: SingleContractProduct | undefined) =>
+      (getTargetProductPrice(product) ?? 0) * totalAmount
+    const [customPrice, setCustomPrice] = useState<number>(getTargetProductPrice(targetProduct))
+    const [customTotalPrice, setCustomTotalPrice] = useState(getTargetProductTotalPrice(targetProduct))
+    const [newProductName, setNewProductName] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
+
+    const handleCustomPriceChange = (value: number) => {
+      setCustomPrice(value)
+      setCustomTotalPrice(Math.round(value * totalAmount))
+    }
+
+    const handleCustomTotalPriceChange = (value: number) => {
+      setCustomTotalPrice(Math.floor(value))
+      setCustomPrice(Math.floor(value) / totalAmount)
+    }
+
+    const handleCategoryChange = (category: Category) => {
+      setCategory(category)
+      const targetProduct = getTargetProduct(category)
+      setTargetProduct(targetProduct)
+      setCustomPrice(getTargetProductPrice(targetProduct))
+      setCustomTotalPrice(getTargetProductTotalPrice(targetProduct))
+    }
+
+    const isPriceEditable =
+      targetProduct?.options.isCustomPrice ||
+      isMemberTypeBG ||
+      (category.language === '中文' && category.programType === '套裝項目' && ![1, 4, 13].includes(week))
+
+    const validateNumericSessionInput = (value: number) => {
+      const regex = /^\d+(\.\d{0,1})?$/
+      if (!regex.test(value.toString())) {
+        console.error('課程堂數只能輸入小數點後一位')
+        return false
+      }
+
+      return true
+    }
+    useEffect(() => {
+      if (isMemberZeroTax && !['註冊費', '學費'].includes(category.product)) {
+        setZeroTaxPrice(Math.round((customTotalPrice || customPrice || targetProduct?.price || 0) / 1.05))
+      }
+    }, [customPrice, isMemberZeroTax, targetProduct?.price, customTotalPrice, category])
+
+    console.log({ targetProduct })
+    console.log({ category })
+    console.log({ products })
+    console.log({ filterProducts })
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
@@ -582,7 +623,7 @@ const MemberContractCreationForm: React.FC<
           <Tabs
             className="mb-5"
             onTabClick={key => {
-              setCategory(
+              handleCategoryChange(
                 key === '中文'
                   ? {
                       language: key,
@@ -628,8 +669,6 @@ const MemberContractCreationForm: React.FC<
                 key === '中文' ? 60 : key === '外文' ? 10 : key === '師資班' ? 26 : key === '方言' ? 60 : 60,
               )
               setNewProductName('')
-              setCustomPrice(0)
-              setCustomTotalPrice(0)
               setZeroTaxPrice(0)
             }}
           >
@@ -642,7 +681,7 @@ const MemberContractCreationForm: React.FC<
                         key={v.title}
                         type={v.title === category?.product ? 'primary' : undefined}
                         onClick={() => {
-                          setCategory({
+                          handleCategoryChange({
                             language: category.language,
                             product: v.title,
                             programType: category.programType || '標準時數',
@@ -683,8 +722,6 @@ const MemberContractCreationForm: React.FC<
                               : 60,
                           )
                           setNewProductName('')
-                          setCustomPrice(0)
-                          setCustomTotalPrice(0)
                           setZeroTaxPrice(0)
                         }}
                       >
@@ -716,7 +753,7 @@ const MemberContractCreationForm: React.FC<
                               value={category.languageType}
                               style={{ width: 110 }}
                               onChange={value => {
-                                setCategory({ ...category, languageType: value, name: undefined })
+                                handleCategoryChange({ ...category, languageType: value, name: undefined })
                               }}
                             >
                               {options.languageType.map((d: { title: string }) => (
@@ -734,7 +771,7 @@ const MemberContractCreationForm: React.FC<
                             value={category.programType}
                             style={{ width: 110 }}
                             onChange={value => {
-                              setCategory(
+                              handleCategoryChange(
                                 value === '套裝項目'
                                   ? { ...category, programType: value, name: undefined, classType: '團體班' }
                                   : value === '標準時數'
@@ -795,7 +832,7 @@ const MemberContractCreationForm: React.FC<
                                   value={v.value}
                                   style={{ width: 110 }}
                                   onChange={value => {
-                                    setCategory({ ...category, [v.id]: value, name: undefined })
+                                    handleCategoryChange({ ...category, [v.id]: value, name: undefined })
                                   }}
                                 >
                                   {v.options.map((d: { title: string }) => (
@@ -816,7 +853,7 @@ const MemberContractCreationForm: React.FC<
                                     value={weeklyBatch}
                                     onChange={value => {
                                       setWeeklyBatch(Number(value))
-                                      setCategory({
+                                      handleCategoryChange({
                                         ...category,
                                         name: undefined,
                                       })
@@ -844,7 +881,7 @@ const MemberContractCreationForm: React.FC<
                                     value={weeklyBatch}
                                     onChange={value => {
                                       setWeeklyBatch(Number(value))
-                                      setCategory({
+                                      handleCategoryChange({
                                         ...category,
                                         name: undefined,
                                       })
@@ -864,7 +901,7 @@ const MemberContractCreationForm: React.FC<
                                   value={weeklyBatch}
                                   onChange={e => {
                                     setWeeklyBatch(Number(e))
-                                    setCategory({
+                                    handleCategoryChange({
                                       ...category,
                                       name: undefined,
                                     })
@@ -883,7 +920,7 @@ const MemberContractCreationForm: React.FC<
                                     value={week}
                                     onChange={e => {
                                       setWeek(Number(e))
-                                      setCategory({
+                                      handleCategoryChange({
                                         ...category,
                                         name: undefined,
                                       })
@@ -906,7 +943,7 @@ const MemberContractCreationForm: React.FC<
                                 value={totalAmount}
                                 style={{ width: 110 }}
                                 onChange={value => {
-                                  setCategory({
+                                  handleCategoryChange({
                                     ...category,
                                     name: undefined,
                                   })
@@ -935,7 +972,7 @@ const MemberContractCreationForm: React.FC<
                                 const roundedValue = Math.floor(numericValue * 10) / 10
 
                                 setTotalAmount(roundedValue)
-                                setCategory({
+                                handleCategoryChange({
                                   ...category,
                                   name: undefined,
                                 })
@@ -958,13 +995,10 @@ const MemberContractCreationForm: React.FC<
                               style={{ width: '100%', marginRight: 16 }}
                               value={category.name}
                               onChange={value => {
-                                setCategory({
+                                handleCategoryChange({
                                   ...category,
                                   name: value.toString(),
                                 })
-                                setCustomPrice(calculateMinPrice(category, weeklyBatch, totalAmount))
-                                setCustomPrice(0)
-                                setCustomTotalPrice(0)
                                 setZeroTaxPrice(0)
                               }}
                             >
@@ -978,30 +1012,24 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>{category.programType === '套裝項目' ? '總價' : '單價/堂'}</div>
-                          {selectedProduct?.options.isCustomPrice ||
-                          isMemberTypeBG ||
-                          (category.language === '中文' &&
-                            category.programType === '套裝項目' &&
-                            ![1, 4, 13].includes(week)) ? (
-                            <InputNumber
-                              min={calculateMinPrice(category, weeklyBatch, totalAmount)}
-                              value={customPrice}
-                              onChange={e => {
-                                setCustomPrice(Number(e))
-                              }}
-                            />
-                          ) : (
-                            <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
-                              {selectedProduct?.price}
-                            </div>
-                          )}
+                          <InputNumber
+                            // in case the stakeholders want it to be constrained...
+                            // min={calculateMinPrice(category, weeklyBatch, totalAmount)}
+                            disabled={!isPriceEditable}
+                            value={customPrice}
+                            onChange={e => {
+                              handleCustomPriceChange(Number(e))
+                            }}
+                          />
                         </div>
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>開放總價</div>
                           <InputNumber
+                            // in case the stakeholders want it to be constrained...
+                            // min={calculateMinPrice(category, weeklyBatch, totalAmount) * totalAmount}
                             value={customTotalPrice}
                             onChange={e => {
-                              setCustomTotalPrice(Number(e))
+                              handleCustomTotalPriceChange(Number(e))
                             }}
                           />
                         </div>
@@ -1031,19 +1059,14 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {selectedProduct?.options.isCustomPrice || isMemberTypeBG ? (
-                            <InputNumber
-                              min={0}
-                              value={customPrice}
-                              onChange={e => {
-                                setCustomPrice(Number(e))
-                              }}
-                            />
-                          ) : (
-                            <div style={{ height: 45, display: 'flex', alignItems: 'center' }}>
-                              {selectedProduct?.price}
-                            </div>
-                          )}
+                          <InputNumber
+                            disabled={!(targetProduct?.options.isCustomPrice || isMemberTypeBG)}
+                            min={0}
+                            value={customPrice}
+                            onChange={e => {
+                              setCustomPrice(Number(e))
+                            }}
+                          />
                         </div>
                       </div>
                     )}
@@ -1066,7 +1089,7 @@ const MemberContractCreationForm: React.FC<
                             style={{ width: 200 }}
                             value={category.project}
                             onChange={value => {
-                              setCategory({
+                              handleCategoryChange({
                                 ...category,
                                 project: value,
                                 name: undefined,
@@ -1095,7 +1118,7 @@ const MemberContractCreationForm: React.FC<
                               style={{ width: '100%', marginRight: 16 }}
                               value={category.name}
                               onChange={value => {
-                                setCategory({
+                                handleCategoryChange({
                                   ...category,
                                   name: value.toString(),
                                 })
@@ -1111,7 +1134,7 @@ const MemberContractCreationForm: React.FC<
                         </div>
                         <div style={{ width: 110, whiteSpace: 'nowrap' }}>
                           <div>單價</div>
-                          {selectedProduct?.options.isCustomPrice ||
+                          {targetProduct?.options.isCustomPrice ||
                           isMemberTypeBG ||
                           category.project?.includes('自訂') ? (
                             <InputNumber
@@ -1140,7 +1163,7 @@ const MemberContractCreationForm: React.FC<
                       disabled={
                         (!isMemberTypeBG &&
                           !category.project?.includes('自訂') &&
-                          (filterProducts.length === 0 || !selectedProduct)) ||
+                          (filterProducts.length === 0 || !targetProduct)) ||
                         loading
                       }
                       loading={loading}
@@ -1265,13 +1288,13 @@ const MemberContractCreationForm: React.FC<
                                 setLoading(false)
                               })
                           }
-                        } else if (selectedProduct) {
+                        } else if (targetProduct) {
                           const price =
                             filterProducts.find(p => p.title === category.name)?.options.isCustomPrice || isMemberTypeBG
                               ? customPrice
-                              : selectedProduct.price
+                              : targetProduct.price
                           onChangeSelectedProducts({
-                            id: selectedProduct.id,
+                            id: targetProduct.id,
                             amount: category.product === '學費' ? totalAmount : 1,
                             price: zeroTaxPrice
                               ? category.product === '學費'
@@ -1293,8 +1316,8 @@ const MemberContractCreationForm: React.FC<
                               : category.programType === '套裝項目'
                               ? price
                               : price * (category.product === '學費' ? totalAmount : 1),
-                            productId: selectedProduct.productId,
-                            title: selectedProduct.title,
+                            productId: targetProduct.productId,
+                            title: targetProduct.title,
                             options: {
                               language: category.language,
                               product: category.product,
@@ -1349,11 +1372,13 @@ const MemberContractCreationForm: React.FC<
                   <div>
                     <QuantityInput
                       value={v.amount}
-                      min={1}
+                      min={0.1}
                       onChange={value => {
-                        adjustSelectedProductAmount(v, value || 1)
+                        adjustSelectedProductAmount(v, value || 0.1)
                       }}
                       disabled={v.title.includes('套裝項目')}
+                      step={0.1}
+                      numberOfDigitalsUnderUnit={2}
                     />
                   </div>
                   <div style={{ minWidth: 110, textAlign: 'right' }}>${v.totalPrice.toLocaleString()}</div>
@@ -1707,20 +1732,44 @@ const QuantityInput: React.VFC<{
   value?: number
   min?: number
   max?: number
+  step?: number
+  numberOfDigitalsUnderUnit?: number
   remainQuantity?: number
   onChange?: (value: number | undefined) => void
   disabled?: boolean
-}> = ({ value = 0, min = -Infinity, max = Infinity, remainQuantity, onChange, disabled }) => {
+}> = ({
+  value = 0,
+  min = -Infinity,
+  max = Infinity,
+  remainQuantity,
+  onChange,
+  disabled,
+  step = 1,
+  numberOfDigitalsUnderUnit = 0,
+}) => {
   const [inputValue, setInputValue] = useState(`${value}`)
   useEffect(() => {
     setInputValue(`${value}`)
   }, [value])
+
+  const roundAccordingToStep = pipe(flip(divide)(step), Math.round, multiply(step))
+
+  const trimDigitals = pipe(
+    multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
+    Math.floor,
+    flip(divide)(Math.pow(10, numberOfDigitalsUnderUnit)),
+  )
+
+  const keepInSafeRange = (prev: number) => ifElse(allPass([flip(gte)(min), flip(lte)(max)]), identity, always(prev))
+
+  const parseNumber = (prev: number) => pipe(roundAccordingToStep, (keepInSafeRange as any)(prev), trimDigitals)
+
   return (
     <StyledInputGroup compact>
       <Button
         icon="-"
         onClick={() => {
-          const result = value - 1 <= min ? min : value - 1
+          const result = parseNumber(value)(value - step) as number
           onChange && onChange(result)
           setInputValue(`${result}`)
         }}
@@ -1730,8 +1779,7 @@ const QuantityInput: React.VFC<{
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
         onBlur={e => {
-          const newValue = Number.isSafeInteger(parseInt(e.target.value)) ? parseInt(e.target.value) : value
-          const result = newValue <= min ? min : newValue >= max ? max : newValue
+          const result = parseNumber(value)(Number(e.target.value))
 
           onChange && onChange(result)
           setInputValue(`${result}`)
@@ -1740,7 +1788,7 @@ const QuantityInput: React.VFC<{
       <Button
         icon="+"
         onClick={() => {
-          const result = value + 1 >= max ? max : value + 1
+          const result = parseNumber(value)(value + step)
           onChange && onChange(result)
           setInputValue(`${result}`)
         }}
