@@ -13,7 +13,6 @@ import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
-import { useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
 
@@ -65,7 +64,6 @@ const MemberContractCreationBlock: React.FC<{
           .map(product => product.totalPrice),
       )
   const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
-  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
 
   let invoices: InvoiceRequest[] = []
 
@@ -370,7 +368,12 @@ const MemberContractCreationBlock: React.FC<{
       productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
     })
 
-    const areOrderPaymentAndDiliverySetCompleteByDefault = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice
+    const isPaidByCashWithInvoiceAutoIssued = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice
+    const isReceivable = enabledModules.account_receivable && fieldValue.accountReceivable
+
+    const isOrderSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
+    const isPaymentSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
+    const isOrderProductsDeliveredByDefault = isPaidByCashWithInvoiceAutoIssued || isReceivable
 
     await axios
       .post(
@@ -389,10 +392,10 @@ const MemberContractCreationBlock: React.FC<{
             paymentMode,
             memberContractId,
           },
-          status: areOrderPaymentAndDiliverySetCompleteByDefault ? 'SUCCESS' : undefined,
-          isOrderSetSuccessByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
-          isPaymentSetSuccessByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
-          isOrderProductsDeliveredByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
+          status: 'UNPAID',
+          isOrderSetSuccessByDefault,
+          isPaymentSetSuccessByDefault,
+          isOrderProductsDeliveredByDefault,
         },
         {
           headers: {
@@ -403,14 +406,6 @@ const MemberContractCreationBlock: React.FC<{
       .then(res => {
         if (res.data.code === 'SUCCESS') {
           message.success(`訂單建立成功: ${res.data.result.orderId}`)
-
-          if (enabledModules.account_receivable && fieldValue.accountReceivable) {
-            setOrderToReceivableStatusCommand({
-              orderProductId: res.data.result.orderId,
-              deliveredAt: new Date(),
-            })
-          }
-
           history.push(`/members/${member.id}/order`)
 
           // axios
