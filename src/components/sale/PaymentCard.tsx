@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { useOrderReceivableStatusQuery, useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
+import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -86,7 +86,6 @@ const PaymentCard: React.FC<{
     }
   `)
   const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
-  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
   const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
   const [isCheckboxDisabled, setCheckboxDisabled] = useState(false)
 
@@ -375,14 +374,6 @@ const PaymentCard: React.FC<{
                         const executeCommands = async () => {
                           try {
                             await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-
-                            if (isAccountsReceivableChecked) {
-                              enabledModules.account_receivable &&
-                                (await setOrderToReceivableStatusCommand({
-                                  orderProductId: order.id,
-                                  deliveredAt: new Date(),
-                                }))
-                            }
                           } catch (err) {
                             console.log(err)
                           } finally {

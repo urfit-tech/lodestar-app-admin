@@ -1,32 +1,4 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import hasura from "../hasura";
-
-const useSetOrderToReceivableStatusCommand = () => {
-  const [updateOrderProductDeliver] = useMutation(UPDATE_ORDER_PRODUCTS_DELIVERED_AT);
-
-  const setOrderToReceivableStatusCommand = async ({
-    orderProductId,
-    deliveredAt,
-  }: {
-    orderProductId: string;
-    deliveredAt: Date | string;
-  }) => {
-    const formattedDate = deliveredAt 
-      ? (deliveredAt instanceof Date ? deliveredAt : new Date(deliveredAt))
-      : null;
-
-    await updateOrderProductDeliver({
-      variables: {
-        orderProductId,
-        deliveredAt: formattedDate,
-      },
-    });
-  };
-
-  return {
-    setOrderToReceivableStatusCommand,
-  };
-};
 
 const useOrderReceivableStatusQuery = (orderId: string) => {
   const { data, loading, error } = useQuery(GET_ORDER_RECEIVABLE_STATUS, {
@@ -92,21 +64,6 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
   return { isAccountReceivable, notPayYetPaymentLog }
 }
 
-const UPDATE_ORDER_PRODUCTS_DELIVERED_AT = gql`
-  mutation UPDATE_ORDER_PRODUCTS_DELIVERED_AT(
-    $orderId: String
-    $deliveredAt: timestamp
-  ) {
-    update_order_product(
-      _set: { delivered_at: $deliveredAt }
-      where: { order_id: { _eq: $orderId } }
-    ) {
-      affected_rows
-    }
-  }
-`;
-
-
 const GET_ORDER_RECEIVABLE_STATUS = gql`
   query GET_ORDER_RECEIVABLE_STATUS($orderId: String) {
     order_log(where: { id: { _eq: $orderId } }) {
@@ -125,6 +82,5 @@ const GET_ORDER_RECEIVABLE_STATUS = gql`
   }
 `;
 
-
-export { useSetOrderToReceivableStatusCommand, useOrderReceivableStatusQuery };
+export { useOrderReceivableStatusQuery };
 
