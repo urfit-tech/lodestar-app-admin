@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Text } from '@chakra-ui/react'
+import { Text, Link } from '@chakra-ui/react'
 import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { ColumnProps, ColumnsType, TableProps } from 'antd/lib/table'
@@ -64,7 +64,6 @@ const TableWrapper = styled.div`
     white-space: nowrap;
   }
   td {
-    white-space: nowrap;
     color: var(--gray-darker);
   }
   tr {
@@ -543,7 +542,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
-      width: 200,
+      width: 250,
       title: formatMessage(saleMessages.SalesLeadTable.memberNickName),
       ...getColumnSearchProps((value?: string) =>
         onFilter({
@@ -557,12 +556,18 @@ const SalesLeadTable: React.VFC<{
         const fullNamePropertyValue = lead?.properties?.find(property => property.name === '本名')?.value || ''
         return (
           <>
-            <a href={`/admin/members/${lead?.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
+            <Link
+              href={`/admin/members/${lead?.id}`}
+              target="_blank"
+              rel="noreferrer"
+              maxW="250px"
+              className="d-flex flex-column"
+            >
               <span>
                 <Tag color={color}>{leadLevel}</Tag>
                 {lead?.name}
               </span>
-            </a>
+            </Link>
             <small>{lead?.email}</small>
             {currentMemberIsManager ? (
               <div>
@@ -712,7 +717,11 @@ const SalesLeadTable: React.VFC<{
         properties
           .find(property => property.name === '廣告素材')
           ?.value.split(',')
-          .map((v, idx) => <div key={idx}>{v}</div>),
+          .map((v, idx) => (
+            <Text maxW="400px" key={idx}>
+              {v}
+            </Text>
+          )),
     },
     {
       key: 'memberNoteOutboundCount',
