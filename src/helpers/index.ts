@@ -615,3 +615,6 @@ export const signShortUrl = async (url: string, authToken: string | null) => {
       return url
     })
 }
+
+export const memberAccountReceivableAvailable = (memberType: string) =>
+  ['B', 'G'].some(v => v === memberType?.trim().match(/^[A-Z]+/)?.[0])

@@ -30,7 +30,18 @@ const MemberContractCreationBlock: React.FC<{
   sales: ContractSales['sales']
   isMemberTypeBG: boolean
   isMemberZeroTax: boolean
-}> = ({ member, form, selectedProducts, contracts, installments, sales, isMemberTypeBG, isMemberZeroTax }) => {
+  isAccountReceivableAvailable: boolean
+}> = ({
+  member,
+  form,
+  selectedProducts,
+  contracts,
+  installments,
+  sales,
+  isMemberTypeBG,
+  isMemberZeroTax,
+  isAccountReceivableAvailable,
+}) => {
   const { settings, enabledModules } = useApp()
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -191,7 +202,7 @@ const MemberContractCreationBlock: React.FC<{
 
   const handleMemberContractCreate = async () => {
     const memberType = member.properties.find(p => p.name === '會員類型')?.value
-    if (fieldValue.accountReceivable && (!memberType || !/^B|G/.test(memberType.trim()))) {
+    if (fieldValue.accountReceivable && (!memberType || !isAccountReceivableAvailable)) {
       return message.warn('此會員無法使用應收帳款')
     }
     const isContract =

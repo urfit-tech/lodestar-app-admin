@@ -8,6 +8,7 @@ import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
+import { memberAccountReceivableAvailable } from '../../helpers'
 import { useMemberAdmin } from '../../hooks/member'
 import LoadingPage from '../LoadingPage'
 import ContractLayout from './ContractLayout'
@@ -172,6 +173,7 @@ const MemberContractCreationPage: React.VFC = () => {
   )
 
   const memberType = member.properties.find(p => p.name === '會員類型')?.value
+  const isAccountReceivableAvailable = memberType ? memberAccountReceivableAvailable(memberType) : false
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
   const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
@@ -248,6 +250,7 @@ const MemberContractCreationPage: React.VFC = () => {
             isMemberZeroTax={isMemberZeroTax}
             targetProduct={targetProduct}
             setTargetProduct={setTargetProduct}
+            isAccountReceivableAvailable={isAccountReceivableAvailable}
           />
           <MemberContractCreationBlock
             form={form}
@@ -258,6 +261,7 @@ const MemberContractCreationPage: React.VFC = () => {
             sales={sales?.sales || []}
             isMemberTypeBG={isMemberTypeBG}
             isMemberZeroTax={isMemberZeroTax}
+            isAccountReceivableAvailable={isAccountReceivableAvailable}
           />
         </AdminBlock>
       </div>
