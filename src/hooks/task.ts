@@ -49,12 +49,16 @@ export const useMemberTaskCollection = (options?: {
   createdAt?: Date[]
   status?: string
   limit?: number
+  group?: string
   orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
   permissionGroupId?: string
 }) => {
   const defaultOrderBy: hasura.member_task_order_by = { created_at: 'desc' as InputMaybe<order_by> }
 
   const { orderBy = defaultOrderBy } = options || {}
+
+  const memberPropertyGroupName = '組別'
+
   const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member: options?.permissionGroupId
       ? {
@@ -66,15 +70,67 @@ export const useMemberTaskCollection = (options?: {
     },
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
     category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
-    executor: options?.executor
-      ? { _or: [{ name: { _ilike: `%${options.executor}%` } }, { username: { _ilike: `%${options.executor}%` } }] }
-      : undefined,
-    author: options?.author
-      ? { _or: [{ name: { _ilike: `%${options.author}%` } }, { username: { _ilike: `%${options.author}%` } }] }
-      : undefined,
+    executor:
+      !options?.executor && !options?.author && options?.group
+        ? {
+            _or: [
+              {
+                member_properties: {
+                  property: { name: { _eq: memberPropertyGroupName } },
+                  value: { _eq: `${options.group}` },
+                },
+              },
+            ],
+          }
+        : options?.executor && options.group
+        ? {
+            _or: [{ name: { _eq: `${options.executor}` } }, { username: { _eq: `${options.executor}` } }],
+            _and: [
+              {
+                member_properties: {
+                  property: { name: { _eq: memberPropertyGroupName } },
+                  value: { _eq: `${options.group}` },
+                },
+              },
+            ],
+          }
+        : options?.executor
+        ? {
+            _or: [{ name: { _eq: `${options.executor}` } }, { username: { _eq: `${options.executor}` } }],
+          }
+        : undefined,
+    author:
+      !options?.author && !options?.executor && options?.group
+        ? {
+            _or: [
+              {
+                member_properties: {
+                  property: { name: { _eq: memberPropertyGroupName } },
+                  value: { _eq: `${options.group}` },
+                },
+              },
+            ],
+          }
+        : options?.author && options.group
+        ? {
+            _or: [{ name: { _eq: `${options.author}` } }, { username: { _eq: `${options.author}` } }],
+            _and: [
+              {
+                member_properties: {
+                  property: { name: { _eq: memberPropertyGroupName } },
+                  value: { _eq: `${options.group}` },
+                },
+              },
+            ],
+          }
+        : options?.author
+        ? {
+            _or: [{ name: { _eq: `${options.author}` } }, { username: { _eq: `${options.author}` } }],
+          }
+        : undefined,
     due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
     created_at: options?.createdAt ? { _gte: options?.createdAt[0], _lte: options?.createdAt[1] } : undefined,
-    status: options?.status ? { _ilike: options.status } : undefined,
+    status: options?.status ? { _eq: options.status } : undefined,
     deleted_at: { _is_null: true },
   }
 
@@ -83,7 +139,12 @@ export const useMemberTaskCollection = (options?: {
     hasura.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
-      query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int, $orderBy: member_task_order_by!) {
+      query GET_MEMBER_TASK_COLLECTION(
+        $condition: member_task_bool_exp
+        $limit: Int
+        $orderBy: member_task_order_by!
+        $propertyNames: [String!]
+      ) {
         executors: member_task(
           where: { executor_id: { _is_null: false }, deleted_at: { _is_null: true } }
           distinct_on: [executor_id]
@@ -92,6 +153,12 @@ export const useMemberTaskCollection = (options?: {
           executor {
             id
             name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              property {
+                name
+              }
+              value
+            }
           }
         }
         authors: member_task(
@@ -102,6 +169,12 @@ export const useMemberTaskCollection = (options?: {
           author {
             id
             name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              property {
+                name
+              }
+              value
+            }
           }
         }
         member_task_aggregate(where: $condition) {
@@ -158,6 +231,7 @@ export const useMemberTaskCollection = (options?: {
         condition,
         orderBy,
         limit: options?.limit,
+        propertyNames: [memberPropertyGroupName],
       },
       // Use 'network-only' fetchPolicy to ensure Apollo Client doesn't use cache for the same query, and always fetches fresh data from the db.
       fetchPolicy: 'network-only',
@@ -167,19 +241,23 @@ export const useMemberTaskCollection = (options?: {
   const executors: {
     id: string
     name: string
+    group?: string
   }[] =
     data?.executors.map(v => ({
       id: v.executor?.id || '',
       name: v.executor?.name || '',
+      group: v.executor?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
     })) || []
 
   const authors: {
     id: string
     name: string
+    group?: string
   }[] =
     data?.authors.map(v => ({
       id: v.author?.id || '',
       name: v.author?.name || '',
+      group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
     })) || []
 
   const memberTasks: MemberTaskProps[] =
