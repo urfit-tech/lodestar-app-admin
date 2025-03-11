@@ -240,8 +240,8 @@ const ExportContractCollectionButton: React.FC<{
                   contract.orderExecutors
                     ?.map(v => {
                       const member = salesNamesAndGroupName.member_public.find(member => member.id === v.memberId)
-                      const groupName = member?.member_properties[0].value
-                      return `${!!groupName && groupName + '-'}${
+                      const groupName = member?.member_properties[0]?.value
+                      return `${!!groupName ? groupName + '-' : ''}${
                         member?.name || member?.username || v.memberId
                       } ${Math.floor(v.ratio * 100)}%`
                     })
