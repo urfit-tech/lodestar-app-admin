@@ -1772,19 +1772,20 @@ const QuantityInput: React.VFC<{
     setInputValue(`${value}`)
   }, [value])
 
+  const isNumberOfDigitalsUnderUnitValidated = tap(
+    ifElse(
+      (converge as any)(equals, [
+        multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
+        pipe(multiply(Math.pow(10, numberOfDigitalsUnderUnit)), Math.floor),
+      ]),
+      () => {},
+      () => message.error(`課程堂數只能輸入小數點後 ${numberOfDigitalsUnderUnit} 位`),
+    ),
+  )
+
   const roundAccordingToStep = pipe(flip(divide)(step), Math.round, multiply(step))
 
   const trimDigitals = pipe(
-    tap(
-      ifElse(
-        (converge as any)(equals, [
-          multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
-          pipe(multiply(Math.pow(10, numberOfDigitalsUnderUnit)), Math.floor),
-        ]),
-        () => {},
-        always(message.error('課程堂數只能輸入小數點後一位')),
-      ),
-    ),
     multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
     Math.round,
     flip(divide)(Math.pow(10, numberOfDigitalsUnderUnit)),
@@ -1792,7 +1793,13 @@ const QuantityInput: React.VFC<{
 
   const keepInSafeRange = (prev: number) => ifElse(allPass([flip(gte)(min), flip(lte)(max)]), identity, always(prev))
 
-  const parseNumber = (prev: number) => pipe(roundAccordingToStep, (keepInSafeRange as any)(prev), trimDigitals)
+  const parseNumber = (prev: number) =>
+    pipe(
+      isNumberOfDigitalsUnderUnitValidated as any,
+      roundAccordingToStep,
+      (keepInSafeRange as any)(prev),
+      trimDigitals,
+    )
 
   return (
     <StyledInputGroup compact>
