@@ -18,7 +18,23 @@ import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import { allPass, always, divide, flip, gte, identity, ifElse, lte, multiply, pipe, prop, uniqBy } from 'ramda'
+import {
+  allPass,
+  always,
+  converge,
+  divide,
+  equals,
+  flip,
+  gte,
+  identity,
+  ifElse,
+  lte,
+  multiply,
+  pipe,
+  prop,
+  tap,
+  uniqBy,
+} from 'ramda'
 import React, { Dispatch, memo, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
@@ -1010,18 +1026,22 @@ const MemberContractCreationForm: React.FC<
                             </Select>
                           )}
                         </div>
-                        <div style={{ whiteSpace: 'nowrap', width: 110 }}>
-                          <div>{category.programType === '套裝項目' ? '總價' : '單價/堂'}</div>
-                          <InputNumber
-                            // in case the stakeholders want it to be constrained...
-                            // min={calculateMinPrice(category, weeklyBatch, totalAmount)}
-                            disabled={!isPriceEditable}
-                            value={customPrice}
-                            onChange={e => {
-                              handleCustomPriceChange(Number(e))
-                            }}
-                          />
-                        </div>
+                        {category.programType !== '套裝項目' ? (
+                          <div style={{ whiteSpace: 'nowrap', width: 110 }}>
+                            <div> 單價/堂</div>
+                            <InputNumber
+                              // in case the stakeholders want it to be constrained...
+                              // min={calculateMinPrice(category, weeklyBatch, totalAmount)}
+                              disabled={!isPriceEditable}
+                              value={customPrice}
+                              onChange={e => {
+                                handleCustomPriceChange(Number(e))
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
                         <div style={{ whiteSpace: 'nowrap', width: 110 }}>
                           <div>開放總價</div>
                           <InputNumber
@@ -1755,8 +1775,18 @@ const QuantityInput: React.VFC<{
   const roundAccordingToStep = pipe(flip(divide)(step), Math.round, multiply(step))
 
   const trimDigitals = pipe(
+    tap(
+      ifElse(
+        (converge as any)(equals, [
+          multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
+          pipe(multiply(Math.pow(10, numberOfDigitalsUnderUnit)), Math.floor),
+        ]),
+        () => {},
+        always(message.error('課程堂數只能輸入小數點後一位')),
+      ),
+    ),
     multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
-    Math.floor,
+    Math.round,
     flip(divide)(Math.pow(10, numberOfDigitalsUnderUnit)),
   )
 

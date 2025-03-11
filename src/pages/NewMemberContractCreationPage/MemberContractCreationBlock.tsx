@@ -370,7 +370,7 @@ const MemberContractCreationBlock: React.FC<{
       productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
     })
 
-    const areOrderPaymentAndDiliverySetCompleteByDefault = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice
+    const areOrderPaymentAndDeliverySetCompleteByDefault = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice
 
     await axios
       .post(
@@ -389,10 +389,10 @@ const MemberContractCreationBlock: React.FC<{
             paymentMode,
             memberContractId,
           },
-          status: areOrderPaymentAndDiliverySetCompleteByDefault ? 'SUCCESS' : undefined,
-          isOrderSetSuccessByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
-          isPaymentSetSuccessByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
-          isOrderProductsDeliveredByDefault: areOrderPaymentAndDiliverySetCompleteByDefault ? true : undefined,
+          status: areOrderPaymentAndDeliverySetCompleteByDefault ? 'SUCCESS' : undefined,
+          isOrderSetSuccessByDefault: areOrderPaymentAndDeliverySetCompleteByDefault ? true : undefined,
+          isPaymentSetSuccessByDefault: areOrderPaymentAndDeliverySetCompleteByDefault ? true : undefined,
+          isOrderProductsDeliveredByDefault: areOrderPaymentAndDeliverySetCompleteByDefault ? true : undefined,
         },
         {
           headers: {
