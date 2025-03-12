@@ -706,6 +706,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'materialNames',
       dataIndex: 'properties',
+      width: 400,
       title: formatMessage(saleMessages.SalesLeadTable.adMaterial),
       ...getColumnSearchProps((value?: string) =>
         onFilter({
