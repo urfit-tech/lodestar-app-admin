@@ -718,21 +718,7 @@ const SalesLeadTable: React.VFC<{
         properties
           .find(property => property.name === '廣告素材')
           ?.value.split(',')
-          .map((v, idx) => (
-            <Text maxW="400px" key={idx}>
-              {v}
-            </Text>
-          )),
-    },
-    {
-      key: 'memberNoteOutboundCount',
-      dataIndex: 'memberNoteOutboundCount',
-      title: formatMessage(saleMessages.SalesLeadTable.memberNoteOutboundCount),
-      sorter: {
-        compare: (a, b) => (a.memberNoteOutboundCount || 0) - (b.memberNoteOutboundCount || 0),
-        multiple: 2,
-      },
-      render: (_, lead) => <span>{lead.memberNoteOutboundCount}</span>,
+          .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
       key: 'memberNoteOutboundCount',
