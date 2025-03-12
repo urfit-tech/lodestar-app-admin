@@ -718,7 +718,11 @@ const SalesLeadTable: React.VFC<{
         properties
           .find(property => property.name === '廣告素材')
           ?.value.split(',')
-          .map((v, idx) => <div key={idx}>{v}</div>),
+          .map((v, idx) => (
+            <Text maxW="400px" key={idx}>
+              {v}
+            </Text>
+          )),
     },
     {
       key: 'memberNoteOutboundCount',
