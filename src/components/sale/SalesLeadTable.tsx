@@ -735,16 +735,6 @@ const SalesLeadTable: React.VFC<{
       render: (_, lead) => <span>{lead.memberNoteOutboundCount}</span>,
     },
     {
-      key: 'memberNoteOutboundCount',
-      dataIndex: 'memberNoteOutboundCount',
-      title: formatMessage(saleMessages.SalesLeadTable.memberNoteOutboundCount),
-      sorter: {
-        compare: (a, b) => (a.memberNoteOutboundCount || 0) - (b.memberNoteOutboundCount || 0),
-        multiple: 2,
-      },
-      render: (_, lead) => <span>{lead.memberNoteOutboundCount}</span>,
-    },
-    {
       key: 'memberNote',
       dataIndex: 'memberNote',
       width: 300,
