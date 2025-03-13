@@ -122,7 +122,7 @@ export type NoteAdmin = {
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
-  const [activeMemberNoteId, _] = useQueryParam('id', StringParam)
+  const [activeMemberNoteId] = useQueryParam('id', StringParam)
 
   const { enabledModules } = useApp()
   const [orderBy, setOrderBy] = useState<hasura.member_note_order_by>({
