@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Input, List } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CommonTitleMixin } from 'lodestar-app-element/src/components/common'
@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, salesMessages } from '../../helpers/translation'
+import { ManagerLead } from '../../hooks/sales'
 import AdminModal from '../admin/AdminModal'
 import saleMessages from './translation'
 
@@ -41,8 +42,9 @@ const MemberPhoneModal: React.FC<{
     isValid: boolean
   }[]
   memberId: string
-  onLeadRefetch: () => Promise<void>
-}> = ({ onCancel, onLeadRefetch, visible, phones, memberId }) => {
+  salesLead?: ManagerLead
+  onSaleLeadChange: (data: ManagerLead) => void
+}> = ({ onCancel, salesLead, onSaleLeadChange, phones, memberId, visible }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -74,6 +76,24 @@ const MemberPhoneModal: React.FC<{
       }
     }
   `)
+
+  const memberPhoneGqlString = gql`
+    query MemberPhoneGqlString($memberId: String!) {
+      member(where: { id: { _eq: $memberId } }) {
+        id
+        member_phones {
+          is_valid
+          phone
+        }
+      }
+    }
+  `
+  const [
+    refetchMemberPhone,
+    { error: refetchMemberPhoneError, loading: refetchMemberPhoneLoading, data: refetchedMemberPhoneData },
+  ] = useLazyQuery(memberPhoneGqlString, {
+    variables: { memberId },
+  })
 
   const handleCancel = () => {
     onCancel()
