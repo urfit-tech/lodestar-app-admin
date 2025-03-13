@@ -103,15 +103,14 @@ const MemberPhoneModal: React.FC<{
   }
 
   const handleSubmit = async () => {
-    await form.validateFields()
-    const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
-    const isValidNewPhone = newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
-    if (!isValidNewPhone && phoneNumbersToUpdate.length === 0) {
-      return
-    }
-    if (isValidNewPhone) {
-      setIsSubmitting(true)
-      try {
+    try {
+      await form.validateFields()
+      const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
+      const isValidNewPhone =
+        newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
+
+      if (isValidNewPhone) {
+        setIsSubmitting(true)
         await insertMemberPhone({
           variables: {
             phones: newPhones
@@ -119,43 +118,71 @@ const MemberPhoneModal: React.FC<{
               .map(phone => ({ member_id: memberId, phone: phone.phoneNumber.trim() })),
           },
         })
-        onLeadRefetch()
-        handleCancel()
-        setIsSubmitting(false)
-        form.resetFields()
-      } catch (err) {
-        console.log(err)
       }
+
+      if (phoneNumbersToUpdate.length > 0) {
+        setIsSubmitting(true)
+        const validPhonesLength = phones.filter(p => p.isValid).length
+        const inValidPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
+        const validPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => p.isValid).length
+
+        await Promise.all(
+          phoneNumbersToUpdate.map(async phone => {
+            try {
+              if (
+                validPhoneNumbersToUpdateLength === 0 &&
+                validPhonesLength - inValidPhoneNumbersToUpdateLength <= 0 &&
+                !isValidNewPhone
+              ) {
+                return await updateMemberMangerId({
+                  variables: { memberId, mangerId: null },
+                })
+              }
+              return await updateMemberPhone({
+                variables: { memberId, phoneNumber: phone.phoneNumber, isValid: phone.isValid },
+              })
+            } catch (err) {
+              console.log(err)
+            }
+          }),
+        )
+        await refetchMemberPhone()
+      }
+    } catch (err) {
+      console.log(err)
+    } finally {
+      handleCancel()
+      setIsSubmitting(false)
+      setPhoneNumbersToUpdate([])
     }
-    if (phoneNumbersToUpdate.length > 0) {
-      setIsSubmitting(true)
-      const validPhonesLength = phones.filter(p => p.isValid).length
-      const inValidPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
-      const validPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => p.isValid).length
-      phoneNumbersToUpdate.map(async phone => {
-        try {
-          if (
-            validPhoneNumbersToUpdateLength === 0 &&
-            validPhonesLength - inValidPhoneNumbersToUpdateLength <= 0 &&
-            !isValidNewPhone
-          ) {
-            await updateMemberMangerId({
-              variables: { memberId, mangerId: null },
-            })
+  }
+
+  if (refetchMemberPhoneLoading) return <p>Loading ...</p>
+  if (refetchMemberPhoneError) return <p>`Error! ${refetchMemberPhoneError}`</p>
+
+  if (refetchedMemberPhoneData) {
+    const newMemberPhone = refetchedMemberPhoneData?.member?.[0]?.member_phones?.map(
+      (newPhone: { phone: string; is_valid: boolean }) => ({ phoneNumber: newPhone.phone, isValid: newPhone.is_valid }),
+    )
+
+    const memberData =
+      salesLead?.salesLeadMembers.map(member => {
+        if (member.id === memberId) {
+          return {
+            ...member,
+            phones: newMemberPhone,
           }
-          await updateMemberPhone({
-            variables: { memberId, phoneNumber: phone.phoneNumber, isValid: phone.isValid },
-          })
-        } catch (err) {
-          console.log(err)
-        } finally {
-          onLeadRefetch()
-          handleCancel()
-          setIsSubmitting(false)
-          setPhoneNumbersToUpdate([])
         }
+        return member
+      }) || []
+
+    salesLead &&
+      onSaleLeadChange({
+        ...salesLead,
+        salesLeadMembers: memberData,
       })
-    }
+    onCancel()
+    return <></>
   }
 
   return (
