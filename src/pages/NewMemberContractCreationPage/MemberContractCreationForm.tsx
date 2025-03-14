@@ -1396,7 +1396,7 @@ const MemberContractCreationForm: React.FC<
                       }}
                       disabled={v.title.includes('套裝項目')}
                       step={0.1}
-                      numberOfDigitalsUnderUnit={2}
+                      numberOfDigitalsUnderUnit={1}
                     />
                   </div>
                   <div style={{ minWidth: 110, textAlign: 'right' }}>${v.totalPrice.toLocaleString()}</div>
@@ -1773,19 +1773,19 @@ const QuantityInput: React.VFC<{
   const isNumberOfDigitalsUnderUnitValidated = tap(
     ifElse(
       (converge as any)(equals, [
-        multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
-        pipe(multiply(Math.pow(10, numberOfDigitalsUnderUnit)), Math.floor),
+        multiply(Math.pow(10, numberOfDigitalsUnderUnit + 1)),
+        pipe(multiply(Math.pow(10, numberOfDigitalsUnderUnit + 1)), Math.floor),
       ]),
       () => {},
       () => message.error(`課程堂數只能輸入小數點後 ${numberOfDigitalsUnderUnit} 位`),
     ),
   )
 
-  const roundAccordingToStep = pipe(flip(divide)(step), Math.round, multiply(step))
+  const roundAccordingToStep = pipe(flip(divide)(step), Math.floor, multiply(step))
 
   const trimDigitals = pipe(
     multiply(Math.pow(10, numberOfDigitalsUnderUnit)),
-    Math.round,
+    Math.floor,
     flip(divide)(Math.pow(10, numberOfDigitalsUnderUnit)),
   )
 
