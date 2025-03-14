@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCancelAppointment } from '../../hooks/appointment'
-import { useMutateMeet } from '../../hooks/meet'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import appointmentMessages from './translation'
 
@@ -28,7 +27,6 @@ const AppointmentCancelModal: React.VFC<
   const [canceledReason, setCanceledReason] = useState('')
   const [loading, setLoading] = useState(false)
   const { cancelAppointment } = useCancelAppointment()
-  const { deleteGeneralMeet } = useMutateMeet()
 
   const handleCancel = async (onCancel: () => void) => {
     setLoading(true)

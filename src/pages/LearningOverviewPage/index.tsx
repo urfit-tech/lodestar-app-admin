@@ -163,11 +163,10 @@ const LearningOverviewPage: React.VFC = () => {
 }
 
 const useLearningReport = (appId: string) => {
-  const {
-    loading: loadingLearningStatus,
-    error: errorLearningStatus,
-    data: dataLearningStatus,
-  } = useQuery<hasura.GET_LEARNING_STATUS, hasura.GET_LEARNING_STATUSVariables>(
+  const { loading: loadingLearningStatus, data: dataLearningStatus } = useQuery<
+    hasura.GET_LEARNING_STATUS,
+    hasura.GET_LEARNING_STATUSVariables
+  >(
     gql`
       query GET_LEARNING_STATUS($appId: String!) {
         app_learning_status(where: { app_id: { _eq: $appId } }) {
@@ -186,11 +185,10 @@ const useLearningReport = (appId: string) => {
     { variables: { appId } },
   )
 
-  const {
-    loading: loadingLearningOverview,
-    error: errorLearningOverview,
-    data: dataLearningOverview,
-  } = useQuery<hasura.GET_LEARNING_OVERVIEW, hasura.GET_LEARNING_OVERVIEWVariables>(
+  const { loading: loadingLearningOverview, data: dataLearningOverview } = useQuery<
+    hasura.GET_LEARNING_OVERVIEW,
+    hasura.GET_LEARNING_OVERVIEWVariables
+  >(
     gql`
       query GET_LEARNING_OVERVIEW($appId: String!) {
         learning_overview(where: { app_id: { _eq: $appId } }) {
@@ -205,11 +203,10 @@ const useLearningReport = (appId: string) => {
     { variables: { appId } },
   )
 
-  const {
-    loading: loadingProgramCategoryCompleteness,
-    error: errorProgramCategoryCompleteness,
-    data: dataProgramCategoryCompleteness,
-  } = useQuery<hasura.GET_PROGRAM_CATEGORY_COMPLETENESS, hasura.GET_PROGRAM_CATEGORY_COMPLETENESSVariables>(
+  const { loading: loadingProgramCategoryCompleteness, data: dataProgramCategoryCompleteness } = useQuery<
+    hasura.GET_PROGRAM_CATEGORY_COMPLETENESS,
+    hasura.GET_PROGRAM_CATEGORY_COMPLETENESSVariables
+  >(
     gql`
       query GET_PROGRAM_CATEGORY_COMPLETENESS($appId: String!) {
         program_category_completeness(where: { category: { app_id: { _eq: $appId } } }) {
