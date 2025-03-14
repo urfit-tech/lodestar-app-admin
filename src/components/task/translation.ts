@@ -12,6 +12,14 @@ const taskMessages = {
     },
   }),
 
+  MemberTaskAdminBlock: defineMessages({
+    switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
+    switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
+    executor: { id: 'member.label.executor', defaultMessage: '執行者' },
+    author: { id: 'member.label.author', defaultMessage: '建立者' },
+    group: { id: 'member.label.group', defaultMessage: 'Group' },
+  }),
+
   MeetingLinkStrategy: defineMessages({
     notInMeetingPeriod: {
       id: 'task.MeetingLinkStrategy.notInMeetingPeriod',

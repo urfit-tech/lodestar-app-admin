@@ -1,5 +1,5 @@
 // organize-imports-ignore
-import { gql, useApolloClient, useQuery } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import { FileAddOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -7,11 +7,9 @@ import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Too
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import moment from 'moment'
-import dayjs from 'dayjs'
-import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import { Box } from '@chakra-ui/react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -25,20 +23,13 @@ import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
-import { useMemberTask, useMemberTaskCollection } from '../../hooks/task'
+import { useMemberTaskCollection } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
 import PermissionGroupSelector from '../form/PermissionGroupSelector'
 import { MeetingError, MeetingLinkStrategyFactory, MeetingServiceType } from './meetingLinkStrategy'
 import taskMessages from './translation'
-
-const messages = defineMessages({
-  switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
-  switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
-  executor: { id: 'member.label.executor', defaultMessage: '執行者' },
-  author: { id: 'member.label.author', defaultMessage: '建立者' },
-})
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -109,6 +100,7 @@ export type FieldFilter = {
   createdAt?: Date[]
   status?: MemberTaskProps['status']
   permissionGroupId?: string
+  group?: string
 }
 
 const MemberTaskAdminBlock: React.FC<{
@@ -148,6 +140,11 @@ const MemberTaskAdminBlock: React.FC<{
       orderBy,
       limit: display === 'table' ? 10 : undefined,
     })
+
+  const groupList = Array.from(
+    new Set([...executors, ...authors].map(v => v.group).filter(group => group !== undefined && group !== null)),
+  )
+
   const { insertMemberNote } = useMutateMemberNote()
 
   useEffect(() => {
@@ -585,7 +582,7 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'executor',
-      title: formatMessage(messages.executor),
+      title: formatMessage(taskMessages.MemberTaskAdminBlock.executor),
       onCell: onCellClick,
       render: (text, record, index) =>
         record.executor ? (
@@ -599,7 +596,7 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'author',
-      title: formatMessage(messages.author),
+      title: formatMessage(taskMessages.MemberTaskAdminBlock.author),
       onCell: onCellClick,
       render: (text, record, index) =>
         record.author ? (
@@ -619,7 +616,7 @@ const MemberTaskAdminBlock: React.FC<{
         <div className="d-flex align-item-center flex-wrap">
           <MemberTaskAdminModal
             renderTrigger={({ setVisible }) => (
-              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+              <Button className="mr-3 mt-3" type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                 {formatMessage(memberMessages.ui.newTask)}
               </Button>
             )}
@@ -687,7 +684,7 @@ const MemberTaskAdminBlock: React.FC<{
             allowClear
             placeholder={formatMessage(memberMessages.label.status)}
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            className="mr-3"
+            className="mr-3 mt-3"
             style={{ width: '150px' }}
             value={filter.status}
             onSelect={value => {
@@ -713,9 +710,33 @@ const MemberTaskAdminBlock: React.FC<{
           <Select
             allowClear
             showSearch
-            placeholder={formatMessage(messages.executor)}
+            placeholder={formatMessage(taskMessages.MemberTaskAdminBlock.group)}
+            className="mr-3 mt-3"
+            style={{ width: '150px' }}
+            value={filter.group}
+            onSelect={value => {
+              setFilter(filter => ({
+                ...filter,
+                group: `${value}` || undefined,
+              }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, group: `${value}` || undefined }))
+            }}
+            onClear={() => {
+              setFilter(filter => ({
+                ...filter,
+                group: undefined,
+              }))
+              localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, group: undefined }))
+            }}
+          >
+            {groupList.map(group => !!group && <Select.Option value={group}>{group}</Select.Option>)}
+          </Select>
+          <Select
+            allowClear
+            showSearch
+            placeholder={formatMessage(taskMessages.MemberTaskAdminBlock.executor)}
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            className="mr-3"
+            className="mr-3 mt-3"
             style={{ width: '150px' }}
             value={filter.executor}
             onSelect={value => {
@@ -733,18 +754,20 @@ const MemberTaskAdminBlock: React.FC<{
               localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, executor: undefined }))
             }}
           >
-            {executors.map(executor => (
-              <Select.Option key={executor.id} value={executor.name}>
-                {executor.name}
-              </Select.Option>
-            ))}
+            {executors
+              .filter(executor => (filter.group ? executor.group?.includes(filter.group) : true))
+              .map(executor => (
+                <Select.Option key={executor.id} value={executor.name}>
+                  {executor.name}
+                </Select.Option>
+              ))}
           </Select>
           <Select
             allowClear
             showSearch
-            placeholder={formatMessage(messages.author)}
+            placeholder={formatMessage(taskMessages.MemberTaskAdminBlock.author)}
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            className="mr-3"
+            className="mr-3 mt-3"
             style={{ width: '150px' }}
             value={filter.author}
             onSelect={value => {
@@ -762,14 +785,16 @@ const MemberTaskAdminBlock: React.FC<{
               localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, author: undefined }))
             }}
           >
-            {authors.map(author => (
-              <Select.Option key={author.id} value={author.name}>
-                {author.name}
-              </Select.Option>
-            ))}
+            {authors
+              .filter(author => (filter.group ? author.group?.includes(filter.group) : true))
+              .map(author => (
+                <Select.Option key={author.id} value={author.name}>
+                  {author.name}
+                </Select.Option>
+              ))}
           </Select>
           <Button
-            className="mb-3"
+            className="mb-3 mt-3"
             onClick={() => {
               const currentDisplay = display === 'table' ? 'calendar' : 'table'
               setFilter(filter => ({ executor: filter.executor, status: filter.status }))
@@ -777,7 +802,9 @@ const MemberTaskAdminBlock: React.FC<{
               localStorage.setItem('memberTaskDisplay', currentDisplay)
             }}
           >
-            {display === 'table' ? formatMessage(messages.switchCalendar) : formatMessage(messages.switchTable)}
+            {display === 'table'
+              ? formatMessage(taskMessages.MemberTaskAdminBlock.switchCalendar)
+              : formatMessage(taskMessages.MemberTaskAdminBlock.switchTable)}
           </Button>
         </div>
       </div>

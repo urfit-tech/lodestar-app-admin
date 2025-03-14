@@ -410,6 +410,7 @@ const MemberContractCreationForm: React.FC<
     isMemberZeroTax: boolean
     targetProduct: SingleContractProduct | undefined
     setTargetProduct: Dispatch<SetStateAction<SingleContractProduct | undefined>>
+    isAccountReceivableAvailable: boolean
   }
 > = memo(
   ({
@@ -430,6 +431,7 @@ const MemberContractCreationForm: React.FC<
     isMemberZeroTax,
     targetProduct,
     setTargetProduct,
+    isAccountReceivableAvailable,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
@@ -626,10 +628,6 @@ const MemberContractCreationForm: React.FC<
       }
     }, [customPrice, isMemberZeroTax, targetProduct?.price, customTotalPrice, category])
 
-    console.log({ targetProduct })
-    console.log({ category })
-    console.log({ products })
-    console.log({ filterProducts })
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
@@ -1508,7 +1506,7 @@ const MemberContractCreationForm: React.FC<
             {enabledModules.account_receivable && (
               <Form.Item name="accountReceivable">
                 <Checkbox
-                  disabled={!memberType || !/^B|G/.test(memberType.trim())}
+                  disabled={!memberType || !isAccountReceivableAvailable}
                   onChange={e => {
                     form?.setFieldsValue({ accountReceivable: e.target.checked })
                   }}

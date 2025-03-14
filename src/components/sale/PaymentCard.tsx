@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { useOrderReceivableStatusQuery, useSetOrderToReceivableStatusCommand } from '../../hooks/orderReceivable'
+import { memberAccountReceivableAvailable } from '../../helpers'
+import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -56,10 +57,9 @@ const PaymentCard: React.FC<{
     | 'invoiceOptions'
     | 'invoiceIssuedAt'
     | 'expiredAt'
-  >
+  > & { memberType?: string }
   onRefetch?: () => void
-  onClose: () => void
-}> = ({ payments, order, onRefetch, onClose }) => {
+}> = ({ payments, order, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
@@ -86,18 +86,9 @@ const PaymentCard: React.FC<{
     }
   `)
   const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
-  const { setOrderToReceivableStatusCommand } = useSetOrderToReceivableStatusCommand()
   const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
-  const [isCheckboxDisabled, setCheckboxDisabled] = useState(false)
+  const isAccountReceivableAvailable = order?.memberType ? memberAccountReceivableAvailable(order.memberType) : false
 
-  useEffect(() => {
-    if (isAccountReceivable) {
-      setAccountsReceivableChecked(true)
-      setCheckboxDisabled(true)
-    }
-  }, [isAccountReceivable])
-
-  console.log('isAccountReceivable', isAccountReceivable)
   console.dir(notPayYetPaymentLog, { depth: null })
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
@@ -375,14 +366,6 @@ const PaymentCard: React.FC<{
                         const executeCommands = async () => {
                           try {
                             await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-
-                            if (isAccountsReceivableChecked) {
-                              enabledModules.account_receivable &&
-                                (await setOrderToReceivableStatusCommand({
-                                  orderProductId: order.id,
-                                  deliveredAt: new Date(),
-                                }))
-                            }
                           } catch (err) {
                             console.log(err)
                           } finally {
@@ -424,9 +407,9 @@ const PaymentCard: React.FC<{
                 </Select>
                 {enabledModules.account_receivable && (
                   <Checkbox
-                    style={{ marginTop: '16px' }}
+                    style={{ marginTop: '1rem' }}
                     checked={isAccountsReceivableChecked}
-                    disabled={isCheckboxDisabled}
+                    disabled={!isAccountReceivableAvailable || !isAccountReceivable}
                     onChange={e => {
                       const isChecked = e.target.checked
                       setAccountsReceivableChecked(isChecked)
