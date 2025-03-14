@@ -775,21 +775,23 @@ export const useMembers = (authToken: string, limit: number, filter?: FieldFilte
     nextToken,
   }
 }
+export const GetMemberPhones =  gql`
+      query GetMemberPhones($memberIdList: [String!]) {
+        member_phone(where: { member_id: { _in: $memberIdList } }) {
+          id
+          member_id
+          phone
+    is_valid
+        }
+      }
+`
 
 export const useMemberCollection = (members: MemberCollectionProps[]) => {
   const { loading: loadingMemberPhones, data: memberPhonesData } = useQuery<
     hasura.GetMemberPhones,
     hasura.GetMemberPhonesVariables
   >(
-    gql`
-      query GetMemberPhones($memberIdList: [String!]) {
-        member_phone(where: { member_id: { _in: $memberIdList } }) {
-          id
-          member_id
-          phone
-        }
-      }
-    `,
+    GetMemberPhones,
     { variables: { memberIdList: members.map(member => member.id) } },
   )
 
