@@ -146,8 +146,8 @@ const MemberPhoneModal: React.FC<{
             }
           }),
         )
-        await refetchMemberPhone()
       }
+      await refetchMemberPhone()
     } catch (err) {
       console.log(err)
     } finally {
