@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Input, List } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CommonTitleMixin } from 'lodestar-app-element/src/components/common'
@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, salesMessages } from '../../helpers/translation'
+import { ManagerLead } from '../../hooks/sales'
 import AdminModal from '../admin/AdminModal'
 import saleMessages from './translation'
 
@@ -41,8 +42,9 @@ const MemberPhoneModal: React.FC<{
     isValid: boolean
   }[]
   memberId: string
-  onLeadRefetch: () => Promise<void>
-}> = ({ onCancel, onLeadRefetch, visible, phones, memberId }) => {
+  salesLead?: ManagerLead
+  onSaleLeadChange: (data: ManagerLead) => void
+}> = ({ onCancel, salesLead, onSaleLeadChange, phones, memberId, visible }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -75,6 +77,24 @@ const MemberPhoneModal: React.FC<{
     }
   `)
 
+  const memberPhoneGqlString = gql`
+    query MemberPhoneGqlString($memberId: String!) {
+      member(where: { id: { _eq: $memberId } }) {
+        id
+        member_phones {
+          is_valid
+          phone
+        }
+      }
+    }
+  `
+  const [
+    refetchMemberPhone,
+    { error: refetchMemberPhoneError, loading: refetchMemberPhoneLoading, data: refetchedMemberPhoneData },
+  ] = useLazyQuery(memberPhoneGqlString, {
+    variables: { memberId },
+  })
+
   const handleCancel = () => {
     onCancel()
     setPhoneNumbersToUpdate([])
@@ -83,15 +103,14 @@ const MemberPhoneModal: React.FC<{
   }
 
   const handleSubmit = async () => {
-    await form.validateFields()
-    const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
-    const isValidNewPhone = newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
-    if (!isValidNewPhone && phoneNumbersToUpdate.length === 0) {
-      return
-    }
-    if (isValidNewPhone) {
-      setIsSubmitting(true)
-      try {
+    try {
+      await form.validateFields()
+      const newPhones: { phoneNumber: string }[] = form.getFieldValue('phone') || []
+      const isValidNewPhone =
+        newPhones.filter(phone => phone?.phoneNumber.trim()).length !== 0 || newPhones.length !== 0
+
+      if (isValidNewPhone) {
+        setIsSubmitting(true)
         await insertMemberPhone({
           variables: {
             phones: newPhones
@@ -99,43 +118,71 @@ const MemberPhoneModal: React.FC<{
               .map(phone => ({ member_id: memberId, phone: phone.phoneNumber.trim() })),
           },
         })
-        onLeadRefetch()
-        handleCancel()
-        setIsSubmitting(false)
-        form.resetFields()
-      } catch (err) {
-        console.log(err)
       }
+
+      if (phoneNumbersToUpdate.length > 0) {
+        setIsSubmitting(true)
+        const validPhonesLength = phones.filter(p => p.isValid).length
+        const inValidPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
+        const validPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => p.isValid).length
+
+        await Promise.all(
+          phoneNumbersToUpdate.map(async phone => {
+            try {
+              if (
+                validPhoneNumbersToUpdateLength === 0 &&
+                validPhonesLength - inValidPhoneNumbersToUpdateLength <= 0 &&
+                !isValidNewPhone
+              ) {
+                return await updateMemberMangerId({
+                  variables: { memberId, mangerId: null },
+                })
+              }
+              return await updateMemberPhone({
+                variables: { memberId, phoneNumber: phone.phoneNumber, isValid: phone.isValid },
+              })
+            } catch (err) {
+              console.log(err)
+            }
+          }),
+        )
+      }
+      await refetchMemberPhone()
+    } catch (err) {
+      console.log(err)
+    } finally {
+      handleCancel()
+      setIsSubmitting(false)
+      setPhoneNumbersToUpdate([])
     }
-    if (phoneNumbersToUpdate.length > 0) {
-      setIsSubmitting(true)
-      const validPhonesLength = phones.filter(p => p.isValid).length
-      const inValidPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => !p.isValid).length
-      const validPhoneNumbersToUpdateLength = phoneNumbersToUpdate.filter(p => p.isValid).length
-      phoneNumbersToUpdate.map(async phone => {
-        try {
-          if (
-            validPhoneNumbersToUpdateLength === 0 &&
-            validPhonesLength - inValidPhoneNumbersToUpdateLength <= 0 &&
-            !isValidNewPhone
-          ) {
-            await updateMemberMangerId({
-              variables: { memberId, mangerId: null },
-            })
+  }
+
+  if (refetchMemberPhoneLoading) return <p>Loading ...</p>
+  if (refetchMemberPhoneError) return <p>`Error! ${refetchMemberPhoneError}`</p>
+
+  if (refetchedMemberPhoneData) {
+    const newMemberPhone = refetchedMemberPhoneData?.member?.[0]?.member_phones?.map(
+      (newPhone: { phone: string; is_valid: boolean }) => ({ phoneNumber: newPhone.phone, isValid: newPhone.is_valid }),
+    )
+
+    const memberData =
+      salesLead?.salesLeadMembers.map(member => {
+        if (member.id === memberId) {
+          return {
+            ...member,
+            phones: newMemberPhone,
           }
-          await updateMemberPhone({
-            variables: { memberId, phoneNumber: phone.phoneNumber, isValid: phone.isValid },
-          })
-        } catch (err) {
-          console.log(err)
-        } finally {
-          onLeadRefetch()
-          handleCancel()
-          setIsSubmitting(false)
-          setPhoneNumbersToUpdate([])
         }
+        return member
+      }) || []
+
+    salesLead &&
+      onSaleLeadChange({
+        ...salesLead,
+        salesLeadMembers: memberData,
       })
-    }
+    onCancel()
+    return <></>
   }
 
   return (
