@@ -93,6 +93,7 @@ const MemberPhoneModal: React.FC<{
     { error: refetchMemberPhoneError, loading: refetchMemberPhoneLoading, data: refetchedMemberPhoneData },
   ] = useLazyQuery(memberPhoneGqlString, {
     variables: { memberId },
+    fetchPolicy: 'network-only',
   })
 
   const handleCancel = () => {
