@@ -582,8 +582,8 @@ const MemberContractCreationForm: React.FC<
     const getTargetProduct = (category: Category) => products.find(p => p.title === category.name)
     const getTargetProductPrice = (product: SingleContractProduct | undefined) =>
       (product?.price ?? 0) > 0 ? product?.price ?? 0 : calculateMinPrice(category, weeklyBatch, totalAmount)
-    const getTargetProductTotalPrice = (product: SingleContractProduct | undefined) =>
-      (getTargetProductPrice(product) ?? 0) * totalAmount
+    const getTargetProductTotalPrice = (product: SingleContractProduct | undefined, amount: number = totalAmount) =>
+      (getTargetProductPrice(product) ?? 0) * amount
     const [customPrice, setCustomPrice] = useState<number>(getTargetProductPrice(targetProduct))
     const [customTotalPrice, setCustomTotalPrice] = useState(getTargetProductTotalPrice(targetProduct))
     const [newProductName, setNewProductName] = useState('')
@@ -600,12 +600,12 @@ const MemberContractCreationForm: React.FC<
       setCustomPrice(Math.floor(value) / totalAmount)
     }
 
-    const handleCategoryChange = (category: Category) => {
+    const handleCategoryChange = (category: Category, amount: number = totalAmount) => {
       setCategory(category)
       const targetProduct = getTargetProduct(category)
       setTargetProduct(targetProduct)
       setCustomPrice(getTargetProductPrice(targetProduct))
-      setCustomTotalPrice(getTargetProductTotalPrice(targetProduct))
+      setCustomTotalPrice(getTargetProductTotalPrice(targetProduct, amount))
     }
 
     const isPriceEditable =
@@ -695,24 +695,39 @@ const MemberContractCreationForm: React.FC<
                         key={v.title}
                         type={v.title === category?.product ? 'primary' : undefined}
                         onClick={() => {
-                          handleCategoryChange({
-                            language: category.language,
-                            product: v.title,
-                            programType: category.programType || '標準時數',
-                            classMode: category.classMode || '內課',
-                            classType: category.classType || '個人班',
-                            locationType: category.locationType || '海內',
-                            languageType: category.languageType || '英文',
-                            project:
-                              v.title !== '註冊費' && v.title !== '學費'
-                                ? (
-                                    CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
-                                      p => p.language === (category as { language: string }).language,
-                                    ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
-                                  )?.products.find(p => p.title === v.title)?.projects[0]?.title
-                                : undefined,
-                            name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
-                          })
+                          const defaultTotalAmount =
+                            v.title === '學費'
+                              ? category.language === '中文'
+                                ? 60
+                                : category.language === '外文'
+                                ? 10
+                                : category.language === '師資班'
+                                ? 26
+                                : category.language === '方言'
+                                ? 60
+                                : 60
+                              : 1
+                          handleCategoryChange(
+                            {
+                              language: category.language,
+                              product: v.title,
+                              programType: category.programType || '標準時數',
+                              classMode: category.classMode || '內課',
+                              classType: category.classType || '個人班',
+                              locationType: category.locationType || '海內',
+                              languageType: category.languageType || '英文',
+                              project:
+                                v.title !== '註冊費' && v.title !== '學費'
+                                  ? (
+                                      CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
+                                        p => p.language === (category as { language: string }).language,
+                                      ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
+                                    )?.products.find(p => p.title === v.title)?.projects[0]?.title
+                                  : undefined,
+                              name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
+                            },
+                            defaultTotalAmount,
+                          )
                           setWeeklyBatch(
                             category.language === '中文'
                               ? 10
@@ -724,17 +739,7 @@ const MemberContractCreationForm: React.FC<
                               ? 10
                               : 10,
                           )
-                          setTotalAmount(
-                            category.language === '中文'
-                              ? 60
-                              : category.language === '外文'
-                              ? 10
-                              : category.language === '師資班'
-                              ? 26
-                              : category.language === '方言'
-                              ? 60
-                              : 60,
-                          )
+                          setTotalAmount(defaultTotalAmount)
                           setNewProductName('')
                           setZeroTaxPrice(0)
                         }}
