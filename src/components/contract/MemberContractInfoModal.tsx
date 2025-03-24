@@ -25,13 +25,13 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
   const { formatMessage } = useIntl()
   const { formatCurrency } = useCurrency()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  console.log(memberContract.orderProducts)
   return (
     <Box>
       <Button p="0" variant="ghost" color={theme.colors.primary[500]} rightIcon={<FaAngleRight />} onClick={onOpen}>
         {formatMessage(contractMessages.MemberContractInfoModal.viewProduct)}
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
         <ModalOverlay />
         <ModalContent p="1rem">
           <ModalHeader>{memberContract.title}</ModalHeader>
@@ -53,42 +53,46 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
             <Flex mb="0.5rem">
               <Box minW="85px">{formatMessage(contractMessages.MemberContractInfoModal.productItems)}：&nbsp;</Box>
               <Box w="100%" h="25vh" overflowY="auto">
-                {Boolean(memberContract.values?.orderProducts.length) ? (
-                  <Box mb="0.5rem" ml="1rem">
+                {memberContract.orderProducts?.length > 0 ? (
+                  <Box mb="0.5rem">
                     <Flex>
-                      <Box>【{formatMessage(contractMessages['*'].product)}】</Box>
-                      <Box> x {memberContract.values?.orderProducts.length}</Box>
+                      <Box ml="1rem">【{formatMessage(contractMessages['*'].product)}】</Box>
+                      <Box> x {memberContract?.orderProducts.length}</Box>
                     </Flex>
-                    {memberContract.values?.orderProducts
+                    {memberContract?.orderProducts
                       .slice()
-                      .sort((a, b) => a.product_id.localeCompare(b.product_id))
-                      .map((orderProduct: { product_id: string; name: string }) => {
-                        const id = orderProduct.product_id
+                      .sort((a, b) => a.productId.localeCompare(b.productId))
+                      .map((orderProduct: { productId: string; name: string }) => {
+                        const id = orderProduct.productId
                         const productType = id?.split('_')?.[0] || ''
                         return (
-                          <Box key={id}>
-                            【<ProductTypeLabel productType={productType} />】{`${orderProduct.name}`}
-                          </Box>
+                          <Flex key={id}>
+                            <Box whiteSpace="nowrap" display="inline-block">
+                              【<ProductTypeLabel productType={productType} />】
+                            </Box>
+                            <Box whiteSpace="nowrap" display="inline-block">
+                              {orderProduct.name}
+                            </Box>
+                          </Flex>
                         )
                       })}
                   </Box>
                 ) : null}
 
-                {Boolean(memberContract.coupons.length) ? (
-                  <Box mt="0.5rem" mb="0.25rem" ml="1rem">
+                {memberContract.coupons?.length > 0 ? (
+                  <Box mt="0.5rem" mb="0.25rem">
                     <Flex>
-                      <Box>【{formatMessage(contractMessages['*'].coupon)}】</Box>
+                      <Box ml="1rem">【{formatMessage(contractMessages['*'].coupon)}】</Box>
                       <Box> x {memberContract.coupons.length}</Box>
                     </Flex>
                     <MemberContractInfoCouponList couponIds={memberContract.coupons.map(coupon => coupon.id)} />
                   </Box>
                 ) : null}
 
-                {Boolean(memberContract.coinLogs.length) &&
-                memberContract.coinLogs.some(coinLog => coinLog.amount > 0) ? (
-                  <Box mt="0.5rem" mb="0.25rem" ml="1rem">
+                {memberContract.coinLogs?.length > 0 && memberContract.coinLogs.some(coinLog => coinLog.amount > 0) ? (
+                  <Box mt="0.5rem" mb="0.25rem">
                     <Flex>
-                      <Box>【{formatMessage(contractMessages['*'].coin)}】</Box>
+                      <Box ml="1rem">【{formatMessage(contractMessages['*'].coin)}】</Box>
                       <Box> x {memberContract.coinLogs.length}</Box>
                     </Flex>
                     {memberContract.coinLogs
@@ -98,9 +102,15 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
                         const title = coinLog.title
                         const amount = coinLog.amount
                         return amount !== 0 ? (
-                          <Box key={id}>
-                            {title} / {coinLog.amount}
-                          </Box>
+                          <Flex key={id}>
+                            <Box whiteSpace="nowrap" display="inline-block">
+                              {title}
+                            </Box>
+                            <Box>&nbsp;/&nbsp;</Box>
+                            <Box whiteSpace="nowrap" display="inline-block">
+                              {coinLog.amount}
+                            </Box>
+                          </Flex>
                         ) : null
                       })}
                   </Box>

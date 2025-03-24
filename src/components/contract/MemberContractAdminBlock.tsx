@@ -62,6 +62,7 @@ const MemberContractAdminBlock: React.FC<{
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
   }
+
   const handleContractRevoke = async (memberContractId: string, values: any) => {
     type Coupon = hasura.coupon_insert_input
 
@@ -238,20 +239,20 @@ const useMemberContracts = (memberId: string) => {
         revokedAt: v.revoked_at && new Date(v.revoked_at),
         createdAt: v.created_at && new Date(v.created_at),
         orderProducts:
-          v.values?.orderProducts.map((orderProduct: ContractWithProducts['orderProducts'][number]) => ({
+          v.values?.orderProducts?.map((orderProduct: ContractValue['orderProducts'][number]) => ({
             productId: orderProduct.product_id,
             name: orderProduct.name,
           })) || [],
         coupons:
-          v.values?.coupons.map((coupon: ContractValue['coupons'][number]) => ({
+          v.values?.coupons?.map((coupon: ContractValue['coupons'][number]) => ({
             id: coupon.id,
             code: coupon.coupon_code?.data.code,
             couponPlanId:
               coupon.coupon_code?.data.coupon_plan?.data.id || coupon.coupon_code?.data?.coupon_plan_id || null,
           })) || [],
         coinLogs: v.values?.coinLogs
-          .filter((coinLog: ContractValue['coinLogs'][number]) => coinLog.amount !== 0)
-          .map((coinLog: ContractValue['coinLogs'][number]) => ({
+          ?.filter((coinLog: ContractValue['coinLogs'][number]) => coinLog.amount !== 0)
+          ?.map((coinLog: ContractValue['coinLogs'][number]) => ({
             id: coinLog.id,
             title: coinLog.title,
             amount: coinLog.amount,

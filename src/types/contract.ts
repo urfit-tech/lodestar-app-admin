@@ -13,7 +13,7 @@ export type Contract = {
 }
 export type ContractWithProducts = Contract & {
   orderProducts: {
-    product_id: string
+    productId: string
     name: string
   }[]
   coinLogs: {

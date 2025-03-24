@@ -1,4 +1,4 @@
-import { Box, SkeletonText } from '@chakra-ui/react'
+import { Flex, Box, SkeletonText } from '@chakra-ui/react'
 import { useCouponListInfo } from '../../hooks/coupon'
 
 const MemberContractInfoCouponList: React.FC<{ couponIds: string[] }> = ({ couponIds }) => {
@@ -21,9 +21,15 @@ const MemberContractInfoCouponList: React.FC<{ couponIds: string[] }> = ({ coupo
     <Box>
       {coupons.map(coupon => {
         return (
-          <Box key={coupon.id}>
-            {coupon.planTitle} / {coupon.code}
-          </Box>
+          <Flex key={coupon.id}>
+            <Box whiteSpace="nowrap" display="inline-block">
+              {coupon.planTitle}
+            </Box>
+            <Box>&nbsp;/&nbsp;</Box>
+            <Box whiteSpace="nowrap" display="inline-block">
+              {coupon.code}
+            </Box>
+          </Flex>
         )
       })}
     </Box>
