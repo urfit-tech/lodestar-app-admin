@@ -361,6 +361,7 @@ const MemberContractCreationBlock: React.FC<{
                   .reduce((sum, product) => sum + product.amount, 0) * 0.1,
               ),
               options,
+              paymentDueDate: fieldValue.paymentDueDate,
             },
           },
         })
@@ -385,6 +386,7 @@ const MemberContractCreationBlock: React.FC<{
     const isOrderSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
     const isPaymentSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
     const isOrderProductsDeliveredByDefault = isPaidByCashWithInvoiceAutoIssued || isReceivable
+    const expiredAt = moment(fieldValue.paymentDueDate).toDate()
 
     await axios
       .post(
@@ -407,6 +409,7 @@ const MemberContractCreationBlock: React.FC<{
           isOrderSetSuccessByDefault,
           isPaymentSetSuccessByDefault,
           isOrderProductsDeliveredByDefault,
+          expiredAt: expiredAt,
         },
         {
           headers: {
