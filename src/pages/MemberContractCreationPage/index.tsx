@@ -350,7 +350,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const serviceStartedAt = moment().toDate()
   let serviceEndedAt = endedAt
   for (const s of appCustom.serviceExtend.sort((a, b) => (a.threshold > b.threshold ? -1 : 1))) {
-    if (totalPrice > s.threshold) {
+    if (totalPrice >= s.threshold) {
       serviceEndedAt = moment(endedAt).add(s.periodAmount, s.periodType).toDate()
       break
     }
