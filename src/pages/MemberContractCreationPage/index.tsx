@@ -162,7 +162,7 @@ const MemberContractCreationPage: React.VFC = () => {
   // const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
   const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
   const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
-
+  console.log('contractsOptions', contractsOptions)
   // calculate contract discounts
   const contractDiscounts: ContractItem[] = []
   const discountAmount = {
@@ -182,7 +182,7 @@ const MemberContractCreationPage: React.VFC = () => {
       discountAmount['studentPromotion']) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
 
-  if (discountAmount['referral']) {
+  if (discountAmount['referral'] && contractsOptions?.couponPlanId['referral']) {
     contractDiscounts.push({
       id: contractsOptions.couponPlanId['referral'],
       type: 'referralDiscount',
@@ -193,7 +193,7 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: mainProducts.length,
     })
   }
-  if (discountAmount['studentPromotion']) {
+  if (discountAmount['studentPromotion'] && contractsOptions?.couponPlanId['student']) {
     contractDiscounts.push({
       id: contractsOptions.couponPlanId['student'],
       type: 'promotionDiscount',
@@ -204,7 +204,7 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     })
   }
-  if (Math.ceil(discountAmount['groupPromotion'])) {
+  if (Math.ceil(discountAmount['groupPromotion']) && contractsOptions?.couponPlanId['groupPromotion']) {
     const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
       price: Math.ceil(discountAmount['groupPromotion']),
       type: 'promotionDiscount',
@@ -213,21 +213,21 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     }
 
-    if (mainProducts.length === 2) {
+    if (mainProducts.length === 2 && contractsOptions?.couponPlanId['tenPercentOff']) {
       contractDiscounts.push({
         id: contractsOptions.couponPlanId['tenPercentOff'],
         name: '任選兩件折抵',
         ...promotionDiscount,
       })
     }
-    if (mainProducts.length === 3) {
+    if (mainProducts.length === 3 && contractsOptions?.couponPlanId['fifteenPercentOff']) {
       contractDiscounts.push({
         id: contractsOptions.couponPlanId['fifteenPercentOff'],
         name: '任選三件折抵',
         ...promotionDiscount,
       })
     }
-    if (mainProducts.length >= 4) {
+    if (mainProducts.length >= 4 && contractsOptions?.couponPlanId['twentyPercentOff']) {
       contractDiscounts.push({
         id: contractsOptions.couponPlanId['twentyPercentOff'],
         name: '任選四件折抵',
@@ -235,7 +235,7 @@ const MemberContractCreationPage: React.VFC = () => {
       })
     }
   }
-  if (fieldValue.hasDeposit) {
+  if (fieldValue.hasDeposit && contractsOptions?.couponPlanId['deposit']) {
     contractDiscounts.push({
       id: contractsOptions.couponPlanId['deposit'],
       type: 'depositDiscount',
