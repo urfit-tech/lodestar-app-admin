@@ -1544,7 +1544,6 @@ const MemberContractCreationForm: React.FC<
                 }}
               >
                 {paymentModes
-                  .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
                       (!!isMemberTypeBG &&
@@ -1555,7 +1554,7 @@ const MemberContractCreationForm: React.FC<
                           '課前頭款+自訂分期',
                           '開課後自訂分期',
                         ].includes(mode)) ||
-                      (!isMemberTypeBG && ['全額付清', '訂金+尾款'].includes(mode)),
+                      (!isMemberTypeBG && ['全額付清'].includes(mode)),
                   )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>

@@ -20,7 +20,6 @@ import MemberDescriptionBlock from './MemberDescriptionBlock'
 const paymentMethods = ['藍新', '銀行匯款', '現金', '實體刷卡', '遠端輸入卡號'] as const
 const paymentModes = [
   '全額付清',
-  '訂金+尾款',
   '先上課後月結實支實付',
   '先上課後月結固定金額',
   '課前頭款+自訂分期',
