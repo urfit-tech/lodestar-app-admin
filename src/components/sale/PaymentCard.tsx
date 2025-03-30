@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -85,11 +85,11 @@ const PaymentCard: React.FC<{
       }
     }
   `)
-  const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
-  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
+  const { loading: loadingOrderReceivableStatus, isAccountReceivable } = useOrderReceivableStatusQuery(order.id)
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(
+    loadingOrderReceivableStatus ? false : isAccountReceivable,
+  )
   const isAccountReceivableAvailable = order?.memberType ? memberAccountReceivableAvailable(order.memberType) : false
-
-  console.dir(notPayYetPaymentLog, { depth: null })
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -373,7 +373,6 @@ const PaymentCard: React.FC<{
                             onRefetch?.()
                           }
                         }
-
                         executeCommands()
                       }}
                     >
@@ -409,7 +408,7 @@ const PaymentCard: React.FC<{
                   <Checkbox
                     style={{ marginTop: '1rem' }}
                     checked={isAccountsReceivableChecked}
-                    disabled={!isAccountReceivableAvailable || !isAccountReceivable}
+                    disabled={!isAccountReceivableAvailable || isAccountReceivable}
                     onChange={e => {
                       const isChecked = e.target.checked
                       setAccountsReceivableChecked(isChecked)
