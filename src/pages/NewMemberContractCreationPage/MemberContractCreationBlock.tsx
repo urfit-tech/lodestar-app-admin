@@ -13,6 +13,7 @@ import styled from 'styled-components'
 import { ContractInfo, ContractSales, FieldProps } from '.'
 import { InvoiceRequest } from '../../components/sale/InvoiceCard'
 import hasura from '../../hasura'
+import { useMutateMemberProperty, useProperty } from '../../hooks/member'
 import pageMessages from '../translation'
 import { PaymentCompany } from './MemberContractCreationForm'
 
@@ -48,6 +49,8 @@ const MemberContractCreationBlock: React.FC<{
   const [addMemberContract] = useMutation<hasura.CREATE_MEMBER_CONTRACT, hasura.CREATE_MEMBER_CONTRACTVariables>(
     CREATE_MEMBER_CONTRACT,
   )
+  const { updateMemberProperty } = useMutateMemberProperty()
+  const { properties } = useProperty()
   const [loading, setLoading] = useState(false)
   const history = useHistory()
 
@@ -417,6 +420,27 @@ const MemberContractCreationBlock: React.FC<{
         if (res.data.code === 'SUCCESS') {
           message.success(`訂單建立成功: ${res.data.result.orderId}`)
           history.push(`/members/${member.id}/order`)
+
+          const uniformNumberPropertyId = properties.find(p => p.name === '統一編號')?.id
+          const uniformTitlePropertyId = properties.find(p => p.name === '發票抬頭')?.id
+          if (!!uniformNumberPropertyId && !!uniformTitlePropertyId) {
+            updateMemberProperty({
+              variables: {
+                memberProperties: [
+                  {
+                    member_id: member.id,
+                    property_id: uniformNumberPropertyId,
+                    value: fieldValue.uniformNumber,
+                  },
+                  {
+                    member_id: member.id,
+                    property_id: uniformTitlePropertyId,
+                    value: fieldValue.uniformTitle,
+                  },
+                ],
+              },
+            })
+          }
 
           // axios
           //   .post(
