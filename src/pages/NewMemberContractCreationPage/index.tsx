@@ -193,6 +193,8 @@ const MemberContractCreationPage: React.VFC = () => {
               invoiceEmail: member.email,
               destinationEmail: member.email,
               language: 'zh-tw',
+              uniformNumber: member.properties.find(p => p.name === '統一編號')?.value,
+              uniformTitle: member.properties.find(p => p.name === '發票抬頭')?.value,
             }}
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
