@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -64,6 +65,8 @@ type FieldProps = {
   language: string
   destinationEmail: string
   accountReceivable: boolean
+  paymentDueDate: moment.Moment | null
+  expiredAt: Date
 }
 
 type ContractInfo = {
@@ -176,7 +179,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
   const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
-
+  const paymentCreatedAt = moment(dayjs().add(30, 'day').toDate()).format('YYYY-MM-DD')
   return (
     <ContractLayout member={member} isMemberTypeBG={isMemberTypeBG}>
       <div className="container py-5">
@@ -193,6 +196,7 @@ const MemberContractCreationPage: React.VFC = () => {
               invoiceEmail: member.email,
               destinationEmail: member.email,
               language: 'zh-tw',
+              paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD'),
               uniformNumber: member.properties.find(p => p.name === '統一編號')?.value,
               uniformTitle: member.properties.find(p => p.name === '發票抬頭')?.value,
             }}
