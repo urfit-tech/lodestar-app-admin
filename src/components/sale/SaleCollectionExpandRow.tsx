@@ -95,6 +95,7 @@ type FieldProps = {
 }
 
 type IssueInvoiceResult = {
+  Index: number
   Status: string
   Message: string
   Result?: {
@@ -471,7 +472,9 @@ const SaleCollectionExpandRow = ({
             {issueInvoiceResults?.map(i => {
               return (
                 <div>
-                  {i?.Status === 'SUCCESS' ? '發票開立成功：' + i.Result?.InvoiceNumber : '發票開立失敗：' + i?.Message}
+                  {i?.Status === 'SUCCESS'
+                    ? '發票開立成功：' + i.Result?.InvoiceNumber
+                    : `第 ${i.Index} 發票開立失敗：` + i?.Message}
                 </div>
               )
             })}
@@ -653,8 +656,9 @@ const ManualIssueInvoiceModal: React.VFC<{
                     }
                   })
                   .catch(err => {
-                    console.log(err)
+                    console.log(i + 1, err)
                     afterIssued({
+                      Index: i + 1,
                       Status: 'ERROR',
                       Message: err.message,
                     })
