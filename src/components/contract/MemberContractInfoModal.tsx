@@ -25,7 +25,7 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
   const { formatMessage } = useIntl()
   const { formatCurrency } = useCurrency()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  console.log(memberContract.orderProducts)
+
   return (
     <Box>
       <Button p="0" variant="ghost" color={theme.colors.primary[500]} rightIcon={<FaAngleRight />} onClick={onOpen}>
