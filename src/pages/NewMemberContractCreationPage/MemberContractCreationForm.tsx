@@ -1645,7 +1645,7 @@ const MemberContractCreationForm: React.FC<
                 value={moment(paymentDueDate)}
                 onChange={date => {
                   if (date) {
-                    setPaymentDueDate(date.format('YYYY-MM-DD'))
+                    setPaymentDueDate(new Date(date.format('YYYY-MM-DD')))
                   }
                 }}
                 disabledDate={current => {
