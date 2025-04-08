@@ -68,20 +68,23 @@ export const useCouponCollection = (memberId: string) => {
 }
 
 export const useCouponListInfo = (couponIds: string[]) => {
-  const { loading, data, error } = useQuery<hasura.GetCouponListInfo, hasura.GetCouponListInfoVariables>(gql`
-    query GetCouponListInfo($couponIds: [uuid!]) {
-      coupon(where: { id: { _in: $couponIds } }) {
-        id
-        coupon_code {
-          code
-          coupon_plan {
-            id
-            title
+  const { loading, data, error } = useQuery<hasura.GetCouponListInfo, hasura.GetCouponListInfoVariables>(
+    gql`
+      query GetCouponListInfo($couponIds: [uuid!]) {
+        coupon(where: { id: { _in: $couponIds } }) {
+          id
+          coupon_code {
+            code
+            coupon_plan {
+              id
+              title
+            }
           }
         }
       }
-    }
-  `)
+    `,
+    { variables: { couponIds } },
+  )
   const coupons: { id: string; code: string; planTitle: string }[] =
     data?.coupon.map(coupon => ({
       id: coupon.id,
