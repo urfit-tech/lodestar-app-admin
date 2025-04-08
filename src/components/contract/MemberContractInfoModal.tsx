@@ -55,8 +55,8 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
               <Box w="100%" h="25vh" overflowY="auto">
                 {memberContract.orderProducts?.length > 0 ? (
                   <Box mb="0.5rem">
-                    <Flex>
-                      <Box ml="1rem">【{formatMessage(contractMessages['*'].product)}】</Box>
+                    <Flex fontWeight="bold" mb="0.125rem">
+                      <Box>【{formatMessage(contractMessages['*'].product)}】</Box>
                       <Box> x {memberContract?.orderProducts.length}</Box>
                     </Flex>
                     {memberContract?.orderProducts
@@ -81,8 +81,8 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
 
                 {memberContract.coupons?.length > 0 ? (
                   <Box mt="0.5rem" mb="0.25rem">
-                    <Flex>
-                      <Box ml="1rem">【{formatMessage(contractMessages['*'].coupon)}】</Box>
+                    <Flex fontWeight="bold" mb="0.125rem">
+                      <Box>【{formatMessage(contractMessages['*'].coupon)}】</Box>
                       <Box> x {memberContract.coupons.length}</Box>
                     </Flex>
                     <MemberContractInfoCouponList couponIds={memberContract.coupons.map(coupon => coupon.id)} />
@@ -91,8 +91,8 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
 
                 {memberContract.coinLogs?.length > 0 && memberContract.coinLogs.some(coinLog => coinLog.amount > 0) ? (
                   <Box mt="0.5rem" mb="0.25rem">
-                    <Flex>
-                      <Box ml="1rem">【{formatMessage(contractMessages['*'].coin)}】</Box>
+                    <Flex fontWeight="bold" mb="0.125rem">
+                      <Box>【{formatMessage(contractMessages['*'].coin)}】</Box>
                       <Box> x {memberContract.coinLogs.length}</Box>
                     </Flex>
                     {memberContract.coinLogs
@@ -102,7 +102,7 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
                         const title = coinLog.title
                         const amount = coinLog.amount
                         return amount !== 0 ? (
-                          <Flex key={id}>
+                          <Flex key={id} ml="0.5rem">
                             <Box whiteSpace="nowrap" display="inline-block">
                               {title}
                             </Box>
