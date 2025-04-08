@@ -136,7 +136,6 @@ export const DefaultLayoutHeader: React.FC<{
   const languagesList = sortedLanguagesList.length > 0 ? sortedLanguagesList : SUPPORTED_LOCALES
 
   const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
-  const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
   const isVideoDurationExceedsUsage =
     appPlan.options.maxVideoDuration &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
@@ -145,40 +144,10 @@ export const DefaultLayoutHeader: React.FC<{
     appPlan.options.maxVideoWatch &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
       appPlan.options.maxVideoWatch
-  const closeSiteAt = isSiteExpired
-    ? dayjs()
-    : appOptions?.close_site_at
-    ? dayjs(appOptions.close_site_at)
-    : dayjs().add(15, 'days').diff(dayjs(appEndedAt)) < 0
-    ? dayjs().add(15, 'days').endOf('day')
-    : dayjs(appEndedAt).endOf('day')
-
-  useEffect(() => {
-    if (
-      currentUserRole === 'app-owner' &&
-      !appPlanLoading &&
-      ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
-        isSiteExpired ||
-        isSiteExpiringSoon ||
-        isVideoDurationExceedsUsage ||
-        isWatchedSecondsExceedsUsage)
-    ) {
-      updateAppOptions({
-        variables: {
-          appId: appId,
-          options: {
-            close_site_at:
-              !isSiteExpired && !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
-                ? undefined
-                : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          },
-        },
-      })
-      if (isSiteExpired) {
-        window.location.reload()
-      }
-    }
-  }, [currentUserRole, appPlanLoading, appOptions, totalVideoDuration, totalWatchedSeconds])
+  const closeSiteAt =
+    isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage
+      ? dayjs().add(15, 'days').endOf('day')
+      : dayjs(appOptions.close_site_at)
 
   let Logo: string | undefined
   try {
