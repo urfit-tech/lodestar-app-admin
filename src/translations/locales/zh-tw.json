@@ -3226,6 +3226,7 @@
   "sale.OrderExportModal.specifyCouponPlan": "指定折價方案",
   "sale.OrderExportModal.specifyVoucherPlan": "指定兌換方案",
   "sale.OrderExportModal.timeRange": "日期範圍",
+  "sale.PaymentCard.accountsReceivable": "應收帳款",
   "sale.OrderExportModal.unknownType": "未知",
   "sale.OrderExportModal.yes": "是",
   "sale.OrderOtherInfoCard.country": "國家",
