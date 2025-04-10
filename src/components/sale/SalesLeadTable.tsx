@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
-import { Text, Link } from '@chakra-ui/react'
+import { Link, Text } from '@chakra-ui/react'
 import { Button, Divider, Dropdown, Input, Menu, message, Table, Tag, Tooltip } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { ColumnProps, ColumnsType, TableProps } from 'antd/lib/table'
@@ -631,7 +631,7 @@ const SalesLeadTable: React.VFC<{
       render: (phones: { phoneNumber: string; isValid: boolean }[], record) => (
         <StyledPhones>
           <div>
-            {phones.map((phone, idx) =>
+            {phones?.map((phone, idx) =>
               !phone.isValid ? (
                 <StyledDelPhone key={idx}>
                   <del>{phone.phoneNumber}</del>
@@ -899,15 +899,16 @@ const SalesLeadTable: React.VFC<{
           }
         />
       )}
-      {selectedMember && (
+      {selectedMember && memberPhoneModalVisible ? (
         <MemberPhoneModal
-          visible={memberPhoneModalVisible}
+          visible={true}
           onCancel={() => setMemberPhoneModalVisible(false)}
-          onLeadRefetch={onRefetch}
           phones={selectedMember.phones || []}
           memberId={selectedMember.id}
+          salesLead={salesLeadMembersData}
+          onSaleLeadChange={onSaleLeadChange}
         />
-      )}
+      ) : null}
       <TableWrapper>
         <b>{title}</b>
         {selectedRowKeys.length > 0 && (

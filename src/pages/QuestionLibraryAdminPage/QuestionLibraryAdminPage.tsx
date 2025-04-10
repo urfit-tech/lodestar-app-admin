@@ -1,9 +1,8 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Form, Input, InputNumber, message, Select, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { sampleSize } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -65,8 +64,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
   const [selectedQuestionGroupIdList, setSelectedQuestionGroupIdList] = useState<string[]>([])
   const [form] = useForm<FieldProps>()
   const { loading, error, refetchQuestionLibrary, questionLibrary } = useQuestionLibrary(questionLibraryId)
-  const { questionLibraryList, refetchQuestionLibraryList, questionLibraryListLoading, questionLibraryListError } =
-    useQuestionLibraryList()
+  const { questionLibraryList, refetchQuestionLibraryList } = useQuestionLibraryList()
   const [createQuestionGroup] = useMutation<hasura.INSERT_QUESTION_GROUP, hasura.INSERT_QUESTION_GROUPVariables>(
     INSERT_QUESTION_GROUP,
   )

@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { Button, Select } from 'antd'
+import { Button, Checkbox, Select } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -10,6 +10,8 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { memberAccountReceivableAvailable } from '../../helpers'
+import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
 import AdminModal from '../admin/AdminModal'
@@ -55,10 +57,9 @@ const PaymentCard: React.FC<{
     | 'invoiceOptions'
     | 'invoiceIssuedAt'
     | 'expiredAt'
-  >
+  > & { memberType?: string }
   onRefetch?: () => void
-  onClose: () => void
-}> = ({ payments, order, onRefetch, onClose }) => {
+}> = ({ payments, order, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
@@ -84,6 +85,11 @@ const PaymentCard: React.FC<{
       }
     }
   `)
+  const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
+  const isAccountReceivableAvailable = order?.memberType ? memberAccountReceivableAvailable(order.memberType) : false
+
+  console.dir(notPayYetPaymentLog, { depth: null })
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -336,12 +342,17 @@ const PaymentCard: React.FC<{
                             ? 'physicalRemoteCredit'
                             : undefined
 
-                        updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-                          .catch(err => console.log(err))
-                          .finally(() => {
+                        const executeCommands = async () => {
+                          try {
+                            await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
+                          } catch (err) {
+                            console.log(err)
+                          } finally {
                             setIsOpenChangePaymentMethodModal(false)
                             onRefetch?.()
-                          })
+                          }
+                        }
+                        executeCommands()
                       }}
                     >
                       {' '}
@@ -373,6 +384,19 @@ const PaymentCard: React.FC<{
                     </Select.Option>
                   ))}
                 </Select>
+                {enabledModules.account_receivable && (
+                  <Checkbox
+                    style={{ marginTop: '1rem' }}
+                    checked={isAccountsReceivableChecked}
+                    disabled={!isAccountReceivableAvailable || !isAccountReceivable}
+                    onChange={e => {
+                      const isChecked = e.target.checked
+                      setAccountsReceivableChecked(isChecked)
+                    }}
+                  >
+                    {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
+                  </Checkbox>
+                )}
               </AdminModal>
             </StyledCard>
           )

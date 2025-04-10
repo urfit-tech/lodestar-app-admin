@@ -410,6 +410,7 @@ const MemberContractCreationForm: React.FC<
     isMemberZeroTax: boolean
     targetProduct: SingleContractProduct | undefined
     setTargetProduct: Dispatch<SetStateAction<SingleContractProduct | undefined>>
+    isAccountReceivableAvailable: boolean
   }
 > = memo(
   ({
@@ -430,12 +431,14 @@ const MemberContractCreationForm: React.FC<
     isMemberZeroTax,
     targetProduct,
     setTargetProduct,
+    isAccountReceivableAvailable,
     ...formProps
   }) => {
     const fieldValue = form?.getFieldsValue()
-
-    const { id: appId, settings } = useApp()
+    const { id: appId, settings, enabledModules } = useApp()
     const { currentMemberId, authToken, currentUserRole } = useAuth()
+    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
+
     const { data: memberPermissionGroups } = useQuery<
       hasura.GetMemberPermissionGroup,
       hasura.GetMemberPermissionGroupVariables
@@ -449,9 +452,6 @@ const MemberContractCreationForm: React.FC<
       `,
       { variables: { memberId: currentMemberId || '' }, skip: !currentMemberId || !authToken },
     )
-
-    const customSetting: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
-
     const [insertAppointmentPlan] = useMutation<
       hasura.CreateAppointmentPlan,
       hasura.CreateAppointmentPlanVariables
@@ -490,7 +490,6 @@ const MemberContractCreationForm: React.FC<
       classType: '個人班',
       locationType: '海內',
     })
-
     const [weeklyBatch, setWeeklyBatch] = useState(10)
     const [week, setWeek] = useState(13)
     const [totalAmount, setTotalAmount] = useState(60)
@@ -583,8 +582,8 @@ const MemberContractCreationForm: React.FC<
     const getTargetProduct = (category: Category) => products.find(p => p.title === category.name)
     const getTargetProductPrice = (product: SingleContractProduct | undefined) =>
       (product?.price ?? 0) > 0 ? product?.price ?? 0 : calculateMinPrice(category, weeklyBatch, totalAmount)
-    const getTargetProductTotalPrice = (product: SingleContractProduct | undefined, amount: number = totalAmount) =>
-      (getTargetProductPrice(product) ?? 0) * amount
+    const getTargetProductTotalPrice = (product: SingleContractProduct | undefined) =>
+      (getTargetProductPrice(product) ?? 0) * totalAmount
     const [customPrice, setCustomPrice] = useState<number>(getTargetProductPrice(targetProduct))
     const [customTotalPrice, setCustomTotalPrice] = useState(getTargetProductTotalPrice(targetProduct))
     const [newProductName, setNewProductName] = useState('')
@@ -601,12 +600,12 @@ const MemberContractCreationForm: React.FC<
       setCustomPrice(Math.floor(value) / totalAmount)
     }
 
-    const handleCategoryChange = (category: Category, amount: number = totalAmount) => {
+    const handleCategoryChange = (category: Category) => {
       setCategory(category)
       const targetProduct = getTargetProduct(category)
       setTargetProduct(targetProduct)
       setCustomPrice(getTargetProductPrice(targetProduct))
-      setCustomTotalPrice(getTargetProductTotalPrice(targetProduct, amount))
+      setCustomTotalPrice(getTargetProductTotalPrice(targetProduct))
     }
 
     const isPriceEditable =
@@ -629,10 +628,6 @@ const MemberContractCreationForm: React.FC<
       }
     }, [customPrice, isMemberZeroTax, targetProduct?.price, customTotalPrice, category])
 
-    console.log({ targetProduct })
-    console.log({ category })
-    console.log({ products })
-    console.log({ filterProducts })
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <AdminBlockTitle>產品清單</AdminBlockTitle>
@@ -700,39 +695,24 @@ const MemberContractCreationForm: React.FC<
                         key={v.title}
                         type={v.title === category?.product ? 'primary' : undefined}
                         onClick={() => {
-                          const defaultTotalAmount =
-                            v.title === '學費'
-                              ? category.language === '中文'
-                                ? 60
-                                : category.language === '外文'
-                                ? 10
-                                : category.language === '師資班'
-                                ? 26
-                                : category.language === '方言'
-                                ? 60
-                                : 60
-                              : 1
-                          handleCategoryChange(
-                            {
-                              language: category.language,
-                              product: v.title,
-                              programType: category.programType || '標準時數',
-                              classMode: category.classMode || '內課',
-                              classType: category.classType || '個人班',
-                              locationType: category.locationType || '海內',
-                              languageType: category.languageType || '英文',
-                              project:
-                                v.title !== '註冊費' && v.title !== '學費'
-                                  ? (
-                                      CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
-                                        p => p.language === (category as { language: string }).language,
-                                      ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
-                                    )?.products.find(p => p.title === v.title)?.projects[0]?.title
-                                  : undefined,
-                              name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
-                            },
-                            defaultTotalAmount,
-                          )
+                          handleCategoryChange({
+                            language: category.language,
+                            product: v.title,
+                            programType: category.programType || '標準時數',
+                            classMode: category.classMode || '內課',
+                            classType: category.classType || '個人班',
+                            locationType: category.locationType || '海內',
+                            languageType: category.languageType || '英文',
+                            project:
+                              v.title !== '註冊費' && v.title !== '學費'
+                                ? (
+                                    CUSTOM_PRODUCT_OPTIONS_CONFIG.find(
+                                      p => p.language === (category as { language: string }).language,
+                                    ) as { products: { title: string; projects: { title: string }[] }[] } | undefined
+                                  )?.products.find(p => p.title === v.title)?.projects[0]?.title
+                                : undefined,
+                            name: v.title === '註冊費' ? `${category.language}_註冊費` : undefined,
+                          })
                           setWeeklyBatch(
                             category.language === '中文'
                               ? 10
@@ -1513,6 +1493,18 @@ const MemberContractCreationForm: React.FC<
                 ))}
               </Select>
             </Form.Item>
+            {enabledModules.account_receivable && (
+              <Form.Item name="accountReceivable">
+                <Checkbox
+                  disabled={!memberType || !isAccountReceivableAvailable}
+                  onChange={e => {
+                    form?.setFieldsValue({ accountReceivable: e.target.checked })
+                  }}
+                >
+                  應收帳款
+                </Checkbox>
+              </Form.Item>
+            )}
           </Descriptions.Item>
 
           <Descriptions.Item

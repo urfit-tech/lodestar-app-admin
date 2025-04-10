@@ -1,9 +1,6 @@
 import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CollapseProps } from 'lodestar-app-element/src/components/collapses/Collapse'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import {
@@ -36,11 +33,7 @@ type FieldProps = {
 
 const CollapseSettings: CraftElementSettings<CollapseProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
-  const { authToken } = useAuth()
-  const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
-  const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleChange = () => {
     form

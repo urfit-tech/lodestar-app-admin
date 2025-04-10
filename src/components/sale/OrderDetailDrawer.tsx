@@ -107,7 +107,6 @@ const OrderDetailDrawer: React.FC<{
                       onRefetch?.()
                       orderDetailRefetch()
                     }}
-                    onClose={onClose}
                   />
                 )}
 
@@ -336,7 +335,6 @@ const OrderDetailDrawer: React.FC<{
                       onRefetch?.()
                       orderDetailRefetch()
                     }}
-                    onClose={onClose}
                   />
                 )}
               </>
@@ -366,6 +364,9 @@ const useOrderDetail = (orderLogId: string | null) => {
             id
             name
             email
+            member_properties(where: { property: { name: { _eq: "會員類型" } } }) {
+              value
+            }
           }
           options
           invoice_options
@@ -435,7 +436,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     },
   )
 
-  const orderLog: { memberId: string } & Pick<
+  const orderLog: { memberId: string; memberType?: string } & Pick<
     OrderLog,
     | 'id'
     | 'status'
@@ -459,6 +460,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     invoiceIssuedAt: orderDetailData?.order_log_by_pk?.invoice_issued_at,
     expiredAt: orderDetailData?.order_log_by_pk?.expired_at,
     memberId: orderDetailData?.order_log_by_pk?.member?.id || '',
+    memberType: orderDetailData?.order_log_by_pk?.member?.member_properties?.[0].value,
   }
 
   const orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[] =
