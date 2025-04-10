@@ -1,6 +1,9 @@
+import { MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Card, message, Skeleton } from 'antd'
+import { Button } from '@chakra-ui/react'
+import { Card, Dropdown, Menu, message, Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -9,11 +12,8 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { Flex, Button } from '@chakra-ui/react'
-import MemberContractInfoModal from './MemberContractInfoModal'
+import { ContractValue, ContractWithProducts } from '../../types/contract'
 import PrimaryButton from '../common/PrimaryButton'
-import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
-import { ContractWithProducts, ContractValue } from '../../types/contract'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
@@ -58,7 +58,6 @@ const MemberContractAdminBlock: React.FC<{
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
-
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
   }
@@ -130,13 +129,43 @@ const MemberContractAdminBlock: React.FC<{
             title={
               <div className="d-flex align-items-center justify-content-between">
                 <span className="mr-1">{contract.title}</span>
-                {contract.revokedAt ? (
-                  <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
-                ) : contract.agreedAt ? (
-                  <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
-                ) : (
-                  <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
-                )}
+                <div className="d-flex align-items-center">
+                  {contract.revokedAt ? (
+                    <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
+                  ) : contract.agreedAt ? (
+                    <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
+                  ) : (
+                    <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
+                  )}
+                  <span className="pb-2 pl-3">
+                    {settings['contract_page.v2.enabled'] === '1' && (
+                      <Dropdown
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item>
+                              <a
+                                href={
+                                  settings['contract_page.v2.enabled'] === '1'
+                                    ? `/admin/members/${memberId}/contract/create?contractSourceId=${contract.id}`
+                                    : `/admin/members/${memberId}/new-contract`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                複製合約
+                              </a>
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <span>
+                          <MoreOutlined className="cursor-pointer" />
+                        </span>
+                      </Dropdown>
+                    )}
+                  </span>
+                </div>
               </div>
             }
             className="mb-4"
@@ -170,29 +199,25 @@ const MemberContractAdminBlock: React.FC<{
                     time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
                   })}
                 </StyledDescription>
+                {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
+                  <Button
+                    loading={revokeLoading}
+                    variant="outline"
+                    color={theme.colors.danger['500']}
+                    border={`1px solid ${theme.colors.danger['500']} !important`}
+                    _hover={{
+                      filter: 'brightness(1.1)',
+                    }}
+                    onClick={e => {
+                      e.preventDefault()
+                      handleContractRevoke(contract.id, contract.values)
+                    }}
+                  >
+                    {formatMessage(messages.revokeContract)}
+                  </Button>
+                )}
               </div>
             </a>
-            <Flex justifyContent="space-between" alignItems="center" mt="1rem">
-              <MemberContractInfoModal memberContract={contract} />
-
-              {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
-                <Button
-                  loading={revokeLoading}
-                  variant="outline"
-                  color={theme.colors.danger['500']}
-                  border={`1px solid ${theme.colors.danger['500']} !important`}
-                  _hover={{
-                    filter: 'brightness(1.1)',
-                  }}
-                  onClick={e => {
-                    e.preventDefault()
-                    handleContractRevoke(contract.id, contract.values)
-                  }}
-                >
-                  {formatMessage(messages.revokeContract)}
-                </Button>
-              )}
-            </Flex>
           </Card>
         ))}
     </div>

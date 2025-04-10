@@ -412,7 +412,6 @@ const MemberContractCreationForm: React.FC<
     targetProduct: SingleContractProduct | undefined
     setTargetProduct: Dispatch<SetStateAction<SingleContractProduct | undefined>>
     isAccountReceivableAvailable: boolean
-    paymentDueDate: moment.Moment
   }
 > = memo(
   ({
