@@ -1231,3 +1231,54 @@ export const useMemberRating = () => {
     upsertMemberRating,
   }
 }
+
+
+export const useCopyMemberContractInfo = (contractSourceId:string)=>{
+  const { loading, data } = useQuery<hasura.GetContractSourceData, hasura.GetContractSourceDataVariables>(
+      gql`
+      query GetContractSourceData($contractSourceId: uuid!) {
+        member_contract_by_pk(id: $contractSourceId ) {
+          contract_id
+          values
+        }
+      }
+      `,
+    {
+      variables: {
+        contractSourceId,
+      },
+    }
+  );
+  const values = data?.member_contract_by_pk?.values
+  const contractSourceData = {
+    values: values || { options: {}, invoice: {} },
+    contract_id: data?.member_contract_by_pk?.contract_id || '',
+    paymentMethod: values?.options?.paymentMethod || '',
+    paymentMode: values?.options?.paymentMode || '',
+    invoiceEmail: values?.invoice.email || '',
+    paymentDueDate: values?.options?.paymentDueDate || '',
+    invoiceComment: values?.options?.invoiceComment || '',
+    uniformNumber: values?.options?.uniformNumber || '',
+    uniformTitle: values?.options?.uniformTitle || '',
+    company: values?.options?.company || '',
+    executorId: values?.options?.executorId || '',
+    language: values?.options?.language || '',
+  }
+
+  const orderProducts = data?.member_contract_by_pk?.values.orderProducts[0]
+  const selectedProductsData = {
+    id: orderProducts?.product_id || '',
+    title: orderProducts?.name || '',
+    amount: orderProducts?.options?.quantity || '',
+    totalPrice: orderProducts?.totalPrice || '',
+    price: orderProducts?.price || 0,
+    productId: orderProducts?.product_id || '',
+    options: orderProducts?.options || {},
+  } 
+
+  return {
+    loading,
+    contractSourceData,
+    selectedProductsData,
+  }
+}
