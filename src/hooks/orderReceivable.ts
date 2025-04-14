@@ -1,27 +1,27 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-
+import { gql, useQuery } from '@apollo/client'
+import { any } from 'ramda'
 const useOrderReceivableStatusQuery = (orderId: string) => {
   const { data, loading, error } = useQuery(GET_ORDER_RECEIVABLE_STATUS, {
     variables: {
-      orderId: orderId || ''
-    }
-  });
+      orderId: orderId || '',
+    },
+  })
 
   if (loading) return { loading: true }
   if (error) return { error: error }
 
   type Order = {
-    orderId: string,
-    orderStatus: string,
+    orderId: string
+    orderStatus: string
     orderProducts: {
-      id: string,
-      deliveredAt: string,
-    }[],
+      id: string
+      deliveredAt: string
+    }[]
     paymentLogs: {
-      no: string,
-      status: string,
-      price: number,
-    }[],
+      no: string
+      status: string
+      price: number
+    }[]
   }
 
   const order: Order = {
@@ -39,22 +39,15 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
   }
 
   const accountReceivableCondition = (order: Order) => {
-
     const isNotSuccessOrderStatus = order?.orderStatus !== 'SUCCESS'
 
-  
-    const allProductsDelivered = order?.orderProducts?.every(
-      (orderProduct: any) => orderProduct.deliveredAt !== null
-    );
+    const hasProductDelivered = any(ele => ele?.deliveredAt !== null, order?.orderProducts || [])
 
-    return isNotSuccessOrderStatus && allProductsDelivered;
-  };
+    return isNotSuccessOrderStatus && hasProductDelivered
+  }
 
   const notPayYetPaymentLogCondition = (order: Order) => {
-    return order?.paymentLogs?.filter((paymentLog: {
-      no: string,
-      status: string,
-    }) => paymentLog.status !== 'SUCCESS');
+    return order?.paymentLogs?.filter((paymentLog: { no: string; status: string }) => paymentLog.status !== 'SUCCESS')
   }
 
   const isAccountReceivable = accountReceivableCondition(order)
@@ -67,20 +60,19 @@ const useOrderReceivableStatusQuery = (orderId: string) => {
 const GET_ORDER_RECEIVABLE_STATUS = gql`
   query GET_ORDER_RECEIVABLE_STATUS($orderId: String) {
     order_log(where: { id: { _eq: $orderId } }) {
-      id,
-      status,
+      id
+      status
       order_products {
-        id,
+        id
         delivered_at
       }
       payment_logs {
-        no,
-        status,
+        no
+        status
         price
       }
     }
   }
-`;
+`
 
-export { useOrderReceivableStatusQuery };
-
+export { useOrderReceivableStatusQuery }
