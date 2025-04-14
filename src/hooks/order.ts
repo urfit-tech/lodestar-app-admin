@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import hasura from '../hasura'
 import { sum, uniq } from 'ramda'
@@ -456,4 +456,13 @@ export const useOrderLogExpandRow = (orderId: string) => {
       refetchOrderDiscountByOrderId()
     },
   }
+}
+
+export const useMutateOrderLogStatus = () => {
+  const [updateOrderLogStatus] = useMutation<hasura.UpdateOrderLogStatus, hasura.UpdateOrderLogStatusVariables>(gql`
+    mutation UpdateOrderLogStatus($orderId:String!,$status:String!){
+      update_order_log(where: {id: {_eq: $orderId}}, _set: {status: $status}) {
+        affected_rows
+    }
+    `)
 }
