@@ -58,6 +58,7 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
     permissions.GROSS_SALES_ADMIN,
     permissions.GROSS_SALES_NORMAL,
     permissions.SALES_RECORDS_ADMIN,
+    permissions.READ_GROUP_SALES_ALL,
     permissions.SALES_RECORDS_DETAILS,
     permissions.SALES_RECORDS_NORMAL,
   ].some(permission => permission)
