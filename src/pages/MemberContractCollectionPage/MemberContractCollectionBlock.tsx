@@ -1,4 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Checkbox, Input, Spin, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
@@ -12,6 +13,7 @@ import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
 import MemberPropertyLabel from '../../components/common/MemberPropertyLabel'
+import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection, useMemberContractPriceAmount } from '../../hooks'
@@ -100,6 +102,7 @@ export const MemberContractCollectionBlock: React.FC<{
     dateRangeType: filter.dateRangeType,
     startedAt: filter.startedAt,
     endedAt: filter.endedAt,
+    memberId: permissions.READ_GROUP_CONTRACT_ALL ? currentMemberId : null,
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -121,8 +124,34 @@ export const MemberContractCollectionBlock: React.FC<{
     'orderExecutors',
   ])
 
+  const { data } = useQuery<hasura.GetUserPermissionGroupMembers, hasura.GetUserPermissionGroupMembersVariables>(
+    gql`
+      query GetUserPermissionGroupMembers($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+          permission_group {
+            name
+            permission_group_members {
+              member_id
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        memberId: currentMemberId as string,
+      },
+    },
+  )
+
+  const permissionGroupsMembers =
+    data?.member_permission_group.flatMap(v => v.permission_group.permission_group_members.map(w => w.member_id)) || []
+
   const displayMemberContracts = permissions.CONTRACT_VALUE_VIEW_ADMIN
     ? memberContracts
+    : permissions.READ_GROUP_CONTRACT_ALL
+    ? memberContracts.filter(mc => permissionGroupsMembers.includes(mc?.authorId ?? ''))
     : permissions.CONTRACT_VALUE_VIEW_NORMAL
     ? memberContracts.filter(
         mc =>

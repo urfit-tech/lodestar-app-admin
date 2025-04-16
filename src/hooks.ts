@@ -218,19 +218,58 @@ export const useMemberContractCollection = ({
     refetchMemberContracts: refetch,
   }
 }
+
 export const useMemberContractPriceAmount = ({
   dateRangeType,
   startedAt,
   endedAt,
+  memberId,
 }: {
   dateRangeType: DateRangeType
   startedAt: Date | null
   endedAt: Date | null
+  memberId: string | null
 }) => {
+  const { data: userPermissionGroupMembersData } = useQuery<
+    hasura.GetUserPermissionGroupMembers,
+    hasura.GetUserPermissionGroupMembersVariables
+  >(
+    gql`
+      query GetUserPermissionGroupMembers($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+          permission_group {
+            name
+            permission_group_members {
+              member_id
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        memberId: memberId || '',
+      },
+      skip: !memberId,
+    },
+  )
+
+  const permissionGroupsMemberIds =
+    userPermissionGroupMembersData?.member_permission_group.flatMap(v =>
+      v.permission_group.permission_group_members.map(w => w.member_id),
+    ) || []
+
+  const isReadGroupContractAllCondition =
+    permissionGroupsMemberIds.length > 0 && !!memberId ? { author_id: { _in: permissionGroupsMemberIds } } : {}
+
   const GET_MEMBER_CONTRACT_PRICE_AMOUNT = gql`
-    query GET_MEMBER_CONTRACT_PRICE_AMOUNT($dateRangeCondition: xuemi_member_private_teach_contract_bool_exp!) {
+    query GET_MEMBER_CONTRACT_PRICE_AMOUNT(
+      $dateRangeCondition: xuemi_member_private_teach_contract_bool_exp!,
+            $isReadGroupContractAllCondition: xuemi_member_private_teach_contract_bool_exp!
+    ) {
       private_teach_pending_contract: xuemi_member_private_teach_contract_aggregate(
-        where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition] }
+        where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition, $isReadGroupContractAllCondition] }
       ) {
         aggregate {
           sum {
@@ -239,7 +278,7 @@ export const useMemberContractPriceAmount = ({
         }
       }
       private_teach_loan_canceled_contract: xuemi_member_private_teach_contract_aggregate(
-        where: { _and: [{ status: { _eq: "loan-canceled" } }, $dateRangeCondition] }
+        where: { _and: [{ status: { _eq: "loan-canceled" } }, $dateRangeCondition, $isReadGroupContractAllCondition] }
       ) {
         aggregate {
           sum {
@@ -248,7 +287,7 @@ export const useMemberContractPriceAmount = ({
         }
       }
       private_teach_approved_contract: xuemi_member_private_teach_contract_aggregate(
-        where: { _and: [{ status: { _eq: "approved" } }, $dateRangeCondition] }
+        where: { _and: [{ status: { _eq: "approved" } }, $dateRangeCondition, $isReadGroupContractAllCondition] }
       ) {
         aggregate {
           sum {
@@ -257,7 +296,7 @@ export const useMemberContractPriceAmount = ({
         }
       }
       private_teach_refund_applied_contract: xuemi_member_private_teach_contract_aggregate(
-        where: { _and: [{ status: { _eq: "refund-applied" } }, $dateRangeCondition] }
+        where: { _and: [{ status: { _eq: "refund-applied" } }, $dateRangeCondition, $isReadGroupContractAllCondition] }
       ) {
         aggregate {
           sum {
@@ -266,7 +305,7 @@ export const useMemberContractPriceAmount = ({
         }
       }
       private_teach_revoked_contract: xuemi_member_private_teach_contract_aggregate(
-        where: { _and: [{ status: { _eq: "revoked" } }, $dateRangeCondition] }
+        where: { _and: [{ status: { _eq: "revoked" } }, $dateRangeCondition, $isReadGroupContractAllCondition] }
       ) {
         aggregate {
           sum {
@@ -289,6 +328,7 @@ export const useMemberContractPriceAmount = ({
   >(GET_MEMBER_CONTRACT_PRICE_AMOUNT, {
     variables: {
       dateRangeCondition,
+      isReadGroupContractAllCondition,
     },
   })
 

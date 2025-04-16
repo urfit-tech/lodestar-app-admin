@@ -466,7 +466,11 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
     {
       permissionIsAllowed:
         !!enabledModules.member_contract_manager &&
-        Boolean(permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
+        Boolean(
+          permissions.CONTRACT_VALUE_VIEW_ADMIN ||
+            permissions.CONTRACT_VALUE_VIEW_NORMAL ||
+            permissions.READ_GROUP_CONTRACT_ALL,
+        ),
       key: 'member_contract_collection',
       icon: () => <UserCopyIcon />,
       name: formatMessage(adminMessages.AdminMenu.contractDataManagement),
