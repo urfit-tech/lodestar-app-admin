@@ -29,7 +29,7 @@ export const useOrderStatuses = () => {
 
 export const useOrderLogPreviewCollection = (
   memberId: string,
-  authStatus: 'Admin' |'Group'| 'Personal' | 'None',
+  authStatus: 'Admin' | 'Group' | 'Personal' | 'None',
   filters?: {
     statuses?: string[] | null
     orderId?: string | null
@@ -42,7 +42,7 @@ export const useOrderLogPreviewCollection = (
   const conditionBase: hasura.GetOrderLogPreviewCollectionVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     app_id: appId ? { _eq: appId } : undefined,
-    status: filters?.statuses ? { _in: filters.statuses } : undefined
+    status: filters?.statuses ? { _in: filters.statuses } : undefined,
   }
 
   const { permissionGroupsMembersOrderId } = useUserPermissionGroupMembers(memberId)
@@ -52,8 +52,10 @@ export const useOrderLogPreviewCollection = (
   let condition: hasura.GetOrderLogPreviewCollectionVariables['condition']
   switch (authStatus) {
     case 'Admin':
-       condition = {...conditionBase,
-        member: filters?.memberId? { id: { _eq: filters.memberId } }
+      condition = {
+        ...conditionBase,
+        member: filters?.memberId
+          ? { id: { _eq: filters.memberId } }
           : filters?.memberNameAndEmail
           ? {
               _or: filters?.memberNameAndEmail
@@ -64,12 +66,13 @@ export const useOrderLogPreviewCollection = (
                   ]
                 : undefined,
             }
-          : undefined
-        };
-      break;
+          : undefined,
+      }
+      break
 
     case 'Personal':
-      condition = {...conditionBase,
+      condition = {
+        ...conditionBase,
         order_products:
           authStatus === 'Personal'
             ? {
@@ -84,17 +87,15 @@ export const useOrderLogPreviewCollection = (
       break
 
     case 'Group':
-      condition = {...conditionBase,
-          id: { _in: permissionGroupsMembersOrderId },
-      }
-    break
+      condition = { ...conditionBase, id: { _in: permissionGroupsMembersOrderId } }
+      break
 
     default:
       condition = {
         ...conditionBase,
         member: {
-          id: { _eq: memberId }
-        }
+          id: { _eq: memberId },
+        },
       }
   }
 
@@ -486,13 +487,4 @@ export const useOrderLogExpandRow = (orderId: string) => {
       refetchOrderDiscountByOrderId()
     },
   }
-}
-
-export const useMutateOrderLogStatus = () => {
-  const [updateOrderLogStatus] = useMutation<hasura.UpdateOrderLogStatus, hasura.UpdateOrderLogStatusVariables>(gql`
-    mutation UpdateOrderLogStatus($orderId:String!,$status:String!){
-      update_order_log(where: {id: {_eq: $orderId}}, _set: {status: $status}) {
-        affected_rows
-    }
-    `)
 }
