@@ -353,15 +353,13 @@ export const useUserPermissionGroupMembers = (memberId: string) => {
       )
     ) || []
 
-  console.log('permission-hooks-360', permissionGroupsMembers)
-
   const { data: permissionGroupsMembersContract } = useQuery<
     hasura.GetPermissionGroupMembersContract,
     hasura.GetPermissionGroupMembersContractVariables
   >(
     gql`
       query GetPermissionGroupMembersContract($permissionGroupsMembers: [String!]) {
-        member_contract(where: { author_id: { _in: $permissionGroupsMembers } }) {
+        member_contract(where: {author_id: {_in: $permissionGroupsMembers}, agreed_at: {_is_null: false}}) {
           values
         }
       }`,
@@ -372,9 +370,7 @@ export const useUserPermissionGroupMembers = (memberId: string) => {
 
   const permissionGroupsMembersOrderId =
   permissionGroupsMembersContract?.member_contract.map(v => v.values?.orderId
-  ) || []
-
-  console.log('@permission-hooks@', permissionGroupsMembersOrderId)
+  ).filter((_:any) => _ ) || []
 
   return {
     loading,

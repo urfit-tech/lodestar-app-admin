@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import hasura from '../hasura'
 import { sum, uniq } from 'ramda'
@@ -46,8 +46,6 @@ export const useOrderLogPreviewCollection = (
   }
 
   const { permissionGroupsMembersOrderId } = useUserPermissionGroupMembers(memberId)
-
-  console.log('!!!!order 50!!!', permissionGroupsMembersOrderId)
 
   let condition: hasura.GetOrderLogPreviewCollectionVariables['condition']
   switch (authStatus) {
@@ -98,9 +96,6 @@ export const useOrderLogPreviewCollection = (
         },
       }
   }
-
-  console.log('!!!!order 102!!!', permissionGroupsMembersOrderId)
-  console.log('!!!!order 108!!!', authStatus)
 
   const {
     loading: loadingOrderLogPreviewCollection,
