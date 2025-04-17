@@ -492,12 +492,15 @@ const MemberTaskAdminBlock: React.FC<{
               type="primary"
               onClick={() => {
                 confirm()
-                setFilter(filter => ({
-                  ...filter,
-                  dueAt: selectedKeys.length
-                    ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
-                    : undefined,
-                }))
+                setFilter(filter => {
+                  setOrderBy({ due_at: 'desc' as hasura.order_by })
+                  return {
+                    ...filter,
+                    dueAt: selectedKeys.length
+                      ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
+                      : undefined,
+                  }
+                })
               }}
               icon={<SearchOutlined />}
               size="small"

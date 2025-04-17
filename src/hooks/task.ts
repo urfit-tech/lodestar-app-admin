@@ -142,6 +142,7 @@ export const useMemberTaskCollection = (options?: {
       query GET_MEMBER_TASK_COLLECTION(
         $condition: member_task_bool_exp
         $limit: Int
+        $offset: Int
         $orderBy: member_task_order_by!
         $propertyNames: [String!]
       ) {
@@ -182,7 +183,7 @@ export const useMemberTaskCollection = (options?: {
             count
           }
         }
-        member_task(where: $condition, limit: $limit, order_by: [$orderBy]) {
+        member_task(where: $condition, limit: $limit, offset: $offset, order_by: [$orderBy]) {
           id
           title
           description
@@ -315,15 +316,9 @@ export const useMemberTaskCollection = (options?: {
               orderBy,
               condition: {
                 ...condition,
-                id: { _nin: options?.excludedIds },
-                created_at: orderBy.created_at
-                  ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_task.slice(-1)[0]?.created_at }
-                  : undefined,
-                due_at: orderBy.due_at
-                  ? { [orderBy.due_at === 'desc' ? '_lt' : '_gt']: data?.member_task.slice(-1)[0]?.due_at }
-                  : undefined,
               },
               limit: options?.limit,
+              offset: data?.member_task.length || 0,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
