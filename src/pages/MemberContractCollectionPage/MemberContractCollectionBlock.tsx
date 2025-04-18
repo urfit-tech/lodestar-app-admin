@@ -524,14 +524,17 @@ export const MemberContractCollectionBlock: React.FC<{
         />
         <div>
           <MemberContractFieldSelector value={visibleFields} onChange={value => setVisibleFields(value)} />
-          <ExportContractCollectionButton
-            visibleFields={visibleFields}
-            columns={columns}
-            filter={filter}
-            sortOrder={sortOrder}
-            isRevoked={variant === 'revoked'}
-            authorId={currentUserRole === 'general-member' ? currentMemberId : null}
-          />
+
+          {!permissions.READ_GROUP_CONTRACT_ALL && (
+            <ExportContractCollectionButton
+              visibleFields={visibleFields}
+              columns={columns}
+              filter={filter}
+              sortOrder={sortOrder}
+              isRevoked={variant === 'revoked'}
+              authorId={currentUserRole === 'general-member' ? currentMemberId : null}
+            />
+          )}
         </div>
       </div>
 
