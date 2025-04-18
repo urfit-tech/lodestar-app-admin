@@ -18,7 +18,7 @@ const MemberContractInfoCouponList: React.FC<{ couponIds: string[] }> = ({ coupo
   }
 
   return (
-    <Box>
+    <Box ml="0.5rem">
       {coupons.map(coupon => {
         return (
           <Flex key={coupon.id}>
