@@ -7,10 +7,11 @@ import moment from 'moment'
 import { intersection, isNotEmpty, path, pipe, prop } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
 import { memberAccountReceivableAvailable } from '../../helpers'
-import { useMemberAdmin } from '../../hooks/member'
+import { useCopyMemberContractInfo, useMemberAdmin } from '../../hooks/member'
 import LoadingPage from '../LoadingPage'
 import ContractLayout from './ContractLayout'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
@@ -143,9 +144,19 @@ const MemberContractCreationPage: React.VFC = () => {
   const { info, error, loading } = useContractInfo(appId, memberId)
   const { products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
   const [installments, setInstallments] = useState<{ index: number; price: number; endedAt: Date }[]>([])
   const [targetProduct, setTargetProduct] = useState<SingleContractProduct>()
+
+  const [contractSourceId] = useQueryParam('contractSourceId', StringParam)
+
+  const {
+    loading: contractSourceLoading,
+    contractSourceData,
+    selectedProductsData,
+  } = useCopyMemberContractInfo(contractSourceId!)
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
+    !contractSourceLoading && contractSourceData ? [selectedProductsData] : [],
+  )
 
   const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
     setInstallments(prevInstallments =>
@@ -180,6 +191,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
   const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
   const paymentCreatedAt = moment(dayjs().add(30, 'day').toDate()).format('YYYY-MM-DD')
+
   return (
     <ContractLayout member={member} isMemberTypeBG={isMemberTypeBG}>
       <div className="container py-5">
@@ -187,19 +199,38 @@ const MemberContractCreationPage: React.VFC = () => {
           <MemberDescriptionBlock member={member} memberBlockRef={memberBlockRef} />
           <MemberContractCreationForm
             form={form}
-            initialValues={{
-              contractId: contracts[0].id,
-              startedAt: moment(),
-              endedAt: moment().add(1, 'y'),
-              paymentMethod: paymentMethods[0],
-              paymentMode: paymentModes[0],
-              invoiceEmail: member.email,
-              destinationEmail: member.email,
-              language: 'zh-tw',
-              paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD'),
-              uniformNumber: member.properties.find(p => p.name === '統一編號')?.value,
-              uniformTitle: member.properties.find(p => p.name === '發票抬頭')?.value,
-            }}
+            initialValues={
+              contractSourceId
+                ? {
+                    contractId: contractSourceData.contract_id,
+                    startedAt: moment(),
+                    endedAt: moment().add(1, 'y'),
+                    paymentMethod: contractSourceData.paymentMethod,
+                    paymentMode: contractSourceData.paymentMode,
+                    invoiceEmail: contractSourceData.invoiceEmail,
+                    paymentDueDate: moment(contractSourceData.paymentDueDate, 'YYYY-MM-DD'),
+                    invoiceComment: contractSourceData.invoiceComment,
+                    uniformNumber: contractSourceData.uniformNumber,
+                    uniformTitle: contractSourceData.uniformTitle,
+                    company: contractSourceData.company,
+                    executorId: contractSourceData.executorId,
+                    language: contractSourceData.language,
+                    destinationEmail: member.email,
+                  }
+                : {
+                    contractId: contracts[0].id,
+                    startedAt: moment(),
+                    endedAt: moment().add(1, 'y'),
+                    paymentMethod: paymentMethods[0],
+                    paymentMode: paymentModes[0],
+                    invoiceEmail: member.email,
+                    destinationEmail: member.email,
+                    language: 'zh-tw',
+                    paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD'),
+                    uniformNumber: member.properties.find(p => p.name === '統一編號')?.value,
+                    uniformTitle: member.properties.find(p => p.name === '發票抬頭')?.value,
+                  }
+            }
             onValuesChange={(_, values) => {
               setReRender(prev => prev + 1)
               if (values.startedAt) {
