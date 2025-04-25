@@ -337,7 +337,7 @@ const PaymentCard: React.FC<{
                     </Button>
                   )}
 
-                {settings['payment.v2'] === '1' && payment.status === 'UNPAID' && (
+                {settings['payment.v2'] === '1' && (
                   <Button
                     disabled={loading}
                     loading={loading}
