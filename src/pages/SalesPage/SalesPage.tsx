@@ -14,7 +14,6 @@ import SaleSummaryCard from './SaleSummaryCard'
 const SalesPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
-
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">

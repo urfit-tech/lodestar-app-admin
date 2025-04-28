@@ -4,7 +4,6 @@ import hasura from '../hasura'
 import { sum, uniq } from 'ramda'
 import { OrderLog } from '../types/general'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useUserPermissionGroupMembers } from '../hooks/permission'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -29,7 +28,7 @@ export const useOrderStatuses = () => {
 
 export const useOrderLogPreviewCollection = (
   memberId: string,
-  authStatus: 'Admin' | 'Group' | 'Personal' | 'None',
+  authStatus: 'Admin' | 'Personal' | 'None',
   filters?: {
     statuses?: string[] | null
     orderId?: string | null
@@ -39,20 +38,13 @@ export const useOrderLogPreviewCollection = (
 ) => {
   const { id: appId } = useApp()
   const limit = 20
-  const conditionBase: hasura.GetOrderLogPreviewCollectionVariables['condition'] = {
+  const condition: hasura.GetOrderLogPreviewCollectionVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     app_id: appId ? { _eq: appId } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
-  }
-
-  const { permissionGroupsMembersOrderId } = useUserPermissionGroupMembers(memberId)
-
-  let condition: hasura.GetOrderLogPreviewCollectionVariables['condition']
-  switch (authStatus) {
-    case 'Admin':
-      condition = {
-        ...conditionBase,
-        member: filters?.memberId
+    member:
+      authStatus !== 'None'
+        ? filters?.memberId
           ? { id: { _eq: filters.memberId } }
           : filters?.memberNameAndEmail
           ? {
@@ -64,39 +56,21 @@ export const useOrderLogPreviewCollection = (
                   ]
                 : undefined,
             }
-          : undefined,
-      }
-      break
-
-    case 'Personal':
-      condition = {
-        ...conditionBase,
-        order_products:
-          authStatus === 'Personal'
-            ? {
-                product: {
-                  product_owner: {
-                    member_id: { _eq: memberId },
-                  },
-                },
-              }
-            : undefined,
-      }
-      break
-
-    case 'Group':
-      condition = { ...conditionBase, id: { _in: permissionGroupsMembersOrderId } }
-      break
-
-    default:
-      condition = {
-        ...conditionBase,
-        member: {
-          id: { _eq: memberId },
-        },
-      }
+          : undefined
+        : {
+            id: { _eq: memberId },
+          },
+    order_products:
+      authStatus === 'Personal'
+        ? {
+            product: {
+              product_owner: {
+                member_id: { _eq: memberId },
+              },
+            },
+          }
+        : undefined,
   }
-
   const {
     loading: loadingOrderLogPreviewCollection,
     error: errorOrderLogPreviewCollection,

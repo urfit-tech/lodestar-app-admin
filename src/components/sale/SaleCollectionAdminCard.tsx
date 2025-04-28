@@ -68,14 +68,6 @@ const SaleCollectionAdminCard: React.VFC<{
   const [orderId, setOrderId] = useState<string | null>(null)
   const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
 
-  const authStatus = permissions.SALES_RECORDS_ADMIN
-    ? 'Admin'
-    : permissions.READ_GROUP_SALES_ALL
-    ? 'Group'
-    : permissions.SALES_RECORDS_NORMAL
-    ? 'Personal'
-    : 'None'
-
   const {
     totalCount,
     loadingOrderLogPreviewCollection,
@@ -89,7 +81,7 @@ const SaleCollectionAdminCard: React.VFC<{
     loadMoreOrderLogPreviewCollection,
   } = useOrderLogPreviewCollection(
     permissions.CHECK_MEMBER_ORDER && memberId ? memberId : currentMemberId || '',
-    authStatus,
+    permissions.SALES_RECORDS_ADMIN ? 'Admin' : permissions.SALES_RECORDS_NORMAL ? 'Personal' : 'None',
     { statuses, orderId, memberNameAndEmail, memberId },
   )
 
