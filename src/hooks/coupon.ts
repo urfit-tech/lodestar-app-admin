@@ -1,8 +1,10 @@
+import { gql, useQuery } from '@apollo/client'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useCallback, useEffect, useState } from 'react'
 import { CouponProps } from '../types/checkout'
 import { CouponFromLodestarAPI } from '../types/coupon'
+import hasura from '../hasura'
 
 export const useCouponCollection = (memberId: string) => {
   const { authToken } = useAuth()
@@ -62,5 +64,37 @@ export const useCouponCollection = (memberId: string) => {
     error,
     data,
     fetch,
+  }
+}
+
+export const useCouponListInfo = (couponIds: string[]) => {
+  const { loading, data, error } = useQuery<hasura.GetCouponListInfo, hasura.GetCouponListInfoVariables>(
+    gql`
+      query GetCouponListInfo($couponIds: [uuid!]) {
+        coupon(where: { id: { _in: $couponIds } }) {
+          id
+          coupon_code {
+            code
+            coupon_plan {
+              id
+              title
+            }
+          }
+        }
+      }
+    `,
+    { variables: { couponIds } },
+  )
+  const coupons: { id: string; code: string; planTitle: string }[] =
+    data?.coupon.map(coupon => ({
+      id: coupon.id,
+      code: coupon.coupon_code.code,
+      planTitle: coupon.coupon_code.coupon_plan.title,
+    })) || []
+
+  return {
+    loading,
+    error,
+    coupons,
   }
 }

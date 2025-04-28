@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { sum } from 'ramda'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -67,6 +67,12 @@ const OrderDetailDrawer: React.FC<{
     ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
     ?.companies.find(company => company.name === orderLog.options?.company)
 
+  const [shownInvoices, setShownInvoices] = useState(invoices)
+
+  const { isAccountReceivable } = useOrderReceivableStatusQuery(orderLogId || '')
+
+  useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
+
   return (
     <>
       {renderTrigger?.({})}
@@ -115,7 +121,7 @@ const OrderDetailDrawer: React.FC<{
                 </div>
                 {loadingOrderDetail ? (
                   <Skeleton />
-                ) : invoices.length === 0 ? (
+                ) : shownInvoices.length === 0 ? (
                   <InvoiceCard
                     status={''}
                     invoiceIssuedAt={''}
@@ -154,7 +160,7 @@ const OrderDetailDrawer: React.FC<{
                     companyPhone={company?.companyPhone}
                   />
                 ) : (
-                  invoices.map(i => (
+                  shownInvoices.map(i => (
                     <InvoiceCard
                       key={i.no}
                       status={!!i.revokedAt ? 'REVOKED' : 'SUCCESS'}
@@ -185,7 +191,7 @@ const OrderDetailDrawer: React.FC<{
                       invoiceAddress={`${orderLog.invoiceOptions?.postCode || ''} ${
                         orderLog.invoiceOptions?.address || ''
                       }`}
-                      invoiceComment={i.options?.Result?.Comment || orderLog.invoiceOptions?.invoiceComment}
+                      invoiceComment={i.options?.Result?.Comment}
                       invoicePrice={i.price}
                       invoiceRandomNumber={i.options?.Result?.RandomNum || ''}
                       onClose={() => {

@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { memberAccountReceivableAvailable } from '../../helpers'
+import { useMutateOrderProduct } from '../../hooks/orderProduct'
 import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderLog, PaymentLog } from '../../types/general'
@@ -85,11 +86,13 @@ const PaymentCard: React.FC<{
       }
     }
   `)
-  const { isAccountReceivable, notPayYetPaymentLog } = useOrderReceivableStatusQuery(order.id)
-  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(false)
-  const isAccountReceivableAvailable = order?.memberType ? memberAccountReceivableAvailable(order.memberType) : false
+  const { loading: loadingOrderReceivableStatus, isAccountReceivable } = useOrderReceivableStatusQuery(order.id)
+  const [isAccountsReceivableChecked, setAccountsReceivableChecked] = useState(
+    loadingOrderReceivableStatus ? false : isAccountReceivable,
+  )
+  const { deliverOrderProductForOrder } = useMutateOrderProduct()
 
-  console.dir(notPayYetPaymentLog, { depth: null })
+  const isAccountReceivableAvailable = order?.memberType ? memberAccountReceivableAvailable(order.memberType) : false
 
   const handleCardReaderSerialport = async (price: number, orderId: string, paymentNo: string, method: string) => {
     if (!settings['pos_serialport.config']) {
@@ -131,6 +134,22 @@ const PaymentCard: React.FC<{
         onRefetch?.()
       })
   }
+
+  const changeCheckoutMethod = async (paymentNo: string, gateway: string, method?: string) => {
+    try {
+      await updatePaymentMethod({ variables: { paymentNo, gateway, method } })
+      if (isAccountsReceivableChecked) {
+        await deliverOrderProductForOrder({ variables: { orderId: order.id } })
+        setAccountsReceivableChecked(true)
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsOpenChangePaymentMethodModal(false)
+      onRefetch?.()
+    }
+  }
+
   return (
     <>
       {payments
@@ -297,6 +316,7 @@ const PaymentCard: React.FC<{
                       <div>{payment.method === 'physicalCredit' ? '實體刷卡' : '遠端輸入卡號'}</div>
                     </Button>
                   )}
+
                 {settings['payment.v2'] === '1' && (
                   <Button
                     disabled={loading}
@@ -329,7 +349,7 @@ const PaymentCard: React.FC<{
                 footer={
                   <div>
                     <Button
-                      onClick={() => {
+                      onClick={async () => {
                         const gateway = paymentMethod === '藍新' ? paymentGateway || '' : 'physical'
                         const method =
                           paymentMethod === '現金'
@@ -342,17 +362,7 @@ const PaymentCard: React.FC<{
                             ? 'physicalRemoteCredit'
                             : undefined
 
-                        const executeCommands = async () => {
-                          try {
-                            await updatePaymentMethod({ variables: { paymentNo: payment.no, gateway, method } })
-                          } catch (err) {
-                            console.log(err)
-                          } finally {
-                            setIsOpenChangePaymentMethodModal(false)
-                            onRefetch?.()
-                          }
-                        }
-                        executeCommands()
+                        changeCheckoutMethod(payment.no, gateway, method)
                       }}
                     >
                       {' '}
@@ -388,7 +398,7 @@ const PaymentCard: React.FC<{
                   <Checkbox
                     style={{ marginTop: '1rem' }}
                     checked={isAccountsReceivableChecked}
-                    disabled={!isAccountReceivableAvailable || !isAccountReceivable}
+                    disabled={!isAccountReceivableAvailable || isAccountReceivable}
                     onChange={e => {
                       const isChecked = e.target.checked
                       setAccountsReceivableChecked(isChecked)

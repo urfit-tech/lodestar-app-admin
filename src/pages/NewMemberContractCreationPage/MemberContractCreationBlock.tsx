@@ -293,15 +293,11 @@ const MemberContractCreationBlock: React.FC<{
         ? 'physicalRemoteCredit'
         : undefined
 
-    const installmentPlans =
-      fieldValue.paymentMode === '訂金+尾款'
-        ? [
-            { price: Math.ceil(totalPrice * 0.1), index: 1 },
-            { price: totalPrice - Math.ceil(totalPrice * 0.1), index: 2 },
-          ]
-        : ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(fieldValue.paymentMode)
-        ? installments
-        : undefined
+    const installmentPlans = ['先上課後月結固定金額', '課前頭款+自訂分期', '開課後自訂分期'].includes(
+      fieldValue.paymentMode,
+    )
+      ? installments
+      : undefined
     const paymentMode = fieldValue.paymentMode
     const invoiceInfo = {
       name: member.name,
@@ -364,6 +360,7 @@ const MemberContractCreationBlock: React.FC<{
                   .reduce((sum, product) => sum + product.amount, 0) * 0.1,
               ),
               options,
+              paymentDueDate: fieldValue.paymentDueDate,
             },
           },
         })
@@ -388,6 +385,7 @@ const MemberContractCreationBlock: React.FC<{
     const isOrderSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
     const isPaymentSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
     const isOrderProductsDeliveredByDefault = isPaidByCashWithInvoiceAutoIssued || isReceivable
+    const expiredAt = moment(fieldValue.paymentDueDate).toDate()
 
     await axios
       .post(
@@ -410,6 +408,7 @@ const MemberContractCreationBlock: React.FC<{
           isOrderSetSuccessByDefault,
           isPaymentSetSuccessByDefault,
           isOrderProductsDeliveredByDefault,
+          expiredAt: expiredAt,
         },
         {
           headers: { authorization: `Bearer ${authToken}` },

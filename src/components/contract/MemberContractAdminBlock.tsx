@@ -1,5 +1,6 @@
+import { MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Button, Card, message, Skeleton } from 'antd'
+import { Card, Dropdown, Menu, message, Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -9,6 +10,11 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
+import { Flex, Button } from '@chakra-ui/react'
+import MemberContractInfoModal from './MemberContractInfoModal'
+import PrimaryButton from '../common/PrimaryButton'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { ContractWithProducts, ContractValue } from '../../types/contract'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
@@ -46,9 +52,10 @@ const StyledDescription = styled.div`
 const MemberContractAdminBlock: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
-  const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const theme = useAppTheme()
   const { settings } = useApp()
+  const { permissions } = useAuth()
+  const { formatMessage } = useIntl()
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
@@ -56,6 +63,7 @@ const MemberContractAdminBlock: React.FC<{
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
   }
+
   const handleContractRevoke = async (memberContractId: string, values: any) => {
     type Coupon = hasura.coupon_insert_input
 
@@ -101,6 +109,7 @@ const MemberContractAdminBlock: React.FC<{
       setRevokeLoading(false)
     }
   }
+
   return (
     <div className="container">
       <a
@@ -112,24 +121,17 @@ const MemberContractAdminBlock: React.FC<{
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button type="primary" className="mb-5">
-          {formatMessage(commonMessages.ui.createContract)}
-        </Button>
+        <PrimaryButton className="mb-5">{formatMessage(commonMessages.ui.createContract)}</PrimaryButton>
       </a>
 
       {contracts
         .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())
         .map(contract => (
-          <a
-            key={contract.id}
-            href={`/members/${memberId}/contracts/${contract.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Card
-              title={
-                <div className="d-flex align-items-center justify-content-between">
-                  <span className="mr-1">{contract.title}</span>
+          <Card
+            title={
+              <div className="d-flex align-items-center justify-content-between">
+                <span className="mr-1">{contract.title}</span>
+                <div className="d-flex align-items-center">
                   {contract.revokedAt ? (
                     <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
                   ) : contract.agreedAt ? (
@@ -137,9 +139,44 @@ const MemberContractAdminBlock: React.FC<{
                   ) : (
                     <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
                   )}
+                  <span className="pb-2 pl-3">
+                    {settings['contract_page.v2.enabled'] === '1' && (
+                      <Dropdown
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item>
+                              <a
+                                href={
+                                  settings['contract_page.v2.enabled'] === '1'
+                                    ? `/admin/members/${memberId}/contract/create?contractSourceId=${contract.id}`
+                                    : `/admin/members/${memberId}/new-contract`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                複製合約
+                              </a>
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <span>
+                          <MoreOutlined className="cursor-pointer" />
+                        </span>
+                      </Dropdown>
+                    )}
+                  </span>
                 </div>
-              }
-              className="mb-4"
+              </div>
+            }
+            className="mb-4"
+          >
+            <a
+              key={contract.id}
+              href={`/members/${memberId}/contracts/${contract.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <StyledMeta>
                 {contract.agreedAt
@@ -164,21 +201,30 @@ const MemberContractAdminBlock: React.FC<{
                     time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
                   })}
                 </StyledDescription>
-                {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
-                  <Button
-                    danger
-                    loading={revokeLoading}
-                    onClick={e => {
-                      e.preventDefault()
-                      handleContractRevoke(contract.id, contract.values)
-                    }}
-                  >
-                    {formatMessage(messages.revokeContract)}
-                  </Button>
-                )}
               </div>
-            </Card>
-          </a>
+            </a>
+            <Flex justifyContent="space-between" alignItems="center" mt="1rem">
+              <MemberContractInfoModal memberContract={contract} />
+
+              {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
+                <Button
+                  loading={revokeLoading}
+                  variant="outline"
+                  color={theme.colors.danger['500']}
+                  border={`1px solid ${theme.colors.danger['500']} !important`}
+                  _hover={{
+                    filter: 'brightness(1.1)',
+                  }}
+                  onClick={e => {
+                    e.preventDefault()
+                    handleContractRevoke(contract.id, contract.values)
+                  }}
+                >
+                  {formatMessage(messages.revokeContract)}
+                </Button>
+              )}
+            </Flex>
+          </Card>
         ))}
     </div>
   )
@@ -209,19 +255,7 @@ const useMemberContracts = (memberId: string) => {
     { variables: { memberId } },
   )
 
-  const contracts: {
-    id: string
-    title: string
-    values: any
-    startedAt: Date | null
-    endedAt: Date | null
-    agreedAt: Date | null
-    createdAt: Date
-    agreedIp: string | null
-    agreedOptions: any
-    options: any
-    revokedAt: Date | null
-  }[] =
+  const contracts: ContractWithProducts[] =
     data?.member_contract.map(v => {
       return {
         id: v.id,
@@ -235,6 +269,25 @@ const useMemberContracts = (memberId: string) => {
         options: v.options,
         revokedAt: v.revoked_at && new Date(v.revoked_at),
         createdAt: v.created_at && new Date(v.created_at),
+        orderProducts:
+          v.values?.orderProducts?.map((orderProduct: ContractValue['orderProducts'][number]) => ({
+            productId: orderProduct.product_id,
+            name: orderProduct.name,
+          })) || [],
+        coupons:
+          v.values?.coupons?.map((coupon: ContractValue['coupons'][number]) => ({
+            id: coupon.id,
+            code: coupon.coupon_code?.data.code,
+            couponPlanId:
+              coupon.coupon_code?.data.coupon_plan?.data.id || coupon.coupon_code?.data?.coupon_plan_id || null,
+          })) || [],
+        coinLogs: v.values?.coinLogs
+          ?.filter((coinLog: ContractValue['coinLogs'][number]) => coinLog.amount !== 0)
+          ?.map((coinLog: ContractValue['coinLogs'][number]) => ({
+            id: coinLog.id,
+            title: coinLog.title,
+            amount: coinLog.amount,
+          })),
       }
     }) || []
 

@@ -14,6 +14,7 @@ import {
   Tabs,
 } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import dayjs from 'dayjs'
 import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -589,6 +590,8 @@ const MemberContractCreationForm: React.FC<
     const [newProductName, setNewProductName] = useState('')
     const [loading, setLoading] = useState(false)
     const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
+    const paymentCreatedAt = dayjs().add(30, 'day').toDate()
+    const [paymentDueDate, setPaymentDueDate] = useState(paymentCreatedAt)
 
     const handleCustomPriceChange = (value: number) => {
       setCustomPrice(value)
@@ -1540,7 +1543,6 @@ const MemberContractCreationForm: React.FC<
                 }}
               >
                 {paymentModes
-                  .filter(mode => (sum(selectedProducts.map(p => p.totalPrice)) >= 24000 ? true : mode !== '訂金+尾款'))
                   .filter(
                     mode =>
                       (!!isMemberTypeBG &&
@@ -1551,7 +1553,7 @@ const MemberContractCreationForm: React.FC<
                           '課前頭款+自訂分期',
                           '開課後自訂分期',
                         ].includes(mode)) ||
-                      (!isMemberTypeBG && ['全額付清', '訂金+尾款'].includes(mode)),
+                      (!isMemberTypeBG && ['全額付清'].includes(mode)),
                   )
                   .map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
@@ -1633,6 +1635,29 @@ const MemberContractCreationForm: React.FC<
             <Form.Item className="mb-2" name="invoiceEmail">
               <Input />
             </Form.Item>
+          </Descriptions.Item>
+
+          <Descriptions.Item label={<div>付款到期日</div>}>
+            <Form.Item name="paymentDueDate">
+              <DatePicker
+                format="YYYY-MM-DD"
+                value={moment(paymentDueDate)}
+                onChange={date => {
+                  if (date) {
+                    setPaymentDueDate(new Date(date.format('YYYY-MM-DD')))
+                  }
+                }}
+                disabledDate={current => {
+                  const minDate = moment().add(1, 'day').startOf('day')
+                  const maxDate = moment().add(180, 'day').endOf('day')
+                  return current.isBefore(minDate) || current.isAfter(maxDate)
+                }}
+              />
+            </Form.Item>
+            <div style={{ color: 'gray' }}>
+              到期天數：
+              {paymentDueDate ? dayjs(paymentDueDate).diff(dayjs().startOf('day'), 'day') : 30}天
+            </div>
           </Descriptions.Item>
 
           <Descriptions.Item label="發票備註">

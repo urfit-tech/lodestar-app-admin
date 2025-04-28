@@ -59,6 +59,7 @@ const formMessages = {
       id: 'form.PermissionGroup.MODIFY_MEMBER_PAYMENT_STATUS',
       defaultMessage: '調整會員交易狀態功能',
     },
+    READ_GROUP_SALES_ALL:{id: 'form.PermissionGroup.READ_GROUP_SALES_ALL', defaultMessage: '讀取組內資料' },
 
     // program
     PROGRAM_ADMIN: { id: 'form.PermissionGroup.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },
@@ -336,6 +337,7 @@ const formMessages = {
       id: 'form.PermissionGroup.CONTRACT_RECOGNIZE_PERFORMANCE_EDIT',
       defaultMessage: '編輯績效金額',
     },
+    READ_GROUP_CONTRACT_ALL: { id: 'form.PermissionGroup.READ_GROUP_CONTRACT_ALL', defaultMessage: '讀取組內資料' },
 
     // craft
     CRAFT_PAGE_ADMIN: { id: 'form.PermissionGroup.CRAFT_PAGE_ADMIN', defaultMessage: '所有頁面模組功能' },

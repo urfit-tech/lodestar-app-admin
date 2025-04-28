@@ -313,7 +313,8 @@ export const useMutationPermissionGroupAuditLog = () => {
   }
 }
 
-export const GetPermissionGroupMembers = gql`
+export const GetPermissionGroupMembers = 
+gql`
   query GetPermissionGroupMembers($permissionGroupId: uuid!) {
     member_permission_group(where: { permission_group_id: { _eq: $permissionGroupId } }) {
       member {
@@ -322,3 +323,58 @@ export const GetPermissionGroupMembers = gql`
     }
   }
 `
+
+export const useUserPermissionGroupMembers = (memberId: string) => {
+  const { loading, data } = useQuery<
+    hasura.GetUserPermissionGroupMembers,
+    hasura.GetUserPermissionGroupMembersVariables
+  >(
+    gql`
+      query GetUserPermissionGroupMembers($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+          permission_group{
+            name
+            permission_group_members{
+            member_id
+            }
+          }
+        }
+      }`,
+    {
+      variables: {
+        memberId,
+      },
+    }
+  )
+
+  const permissionGroupsMembers =    
+    data?.member_permission_group.flatMap(v =>  v.permission_group.permission_group_members.map(w =>  w.member_id,
+      )
+    ) || []
+
+  const { data: permissionGroupsMembersContract } = useQuery<
+    hasura.GetPermissionGroupMembersContract,
+    hasura.GetPermissionGroupMembersContractVariables
+  >(
+    gql`
+      query GetPermissionGroupMembersContract($permissionGroupsMembers: [String!]) {
+        member_contract(where: {author_id: {_in: $permissionGroupsMembers}, agreed_at: {_is_null: false}}) {
+          values
+        }
+      }`,
+    {
+      variables: { permissionGroupsMembers: permissionGroupsMembers },
+    },
+  )
+
+  const permissionGroupsMembersOrderId =
+  permissionGroupsMembersContract?.member_contract.map(v => v.values?.orderId
+  ).filter((_:any) => _ ) || []
+
+  return {
+    loading,
+    permissionGroupsMembersOrderId
+  }
+}
+
