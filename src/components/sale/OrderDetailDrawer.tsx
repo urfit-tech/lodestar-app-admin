@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
+import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
 import InvoiceCard from './InvoiceCard'
@@ -158,6 +159,7 @@ const OrderDetailDrawer: React.FC<{
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
+                    isAccountReceivable={isAccountReceivable}
                   />
                 ) : (
                   shownInvoices.map(i => (
@@ -206,6 +208,7 @@ const OrderDetailDrawer: React.FC<{
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
+                      isAccountReceivable={isAccountReceivable}
                     />
                   ))
                 )}
@@ -328,6 +331,7 @@ const OrderDetailDrawer: React.FC<{
                     }`}
                     invoiceComment={orderLog.invoiceOptions?.invoiceComment}
                     invoiceGatewayId={company?.invoiceGatewayId}
+                    isAccountReceivable={isAccountReceivable}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
