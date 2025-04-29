@@ -360,7 +360,8 @@ const MemberContractCreationBlock: React.FC<{
                   .reduce((sum, product) => sum + product.amount, 0) * 0.1,
               ),
               options,
-              paymentDueDate: fieldValue.paymentDueDate,
+              // FIXME: 
+              // paymentDueDate: fieldValue.paymentDueDate,
             },
           },
         })

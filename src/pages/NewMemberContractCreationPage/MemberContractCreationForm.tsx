@@ -1639,7 +1639,8 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label={<div>付款到期日</div>}>
+          {/* FIXME: */}
+          {/* <Descriptions.Item label={<div>付款到期日</div>}>
             <Form.Item name="paymentDueDate">
               <DatePicker
                 format="YYYY-MM-DD"
@@ -1660,7 +1661,7 @@ const MemberContractCreationForm: React.FC<
               到期天數：
               {paymentDueDate ? dayjs(paymentDueDate).diff(dayjs().startOf('day'), 'day') : 30}天
             </div>
-          </Descriptions.Item>
+          </Descriptions.Item> */}
 
           <Descriptions.Item label="發票備註">
             <Form.Item className="mb-2" name="invoiceComment">
