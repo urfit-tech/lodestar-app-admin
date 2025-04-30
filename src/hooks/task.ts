@@ -309,7 +309,7 @@ export const useMemberTaskCollection = (options?: {
     })) || []
 
   const loadMoreMemberTasks =
-    (data?.member_task_aggregate.aggregate?.count || 0) > (options?.limit || 0)
+    (data?.member_task_aggregate.aggregate?.count || 0) > (data?.member_task.length || 0)
       ? () =>
           fetchMore({
             variables: {
