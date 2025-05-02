@@ -22,6 +22,7 @@ import { notEmpty } from '../helpers'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { FieldFilter } from '../pages/MemberCollectionAdminPage/MemberCollectionAdminPage'
+import { SelectedProduct } from '../pages/NewMemberContractCreationPage'
 
 interface MenuItem {
   role: string | null
@@ -1247,6 +1248,7 @@ export const useCopyMemberContractInfo = (contractSourceId:string)=>{
       variables: {
         contractSourceId,
       },
+      skip: !contractSourceId || contractSourceId === '',
     }
   );
   const values = data?.member_contract_by_pk?.values
@@ -1264,19 +1266,38 @@ export const useCopyMemberContractInfo = (contractSourceId:string)=>{
     executorId: values?.options?.executorId || '',
     language: values?.options?.language || '',
   }
+  const orderProducts = data?.member_contract_by_pk?.values.orderProducts
+  const selectedProductsData: SelectedProduct[] = Array.isArray(orderProducts)
+    ? orderProducts.map(orderProduct => ({
+        id: orderProduct?.product_id || '',
+        title: orderProduct?.name || '',
+        amount: Number(orderProduct?.options?.quantity) || 0,
+        totalPrice: Number(orderProduct?.totalPrice) || 0,
+        price: Number(orderProduct?.price) || 0,
+        productId: orderProduct?.product_id || '',
+        options: {
+          product: orderProduct?.options?.product || '',
+          language: orderProduct?.options?.language || '',
+          language_type: orderProduct?.options?.language_type || '',
+          program_type: orderProduct?.options?.program_type || '',
+          class_mode: orderProduct?.options?.class_mode || '',
+          class_type: orderProduct?.options?.class_type || '',
+          location_type: orderProduct?.options?.location_type || '',
+          project: orderProduct?.options?.project || '',
+          once_sessions: orderProduct?.options?.once_sessions || 0,
+          weekly_frequency: {
+            max: orderProduct?.options?.weekly_frequency?.max || 0,
+            min: orderProduct?.options?.weekly_frequency?.min || 0,
+          },
+          total_sessions: {
+            max: orderProduct?.options?.total_sessions?.max || 0,
+            min: orderProduct?.options?.total_sessions?.min || 0,
+          },
+        },
+      }))
+    : [];
 
-  const orderProducts = data?.member_contract_by_pk?.values.orderProducts[0]
-  const selectedProductsData = {
-    id: orderProducts?.product_id || '',
-    title: orderProducts?.name || '',
-    amount: orderProducts?.options?.quantity || '',
-    totalPrice: orderProducts?.totalPrice || '',
-    price: orderProducts?.price || 0,
-    productId: orderProducts?.product_id || '',
-    options: orderProducts?.options || {},
-  } 
-
-  return {
+  return{
     loading,
     contractSourceData,
     selectedProductsData,
