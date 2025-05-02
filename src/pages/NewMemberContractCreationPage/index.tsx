@@ -153,9 +153,9 @@ const MemberContractCreationPage: React.VFC = () => {
     loading: contractSourceLoading,
     contractSourceData,
     selectedProductsData,
-  } = useCopyMemberContractInfo(contractSourceId!)
+  } = useCopyMemberContractInfo(contractSourceId || '')
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    !contractSourceLoading && contractSourceData ? [selectedProductsData] : [],
+    contractSourceId && selectedProductsData.length > 0 ? selectedProductsData : [],
   )
 
   const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
@@ -200,8 +200,12 @@ const MemberContractCreationPage: React.VFC = () => {
           <MemberContractCreationForm
             form={form}
             initialValues={
-              contractSourceId
+              contractSourceId && selectedProductsData.length > 0
                 ? {
+                    id: selectedProductsData[0]?.id,
+                    title: selectedProductsData[0]?.title,
+                    amount: selectedProductsData[0]?.amount,
+                    price: selectedProductsData[0]?.price,
                     contractId: contractSourceData.contract_id,
                     startedAt: moment(),
                     endedAt: moment().add(1, 'y'),
