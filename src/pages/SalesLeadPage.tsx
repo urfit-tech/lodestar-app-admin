@@ -14,6 +14,7 @@ import SalesLeadTabs, { SelectedLeadStatusCategory } from '../components/sale/Sa
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
 import { useManagers } from '../hooks/sales'
+import { ManagerSelectorStatus } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
@@ -28,12 +29,22 @@ export const StyledLine = styled.div`
   margin: 2px 0;
 `
 
-const SalesLeadManagerSelectorStatus = () => {
+const SalesLeadManagerSelectorStatus = (): ManagerSelectorStatus => {
   const { permissions } = useAuth()
-  if (
-    Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true &&
-    Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === false
-  ) {
+
+  const hasPermissionGroupSelector = Boolean(permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR) === true
+  const hasDivisionSelector = Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true
+  const isAdmin = Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === true
+
+  if (isAdmin) {
+    return 'default'
+  }
+
+  if (hasPermissionGroupSelector && hasDivisionSelector) {
+    return 'bothPermissionGroupAndDivision'
+  } else if (hasPermissionGroupSelector) {
+    return 'onlySamePermissionGroup'
+  } else if (hasDivisionSelector) {
     return 'onlySameDivision'
   } else {
     return 'default'
@@ -66,7 +77,10 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {(permissions.SALES_LEAD_SELECTOR_ADMIN || permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) && manager ? (
+        {(permissions.SALES_LEAD_SELECTOR_ADMIN ||
+          permissions.SALES_LEAD_SAME_DIVISION_SELECTOR ||
+          permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR) &&
+        manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">{formatMessage(pageMessages.SalesLeadPage.agent)}：</span>
             <MemberSelector
