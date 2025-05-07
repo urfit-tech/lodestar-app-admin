@@ -882,19 +882,21 @@ const MemberContractCreationForm: React.FC<
                                       setTotalAmount(week * Number(value))
                                     }}
                                   >
-                                    {[
-                                      { week: '1' },
-                                      { week: '3' },
-                                      { week: '4' },
-                                      { week: '6' },
-                                      { week: '9' },
-                                      { week: '10' },
-                                      { week: '15' },
-                                    ].map((d: { week: string }) => (
-                                      <Select.Option key={d.week} value={d.week}>
-                                        {d.week}
-                                      </Select.Option>
-                                    ))}
+                                    {products
+                                      .filter(
+                                        product =>
+                                          product.options.programType === '套裝項目' &&
+                                          product.options.language === '中文',
+                                      )
+                                      .map(product => product?.options?.weeklyFrequency?.max)
+                                      .filter(weeklyFrequency => weeklyFrequency)
+                                      .filter((v, i, s) => s.indexOf(v) === i)
+                                      .sort((a, b) => (a ?? 0) - (b ?? 0))
+                                      .map(weeklyFrequency => (
+                                        <Select.Option key={weeklyFrequency} value={weeklyFrequency as number}>
+                                          {weeklyFrequency}
+                                        </Select.Option>
+                                      ))}
                                   </Select>
                                 ) : category.language === '師資班' ? (
                                   <Select
