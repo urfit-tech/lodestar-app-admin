@@ -553,6 +553,7 @@ const ManualIssueInvoiceModal: React.VFC<{
   const [invoices, setInvoices] = useState<Invoice[]>(
     orderLog.invoiceOptions?.invoices?.map((i: InvoiceFromAPI) => ({
       ...i,
+      MerchantOrderNo: new Date().getTime().toString() + i.TaxType,
       Items:
         i.ItemCount?.split('|').map((_item, idx) => ({
           ItemName: i.ItemName?.split('|')[idx],
