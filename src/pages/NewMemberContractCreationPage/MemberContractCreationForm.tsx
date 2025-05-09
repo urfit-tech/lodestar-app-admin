@@ -1639,15 +1639,17 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          {/* FIXME: */}
-          {/* <Descriptions.Item label={<div>付款到期日</div>}>
+          <Descriptions.Item label={<div>付款到期日</div>}>
             <Form.Item name="paymentDueDate">
               <DatePicker
                 format="YYYY-MM-DD"
                 value={moment(paymentDueDate)}
                 onChange={date => {
                   if (date) {
-                    setPaymentDueDate(new Date(date.format('YYYY-MM-DD')))
+                    const now = moment()
+                    const withCurrentTime = date.hour(now.hour()).minute(now.minute()).second(now.second())
+
+                    setPaymentDueDate(withCurrentTime.toDate())
                   }
                 }}
                 disabledDate={current => {
@@ -1661,7 +1663,7 @@ const MemberContractCreationForm: React.FC<
               到期天數：
               {paymentDueDate ? dayjs(paymentDueDate).diff(dayjs().startOf('day'), 'day') : 30}天
             </div>
-          </Descriptions.Item> */}
+          </Descriptions.Item>
 
           <Descriptions.Item label="發票備註">
             <Form.Item className="mb-2" name="invoiceComment">
