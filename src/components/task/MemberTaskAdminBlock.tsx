@@ -492,8 +492,8 @@ const MemberTaskAdminBlock: React.FC<{
               type="primary"
               onClick={() => {
                 confirm()
+                setOrderBy({ due_at: 'desc' as hasura.order_by })
                 setFilter(filter => {
-                  setOrderBy({ due_at: 'desc' as hasura.order_by })
                   return {
                     ...filter,
                     dueAt: selectedKeys.length
