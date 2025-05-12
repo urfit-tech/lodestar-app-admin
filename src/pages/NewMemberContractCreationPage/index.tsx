@@ -155,7 +155,7 @@ const MemberContractCreationPage: React.VFC = () => {
     selectedProductsData,
   } = useCopyMemberContractInfo(contractSourceId || '')
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    contractSourceId && selectedProductsData.length > 0 ? selectedProductsData : [],
+    !contractSourceLoading && contractSourceId && selectedProductsData.length > 0 ? selectedProductsData : [],
   )
 
   const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
