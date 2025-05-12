@@ -425,9 +425,11 @@ const MemberContractCreationBlock: React.FC<{
                       }
                     : null,
               })),
-            // xuemi-only: consultant
+            // xuemi & nschool: consultant
             ...[
-              appId === 'xuemi' && totalAppointments > 0 && products.find(p => p.name === '業師諮詢')
+              (appId === 'xuemi' || appId === 'nschool') &&
+              totalAppointments > 0 &&
+              products.find(p => p.name === '業師諮詢')
                 ? {
                     product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
                     name: products.find(p => p.name === '業師諮詢')?.name,
