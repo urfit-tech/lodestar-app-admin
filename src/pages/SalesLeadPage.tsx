@@ -29,33 +29,29 @@ export const StyledLine = styled.div`
   margin: 2px 0;
 `
 
-const SalesLeadManagerSelectorStatus = (): ManagerSelectorStatus => {
+const getSalesLeadManagerSelectorStatus = (): ManagerSelectorStatus => {
   const { permissions } = useAuth()
 
-  const hasPermissionGroupSelector = Boolean(permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR) === true
-  const hasDivisionSelector = Boolean(permissions.SALES_LEAD_SAME_DIVISION_SELECTOR) === true
-  const isAdmin = Boolean(permissions.SALES_LEAD_SELECTOR_ADMIN) === true
+  const hasPermissionGroupSelector = !!permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR
+  const hasDivisionSelector = !!permissions.SALES_LEAD_SAME_DIVISION_SELECTOR
+  const isAdmin = !!permissions.SALES_LEAD_SELECTOR_ADMIN
 
   if (isAdmin) {
     return 'default'
   }
 
-  if (hasPermissionGroupSelector && hasDivisionSelector) {
-    return 'bothPermissionGroupAndDivision'
-  } else if (hasPermissionGroupSelector) {
-    return 'onlySamePermissionGroup'
-  } else if (hasDivisionSelector) {
-    return 'onlySameDivision'
-  } else {
-    return 'default'
-  }
+  if (isAdmin) return 'default'
+  if (hasPermissionGroupSelector && hasDivisionSelector) return 'bothPermissionGroupAndDivision'
+  if (hasPermissionGroupSelector) return 'onlySamePermissionGroup'
+  if (hasDivisionSelector) return 'onlySameDivision'
+  return 'default'
 }
 
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const { managers } = useManagers(SalesLeadManagerSelectorStatus())
+  const { managers } = useManagers(getSalesLeadManagerSelectorStatus())
   const [activeKey, setActiveKey] = useState('FOLLOWED')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
@@ -65,6 +61,11 @@ const SalesLeadPage: React.VFC = () => {
     managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
 
   const currentMemberIsManager = managers.some(manager => manager.id === currentMemberId)
+
+  const canSelectManager =
+    permissions.SALES_LEAD_SELECTOR_ADMIN ||
+    permissions.SALES_LEAD_SAME_DIVISION_SELECTOR ||
+    permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR
 
   if (!enabledModules.sales || (!permissions.SALES_LEAD_ADMIN && !permissions.SALES_LEAD_NORMAL && !manager)) {
     return <ForbiddenPage />
@@ -77,10 +78,7 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {(permissions.SALES_LEAD_SELECTOR_ADMIN ||
-          permissions.SALES_LEAD_SAME_DIVISION_SELECTOR ||
-          permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR) &&
-        manager ? (
+        {canSelectManager && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">{formatMessage(pageMessages.SalesLeadPage.agent)}：</span>
             <MemberSelector

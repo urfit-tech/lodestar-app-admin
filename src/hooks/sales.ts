@@ -72,6 +72,7 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
   `,
     {
       variables: { memberId: currentMemberId || '' },
+      skip: !currentMemberId,
     },
   )
 
@@ -133,30 +134,51 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
       },
     },
   )
-  
+
+  if (error) {
+    return {
+      loading: false,
+      error,
+      managers: [],
+      refetch,
+    }
+  }
+
+  const isManagerInFilteredGroup = useCallback((member: any) => {
+    const memberId = member?.id;
+    if (!memberId) return false;
+
+    switch (status) {
+      case 'onlySameDivision':
+        return sameDivisionMembersData?.member_property?.some(
+          prop => prop.member_id === memberId
+        );
+
+      case 'onlySamePermissionGroup':
+        return samePermissionGroupMembersData?.member_permission_group?.some(
+          group => group.member_id === memberId
+        );
+
+      case 'bothPermissionGroupAndDivision':
+        return sameDivisionMembersData?.member_property?.some(
+          prop => prop.member_id === memberId
+        ) || samePermissionGroupMembersData?.member_permission_group?.some(
+          group => group.member_id === memberId
+        );
+
+      default:
+        return true;
+    }
+  }, [
+    status,
+    sameDivisionMembersData?.member_property,
+    samePermissionGroupMembersData?.member_permission_group
+  ]);
+
   const managers: Manager[] = useMemo(
     () => {
-      
       return data?.member_permission
-        .filter(v => {
-          if (status === 'onlySameDivision') {
-            return sameDivisionMembersData?.member_property
-              .map(v => v.member_id)
-              .some(memberId => memberId === v.member?.id);
-          } else if (status === 'onlySamePermissionGroup') {
-            return samePermissionGroupMembersData?.member_permission_group
-              .map(v => v.member_id)
-              .some(memberId => memberId === v.member?.id);
-          } else if (status === 'bothPermissionGroupAndDivision') {
-            return sameDivisionMembersData?.member_property
-              .map(v => v.member_id)
-              .some(memberId => memberId === v.member?.id) ||
-              samePermissionGroupMembersData?.member_permission_group
-                .map(v => v.member_id)
-                .some(memberId => memberId === v.member?.id);
-          }
-          return true;
-        })
+        .filter(v => isManagerInFilteredGroup(v.member))
         .map(v => ({
           id: v.member?.id || '',
           name: v.member?.name || '',
@@ -174,15 +196,15 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
       status,
     ],
   );
-    
+
   const loadingStates = [
-    loadingCurrentMemberDivision, 
-    loadingManagerCollection, 
+    loadingCurrentMemberDivision,
+    loadingManagerCollection,
     loadingSamDivisionMembers,
     loadingCurrentMemberPermissionGroups,
     loadingSamePermissionGroupMembers,
   ];
-  
+
   return {
     loading: loadingStates.some(Boolean),
     error,
