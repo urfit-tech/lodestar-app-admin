@@ -435,7 +435,7 @@ const MemberContractCreationBlock: React.FC<{
                   {
                     member_id: member.id,
                     property_id: uniformTitlePropertyId,
-                    value: fieldValue.uniformTitle,
+                    value: fieldValue.uniformTitle ?? '',
                   },
                 ],
               },
