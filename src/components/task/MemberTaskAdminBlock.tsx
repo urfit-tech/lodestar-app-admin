@@ -138,7 +138,7 @@ const MemberTaskAdminBlock: React.FC<{
       setExcludedIds,
       ...filter,
       orderBy,
-      limit: display === 'table' ? 10 : undefined,
+      limit: display === 'table' ? 50 : undefined,
     })
 
   const groupList = Array.from(
