@@ -1,4 +1,5 @@
 import { UserOutlined } from '@ant-design/icons'
+import { gql, useQuery } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -17,9 +18,31 @@ const TaskCollectionPage: React.FC = () => {
   const { memberTask } = useMemberTask(activeMemberTaskId || '')
 
   const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
 
-  if (!permissions.TASK_ADMIN) {
+  const { data: permissionGroupData } = useQuery<{
+    member_permission_group: { permission_group_id: string }[]
+  }>(
+    gql`
+      query GET_MEMBER_PERMISSION_GROUP($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+        }
+      }
+    `,
+    {
+      skip: !permissions?.TASK_READ_GROUP_ALL || !currentMemberId,
+      variables: { memberId: currentMemberId || '' },
+      fetchPolicy: 'network-only',
+    },
+  )
+
+  const permissionGroupIds =
+    permissionGroupData?.member_permission_group?.map(
+      (pg: { permission_group_id: string }) => pg.permission_group_id,
+    ) || []
+
+  if (!permissions.TASK_ADMIN && !permissions.TASK_READ_GROUP_ALL) {
     return <ForbiddenPage />
   }
 
@@ -34,6 +57,8 @@ const TaskCollectionPage: React.FC = () => {
         localStorageMemberTaskDisplay={localStorageMemberTaskDisplay}
         localStorageMemberTaskFilter={localStorageMemberTaskFilter}
         activeMemberTask={memberTask}
+        permissionGroupIds={permissionGroupIds}
+        permissions={{ TASK_READ_GROUP_ALL: !!permissions.TASK_READ_GROUP_ALL }}
       />
     </AdminLayout>
   )

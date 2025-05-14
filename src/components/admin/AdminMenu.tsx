@@ -608,13 +608,16 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
     },
     {
       permissionIsAllowed:
-        !!enabledModules.member_task && (Boolean(permissions.TASK_ADMIN) || Boolean(permissions.TASK_CATEGORY_ADMIN)),
+        !!enabledModules.member_task &&
+        (Boolean(permissions.TASK_ADMIN) ||
+          Boolean(permissions.TASK_CATEGORY_ADMIN) ||
+          Boolean(permissions.TASK_READ_GROUP_ALL)),
       key: 'task_admin',
       icon: () => <UsersIcon />,
       name: formatMessage(adminMessages.AdminMenu.taskAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: Boolean(permissions.TASK_ADMIN),
+          permissionIsAllowed: Boolean(permissions.TASK_ADMIN) || Boolean(permissions.TASK_READ_GROUP_ALL),
           key: 'task_collection',
           name: formatMessage(adminMessages.AdminMenu.tasks),
         },
