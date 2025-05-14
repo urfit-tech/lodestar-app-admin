@@ -299,6 +299,13 @@ const SaleCollectionExpandRow = ({
                       })}
                     </div>
                   )}
+                  {orderLog.expiredAt && (
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.paymentDeadline, {
+                        date: dayjs(orderLog.expiredAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm'),
+                      })}
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
