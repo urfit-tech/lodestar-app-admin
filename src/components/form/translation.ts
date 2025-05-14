@@ -267,6 +267,7 @@ const formMessages = {
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
     TASK_CATEGORY_ADMIN: { id: 'form.PermissionGroup.TASK_CATEGORY_ADMIN', defaultMessage: '所有待辦分類功能' },
     TASK_CREATED_AT_WRITE: { id: 'form.PermissionGroup.TASK_CREATED_AT_WRITE', defaultMessage: '設定待辦建立日期' },
+    TASK_READ_GROUP_ALL: {id: 'form.PermissionGroup.TASK_READ_GROUP_ALL', defaultMessage: '讀取組內資料' },
 
     // app_setting
     APP_SETTING_ADMIN: { id: 'form.PermissionGroup.APP_SETTING_ADMIN', defaultMessage: '參數設定' },
