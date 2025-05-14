@@ -52,6 +52,10 @@ export const useMemberTaskCollection = (options?: {
   group?: string
   orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
   permissionGroupId?: string
+  permissionGroupIds?: string[]
+  permissions?: {
+    TASK_READ_GROUP_ALL?: boolean
+  }
 }) => {
   const defaultOrderBy: hasura.member_task_order_by = { created_at: 'desc' as InputMaybe<order_by> }
 
@@ -134,6 +138,20 @@ export const useMemberTaskCollection = (options?: {
     deleted_at: { _is_null: true },
   }
 
+  const permissionGroup: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] | undefined =
+    options?.permissions?.TASK_READ_GROUP_ALL && options?.permissionGroupIds
+      ? {
+          member: {
+            member_permission_groups: {
+              permission_group_id: { _in: options.permissionGroupIds },
+            },
+          },
+          deleted_at: { _is_null: true },
+        }
+      : undefined
+
+  const activeCondition = permissionGroup ?? condition
+  
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_TASK_COLLECTION,
     hasura.GET_MEMBER_TASK_COLLECTIONVariables
@@ -228,7 +246,7 @@ export const useMemberTaskCollection = (options?: {
     `,
     {
       variables: {
-        condition,
+        condition: activeCondition,
         orderBy,
         limit: options?.limit,
         propertyNames: [memberPropertyGroupName],
