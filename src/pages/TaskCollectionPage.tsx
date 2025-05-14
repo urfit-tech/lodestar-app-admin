@@ -58,9 +58,7 @@ const TaskCollectionPage: React.FC = () => {
         localStorageMemberTaskFilter={localStorageMemberTaskFilter}
         activeMemberTask={memberTask}
         permissionGroupIds={permissionGroupIds}
-        permissions={{
-          TASK_READ_GROUP_ALL: permissions.TASK_READ_GROUP_ALL || false,
-        }}
+        permissions={{ TASK_READ_GROUP_ALL: !!permissions.TASK_READ_GROUP_ALL }}
       />
     </AdminLayout>
   )

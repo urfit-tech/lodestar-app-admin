@@ -151,8 +151,6 @@ export const useMemberTaskCollection = (options?: {
       : undefined
 
   const activeCondition = permissionGroup ?? condition
-  console.log('condition', condition)
-  console.log('activeCondition', activeCondition)
   
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_TASK_COLLECTION,
