@@ -378,6 +378,10 @@ const formMessages = {
       id: 'form.PermissionGroup.SALES_LEAD_SAME_DIVISION_SELECTOR',
       defaultMessage: '同組別名單撥打選擇器功能',
     },
+    SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR: {
+      id: 'form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR',
+      defaultMessage: '同權限組名單撥打選擇器功能',
+    },
 
     // merchandise
     MERCHANDISE_ADMIN: { id: 'form.PermissionGroup.MERCHANDISE_ADMIN', defaultMessage: '所有電商管理' },

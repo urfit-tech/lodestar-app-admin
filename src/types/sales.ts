@@ -85,6 +85,12 @@ export type Manager = {
   telephone: string
 }
 
+export type ManagerSelectorStatus =
+  | 'default'
+  | 'onlySameDivision'
+  | 'onlySamePermissionGroup'
+  | 'bothPermissionGroupAndDivision'
+
 export type LeadStatus =
   | 'IDLED'
   | 'CONTACTED'
