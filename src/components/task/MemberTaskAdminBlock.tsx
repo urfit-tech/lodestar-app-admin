@@ -108,18 +108,7 @@ const MemberTaskAdminBlock: React.FC<{
   localStorageMemberTaskDisplay?: string
   localStorageMemberTaskFilter?: {}
   activeMemberTask?: MemberTaskProps | null
-  permissionGroupIds?: string[]
-  permissions?: {
-    TASK_READ_GROUP_ALL: boolean
-  }
-}> = ({
-  memberId,
-  localStorageMemberTaskDisplay,
-  localStorageMemberTaskFilter,
-  activeMemberTask,
-  permissionGroupIds,
-  permissions,
-}) => {
+}> = ({ memberId, localStorageMemberTaskDisplay, localStorageMemberTaskFilter, activeMemberTask }) => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules, settings } = useApp()
@@ -147,8 +136,6 @@ const MemberTaskAdminBlock: React.FC<{
       memberId,
       excludedIds,
       setExcludedIds,
-      permissionGroupIds,
-      permissions,
       ...filter,
       orderBy,
       limit: display === 'table' ? 50 : undefined,
