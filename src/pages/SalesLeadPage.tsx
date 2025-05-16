@@ -29,7 +29,7 @@ export const StyledLine = styled.div`
   margin: 2px 0;
 `
 
-const getSalesLeadManagerSelectorStatus = (): ManagerSelectorStatus => {
+const useSalesLeadManagerSelectorStatus = (): ManagerSelectorStatus => {
   const { permissions } = useAuth()
 
   const hasPermissionGroupSelector = !!permissions.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR
@@ -51,7 +51,7 @@ const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const { managers } = useManagers(getSalesLeadManagerSelectorStatus())
+  const { managers } = useManagers(useSalesLeadManagerSelectorStatus())
   const [activeKey, setActiveKey] = useState('FOLLOWED')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()

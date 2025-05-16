@@ -12,7 +12,6 @@ import axios from 'axios'
 import { SorterResult } from 'antd/lib/table/interface'
 import { ManagerSelectorStatus } from '../types/sales'
 
-
 type ManagerWithMemberCountData = {
   manager: {
     email: string
@@ -64,12 +63,12 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
     hasura.GetCurrentMemberPermissionGroupsVariables
   >(
     gql`
-    query GetCurrentMemberPermissionGroups($memberId: String!) {
-      member_permission_group(where: { member_id: { _eq: $memberId } }) {
-        permission_group_id
+      query GetCurrentMemberPermissionGroups($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+        }
       }
-    }
-  `,
+    `,
     {
       variables: { memberId: currentMemberId || '' },
       skip: !currentMemberId,
@@ -81,15 +80,16 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
     hasura.GetSamePermissionGroupMembersVariables
   >(
     gql`
-    query GetSamePermissionGroupMembers($permissionGroupIds: [uuid!]!) {
-      member_permission_group(where: { permission_group_id: { _in: $permissionGroupIds } }) {
-        member_id
+      query GetSamePermissionGroupMembers($permissionGroupIds: [uuid!]!) {
+        member_permission_group(where: { permission_group_id: { _in: $permissionGroupIds } }) {
+          member_id
+        }
       }
-    }
-  `,
+    `,
     {
       variables: {
-        permissionGroupIds: currentMemberPermissionGroupsData?.member_permission_group.map(g => g.permission_group_id) || []
+        permissionGroupIds:
+          currentMemberPermissionGroupsData?.member_permission_group.map(g => g.permission_group_id) || [],
       },
       skip: !currentMemberPermissionGroupsData?.member_permission_group.length,
     },
@@ -135,6 +135,46 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
     },
   )
 
+  const isManagerInFilteredGroup = useCallback(
+    (member: any) => {
+      const memberId = member?.id
+      if (!memberId) return false
+
+      switch (status) {
+        case 'onlySameDivision':
+          return sameDivisionMembersData?.member_property?.some(prop => prop.member_id === memberId)
+
+        case 'onlySamePermissionGroup':
+          return samePermissionGroupMembersData?.member_permission_group?.some(group => group.member_id === memberId)
+
+        case 'bothPermissionGroupAndDivision':
+          return (
+            sameDivisionMembersData?.member_property?.some(prop => prop.member_id === memberId) ||
+            samePermissionGroupMembersData?.member_permission_group?.some(group => group.member_id === memberId)
+          )
+
+        default:
+          return true
+      }
+    },
+    [status, sameDivisionMembersData?.member_property, samePermissionGroupMembersData?.member_permission_group],
+  )
+
+  const managers: Manager[] = useMemo(() => {
+    return (
+      data?.member_permission
+        .filter(v => isManagerInFilteredGroup(v.member))
+        .map(v => ({
+          id: v.member?.id || '',
+          name: v.member?.name || '',
+          username: v.member?.username || '',
+          avatarUrl: v.member?.picture_url || null,
+          email: v.member?.email || '',
+          telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
+        })) || []
+    )
+  }, [data?.member_permission, isManagerInFilteredGroup, managerTelephoneExtData?.member_property])
+
   if (error) {
     return {
       loading: false,
@@ -144,66 +184,13 @@ export const useManagers = (status?: ManagerSelectorStatus) => {
     }
   }
 
-  const isManagerInFilteredGroup = useCallback((member: any) => {
-    const memberId = member?.id;
-    if (!memberId) return false;
-
-    switch (status) {
-      case 'onlySameDivision':
-        return sameDivisionMembersData?.member_property?.some(
-          prop => prop.member_id === memberId
-        );
-
-      case 'onlySamePermissionGroup':
-        return samePermissionGroupMembersData?.member_permission_group?.some(
-          group => group.member_id === memberId
-        );
-
-      case 'bothPermissionGroupAndDivision':
-        return sameDivisionMembersData?.member_property?.some(
-          prop => prop.member_id === memberId
-        ) || samePermissionGroupMembersData?.member_permission_group?.some(
-          group => group.member_id === memberId
-        );
-
-      default:
-        return true;
-    }
-  }, [
-    status,
-    sameDivisionMembersData?.member_property,
-    samePermissionGroupMembersData?.member_permission_group
-  ]);
-
-  const managers: Manager[] = useMemo(
-    () => {
-      return data?.member_permission
-        .filter(v => isManagerInFilteredGroup(v.member))
-        .map(v => ({
-          id: v.member?.id || '',
-          name: v.member?.name || '',
-          username: v.member?.username || '',
-          avatarUrl: v.member?.picture_url || null,
-          email: v.member?.email || '',
-          telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
-        })) || [];
-    },
-    [
-      data?.member_permission,
-      managerTelephoneExtData?.member_property,
-      sameDivisionMembersData?.member_property,
-      samePermissionGroupMembersData?.member_permission_group,
-      status,
-    ],
-  );
-
   const loadingStates = [
     loadingCurrentMemberDivision,
     loadingManagerCollection,
     loadingSamDivisionMembers,
     loadingCurrentMemberPermissionGroups,
     loadingSamePermissionGroupMembers,
-  ];
+  ]
 
   return {
     loading: loadingStates.some(Boolean),
@@ -268,26 +255,26 @@ export const useSales = (salesId: string) => {
 
   const sales: SalesProps | null = data?.member_by_pk
     ? {
-      id: data.member_by_pk.id,
-      pictureUrl: data.member_by_pk.picture_url || null,
-      name: data.member_by_pk.name,
-      email: data.member_by_pk.email,
-      telephone: data.member_by_pk.member_properties[0]?.value || '',
-      metadata: data.member_by_pk.metadata,
-      baseOdds: parseFloat(data.member_by_pk.metadata?.assignment?.odds || '0'),
-      lastAttend: data.member_by_pk.attends[0]
-        ? {
-          startedAt: new Date(data.member_by_pk.attends[0].started_at),
-          endedAt: new Date(data.member_by_pk.attends[0].ended_at),
-        }
-        : null,
-      sharingOfMonth: sum(
-        data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
-      ),
-      sharingOrdersOfMonth: data.order_executor_sharing.length,
-      totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
-      totalNotes: data.member_note_aggregate.aggregate?.count || 0,
-    }
+        id: data.member_by_pk.id,
+        pictureUrl: data.member_by_pk.picture_url || null,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        telephone: data.member_by_pk.member_properties[0]?.value || '',
+        metadata: data.member_by_pk.metadata,
+        baseOdds: parseFloat(data.member_by_pk.metadata?.assignment?.odds || '0'),
+        lastAttend: data.member_by_pk.attends[0]
+          ? {
+              startedAt: new Date(data.member_by_pk.attends[0].started_at),
+              endedAt: new Date(data.member_by_pk.attends[0].ended_at),
+            }
+          : null,
+        sharingOfMonth: sum(
+          data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
+        ),
+        sharingOrdersOfMonth: data.order_executor_sharing.length,
+        totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
+        totalNotes: data.member_note_aggregate.aggregate?.count || 0,
+      }
     : null
 
   return {
@@ -343,7 +330,7 @@ export const useGetManagerWithMemberCount = (managerId: string, appId: string) =
       managerWithMemberCountData: { manager: null, memberCount: 0 },
       errorMembers: null,
       loadingMembers: false,
-      refetchMembers: () => { },
+      refetchMembers: () => {},
     }
   }
 
@@ -431,13 +418,13 @@ export const useManagerLeads = (
               sorter: sorter
                 ? Array.isArray(sorter)
                   ? sorter.map(sorter => ({
-                    columnKey: sorter?.columnKey,
-                    order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
-                  }))
+                      columnKey: sorter?.columnKey,
+                      order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
+                    }))
                   : {
-                    columnKey: sorter?.columnKey,
-                    order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
-                  }
+                      columnKey: sorter?.columnKey,
+                      order: sorter?.order === 'ascend' ? 'ASC' : 'DESC',
+                    }
                 : { columnKey: 'member.assignedAt', order: 'DESC' },
               condition,
             },
