@@ -1,18 +1,16 @@
 import { DownOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
 import { Button, Divider, Dropdown, Layout, Menu } from 'antd'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
 import LocaleContext, { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
-import hasura from '../../hasura'
 import { useAppPlan, useAppUsage } from '../../hooks/data'
 import defaultSettings from '../../settings'
 import AttendButton from '../attend/AttendButton'
@@ -22,8 +20,10 @@ import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 import layoutMessages from './translation'
+import minMax from 'dayjs/plugin/minMax'
 
 dayjs.extend(utc)
+dayjs.extend(minMax)
 
 const StyledLayout = styled(Layout)`
   &.bg-white {
@@ -116,9 +116,6 @@ export const DefaultLayoutHeader: React.FC<{
     totalWatchedSeconds,
     loading: appUsageLoading,
   } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
-  const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
-    UPDATE_APP_OPTIONS,
-  )
 
   let settingLanguageList: string[] = []
   if (!!settings['layout.language_sorted_list']) {
@@ -135,50 +132,27 @@ export const DefaultLayoutHeader: React.FC<{
   )
   const languagesList = sortedLanguagesList.length > 0 ? sortedLanguagesList : SUPPORTED_LOCALES
 
-  const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
-  const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
+  const now = dayjs()
+  const systemCloseDate = now.add(15, 'days').endOf('day')
+  const optionCloseDate = dayjs(appOptions.close_site_at)
+  const appEndDiffDays = dayjs(appEndedAt).diff(now, 'day')
+  const isSiteExpiringSoon = appEndDiffDays <= 20
+
   const isVideoDurationExceedsUsage =
     appPlan.options.maxVideoDuration &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
       appPlan.options.maxVideoDuration
+
   const isWatchedSecondsExceedsUsage =
     appPlan.options.maxVideoWatch &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
       appPlan.options.maxVideoWatch
-  const closeSiteAt = isSiteExpired
-    ? dayjs()
-    : appOptions?.close_site_at
-    ? dayjs(appOptions.close_site_at)
-    : dayjs().add(15, 'days').diff(dayjs(appEndedAt)) < 0
-    ? dayjs().add(15, 'days').endOf('day')
-    : dayjs(appEndedAt).endOf('day')
 
-  useEffect(() => {
-    if (
-      currentUserRole === 'app-owner' &&
-      !appPlanLoading &&
-      ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
-        isSiteExpired ||
-        isSiteExpiringSoon ||
-        isVideoDurationExceedsUsage ||
-        isWatchedSecondsExceedsUsage)
-    ) {
-      updateAppOptions({
-        variables: {
-          appId: appId,
-          options: {
-            close_site_at:
-              !isSiteExpired && !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
-                ? undefined
-                : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          },
-        },
-      })
-      if (isSiteExpired) {
-        window.location.reload()
-      }
-    }
-  }, [currentUserRole, appPlanLoading, appOptions, totalVideoDuration, totalWatchedSeconds])
+  const isUsageExceeded = isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage
+
+  const closedDate = optionCloseDate.isValid() ? optionCloseDate : dayjs(appEndedAt)
+
+  const closeSiteAt = isUsageExceeded ? dayjs.min(systemCloseDate, closedDate) : closedDate
 
   let Logo: string | undefined
   try {
@@ -270,13 +244,5 @@ export const DefaultLayoutHeader: React.FC<{
     </>
   )
 }
-
-const UPDATE_APP_OPTIONS = gql`
-  mutation UPDATE_APP_OPTIONS($appId: String!, $options: jsonb!) {
-    update_app(where: { id: { _eq: $appId } }, _set: { options: $options }) {
-      affected_rows
-    }
-  }
-`
 
 export default DefaultLayout
