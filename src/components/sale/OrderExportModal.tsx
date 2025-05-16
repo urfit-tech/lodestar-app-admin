@@ -9,6 +9,7 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
+import { useUserPermissionGroupMembers } from '../../hooks/permission'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
 import saleMessages from './translation'
@@ -62,15 +63,21 @@ type OrderExportPayload = {
   timezone?: string
 }
 
-const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
+const OrderExportModal: React.FC<AdminModalProps & { exportPermission: 'Admin' | 'Group' }> = ({
+  renderTrigger,
+  exportPermission,
+  ...adminModalProps
+}) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [selectedSpeicfy, setSelectedSpecify] = useState<OrderSpecify>('ALL')
   const [selectedProducts, setSelectedProducts] = useState<{ id: string; title: string; children?: any[] }[]>([])
   const [loading, setLoading] = useState(false)
   const toast = useToast()
+  const { loading: loadingPermissionGroupsMembersOrderId, permissionGroupsMembersOrderId } =
+    useUserPermissionGroupMembers(currentMemberId || '')
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
     form
@@ -103,6 +110,14 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             break
           case 'SPECIFY_VOUCHER_PLAN':
             Object.assign(orderExportPayload, { voucherPlanIds: selectedIds.map(each => last(each.split('_'))) })
+            break
+        }
+
+        switch (exportPermission) {
+          case 'Admin':
+            break
+          case 'Group':
+            Object.assign(orderExportPayload, { groupId: permissionGroupsMembersOrderId })
             break
         }
 
