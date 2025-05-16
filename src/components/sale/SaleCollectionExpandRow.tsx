@@ -577,7 +577,6 @@ const ManualIssueInvoiceModal: React.VFC<{
         })) || [],
     })),
   )
-  console.log(invoices)
 
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const invoiceGatewayId = paymentCompanies?.paymentCompanies
