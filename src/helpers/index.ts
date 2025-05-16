@@ -376,7 +376,7 @@ export const call = async ({
   }
 
   return axios.post(
-    `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/call`,
     {
       appId,
       callFrom: salesTelephone,
