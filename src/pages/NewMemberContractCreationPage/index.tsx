@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import { intersection, isNotEmpty, path, pipe, prop } from 'ramda'
+import { equals, intersection, isNotEmpty, path, pipe, prop } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -161,7 +161,8 @@ const MemberContractCreationPage: React.VFC = () => {
       !contractSourceLoading &&
       contractSourceId &&
       selectedProductsData.length > 0 &&
-      selectedProducts.length === 0
+      selectedProducts.length === 0 &&
+      !equals(selectedProducts, selectedProductsData)
     ) {
       setSelectedProducts(selectedProductsData)
     }
