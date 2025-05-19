@@ -5,7 +5,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { intersection, isNotEmpty, path, pipe, prop } from 'ramda'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock } from '../../components/admin'
@@ -154,9 +154,18 @@ const MemberContractCreationPage: React.VFC = () => {
     contractSourceData,
     selectedProductsData,
   } = useCopyMemberContractInfo(contractSourceId || '')
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    !contractSourceLoading && contractSourceId && selectedProductsData.length > 0 ? selectedProductsData : [],
-  )
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
+
+  useEffect(() => {
+    if (
+      !contractSourceLoading &&
+      contractSourceId &&
+      selectedProductsData.length > 0 &&
+      selectedProducts.length === 0
+    ) {
+      setSelectedProducts(selectedProductsData)
+    }
+  }, [contractSourceLoading, contractSourceId, selectedProductsData, selectedProducts])
 
   const updateInstallmentPrice = (index: number, price: number, endedAt: Date) => {
     setInstallments(prevInstallments =>
