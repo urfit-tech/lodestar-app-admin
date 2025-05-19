@@ -1642,7 +1642,9 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label={<div>付款到期日</div>}>
             <Form.Item name="paymentDueDate">
               <DatePicker
-                format="YYYY-MM-DD"
+                showTime
+                showNow={false}
+                format="YYYY-MM-DD HH:mm"
                 value={moment(paymentDueDate)}
                 onChange={date => {
                   if (date) {
