@@ -222,7 +222,7 @@ const MemberContractCreationPage: React.VFC = () => {
                     paymentMethod: contractSourceData.paymentMethod,
                     paymentMode: contractSourceData.paymentMode,
                     invoiceEmail: contractSourceData.invoiceEmail,
-                    paymentDueDate: moment(contractSourceData.paymentDueDate, 'YYYY-MM-DD'),
+                    paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD'),
                     invoiceComment: contractSourceData.invoiceComment,
                     uniformNumber: contractSourceData.uniformNumber,
                     uniformTitle: contractSourceData.uniformTitle,
