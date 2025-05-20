@@ -151,7 +151,7 @@ const MemberTaskAdminBlock: React.FC<{
       permissions,
       ...filter,
       orderBy,
-      limit: display === 'table' ? 10 : undefined,
+      limit: display === 'table' ? 50 : undefined,
     })
 
   const groupList = Array.from(
@@ -505,12 +505,15 @@ const MemberTaskAdminBlock: React.FC<{
               type="primary"
               onClick={() => {
                 confirm()
-                setFilter(filter => ({
-                  ...filter,
-                  dueAt: selectedKeys.length
-                    ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
-                    : undefined,
-                }))
+                setOrderBy({ due_at: 'desc' as hasura.order_by })
+                setFilter(filter => {
+                  return {
+                    ...filter,
+                    dueAt: selectedKeys.length
+                      ? [moment(selectedKeys[0]).startOf('day').toDate(), moment(selectedKeys[1]).endOf('day').toDate()]
+                      : undefined,
+                  }
+                })
               }}
               icon={<SearchOutlined />}
               size="small"
