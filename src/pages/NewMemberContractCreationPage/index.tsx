@@ -190,7 +190,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const isMemberTypeBG = !!memberType && !(memberType.trim().startsWith('C') || memberType.trim().startsWith('BIP'))
   const memberZeroTax = member.properties.find(p => p.name === '是否零稅')?.value
   const isMemberZeroTax = !!memberZeroTax && memberZeroTax === '是'
-  const paymentCreatedAt = moment(dayjs().add(30, 'day').toDate()).format('YYYY-MM-DD HH:mm')
+  const paymentDueDate = moment(dayjs().add(30, 'day').format('YYYY-MM-DD HH:mm'))
 
   return (
     <ContractLayout member={member} isMemberTypeBG={isMemberTypeBG}>
@@ -212,7 +212,7 @@ const MemberContractCreationPage: React.VFC = () => {
                     paymentMethod: contractSourceData.paymentMethod,
                     paymentMode: contractSourceData.paymentMode,
                     invoiceEmail: contractSourceData.invoiceEmail,
-                    paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD HH:mm'),
+                    paymentDueDate: paymentDueDate,
                     invoiceComment: contractSourceData.invoiceComment,
                     uniformNumber: contractSourceData.uniformNumber,
                     uniformTitle: contractSourceData.uniformTitle,
@@ -230,7 +230,7 @@ const MemberContractCreationPage: React.VFC = () => {
                     invoiceEmail: member.email,
                     destinationEmail: member.email,
                     language: 'zh-tw',
-                    paymentDueDate: moment(paymentCreatedAt, 'YYYY-MM-DD HH:mm'),
+                    paymentDueDate: paymentDueDate,
                     uniformNumber: member.properties.find(p => p.name === '統一編號')?.value,
                     uniformTitle: member.properties.find(p => p.name === '發票抬頭')?.value,
                   }

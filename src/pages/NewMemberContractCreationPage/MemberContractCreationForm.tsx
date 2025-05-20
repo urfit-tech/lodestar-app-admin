@@ -590,8 +590,13 @@ const MemberContractCreationForm: React.FC<
     const [newProductName, setNewProductName] = useState('')
     const [loading, setLoading] = useState(false)
     const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
-    const paymentCreatedAt = dayjs().add(30, 'day').toDate()
-    const [paymentDueDate, setPaymentDueDate] = useState(paymentCreatedAt)
+    const [paymentDueDate, setPaymentDueDate] = useState<Date | null>(null)
+    useEffect(() => {
+      if (paymentDueDate === null && fieldValue?.paymentDueDate) {
+        const date = moment(fieldValue?.paymentDueDate).toDate()
+        setPaymentDueDate(date)
+      }
+    }, [paymentDueDate, fieldValue?.paymentDueDate])
 
     const handleCustomPriceChange = (value: number) => {
       setCustomPrice(value)
