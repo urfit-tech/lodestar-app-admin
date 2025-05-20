@@ -409,6 +409,7 @@ const MemberContractCreationBlock: React.FC<{
           isPaymentSetSuccessByDefault,
           isOrderProductsDeliveredByDefault,
           expiredAt: expiredAt,
+          isManuallyIssueInvoice: fieldValue.skipIssueInvoice,
         },
         {
           headers: {
