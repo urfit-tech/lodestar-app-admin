@@ -10,6 +10,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import axios from 'axios'
 import { SorterResult } from 'antd/lib/table/interface'
+import { ManagerSelectorStatus } from '../types/sales'
 
 type ManagerWithMemberCountData = {
   manager: {
@@ -24,7 +25,7 @@ type ManagerWithMemberCountData = {
   } | null
 }
 
-export const useManagers = (status?: 'default' | 'onlySameDivision') => {
+export const useManagers = (status?: ManagerSelectorStatus) => {
   const { currentMemberId } = useAuth()
   const { loading: loadingCurrentMemberDivision, data: currentMemberDivisionData } = useQuery<
     hasura.GetCurrentMemberDivision,
@@ -55,6 +56,43 @@ export const useManagers = (status?: 'default' | 'onlySameDivision') => {
       }
     `,
     { variables: { division: currentMemberDivisionData?.member_property[0]?.value || '' } },
+  )
+
+  const { loading: loadingCurrentMemberPermissionGroups, data: currentMemberPermissionGroupsData } = useQuery<
+    hasura.GetCurrentMemberPermissionGroups,
+    hasura.GetCurrentMemberPermissionGroupsVariables
+  >(
+    gql`
+      query GetCurrentMemberPermissionGroups($memberId: String!) {
+        member_permission_group(where: { member_id: { _eq: $memberId } }) {
+          permission_group_id
+        }
+      }
+    `,
+    {
+      variables: { memberId: currentMemberId || '' },
+      skip: !currentMemberId,
+    },
+  )
+
+  const { loading: loadingSamePermissionGroupMembers, data: samePermissionGroupMembersData } = useQuery<
+    hasura.GetSamePermissionGroupMembers,
+    hasura.GetSamePermissionGroupMembersVariables
+  >(
+    gql`
+      query GetSamePermissionGroupMembers($permissionGroupIds: [uuid!]!) {
+        member_permission_group(where: { permission_group_id: { _in: $permissionGroupIds } }) {
+          member_id
+        }
+      }
+    `,
+    {
+      variables: {
+        permissionGroupIds:
+          currentMemberPermissionGroupsData?.member_permission_group.map(g => g.permission_group_id) || [],
+      },
+      skip: !currentMemberPermissionGroupsData?.member_permission_group.length,
+    },
   )
 
   const {
@@ -97,14 +135,35 @@ export const useManagers = (status?: 'default' | 'onlySameDivision') => {
     },
   )
 
-  const managers: Manager[] = useMemo(
-    () =>
+  const isManagerInFilteredGroup = useCallback(
+    (member: any) => {
+      const memberId = member?.id
+      if (!memberId) return false
+
+      switch (status) {
+        case 'onlySameDivision':
+          return sameDivisionMembersData?.member_property?.some(prop => prop.member_id === memberId)
+
+        case 'onlySamePermissionGroup':
+          return samePermissionGroupMembersData?.member_permission_group?.some(group => group.member_id === memberId)
+
+        case 'bothPermissionGroupAndDivision':
+          return (
+            sameDivisionMembersData?.member_property?.some(prop => prop.member_id === memberId) ||
+            samePermissionGroupMembersData?.member_permission_group?.some(group => group.member_id === memberId)
+          )
+
+        default:
+          return true
+      }
+    },
+    [status, sameDivisionMembersData?.member_property, samePermissionGroupMembersData?.member_permission_group],
+  )
+
+  const managers: Manager[] = useMemo(() => {
+    return (
       data?.member_permission
-        .filter(v =>
-          status === 'onlySameDivision'
-            ? sameDivisionMembersData?.member_property.map(v => v.member_id).some(memberId => memberId === v.member?.id)
-            : true,
-        )
+        .filter(v => isManagerInFilteredGroup(v.member))
         .map(v => ({
           id: v.member?.id || '',
           name: v.member?.name || '',
@@ -112,17 +171,29 @@ export const useManagers = (status?: 'default' | 'onlySameDivision') => {
           avatarUrl: v.member?.picture_url || null,
           email: v.member?.email || '',
           telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
-        })) || [],
-    [
-      data?.member_permission,
-      managerTelephoneExtData?.member_property,
-      sameDivisionMembersData?.member_property,
-      status,
-    ],
-  )
+        })) || []
+    )
+  }, [data?.member_permission, isManagerInFilteredGroup, managerTelephoneExtData?.member_property])
+
+  if (error) {
+    return {
+      loading: false,
+      error,
+      managers: [],
+      refetch,
+    }
+  }
+
+  const loadingStates = [
+    loadingCurrentMemberDivision,
+    loadingManagerCollection,
+    loadingSamDivisionMembers,
+    loadingCurrentMemberPermissionGroups,
+    loadingSamePermissionGroupMembers,
+  ]
 
   return {
-    loading: loadingCurrentMemberDivision || loadingManagerCollection || loadingSamDivisionMembers,
+    loading: loadingStates.some(Boolean),
     error,
     managers,
     refetch,
