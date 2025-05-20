@@ -423,25 +423,32 @@ const MemberContractCreationBlock: React.FC<{
 
           const uniformNumberPropertyId = properties.find(p => p.name === '統一編號')?.id
           const uniformTitlePropertyId = properties.find(p => p.name === '發票抬頭')?.id
-          if (!!uniformNumberPropertyId && !!uniformTitlePropertyId) {
-            updateMemberProperty({
-              variables: {
-                memberProperties: [
-                  {
-                    member_id: member.id,
-                    property_id: uniformNumberPropertyId,
-                    value: fieldValue.uniformNumber,
-                  },
-                  {
-                    member_id: member.id,
-                    property_id: uniformTitlePropertyId,
-                    value: fieldValue.uniformTitle,
-                  },
-                ],
-              },
+
+          const memberUniformProperty = []
+
+          if (uniformNumberPropertyId && fieldValue.uniformNumber) {
+            memberUniformProperty.push({
+              member_id: member.id,
+              property_id: uniformNumberPropertyId,
+              value: fieldValue.uniformNumber,
             })
           }
 
+          if (uniformTitlePropertyId && fieldValue.uniformTitle) {
+            memberUniformProperty.push({
+              member_id: member.id,
+              property_id: uniformTitlePropertyId,
+              value: fieldValue.uniformTitle,
+            })
+          }
+
+          if (memberUniformProperty.length > 0) {
+            updateMemberProperty({
+              variables: {
+                memberProperties: memberUniformProperty,
+              },
+            })
+          }
           // axios
           //   .post(
           //     `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
