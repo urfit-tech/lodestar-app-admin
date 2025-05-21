@@ -592,7 +592,11 @@ const MemberContractCreationForm: React.FC<
     const [zeroTaxPrice, setZeroTaxPrice] = useState(0)
     const [paymentDueDate, setPaymentDueDate] = useState<Date | null>(null)
     useEffect(() => {
-      if (paymentDueDate === null && fieldValue?.paymentDueDate) {
+      if (
+        paymentDueDate === null &&
+        fieldValue?.paymentDueDate &&
+        !equals(moment(fieldValue.paymentDueDate).toDate(), paymentDueDate)
+      ) {
         const date = moment(fieldValue?.paymentDueDate).toDate()
         setPaymentDueDate(date)
       }
@@ -1653,10 +1657,9 @@ const MemberContractCreationForm: React.FC<
                 value={moment(paymentDueDate)}
                 onChange={date => {
                   if (date) {
-                    const now = moment()
-                    const withCurrentTime = date.hour(now.hour()).minute(now.minute()).second(now.second())
-
-                    setPaymentDueDate(withCurrentTime.toDate())
+                    const selectedDate = date.toDate()
+                    setPaymentDueDate(selectedDate)
+                    form?.setFieldsValue({ paymentDueDate: moment(selectedDate) })
                   }
                 }}
                 disabledDate={current => {
