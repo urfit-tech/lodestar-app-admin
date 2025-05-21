@@ -1653,10 +1653,7 @@ const MemberContractCreationForm: React.FC<
                 value={moment(paymentDueDate)}
                 onChange={date => {
                   if (date) {
-                    const now = moment()
-                    const withCurrentTime = date.hour(now.hour()).minute(now.minute()).second(now.second())
-
-                    setPaymentDueDate(withCurrentTime.toDate())
+                    setPaymentDueDate(date.toDate())
                   }
                 }}
                 disabledDate={current => {
