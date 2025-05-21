@@ -126,8 +126,7 @@ const MemberDescriptionBlock: React.FC<{
               message.error(formatMessage(pageMessages.MemberDescriptionBlock.fail))
             } finally {
               setLoading(false)
-              // window.location.reload()
-              fetch('/api/refresh-data')
+              window.location.reload()
             }
           }}
         >
