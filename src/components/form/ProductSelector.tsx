@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import { Spin, Tag, TreeSelect } from 'antd'
 import { DataNode } from 'antd/lib/tree'
 import { ProductType } from 'lodestar-app-element/src/types/product'
-import React, { Key, useEffect, useState } from 'react'
+import React, { Key, useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import formMessages from './translation'
@@ -710,21 +710,28 @@ const ProductSelector: React.FC<{
     }
   }
 
+  // Effect 1: 處理 allowTypes 變化
   useEffect(() => {
-    const loadedData: Record<string, any[]> = {}
-    productSelections.forEach(ps => {
-      if (ps.products && ps.products.length > 0 && loadedTypes.includes(ps.productType)) {
-        loadedData[ps.productType] = [...ps.products]
-      }
+    setProductSelections(prevSelections => {
+      const loadedData: Record<string, any[]> = {}
+      prevSelections.forEach(ps => {
+        if (ps.products && ps.products.length > 0) {
+          loadedData[ps.productType] = [...ps.products]
+        }
+      })
+
+      return allowTypes.map(type => ({
+        productType: type,
+        products: loadedData[type] || [],
+      }))
     })
+  }, [allowTypes])
 
-    const initialProductSelections = allowTypes.map(type => ({
-      productType: type,
-      products: loadedData[type] || [],
-    }))
+  // Effect 2: 處理 value 變化
+  const loadProductTypeRef = useRef<typeof loadProductType>()
+  loadProductTypeRef.current = loadProductType
 
-    setProductSelections(initialProductSelections)
-
+  useEffect(() => {
     if (value && value.length > 0) {
       const typesToLoad = new Set<string>()
       value.forEach(v => {
@@ -736,13 +743,20 @@ const ProductSelector: React.FC<{
       })
 
       typesToLoad.forEach(type => {
-        loadProductType(type)
+        if (loadProductTypeRef.current) {
+          loadProductTypeRef.current(type)
+        }
       })
     }
-  }, [allowTypes])
+  }, [value])
 
   const handleTreeExpand = (keys: Key[]) => {
     const stringKeys = keys.map(key => String(key))
+
+    if (searchTerm.trim()) {
+      setSearchTerm('') // 清除搜尋關鍵字
+    }
+
     setExpandedKeys(stringKeys)
 
     const newExpandedTypes = stringKeys.filter(key => !loadedTypes.includes(key))
