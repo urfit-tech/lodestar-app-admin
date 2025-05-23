@@ -76,8 +76,7 @@ const OrderExportModal: React.FC<AdminModalProps & { exportPermission: 'Admin' |
   const [selectedProducts, setSelectedProducts] = useState<{ id: string; title: string; children?: any[] }[]>([])
   const [loading, setLoading] = useState(false)
   const toast = useToast()
-  const { loading: loadingPermissionGroupsMembersOrderId, permissionGroupsMembersOrderId } =
-    useUserPermissionGroupMembers(currentMemberId || '')
+  const { permissionGroupsMembers } = useUserPermissionGroupMembers(currentMemberId || '')
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
     form
@@ -117,12 +116,15 @@ const OrderExportModal: React.FC<AdminModalProps & { exportPermission: 'Admin' |
           case 'Admin':
             break
           case 'Group':
-            Object.assign(orderExportPayload, { groupId: permissionGroupsMembersOrderId })
+            Object.assign(orderExportPayload, { memberIds: permissionGroupsMembers })
             break
         }
 
         switch (exportTarget) {
           case 'orderLog':
+            // FIXME: delete
+            console.log('[送出 exportPayload]', orderExportPayload)
+
             await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/orders/export`, orderExportPayload, {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -154,6 +156,8 @@ const OrderExportModal: React.FC<AdminModalProps & { exportPermission: 'Admin' |
             )
             break
         }
+        // FIXME: delete
+        console.log('[DEBUG] 傳送 export payload：', orderExportPayload)
         toast({
           title: formatMessage(saleMessages.OrderExportModal.requestSuccess),
           status: 'success',
