@@ -1,7 +1,9 @@
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { OrderDiscount, OrderProduct } from '../../types/general'
+import { commonMessages } from '../../helpers/translation'
 import OrderStatusTag from './OrderStatusTag'
 import saleMessages from './translation'
 
@@ -36,8 +38,22 @@ const OrderCard: React.FC<{
   totalPrice: string
   orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[]
   orderDiscounts: Pick<OrderDiscount, 'id' | 'price' | 'name'>[]
-}> = ({ orderId, status, createdAt, name, email, totalPrice, orderProducts, orderDiscounts }) => {
+  isManuallyIssueInvoice?: boolean
+}> = ({
+  orderId,
+  status,
+  createdAt,
+  name,
+  email,
+  totalPrice,
+  orderProducts,
+  orderDiscounts,
+  isManuallyIssueInvoice,
+}) => {
+  const { settings } = useApp()
   const { formatMessage } = useIntl()
+  const manuallyIssueInvoiceEnableSetting = settings['feature.manually_issue_invoice.enable'] === '1'
+
   const contentList = [
     { title: formatMessage(saleMessages.OrderCard.orderCreatedAt), message: createdAt, isRender: true },
     { title: formatMessage(saleMessages.OrderCard.nameAndEmail), message: `${name} / ${email}`, isRender: true },
@@ -82,6 +98,16 @@ const OrderCard: React.FC<{
           </div>
         ))}
       </div>
+      {!!manuallyIssueInvoiceEnableSetting && (
+        <div className="container mb-2">
+          <StyledInfoTitle className="row">
+            {formatMessage(saleMessages.OrderCard.manuallyIssueInvoice)}
+          </StyledInfoTitle>
+          <StyledInfoContent className="row">
+            {isManuallyIssueInvoice ? formatMessage(commonMessages.ui.yes) : formatMessage(commonMessages.ui.no)}
+          </StyledInfoContent>
+        </div>
+      )}
     </StyledCard>
   )
 }

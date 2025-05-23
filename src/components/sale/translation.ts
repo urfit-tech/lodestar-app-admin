@@ -177,6 +177,7 @@ const saleMessages = {
     totalPrice: { id: 'sale.OrderCard.totalPrice', defaultMessage: '訂單總額' },
     orderProductItem: { id: 'sale.OrderCard.orderProductItem', defaultMessage: '產品項目' },
     orderDiscountItem: { id: 'sale.OrderCard.orderDiscountItem', defaultMessage: '折抵項目' },
+    manuallyIssueInvoice: { id: 'sale.OrderCard.manuallyIssueInvoice', defaultMessage: 'Manually Issue Invoice' },
   }),
   OrderOtherInfoCard: defineMessages({
     country: { id: 'sale.OrderOtherInfoCard.country', defaultMessage: '國家' },

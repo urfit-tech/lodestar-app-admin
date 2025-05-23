@@ -86,6 +86,8 @@ export const commonMessages = {
     send: { id: 'common.ui.send', defaultMessage: 'Send' },
     reject: { id: 'common.ui.reject', defaultMessage: 'Reject' },
     agree: { id: 'common.ui.agree', defaultMessage: 'Agree' },
+    yes: { id: 'common.ui.yes', defaultMessage: 'Yes' },
+    no: { id: 'common.ui.no', defaultMessage: 'No' },
   }),
   label: defineMessages({
     leadLevel: { id: 'common.label.leadLevel', defaultMessage: '分級' },

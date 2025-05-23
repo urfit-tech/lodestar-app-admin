@@ -134,4 +134,5 @@ export type InvoiceProps = {
   invoiceNumber?: string
   referrerEmail?: string
   invoiceComment?: string
+  skipIssueInvoice?: boolean
 }
