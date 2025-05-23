@@ -1851,6 +1851,8 @@
   "member.ui.memberReject": "Anggota Ditolak",
   "member.ui.switchCalendar": "Ganti Mode Kalender",
   "member.ui.switchTable": "Ganti Mode Daftar",
+  "member.ui.deleteMember": "Hapus anggota",
+  "member.ui.memberPage": "Halaman Beranda Mahasiswa",
   "memberMessages.label.createMember": "Tambah Anggota",
   "memberMessages.label.presentCall": "Panggilan ini",
   "memberMessages.label.roleSettings": "Tambahkan Identitas",

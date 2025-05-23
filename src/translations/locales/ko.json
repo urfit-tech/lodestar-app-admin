@@ -1851,6 +1851,8 @@
   "member.ui.memberReject": "회원 거부",
   "member.ui.switchCalendar": "캘린더 모드로 전환",
   "member.ui.switchTable": "목록 모드로 전환",
+  "member.ui.deleteMember": "멤버 삭제",
+  "member.ui.memberPage": "학생 홈페이지",
   "memberMessages.label.createMember": "회원 추가",
   "memberMessages.label.presentCall": "이번 통화",
   "memberMessages.label.roleSettings": "역할 추가",
