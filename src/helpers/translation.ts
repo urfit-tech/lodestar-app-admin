@@ -1195,10 +1195,10 @@ export const blogMessages = {
 export const memberMessages = {
   ui: {
     view: { id: 'member.ui.view', defaultMessage: '查看' },
-    memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
+    memberPage: { id: 'member.ui.memberPage', defaultMessage: 'Student Home Page' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
-    deleteMember: { id: 'member.ui.deleteMember', defaultMessage: '刪除會員' },
+    deleteMember: { id: 'member.ui.deleteMember', defaultMessage: 'Delete member' },
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
@@ -1263,7 +1263,8 @@ export const memberMessages = {
     },
     deleteMemberConfirmation: {
       id: 'member.text.deleteMemberConfirmation',
-      defaultMessage: '會員一經刪除即不可恢復，會將該會員的相關資料與權限移除，確定要刪除嗎？',
+      defaultMessage:
+        "Once a member is deleted, it cannot be restored. The member's related information and permissions will be removed. Are you sure you want to delete it?",
     },
     noMemberNote: {
       id: 'member.text.noMemberNote',
