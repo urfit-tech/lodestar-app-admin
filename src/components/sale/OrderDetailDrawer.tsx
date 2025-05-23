@@ -101,6 +101,7 @@ const OrderDetailDrawer: React.FC<{
                     totalPrice={currencyFormatter(totalPrice) || ''}
                     orderProducts={orderProducts}
                     orderDiscounts={orderDiscounts}
+                    isManuallyIssueInvoice={orderLog.invoiceOptions?.skipIssueInvoice}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
@@ -259,6 +260,7 @@ const OrderDetailDrawer: React.FC<{
                     totalPrice={currencyFormatter(totalPrice) || ''}
                     orderProducts={orderProducts}
                     orderDiscounts={orderDiscounts}
+                    isManuallyIssueInvoice={orderLog.invoiceOptions?.skipIssueInvoice}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
