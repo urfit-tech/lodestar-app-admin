@@ -7,6 +7,28 @@ import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import formMessages from './translation'
 
+interface QueryData {
+  [key: string]: any[]
+}
+
+interface ProcessedProduct {
+  id: string
+  title: string
+  publishedAt?: Date | null
+  tag?: string
+  children?: string[]
+  isCustomized?: boolean
+  isPhysical?: boolean
+  originalData?: any
+}
+
+interface ProductSelection {
+  productType: string
+  products: ProcessedProduct[]
+}
+
+type FormatMessage = (descriptor: { id: string; defaultMessage?: string }, values?: Record<string, any>) => string
+
 const productTypeLabel = (productType: string) => {
   switch (productType) {
     case 'ProgramPackagePlan':
@@ -91,7 +113,7 @@ const ProductSelector: React.FC<{
       title: string
       publishedAt?: Date | null
       tag?: string
-      children?: any[]
+      children?: string[]
     }[],
   ) => void
   onFullSelected?: (types: (ProductType | 'CouponPlan')[]) => void
@@ -99,7 +121,7 @@ const ProductSelector: React.FC<{
   const { formatMessage } = useIntl()
   const [expandedKeys, setExpandedKeys] = useState<string[]>([])
   const [loadedTypes, setLoadedTypes] = useState<string[]>([])
-  const [productSelections, setProductSelections] = useState<any[]>([])
+  const [productSelections, setProductSelections] = useState<ProductSelection[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [isSearchingDatabase, setIsSearchingDatabase] = useState(false)
@@ -270,13 +292,13 @@ const ProductSelector: React.FC<{
     return queries[type] || ''
   }
 
-  const getSpecTitle = (merchandise: any, specId: string) => {
+  const getSpecTitle = (merchandise: ProcessedProduct, specId: string): string => {
     const spec = merchandise.originalData?.merchandise_specs?.find((s: any) => s.id === specId)
     return spec?.title || 'Unknown Spec'
   }
 
-  const updateProductSelections = (type: string, data: any, formatMessage: any) => {
-    let products: any[] = []
+  const updateProductSelections = (type: string, data: QueryData, formatMessage: FormatMessage) => {
+    let products: ProcessedProduct[] = []
 
     switch (type) {
       case 'ProgramPlan':
@@ -416,8 +438,8 @@ const ProductSelector: React.FC<{
     )
   }
 
-  const updateSearchResults = (type: string, data: any, formatMessage: any) => {
-    let products: any[] = []
+  const updateSearchResults = (type: string, data: QueryData, formatMessage: FormatMessage) => {
+    let products: ProcessedProduct[] = []
 
     switch (type) {
       case 'ProgramPlan':
@@ -554,11 +576,11 @@ const ProductSelector: React.FC<{
       const selection = prev.find(ps => ps.productType === type)
 
       if (selection) {
-        const productsMap = new Map()
+        const productsMap = new Map<string, ProcessedProduct>()
 
-        selection.products.forEach((p: any) => productsMap.set(p.id, p))
+        selection.products.forEach((p: ProcessedProduct) => productsMap.set(p.id, p))
 
-        products.forEach((p: any) => productsMap.set(p.id, p))
+        products.forEach((p: ProcessedProduct) => productsMap.set(p.id, p))
 
         const mergedProducts = Array.from(productsMap.values())
 
@@ -572,12 +594,12 @@ const ProductSelector: React.FC<{
   const processMerchandiseSpecType = (type: string, searchKeyword?: string) => {
     const merchandiseData = productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
 
-    let products: any[] = []
+    let products: ProcessedProduct[] = []
 
     switch (type) {
       case 'MerchandiseSpec':
         products = merchandiseData.flatMap(
-          (merchandise: any) =>
+          (merchandise: ProcessedProduct) =>
             merchandise.children?.map((specId: string) => ({
               id: `MerchandiseSpec_${specId}`,
               title: `${merchandise.title} - ${getSpecTitle(merchandise, specId)}`,
@@ -588,9 +610,9 @@ const ProductSelector: React.FC<{
 
       case 'GeneralPhysicalMerchandiseSpec':
         products = merchandiseData
-          .filter((v: any) => !v.isCustomized && v.isPhysical)
+          .filter((v: ProcessedProduct) => !v.isCustomized && v.isPhysical)
           .flatMap(
-            (merchandise: any) =>
+            (merchandise: ProcessedProduct) =>
               merchandise.children?.map((specId: string) => ({
                 id: `MerchandiseSpec_${specId}`,
                 title: `${merchandise.title} - ${getSpecTitle(merchandise, specId)}`,
@@ -601,9 +623,9 @@ const ProductSelector: React.FC<{
 
       case 'GeneralVirtualMerchandiseSpec':
         products = merchandiseData
-          .filter((v: any) => !v.isCustomized && !v.isPhysical)
+          .filter((v: ProcessedProduct) => !v.isCustomized && !v.isPhysical)
           .flatMap(
-            (merchandise: any) =>
+            (merchandise: ProcessedProduct) =>
               merchandise.children?.map((specId: string) => ({
                 id: `MerchandiseSpec_${specId}`,
                 title: `${merchandise.title} - ${getSpecTitle(merchandise, specId)}`,
@@ -614,9 +636,9 @@ const ProductSelector: React.FC<{
 
       case 'CustomizedPhysicalMerchandiseSpec':
         products = merchandiseData
-          .filter((v: any) => v.isCustomized && v.isPhysical)
+          .filter((v: ProcessedProduct) => v.isCustomized && v.isPhysical)
           .flatMap(
-            (merchandise: any) =>
+            (merchandise: ProcessedProduct) =>
               merchandise.children?.map((specId: string) => ({
                 id: `MerchandiseSpec_${specId}`,
                 title: `${merchandise.title} - ${getSpecTitle(merchandise, specId)}`,
@@ -627,9 +649,9 @@ const ProductSelector: React.FC<{
 
       case 'CustomizedVirtualMerchandiseSpec':
         products = merchandiseData
-          .filter((v: any) => v.isCustomized && !v.isPhysical)
+          .filter((v: ProcessedProduct) => v.isCustomized && !v.isPhysical)
           .flatMap(
-            (merchandise: any) =>
+            (merchandise: ProcessedProduct) =>
               merchandise.children?.map((specId: string) => ({
                 id: `MerchandiseSpec_${specId}`,
                 title: `${merchandise.title} - ${getSpecTitle(merchandise, specId)}`,
@@ -641,7 +663,7 @@ const ProductSelector: React.FC<{
 
     if (searchKeyword) {
       const keyword = searchKeyword.toLowerCase()
-      products = products.filter((p: any) => p.title.toLowerCase().includes(keyword))
+      products = products.filter((p: ProcessedProduct) => p.title.toLowerCase().includes(keyword))
 
       updateSearchResults(type, { [type.toLowerCase()]: products }, formatMessage)
     } else {
@@ -710,10 +732,9 @@ const ProductSelector: React.FC<{
     }
   }
 
-  // Effect 1: 處理 allowTypes 變化
   useEffect(() => {
     setProductSelections(prevSelections => {
-      const loadedData: Record<string, any[]> = {}
+      const loadedData: Record<string, ProcessedProduct[]> = {}
       prevSelections.forEach(ps => {
         if (ps.products && ps.products.length > 0) {
           loadedData[ps.productType] = [...ps.products]
@@ -727,7 +748,6 @@ const ProductSelector: React.FC<{
     })
   }, [allowTypes])
 
-  // Effect 2: 處理 value 變化
   const loadProductTypeRef = useRef<typeof loadProductType>()
   loadProductTypeRef.current = loadProductType
 
@@ -754,7 +774,7 @@ const ProductSelector: React.FC<{
     const stringKeys = keys.map(key => String(key))
 
     if (searchTerm.trim()) {
-      setSearchTerm('') // 清除搜尋關鍵字
+      setSearchTerm('')
     }
 
     setExpandedKeys(stringKeys)
@@ -785,7 +805,7 @@ const ProductSelector: React.FC<{
           const typeEnd = v.indexOf('_')
           const type = v.slice(0, typeEnd)
           const selection = productSelections.find(s => s.productType === type)
-          return selection?.products.find((p: any) => p.id === v)
+          return selection?.products.find((p: ProcessedProduct) => p.id === v)
         } else {
           const selection = productSelections.find(s => s.productType === v)
           return selection?.products || []
@@ -804,7 +824,7 @@ const ProductSelector: React.FC<{
           return v
         } else {
           const selection = productSelections.find(s => s.productType === v)
-          return selection?.products.map((p: any) => p.id) || []
+          return selection?.products.map((p: ProcessedProduct) => p.id) || []
         }
       })
       .flat()
@@ -822,7 +842,7 @@ const ProductSelector: React.FC<{
     }
 
     const hasLocalResults = productSelections.some(selection =>
-      selection.products.some((product: any) => product.title.toLowerCase().includes(value.toLowerCase())),
+      selection.products.some((product: ProcessedProduct) => product.title.toLowerCase().includes(value.toLowerCase())),
     )
 
     if (!hasLocalResults) {
@@ -859,7 +879,7 @@ const ProductSelector: React.FC<{
       value: productSelection.productType,
       selectable: !!multiple,
       isLeaf: false,
-      children: productSelection.products.map((product: any) => ({
+      children: productSelection.products.map((product: ProcessedProduct) => ({
         key: product.id,
         title: (
           <div className="d-flex align-items-center" title={product.title}>
