@@ -1851,6 +1851,8 @@
   "member.ui.memberReject": "Thành viên bị Từ chối ",
   "member.ui.switchCalendar": " Chuyển Chế độ Lịch ",
   "member.ui.switchTable": " Chuyển Chế độ Danh sách ",
+  "member.ui.deleteMember": "Xóa thành viên",
+  "member.ui.memberPage": "Trang chủ của sinh viên",
   "memberMessages.label.createMember": " Thêm thành viên ",
   "memberMessages.label.presentCall": " Cuộc gọi này ",
   "memberMessages.label.roleSettings": " Thêm danh tính ",
