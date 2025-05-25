@@ -161,6 +161,7 @@ const OrderDetailDrawer: React.FC<{
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
                     isAccountReceivable={isAccountReceivable}
+                    isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
                   />
                 ) : (
                   shownInvoices.map(i => (
@@ -210,6 +211,7 @@ const OrderDetailDrawer: React.FC<{
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
                       isAccountReceivable={isAccountReceivable}
+                      isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
                     />
                   ))
                 )}
