@@ -139,10 +139,10 @@ const MemberContractCreationPage: React.VFC = () => {
   const { id: appId } = useApp()
   const { memberId } = useParams<{ memberId: string }>()
   const { currentMemberId: adminId } = useAuth()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(adminId ?? '')
+  const { loadingMemberAdmin, memberAdmin } = useMemberAdmin(adminId ?? '')
   const [form] = useForm<FieldProps>()
-  const { info, error, loading } = useContractInfo(appId, memberId)
-  const { products } = useContractProducts(appId)
+  const { info, loading } = useContractInfo(appId, memberId)
+  const { loading: contractProductsLoading, products } = useContractProducts(appId)
   const { sales } = useContractSales(appId)
   const [installments, setInstallments] = useState<{ index: number; price: number; endedAt: Date }[]>([])
   const [targetProduct, setTargetProduct] = useState<SingleContractProduct>()
@@ -185,7 +185,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [_, setReRender] = useState(0)
 
-  if (loading || error || !info || loadingMemberAdmin || errorMemberAdmin) {
+  if (loading || !info || loadingMemberAdmin || contractProductsLoading) {
     return <LoadingPage />
   }
 
@@ -433,6 +433,7 @@ const useContractProducts = (appId: string) => {
     data && data.appointment_plan && data.token
       ? {
           products: data.appointment_plan
+            .filter(v => !!v.options?.language)
             .map(v => ({
               id: v.id,
               title: v.title,
