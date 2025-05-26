@@ -303,6 +303,7 @@ const MemberContractCreationBlock: React.FC<{
       name: member.name,
       email: fieldValue.invoiceEmail || member.email,
       skipIssueInvoice: fieldValue.skipIssueInvoice,
+      isMemberZeroTaxProperty: member.properties.find(p => p.name === '是否零稅')?.value,
       uniformNumber: fieldValue.uniformNumber,
       uniformTitle: fieldValue.uniformTitle,
       invoiceComment: fieldValue.invoiceComment,
