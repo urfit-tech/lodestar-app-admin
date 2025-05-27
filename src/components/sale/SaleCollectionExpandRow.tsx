@@ -1,5 +1,6 @@
 import { CopyOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
+import { useToast } from '@chakra-ui/react'
 import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
@@ -578,6 +579,9 @@ const ManualIssueInvoiceModal: React.VFC<{
     })),
   )
 
+  const toast = useToast()
+  const invoicesTotalAmount = sum(invoices.map(invoice => invoice.TotalAmt))
+
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const invoiceGatewayId = paymentCompanies?.paymentCompanies
     ?.find(c => orderLog.options?.company && c.companies.map(c => c.name).includes(orderLog.options?.company))
@@ -609,6 +613,16 @@ const ManualIssueInvoiceModal: React.VFC<{
             disabled={loading}
             loading={loading}
             onClick={async () => {
+              if (invoicesTotalAmount > totalPrice) {
+                toast({
+                  title: `發票總金額不得大於訂單總金額: $${totalPrice}`,
+                  status: 'error',
+                  duration: 5000,
+                  isClosable: true,
+                  position: 'top',
+                })
+                return
+              }
               setLoading(true)
               for (let i = 0; i < invoices.length; i++) {
                 const invoice = invoices[i]
