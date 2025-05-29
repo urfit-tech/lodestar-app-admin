@@ -1297,6 +1297,7 @@ export const orderMessages = {
     referrer: { id: 'order.label.referrer', defaultMessage: '推薦人' },
     orderDiscountName: { id: 'order.label.orderDiscountName', defaultMessage: '折扣名稱' },
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
+    bankAccount: { id: 'order.label.bankAccount', defaultMessage: '收款帳號' },
     // invoice
     invoiceName: { id: 'order.label.invoiceName', defaultMessage: '發票姓名' },
     invoiceEmail: { id: 'order.label.invoiceEmail', defaultMessage: '發票信箱' },

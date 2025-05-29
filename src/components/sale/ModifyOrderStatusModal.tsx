@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
@@ -9,6 +10,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, orderMessages } from '../../helpers/translation'
+import { useMemberPermissionGroups } from '../../hooks/member'
 import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
@@ -25,6 +27,7 @@ const messages = defineMessages({
 type FieldProps = {
   price: number
   paidAt: Moment
+  bankAccountInfo?: string
 }
 
 type ModifyType = 'paid' | 'refunded' | 'expired'
@@ -45,6 +48,7 @@ const ModifyOrderStatusModal: React.VFC<{
   targetPaymentNo?: string
   minPrice?: number
   totalPrice: number
+  showBankAccountSelect?: boolean
 }> = ({
   orderLogId,
   defaultOrderStatus,
@@ -55,6 +59,7 @@ const ModifyOrderStatusModal: React.VFC<{
   targetPaymentNo,
   minPrice,
   totalPrice,
+  showBankAccountSelect = false,
 }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -63,9 +68,12 @@ const ModifyOrderStatusModal: React.VFC<{
   const [updateOrderLogStatus] = useMutation<hasura.UPDATE_ORDER_LOG_STATUS, hasura.UPDATE_ORDER_LOG_STATUSVariables>(
     UPDATE_ORDER_LOG_STATUS,
   )
+  const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
+  const currentUserPermissionGroupId = memberPermissionGroups[0]?.permission_group_id
 
   const [loading, setLoading] = useState(false)
   const [type, setType] = useState<ModifyType>('paid')
+  const { settings } = useApp()
 
   const maxPrice =
     type === 'paid'
@@ -74,6 +82,28 @@ const ModifyOrderStatusModal: React.VFC<{
       ? sum(paymentLogs.filter(p => p.status === 'SUCCESS').map(p => p.price)) -
         sum(paymentLogs.filter(p => p.status === 'REFUND').map(p => p.price))
       : 0
+
+  const paymentMethod = paymentLogs[0]?.method
+
+  const customSetting = JSON.parse(settings['custom'] || '{}')
+  const paymentCompanies: {
+    permissionGroupId?: string
+    bankAccountInfo?: { optionName: string; bankAccountNumber?: string }[]
+  }[] = customSetting.paymentCompanies || []
+
+  const matchedPermissionGroupId = paymentCompanies.find(
+    (groupId: { permissionGroupId?: string }) => groupId.permissionGroupId === currentUserPermissionGroupId,
+  )
+
+  const bankOptionName = (matchedPermissionGroupId?.bankAccountInfo ?? []).map(info => {
+    const rawNumber = info.bankAccountNumber?.replace(/-/g, '') || ''
+    const lastFourDigits = rawNumber.slice(-4)
+    info.optionName = `${info.optionName}: ${lastFourDigits}`
+    return {
+      label: info.optionName,
+      value: info.optionName,
+    }
+  })
 
   const handleSubmit = async (onFinished?: () => void) => {
     try {
@@ -94,6 +124,7 @@ const ModifyOrderStatusModal: React.VFC<{
                 gateway: paymentLogs[0]?.gateway || 'lodestar',
                 method: paymentLogs[0]?.method,
                 authorId: currentMemberId,
+                bankAccountInfo: values.bankAccountInfo,
               },
               paid_at: paidAt,
             },
@@ -210,6 +241,22 @@ const ModifyOrderStatusModal: React.VFC<{
               />
             </Form.Item>
           </div>
+          {showBankAccountSelect && paymentMethod?.toLowerCase() === 'banktransfer' && (
+            <div className="col-6">
+              <Form.Item
+                label={formatMessage(orderMessages.label.bankAccount)}
+                name="bankAccountInfo"
+                rules={[
+                  {
+                    required: true,
+                    message: '請選擇收款帳號',
+                  },
+                ]}
+              >
+                <Select options={bankOptionName} placeholder="請選擇帳號名稱" />
+              </Form.Item>
+            </div>
+          )}
         </div>
 
         <Form.Item label={formatMessage(orderMessages.label.paymentLogPaidAt)} name="paidAt">

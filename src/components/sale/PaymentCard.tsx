@@ -149,6 +149,9 @@ const PaymentCard: React.FC<{
       onRefetch?.()
     }
   }
+  const paymentCheck = payments.map(payment => payment.options?.bankAccountInfo)
+  const bankAccountMessage =
+    paymentCheck && paymentCheck.filter(Boolean).length > 0 ? paymentCheck.filter(Boolean)[0] : ''
 
   return (
     <>
@@ -199,6 +202,15 @@ const PaymentCard: React.FC<{
                     message: order.options?.paymentMode || '',
                     isRender: true,
                   },
+                  ...(payment.method === 'bankTransfer'
+                    ? [
+                        {
+                          title: formatMessage(saleMessages.PaymentCard.receivingAccount),
+                          message: bankAccountMessage,
+                          isRender: true,
+                        },
+                      ]
+                    : []),
                 ]
               : [
                   {
@@ -320,6 +332,7 @@ const PaymentCard: React.FC<{
                       onRefetch={onRefetch}
                       canModifyOperations={['paid']}
                       targetPaymentNo={payment.no}
+                      showBankAccountSelect={true}
                     />
                   )}
 
