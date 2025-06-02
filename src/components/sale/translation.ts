@@ -256,6 +256,10 @@ const saleMessages = {
       id: 'sale.PaymentCard.paymentMode',
       defaultMessage: '付款模式',
     },
+    receivingAccount: {
+      id: 'sale.PaymentCard.receivingAccount',
+      defaultMessage: '收款帳號',
+    },
     amount: {
       id: 'sale.PaymentCard.amount',
       defaultMessage: '款項',
