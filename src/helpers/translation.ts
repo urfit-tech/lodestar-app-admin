@@ -1193,21 +1193,21 @@ export const blogMessages = {
 }
 
 export const memberMessages = {
-  ui: {
+  ui: defineMessages({
     view: { id: 'member.ui.view', defaultMessage: '查看' },
     memberPage: { id: 'member.ui.memberPage', defaultMessage: 'Student Home Page' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
     deleteMember: { id: 'member.ui.deleteMember', defaultMessage: 'Delete member' },
-  },
-  status: {
+  }),
+  status: defineMessages({
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
     priorityMedium: { id: 'member.status.priorityMedium', defaultMessage: 'Medium' },
     priorityLow: { id: 'member.status.priorityLow', defaultMessage: 'Low' },
     statusPending: { id: 'member.status.statusPending', defaultMessage: 'Pending' },
     statusInProgress: { id: 'member.status.statusInProgress', defaultMessage: 'InProgress' },
     statusDone: { id: 'member.status.statusDone', defaultMessage: 'Done' },
-  },
+  }),
   label: defineMessages({
     profile: { id: 'member.label.profile', defaultMessage: '個人資料' },
     note: { id: 'member.label.note', defaultMessage: '聯絡紀錄' },
@@ -1248,7 +1248,7 @@ export const memberMessages = {
       defaultMessage: 'Private (only visible to the author and the executor)',
     },
   }),
-  text: {
+  text: defineMessages({
     noAvailableAccountInPeriod: {
       id: 'member.text.noAvailableAccountInPeriod',
       defaultMessage: '此時段無可用 {gateway} 帳號',
@@ -1280,11 +1280,11 @@ export const memberMessages = {
     smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
     smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數限制' },
     urlSpacingHint: { id: 'member.text.urlSpacingHint', defaultMessage: '若文字中有含網址，請於網址後方加上空格' },
-  },
-  placeholder: {
+  }),
+  placeholder: defineMessages({
     smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過63字' },
     smsSchedule: { id: 'member.placeholder.smsSchedule', defaultMessage: '排程發送時間（選填）' },
-  },
+  }),
 }
 
 export const orderMessages = {
