@@ -22,6 +22,7 @@ const LanguageSelector: React.FC<{
       <Select.Option value="vi">Tiếng việt</Select.Option>
       <Select.Option value="ja"> 日本語</Select.Option>
       <Select.Option value="ko"> 한국어</Select.Option>
+      <Select.Option value="de-de"> Deutsch</Select.Option>
     </Select>
   )
 }
