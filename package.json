@@ -11,8 +11,8 @@
     "format:organize-imports": "organize-imports-cli ./src/***/**/*.ts[x]",
     "format:prettier": "prettier --write ./src/***/**/*.ts[x]",
     "format": "npm run format:organize-imports && npm run format:prettier",
-    "trans:compile": "tsc --noEmit false --outDir src/extracted",
-    "trans:extract": "babel --config-file ./.intl.babelrc ./src/extracted > /dev/null",
+    "trans:compile": "babel src --out-dir src/extracted --extensions .ts,.tsx,.js,.jsx --config-file ./.intl.babelrc --ignore '**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/*.d.ts'",
+    "trans:extract": "echo 'Messages extracted during compilation'",
     "trans:manage": "node manageTranslations.js",
     "trans:clean": "rm -rf ./src/extracted",
     "trans": "npm run trans:clean && npm run trans:compile && npm run trans:extract && npm run trans:manage && npm run trans:clean"
@@ -189,6 +189,7 @@
     "node": ">=14.16.0 <17.0.0"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.27.1",
     "@graphql-codegen/cli": "^3.3.0",
     "@graphql-codegen/client-preset": "^3.0.0",
     "dotenv-flow": "^3.2.0"
