@@ -70,7 +70,7 @@ const OrderDetailDrawer: React.FC<{
 
   const [shownInvoices, setShownInvoices] = useState(invoices)
 
-  const { isAccountReceivable } = useOrderReceivableStatusQuery(orderLogId || '')
+  const { loading: accountReceivableLoading, isAccountReceivable } = useOrderReceivableStatusQuery(orderLogId)
 
   useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
 
@@ -121,7 +121,7 @@ const OrderDetailDrawer: React.FC<{
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
                 </div>
-                {loadingOrderDetail ? (
+                {loadingOrderDetail && accountReceivableLoading ? (
                   <Skeleton />
                 ) : shownInvoices.length === 0 ? (
                   <InvoiceCard

@@ -1,10 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
 import { any } from 'ramda'
-const useOrderReceivableStatusQuery = (orderId: string) => {
+const useOrderReceivableStatusQuery = (orderId: string | null) => {
   const { data, loading, error } = useQuery(GET_ORDER_RECEIVABLE_STATUS, {
     variables: {
-      orderId: orderId || '',
+      orderId,
     },
+    skip: !orderId,
   })
 
   if (loading) return { loading: true }
