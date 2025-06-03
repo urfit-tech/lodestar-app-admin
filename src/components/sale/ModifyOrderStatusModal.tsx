@@ -69,7 +69,7 @@ const ModifyOrderStatusModal: React.VFC<{
     UPDATE_ORDER_LOG_STATUS,
   )
   const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
-  const currentUserPermissionGroupId = memberPermissionGroups[0]?.permission_group_id
+  const currentUserPermissionGroupId = memberPermissionGroups.map(group => group.permission_group_id)
 
   const [loading, setLoading] = useState(false)
   const [type, setType] = useState<ModifyType>('paid')
@@ -91,19 +91,21 @@ const ModifyOrderStatusModal: React.VFC<{
     bankAccountInfo?: { optionName: string; bankAccountNumber?: string }[]
   }[] = customSetting.paymentCompanies || []
 
-  const matchedPermissionGroupId = paymentCompanies.find(
-    (groupId: { permissionGroupId?: string }) => groupId.permissionGroupId === currentUserPermissionGroupId,
+  const matchedPermissionGroupId = paymentCompanies.filter(
+    company => company.permissionGroupId && currentUserPermissionGroupId.includes(company.permissionGroupId),
   )
 
-  const bankOptionName = (matchedPermissionGroupId?.bankAccountInfo ?? []).map(info => {
-    const rawNumber = info.bankAccountNumber?.replace(/-/g, '') || ''
-    const lastFourDigits = rawNumber.slice(-4)
-    info.optionName = `${info.optionName}: ${lastFourDigits}`
-    return {
-      label: info.optionName,
-      value: info.optionName,
-    }
-  })
+  const bankOptionName = matchedPermissionGroupId
+    .flatMap(company => company.bankAccountInfo ?? [])
+    .map(info => {
+      const rawNumber = info.bankAccountNumber?.replace(/-/g, '') || ''
+      const lastFourDigits = rawNumber.slice(-4)
+      info.optionName = `${info.optionName}: ${lastFourDigits}`
+      return {
+        label: info.optionName,
+        value: info.optionName,
+      }
+    })
 
   const handleSubmit = async (onFinished?: () => void) => {
     try {
