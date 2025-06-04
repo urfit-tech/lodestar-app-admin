@@ -791,56 +791,54 @@ export const useProductSelection = (
   }, [value])
 
   
-  const handleTreeSelect = (selectedValue: string[]) => {
-    
-    selectedValue.forEach(value => {
-      if (value.includes('_')) {
-        const typeEnd = value.indexOf('_')
-        const type = value.slice(0, typeEnd)
-        if (!loadedTypes.includes(type)) {
-          loadProductType(type)
-        }
-      } else if (!loadedTypes.includes(value)) {
-        loadProductType(value)
+const handleTreeSelect = (selectedValue: string[] | string) => {
+  const valueArray = Array.isArray(selectedValue) ? selectedValue : [selectedValue]
+
+  const selectedIds = (multiple ? valueArray : [valueArray[0]])
+    .map(v => {
+      if (v.includes('_')) {
+        return v
+      } else {
+        const selection = productSelections.find(s => s.productType === v)
+        const ids = selection?.products.map((p: any) => p.id) || []
+        return ids
       }
     })
+    .flat()
 
-    
-    const found = (multiple ? selectedValue : [selectedValue])
-      .map(v => {
-        if (v.includes('_')) {
-          const typeEnd = v.indexOf('_')
-          const type = v.slice(0, typeEnd)
-          const selection = productSelections.find(s => s.productType === type)
-          return selection?.products.find((p: any) => p.id === v)
-        } else {
-          const selection = productSelections.find(s => s.productType === v)
-          return selection?.products || []
-        }
-      })
-      .flat()
-      .filter(Boolean)
+  valueArray.forEach(value => {
+    if (value.includes('_')) {
+      const typeEnd = value.indexOf('_')
+      const type = value.slice(0, typeEnd)
+      if (!loadedTypes.includes(type)) {
+        loadProductType(type)
+      }
+    } else if (!loadedTypes.includes(value)) {
+      loadProductType(value)
+    }
+  })
 
-    const selectedTypes = selectedValue
-      .map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan')))
-      .flat()
-    
-    onFullSelected?.(selectedTypes)
+  const found = (multiple ? valueArray : [valueArray[0]])
+    .map(v => {
+      if (v.includes('_')) {
+        const typeEnd = v.indexOf('_')
+        const type = v.slice(0, typeEnd)
+        const selection = productSelections.find(s => s.productType === type)
+        return selection?.products.find((p: any) => p.id === v)
+      } else {
+        const selection = productSelections.find(s => s.productType === v)
+        return selection?.products || []
+      }
+    })
+    .flat()
+    .filter(Boolean)
 
-    const selectedIds = (multiple ? selectedValue : [selectedValue])
-      .map(v => {
-        if (v.includes('_')) {
-          return v
-        } else {
-          const selection = productSelections.find(s => s.productType === v)
-          return selection?.products.map((p: any) => p.id) || []
-        }
-      })
-      .flat()
+  const selectedTypes = valueArray.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat()
 
-    onChange?.(selectedIds)
-    onProductChange?.(found)
-  }
+  onFullSelected?.(selectedTypes)
+  onChange?.(selectedIds)
+  onProductChange?.(found)
+}
 
   
   const handleTreeExpand = (keys: Key[], setSearchTerm: (term: string) => void, setExpandedKeys: (keys: string[]) => void) => {
