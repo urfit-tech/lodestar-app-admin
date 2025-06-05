@@ -207,7 +207,7 @@ const InvoiceCard: React.FC<{
   const handlePrint = async () => {
     try {
       setLoading(true)
-
+      console.log('應收帳款',isAccountReceivable)
       const result: {
         data: {
           code: string
