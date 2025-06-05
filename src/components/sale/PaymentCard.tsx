@@ -211,6 +211,15 @@ const PaymentCard: React.FC<{
                         },
                       ]
                     : []),
+                  ...(enabledModules.account_receivable
+                    ? [
+                        {
+                          title: formatMessage(saleMessages.PaymentCard.accountsReceivable),
+                          message: isAccountReceivable ? '是' : '否',
+                          isRender: true,
+                        },
+                      ]
+                    : []),
                 ]
               : [
                   {
@@ -238,15 +247,6 @@ const PaymentCard: React.FC<{
                     message: payment.gateway,
                     isRender: true,
                   },
-                  ...(enabledModules.account_receivable
-                    ? [
-                        {
-                          title: formatMessage(saleMessages.PaymentCard.accountsReceivable),
-                          message: isAccountReceivable ? '是' : '否',
-                          isRender: true,
-                        },
-                      ]
-                    : []),
                 ]
           return (
             <StyledCard key={payment.no}>
@@ -300,15 +300,6 @@ const PaymentCard: React.FC<{
                       {formatMessage(saleMessages.PaymentCard.bankLastFiveDigits)}
                     </StyledInfoTitle>
                     <StyledInfoMessage className="column">{payment.options?.bankCode}</StyledInfoMessage>
-                  </div>
-                )}
-
-                {enabledModules.account_receivable && (
-                  <div className="row mb-2 justify-content-between">
-                    <StyledInfoTitle className="column">
-                      {formatMessage(saleMessages.PaymentCard.accountsReceivable)}
-                    </StyledInfoTitle>
-                    <StyledInfoMessage className="column">{isAccountReceivable ? '是' : '否'}</StyledInfoMessage>
                   </div>
                 )}
 
