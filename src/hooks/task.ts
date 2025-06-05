@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura, { InputMaybe, order_by } from '../hasura'
 import { MeetingGateway, MemberTaskProps } from '../types/member'
+import { useMemberPermissionGroups } from './member'
 
 export const useTask = (queue: string | null, taskId: string | null) => {
   const { authToken } = useAuth()
@@ -52,26 +53,14 @@ export const useMemberTaskCollection = (options?: {
   group?: string
   orderBy: hasura.GET_MEMBER_TASK_COLLECTIONVariables['orderBy']
   permissionGroupId?: string
-  permissionGroupIds?: string[]
-  permissions?: {
-    TASK_READ_GROUP_ALL?: boolean
-  }
 }) => {
   const defaultOrderBy: hasura.member_task_order_by = { created_at: 'desc' as InputMaybe<order_by> }
-
   const { orderBy = defaultOrderBy } = options || {}
-
   const memberPropertyGroupName = '組別'
+  const { currentMemberId, permissions } = useAuth()
+  const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
 
-  const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
-    member: options?.permissionGroupId
-      ? {
-          member_permission_groups: { permission_group_id: { _eq: options?.permissionGroupId } },
-        }
-      : undefined,
-    member_id: {
-      _eq: options?.memberId,
-    },
+  const baseCondition = {
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
     category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
     executor:
@@ -138,20 +127,30 @@ export const useMemberTaskCollection = (options?: {
     deleted_at: { _is_null: true },
   }
 
-  const permissionGroup: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] | undefined =
-    options?.permissions?.TASK_READ_GROUP_ALL && options?.permissionGroupIds
+  const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = 
+    options?.memberId 
       ? {
-          member: {
+          ...baseCondition,
+          member_id: { _eq: options.memberId },
+          deleted_at: { _is_null: true },
+        }
+      : permissions?.TASK_READ_GROUP_ALL && memberPermissionGroups.length > 0
+      ? {
+          ...baseCondition,
+          executor: {
             member_permission_groups: {
-              permission_group_id: { _in: options.permissionGroupIds },
+              permission_group_id: {
+                _in: memberPermissionGroups.map(p => p.permission_group_id),
+              },
             },
           },
           deleted_at: { _is_null: true },
         }
-      : undefined
+      : {
+          ...baseCondition,
+          member_id: {_eq: options?.memberId,},
+      }
 
-  const activeCondition = permissionGroup ?? condition
-  
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_TASK_COLLECTION,
     hasura.GET_MEMBER_TASK_COLLECTIONVariables
@@ -247,7 +246,7 @@ export const useMemberTaskCollection = (options?: {
     `,
     {
       variables: {
-        condition: activeCondition,
+        condition,
         orderBy,
         limit: options?.limit,
         propertyNames: [memberPropertyGroupName],
@@ -257,74 +256,85 @@ export const useMemberTaskCollection = (options?: {
     },
   )
 
+  const memberTasks: MemberTaskProps[] =
+  data?.member_task.map(v => ({
+    id: v.id,
+    title: v.title || '',
+    priority: v.priority as MemberTaskProps['priority'],
+    status: v.status as MemberTaskProps['status'],
+    category: v.category
+      ? {
+          id: v.category.id,
+          name: v.category.name,
+        }
+      : null,
+    dueAt: v.due_at && new Date(v.due_at),
+    createdAt: v.created_at && new Date(v.created_at),
+    hasMeeting: v.has_meeting,
+    meetingGateway: v.meeting_gateway as MeetingGateway,
+    meetingHours: v.meeting_hours,
+    meet: {
+      id: v.meet?.id,
+      startedAt: v.meet?.started_at,
+      endedAt: v.meet?.ended_at,
+      nbfAt: v.meet?.nbf_at,
+      expAt: v.meet?.exp_at,
+      options: v.meet?.options,
+    },
+    description: v.description || '',
+    member: {
+      id: v.member.id,
+      name: v.member.name || v.member.username,
+    },
+    executor: v.executor
+      ? {
+          id: v.executor.id,
+          name: v.executor.name || v.executor.username,
+          avatarUrl: v.executor.picture_url || null,
+        }
+      : null,
+    author: v.author
+      ? {
+          id: v.author.id,
+          name: v.author.name || v.author.username,
+          avatarUrl: v.author.picture_url || null,
+        }
+      : null,
+    isPrivate: v.is_private,
+  })) || []
+
+  const permissionGroupMemberIds =
+    permissions?.TASK_READ_GROUP_ALL && memberPermissionGroups.length > 0
+      ? memberTasks
+        .filter(task => task.executor)
+        .map(task => task.executor!.id)
+      : undefined
+
   const executors: {
     id: string
     name: string
     group?: string
   }[] =
-    data?.executors.map(v => ({
-      id: v.executor?.id || '',
-      name: v.executor?.name || '',
-      group: v.executor?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
-    })) || []
+    data?.executors
+      .filter(v => !permissionGroupMemberIds || (v.executor && permissionGroupMemberIds.includes(v.executor.id)))
+      .map(v => ({
+        id: v.executor?.id || '',
+        name: v.executor?.name || '',
+        group: v.executor?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
+      })) || []
 
   const authors: {
     id: string
     name: string
     group?: string
   }[] =
-    data?.authors.map(v => ({
-      id: v.author?.id || '',
-      name: v.author?.name || '',
-      group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
-    })) || []
-
-  const memberTasks: MemberTaskProps[] =
-    data?.member_task.map(v => ({
-      id: v.id,
-      title: v.title || '',
-      priority: v.priority as MemberTaskProps['priority'],
-      status: v.status as MemberTaskProps['status'],
-      category: v.category
-        ? {
-            id: v.category.id,
-            name: v.category.name,
-          }
-        : null,
-      dueAt: v.due_at && new Date(v.due_at),
-      createdAt: v.created_at && new Date(v.created_at),
-      hasMeeting: v.has_meeting,
-      meetingGateway: v.meeting_gateway as MeetingGateway,
-      meetingHours: v.meeting_hours,
-      meet: {
-        id: v.meet?.id,
-        startedAt: v.meet?.started_at,
-        endedAt: v.meet?.ended_at,
-        nbfAt: v.meet?.nbf_at,
-        expAt: v.meet?.exp_at,
-        options: v.meet?.options,
-      },
-      description: v.description || '',
-      member: {
-        id: v.member.id,
-        name: v.member.name || v.member.username,
-      },
-      executor: v.executor
-        ? {
-            id: v.executor.id,
-            name: v.executor.name || v.executor.username,
-            avatarUrl: v.executor.picture_url || null,
-          }
-        : null,
-      author: v.author
-        ? {
-            id: v.author.id,
-            name: v.author.name || v.author.username,
-            avatarUrl: v.author.picture_url || null,
-          }
-        : null,
-      isPrivate: v.is_private,
-    })) || []
+    data?.authors
+      .filter(v => !permissionGroupMemberIds || memberTasks.some(task => task.executor?.id && task.author?.id === v.author?.id && permissionGroupMemberIds.includes(task.executor.id)))
+      .map(v => ({
+        id: v.author?.id || '',
+        name: v.author?.name || '',
+        group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
+      })) || []
 
   const loadMoreMemberTasks =
     (data?.member_task_aggregate.aggregate?.count || 0) > (data?.member_task.length || 0)
