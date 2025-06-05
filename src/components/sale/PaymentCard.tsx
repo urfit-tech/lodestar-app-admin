@@ -211,6 +211,15 @@ const PaymentCard: React.FC<{
                         },
                       ]
                     : []),
+                  ...(enabledModules.account_receivable
+                    ? [
+                        {
+                          title: formatMessage(saleMessages.PaymentCard.accountsReceivable),
+                          message: isAccountReceivable ? '是' : '否',
+                          isRender: true,
+                        },
+                      ]
+                    : []),
                 ]
               : [
                   {
