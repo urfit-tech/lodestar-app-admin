@@ -207,7 +207,6 @@ const InvoiceCard: React.FC<{
   const handlePrint = async () => {
     try {
       setLoading(true)
-      console.log('應收帳款',isAccountReceivable)
       const result: {
         data: {
           code: string
@@ -232,7 +231,7 @@ const InvoiceCard: React.FC<{
       if (result.data?.result.Status === 'SUCCESS') {
         setInvoiceResponse(result.data.result.Result)
         setShowInvoice(true)
-
+        console.log('應收帳款',isAccountReceivable)
         setTimeout(() => {
           const printContents = window.document.getElementById('print-content')?.innerHTML
 
