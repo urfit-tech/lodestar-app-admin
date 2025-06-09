@@ -9,6 +9,7 @@ import { defaultTo, pipe, prop, sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { paymentMethodFormatter } from '../../helpers'
 import saleMessages from './translation'
 
 export type InvoiceRequest = {
@@ -399,7 +400,7 @@ const InvoiceCard: React.FC<{
                         totalUnit: sum(
                           JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map((item: any) => item.ItemCount) || 0,
                         ),
-                        paymentMethod,
+                        paymentMethod: paymentMethodFormatter(paymentMethod || ''),
                         invoiceCompanyName,
                         companyAddress,
                         companyPhone,

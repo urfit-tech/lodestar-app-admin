@@ -594,19 +594,19 @@ export const convertPxToUnit = (value: number, unit: string) => {
   }
 }
 
-
 export const signShortUrl = async (url: string, authToken: string | null) => {
-  return await axios.post(
-    `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-short-url`,
-    {
-      url,
-    },
-    {
-      headers: {
-        authorization: `Bearer ${authToken}`,
+  return await axios
+    .post(
+      `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-short-url`,
+      {
+        url,
       },
-    },
-  )
+      {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      },
+    )
     .then(res => {
       console.log(res.data.result)
       return res.data.result
@@ -619,3 +619,18 @@ export const signShortUrl = async (url: string, authToken: string | null) => {
 
 export const memberAccountReceivableAvailable = (memberType: string) =>
   ['B', 'G'].some(v => v === memberType?.trim().match(/^[A-Z]+/)?.[0])
+
+export const paymentMethodFormatter = (paymentMethod: string) => {
+  if (paymentMethod.includes('spgateway')) {
+    return '藍新'
+  } else if (paymentMethod === 'cash') {
+    return '現金'
+  } else if (paymentMethod === 'bankTransfer') {
+    return '銀行匯款'
+  } else if (paymentMethod === 'physicalCredit') {
+    return '實體刷卡'
+  } else if (paymentMethod === 'physicalRemoteCredit') {
+    return '遠端輸入卡號'
+  }
+  return paymentMethod
+}
