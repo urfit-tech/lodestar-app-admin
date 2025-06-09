@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { memberAccountReceivableAvailable } from '../../helpers'
+import { memberAccountReceivableAvailable, paymentMethodFormatter } from '../../helpers'
 import { useMutateOrderProduct } from '../../hooks/orderProduct'
 import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
@@ -184,17 +184,7 @@ const PaymentCard: React.FC<{
 
                   {
                     title: formatMessage(saleMessages.PaymentCard.checkoutMethod),
-                    message: payment.gateway.includes('spgateway')
-                      ? '藍新'
-                      : payment.method === 'cash'
-                      ? '現金'
-                      : payment.method === 'bankTransfer'
-                      ? '銀行匯款'
-                      : payment.method === 'physicalCredit'
-                      ? '實體刷卡'
-                      : payment.method === 'physicalRemoteCredit'
-                      ? '遠端輸入卡號'
-                      : payment.method || '',
+                    message: paymentMethodFormatter(payment.method),
                     isRender: true,
                   },
                   {
@@ -348,19 +338,7 @@ const PaymentCard: React.FC<{
                     style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                     onClick={() => {
                       setIsOpenChangePaymentMethodModal(true)
-                      setPaymentMethod(
-                        payment.gateway.includes('spgateway')
-                          ? '藍新'
-                          : payment.method === 'cash'
-                          ? '現金'
-                          : payment.method === 'bankTransfer'
-                          ? '銀行匯款'
-                          : payment.method === 'physicalCredit'
-                          ? '實體刷卡'
-                          : payment.method === 'physicalRemoteCredit'
-                          ? '遠端輸入卡號'
-                          : payment.method,
-                      )
+                      setPaymentMethod(paymentMethodFormatter(payment.method))
                     }}
                   >
                     <div>{formatMessage(saleMessages.PaymentCard.changeCheckoutMethod)}</div>
