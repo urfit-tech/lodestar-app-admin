@@ -74,8 +74,9 @@ const OrderDetailDrawer: React.FC<{
 
   useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
 
-  const invoicePaymentMethod =
-    paymentLogs.sort((a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0))[0]?.method || ''
+  const invoicePaymentMethod: string | null =
+    paymentLogs.sort((a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0))[0]?.method || null
+
   return (
     <>
       {renderTrigger?.({})}
@@ -158,7 +159,7 @@ const OrderDetailDrawer: React.FC<{
                     companyUniformNumber={company?.companyUniformNumber}
                     executorName={orderLog.options?.executor?.name}
                     memberId={orderLog.memberId}
-                    paymentMethod={invoicePaymentMethod}
+                    paymentMethod={invoicePaymentMethod || orderLog.options?.paymentMethod}
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
@@ -207,7 +208,7 @@ const OrderDetailDrawer: React.FC<{
                       companyUniformNumber={company?.companyUniformNumber}
                       executorName={orderLog.options?.executor?.name}
                       memberId={orderLog.memberId}
-                      paymentMethod={invoicePaymentMethod}
+                      paymentMethod={invoicePaymentMethod || orderLog.options?.paymentMethod}
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
