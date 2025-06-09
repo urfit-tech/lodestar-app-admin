@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, paymentMethodFormatter } from '../../helpers'
 import { useOrderReceivableStatusQuery } from '../../hooks/orderReceivable'
 import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/MemberContractCreationForm'
 import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
@@ -159,7 +159,7 @@ const OrderDetailDrawer: React.FC<{
                     companyUniformNumber={company?.companyUniformNumber}
                     executorName={orderLog.options?.executor?.name}
                     memberId={orderLog.memberId}
-                    paymentMethod={invoicePaymentMethod || orderLog.options?.paymentMethod}
+                    paymentMethod={paymentMethodFormatter(invoicePaymentMethod) || orderLog.options?.paymentMethod}
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
@@ -208,7 +208,7 @@ const OrderDetailDrawer: React.FC<{
                       companyUniformNumber={company?.companyUniformNumber}
                       executorName={orderLog.options?.executor?.name}
                       memberId={orderLog.memberId}
-                      paymentMethod={invoicePaymentMethod || orderLog.options?.paymentMethod}
+                      paymentMethod={paymentMethodFormatter(invoicePaymentMethod) || orderLog.options?.paymentMethod}
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}

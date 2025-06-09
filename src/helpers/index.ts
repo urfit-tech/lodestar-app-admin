@@ -620,7 +620,10 @@ export const signShortUrl = async (url: string, authToken: string | null) => {
 export const memberAccountReceivableAvailable = (memberType: string) =>
   ['B', 'G'].some(v => v === memberType?.trim().match(/^[A-Z]+/)?.[0])
 
-export const paymentMethodFormatter = (paymentMethod: string) => {
+export const paymentMethodFormatter = (paymentMethod: string | null) => {
+  if (!paymentMethod) {
+    return paymentMethod
+  }
   if (paymentMethod.includes('spgateway')) {
     return '藍新'
   } else if (paymentMethod === 'cash') {
