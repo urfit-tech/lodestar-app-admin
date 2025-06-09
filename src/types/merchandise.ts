@@ -135,4 +135,5 @@ export type InvoiceProps = {
   referrerEmail?: string
   invoiceComment?: string
   skipIssueInvoice?: boolean
+  isMemberZeroTaxProperty?: string
 }
