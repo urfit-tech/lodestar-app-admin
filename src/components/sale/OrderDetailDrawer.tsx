@@ -74,6 +74,8 @@ const OrderDetailDrawer: React.FC<{
 
   useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
 
+  const invoicePaymentMethod =
+    paymentLogs.sort((a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0))[0]?.method || ''
   return (
     <>
       {renderTrigger?.({})}
@@ -156,7 +158,7 @@ const OrderDetailDrawer: React.FC<{
                     companyUniformNumber={company?.companyUniformNumber}
                     executorName={orderLog.options?.executor?.name}
                     memberId={orderLog.memberId}
-                    paymentMethod={orderLog.options?.paymentMethod}
+                    paymentMethod={invoicePaymentMethod}
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
@@ -205,7 +207,7 @@ const OrderDetailDrawer: React.FC<{
                       companyUniformNumber={company?.companyUniformNumber}
                       executorName={orderLog.options?.executor?.name}
                       memberId={orderLog.memberId}
-                      paymentMethod={orderLog.options?.paymentMethod}
+                      paymentMethod={invoicePaymentMethod}
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
@@ -413,6 +415,7 @@ const useOrderDetail = (orderLogId: string | null) => {
           method
           custom_no
           options
+          updated_at
         }
         order_executor(where: { order_id: { _eq: $orderLogId } }) {
           id
@@ -511,7 +514,10 @@ const useOrderDetail = (orderLogId: string | null) => {
     sharingNote: sharingCodeData?.sharing_code?.map(v => v.code).join(', ') || '',
   }
 
-  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method'>[] =
+  const paymentLogs: Pick<
+    PaymentLog,
+    'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method' | 'updatedAt'
+  >[] =
     orderDetailData?.payment_log.map(v => ({
       no: v.no,
       status: v.status || '',
@@ -520,6 +526,7 @@ const useOrderDetail = (orderLogId: string | null) => {
       paidAt: v.paid_at,
       options: v.options,
       method: v.method || '',
+      updatedAt: new Date(v.updated_at),
     })) || []
 
   const invoices =
