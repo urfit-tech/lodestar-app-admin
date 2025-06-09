@@ -115,6 +115,7 @@ export type PaymentLog = {
   customNo: string | null
   invoice_options?: InvoiceProps
   options?: any
+  updatedAt: Date
 }
 
 export type PermissionGroup = {
