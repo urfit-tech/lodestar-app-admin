@@ -118,6 +118,7 @@ const InvoiceCard: React.FC<{
   companyPhone?: string
   onClose?: () => void
   isAccountReceivable?: boolean
+  isMemberZeroTaxProperty?: string
 }> = ({
   status,
   invoiceIssuedAt,
@@ -144,6 +145,7 @@ const InvoiceCard: React.FC<{
   companyPhone,
   onClose,
   isAccountReceivable,
+  isMemberZeroTaxProperty,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -156,6 +158,8 @@ const InvoiceCard: React.FC<{
 
   const [invoiceResponse, setInvoiceResponse] = useState<InvoiceResponse>()
 
+  const isMemberZeroTaxPropertyEnableSetting = settings['feature.is_member_zero_tax_property.enable'] === '1'
+
   const statusMessage = !status
     ? formatMessage(saleMessages.InvoiceCard.invoicePending)
     : status === 'SUCCESS'
@@ -165,6 +169,7 @@ const InvoiceCard: React.FC<{
     : formatMessage(saleMessages.InvoiceCard.invoiceFailed, { errorCode: status })
   const contentList = [
     { title: formatMessage(saleMessages.InvoiceCard.invoiceStatus), message: statusMessage, isRender: true },
+    { title: '是否零稅', message: isMemberZeroTaxProperty, isRender: isMemberZeroTaxPropertyEnableSetting },
     {
       title: formatMessage(saleMessages.InvoiceCard.invoiceNumber),
       message: invoiceNumber,
