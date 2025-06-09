@@ -9,7 +9,6 @@ import { defaultTo, pipe, prop, sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { paymentMethodFormatter } from '../../helpers'
 import saleMessages from './translation'
 
 export type InvoiceRequest = {
@@ -213,7 +212,6 @@ const InvoiceCard: React.FC<{
   const handlePrint = async () => {
     try {
       setLoading(true)
-      console.log('應收帳款',isAccountReceivable)
       const result: {
         data: {
           code: string
@@ -290,10 +288,8 @@ const InvoiceCard: React.FC<{
     '12': '11-12',
   }
 
-  console.log(invoiceResponse)
   const getMinGuoYear = (date: Date) => date.getFullYear() - 1911
   const currentMonth = new Date().getMonth() + 1
-
   return (
     <StyledCard>
       <div className="container" style={{ opacity: status !== 'SUCCESS' ? 0.4 : 1 }}>
@@ -406,7 +402,7 @@ const InvoiceCard: React.FC<{
                         totalUnit: sum(
                           JSON.parse(invoiceResponse?.ItemDetail || '{}')?.map((item: any) => item.ItemCount) || 0,
                         ),
-                        paymentMethod: paymentMethodFormatter(paymentMethod || ''),
+                        paymentMethod: paymentMethod,
                         invoiceCompanyName,
                         companyAddress,
                         companyPhone,
