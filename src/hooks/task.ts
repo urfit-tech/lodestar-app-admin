@@ -58,7 +58,7 @@ export const useMemberTaskCollection = (options?: {
   const { orderBy = defaultOrderBy } = options || {}
   const memberPropertyGroupName = '組別'
   const { currentMemberId, permissions } = useAuth()
-  const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
+  const { memberPermissionGroups, groupMemberIds } = useMemberPermissionGroups(currentMemberId || '')
 
   const baseCondition = {
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
@@ -138,11 +138,23 @@ export const useMemberTaskCollection = (options?: {
       ? {
           ...baseCondition,
           executor: {
-            member_permission_groups: {
-              permission_group_id: {
-                _in: memberPermissionGroups.map(p => p.permission_group_id),
+            _and: [
+              {
+                member_permission_groups: {
+                  permission_group_id: {
+                    _in: memberPermissionGroups.map(p => p.permission_group_id),
+                  },
+                },
               },
-            },
+              options?.executor
+                ? {
+                    _or: [
+                      { name: { _eq: options.executor } },
+                      { username: { _eq: options.executor } },
+                    ],
+                  }
+                : {},
+            ],
           },
           deleted_at: { _is_null: true },
         }
@@ -328,9 +340,17 @@ export const useMemberTaskCollection = (options?: {
     name: string
     group?: string
   }[] =
-    data?.authors
-      .filter(v => !permissionGroupMemberIds || memberTasks.some(task => task.executor?.id && task.author?.id === v.author?.id && permissionGroupMemberIds.includes(task.executor.id)))
-      .map(v => ({
+  // 這段下拉選單正常，不會被限制成單獨選項
+    permissions?.TASK_READ_GROUP_ALL && groupMemberIds
+    ? data?.authors
+        .filter(v => groupMemberIds.includes(v.author?.id || ''))
+        .map(v => ({
+          id: v.author?.id || '',
+          name: v.author?.name || '',
+          group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
+        })) || []
+
+    : data?.authors.map(v => ({
         id: v.author?.id || '',
         name: v.author?.name || '',
         group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
