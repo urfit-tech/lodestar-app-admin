@@ -74,8 +74,8 @@ const OrderDetailDrawer: React.FC<{
 
   useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
 
-  const invoicePaymentMethod: string | null =
-    paymentLogs.sort((a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0))[0]?.method || null
+  const paymentMethod: string | null =
+    paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
 
   return (
     <>
@@ -113,6 +113,7 @@ const OrderDetailDrawer: React.FC<{
                 ) : (
                   <PaymentCard
                     payments={paymentLogs}
+                    paymentMethod={paymentMethod}
                     order={orderLog}
                     onRefetch={() => {
                       onRefetch?.()
@@ -159,7 +160,7 @@ const OrderDetailDrawer: React.FC<{
                     companyUniformNumber={company?.companyUniformNumber}
                     executorName={orderLog.options?.executor?.name}
                     memberId={orderLog.memberId}
-                    paymentMethod={paymentMethodFormatter(invoicePaymentMethod) || orderLog.options?.paymentMethod}
+                    paymentMethod={paymentMethod}
                     invoiceCompanyName={company?.invoiceCompanyName}
                     companyAddress={company?.companyAddress}
                     companyPhone={company?.companyPhone}
@@ -208,7 +209,7 @@ const OrderDetailDrawer: React.FC<{
                       companyUniformNumber={company?.companyUniformNumber}
                       executorName={orderLog.options?.executor?.name}
                       memberId={orderLog.memberId}
-                      paymentMethod={paymentMethodFormatter(invoicePaymentMethod) || orderLog.options?.paymentMethod}
+                      paymentMethod={paymentMethod}
                       invoiceCompanyName={company?.invoiceCompanyName}
                       companyAddress={company?.companyAddress}
                       companyPhone={company?.companyPhone}
@@ -345,6 +346,7 @@ const OrderDetailDrawer: React.FC<{
                 ) : (
                   <PaymentCard
                     payments={paymentLogs}
+                    paymentMethod={paymentMethod}
                     order={orderLog}
                     onRefetch={() => {
                       onRefetch?.()
@@ -519,16 +521,18 @@ const useOrderDetail = (orderLogId: string | null) => {
     PaymentLog,
     'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method' | 'updatedAt'
   >[] =
-    orderDetailData?.payment_log.map(v => ({
-      no: v.no,
-      status: v.status || '',
-      price: v.price,
-      gateway: v.gateway || '',
-      paidAt: v.paid_at,
-      options: v.options,
-      method: v.method || '',
-      updatedAt: new Date(v.updated_at),
-    })) || []
+    orderDetailData?.payment_log
+      .sort((a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime())
+      .map(v => ({
+        no: v.no,
+        status: v.status || '',
+        price: v.price,
+        gateway: v.gateway || '',
+        paidAt: v.paid_at,
+        options: v.options,
+        method: v.method || '',
+        updatedAt: new Date(v.updated_at),
+      })) || []
 
   const invoices =
     orderDetailData?.order_log_by_pk?.invoice.map(i => ({
