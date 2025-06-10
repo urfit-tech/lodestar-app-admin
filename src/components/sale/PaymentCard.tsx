@@ -46,6 +46,7 @@ const StyledInfoMessage = styled.div`
 
 const PaymentCard: React.FC<{
   payments: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method'>[]
+  paymentMethod: string
   order: Pick<
     OrderLog,
     | 'id'
@@ -60,7 +61,7 @@ const PaymentCard: React.FC<{
     | 'expiredAt'
   > & { memberType?: string }
   onRefetch?: () => void
-}> = ({ payments, order, onRefetch }) => {
+}> = ({ payments, paymentMethod: checkoutMethod, order, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
@@ -184,7 +185,7 @@ const PaymentCard: React.FC<{
 
                   {
                     title: formatMessage(saleMessages.PaymentCard.checkoutMethod),
-                    message: paymentMethodFormatter(payment.method),
+                    message: paymentMethodFormatter(checkoutMethod),
                     isRender: true,
                   },
                   {
@@ -192,7 +193,7 @@ const PaymentCard: React.FC<{
                     message: order.options?.paymentMode || '',
                     isRender: true,
                   },
-                  ...(payment.method === 'bankTransfer'
+                  ...(checkoutMethod === '銀行匯款'
                     ? [
                         {
                           title: formatMessage(saleMessages.PaymentCard.receivingAccount),
