@@ -1,6 +1,7 @@
 import bwipjs from '@bwip-js/browser'
 import { Button, message } from 'antd'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
@@ -9,6 +10,7 @@ import { defaultTo, pipe, prop, sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminModal from '../admin/AdminModal'
 import saleMessages from './translation'
 
 export type InvoiceRequest = {
@@ -150,6 +152,7 @@ const InvoiceCard: React.FC<{
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
   const { authToken } = useAuth()
+  const [isRevokeInvoiceModalOpen, setIsRevokeInvoiceModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showInvoice, setShowInvoice] = useState(false)
   const receiptRef1 = useRef<HTMLDivElement | null>(null)
@@ -159,6 +162,34 @@ const InvoiceCard: React.FC<{
   const [invoiceResponse, setInvoiceResponse] = useState<InvoiceResponse>()
 
   const isMemberZeroTaxPropertyEnableSetting = settings['feature.is_member_zero_tax_property.enable'] === '1'
+  const revokeInvoice = () => {
+    setLoading(true)
+    axios
+      .post(
+        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
+        {
+          appId,
+          invoiceGatewayId,
+          invoiceNumber: invoiceNumber,
+          invalidReason: '發票作廢',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      )
+      .then(r => {
+        if (r.data.code === 'SUCCESS') {
+          onClose?.()
+          message.success(formatMessage(saleMessages.InvoiceCard.voidInvoiceSuccess))
+        }
+      })
+      .catch(handleError)
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
   const statusMessage = !status
     ? formatMessage(saleMessages.InvoiceCard.invoicePending)
@@ -427,37 +458,27 @@ const InvoiceCard: React.FC<{
               disabled={loading}
               loading={loading}
               onClick={() => {
-                setLoading(true)
-                axios
-                  .post(
-                    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/invoice/revoke`,
-                    {
-                      appId,
-                      invoiceGatewayId,
-                      invoiceNumber: invoiceNumber,
-                      invalidReason: '發票作廢',
-                    },
-                    {
-                      headers: {
-                        Authorization: `Bearer ${authToken}`,
-                      },
-                    },
-                  )
-                  .then(r => {
-                    if (r.data.code === 'SUCCESS') {
-                      onClose?.()
-                      message.success(formatMessage(saleMessages.InvoiceCard.voidInvoiceSuccess))
-                    }
-                  })
-                  .catch(handleError)
-                  .finally(() => {
-                    setLoading(false)
-                  })
+                setIsRevokeInvoiceModalOpen(true)
               }}
             >
               {formatMessage(saleMessages.InvoiceCard.voidInvoice)}
             </Button>
           )}
+          <AdminModal
+            title="確認作廢發票"
+            visible={isRevokeInvoiceModalOpen}
+            onOk={() => {
+              revokeInvoice()
+              setIsRevokeInvoiceModalOpen(false)
+            }}
+            onCancel={() => setIsRevokeInvoiceModalOpen(false)}
+          >
+            <p>您即將作廢此發票，作廢後將無法恢復。</p>
+            <p>請確認是否繼續？</p>
+            <p>發票開立日期：{dayjs(invoiceIssuedAt).format('YYYY/MM/DD')}</p>
+            <p>發票號碼：{invoiceNumber}</p>
+            <p>發票金額：{invoicePrice}</p>
+          </AdminModal>
         </>
       )}
     </StyledCard>
