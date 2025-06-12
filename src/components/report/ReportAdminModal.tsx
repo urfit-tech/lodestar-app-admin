@@ -19,6 +19,7 @@ type FieldProps = {
   dashboard: string
   viewPermissions?: string[]
   canViewSelfDataOnly: boolean
+  canViewGroupDataOnly: boolean
 }
 
 const ReportAdminModal: React.FC<
@@ -40,7 +41,7 @@ const ReportAdminModal: React.FC<
   const { formatMessage } = useIntl()
 
   const generateReportOptions = (formValue: FieldProps) => {
-    const { type, formType, dashboard, question, canViewSelfDataOnly } = formValue
+    const { type, formType, dashboard, question, canViewSelfDataOnly, canViewGroupDataOnly } = formValue
     switch (type) {
       case 'metabase':
         return {
@@ -50,6 +51,7 @@ const ReportAdminModal: React.FC<
             params: formType === 'dashboard' ? { appid: appId } : { appId },
           },
           canViewSelfDataOnly,
+          canViewGroupDataOnly,
         }
       default:
         return null
@@ -150,6 +152,7 @@ const ReportAdminModal: React.FC<
           [originFormType]: report?.options?.metabase?.resource?.[originFormType],
           viewPermissions: report?.viewingPermissions?.map(viewingPermission => viewingPermission.id),
           canViewSelfDataOnly: !!report?.options?.canViewSelfDataOnly,
+          canViewGroupDataOnly: !!report?.options?.canViewGroupDataOnly,
         }}
       >
         <Form.Item
@@ -198,6 +201,9 @@ const ReportAdminModal: React.FC<
         </Form.Item>
         <Form.Item name="canViewSelfDataOnly" valuePropName="checked">
           <Checkbox> {formatMessage(reportMessages.ReportAdminModal.canViewSelfDataOnly)}</Checkbox>
+        </Form.Item>
+        <Form.Item name="canViewGroupDataOnly" valuePropName="checked">
+          <Checkbox>{formatMessage(reportMessages.ReportAdminModal.canViewGroupDataOnly)}</Checkbox>
         </Form.Item>
         {enabledModules.permission_group ? (
           <Form.Item label={formatMessage(reportMessages.ReportAdminModal.viewingPermission)} name="viewPermissions">
