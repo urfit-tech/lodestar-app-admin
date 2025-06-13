@@ -1156,21 +1156,33 @@ export const useMemberPermissionGroups = (memberId: string) => {
           permission_group {
             id
             name
+            permission_group_members {
+              member_id
+            }
           }
         }
       }
     `,
     { variables: { memberId } },
   )
-  const memberPermissionGroups: { permission_group_id: string; name: string }[] =
+  const { permissions } = useAuth()
+
+  const memberPermissionGroups: { permission_group_id: string; name: string; member_ids: string[] }[] =
     data?.member_permission_group.map(v => ({
       permission_group_id: v.permission_group.id,
       name: v.permission_group.name,
+      member_ids: v.permission_group.permission_group_members.map(m => m.member_id),
     })) || []
+
+  const groupMemberIds =
+  permissions?.TASK_READ_GROUP_ALL && memberPermissionGroups.length > 0
+    ? memberPermissionGroups.flatMap(g => g.member_ids)
+    : undefined
 
   return {
     loading,
     memberPermissionGroups,
+    groupMemberIds,
     error,
   }
 }
