@@ -473,10 +473,10 @@ const InvoiceCard: React.FC<{
             }}
             onCancel={() => setIsRevokeInvoiceModalOpen(false)}
           >
-            <p>您即將作廢此發票，作廢後將無法恢復。</p>
-            <p>請確認是否繼續？</p>
-            <p>發票開立日期：{dayjs(invoiceIssuedAt).format('YYYY/MM/DD')}</p>
-            <p>發票號碼：{invoiceNumber}</p>
+            <p>您即將作廢此發票，作廢後將無法恢復。請確認是否繼續？</p>
+            <p>預作廢的發票資訊如下：</p>
+            <p>發票開立時間：{dayjs(invoiceIssuedAt).format('YYYY/MM/DD HH:mm:ss')}</p>
+            <p>發票編號：{invoiceNumber}</p>
             <p>發票金額：{invoicePrice}</p>
           </AdminModal>
         </>
