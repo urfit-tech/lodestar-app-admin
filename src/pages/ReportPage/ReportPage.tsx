@@ -33,14 +33,6 @@ const ReportPage: React.FC = () => {
   const iframeHeightSetting = Number(settings['report.iframe_height']) || 600
   const [iframeHeight, setIframeHeight] = useState(iframeHeightSetting)
   const { reportId } = useParams<{ reportId: string }>()
-  // 👈 加入更多 debug
-  console.log('=== ReportPage Debug ===')
-  console.log('reportId from useParams:', reportId, typeof reportId)
-  console.log('reportId is undefined:', reportId === undefined)
-  console.log('reportId is null:', reportId === null)
-  console.log('reportId stringified:', JSON.stringify(reportId))
-  console.log('========================')
-
   const { report } = useReport(reportId)
   const { loading: loadingMemberPermissionGroups, memberPermissionGroups } = useMemberPermissionGroups(
     currentMemberId || '',
@@ -49,12 +41,6 @@ const ReportPage: React.FC = () => {
   const startedAt = dayjs(Date.now()).add(-1, 'month').format('YYYY-MM-DD')
   const endedAt = dayjs(Date.now()).format('YYYY-MM-DD')
   const signedUrlWithFilter = `${signedUrl}?startedAt=${startedAt}&endedAt=${endedAt}#titled=false`
-
-  console.log('🖼️ signedUrl:', signedUrl) // 👈 加入這行
-  console.log('🖼️ signedUrlWithFilter:', signedUrlWithFilter) // 👈 加入這行
-  console.log('🖼️ iframe height:', iframeHeight) // 👈 加入這行
-  console.log('🖼️ iframe loading state:', isIframeLoading) // 👈 加入這行
-
   const handleIframeLoad = () => setIframeLoading(false)
 
   if (
@@ -69,8 +55,6 @@ const ReportPage: React.FC = () => {
       !permissions.REPORT_ADMIN)
   )
     return <ForbiddenPage />
-
-  console.log('report object:', report)
 
   return (
     <AdminBlock style={{ height: '100vh' }}>
@@ -103,13 +87,7 @@ const ReportPage: React.FC = () => {
         width="100%"
         height={`${iframeHeight}px`}
         allowTransparency
-        onLoad={() => {
-          console.log('🖼️ iframe loaded successfully!') // 👈 加入這行
-          handleIframeLoad()
-        }}
-        onError={e => {
-          console.error('🖼️ iframe load error:', e) // 👈 加入這行
-        }}
+        onLoad={handleIframeLoad}
         style={{ display: isIframeLoading ? 'none' : 'block' }}
       />
     </AdminBlock>
@@ -120,46 +98,15 @@ const useReportSignedUrlById = (reportId: string, authToken: string) => {
   const [signedUrl, setSignedUrl] = useState<any>(null)
   const [error, setError] = useState<any>('')
   const [isLoading, setLoading] = useState<boolean>(false)
-
-  // 👈 加入這些 debug
-  console.log('=== useReportSignedUrlById Debug ===')
-  console.log('Hook called with reportId:', reportId, typeof reportId)
-  console.log('Hook called with authToken exists:', !!authToken)
-
-  console.log('==================================')
-
   useEffect(() => {
-    console.log('=== useEffect triggered ===')
-    console.log('useEffect reportId:', reportId, typeof reportId)
-    console.log('useEffect authToken exists:', !!authToken)
-
-    if (!reportId || reportId === 'null' || reportId === 'undefined') {
-      console.log('❌ Skipping request - invalid reportId:', reportId)
-      return
-    }
-
-    if (!authToken) {
-      console.log('❌ Skipping request - no authToken')
-      return
-    }
-
-    console.log('✅ Making valid request')
     setLoading(true)
     ;(async () => {
       try {
-        const url = `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/report/${reportId}`
-        console.log('🚀 Sending request to:', url)
-
-        const response = await axios.get(url, {
+        const response = await axios.get(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/report/${reportId}`, {
           headers: { authorization: `Bearer ${authToken}` },
         })
-
-        console.log('📥 Full response:', response) // 👈 加入這行
-        console.log('📥 Response data:', response.data) // 👈 加入這行
-        console.log('📥 Response result:', response.data.result) // 👈 加入這行
         setSignedUrl(() => response.data.result)
       } catch (error) {
-        console.error('❌ Request failed:', error)
         setError(error)
       } finally {
         setLoading(false)
