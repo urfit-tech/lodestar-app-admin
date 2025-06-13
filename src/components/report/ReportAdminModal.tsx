@@ -202,7 +202,7 @@ const ReportAdminModal: React.FC<
         <Form.Item name="canViewSelfDataOnly" valuePropName="checked">
           <Checkbox> {formatMessage(reportMessages.ReportAdminModal.canViewSelfDataOnly)}</Checkbox>
         </Form.Item>
-        <Form.Item name="canViewGroupDataOnly" valuePropName="checked">
+        <Form.Item name="canViewGroupDataOnly" valuePropName="checked" style={{ marginTop: '-24px' }}>
           <Checkbox>{formatMessage(reportMessages.ReportAdminModal.canViewGroupDataOnly)}</Checkbox>
         </Form.Item>
         {enabledModules.permission_group ? (
