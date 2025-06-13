@@ -3113,6 +3113,7 @@
   "questionLibrary.ui.sortQuestions": "Sort Questions",
   "questionLibrary.ui.useZhuYinFont": "Use Zhuyin Font",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "Only can view Self Data",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "Only can view Group Data",
   "reportMessages.ReportAdminModal.cancel": "cancel",
   "reportMessages.ReportAdminModal.confirm": "confirm",
   "reportMessages.ReportAdminModal.embedDashboard": "Embed Dashboard",

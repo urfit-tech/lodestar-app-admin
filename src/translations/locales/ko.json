@@ -3113,6 +3113,7 @@
   "questionLibrary.ui.sortQuestions": "문항 정렬",
   "questionLibrary.ui.useZhuYinFont": "주음 글꼴 사용",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "개인 데이터만 조회 가능",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "그룹 내 데이터만 보기 가능",
   "reportMessages.ReportAdminModal.cancel": "취소",
   "reportMessages.ReportAdminModal.confirm": "확인",
   "reportMessages.ReportAdminModal.embedDashboard": "대시보드 삽입",

@@ -12,6 +12,10 @@ export const reportMessages = {
       id: 'reportMessages.ReportAdminModal.canViewSelfDataOnly',
       defaultMessage: 'Only can view Self Data',
     },
+    canViewGroupDataOnly: {
+      id: 'reportMessages.ReportAdminModal.canViewGroupDataOnly',
+      defaultMessage: 'Only can view Group Data',
+    },
     existReport: { id: 'reportMessages.ReportAdminModal.existReport', defaultMessage: '已存在相同報表' },
     embedSingleReport: {
       id: 'reportMessages.ReportAdminModal.embedSingleReport',

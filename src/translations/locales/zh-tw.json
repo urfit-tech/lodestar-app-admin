@@ -3113,6 +3113,7 @@
   "questionLibrary.ui.sortQuestions": "排序題目",
   "questionLibrary.ui.useZhuYinFont": "使用注音字形",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "只能看個人的數據",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "只能看組內的數據",
   "reportMessages.ReportAdminModal.cancel": "取消",
   "reportMessages.ReportAdminModal.confirm": "確定",
   "reportMessages.ReportAdminModal.embedDashboard": "嵌入儀表板",
