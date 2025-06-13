@@ -381,8 +381,8 @@ const MemberContractCreationBlock: React.FC<{
       productOptions[p.productId] = { ...p, isContract: true, quantity: p.amount }
     })
 
-    const isPaidByCashWithInvoiceAutoIssued = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice
     const isReceivable = enabledModules.account_receivable && fieldValue.accountReceivable
+    const isPaidByCashWithInvoiceAutoIssued = paymentMethod === 'cash' && !fieldValue.skipIssueInvoice && !isReceivable
 
     const isOrderSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
     const isPaymentSetSuccessByDefault = isPaidByCashWithInvoiceAutoIssued
