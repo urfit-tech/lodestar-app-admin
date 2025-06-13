@@ -58,69 +58,37 @@ export const useMemberTaskCollection = (options?: {
   const { orderBy = defaultOrderBy } = options || {}
   const memberPropertyGroupName = '組別'
   const { currentMemberId, permissions } = useAuth()
-  const { memberPermissionGroups, groupMemberIds } = useMemberPermissionGroups(currentMemberId || '')
+  const { memberPermissionGroups } = useMemberPermissionGroups(currentMemberId || '')
 
   const baseCondition = {
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
     category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
     executor:
-      !options?.executor && !options?.author && options?.group
-        ? {
-            _or: [
-              {
-                member_properties: {
-                  property: { name: { _eq: memberPropertyGroupName } },
-                  value: { _eq: `${options.group}` },
-                },
-              },
-            ],
-          }
-        : options?.executor && options.group
-        ? {
-            _or: [{ name: { _eq: `${options.executor}` } }, { username: { _eq: `${options.executor}` } }],
-            _and: [
-              {
-                member_properties: {
-                  property: { name: { _eq: memberPropertyGroupName } },
-                  value: { _eq: `${options.group}` },
-                },
-              },
-            ],
-          }
-        : options?.executor
-        ? {
-            _or: [{ name: { _eq: `${options.executor}` } }, { username: { _eq: `${options.executor}` } }],
-          }
-        : undefined,
+      options?.executor
+      ? {
+          id: { _eq: options.executor },
+        }
+      : options?.group
+      ? {
+          member_properties: {
+            property: { name: { _eq: memberPropertyGroupName } },
+            value: { _eq: `${options.group}` },
+          },
+        }
+      : undefined,
     author:
-      !options?.author && !options?.executor && options?.group
-        ? {
-            _or: [
-              {
-                member_properties: {
-                  property: { name: { _eq: memberPropertyGroupName } },
-                  value: { _eq: `${options.group}` },
-                },
-              },
-            ],
-          }
-        : options?.author && options.group
-        ? {
-            _or: [{ name: { _eq: `${options.author}` } }, { username: { _eq: `${options.author}` } }],
-            _and: [
-              {
-                member_properties: {
-                  property: { name: { _eq: memberPropertyGroupName } },
-                  value: { _eq: `${options.group}` },
-                },
-              },
-            ],
-          }
-        : options?.author
-        ? {
-            _or: [{ name: { _eq: `${options.author}` } }, { username: { _eq: `${options.author}` } }],
-          }
-        : undefined,
+      options?.author
+      ? {
+          id: { _eq: options.author },
+        }
+      : options?.group
+      ? {
+          member_properties: {
+            property: { name: { _eq: memberPropertyGroupName } },
+            value: { _eq: `${options.group}` },
+          },
+        }
+      : undefined,
     due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
     created_at: options?.createdAt ? { _gte: options?.createdAt[0], _lte: options?.createdAt[1] } : undefined,
     status: options?.status ? { _eq: options.status } : undefined,
@@ -137,25 +105,18 @@ export const useMemberTaskCollection = (options?: {
       : permissions?.TASK_READ_GROUP_ALL && memberPermissionGroups.length > 0
       ? {
           ...baseCondition,
-          executor: {
-            _and: [
-              {
-                member_permission_groups: {
-                  permission_group_id: {
-                    _in: memberPermissionGroups.map(p => p.permission_group_id),
+            executor: {
+              _and: [
+                baseCondition.executor ?? {},
+                {
+                  member_permission_groups: {
+                    permission_group_id: {
+                      _in: memberPermissionGroups.map(p => p.permission_group_id),
+                    },
                   },
                 },
-              },
-              options?.executor
-                ? {
-                    _or: [
-                      { name: { _eq: options.executor } },
-                      { username: { _eq: options.executor } },
-                    ],
-                  }
-                : {},
-            ],
-          },
+              ],
+            },
           deleted_at: { _is_null: true },
         }
       : {
@@ -315,47 +276,6 @@ export const useMemberTaskCollection = (options?: {
     isPrivate: v.is_private,
   })) || []
 
-  const permissionGroupMemberIds =
-    permissions?.TASK_READ_GROUP_ALL && memberPermissionGroups.length > 0
-      ? memberTasks
-        .filter(task => task.executor)
-        .map(task => task.executor!.id)
-      : undefined
-
-  const executors: {
-    id: string
-    name: string
-    group?: string
-  }[] =
-    data?.executors
-      .filter(v => !permissionGroupMemberIds || (v.executor && permissionGroupMemberIds.includes(v.executor.id)))
-      .map(v => ({
-        id: v.executor?.id || '',
-        name: v.executor?.name || '',
-        group: v.executor?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
-      })) || []
-
-  const authors: {
-    id: string
-    name: string
-    group?: string
-  }[] =
-  // 這段下拉選單正常，不會被限制成單獨選項
-    permissions?.TASK_READ_GROUP_ALL && groupMemberIds
-    ? data?.authors
-        .filter(v => groupMemberIds.includes(v.author?.id || ''))
-        .map(v => ({
-          id: v.author?.id || '',
-          name: v.author?.name || '',
-          group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
-        })) || []
-
-    : data?.authors.map(v => ({
-        id: v.author?.id || '',
-        name: v.author?.name || '',
-        group: v.author?.member_properties.find(mp => mp.property.name === memberPropertyGroupName)?.value,
-      })) || []
-
   const loadMoreMemberTasks =
     (data?.member_task_aggregate.aggregate?.count || 0) > (data?.member_task.length || 0)
       ? () =>
@@ -383,8 +303,6 @@ export const useMemberTaskCollection = (options?: {
   return {
     loadingMemberTasks: loading,
     errorMemberTasks: error,
-    executors,
-    authors,
     memberTasks,
     refetchMemberTasks: refetch,
     loadMoreMemberTasks,
@@ -489,4 +407,154 @@ export const useMemberTask = (taskId: string) => {
     : null
 
   return { memberTask }
+}
+
+
+export const useAuthorsByGroupMemberIds = (
+  groupMemberIds: string[],
+  propertyNames: string[] = ['組別']
+) => {
+  const { data, loading, error } = useQuery<
+    hasura.GET_AUTHORS_BY_GROUP_MEMBER_IDS,
+    hasura.GET_AUTHORS_BY_GROUP_MEMBER_IDSVariables
+  >(
+    gql`
+      query GET_AUTHORS_BY_GROUP_MEMBER_IDS($groupMemberIds: [String!]!, $propertyNames: [String!]!) {
+        executors: member_task(
+          where: {
+            executor_id: { _in: $groupMemberIds }
+            deleted_at: { _is_null: true }
+          }
+          distinct_on: [executor_id]
+        ) {
+          executor {
+            id
+            name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              value
+              property { name }
+            }
+          }
+        }  
+
+        authors:member_task(
+          where: {
+            executor_id: { _in: $groupMemberIds }
+            deleted_at: { _is_null: true }
+            author_id: { _is_null: false }
+          }
+          distinct_on: [author_id]
+        ) {
+          author {
+            id
+            name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              value
+              property {
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: { groupMemberIds, propertyNames },
+      skip: groupMemberIds.length === 0,
+      fetchPolicy: 'network-only',
+    },
+  )
+  const executors =
+  data?.executors.map(v => ({
+    id: v.executor?.id || '',
+    name: v.executor?.name || '',
+    group: v.executor?.member_properties.find(mp => mp.property.name === propertyNames[0])?.value,
+  })) || []
+
+  const authors =
+    data?.authors.map(v => ({
+      id: v.author?.id || '',
+      name: v.author?.name || '',
+      group: v.author?.member_properties.find(mp => mp.property.name === propertyNames[0])?.value,
+    })) || []
+
+  return {
+    executors,
+    authors,
+    loading,
+    error,
+  }
+}
+
+
+export const useAllExecutorsAndAuthors = (
+  propertyNames: string[] = ['組別']
+) => {
+  const { data, loading, error } = useQuery<
+    hasura.GET_ALL_EXECUTORS_AND_AUTHORS,
+    hasura.GET_ALL_EXECUTORS_AND_AUTHORSVariables
+  >(
+    gql`
+      query GET_ALL_EXECUTORS_AND_AUTHORS($propertyNames: [String!]!) {
+        executors: member_task(
+          where: {
+            executor_id: { _is_null: false }
+            deleted_at: { _is_null: true }
+          }
+          distinct_on: [executor_id]
+        ) {
+          executor {
+            id
+            name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              property { name }
+              value
+            }
+          }
+        }
+
+        authors: member_task(
+          where: {
+            author_id: { _is_null: false }
+            deleted_at: { _is_null: true }
+          }
+          distinct_on: [author_id]
+        ) {
+          author {
+            id
+            name
+            member_properties(where: { property: { name: { _in: $propertyNames } } }) {
+              property { name }
+              value
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: { propertyNames },
+      fetchPolicy: 'network-only',
+    }
+  )
+
+  const executors =
+    data?.executors.map(v => ({
+      id: v.executor?.id || '',
+      name: v.executor?.name || '',
+      group: v.executor?.member_properties.find(mp => mp.property.name === propertyNames[0])?.value,
+    })) || []
+
+  const authors =
+    data?.authors.map(v => ({
+      id: v.author?.id || '',
+      name: v.author?.name || '',
+      group: v.author?.member_properties.find(mp => mp.property.name === propertyNames[0])?.value,
+    })) || []
+
+  return { 
+    executors, 
+    authors, 
+    loading, 
+    error,
+  }
 }

@@ -22,8 +22,8 @@ import { AvatarImage } from '../common/Image'
 import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
-import { useMutateMemberNote } from '../../hooks/member'
-import { useMemberTaskCollection } from '../../hooks/task'
+import { useMutateMemberNote, useMemberPermissionGroups } from '../../hooks/member'
+import { useMemberTaskCollection, useAuthorsByGroupMemberIds, useAllExecutorsAndAuthors } from '../../hooks/task'
 import { GetMeetById } from '../../hooks/meet'
 import { handleError } from '../../helpers'
 import { LockIcon } from '../../images/icon'
@@ -112,7 +112,7 @@ const MemberTaskAdminBlock: React.FC<{
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules, settings } = useApp()
-  const { authToken, currentMember, currentMemberId } = useAuth()
+  const { authToken, currentMember, currentMemberId, permissions } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<FieldFilter>(localStorageMemberTaskFilter || {})
   const [display, setDisplay] = useState(localStorageMemberTaskDisplay || 'table')
@@ -131,15 +131,22 @@ const MemberTaskAdminBlock: React.FC<{
   })
   const { loading: categoriesLoading, categories } = useCategory('task')
   const [excludedIds, setExcludedIds] = useState<string[]>([])
-  const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
-    useMemberTaskCollection({
-      memberId,
-      excludedIds,
-      setExcludedIds,
-      ...filter,
-      orderBy,
-      limit: display === 'table' ? 50 : undefined,
-    })
+  const { groupMemberIds } = useMemberPermissionGroups(currentMemberId || '')
+  const { loadingMemberTasks, memberTasks, loadMoreMemberTasks, refetchMemberTasks } = useMemberTaskCollection({
+    memberId,
+    excludedIds,
+    setExcludedIds,
+    ...filter,
+    orderBy,
+    limit: display === 'table' ? 10 : undefined,
+  })
+  const hasPermission = permissions?.TASK_READ_GROUP_ALL
+  const { executors: groupExecutors, authors: groupAuthors } = useAuthorsByGroupMemberIds(groupMemberIds || [])
+
+  const { executors: allExecutors, authors: allAuthors } = useAllExecutorsAndAuthors()
+
+  const executors = hasPermission ? groupExecutors : allExecutors
+  const authors = hasPermission ? groupAuthors : allAuthors
 
   const groupList = Array.from(
     new Set([...executors, ...authors].map(v => v.group).filter(group => group !== undefined && group !== null)),
@@ -696,7 +703,6 @@ const MemberTaskAdminBlock: React.FC<{
                 status: value,
               }))
               localStorage.setItem('memberTaskFilter', JSON.stringify({ ...filter, status: value }))
-              refetchMemberTasks()
             }}
             onClear={() => {
               setFilter(filter => ({
@@ -760,7 +766,7 @@ const MemberTaskAdminBlock: React.FC<{
             {executors
               .filter(executor => (filter.group ? executor.group?.includes(filter.group) : true))
               .map(executor => (
-                <Select.Option key={executor.id} value={executor.name}>
+                <Select.Option key={executor.id} value={executor.id}>
                   {executor.name}
                 </Select.Option>
               ))}
@@ -791,7 +797,7 @@ const MemberTaskAdminBlock: React.FC<{
             {authors
               .filter(author => (filter.group ? author.group?.includes(filter.group) : true))
               .map(author => (
-                <Select.Option key={author.id} value={author.name}>
+                <Select.Option key={author.id} value={author.id}>
                   {author.name}
                 </Select.Option>
               ))}
