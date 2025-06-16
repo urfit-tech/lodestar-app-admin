@@ -62,6 +62,7 @@ const OrderDetailDrawer: React.FC<{
     paymentLogs,
     orderDetailRefetch,
     invoices,
+    paymentMethod,
   } = useOrderDetail(orderLogId)
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const company = paymentCompanies?.paymentCompanies
@@ -73,9 +74,6 @@ const OrderDetailDrawer: React.FC<{
   const { loading: accountReceivableLoading, isAccountReceivable } = useOrderReceivableStatusQuery(orderLogId)
 
   useEffect(() => setShownInvoices(invoices), [JSON.stringify(invoices)])
-
-  const paymentMethod: string | null =
-    paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
 
   return (
     <>
@@ -545,6 +543,10 @@ const useOrderDetail = (orderLogId: string | null) => {
       options: i.options,
     })) || []
 
+  const paymentMethod: string = loadingOrderDetail
+    ? paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
+    : ''
+
   return {
     loadingOrderDetail,
     loadingSharingCode,
@@ -559,6 +561,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     paymentLogs,
     invoices,
     orderDetailRefetch,
+    paymentMethod,
   }
 }
 
