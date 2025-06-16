@@ -522,7 +522,7 @@ const useOrderDetail = (orderLogId: string | null) => {
     'no' | 'status' | 'price' | 'gateway' | 'paidAt' | 'options' | 'method' | 'updatedAt'
   >[] =
     orderDetailData?.payment_log
-      .sort((a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime())
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
       .map(v => ({
         no: v.no,
         status: v.status || '',
