@@ -543,7 +543,7 @@ const useOrderDetail = (orderLogId: string | null) => {
       options: i.options,
     })) || []
 
-  const paymentMethod: string = loadingOrderDetail
+  const paymentMethod: string = !loadingOrderDetail
     ? paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
     : ''
 
