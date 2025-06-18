@@ -460,6 +460,15 @@ const saleMessages = {
     followedSuccessfully: { id: 'sale.SalesLeadTable.followedSuccessfully', defaultMessage: 'Followed Successfully' },
     leadLevel: { id: 'sale.SalesLeadTable.leadLevel', defaultMessage: 'Lead Level' },
     list: { id: 'sale.SalesLeadTable.list', defaultMessage: 'List' },
+    invalid: { id: 'sale.SalesLeadTable.invalid', defaultMessage: 'invalid' },
+    invalidConfirm: {
+      id: 'sale.SalesLeadTable.invalidConfirm',
+      defaultMessage: 'Are you sure to invalid this tab?',
+    },
+    invalidSuccessfully: {
+      id: 'sale.SalesLeadTable.invalidSuccessfully',
+      defaultMessage: 'Invalid the tab successfully',
+    },
     managerList: { id: 'sale.SalesLeadTable.managerList', defaultMessage: 'Manager List' },
     memberFullName: { id: 'sale.SalesLeadTable.memberFullName', defaultMessage: 'Full Name' },
     memberNickName: { id: 'sale.SalesLeadTable.memberNickName', defaultMessage: 'Nickname' },
