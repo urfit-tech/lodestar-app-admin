@@ -580,7 +580,7 @@ const ManualIssueInvoiceModal: React.VFC<{
   )
 
   const toast = useToast()
-  const invoicesTotalAmount = sum(invoices.map(invoice => invoice.TotalAmt))
+  const invoicesTotalAmount = sum(invoices.map(invoice => invoice.TotalAmt)) + orderLog.invoiceTotalPrice
 
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const invoiceGatewayId = paymentCompanies?.paymentCompanies
