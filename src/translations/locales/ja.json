@@ -3113,6 +3113,7 @@
   "questionLibrary.ui.sortQuestions": "問題を並び替え",
   "questionLibrary.ui.useZhuYinFont": "注音フォントを使用",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "個人データのみ閲覧可能",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "グループ内のデータのみ表示可能",
   "reportMessages.ReportAdminModal.cancel": "キャンセル",
   "reportMessages.ReportAdminModal.confirm": "確認",
   "reportMessages.ReportAdminModal.embedDashboard": "ダッシュボードを埋め込む",
