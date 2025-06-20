@@ -9,6 +9,7 @@ import {
   StarOutlined,
   StopOutlined,
   SyncOutlined,
+  WarningOutlined,
 } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Center } from '@chakra-ui/layout'
@@ -36,7 +37,7 @@ import {
   useMutateMemberProperty,
   useProperty,
 } from '../../hooks/member'
-import { Filter, ManagerLead, useLeadStatusCategory } from '../../hooks/sales'
+import { Filter, ManagerLead, useLeadStatusCategory, useUpdatePhonesIsValid } from '../../hooks/sales'
 import { ReactComponent as LeaveTheTab } from '../../images/icon/leave_the_tab.svg'
 import { StyledLine } from '../../pages/SalesLeadPage'
 import { LeadStatus, Manager, SalesLeadMember } from '../../types/sales'
@@ -144,6 +145,7 @@ const SalesLeadTable: React.VFC<{
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const { upsertMemberRating } = useMemberRating()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
+  const { updatePhonesIsValid } = useUpdatePhonesIsValid()
   const { updateMemberProperty } = useMutateMemberProperty()
   const { deleteMemberProperty } = useDeleteMemberProperty()
   const uploadAttachments = useUploadAttachments()
@@ -298,7 +300,8 @@ const SalesLeadTable: React.VFC<{
       | 'recycle'
       | 'reject'
       | 'delete'
-      | 'leaveTheCallbackTab',
+      | 'leaveTheCallbackTab'
+      | 'invalid',
     leadStatusCategory?: { id: string; categoryName: string },
   ) => {
     const statusMessages: Record<typeof status, { confirm: string; success: string }> = {
@@ -340,11 +343,15 @@ const SalesLeadTable: React.VFC<{
         confirm: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabConfirm),
         success: formatMessage(saleMessages.SalesLeadTable.leaveTheCallbackTabSuccessfully),
       },
+      invalid: {
+        confirm: formatMessage(saleMessages.SalesLeadTable.invalidConfirm),
+        success: formatMessage(saleMessages.SalesLeadTable.invalidSuccessfully),
+      },
     }
 
     const { confirm: confirmText, success: eventSuccessMessage } = statusMessages[status]
 
-    if (window.confirm(confirmText)) {
+    if (status === 'invalid' || window.confirm(confirmText)) {
       updateLeads({
         variables: {
           updateLeads: memberIds.map(memberId => {
@@ -435,6 +442,14 @@ const SalesLeadTable: React.VFC<{
                     excluded_at: dayjs().utc().toDate(),
                     lead_status_category_id: null,
                   }
+                case 'invalid':
+                  return {
+                    ...updateLeadsSetObject,
+                    manager_id: null,
+                    followed_at: null,
+                    lead_status_category_id: null,
+                    callbacked_at: null,
+                  }
                 case 'leaveTheCallbackTab':
                   return { ...updateLeadsSetObject, callbacked_at: null }
                 default:
@@ -455,7 +470,9 @@ const SalesLeadTable: React.VFC<{
           data?.update_member_many &&
           data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
         ) {
-          message.success(eventSuccessMessage)
+          if (status !== 'invalid') {
+            message.success(eventSuccessMessage)
+          }
           onRefetch()
           onSelectChange([])
         } else {
@@ -784,6 +801,50 @@ const SalesLeadTable: React.VFC<{
     },
   ]
 
+  const handleMarkPhonesInvalid = async (selectedMembers: SalesLeadMember[]) => {
+    if (!window.confirm(formatMessage(saleMessages.SalesLeadTable.invalidConfirm))) {
+      return
+    }
+
+    try {
+      const phoneUpdates = selectedRowLeads.flatMap((lead: SalesLeadMember) =>
+        lead.phones.map(phone => ({
+          member_id: lead.id,
+          phone: phone.phoneNumber,
+          is_valid: false,
+        })),
+      )
+
+      await updatePhonesIsValid({
+        variables: {
+          phones: phoneUpdates,
+        },
+      })
+
+      const memberIdsToClearManager = selectedMembers
+        .filter(member =>
+          member.phones.every(phone =>
+            phoneUpdates.some(
+              update =>
+                update.member_id === member.id && update.phone === phone.phoneNumber && update.is_valid === false,
+            ),
+          ),
+        )
+        .map(member => member.id)
+
+      if (memberIdsToClearManager.length > 0) {
+        handleLeadStatus(memberIdsToClearManager, '', leads, 'invalid', undefined)
+      }
+
+      message.success(formatMessage(saleMessages.SalesLeadTable.invalidSuccessfully))
+      onRefetch()
+      onSelectChange([])
+    } catch (error) {
+      handleError(error)
+      message.error(formatMessage(saleMessages.SalesLeadTable.systemError))
+    }
+  }
+
   const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
   return (
@@ -1095,6 +1156,19 @@ const SalesLeadTable: React.VFC<{
                   {formatMessage(saleMessages.SalesLeadTable.cancelComplete)}
                 </Button>
               )}
+              <Button
+                icon={<WarningOutlined />}
+                className="mr-2"
+                onClick={() =>
+                  handleMarkPhonesInvalid(
+                    selectedRowKeys
+                      .map(key => leads.find(lead => lead.id === key))
+                      .filter(Boolean) as SalesLeadMember[],
+                  )
+                }
+              >
+                {formatMessage(saleMessages.SalesLeadTable.invalid)}
+              </Button>
               {variant !== 'completed' && (
                 <>
                   {Boolean(permissions.SALES_MEMBER_LIST_RECYCLE) && (

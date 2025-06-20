@@ -721,3 +721,28 @@ const UpdateMemberLeadStatusCategoryId = gql`
     }
   }
 `
+
+export const useUpdatePhonesIsValid = () => {
+  const [updatePhonesIsValidMutation, { loading, error }] = useMutation<
+    hasura.UPDATE_MEMBER_PHONES_IS_VALID,
+    hasura.UPDATE_MEMBER_PHONES_IS_VALIDVariables
+  >(gql`
+    mutation UPDATE_MEMBER_PHONES_IS_VALID($phones: [member_phone_insert_input!]!) {
+      insert_member_phone(
+        objects: $phones
+        on_conflict: {
+          constraint: member_phone_member_id_phone_key
+          update_columns: [is_valid]
+        }
+      ) {
+        affected_rows
+      }
+    }
+  `)
+
+  return {
+    updatePhonesIsValid: updatePhonesIsValidMutation,
+    loading,
+    error,
+  }
+}
