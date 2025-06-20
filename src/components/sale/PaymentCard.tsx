@@ -185,7 +185,9 @@ const PaymentCard: React.FC<{
 
                   {
                     title: formatMessage(saleMessages.PaymentCard.checkoutMethod),
-                    message: paymentMethodFormatter(checkoutMethod),
+                    message: payment.gateway.includes('spgateway')
+                      ? '藍新'
+                      : paymentMethodFormatter(payment.method || payment.gateway),
                     isRender: true,
                   },
                   {
