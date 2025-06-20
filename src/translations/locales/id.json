@@ -3109,6 +3109,7 @@
   "questionLibrary.ui.sortQuestions": "Urutkan pertanyaan",
   "questionLibrary.ui.useZhuYinFont": "Gunakan font Zhuyin",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "Hanya dapat melihat data pribadi",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "Hanya bisa melihat data dalam grup",
   "reportMessages.ReportAdminModal.cancel": "Batal",
   "reportMessages.ReportAdminModal.confirm": "Konfirmasi",
   "reportMessages.ReportAdminModal.embedDashboard": "Sisipkan dasbor",

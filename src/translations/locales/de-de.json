@@ -3109,6 +3109,7 @@
   "questionLibrary.ui.sortQuestions": "排序題目",
   "questionLibrary.ui.useZhuYinFont": "使用注音字形",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "Only can view Self Data",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "Nur Gruppendaten anzeigen",
   "reportMessages.ReportAdminModal.cancel": "取消",
   "reportMessages.ReportAdminModal.confirm": "確定",
   "reportMessages.ReportAdminModal.embedDashboard": "嵌入儀表板",

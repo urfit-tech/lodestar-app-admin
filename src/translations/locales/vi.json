@@ -3109,6 +3109,7 @@
   "questionLibrary.ui.sortQuestions": "Sắp xếp câu hỏi",
   "questionLibrary.ui.useZhuYinFont": "Sử dụng Phông chữ Zhuyin",
   "reportMessages.ReportAdminModal.canViewSelfDataOnly": "Chỉ có thể xem dữ liệu cá nhân",
+  "reportMessages.ReportAdminModal.canViewGroupDataOnly": "Chỉ xem được dữ liệu trong nhóm",
   "reportMessages.ReportAdminModal.cancel": "Hủy",
   "reportMessages.ReportAdminModal.confirm": "Xác nhận",
   "reportMessages.ReportAdminModal.embedDashboard": "Nhúng bảng điều khiển",
