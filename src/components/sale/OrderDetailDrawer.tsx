@@ -544,7 +544,9 @@ const useOrderDetail = (orderLogId: string | null) => {
     })) || []
 
   const paymentMethod: string = !loadingOrderDetail
-    ? paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
+    ? paymentLogs[0]?.gateway?.includes('spgateway')
+      ? '藍新'
+      : paymentMethodFormatter(paymentLogs[0]?.method) || orderLog.options?.paymentMethod || ''
     : ''
 
   return {
