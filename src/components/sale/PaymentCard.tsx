@@ -341,7 +341,7 @@ const PaymentCard: React.FC<{
                     style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                     onClick={() => {
                       setIsOpenChangePaymentMethodModal(true)
-                      setPaymentMethod(paymentMethodFormatter(payment.method))
+                      setPaymentMethod(paymentMethodFormatter(payment.method, payment.gateway)) // 傳入 gateway
                     }}
                   >
                     <div>{formatMessage(saleMessages.PaymentCard.changeCheckoutMethod)}</div>
