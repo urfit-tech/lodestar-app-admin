@@ -106,6 +106,13 @@ const ModifyOrderStatusModal: React.VFC<{
         value: info.optionName,
       }
     })
+  const seen = new Set<string>()
+  const uniqueBankOptionsName = bankOptionName.filter(option => {
+    const lastFour = option.label.split(': ').pop() || ''
+    if (seen.has(lastFour)) return false
+    seen.add(lastFour)
+    return true
+  })
 
   const handleSubmit = async (onFinished?: () => void) => {
     try {
