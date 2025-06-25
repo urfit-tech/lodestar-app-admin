@@ -1700,7 +1700,7 @@
   "form.PermissionGroup.TASK_ADMIN": "All Task Functions",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "All Task Category Functions",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "Set Task Creation Date",
-  "form.PermissionGroup.TASK_READ_GROUP_ALL": "Read group data",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "Read data from the same permission group",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "view all member note",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "View member note transcript",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "All Voucher Category Functions",

@@ -1700,7 +1700,7 @@
   "form.PermissionGroup.TASK_ADMIN": "すべてのタスクリスト機能",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "すべてのタスクカテゴリ機能",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "タスク作成日を設定",
-  "form.PermissionGroup.TASK_READ_GROUP_ALL": "グループデータを読み取る",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "同じ権限グループのデータを読み取る",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "すべての連絡記録の表示",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "メンバーノートの転写を表示",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "すべてのバウチャーカテゴリ機能",
