@@ -580,7 +580,7 @@ const ManualIssueInvoiceModal: React.VFC<{
   )
 
   const toast = useToast()
-  const invoicesTotalAmount = sum(invoices.map(invoice => invoice.TotalAmt)) + orderLog.invoiceTotalPrice
+  const invoiceTotalPrice = orderLog.invoiceTotalPrice
 
   const paymentCompanies: { paymentCompanies: PaymentCompany[] } = JSON.parse(settings['custom'] || '{}')
   const invoiceGatewayId = paymentCompanies?.paymentCompanies
@@ -613,7 +613,7 @@ const ManualIssueInvoiceModal: React.VFC<{
             disabled={loading}
             loading={loading}
             onClick={async () => {
-              if (invoicesTotalAmount > totalPrice) {
+              if (invoiceTotalPrice > totalPrice) {
                 toast({
                   title: `發票總金額不得大於訂單總金額: $${totalPrice}`,
                   status: 'error',
