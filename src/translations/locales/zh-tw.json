@@ -1697,6 +1697,7 @@
   "form.PermissionGroup.TASK_ADMIN": "所有待辦清單功能",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "所有待辦分類功能",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "設定待辦建立日期",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "讀取同權限組資料",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "檢視所有聯絡紀錄",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "檢視聯絡紀錄逐字稿",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "所有兌換分類功能",

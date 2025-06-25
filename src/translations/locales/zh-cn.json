@@ -1697,6 +1697,7 @@
   "form.PermissionGroup.TASK_ADMIN": "所有待办清单功能",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "所有待办分类功能",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "设置待办创建日期",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "读取同权限组数据",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "查看所有联系记录",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "查看会员笔记转录",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "所有兑换分类功能",

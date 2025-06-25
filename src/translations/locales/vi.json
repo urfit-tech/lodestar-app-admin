@@ -1697,6 +1697,7 @@
   "form.PermissionGroup.TASK_ADMIN": "Tất cả các chức năng liệt kê",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "Tất cả các chức năng phân loại công việc",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "Cài đặt ngày tạo công việc",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "Đọc dữ liệu từ nhóm quyền giống nhau",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "Xem tất cả các hồ sơ liên hệ",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "Ghi chú thành viên",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "Tất cả chức năng phân loại voucher",

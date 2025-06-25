@@ -1697,6 +1697,7 @@
   "form.PermissionGroup.TASK_ADMIN": "Semua fungsi daftar",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "Semua fungsi kategori tugas",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "Atur tanggal pembuatan tugas",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "Membaca data dari grup izin yang sama",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "Lihat semua catatan kontak",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "Catatan anggota",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "Semua fungsi kategori voucher",

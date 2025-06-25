@@ -1697,6 +1697,7 @@
   "form.PermissionGroup.TASK_ADMIN": "모든 할 일 목록 기능",
   "form.PermissionGroup.TASK_CATEGORY_ADMIN": "모든 할 일 카테고리 기능",
   "form.PermissionGroup.TASK_CREATED_AT_WRITE": "할 일 생성일 설정",
+  "form.PermissionGroup.TASK_READ_GROUP_ALL": "동일 권한 그룹의 데이터를 불러오기",
   "form.PermissionGroup.VIEW_ALL_MEMBER_NOTE": "모든 연락 기록 보기",
   "form.PermissionGroup.VIEW_MEMBER_NOTE_TRANSCRIPT": "회원 메모 전사 보기",
   "form.PermissionGroup.VOUCHER_CATEGORY_ADMIN": "모든 바우처 카테고리 기능",
