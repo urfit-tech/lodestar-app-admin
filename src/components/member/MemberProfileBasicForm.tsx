@@ -79,12 +79,13 @@ const MemberProfileBasicForm: React.FC<{
                   return {
                     member_id: memberAdmin.id,
                     phone,
-                    is_valid: findPhone?.isValid,
+                    is_valid: findPhone ? findPhone.isValid : true,
                   }
                 })
             : memberAdmin.phones.map(phone => ({
                 member_id: memberAdmin.id,
                 phone: phone.phoneNumber,
+                is_valid: phone.isValid,
               })),
           managerId:
             enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
