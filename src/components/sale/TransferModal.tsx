@@ -2,7 +2,6 @@ import { SwapOutlined } from '@ant-design/icons'
 import {
   Box,
   Icon,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -10,10 +9,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   useDisclosure,
 } from '@chakra-ui/react'
-import { Button } from 'antd'
+import { Button, Select } from 'antd'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useTransferManagers } from '../../hooks/member'
@@ -30,7 +28,6 @@ const TransferModal: React.FC<{
 }> = ({ selectedRowLeads, listStatus, onRefetch, onTransferFinish, selectedLeadStatusCategoryId }) => {
   const { formatMessage } = useIntl()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [searchValue, setSearchValue] = useState('')
   const [selectedManagerId, setSelectedManagerId] = useState('')
   const { transferManagers, transferLeads } = useTransferManagers()
   const { leadStatusCategories, addLeadStatusCategory } = useLeadStatusCategory(
@@ -89,35 +86,25 @@ const TransferModal: React.FC<{
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
+        <ModalOverlay zIndex="0" />
+        <ModalContent containerProps={{ zIndex: '0' }}>
           <ModalHeader>{formatMessage(saleMessages.TransferModal.modalTitle)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box mb="2">
-              <Input
-                placeholder={formatMessage(saleMessages.TransferModal.inputPlaceHolder)}
-                onChange={value => {
-                  setSearchValue(value.target.value.toLowerCase())
-                }}
-              />
-            </Box>
+            <Box mb="2"></Box>
             <Box>
-              <Select defaultValue="" onChange={value => setSelectedManagerId(value.target.value)}>
-                <option value="" disabled>
-                  {formatMessage(saleMessages.TransferModal.pleaseSelectManager)}
-                </option>
-                {transferManagers
-                  .filter(manager =>
-                    searchValue !== '' && searchValue.length >= 2
-                      ? manager.email.toLowerCase().includes(searchValue) ||
-                        manager.name.toLowerCase().includes(searchValue)
-                      : manager,
-                  )
-                  .map(manager => (
-                    <option key={manager.id} value={manager.id}>{`${manager.name} , ${manager.email}`}</option>
-                  ))}
-              </Select>
+              <Select
+                allowClear
+                showSearch
+                placeholder="請輸入承辦編號"
+                options={transferManagers.map(manager => ({
+                  value: manager.id,
+                  label: `${manager.name}, ${manager.email}`,
+                }))}
+                filterOption={(input, option) => ((option?.label as string) ?? '').includes(input)}
+                onSelect={(value: string) => setSelectedManagerId(value)}
+                style={{ minWidth: '14em' }}
+              />
             </Box>
           </ModalBody>
 
@@ -125,7 +112,6 @@ const TransferModal: React.FC<{
             <Button
               className="mr-2"
               onClick={() => {
-                setSearchValue('')
                 setSelectedManagerId('')
                 onClose()
               }}
