@@ -112,16 +112,14 @@ const MemberProfileBasicForm: React.FC<{
             memberId: memberAdmin.id,
             phones: permissions['MEMBER_PHONE_ADMIN']
               ? phones.map((phone: string, index: number) => {
-                  const oldPhone = memberAdmin.phones.find(
-                    memberPhone => memberPhone.phoneNumber === phone && memberPhone.countryCode === countryCodes[index],
-                  )
+                  const originalPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
 
                   return {
                     member_id: memberAdmin.id,
                     phone,
                     country_code: countryCodes[index],
                     international_phone: `+${countryCodes[index]}${phone}`,
-                    is_valid: typeof oldPhone?.isValid === 'boolean' ? oldPhone.isValid : true,
+                    is_valid: originalPhone !== undefined ? originalPhone.isValid : true,
                   }
                 })
               : phones.map((phone: string, index: number) => ({
