@@ -262,7 +262,7 @@ const ModifyOrderStatusModal: React.VFC<{
                   },
                 ]}
               >
-                <Select options={bankOptionName} placeholder="請選擇帳號名稱" />
+                <Select options={uniqueBankOptionsName} placeholder="請選擇帳號名稱" />
               </Form.Item>
             </div>
           )}
