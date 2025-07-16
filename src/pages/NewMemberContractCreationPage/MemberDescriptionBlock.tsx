@@ -21,7 +21,7 @@ const MemberDescriptionBlock: React.FC<{
     const [comment, setComment] = React.useState(defaultComment)
 
     const isMemberZeroTaxProperty = member.properties.find(p => p.name === '是否零稅')
-    const defaultIsMemberZeroTax = isMemberZeroTaxProperty?.value || ''
+    const defaultIsMemberZeroTax = isMemberZeroTaxProperty?.value || '否'
     const IsMemberZeroTaxOptions = isMemberZeroTaxProperty?.placeholder.split('/') || []
     const [isMemberZeroTax, setIsMemberZeroTax] = React.useState(defaultIsMemberZeroTax)
     const { formatMessage } = useIntl()
