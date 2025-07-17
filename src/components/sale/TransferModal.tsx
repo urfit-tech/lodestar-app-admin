@@ -101,7 +101,9 @@ const TransferModal: React.FC<{
                   value: manager.id,
                   label: `${manager.name}, ${manager.email}`,
                 }))}
-                filterOption={(input, option) => ((option?.label as string) ?? '').includes(input)}
+                filterOption={(input, option) =>
+                  ((option?.label as string).toLowerCase() ?? '').includes(input.toLowerCase())
+                }
                 onSelect={(value: string) => setSelectedManagerId(value)}
                 style={{ minWidth: '14em' }}
               />
