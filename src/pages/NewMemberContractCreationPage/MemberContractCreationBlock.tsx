@@ -6,7 +6,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { sum } from 'ramda'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -52,7 +52,6 @@ const MemberContractCreationBlock: React.FC<{
   const { updateMemberProperty } = useMutateMemberProperty()
   const { properties } = useProperty()
   const [loading, setLoading] = useState(false)
-  const [invoices, setInvoices] = useState<InvoiceRequest[]>([])
   const history = useHistory()
 
   const fieldValue = form.getFieldsValue()
@@ -64,12 +63,165 @@ const MemberContractCreationBlock: React.FC<{
       ?.find(c => !!c.companies.find(company => company.name === fieldValue.company))
       ?.companies.find(company => company.name === fieldValue.company) || null
 
-  // Invoice Tax Calculation
-  const category = fieldValue.uniformNumber ? 'B2B' : 'B2C'
-  const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
-  const totalPriceWithTax = sum(
-    selectedProducts.filter(p => !['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
-  )
+  const actualIsMemberZeroTax = useMemo(() => {
+    const currentZeroTaxValue = member.properties.find(p => p.name === '是否零稅')?.value
+    return currentZeroTaxValue === '是' ? true : isMemberZeroTax
+  }, [member.properties, isMemberZeroTax])
+
+  const invoiceCalculation = useMemo(() => {
+    const category = fieldValue.uniformNumber ? 'B2B' : 'B2C'
+    const totalPrice = sum(selectedProducts.map(product => product.totalPrice))
+    const totalPriceWithTax = sum(
+      selectedProducts.filter(p => !['學費', '註冊費'].includes(p.options.product)).map(product => product.totalPrice),
+    )
+    const totalPriceWithoutTax = actualIsMemberZeroTax ? 0 : Math.round(totalPriceWithTax / 1.05)
+    const totalPriceWithFreeTax = actualIsMemberZeroTax
+      ? sum(selectedProducts.map(product => product.totalPrice))
+      : sum(
+          selectedProducts
+            .filter(p => !!['學費', '註冊費'].includes(p.options.product))
+            .map(product => product.totalPrice),
+        )
+    const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
+
+    const items = selectedProducts.map(p => {
+      const taxType = actualIsMemberZeroTax ? '2' : ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
+      const name = ['學費', '註冊費'].includes(p.options.product) ? p.options.language + p.options.product : p.title
+      return p.options.program_type?.includes('套裝項目')
+        ? {
+            name,
+            count: 1,
+            unit: '件',
+            price:
+              category === 'B2B'
+                ? taxType === '3' || taxType === '2'
+                  ? p.totalPrice
+                  : Math.round(p.totalPrice / 1.05)
+                : p.totalPrice,
+            taxType,
+            amt:
+              category === 'B2B'
+                ? taxType === '3' || taxType === '2'
+                  ? p.totalPrice
+                  : Math.round(p.totalPrice / 1.05)
+                : p.totalPrice,
+          }
+        : {
+            name,
+            count: p.amount,
+            unit: '件',
+            price:
+              category === 'B2B'
+                ? taxType === '3' || taxType === '2'
+                  ? p.price
+                  : Math.round(p.price / 1.05)
+                : p.price,
+            taxType,
+            amt:
+              p.amount *
+              (category === 'B2B'
+                ? taxType === '3' || taxType === '2'
+                  ? p.price
+                  : Math.round(p.price / 1.05)
+                : p.price),
+          }
+    })
+
+    let invoices: InvoiceRequest[] = []
+
+    if (category === 'B2C') {
+      const taxType = actualIsMemberZeroTax
+        ? '2'
+        : totalPriceWithFreeTax > 0 && totalPriceWithTax > 0
+        ? '9'
+        : totalPriceWithFreeTax > 0
+        ? '3'
+        : '1'
+      const taxRate = taxType === '3' || taxType === '2' ? 0 : 5
+      invoices.push({
+        Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
+        ItemName: items.map(v => v.name).join('|'),
+        ItemCount: items.map(v => v.count).join('|'),
+        ItemUnit: items.map(v => v.unit).join('|'),
+        ItemPrice: items.map(v => v.price).join('|'),
+        ItemAmt: items.map(v => v.amt).join('|'),
+        TaxType: taxType,
+        TaxAmt: taxType === '3' || taxType === '2' ? 0 : tax,
+        TotalAmt: totalPrice,
+        TaxRate: taxRate,
+        AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
+        AmtFree: taxType === '9' ? totalPriceWithFreeTax : undefined,
+        AmtZero: taxType === '9' ? 0 : undefined,
+        ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
+        MerchantOrderNo: new Date().getTime().toString() + taxType,
+        BuyerEmail: fieldValue.invoiceEmail || member.email,
+        BuyerName: fieldValue.uniformTitle || member.name,
+        BuyerUBN: fieldValue.uniformNumber,
+        Category: category,
+        Comment: fieldValue.invoiceComment,
+        PrintFlag: 'Y',
+      })
+    }
+
+    if (category === 'B2B') {
+      if (totalPriceWithTax > 0) {
+        const filteredItems = items.filter(v => v.taxType === '1')
+        invoices.push({
+          TaxType: '1',
+          ItemName: filteredItems.map(v => v.name).join('|'),
+          ItemCount: filteredItems.map(v => v.count).join('|'),
+          ItemUnit: filteredItems.map(v => v.unit).join('|'),
+          ItemPrice: filteredItems.map(v => v.price).join('|'),
+          ItemAmt: filteredItems.map(v => v.amt).join('|'),
+          Amt: totalPriceWithoutTax,
+          TaxAmt: tax,
+          TotalAmt: totalPrice - totalPriceWithFreeTax,
+          TaxRate: 5,
+          MerchantOrderNo: new Date().getTime().toString() + '1',
+          BuyerEmail: fieldValue.invoiceEmail || member.email,
+          BuyerName: fieldValue.uniformTitle,
+          BuyerUBN: fieldValue.uniformNumber,
+          Category: category,
+          Comment: fieldValue.invoiceComment,
+          PrintFlag: 'Y',
+        })
+      }
+
+      if (totalPriceWithFreeTax > 0) {
+        const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
+        invoices.push({
+          TaxType: '3',
+          Amt: totalPriceWithFreeTax,
+          ItemName: filteredItems.map(v => v.name).join('|'),
+          ItemCount: filteredItems.map(v => v.count).join('|'),
+          ItemUnit: filteredItems.map(v => v.unit).join('|'),
+          ItemPrice: filteredItems.map(v => v.price).join('|'),
+          ItemAmt: filteredItems.map(v => v.amt).join('|'),
+          TaxAmt: 0,
+          TotalAmt: totalPriceWithFreeTax,
+          TaxRate: 0,
+          MerchantOrderNo: new Date().getTime().toString() + '3',
+          BuyerEmail: fieldValue.invoiceEmail || member.email,
+          BuyerName: fieldValue.uniformTitle,
+          BuyerUBN: fieldValue.uniformNumber,
+          Category: category,
+          Comment: fieldValue.invoiceComment,
+          PrintFlag: 'Y',
+        })
+      }
+    }
+
+    return {
+      invoices,
+      totalPrice,
+      totalPriceWithTax,
+      totalPriceWithoutTax,
+      totalPriceWithFreeTax,
+      tax,
+      items,
+      category,
+    }
+  }, [selectedProducts, fieldValue, member.email, member.name, actualIsMemberZeroTax])
 
   const handleMemberContractCreate = async () => {
     const memberType = member.properties.find(p => p.name === '會員類型')?.value
@@ -147,10 +299,11 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
+    // 檢查並更新零稅屬性（如果需要）
     const zeroTaxPropertyId = properties.find(p => p.name === '是否零稅')?.id
     const currentZeroTaxValue = member.properties.find(p => p.name === '是否零稅')?.value
 
-    let actualIsMemberZeroTax = isMemberZeroTax
+    let finalIsMemberZeroTax = actualIsMemberZeroTax
 
     if (zeroTaxPropertyId && !currentZeroTaxValue) {
       await updateMemberProperty({
@@ -164,146 +317,11 @@ const MemberContractCreationBlock: React.FC<{
           ],
         },
       })
-      actualIsMemberZeroTax = false
+      finalIsMemberZeroTax = false
     }
 
-    const totalPriceWithoutTax = actualIsMemberZeroTax ? 0 : Math.round(totalPriceWithTax / 1.05)
-    const totalPriceWithFreeTax = actualIsMemberZeroTax
-      ? sum(selectedProducts.map(product => product.totalPrice))
-      : sum(
-          selectedProducts
-            .filter(p => !!['學費', '註冊費'].includes(p.options.product))
-            .map(product => product.totalPrice),
-        )
-    const tax = totalPrice - totalPriceWithoutTax - totalPriceWithFreeTax
-
-    let newInvoices: InvoiceRequest[] = []
-
-    const items = selectedProducts.map(p => {
-      const taxType = actualIsMemberZeroTax ? '2' : ['學費', '註冊費'].includes(p.options.product) ? '3' : '1'
-      const name = ['學費', '註冊費'].includes(p.options.product) ? p.options.language + p.options.product : p.title
-      return p.options.program_type?.includes('套裝項目')
-        ? {
-            name,
-            count: 1,
-            unit: '件',
-            price:
-              category === 'B2B'
-                ? taxType === '3' || taxType === '2'
-                  ? p.totalPrice
-                  : Math.round(p.totalPrice / 1.05)
-                : p.totalPrice,
-            taxType,
-            amt:
-              category === 'B2B'
-                ? taxType === '3' || taxType === '2'
-                  ? p.totalPrice
-                  : Math.round(p.totalPrice / 1.05)
-                : p.totalPrice,
-          }
-        : {
-            name,
-            count: p.amount,
-            unit: '件',
-            price:
-              category === 'B2B'
-                ? taxType === '3' || taxType === '2'
-                  ? p.price
-                  : Math.round(p.price / 1.05)
-                : p.price,
-            taxType,
-            amt:
-              p.amount *
-              (category === 'B2B'
-                ? taxType === '3' || taxType === '2'
-                  ? p.price
-                  : Math.round(p.price / 1.05)
-                : p.price),
-          }
-    })
-
-    if (category === 'B2C') {
-      // 應稅: 1, 零稅: 2, 免稅: 3, 混稅: 9
-      const taxType = actualIsMemberZeroTax
-        ? '2'
-        : totalPriceWithFreeTax > 0 && totalPriceWithTax > 0
-        ? '9'
-        : totalPriceWithFreeTax > 0
-        ? '3'
-        : '1'
-      const taxRate = taxType === '3' || taxType === '2' ? 0 : 5
-      newInvoices.push({
-        Amt: totalPriceWithoutTax + totalPriceWithFreeTax,
-        ItemName: items.map(v => v.name).join('|'),
-        ItemCount: items.map(v => v.count).join('|'),
-        ItemUnit: items.map(v => v.unit).join('|'),
-        ItemPrice: items.map(v => v.price).join('|'),
-        ItemAmt: items.map(v => v.amt).join('|'),
-        TaxType: taxType,
-        TaxAmt: taxType === '3' || taxType === '2' ? 0 : tax,
-        TotalAmt: totalPrice,
-        TaxRate: taxRate,
-        AmtSales: taxType === '9' ? totalPriceWithoutTax : undefined,
-        AmtFree: taxType === '9' ? totalPriceWithFreeTax : undefined,
-        AmtZero: taxType === '9' ? 0 : undefined,
-        ItemTaxType: taxType === '9' ? items.map(v => v.taxType).join('|') : undefined,
-        MerchantOrderNo: new Date().getTime().toString() + taxType,
-        BuyerEmail: fieldValue.invoiceEmail || member.email,
-        BuyerName: fieldValue.uniformTitle || member.name,
-        BuyerUBN: fieldValue.uniformNumber,
-        Category: category,
-        Comment: fieldValue.invoiceComment,
-        PrintFlag: 'Y',
-      })
-    }
-
-    if (category === 'B2B') {
-      if (totalPriceWithTax > 0) {
-        const filteredItems = items.filter(v => v.taxType === '1')
-        newInvoices.push({
-          TaxType: '1',
-          ItemName: filteredItems.map(v => v.name).join('|'),
-          ItemCount: filteredItems.map(v => v.count).join('|'),
-          ItemUnit: filteredItems.map(v => v.unit).join('|'),
-          ItemPrice: filteredItems.map(v => v.price).join('|'),
-          ItemAmt: filteredItems.map(v => v.amt).join('|'),
-          Amt: totalPriceWithoutTax,
-          TaxAmt: tax,
-          TotalAmt: totalPrice - totalPriceWithFreeTax,
-          TaxRate: 5,
-          MerchantOrderNo: new Date().getTime().toString() + '1',
-          BuyerEmail: fieldValue.invoiceEmail || member.email,
-          BuyerName: fieldValue.uniformTitle,
-          BuyerUBN: fieldValue.uniformNumber,
-          Category: category,
-          Comment: fieldValue.invoiceComment,
-          PrintFlag: 'Y',
-        })
-      }
-
-      if (totalPriceWithFreeTax > 0) {
-        const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
-        newInvoices.push({
-          TaxType: '3',
-          Amt: totalPriceWithFreeTax,
-          ItemName: filteredItems.map(v => v.name).join('|'),
-          ItemCount: filteredItems.map(v => v.count).join('|'),
-          ItemUnit: filteredItems.map(v => v.unit).join('|'),
-          ItemPrice: filteredItems.map(v => v.price).join('|'),
-          ItemAmt: filteredItems.map(v => v.amt).join('|'),
-          TaxAmt: 0,
-          TotalAmt: totalPriceWithFreeTax,
-          TaxRate: 0,
-          MerchantOrderNo: new Date().getTime().toString() + '3',
-          BuyerEmail: fieldValue.invoiceEmail || member.email,
-          BuyerName: fieldValue.uniformTitle,
-          BuyerUBN: fieldValue.uniformNumber,
-          Category: category,
-          Comment: fieldValue.invoiceComment,
-          PrintFlag: 'Y',
-        })
-      }
-    }
+    // 重新計算發票資訊（使用最終的零稅狀態）
+    const { invoices, totalPrice } = invoiceCalculation
 
     const paymentGateway = fieldValue.paymentMethod.includes('藍新')
       ? paymentCompany?.paymentGateway || 'spgateway'
@@ -325,18 +343,18 @@ const MemberContractCreationBlock: React.FC<{
       ? installments
       : undefined
     const paymentMode = fieldValue.paymentMode
-    setInvoices(newInvoices)
+
     const invoiceInfo = {
       name: member.name,
       email: fieldValue.invoiceEmail || member.email,
       skipIssueInvoice: fieldValue.skipIssueInvoice,
-      isMemberZeroTaxProperty: actualIsMemberZeroTax ? '是' : '否',
+      isMemberZeroTaxProperty: finalIsMemberZeroTax ? '是' : '否',
       uniformNumber: fieldValue.uniformNumber,
       uniformTitle: fieldValue.uniformTitle,
       invoiceComment: fieldValue.invoiceComment,
       invoiceGateway: paymentCompany?.invoiceGateway,
       invoiceGatewayId: paymentCompany?.invoiceGatewayId,
-      invoices: newInvoices,
+      invoices,
     }
     const options = {
       ...fieldValue,
@@ -393,7 +411,6 @@ const MemberContractCreationBlock: React.FC<{
           },
         })
         memberContractId = addMemberContractResult.data?.insert_member_contract_one?.id
-        // setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
         message.success(formatMessage(pageMessages.MemberContractCreationBlock.contractCreateSuccess))
       } catch (error) {
         message.error(`${formatMessage(pageMessages.MemberContractCreationBlock.contractCreateFail)}${error}`)
@@ -477,41 +494,6 @@ const MemberContractCreationBlock: React.FC<{
               },
             })
           }
-          // axios
-          //   .post(
-          //     `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/tli1956/orders/${res.data.result.orderId}/send-email`,
-          //     {
-          //       memberId: member.id,
-          //       executorId: fieldValue.executorId,
-          //       destinationEmail: fieldValue.destinationEmail,
-          //       language: fieldValue.language,
-          //     },
-          //     {
-          //       headers: { authorization: `Bearer ${authToken}` },
-          //     },
-          //   )
-          //   .then(res => {
-
-          //     message.success('信件已發送成功')
-          //   })
-
-          // const paymentNo = res.data.result.paymentNo
-          // const payToken = res.data.result.payToken
-          // const orderId = res.data.result.orderId
-          // if (paymentGateway.includes('spgateway') && orderId) {
-          //   setPaymentUrl(
-          //     paymentNo
-          //       ? `${window.origin}/payments/${paymentNo}?token=${payToken}`
-          //       : `${window.origin}/orders/${orderId}?tracking=1`,
-          //   )
-          // }
-          // if (paymentGateway === 'physical' && paymentMethod === 'bankTransfer' && orderId) {
-          //   setPaymentUrl(
-          //     paymentNo
-          //       ? `${window.origin}/payments/${paymentNo}?method=${paymentMethod}`
-          //       : `${window.origin}/orders/${orderId}?tracking=1`,
-          //   )
-          // }
         }
       })
       .catch(error => {
@@ -522,6 +504,8 @@ const MemberContractCreationBlock: React.FC<{
         setLoading(false)
       })
   }
+
+  const { invoices, totalPrice } = invoiceCalculation
 
   return (
     <>
@@ -548,7 +532,7 @@ const MemberContractCreationBlock: React.FC<{
           <div key={i.TaxType}>
             <div className="row mb-2">
               <strong className="col-6 text-right">
-                {isMemberZeroTax
+                {actualIsMemberZeroTax
                   ? '零稅'
                   : i.TaxType === '9'
                   ? '混稅'
