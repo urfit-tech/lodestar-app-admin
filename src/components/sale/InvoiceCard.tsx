@@ -13,6 +13,15 @@ import styled from 'styled-components'
 import AdminModal from '../admin/AdminModal'
 import saleMessages from './translation'
 
+type TaxType = '1' | '2' | '3' | '9'
+
+type InvoiceOptionsType = {
+  invoices?: Array<{
+    TaxType?: TaxType
+  }>
+  [key: string]: any
+}
+
 export type InvoiceRequest = {
   MerchantOrderNo: string
   BuyerName: string
@@ -121,6 +130,7 @@ const InvoiceCard: React.FC<{
   onClose?: () => void
   isAccountReceivable?: boolean
   isMemberZeroTaxProperty?: string
+  invoiceOptions?: InvoiceOptionsType
 }> = ({
   status,
   invoiceIssuedAt,
@@ -148,6 +158,7 @@ const InvoiceCard: React.FC<{
   onClose,
   isAccountReceivable,
   isMemberZeroTaxProperty,
+  invoiceOptions,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -162,6 +173,32 @@ const InvoiceCard: React.FC<{
   const [invoiceResponse, setInvoiceResponse] = useState<InvoiceResponse>()
 
   const isMemberZeroTaxPropertyEnableSetting = settings['feature.is_member_zero_tax_property.enable'] === '1'
+  const getTaxTypeName = (taxType: string) => {
+    switch (taxType) {
+      case '1':
+        return formatMessage(saleMessages.SaleCollectionExpandRow.taxable) // '應稅'
+      case '2':
+        return formatMessage(saleMessages.SaleCollectionExpandRow.zeroTax) // '零稅'
+      case '3':
+        return formatMessage(saleMessages.SaleCollectionExpandRow.taxExempt) // '免稅'
+      case '9':
+        return formatMessage(saleMessages.SaleCollectionExpandRow.mixedTax) // '混合稅'
+      default:
+        return taxType || ''
+    }
+  }
+
+  const getTaxTypeFromData = () => {
+    if (invoiceOptions?.invoices && invoiceOptions.invoices.length > 0) {
+      const firstInvoice = invoiceOptions.invoices[0]
+      if (firstInvoice?.TaxType) {
+        return getTaxTypeName(firstInvoice.TaxType)
+      }
+    }
+
+    return ''
+  }
+
   const revokeInvoice = () => {
     setLoading(true)
     axios
@@ -200,7 +237,11 @@ const InvoiceCard: React.FC<{
     : formatMessage(saleMessages.InvoiceCard.invoiceFailed, { errorCode: status })
   const contentList = [
     { title: formatMessage(saleMessages.InvoiceCard.invoiceStatus), message: statusMessage, isRender: true },
-    { title: '是否零稅', message: isMemberZeroTaxProperty, isRender: isMemberZeroTaxPropertyEnableSetting },
+    {
+      title: formatMessage(saleMessages.SaleCollectionExpandRow.taxType), // '課稅別'
+      message: getTaxTypeFromData(),
+      isRender: isMemberZeroTaxPropertyEnableSetting && getTaxTypeFromData() !== '',
+    },
     {
       title: formatMessage(saleMessages.InvoiceCard.invoiceNumber),
       message: invoiceNumber,
