@@ -23,8 +23,9 @@ const SalesPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex mb-4">
-        {permissions.SALES_RECORDS_ADMIN && (
+        {(permissions.SALES_RECORDS_ADMIN || permissions.READ_GROUP_SALES_ALL) && (
           <OrderExportModal
+            exportPermission={permissions.SALES_RECORDS_ADMIN ? 'Admin' : 'Group'}
             renderTrigger={({ setVisible }) => (
               <Button className="mr-2" type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
                 {formatMessage(pageMessages.SalesPage.export)}
