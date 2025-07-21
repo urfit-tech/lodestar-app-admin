@@ -156,43 +156,19 @@ const MemberContractCreationBlock: React.FC<{
   }
 
   if (category === 'B2B') {
-    if (totalPriceWithTax > 0) {
-      const filteredItems = items.filter(v => v.taxType === '1')
+    if (isMemberZeroTax) {
       invoices.push({
-        TaxType: '1',
-        ItemName: filteredItems.map(v => v.name).join('|'),
-        ItemCount: filteredItems.map(v => v.count).join('|'),
-        ItemUnit: filteredItems.map(v => v.unit).join('|'),
-        ItemPrice: filteredItems.map(v => v.price).join('|'),
-        ItemAmt: filteredItems.map(v => v.amt).join('|'),
-        Amt: totalPriceWithoutTax,
-        TaxAmt: tax,
-        TotalAmt: totalPrice - totalPriceWithFreeTax,
-        TaxRate: 5,
-        MerchantOrderNo: new Date().getTime().toString() + '1',
-        BuyerEmail: fieldValue.invoiceEmail || member.email,
-        BuyerName: fieldValue.uniformTitle,
-        BuyerUBN: fieldValue.uniformNumber,
-        Category: category,
-        Comment: fieldValue.invoiceComment,
-        PrintFlag: 'Y',
-      })
-    }
-
-    if (totalPriceWithFreeTax > 0) {
-      const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
-      invoices.push({
-        TaxType: '3',
-        Amt: totalPriceWithFreeTax,
-        ItemName: filteredItems.map(v => v.name).join('|'),
-        ItemCount: filteredItems.map(v => v.count).join('|'),
-        ItemUnit: filteredItems.map(v => v.unit).join('|'),
-        ItemPrice: filteredItems.map(v => v.price).join('|'),
-        ItemAmt: filteredItems.map(v => v.amt).join('|'),
+        TaxType: '2',
+        Amt: totalPrice,
         TaxAmt: 0,
-        TotalAmt: totalPriceWithFreeTax,
+        TotalAmt: totalPrice,
         TaxRate: 0,
-        MerchantOrderNo: new Date().getTime().toString() + '3',
+        ItemName: items.map(v => v.name).join('|'),
+        ItemCount: items.map(v => v.count).join('|'),
+        ItemUnit: items.map(v => v.unit).join('|'),
+        ItemPrice: items.map(v => v.price).join('|'),
+        ItemAmt: items.map(v => v.amt).join('|'),
+        MerchantOrderNo: new Date().getTime().toString() + '2',
         BuyerEmail: fieldValue.invoiceEmail || member.email,
         BuyerName: fieldValue.uniformTitle,
         BuyerUBN: fieldValue.uniformNumber,
@@ -200,6 +176,52 @@ const MemberContractCreationBlock: React.FC<{
         Comment: fieldValue.invoiceComment,
         PrintFlag: 'Y',
       })
+    } else {
+      if (totalPriceWithTax > 0) {
+        const filteredItems = items.filter(v => v.taxType === '1')
+        invoices.push({
+          TaxType: '1',
+          ItemName: filteredItems.map(v => v.name).join('|'),
+          ItemCount: filteredItems.map(v => v.count).join('|'),
+          ItemUnit: filteredItems.map(v => v.unit).join('|'),
+          ItemPrice: filteredItems.map(v => v.price).join('|'),
+          ItemAmt: filteredItems.map(v => v.amt).join('|'),
+          Amt: totalPriceWithoutTax,
+          TaxAmt: tax,
+          TotalAmt: totalPrice - totalPriceWithFreeTax,
+          TaxRate: 5,
+          MerchantOrderNo: new Date().getTime().toString() + '1',
+          BuyerEmail: fieldValue.invoiceEmail || member.email,
+          BuyerName: fieldValue.uniformTitle,
+          BuyerUBN: fieldValue.uniformNumber,
+          Category: category,
+          Comment: fieldValue.invoiceComment,
+          PrintFlag: 'Y',
+        })
+      }
+
+      if (totalPriceWithFreeTax > 0) {
+        const filteredItems = items.filter(v => v.taxType === '3' || v.taxType === '2')
+        invoices.push({
+          TaxType: '3',
+          Amt: totalPriceWithFreeTax,
+          ItemName: filteredItems.map(v => v.name).join('|'),
+          ItemCount: filteredItems.map(v => v.count).join('|'),
+          ItemUnit: filteredItems.map(v => v.unit).join('|'),
+          ItemPrice: filteredItems.map(v => v.price).join('|'),
+          ItemAmt: filteredItems.map(v => v.amt).join('|'),
+          TaxAmt: 0,
+          TotalAmt: totalPriceWithFreeTax,
+          TaxRate: 0,
+          MerchantOrderNo: new Date().getTime().toString() + '3',
+          BuyerEmail: fieldValue.invoiceEmail || member.email,
+          BuyerName: fieldValue.uniformTitle,
+          BuyerUBN: fieldValue.uniformNumber,
+          Category: category,
+          Comment: fieldValue.invoiceComment,
+          PrintFlag: 'Y',
+        })
+      }
     }
   }
 
