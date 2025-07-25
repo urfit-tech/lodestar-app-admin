@@ -501,7 +501,7 @@ const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => 
       ItemPrice: i.ItemPrice,
       ItemTaxType: i.ItemTaxType,
       ItemUnit: '項',
-      ItemAmt: Math.ceil(i.ItemCount * i.ItemPrice),
+      ItemAmt: Math.ceil(i.ItemCount * i.ItemPrice * 100),
     }))
     const AmtFree =
       value.TaxType === '9' ? sum(Items.filter(i => i.ItemTaxType === '3').map(i => i.ItemAmt)) : undefined
@@ -515,9 +515,10 @@ const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => 
     const TaxRate = value.TaxType === '3' || value.TaxType === '2' ? 0 : 5
     const Amt =
       value.TaxType === '9'
-        ? Number(AmtFree) + Number(AmtSales) + Number(AmtZero)
-        : Math.round(TotalAmt / (1 + TaxRate / 100))
+        ? Math.round(Number(AmtFree) + Number(AmtSales) + Number(AmtZero) * 100)
+        : Math.round((TotalAmt * 100) / (100 + TaxRate))
     const TaxAmt = TotalAmt - Amt
+
     return {
       MerchantOrderNo: new Date().getTime().toString(),
       BuyerEmail: value.BuyerEmail,
@@ -529,9 +530,9 @@ const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => 
       PrintFlag: 'Y',
       CustomsClearance: value.TaxType === '2' || value.TaxType === '9' ? '1' : undefined,
       TaxRate,
-      Amt,
-      TaxAmt,
-      TotalAmt,
+      Amt: Amt / 100,
+      TaxAmt: TaxAmt / 100,
+      TotalAmt: TotalAmt / 100,
       Items,
       AmtFree,
       AmtZero,
@@ -568,11 +569,11 @@ const ManualIssueInvoiceModal: React.VFC<{
           ItemCount: i.ItemCount?.split('|')[idx],
           ItemPrice:
             i.BuyerUBN && i.TaxType === '1'
-              ? Math.round(Number(i.ItemPrice?.split('|')[idx]) * 1.05)
+              ? Math.round(Number(i.ItemPrice?.split('|')[idx]) * 105) / 100
               : i.ItemPrice?.split('|')[idx],
           ItemAmt:
             i.BuyerUBN && i.TaxType === '1'
-              ? Math.round(Number(i.ItemAmt?.split('|')[idx]) * 1.05)
+              ? Math.round(Number(i.ItemAmt?.split('|')[idx]) * 105) / 100
               : i.ItemAmt?.split('|')[idx],
           ItemTaxType: i.ItemTaxType?.split('|')[idx],
         })) || [],
