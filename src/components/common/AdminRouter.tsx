@@ -676,7 +676,7 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
                     hasPassedCloseSiteTime && routeProps.path !== '/deactivate' ? (
                       <Redirect to="/deactivate" />
                     ) : !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
-                      <Redirect to="/" />
+                      <Redirect to={`/?back=${window.location.pathname.replace('/admin', '')}`} />
                     ) : typeof routeProps.pageName === 'string' ? (
                       <LoadablePage pageName={routeProps.pageName} />
                     ) : (

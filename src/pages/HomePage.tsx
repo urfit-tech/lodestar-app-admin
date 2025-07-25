@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import AuthModal, { AuthModalContext } from '../components/auth/AuthModal'
 import LoginSection from '../components/auth/LoginSection'
 
@@ -50,13 +51,16 @@ const HomePage: React.FC = () => {
   const isBusiness = payload && payload.isBusiness
   const { loading, id: appId, settings } = useApp()
   const [visible, setVisible] = useState(false)
+  const [back] = useQueryParam('back', StringParam)
 
   useEffect(() => {
     if (loading || !currentMemberId) {
       return
     }
 
-    if (isBusiness) {
+    if (back) {
+      history.push(back)
+    } else if (isBusiness) {
       history.push(`/sales`)
     } else if (currentUserRole === 'app-owner') {
       history.push(settings['admin.app_owner.redirect'] || `/sales`)
