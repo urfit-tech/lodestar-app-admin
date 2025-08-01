@@ -167,7 +167,7 @@ const OrderDetailDrawer: React.FC<{
                     invoiceOptions={orderLog.invoiceOptions}
                   />
                 ) : (
-                  shownInvoices.map(i => (
+                  shownInvoices.map((i, index) => (
                     <InvoiceCard
                       key={i.no}
                       status={!!i.revokedAt ? 'REVOKED' : 'SUCCESS'}
@@ -216,6 +216,7 @@ const OrderDetailDrawer: React.FC<{
                       isAccountReceivable={isAccountReceivable}
                       isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
                       invoiceOptions={orderLog.invoiceOptions}
+                      currentInvoiceIndex={index}
                     />
                   ))
                 )}

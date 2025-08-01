@@ -18,6 +18,7 @@ type TaxType = '1' | '2' | '3' | '9'
 type InvoiceOptionsType = {
   invoices?: Array<{
     TaxType?: TaxType
+    MerchantOrderNo?: string
   }>
   [key: string]: any
 }
@@ -131,6 +132,7 @@ const InvoiceCard: React.FC<{
   isAccountReceivable?: boolean
   isMemberZeroTaxProperty?: string
   invoiceOptions?: InvoiceOptionsType
+  currentInvoiceIndex?: number
 }> = ({
   status,
   invoiceIssuedAt,
@@ -159,6 +161,7 @@ const InvoiceCard: React.FC<{
   isAccountReceivable,
   isMemberZeroTaxProperty,
   invoiceOptions,
+  currentInvoiceIndex,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -190,9 +193,12 @@ const InvoiceCard: React.FC<{
 
   const getTaxTypeFromData = () => {
     if (invoiceOptions?.invoices && invoiceOptions.invoices.length > 0) {
-      const firstInvoice = invoiceOptions.invoices[0]
-      if (firstInvoice?.TaxType) {
-        return getTaxTypeName(firstInvoice.TaxType)
+      // 如果有指定當前發票索引，使用該索引對應的發票
+      const invoiceIndex = currentInvoiceIndex !== undefined ? currentInvoiceIndex : 0
+      const currentInvoice = invoiceOptions.invoices[invoiceIndex]
+      
+      if (currentInvoice?.TaxType) {
+        return getTaxTypeName(currentInvoice.TaxType)
       }
     }
 
