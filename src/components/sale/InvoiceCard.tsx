@@ -133,6 +133,7 @@ const InvoiceCard: React.FC<{
   isMemberZeroTaxProperty?: string
   invoiceOptions?: InvoiceOptionsType
   currentInvoiceIndex?: number
+  actualInvoiceData?: any
 }> = ({
   status,
   invoiceIssuedAt,
@@ -162,6 +163,7 @@ const InvoiceCard: React.FC<{
   isMemberZeroTaxProperty,
   invoiceOptions,
   currentInvoiceIndex,
+  actualInvoiceData,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -192,6 +194,12 @@ const InvoiceCard: React.FC<{
   }
 
   const getTaxTypeFromData = () => {
+    // 優先從實際發票資料中獲取課稅別
+    if (actualInvoiceData?.options?.Result?.TaxType) {
+      return getTaxTypeName(actualInvoiceData.options.Result.TaxType)
+    }
+    
+    // 如果沒有實際發票資料，回退到 invoiceOptions
     if (invoiceOptions?.invoices && invoiceOptions.invoices.length > 0) {
       // 如果有指定當前發票索引，使用該索引對應的發票
       const invoiceIndex = currentInvoiceIndex !== undefined ? currentInvoiceIndex : 0

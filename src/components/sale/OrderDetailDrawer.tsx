@@ -217,6 +217,7 @@ const OrderDetailDrawer: React.FC<{
                       isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
                       invoiceOptions={orderLog.invoiceOptions}
                       currentInvoiceIndex={index}
+                      actualInvoiceData={i}
                     />
                   ))
                 )}
