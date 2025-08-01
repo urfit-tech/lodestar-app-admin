@@ -15,12 +15,19 @@ import saleMessages from './translation'
 
 type TaxType = '1' | '2' | '3' | '9'
 
-type InvoiceOptionsType = {
-  invoices?: Array<{
-    TaxType?: TaxType
-    MerchantOrderNo?: string
-  }>
-  [key: string]: any
+
+type ActualInvoiceData = {
+  no: string
+  price: number
+  createdAt: string
+  revokedAt?: string | null
+  options?: {
+    Result?: {
+      TaxType?: TaxType
+      [key: string]: any
+    }
+    [key: string]: any
+  }
 }
 
 export type InvoiceRequest = {
@@ -131,9 +138,7 @@ const InvoiceCard: React.FC<{
   onClose?: () => void
   isAccountReceivable?: boolean
   isMemberZeroTaxProperty?: string
-  invoiceOptions?: InvoiceOptionsType
-  currentInvoiceIndex?: number
-  actualInvoiceData?: any
+  actualInvoiceData?: ActualInvoiceData
 }> = ({
   status,
   invoiceIssuedAt,
@@ -161,8 +166,6 @@ const InvoiceCard: React.FC<{
   onClose,
   isAccountReceivable,
   isMemberZeroTaxProperty,
-  invoiceOptions,
-  currentInvoiceIndex,
   actualInvoiceData,
 }) => {
   const { formatMessage } = useIntl()
@@ -194,22 +197,9 @@ const InvoiceCard: React.FC<{
   }
 
   const getTaxTypeFromData = () => {
-    // 優先從實際發票資料中獲取課稅別
     if (actualInvoiceData?.options?.Result?.TaxType) {
       return getTaxTypeName(actualInvoiceData.options.Result.TaxType)
     }
-    
-    // 如果沒有實際發票資料，回退到 invoiceOptions
-    if (invoiceOptions?.invoices && invoiceOptions.invoices.length > 0) {
-      // 如果有指定當前發票索引，使用該索引對應的發票
-      const invoiceIndex = currentInvoiceIndex !== undefined ? currentInvoiceIndex : 0
-      const currentInvoice = invoiceOptions.invoices[invoiceIndex]
-      
-      if (currentInvoice?.TaxType) {
-        return getTaxTypeName(currentInvoice.TaxType)
-      }
-    }
-
     return ''
   }
 
