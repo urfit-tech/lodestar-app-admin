@@ -15,11 +15,19 @@ import saleMessages from './translation'
 
 type TaxType = '1' | '2' | '3' | '9'
 
-type InvoiceOptionsType = {
-  invoices?: Array<{
-    TaxType?: TaxType
-  }>
-  [key: string]: any
+
+type ActualInvoiceData = {
+  no: string
+  price: number
+  createdAt: string
+  revokedAt?: string | null
+  options?: {
+    Result?: {
+      TaxType?: TaxType
+      [key: string]: any
+    }
+    [key: string]: any
+  }
 }
 
 export type InvoiceRequest = {
@@ -130,7 +138,7 @@ const InvoiceCard: React.FC<{
   onClose?: () => void
   isAccountReceivable?: boolean
   isMemberZeroTaxProperty?: string
-  invoiceOptions?: InvoiceOptionsType
+  actualInvoiceData?: ActualInvoiceData
 }> = ({
   status,
   invoiceIssuedAt,
@@ -158,7 +166,7 @@ const InvoiceCard: React.FC<{
   onClose,
   isAccountReceivable,
   isMemberZeroTaxProperty,
-  invoiceOptions,
+  actualInvoiceData,
 }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId, settings } = useApp()
@@ -189,13 +197,9 @@ const InvoiceCard: React.FC<{
   }
 
   const getTaxTypeFromData = () => {
-    if (invoiceOptions?.invoices && invoiceOptions.invoices.length > 0) {
-      const firstInvoice = invoiceOptions.invoices[0]
-      if (firstInvoice?.TaxType) {
-        return getTaxTypeName(firstInvoice.TaxType)
-      }
+    if (actualInvoiceData?.options?.Result?.TaxType) {
+      return getTaxTypeName(actualInvoiceData.options.Result.TaxType)
     }
-
     return ''
   }
 
