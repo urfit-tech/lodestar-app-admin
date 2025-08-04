@@ -164,7 +164,6 @@ const OrderDetailDrawer: React.FC<{
                     companyPhone={company?.companyPhone}
                     isAccountReceivable={isAccountReceivable}
                     isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
-                    invoiceOptions={orderLog.invoiceOptions}
                   />
                 ) : (
                   shownInvoices.map(i => (
@@ -215,7 +214,7 @@ const OrderDetailDrawer: React.FC<{
                       companyPhone={company?.companyPhone}
                       isAccountReceivable={isAccountReceivable}
                       isMemberZeroTaxProperty={orderLog.invoiceOptions?.isMemberZeroTaxProperty}
-                      invoiceOptions={orderLog.invoiceOptions}
+                      actualInvoiceData={i}
                     />
                   ))
                 )}
@@ -340,7 +339,6 @@ const OrderDetailDrawer: React.FC<{
                     invoiceComment={orderLog.invoiceOptions?.invoiceComment}
                     invoiceGatewayId={company?.invoiceGatewayId}
                     isAccountReceivable={isAccountReceivable}
-                    invoiceOptions={orderLog.invoiceOptions}
                   />
                 )}
                 <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
