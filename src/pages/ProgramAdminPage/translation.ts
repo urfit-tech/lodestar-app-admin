@@ -17,12 +17,6 @@ const ProgramAdminPageMessages = {
     reviewSettings: { id: 'ProgramAdminPage.*.reviewSettings', defaultMessage: '評論設定' },
     programIntroduction: { id: 'ProgramAdminPage.*.programIntroduction', defaultMessage: '課程介紹' },
     salesPlan: { id: 'ProgramAdminPage.*.salesPlan', defaultMessage: '銷售方案' },
-    sharingCode: { id: 'ProgramAdminPage.*.sharingCode', defaultMessage: '推廣網址' },
-    sharingCodeDescription: {
-      id: 'ProgramAdminPage.*.sharingCodeDescription',
-      defaultMessage:
-        '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
-    },
     roleAdmin: { id: 'ProgramAdminPage.*.roleAdmin', defaultMessage: '身份管理' },
     publishSettings: { id: 'ProgramAdminPage.*.publishSettings', defaultMessage: '發佈設定' },
     approvalHistory: { id: 'ProgramAdminPage.*.approvalHistory', defaultMessage: '審核紀錄' },
@@ -231,24 +225,6 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPageMessages.ProgramRoleAdminPane.selectInstructor',
       defaultMessage: '選擇老師',
     },
-  }),
-  ProgramSharingCodeAdminForm: defineMessages({
-    code: { id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.code', defaultMessage: '設定網址' },
-    codeIsRequired: {
-      id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.codeIsRequired',
-      defaultMessage: '未填寫設定網址',
-    },
-    duplicatedCodesWarning: {
-      id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.duplicatedCodesWarning',
-      defaultMessage: '推廣網址不可重複',
-    },
-    note: { id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.note', defaultMessage: '用途備註' },
-    copiedToClipboard: {
-      id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copiedToClipboard',
-      defaultMessage: '已複製到剪貼簿',
-    },
-    copy: { id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copy', defaultMessage: '複製' },
-    addUrl: { id: 'ProgramAdminPageMessages.ProgramSharingCodeAdminForm.addUrl', defaultMessage: '新增網址' },
   }),
   ProgramStructureAdminBlock: defineMessages({
     createBlock: { id: 'ProgramAdminPageMessages.ProgramStructureAdminBlock.createBlock', defaultMessage: '新增區塊' },
