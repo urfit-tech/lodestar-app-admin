@@ -214,6 +214,7 @@ const AppNavModal: React.FC<AppNavModalProps> = ({
                 { value: 'vi', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.vi) },
                 { value: 'ja', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.ja) },
                 { value: 'ko', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.ko) },
+                { value: 'de-de', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.deDe) },
               ]}
             />
           </Form.Item>
