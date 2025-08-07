@@ -87,6 +87,10 @@ const AppBasicAdminPageMessages = {
       id: 'AppBasicAdminPageMessages.AppNavModal.ko',
       defaultMessage: '한국어',
     },
+    id: {
+      id: 'AppBasicAdminPageMessages.AppNavModal.id',
+      defaultMessage: 'Indonesia',
+    },
     deDe: {
       id: 'AppBasicAdminPageMessages.AppNavModal.deDe',
       defaultMessage: 'Deutsch',
