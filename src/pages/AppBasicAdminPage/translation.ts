@@ -87,6 +87,10 @@ const AppBasicAdminPageMessages = {
       id: 'AppBasicAdminPageMessages.AppNavModal.ko',
       defaultMessage: '한국어',
     },
+    deDe: {
+      id: 'AppBasicAdminPageMessages.AppNavModal.deDe',
+      defaultMessage: 'Deutsch',
+    },
     navTag: {
       id: 'AppBasicAdminPageMessages.AppNavModal.navTag',
       defaultMessage: '標籤',
