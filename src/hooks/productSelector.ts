@@ -519,8 +519,9 @@ export const useProductData = (
   }
 
   
-  const processMerchandiseSpecType = (type: string, searchKeyword?: string) => {
-    const merchandiseData = productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
+  const processMerchandiseSpecType = (type: string, searchKeyword?: string, merchandiseDataOverride?: ProcessedProduct[]) => {
+    
+    const merchandiseData = merchandiseDataOverride || productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
 
     let products: ProcessedProduct[] = []
 
@@ -619,11 +620,49 @@ export const useProductData = (
         'CustomizedVirtualMerchandiseSpec',
       ]
 
-      if (merchandiseSpecTypes.includes(type) && !loadedTypes.includes('Merchandise')) {
-        await loadProductType('Merchandise')
-      }
-
-      if (!merchandiseSpecTypes.includes(type)) {
+      if (merchandiseSpecTypes.includes(type)) {
+        
+        let merchandiseData: ProcessedProduct[] = []
+        
+        if (!loadedTypes.includes('Merchandise')) {
+          
+          const queryString = getQueryForType('Merchandise')
+          if (queryString) {
+            const fullQuery = gql`
+              query GET_MERCHANDISE_PRODUCTS($voucherCondition: voucher_plan_bool_exp) {
+                ${queryString}
+              }
+            `
+            
+            const { data } = await client.query({
+              query: fullQuery,
+              variables: { voucherCondition: getVoucherCondition(onlyValid) },
+              fetchPolicy: searchKeyword ? 'network-only' : 'cache-first',
+            })
+            
+            
+            merchandiseData = data?.merchandise?.map((v: any) => ({
+              id: `Merchandise_${v.id}`,
+              title: v.title || '',
+              publishedAt: v.published_at ? new Date(v.published_at) : null,
+              children: v.merchandise_specs.map(({ id }: any) => id),
+              isCustomized: v.is_customized,
+              isPhysical: v.is_physical,
+              originalData: v,
+            })) || []
+            
+            
+            updateProductSelections('Merchandise', data)
+            setLoadedTypes(prev => [...prev, 'Merchandise'])
+          }
+        } else {
+          
+          merchandiseData = productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
+        }
+        
+        
+        processMerchandiseSpecType(type, searchKeyword, merchandiseData)
+      } else {
         const queryString = getQueryForType(type)
         if (!queryString) {
           setIsLoading(false)
@@ -647,8 +686,6 @@ export const useProductData = (
         } else {
           updateProductSelections(type, data)
         }
-      } else {
-        processMerchandiseSpecType(type, searchKeyword)
       }
 
       if (!searchKeyword) {
