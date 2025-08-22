@@ -637,6 +637,7 @@ export const appointmentMessages = {
     period: { id: 'appointment.label.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.label.planTitle', defaultMessage: '方案名稱' },
     contactPhone: { id: 'appointment.label.contactPhone', defaultMessage: '聯絡手機' },
+    category: { id: 'appointment.label.category', defaultMessage: '分類' },
     startedAt: { id: 'appointment.label.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.label.periodType', defaultMessage: '重複週期' },
     reschedule: { id: 'appointment.label.reschedule', defaultMessage: '更換時段' },
