@@ -1,17 +1,16 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { countBy } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
-import { copyToClipboard, handleError } from '../../helpers'
-import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
-import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
-import ProgramAdminPageMessages from './translation'
+import hasura from '../../../hasura'
+import { copyToClipboard, handleError } from '../../../helpers'
+import { ReactComponent as PlusIcon } from '../../../images/icon/plus.svg'
+import { ReactComponent as TrashOIcon } from '../../../images/icon/trash-o.svg'
+import commonMessages from '../translation'
 
 const StyledLabel = styled.div`
   font-size: 14px;
@@ -39,13 +38,14 @@ type FieldProps = {
   }[]
 }
 
-const ProgramSharingCodeAdminForm: React.FC<{
-  programId: string
-}> = ({ programId }) => {
+const SharingCodeAdminForm: React.FC<{
+  typePath: string
+  target: string
+}> = ({ typePath, target }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, host } = useApp()
-  const pathKey = `/programs/${programId}`
+  const pathKey = `/${typePath}/${target}`
   const { loadingSharingCodes, sharingCodes, refetchSharingCodes } = useSharingCodeCollection(pathKey)
   const [insertSharingCode] = useMutation<hasura.INSERT_SHARING_CODE, hasura.INSERT_SHARING_CODEVariables>(
     INSERT_SHARING_CODE,
@@ -76,7 +76,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
       },
     })
       .then(() => {
-        message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
+        message.success(formatMessage(commonMessages['*'].successfullySaved))
         refetchSharingCodes()
       })
       .catch(handleError)
@@ -113,22 +113,18 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <Form.Item
                   name={[field.name, 'code']}
                   fieldKey={[field.fieldKey, 'code']}
-                  label={
-                    <StyledLabel>
-                      {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.code)}
-                    </StyledLabel>
-                  }
+                  label={<StyledLabel>{formatMessage(commonMessages.SharingCode.code)}</StyledLabel>}
                   className="mb-0 mr-3"
                   rules={[
                     {
                       required: true,
-                      message: formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.codeIsRequired),
+                      message: formatMessage(commonMessages.SharingCode.codeIsRequired),
                     },
                   ]}
                   validateStatus={sharingCodeInputs[index]?.isDuplicated ? 'error' : undefined}
                   help={
                     sharingCodeInputs[index]?.code && sharingCodeInputs[index]?.isDuplicated
-                      ? formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.duplicatedCodesWarning)
+                      ? formatMessage(commonMessages.SharingCode.codeDuplicated)
                       : undefined
                   }
                 >
@@ -137,11 +133,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <Form.Item
                   name={[field.name, 'note']}
                   fieldKey={[field.fieldKey, 'note']}
-                  label={
-                    <StyledLabel>
-                      {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.note)}
-                    </StyledLabel>
-                  }
+                  label={<StyledLabel>{formatMessage(commonMessages.SharingCode.note)}</StyledLabel>}
                   className="mb-0 mr-3"
                 >
                   <Input style={{ width: '220px' }} />
@@ -149,7 +141,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <StyledDeleteButton type="link" icon={<TrashOIcon />} onClick={() => remove(field.name)} />
                 <StyledDescription className="mt-1">
                   <span>
-                    https://{host}/programs/{programId}?sharing=
+                    https://{host}/{typePath}/{target}?sharing=
                     {sharingCodeInputs[index]?.code || sharingCodes[index]?.code}
                   </span>
                   <Button
@@ -157,16 +149,14 @@ const ProgramSharingCodeAdminForm: React.FC<{
                     size="small"
                     onClick={() => {
                       copyToClipboard(
-                        `https://${host}/programs/${programId}?sharing=${
+                        `https://${host}/${typePath}/${target}?sharing=${
                           sharingCodeInputs[index]?.code || sharingCodes[index]?.code
                         }`,
                       )
-                      message.success(
-                        formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copiedToClipboard),
-                      )
+                      message.success(formatMessage(commonMessages.SharingCode.copiedToClipboard))
                     }}
                   >
-                    {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copy)}
+                    {formatMessage(commonMessages.SharingCode.copy)}
                   </Button>
                 </StyledDescription>
               </div>
@@ -183,7 +173,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 })
               }
             >
-              {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.addUrl)}
+              {formatMessage(commonMessages.SharingCode.addUrl)}
             </Button>
           </>
         )}
@@ -191,10 +181,10 @@ const ProgramSharingCodeAdminForm: React.FC<{
 
       <div>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          {formatMessage(ProgramAdminPageMessages['*'].cancel)}
+          {formatMessage(commonMessages['*'].cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          {formatMessage(ProgramAdminPageMessages['*'].save)}
+          {formatMessage(commonMessages['*'].save)}
         </Button>
       </div>
     </Form>
@@ -246,4 +236,4 @@ const INSERT_SHARING_CODE = gql`
   }
 `
 
-export default ProgramSharingCodeAdminForm
+export default SharingCodeAdminForm

@@ -1,7 +1,12 @@
 import { defineMessages } from 'react-intl'
 
 const commonMessages = {
-  '*': defineMessages({}),
+  '*': defineMessages({
+    save: { id: 'common.*.save', defaultMessage: '存檔' },
+    cancel: { id: 'common.*.cancel', defaultMessage: '取消' },
+    confirm: { id: 'common.*.confirm', defaultMessage: '確定' },
+    successfullySaved: { id: 'common.*.successfullySaved', defaultMessage: '儲存成功' },
+  }),
   MetaProductDeletionBlock: defineMessages({
     delete: {
       id: 'common.MetaProductDeletionBlock.delete',
@@ -56,6 +61,30 @@ const commonMessages = {
       id: 'common.SalesMemberInput.loadError',
       defaultMessage: '讀取錯誤',
     },
+  }),
+  SharingCode: defineMessages({
+    title: { id: 'common.SharingCode.title', defaultMessage: '推廣網址' },
+    description: {
+      id: 'common.SharingCode.description',
+      defaultMessage:
+        '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
+    },
+    code: { id: 'common.SharingCode.code', defaultMessage: '設定網址' },
+    codeIsRequired: {
+      id: 'common.SharingCode.code.IsRequired',
+      defaultMessage: '未填寫設定網址',
+    },
+    codeDuplicated: {
+      id: 'common.SharingCode.Duplicated',
+      defaultMessage: '推廣網址不可重複',
+    },
+    note: { id: 'common.SharingCode.note', defaultMessage: '用途備註' },
+    copiedToClipboard: {
+      id: 'common.SharingCode.copiedToClipboard',
+      defaultMessage: '已複製到剪貼簿',
+    },
+    copy: { id: 'common.SharingCode.copy', defaultMessage: '複製' },
+    addUrl: { id: 'common.SharingCode.addUrl', defaultMessage: '新增網址' },
   }),
 }
 

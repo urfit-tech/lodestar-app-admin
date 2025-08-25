@@ -12,11 +12,12 @@ import {
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
-  AdminPaneDescription,
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
+import SharingCodeTab from '../../components/common/SharingCode/SharingCodeTab'
+import commonMessages from '../../components/common/translation'
 import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
@@ -31,7 +32,6 @@ import ProgramIntroForm from './ProgramIntroForm'
 import ProgramPlanAdminBlock from './ProgramPlanAdminBlock'
 import ProgramPublishBlock from './ProgramPublishBlock'
 import ProgramRoleAdminPane from './ProgramRoleAdminPane'
-import ProgramSharingCodeAdminForm from './ProgramSharingCodeAdminForm'
 import ProgramStructureAdminBlock from './ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 import ProgramAdminPageMessages from './translation'
@@ -175,16 +175,8 @@ const ProgramAdminPage: React.FC = () => {
           </Tabs.TabPane>
 
           {enabledModules.sharing_code && (
-            <Tabs.TabPane key="sharing" tab={formatMessage(ProgramAdminPageMessages['*'].sharingCode)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(ProgramAdminPageMessages['*'].sharingCode)}</AdminPaneTitle>
-                <AdminPaneDescription className="mb-4">
-                  {formatMessage(ProgramAdminPageMessages['*'].sharingCodeDescription)}
-                </AdminPaneDescription>
-                <AdminBlock>
-                  <ProgramSharingCodeAdminForm programId={programId} />
-                </AdminBlock>
-              </div>
+            <Tabs.TabPane key="sharing" tab={formatMessage(commonMessages.SharingCode.title)}>
+              <SharingCodeTab typePath="programs" target={programId} />
             </Tabs.TabPane>
           )}
 

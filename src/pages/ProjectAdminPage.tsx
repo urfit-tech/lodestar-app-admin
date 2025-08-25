@@ -1,7 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -18,6 +17,10 @@ import {
   AdminTabBarWrapper,
 } from '../components/admin'
 import RoleAdminBlock from '../components/admin/RoleAdminBlock'
+import SharingCodeTab from '../components/common/SharingCode/SharingCodeTab'
+import commonComponentMessages from '../components/common/translation'
+import OpenGraphSettingsBlock from '../components/form/OpenGraphSettingsBlock'
+import SeoSettingsBlock from '../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProjectBasicForm from '../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../components/project/ProjectIntroForm'
@@ -32,8 +35,6 @@ import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ProjectAdminProps, ProjectDataType } from '../types/project'
 import pageMessages from './translation'
-import SeoSettingsBlock from '../components/form/SeoSettingsBlock'
-import OpenGraphSettingsBlock from '../components/form/OpenGraphSettingsBlock'
 
 const ProjectPortfolioBlockTitle = styled(AdminBlockTitle)`
   margin-bottom: 8px;
@@ -43,7 +44,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { projectId } = useParams<{ projectId: string }>()
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
-  const { host } = useApp()
+  const { host, enabledModules } = useApp()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
   const { updateProjectMetaTag } = useMutateProjectAdmin()
   return (
@@ -198,6 +199,11 @@ const ProjectAdminPage: React.FC<{}> = () => {
                     />
                   </div>
                 </Tabs.TabPane>
+                {enabledModules.sharing_code && (
+                  <Tabs.TabPane key="sharing" tab={formatMessage(commonComponentMessages.SharingCode.title)}>
+                    <SharingCodeTab typePath="projects" target={projectId} />
+                  </Tabs.TabPane>
+                )}
                 <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
                   <div className="container py-5">
                     <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
