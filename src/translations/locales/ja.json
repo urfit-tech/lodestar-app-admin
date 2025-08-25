@@ -399,6 +399,7 @@
   "appointment.label.automaticallyGenerated": "自動生成",
   "appointment.label.contactInformation": "連絡先情報",
   "appointment.label.contactPhone": "連絡先電話番号",
+  "appointment.label.category": "カテゴリー",
   "appointment.label.creator": "講師",
   "appointment.label.daysAgo": "日前",
   "appointment.label.duration": "時間の長さ（分）",

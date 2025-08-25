@@ -147,6 +147,9 @@ const DELETE_CATEGORY = gql`
     delete_voucher_category(where: { category_id: { _eq: $categoryId } }) {
       affected_rows
     }
+    delete_appointment_plan_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
     update_member_task(where: { category_id: { _eq: $categoryId } }, _set: { category_id: null }) {
       returning {
         id

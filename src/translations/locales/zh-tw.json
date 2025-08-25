@@ -399,6 +399,7 @@
   "appointment.label.automaticallyGenerated": "自動產生",
   "appointment.label.contactInformation": "聯絡資訊",
   "appointment.label.contactPhone": "聯絡手機",
+  "appointment.label.category": "分類",
   "appointment.label.creator": "講師",
   "appointment.label.daysAgo": "天前",
   "appointment.label.duration": "時間長度(分鐘)",

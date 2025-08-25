@@ -242,6 +242,11 @@ export const routesProps = {
     pageName: 'AppointmentPeriodCollectionAdminPage',
     authenticated: true,
   },
+  appointment_plan_category: {
+    path: '/appointment-plan-category',
+    pageName: 'AppointmentPlanCategoryPage',
+    authenticated: true,
+  },
 
   // activity
   activity_collection: {
