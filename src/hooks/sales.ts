@@ -450,44 +450,46 @@ export const useManagerLeads = (
               contactedLeadsCount: data.contactedLeadsCount || 0,
               idLedLeadsCount: data.idLedLeadsCount || 0,
               callbackedLeadsCount: data.callbackedLeadsCount,
-              salesLeadMembers: data.salesLeadMembers.map((salesLeadMember: SalesLeadMember) => ({
-                id: salesLeadMember.id,
-                appId: salesLeadMember.appId,
-                name: salesLeadMember.name,
-                email: salesLeadMember.email,
-                pictureUrl: salesLeadMember.pictureUrl,
-                star: Number(salesLeadMember.star),
-                notified: Boolean(salesLeadMember.notified),
-                leadStatusCategoryId: salesLeadMember.leadStatusCategoryId,
-                properties: salesLeadMember.properties.map(property => ({
-                  id: property.id,
-                  name: property.name,
-                  value: property.value,
+              salesLeadMembers: (data.salesLeadMembers as SalesLeadMember[])
+                .filter((currentMember, index, members) => members.findIndex((member) => member.id === currentMember.id) === index)
+                .map((salesLeadMember) => ({
+                  id: salesLeadMember.id,
+                  appId: salesLeadMember.appId,
+                  name: salesLeadMember.name,
+                  email: salesLeadMember.email,
+                  pictureUrl: salesLeadMember.pictureUrl,
+                  star: Number(salesLeadMember.star),
+                  notified: Boolean(salesLeadMember.notified),
+                  leadStatusCategoryId: salesLeadMember.leadStatusCategoryId,
+                  properties: salesLeadMember.properties.map(property => ({
+                    id: property.id,
+                    name: property.name,
+                    value: property.value,
+                  })),
+                  phones: salesLeadMember.phones.map(phone => ({
+                    phoneNumber: phone.phoneNumber,
+                    isValid: phone.isValid,
+                  })),
+                  categoryNames: salesLeadMember.categoryNames,
+                  latestNoteDescription: salesLeadMember.latestNoteDescription,
+                  memberNoteOutboundCount: salesLeadMember.memberNoteOutboundCount,
+                  status: salesLeadMember.status as LeadStatus,
+                  createdAt: dayjs(salesLeadMember.createdAt).toDate(),
+                  assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,
+                  followedAt: salesLeadMember.followedAt ? dayjs(salesLeadMember.followedAt).toDate() : null,
+                  closedAt: salesLeadMember.closedAt ? dayjs(salesLeadMember.closedAt).toDate() : null,
+                  completedAt: salesLeadMember.completedAt ? dayjs(salesLeadMember.completedAt).toDate() : null,
+                  excludedAt: salesLeadMember.excludedAt ? dayjs(salesLeadMember.excludedAt).toDate() : null,
+                  recycledAt: salesLeadMember.recycledAt ? dayjs(salesLeadMember.recycledAt).toDate() : null,
+                  recentContactedAt: salesLeadMember.recentContactedAt
+                    ? dayjs(salesLeadMember.recentContactedAt).toDate()
+                    : null,
+                  recentAnsweredAt: salesLeadMember.recentAnsweredAt
+                    ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
+                    : null,
+                  callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
+                  rating: salesLeadMember.rating,
                 })),
-                phones: salesLeadMember.phones.map(phone => ({
-                  phoneNumber: phone.phoneNumber,
-                  isValid: phone.isValid,
-                })),
-                categoryNames: salesLeadMember.categoryNames,
-                latestNoteDescription: salesLeadMember.latestNoteDescription,
-                memberNoteOutboundCount: salesLeadMember.memberNoteOutboundCount,
-                status: salesLeadMember.status as LeadStatus,
-                createdAt: dayjs(salesLeadMember.createdAt).toDate(),
-                assignedAt: salesLeadMember.assignedAt ? dayjs(salesLeadMember.assignedAt).toDate() : null,
-                followedAt: salesLeadMember.followedAt ? dayjs(salesLeadMember.followedAt).toDate() : null,
-                closedAt: salesLeadMember.closedAt ? dayjs(salesLeadMember.closedAt).toDate() : null,
-                completedAt: salesLeadMember.completedAt ? dayjs(salesLeadMember.completedAt).toDate() : null,
-                excludedAt: salesLeadMember.excludedAt ? dayjs(salesLeadMember.excludedAt).toDate() : null,
-                recycledAt: salesLeadMember.recycledAt ? dayjs(salesLeadMember.recycledAt).toDate() : null,
-                recentContactedAt: salesLeadMember.recentContactedAt
-                  ? dayjs(salesLeadMember.recentContactedAt).toDate()
-                  : null,
-                recentAnsweredAt: salesLeadMember.recentAnsweredAt
-                  ? dayjs(salesLeadMember.recentAnsweredAt).toDate()
-                  : null,
-                callbackedAt: salesLeadMember.callbackedAt ? dayjs(salesLeadMember.callbackedAt).toDate() : null,
-                rating: salesLeadMember.rating,
-              })),
             }
             setDefaultSalesLeadMembers(result.salesLeadMembers)
             setSalesLeadMembersData(result)
@@ -730,10 +732,7 @@ export const useUpdatePhonesIsValid = () => {
     mutation UPDATE_MEMBER_PHONES_IS_VALID($phones: [member_phone_insert_input!]!) {
       insert_member_phone(
         objects: $phones
-        on_conflict: {
-          constraint: member_phone_member_id_phone_key
-          update_columns: [is_valid]
-        }
+        on_conflict: { constraint: member_phone_member_id_phone_key, update_columns: [is_valid] }
       ) {
         affected_rows
       }
