@@ -382,7 +382,7 @@ const useContractInfo = (appId: string, memberId: string) => {
             })),
             agreedAndUnexpiredContracts: data.member_by_pk.member_contracts.map(c => ({
               ended_at: c.ended_at,
-              type: c.contract.options.type,
+              type: c.contract.options?.type || '',
             })),
           },
           contracts: data.contract.map(c => ({
