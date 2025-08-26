@@ -399,6 +399,7 @@
   "appointment.label.automaticallyGenerated": "自动生成",
   "appointment.label.contactInformation": "联系信息",
   "appointment.label.contactPhone": "联系手机",
+  "appointment.label.category": "分类",
   "appointment.label.creator": "讲师",
   "appointment.label.daysAgo": "天前",
   "appointment.label.duration": "时间长度（分钟）",

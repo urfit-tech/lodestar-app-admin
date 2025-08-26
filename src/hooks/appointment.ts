@@ -64,6 +64,12 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
             booked
             available
           }
+          appointment_plan_categories(order_by: { position: asc }) {
+            category {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -132,6 +138,13 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
           creatorId: data?.appointment_plan_by_pk.creator_id || '',
           isPrivate: data?.appointment_plan_by_pk.is_private,
+          categories:
+            data.appointment_plan_by_pk.appointment_plan_categories
+              .filter((v): v is { category: { id: string; name: string } } => !!v.category?.id && !!v.category?.name)
+              .map(appointmentPlanCategory => ({
+                id: appointmentPlanCategory.category.id,
+                name: appointmentPlanCategory.category.name,
+              })) || [],
         }
       : null
   }, [appointmentPlanId, data?.appointment_plan_by_pk, targetMemberId])

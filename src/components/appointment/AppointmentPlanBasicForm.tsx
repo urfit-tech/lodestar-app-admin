@@ -12,6 +12,7 @@ import { appointmentMessages, commonMessages, errorMessages } from '../../helper
 import { useService } from '../../hooks/service'
 import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
+import CategorySelector from '../form/CategorySelector'
 
 const messages = defineMessages({
   hoursAgo: { id: 'appointment.label.hoursAgo', defaultMessage: '小時前' },
@@ -28,6 +29,7 @@ const messages = defineMessages({
 
 type FieldProps = {
   title: string
+  categoryIds: string[]
   phone: string
   reservationAmount: number
   reservationType: ReservationType
@@ -42,6 +44,7 @@ const UpdateAppointmentPlan = gql`
   mutation UpdateAppointmentPlan(
     $appointmentPlanId: uuid!
     $title: String!
+    $appointmentPlanCategories: [appointment_plan_category_insert_input!]!
     $phone: String!
     $reservationAmount: numeric
     $reservationType: String
@@ -65,6 +68,12 @@ const UpdateAppointmentPlan = gql`
         meeting_link_url: $meetingLinkUrl
       }
     ) {
+      affected_rows
+    }
+    delete_appointment_plan_category(where: { appointment_plan_id: { _eq: $appointmentPlanId } }) {
+      affected_rows
+    }
+    insert_appointment_plan_category(objects: $appointmentPlanCategories) {
       affected_rows
     }
   }
@@ -99,6 +108,11 @@ const AppointmentPlanBasicForm: React.FC<{
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
         title: values.title,
+        appointmentPlanCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+          appointment_plan_id: appointmentPlanAdmin.id,
+          category_id: categoryId,
+          position: index,
+        })),
         phone: values.phone,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
@@ -128,6 +142,7 @@ const AppointmentPlanBasicForm: React.FC<{
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
         title: appointmentPlanAdmin.title || '',
+        categoryIds: appointmentPlanAdmin.categories.map(category => category.id),
         phone: appointmentPlanAdmin.phone,
         reservationAmount: appointmentPlanAdmin.reservationAmount || 0,
         reservationType: appointmentPlanAdmin.reservationType || 'hour',
@@ -152,6 +167,9 @@ const AppointmentPlanBasicForm: React.FC<{
         ]}
       >
         <Input maxLength={10} />
+      </Form.Item>
+      <Form.Item label={formatMessage(appointmentMessages.label.category)} name="categoryIds">
+        <CategorySelector classType="appointmentPlan" />
       </Form.Item>
       <Form.Item
         label={formatMessage(appointmentMessages.label.contactPhone)}
