@@ -33,6 +33,7 @@ const adminMessages = {
     appointmentAdmin: { id: 'admin.AdminMenu.appointmentAdmin', defaultMessage: '預約服務' },
     appointmentPlans: { id: 'admin.AdminMenu.appointmentPlans', defaultMessage: '預約方案' },
     appointments: { id: 'admin.AdminMenu.appointments', defaultMessage: '預約紀錄' },
+    appointmentCategory: { id: 'admin.AdminMenu.appointmentCategory', defaultMessage: '預約分類' },
     creatorDisplayAdmin: { id: 'admin.AdminMenu.creatorDisplayAdmin', defaultMessage: '講師牆' },
     creatorDisplayManagement: { id: 'admin.AdminMenu.creatorDisplayManagement', defaultMessage: '講師牆管理' },
     creatorDisplayCategory: { id: 'admin.AdminMenu.creatorDisplayCategory', defaultMessage: '領域分類' },

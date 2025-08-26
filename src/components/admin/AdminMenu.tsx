@@ -293,7 +293,8 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
         (Boolean(permissions.APPOINTMENT_PLAN_ADMIN) ||
           Boolean(permissions.APPOINTMENT_PERIOD_ADMIN) ||
           Boolean(permissions.APPOINTMENT_PLAN_NORMAL) ||
-          Boolean(permissions.APPOINTMENT_PERIOD_NORMAL)),
+          Boolean(permissions.APPOINTMENT_PERIOD_NORMAL) ||
+          Boolean(permissions.APPOINTMENT_PLAN_CATEGORY)),
       key: 'appointment_admin',
       icon: () => <CalendarAltIcon />,
       name: formatMessage(adminMessages.AdminMenu.appointmentAdmin),
@@ -309,6 +310,11 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
             Boolean(permissions.APPOINTMENT_PERIOD_ADMIN) || Boolean(permissions.APPOINTMENT_PERIOD_NORMAL),
           key: 'appointment_period_collection',
           name: formatMessage(adminMessages.AdminMenu.appointments),
+        },
+        {
+          permissionIsAllowed: Boolean(permissions.APPOINTMENT_PLAN_CATEGORY),
+          key: 'appointment_plan_category',
+          name: formatMessage(adminMessages.AdminMenu.appointmentCategory),
         },
       ],
     },

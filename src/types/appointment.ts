@@ -1,4 +1,4 @@
-import { PeriodType } from './general'
+import { Category, PeriodType } from './general'
 
 export type ReservationType = 'hour' | 'day'
 export type MeetGenerationMethod = 'auto' | 'manual'
@@ -81,6 +81,7 @@ export type AppointmentPlanAdmin = Pick<
     targetMemberBooked?: boolean
     isBookedReachLimit?: boolean
   })[]
+  categories: Category[]
 }
 
 export type AppointmentPeriodPlanProps = {
