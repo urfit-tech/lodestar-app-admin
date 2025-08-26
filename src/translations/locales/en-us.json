@@ -399,6 +399,7 @@
   "appointment.label.automaticallyGenerated": "automatically generated",
   "appointment.label.contactInformation": "Contact Information",
   "appointment.label.contactPhone": "Contact Phone",
+  "appointment.label.category": "Category",
   "appointment.label.creator": "Instructor",
   "appointment.label.daysAgo": "DaysAgo",
   "appointment.label.duration": "Duration (minutes)",

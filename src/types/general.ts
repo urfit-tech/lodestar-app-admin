@@ -15,6 +15,7 @@ export type ClassType =
   | 'creator'
   | 'podcastAlbum'
   | 'voucher'
+  | 'appointmentPlan'
 
 export type Category = {
   id: string
