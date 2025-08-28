@@ -422,6 +422,7 @@ export const commonMessages = {
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
     podcastCategory: { id: 'common.menu.podcastCategory', defaultMessage: '廣播分類' },
     appointmentPlans: { id: 'common.menu.appointmentPlans', defaultMessage: '預約方案' },
+    appointmentCategory: { id: 'common.menu.appointmentCategory', defaultMessage: '預約分類' },
     appointments: { id: 'common.menu.appointments', defaultMessage: '預約紀錄' },
     creatorDisplayManagement: { id: 'common.menu.creatorDisplayManagement', defaultMessage: '講師牆管理' },
     creatorDisplayCategory: { id: 'common.menu.creatorDisplayCategory', defaultMessage: '領域分類' },
