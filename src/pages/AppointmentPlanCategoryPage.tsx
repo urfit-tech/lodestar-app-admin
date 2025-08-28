@@ -22,7 +22,7 @@ const AppointmentPlanCategoryPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <BookOutlined className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.blogCategory)}</span>
+        <span>{formatMessage(commonMessages.menu.appointmentCategory)}</span>
       </AdminPageTitle>
 
       <CategoryAdminCard classType="appointmentPlan" />
