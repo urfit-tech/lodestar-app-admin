@@ -1,9 +1,8 @@
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import { Key } from 'react'
-import { useMemo } from 'react'
 
 
 interface ProcessedProduct {
@@ -34,6 +33,8 @@ export const useProductData = (
   const [loadedTypes, setLoadedTypes] = useState<string[]>([])
   const [productSelections, setProductSelections] = useState<ProductSelection[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  
+  const merchandiseDataCache = useRef<ProcessedProduct[]>([])
 
   const { client } = useQuery(gql`query GetClient { __typename }`)
 
@@ -520,8 +521,8 @@ export const useProductData = (
 
   
   const processMerchandiseSpecType = (type: string, searchKeyword?: string, merchandiseDataOverride?: ProcessedProduct[]) => {
-    
-    const merchandiseData = merchandiseDataOverride || productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
+    const merchandiseSelection = productSelections.find(ps => ps.productType === 'Merchandise')
+    const merchandiseData = merchandiseDataOverride || merchandiseSelection?.products || []
 
     let products: ProcessedProduct[] = []
 
@@ -652,14 +653,15 @@ export const useProductData = (
             })) || []
             
             
+            merchandiseDataCache.current = merchandiseData
+            
             updateProductSelections('Merchandise', data)
             setLoadedTypes(prev => [...prev, 'Merchandise'])
           }
         } else {
           
-          merchandiseData = productSelections.find(ps => ps.productType === 'Merchandise')?.products || []
+          merchandiseData = productSelections.find(ps => ps.productType === 'Merchandise')?.products || merchandiseDataCache.current
         }
-        
         
         processMerchandiseSpecType(type, searchKeyword, merchandiseData)
       } else {
@@ -688,7 +690,7 @@ export const useProductData = (
         }
       }
 
-      if (!searchKeyword) {
+      if (!searchKeyword && !merchandiseSpecTypes.includes(type)) {
         setLoadedTypes(prev => [...prev, type])
       }
     } catch (error) {
@@ -828,54 +830,54 @@ export const useProductSelection = (
   }, [value])
 
   
-const handleTreeSelect = (selectedValue: string[] | string) => {
-  const valueArray = Array.isArray(selectedValue) ? selectedValue : [selectedValue]
+  const handleTreeSelect = (selectedValue: string[] | string) => {
+    const valueArray = Array.isArray(selectedValue) ? selectedValue : [selectedValue]
+    
+    const selectedIds = (multiple ? valueArray : [valueArray[0]])
+      .map(v => {
+        if (v.includes('_')) {
+          return v
+        } else {
+          const selection = productSelections.find(s => s.productType === v)
+          const ids = selection?.products.map((p: any) => p.id) || []
+          return ids
+        }
+      })
+      .flat()
 
-  const selectedIds = (multiple ? valueArray : [valueArray[0]])
-    .map(v => {
-      if (v.includes('_')) {
-        return v
-      } else {
-        const selection = productSelections.find(s => s.productType === v)
-        const ids = selection?.products.map((p: any) => p.id) || []
-        return ids
+    valueArray.forEach(value => {
+      if (value.includes('_')) {
+        const typeEnd = value.indexOf('_')
+        const type = value.slice(0, typeEnd)
+        if (!loadedTypes.includes(type)) {
+          loadProductType(type)
+        }
+      } else if (!loadedTypes.includes(value)) {
+        loadProductType(value)
       }
     })
-    .flat()
 
-  valueArray.forEach(value => {
-    if (value.includes('_')) {
-      const typeEnd = value.indexOf('_')
-      const type = value.slice(0, typeEnd)
-      if (!loadedTypes.includes(type)) {
-        loadProductType(type)
-      }
-    } else if (!loadedTypes.includes(value)) {
-      loadProductType(value)
-    }
-  })
+    const found = (multiple ? valueArray : [valueArray[0]])
+      .map(v => {
+        if (v.includes('_')) {
+          const typeEnd = v.indexOf('_')
+          const type = v.slice(0, typeEnd)
+          const selection = productSelections.find(s => s.productType === type)
+          return selection?.products.find((p: any) => p.id === v)
+        } else {
+          const selection = productSelections.find(s => s.productType === v)
+          return selection?.products || []
+        }
+      })
+      .flat()
+      .filter(Boolean)
 
-  const found = (multiple ? valueArray : [valueArray[0]])
-    .map(v => {
-      if (v.includes('_')) {
-        const typeEnd = v.indexOf('_')
-        const type = v.slice(0, typeEnd)
-        const selection = productSelections.find(s => s.productType === type)
-        return selection?.products.find((p: any) => p.id === v)
-      } else {
-        const selection = productSelections.find(s => s.productType === v)
-        return selection?.products || []
-      }
-    })
-    .flat()
-    .filter(Boolean)
+    const selectedTypes = valueArray.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat()
 
-  const selectedTypes = valueArray.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat()
-
-  onFullSelected?.(selectedTypes)
-  onChange?.(selectedIds)
-  onProductChange?.(found)
-}
+    onFullSelected?.(selectedTypes)
+    onChange?.(selectedIds)
+    onProductChange?.(found)
+  }
 
   
   const handleTreeExpand = (keys: Key[], setSearchTerm: (term: string) => void, setExpandedKeys: (keys: string[]) => void) => {
@@ -884,7 +886,6 @@ const handleTreeSelect = (selectedValue: string[] | string) => {
     setExpandedKeys(stringKeys)
     setSearchTerm('') 
 
-    
     const newExpandedTypes = stringKeys.filter(key => !loadedTypes.includes(key))
     newExpandedTypes.forEach(type => {
       loadProductType(type)
