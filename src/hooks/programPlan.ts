@@ -175,6 +175,7 @@ export const useUpsertProgramPlan = () => {
               sale_price_prefix
               sale_price_suffix
               price_description
+              group_buying_people
             ]
           }
         ) {
