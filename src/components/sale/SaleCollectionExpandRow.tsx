@@ -504,18 +504,22 @@ const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => 
       ItemAmt: Math.ceil(i.ItemCount * i.ItemPrice * 100),
     }))
     const AmtFree =
-      value.TaxType === '9' ? sum(Items.filter(i => i.ItemTaxType === '3').map(i => i.ItemAmt)) : undefined
+      value.TaxType === '9'
+        ? Math.round(sum(Items.filter(i => i.ItemTaxType === '3').map(i => i.ItemAmt)) / 100)
+        : undefined
     const AmtZero =
-      value.TaxType === '9' ? sum(Items.filter(i => i.ItemTaxType === '2').map(i => i.ItemAmt)) : undefined
+      value.TaxType === '9'
+        ? Math.round(sum(Items.filter(i => i.ItemTaxType === '2').map(i => i.ItemAmt)) / 100)
+        : undefined
     const AmtSales =
       value.TaxType === '9'
-        ? sum(Items.filter(i => i.ItemTaxType === '1').map(i => Math.round(i.ItemAmt / 1.05)))
+        ? Math.round(sum(Items.filter(i => i.ItemTaxType === '1').map(i => Math.round(i.ItemAmt / 1.05))) / 100)
         : undefined
-    const TotalAmt = sum(Items.map(i => i.ItemAmt))
+    const TotalAmt = Math.round(sum(Items.map(i => i.ItemAmt)) / 100)
     const TaxRate = value.TaxType === '3' || value.TaxType === '2' ? 0 : 5
     const Amt =
       value.TaxType === '9'
-        ? Math.round(Number(AmtFree) + Number(AmtSales) + Number(AmtZero) * 100)
+        ? Math.round(Number(AmtFree) + Number(AmtSales) + Number(AmtZero))
         : Math.round((TotalAmt * 100) / (100 + TaxRate))
     const TaxAmt = TotalAmt - Amt
 
@@ -530,9 +534,9 @@ const transformInvoice = (field: FieldProps, memberName?: string): Invoice[] => 
       PrintFlag: 'Y',
       CustomsClearance: value.TaxType === '2' || value.TaxType === '9' ? '1' : undefined,
       TaxRate,
-      Amt: Math.round(Amt / 100),
-      TaxAmt: Math.round(TaxAmt / 100),
-      TotalAmt: Math.round(TotalAmt / 100),
+      Amt,
+      TaxAmt,
+      TotalAmt,
       Items,
       AmtFree,
       AmtZero,
