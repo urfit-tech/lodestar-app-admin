@@ -2,6 +2,7 @@ import { MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { WarningTwoIcon } from '@chakra-ui/icons'
 import { Box, Flex, Icon, Spinner } from '@chakra-ui/react'
 import { Dropdown, Menu, message, Modal, Space } from 'antd'
+import InnerHTML from 'dangerously-set-html-content'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -193,6 +194,15 @@ const MemberNoteAdminItem: React.FC<{
     }
   }
 
+  const renderAccordingToSyntax = (syntax: undefined | 'html' | 'markdown') => (content: string | null) => {
+    switch (syntax) {
+      case 'html':
+        return <InnerHTML html={content || ''} />
+      default:
+        return content
+    }
+  }
+
   return (
     <div className="d-flex justify-content-between mb-4">
       <div className="d-flex align-items-start">
@@ -252,7 +262,7 @@ const MemberNoteAdminItem: React.FC<{
               )}
           </div>
 
-          <StyledParagraph>{note.description}</StyledParagraph>
+          <StyledParagraph>{renderAccordingToSyntax(note.metadata?.syntax)(note.description)}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
           {permissions.MEMBER_NOTE_VIEW_EDIT && note.note && (
             <StyledCommentBlock>
