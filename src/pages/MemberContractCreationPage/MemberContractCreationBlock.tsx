@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -205,7 +206,7 @@ const MemberContractCreationBlock: React.FC<{
             })),
           ],
           orderExecutors,
-          paymentNo: v4(),
+          paymentNo: `${dayjs().format('YYYYMMDDHHmmss')}-${v4().slice(0, 8)}`,
           paymentOptions: {
             paymentMethod: fieldValue.paymentMethod,
             installmentPlan: fieldValue.installmentPlan,
