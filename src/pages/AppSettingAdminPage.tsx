@@ -155,7 +155,12 @@ const AppSettingCard: React.FC<
                     rules={[{ required: setting.isRequired, whitespace: true }]}
                   >
                     <Select disabled={setting.isProtected}>
-                      {setting.options.map((option: string) => (
+                      {(Array.isArray(setting.options)
+                        ? setting.options
+                        : typeof setting.options === 'string'
+                        ? JSON.parse(setting.options)
+                        : []
+                      ).map((option: string) => (
                         <Select.Option key={option} value={option}>
                           {option}
                         </Select.Option>
