@@ -38,6 +38,7 @@ const AppSettingAdminPage: React.FC = () => {
         options: v.options,
         isProtected: v.is_protected,
         isRequired: v.is_required,
+        maxLength: v.max_length ? v.max_length : undefined,
       }
       return accum
     }, {} as Record<string, AppSettings>) || {}
@@ -76,6 +77,7 @@ type AppSettings = {
     options: any
     isProtected: boolean
     isRequired: boolean
+    maxLength?: number
   }
 }
 
@@ -142,9 +144,12 @@ const AppSettingCard: React.FC<
                     key={key}
                     label={label}
                     name={key}
-                    rules={[{ required: setting.isRequired, whitespace: true }]}
+                    rules={[
+                      { required: setting.isRequired, whitespace: true },
+                      ...(setting.maxLength ? [{ max: setting.maxLength }] : []),
+                    ]}
                   >
-                    <Input disabled={setting.isProtected} />
+                    <Input disabled={setting.isProtected} maxLength={setting.maxLength} />
                   </Form.Item>
                 )}
                 {setting.type === 'string' && setting.options && (
@@ -216,6 +221,7 @@ const GET_SETTINGS = gql`
       options
       is_protected
       is_required
+      max_length
       app_settings(where: { app_id: { _eq: $appId } }) {
         value
       }
