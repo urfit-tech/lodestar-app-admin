@@ -404,6 +404,30 @@ export const useOrderLogExpandRow = (orderId: string) => {
     { variables: { orderId } },
   )
 
+  const {
+    loading: loadingPaymentMethods,
+    error: errorPaymentMethods,
+    data: paymentMethodsData,
+    refetch: refetchPaymentMethods,
+  } = useQuery<hasura.GetPaymentMethods, hasura.GetPaymentMethodsVariables>(
+    gql`
+      query GetPaymentMethods {
+        payment_method {
+          name
+          display_name
+        }
+      }
+    `,
+  )
+
+  const paymentMethodMap =
+    paymentMethodsData?.payment_method.reduce((acc, pm) => {
+      if (pm.display_name) {
+        acc[pm.name] = pm.display_name
+      }
+      return acc
+    }, {} as Record<string, string>) || {}
+
   const orderLog = {
     id: expandRowOrderLog?.order_log_by_pk?.id,
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
@@ -435,7 +459,9 @@ export const useOrderLogExpandRow = (orderId: string) => {
       ratio: v.ratio,
     })) || []
 
-  const paymentMethod = paymentLogByOrderIdData?.payment_log[0]?.gateway || null
+  const paymentGateway = paymentLogByOrderIdData?.payment_log[0]?.gateway || null
+  const firstMethod = paymentLogByOrderIdData?.payment_log[0]?.method
+  const paymentMethod = firstMethod ? paymentMethodMap[firstMethod] || firstMethod : null
   const paymentLogs =
     paymentLogByOrderIdData?.payment_log.map(p => ({
       status: p.status,
@@ -443,6 +469,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
       no: p.no,
       gateway: p.gateway,
       method: p.method,
+      methodDisplayName: p.method ? paymentMethodMap[p.method] : p.method,
       invoiceIssuedAt: p.invoice_issued_at,
       invoiceOptions: p.invoice_options,
     })) || []
@@ -463,14 +490,17 @@ export const useOrderLogExpandRow = (orderId: string) => {
     loadingOrderExecutors,
     loadingPaymentLogByOrderId,
     loadingOrderDiscountByOrderId,
+    loadingPaymentMethods,
     errorExpandRowOrderLog,
     errorExpandRowOrderProduct,
     errorOrderExecutors,
     errorPaymentLogByOrderId,
     errorOrderDiscountByOrderId,
+    errorPaymentMethods,
     orderLog,
     orderProducts,
     orderExecutors,
+    paymentGateway,
     paymentMethod,
     paymentLogs,
     orderDiscounts,
@@ -480,6 +510,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
       refetchOrderExecutors()
       refetchPaymentLogByOrderId()
       refetchOrderDiscountByOrderId()
+      refetchPaymentMethods()
     },
   }
 }

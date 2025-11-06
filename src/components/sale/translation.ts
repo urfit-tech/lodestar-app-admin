@@ -64,6 +64,10 @@ const saleMessages = {
       id: 'sale.SaleCollectionExpandRow.paymentMethod',
       defaultMessage: '付款方式：{paymentMethod}',
     },
+    paymentGateway: {
+      id: 'sale.SaleCollectionExpandRow.paymentGateway',
+      defaultMessage: '交易渠道：{paymentGateway}',
+    },
     paymentDeadline: {
       id: 'sale.SaleCollectionExpandRow.paymentDeadline',
       defaultMessage: '付款期限：{date}',
