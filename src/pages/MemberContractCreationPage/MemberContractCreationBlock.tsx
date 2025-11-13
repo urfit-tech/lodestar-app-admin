@@ -205,7 +205,7 @@ const MemberContractCreationBlock: React.FC<{
             })),
           ],
           orderExecutors,
-          paymentNo: v4(),
+          paymentNo: moment().format('YYYYMMDDHHmmss'),
           paymentOptions: {
             paymentMethod: fieldValue.paymentMethod,
             installmentPlan: fieldValue.installmentPlan,
