@@ -136,6 +136,7 @@ const SaleCollectionExpandRow = ({
     paymentLogs,
     orderDiscounts,
     paymentMethod,
+    paymentGateway,
     refetchOrderLogExpandRow,
   } = useOrderLogExpandRow(orderLogId)
 
@@ -313,6 +314,13 @@ const SaleCollectionExpandRow = ({
                     <div>
                       {formatMessage(saleMessages.SaleCollectionExpandRow.executorsInfo)}
                       {orderExecutors.map(orderExecutor => orderExecutor.ratio).join('、')}
+                    </div>
+                  ) : null}
+                  {paymentGateway && permissions['SALES_RECORDS_DETAILS'] ? (
+                    <div>
+                      {formatMessage(saleMessages.SaleCollectionExpandRow.paymentGateway, {
+                        paymentGateway,
+                      })}{' '}
                     </div>
                   ) : null}
                   {paymentMethod && permissions['SALES_RECORDS_DETAILS'] ? (
