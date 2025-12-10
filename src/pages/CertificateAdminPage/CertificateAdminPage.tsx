@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -16,6 +16,7 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
+import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
 import { Certificate } from '../../types/certificate'
@@ -34,6 +35,7 @@ const CertificateAdminPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { loading, error, certificate, refetch } = useCertificate(certificateId)
   const [visible, setVisible] = useState(false)
+  const { updateCertificateMetaTag } = useUpdateCertificateMetaTag()
 
   if (Object.keys(enabledModules).length === 0 || loading) {
     return <LoadingPage />
@@ -89,6 +91,16 @@ const CertificateAdminPage: React.VFC = () => {
                   <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
                   <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
                 </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
+                  <OpenGraphSettingsBlock
+                    id={certificate?.id}
+                    type="certificate"
+                    metaTag={certificate?.metaTag}
+                    updateMetaTag={updateCertificateMetaTag}
+                    onRefetch={refetch}
+                  />
+                </AdminBlock>
                 <MetaProductDeletionBlock
                   metaProductType="Certificate"
                   targetId={certificateId}
@@ -135,6 +147,7 @@ const useCertificate = (certificateId: string) => {
           code
           period_type
           period_amount
+          meta_tag
           author {
             id
             name
@@ -169,6 +182,7 @@ const useCertificate = (certificateId: string) => {
         code: data?.certificate_by_pk?.code || null,
         periodType: data?.certificate_by_pk?.period_type as 'D' | 'W' | 'M' | 'Y',
         periodAmount: data?.certificate_by_pk?.period_amount,
+        metaTag: data?.certificate_by_pk?.meta_tag,
         author: {
           id: data?.certificate_by_pk?.certificate_template?.author?.id || '',
           name: data?.certificate_by_pk?.certificate_template?.author?.name || '',
@@ -192,6 +206,25 @@ const useCertificate = (certificateId: string) => {
     error,
     certificate,
     refetch,
+  }
+}
+
+const useUpdateCertificateMetaTag = () => {
+  const [updateCertificateMetaTag] = useMutation<
+    hasura.UPDATE_CERTIFICATE_META_TAG,
+    hasura.UPDATE_CERTIFICATE_META_TAGVariables
+  >(
+    gql`
+      mutation UPDATE_CERTIFICATE_META_TAG($id: uuid!, $metaTag: jsonb) {
+        update_certificate(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    updateCertificateMetaTag,
   }
 }
 
