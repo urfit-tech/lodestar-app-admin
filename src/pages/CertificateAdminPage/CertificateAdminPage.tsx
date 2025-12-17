@@ -91,16 +91,13 @@ const CertificateAdminPage: React.VFC = () => {
                   <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
                   <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
                 </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
-                  <OpenGraphSettingsBlock
-                    id={certificate?.id}
-                    type="certificate"
-                    metaTag={certificate?.metaTag}
-                    updateMetaTag={updateCertificateMetaTag}
-                    onRefetch={refetch}
-                  />
-                </AdminBlock>
+                <OpenGraphSettingsBlock
+                  id={certificate?.id}
+                  type="certificate"
+                  metaTag={certificate?.metaTag}
+                  updateMetaTag={updateCertificateMetaTag}
+                  onRefetch={refetch}
+                />
                 <MetaProductDeletionBlock
                   metaProductType="Certificate"
                   targetId={certificateId}
