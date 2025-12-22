@@ -26,17 +26,19 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
 `
 
 const PermissionGroupSelector: React.FC<{
+  disabled?: boolean
   single?: boolean
   value?: string
   onChange?: (value: string) => void
   onClear?: () => void
-}> = ({ single, value, onChange, onClear }) => {
+}> = ({ single, value, onChange, onClear, disabled }) => {
   const { formatMessage } = useIntl()
 
   const { loadingPermissionGroups, permissionGroups } = usePermissionGroupCollection()
 
   return (
     <StyledSelect
+      disabled={disabled}
       allowClear
       mode={single ? undefined : 'multiple'}
       loading={loadingPermissionGroups}
