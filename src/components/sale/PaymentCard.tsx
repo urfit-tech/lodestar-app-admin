@@ -109,13 +109,19 @@ const PaymentCard: React.FC<{
     }
     setLoading(true)
     axios
-      .post(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`, {
-        price,
-        orderId,
-        paymentNo,
-        targetUrl: config.targetUrl,
-        targetPath: config.targetPath,
-      })
+      .post(
+        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/payment/${appId}/card-reader`,
+        {
+          price,
+          orderId,
+          paymentNo,
+          targetUrl: config.targetUrl,
+          targetPath: config.targetPath,
+        },
+        {
+          timeout: 70000,
+        },
+      )
       .then(res => {
         if (res.data.message === 'success') {
           setCardReaderResponse({ status: 'success', message: formatMessage(saleMessages.PaymentCard.paymentSuccess) })
