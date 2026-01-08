@@ -192,7 +192,9 @@ const SaleCollectionExpandRow = ({
                     </div>
                     <div className="col-7">
                       <span>{orderProduct.name}</span>
-                      {orderProduct.endedAt && orderProduct.type !== 'AppointmentPlan' ? (
+                      {orderProduct.endedAt &&
+                      orderProduct.type !== 'AppointmentPlan' &&
+                      settings['order.hide_product_expired_at_back_stage'] !== 'true' ? (
                         <span className="ml-2">
                           {`(${dayjs(orderProduct.endedAt)
                             .tz(currentTimeZone)
@@ -201,7 +203,10 @@ const SaleCollectionExpandRow = ({
                           )})`}
                         </span>
                       ) : null}
-                      {orderProduct.startedAt && orderProduct.endedAt && orderProduct.type === 'AppointmentPlan' ? (
+                      {orderProduct.startedAt &&
+                      orderProduct.endedAt &&
+                      orderProduct.type === 'AppointmentPlan' &&
+                      settings['order.hide_product_expired_at_back_stage'] !== 'true' ? (
                         <span>
                           {`(${dateRangeFormatter({
                             startedAt: orderProduct.startedAt,
