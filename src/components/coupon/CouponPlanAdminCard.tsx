@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Divider, Modal } from 'antd'
-import { gql } from '@apollo/client'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -127,7 +127,7 @@ const CouponPlanAdminCard: React.FC<{
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
   const { couponPlanProductIdList, refetchCouponPlanProductIdList } = useCouponPlanProductIds(couponPlan.id)
-
+  const { settings } = useApp()
   useEffect(() => {
     refetchCouponPlanProductIdList()
   }, [stateCode])
@@ -168,12 +168,16 @@ const CouponPlanAdminCard: React.FC<{
             ? dateFormatter(couponPlan.startedAt)
             : formatMessage(couponMessages.CouponPlanAdminCard.fromNow)}
         </span>
-        <span className="m-1">-</span>
-        <span>
-          {couponPlan.endedAt
-            ? dateFormatter(couponPlan.endedAt)
-            : formatMessage(couponMessages.CouponPlanAdminCard.forever)}
-        </span>
+        {settings['coupon.hide_expired_at_back_stage'] !== 'true' && (
+          <>
+            <span className="m-1">-</span>
+            <span>
+              {couponPlan.endedAt
+                ? dateFormatter(couponPlan.endedAt)
+                : formatMessage(couponMessages.CouponPlanAdminCard.forever)}
+            </span>
+          </>
+        )}
       </StyledPeriod>
 
       <Divider className="mt-3" />
