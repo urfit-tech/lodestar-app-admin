@@ -1,6 +1,7 @@
 import { Card } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { dateFormatter } from '../../helpers'
@@ -13,6 +14,7 @@ const CouponCard: React.FC<
   }
 > = ({ coupon, ...cardProps }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
 
   return (
     <Card {...cardProps}>
@@ -37,10 +39,12 @@ const CouponCard: React.FC<
         {coupon.couponCode?.couponPlan.startedAt
           ? dateFormatter(coupon.couponCode.couponPlan.startedAt)
           : formatMessage(couponMessages.CouponCard.fromNow)}
-        {' ~ '}
-        {coupon?.couponCode?.couponPlan.endedAt
-          ? dateFormatter(coupon.couponCode.couponPlan.endedAt)
-          : formatMessage(couponMessages.CouponCard.noPeriod)}
+        {settings['coupon.hide_expired_at_back_stage'] !== 'true' &&
+          ` ~ ${
+            coupon.couponCode.couponPlan.endedAt
+              ? dateFormatter(coupon.couponCode.couponPlan.endedAt)
+              : formatMessage(couponMessages.CouponCard.noPeriod)
+          }`}
       </div>
     </Card>
   )
