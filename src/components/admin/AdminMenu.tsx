@@ -73,6 +73,13 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
       name: string
     }[]
   }[] = [
+    // TODO:之後加入排課功能的subMenuItems
+    {
+      permissionIsAllowed: !!enabledModules.appointment,
+      icon: () => <MoneyCircleIcon />,
+      key: 'schedule_expiry_setting',
+      name: formatMessage(adminMessages.AdminMenu.scheduleExpiry),
+    },
     {
       permissionIsAllowed: !!enabledModules.sale_manager && hasSaleGroupPermission,
       icon: () => <MoneyCircleIcon />,
