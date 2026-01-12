@@ -24,6 +24,7 @@ export type OrderLogColumn = {
   status: string
   totalPrice: number
   options?: any
+  parentOrderId?: string | null
 }
 
 const StyledContainer = styled.div`

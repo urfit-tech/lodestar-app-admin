@@ -113,6 +113,7 @@ export const useOrderLogPreviewCollection = (
           shipping
           member_id
           options
+          parent_order_id
         }
       }
     `,
@@ -241,7 +242,7 @@ export const useOrderLogPreviewCollection = (
 
   const orderLogPreviewCollection: Pick<
     OrderLog,
-    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options'
+    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options' | 'parentOrderId'
   >[] =
     orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
       const productPrice = sum(
@@ -265,6 +266,7 @@ export const useOrderLogPreviewCollection = (
         shipping: orderLogPreview.shipping,
         totalPrice: Math.max(productPrice - discountPrice + shippingFee),
         options: orderLogPreview.options,
+        parentOrderId: orderLogPreview.parent_order_id || null,
       }
     }) || []
 
