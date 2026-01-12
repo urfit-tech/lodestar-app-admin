@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

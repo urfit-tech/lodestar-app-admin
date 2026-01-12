@@ -7,14 +7,7 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminBlockTitle,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../components/admin'
+import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'

@@ -1,7 +1,6 @@
 import { DragOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button } from 'antd'
-import { gql } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'

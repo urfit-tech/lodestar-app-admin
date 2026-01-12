@@ -9,6 +9,7 @@ import MemberCoinAdminBlock from '../../components/coin/MemberCoinAdminBlock'
 import MemberContractAdminBlock from '../../components/contract/MemberContractAdminBlock'
 import MemberCouponAdminBlock from '../../components/coupon/MemberCouponAdminBlock'
 import MemberEventCalendarBlock from '../../components/event/MemberEventCalendarBlock'
+import MemberOpenTimeScheduleBlock from '../../components/event/MemberOpenTimeScheduleBlock'
 import MemberPermissionForm from '../../components/member/MemberPermissionForm'
 import MemberProfileAbstractForm from '../../components/member/MemberProfileAbstractForm'
 import MemberProfileBasicForm from '../../components/member/MemberProfileBasicForm'
@@ -17,14 +18,9 @@ import MemberNoteAdminBlock from '../../components/note/MemberNoteAdminBlock'
 import SaleCollectionAdminCard from '../../components/sale/SaleCollectionAdminCard'
 import MemberTaskCollectionBlock from '../../components/task/MemberTaskCollectionBlock'
 import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdminBlock'
-import {
-  createEventAndInviteResourceFetcher,
-  deleteEvent,
-  getDefaultResourceEventsFethcer,
-  getInvitedResourceEventsFetcher,
-  updateEvent,
-} from '../../helpers/eventHelper/eventFetchers'
+import { createEventAndInviteResourceFetcher, deleteEvent, getDefaultResourceEventsFethcer, getInvitedResourceEventsFetcher, updateEvent } from '../../helpers/eventHelper/eventFetchers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
+import memberComponentMessages from '../../components/member/translation'
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
 import MemberHistoryAdminBlock from './MemberHistoryAdminBlock'
@@ -68,7 +64,14 @@ const MemberAdminPage: React.FC = () => {
           </Tabs.TabPane>
         ),
         enabledModules.event_arrangement && (
-          <Tabs.TabPane key="event" tab={formatMessage(memberMessages.label.event)}>
+          <Tabs.TabPane key="eventSchedule" tab={formatMessage(memberComponentMessages.label.eventSchedule)}>
+            <div className="p-5">
+              <MemberOpenTimeScheduleBlock memberId={memberId} />
+            </div>
+          </Tabs.TabPane>
+        ),
+        enabledModules.event_arrangement && (
+          <Tabs.TabPane key="event" tab={formatMessage(memberComponentMessages.label.eventOld)}>
             <div className="p-5">
               <MemberEventCalendarBlock
                 allowedMode={['default', 'arrange']}

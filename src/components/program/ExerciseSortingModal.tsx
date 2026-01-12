@@ -9,10 +9,7 @@ import styled from 'styled-components'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
 import AdminModal from '../admin/AdminModal'
-import DraggableItemCollectionBlock, {
-  ItemProps,
-  StyledReactSortableWrapper,
-} from '../common/DraggableItemCollectionBlock'
+import DraggableItemCollectionBlock, { ItemProps, StyledReactSortableWrapper } from '../common/DraggableItemCollectionBlock'
 import { QuestionBlock, StyledAction } from '../form/QuestionInput'
 
 const StyledQuestionBlock = styled.div`

@@ -1,6 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Tabs } from 'antd'
 import { gql } from '@apollo/client'
+import { Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'

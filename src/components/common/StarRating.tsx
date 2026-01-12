@@ -1,6 +1,6 @@
 import ReactStars from 'react-star-rating-component'
 import styled from 'styled-components'
-import { StarIcon, StarGrayIcon } from '../../images/icon/index'
+import { StarGrayIcon, StarIcon } from '../../images/icon/index'
 
 const ReactStarsWrapper = styled(ReactStars)`
   svg {

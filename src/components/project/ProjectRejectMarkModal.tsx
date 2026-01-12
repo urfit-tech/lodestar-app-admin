@@ -5,11 +5,11 @@ import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProject } from '../../hooks/project'
 import projectMessages from './translation'
-import hasura from '../../hasura'
 
 type RenameFieldProps = {
   reason: string

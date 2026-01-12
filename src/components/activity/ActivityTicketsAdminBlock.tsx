@@ -1,7 +1,6 @@
 import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'

@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import { Button, Divider, Modal } from 'antd'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'

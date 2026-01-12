@@ -1,5 +1,6 @@
 import { FileAddOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/client'
+import { Select } from '@chakra-ui/react'
 import { Button, Form, Input, Radio, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -13,6 +14,7 @@ import { StyledTips } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
 import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -22,8 +24,6 @@ import { templateAImage, templateBImage, templateCImage } from '../../images/def
 import { PlusIcon } from '../../images/icon'
 import { templateA, templateB, templateC, templateDefault } from './templatePage'
 import craftPageCollectionPageMessages from './translation'
-import { Select } from '@chakra-ui/react'
-import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 
 const StyledDemoUrl = styled.div`
   font-size: 14px;

@@ -29,14 +29,94 @@ export const parseRRuleWithTimeZone: (rrule: RRule) => RRule
     return new RRule({ ...adaptedRRule.origOptions, tzid: Intl.DateTimeFormat().resolvedOptions().timeZone })
   }
 
-const adaptRrule = (rruleStr: string | null): string =>
-  isNil(rruleStr) ?
-    identity(rruleStr) :
-    pipe(
-      rrulestr,
-      parseRRuleWithTimeZone,
-      invoker(0, 'toString')
-    )(rruleStr)
+const adaptRrule = (rruleStr: string | null): string | null => {
+  if (isNil(rruleStr)) {
+    return null
+  }
+
+  try {
+    // Check if the rrule is a JSON object string
+    if (rruleStr.trim().startsWith('{')) {
+      const rruleObj = JSON.parse(rruleStr)
+
+      // Convert JSON object to RRule options
+      const options: any = {}
+
+      // Map FREQ
+      if (rruleObj.FREQ) {
+        const freqMap: Record<string, number> = {
+          'YEARLY': RRule.YEARLY,
+          'MONTHLY': RRule.MONTHLY,
+          'WEEKLY': RRule.WEEKLY,
+          'DAILY': RRule.DAILY,
+          'HOURLY': RRule.HOURLY,
+          'MINUTELY': RRule.MINUTELY,
+          'SECONDLY': RRule.SECONDLY,
+        }
+        options.freq = freqMap[rruleObj.FREQ]
+      }
+
+      // Map BYDAY (weekday)
+      if (rruleObj.BYDAY) {
+        const dayMap: Record<string, any> = {
+          'MO': RRule.MO,
+          'TU': RRule.TU,
+          'WE': RRule.WE,
+          'TH': RRule.TH,
+          'FR': RRule.FR,
+          'SA': RRule.SA,
+          'SU': RRule.SU,
+        }
+        const days = Array.isArray(rruleObj.BYDAY) ? rruleObj.BYDAY : [rruleObj.BYDAY]
+        options.byweekday = days.map((day: string) => dayMap[day]).filter(Boolean)
+      }
+
+      // Map DTSTART
+      if (rruleObj.DTSTART) {
+        options.dtstart = new Date(rruleObj.DTSTART)
+      }
+
+      // Map UNTIL - 如果沒有設置 UNTIL，使用 100 年後作為默認值
+      // 這是為了讓 FullCalendar 的 rrule 插件能正確展開重複事件
+      if (rruleObj.UNTIL) {
+        options.until = new Date(rruleObj.UNTIL)
+      } else {
+        // 默認顯示 100 年內的重複事件（永久重複）
+        options.until = moment().add(100, 'year').toDate()
+      }
+
+      // Map BYHOUR
+      if (rruleObj.BYHOUR !== undefined) {
+        options.byhour = Array.isArray(rruleObj.BYHOUR) ? rruleObj.BYHOUR : [rruleObj.BYHOUR]
+      }
+
+      // Map BYMINUTE
+      if (rruleObj.BYMINUTE !== undefined) {
+        options.byminute = Array.isArray(rruleObj.BYMINUTE) ? rruleObj.BYMINUTE : [rruleObj.BYMINUTE]
+      }
+
+      const rrule = new RRule(options)
+      const adaptedRRule = parseRRuleWithTimeZone(rrule)
+      return adaptedRRule.toString()
+    }
+
+    // Standard RRule string format
+    const parsedRRule = rrulestr(rruleStr)
+    const adaptedRRule = parseRRuleWithTimeZone(parsedRRule)
+
+    // 如果沒有 UNTIL，設置默認值（一年後）
+    if (!adaptedRRule.origOptions.until) {
+      const defaultUntil = moment().add(100, 'year').toDate()
+      const optionsWithUntil = { ...adaptedRRule.origOptions, until: defaultUntil }
+      return new RRule(optionsWithUntil).toString()
+    }
+
+    return adaptedRRule.toString()
+  } catch (e) {
+    console.error('Failed to parse rrule:', e, 'rruleStr:', rruleStr)
+    return null
+  }
+}
 
 const evolveMapForResourceEvent = {
   title: (titile: string | undefined) => identity(titile),
@@ -113,5 +193,5 @@ export const adaptedEventPayload: (eventPayload: Partial<GeneralEventApi>) => Ev
       ]
     ),
     renameKey(keysMapForEventPayload as any) as any,
-    omit(['extendedProps']) as any,
+    omit(['extendedProps', 'duration', 'role']) as any,
   )

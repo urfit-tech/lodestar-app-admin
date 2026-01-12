@@ -1,7 +1,9 @@
 import { MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { Button, Flex } from '@chakra-ui/react'
 import { Card, Dropdown, Menu, message, Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -10,11 +12,9 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { Flex, Button } from '@chakra-ui/react'
-import MemberContractInfoModal from './MemberContractInfoModal'
+import { ContractValue, ContractWithProducts } from '../../types/contract'
 import PrimaryButton from '../common/PrimaryButton'
-import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
-import { ContractWithProducts, ContractValue } from '../../types/contract'
+import MemberContractInfoModal from './MemberContractInfoModal'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },

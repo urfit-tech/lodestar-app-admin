@@ -1,11 +1,4 @@
-import Icon, {
-  AreaChartOutlined,
-  BarChartOutlined,
-  DatabaseOutlined,
-  GlobalOutlined,
-  GoldenFilled,
-  ShoppingFilled,
-} from '@ant-design/icons'
+import Icon, { AreaChartOutlined, BarChartOutlined, DatabaseOutlined, GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -18,24 +11,7 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import {
-  AnnouncementIcon,
-  BookIcon,
-  CalendarAltIcon,
-  CertificateIcon,
-  DiscountIcon,
-  MicrophoneIcon,
-  MoneyCircleIcon,
-  PageIcon,
-  PhoneIcon,
-  PointIcon,
-  ProjectIcon,
-  QuestionLibraryIcon,
-  ShopIcon,
-  UserCopyIcon,
-  UserIcon,
-  UsersIcon,
-} from '../../images/icon'
+import { AnnouncementIcon, BookIcon, CalendarAltIcon, CalendarCheckFillIcon, CertificateIcon, DiscountIcon, MicrophoneIcon, MoneyCircleIcon, PageIcon, PhoneIcon, PointIcon, ProjectIcon, QuestionLibraryIcon, ShopIcon, UserCopyIcon, UserIcon, UsersIcon } from '../../images/icon'
 import { routesMap, routesProps } from '../common/AdminRouter'
 import adminMessages from './translation'
 
@@ -316,6 +292,29 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
           permissionIsAllowed: Boolean(permissions.APPOINTMENT_PLAN_CATEGORY),
           key: 'appointment_plan_category',
           name: formatMessage(adminMessages.AdminMenu.appointmentCategory),
+        },
+      ],
+    },
+    {
+      permissionIsAllowed: true,
+      key: 'class_schedule_admin',
+      icon: () => <CalendarCheckFillIcon />,
+      name: formatMessage(adminMessages.AdminMenu.scheduleManagement),
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'class_schedule_personal',
+          name: formatMessage(adminMessages.AdminMenu.personalSchedule),
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'class_schedule_semester',
+          name: formatMessage(adminMessages.AdminMenu.semesterSchedule),
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'class_schedule_group',
+          name: formatMessage(adminMessages.AdminMenu.groupSchedule),
         },
       ],
     },

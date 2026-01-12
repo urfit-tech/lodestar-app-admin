@@ -1,4 +1,4 @@
-import { Flex, Box, SkeletonText } from '@chakra-ui/react'
+import { Box, Flex, SkeletonText } from '@chakra-ui/react'
 import { useCouponListInfo } from '../../hooks/coupon'
 
 const MemberContractInfoCouponList: React.FC<{ couponIds: string[] }> = ({ couponIds }) => {

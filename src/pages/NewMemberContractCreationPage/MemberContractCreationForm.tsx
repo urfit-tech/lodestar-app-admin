@@ -1,53 +1,17 @@
 import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import {
-  Button,
-  Checkbox,
-  DatePicker,
-  Descriptions,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Select,
-  Skeleton,
-  Tabs,
-} from 'antd'
+import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, message, Select, Skeleton, Tabs } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import dayjs from 'dayjs'
 import { sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import {
-  allPass,
-  always,
-  converge,
-  divide,
-  equals,
-  flip,
-  gte,
-  identity,
-  ifElse,
-  lte,
-  multiply,
-  pipe,
-  prop,
-  tap,
-  uniqBy,
-} from 'ramda'
+import { allPass, always, converge, divide, equals, flip, gte, identity, ifElse, lte, multiply, pipe, prop, tap, uniqBy } from 'ramda'
 import React, { Dispatch, memo, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
-import {
-  ContractInfo,
-  ContractProduct,
-  ContractSales,
-  FieldProps,
-  paymentMethods,
-  paymentModes,
-  SelectedProduct,
-} from '.'
+import { ContractInfo, ContractProduct, ContractSales, FieldProps, paymentMethods, paymentModes, SelectedProduct } from '.'
 import { AdminBlockTitle } from '../../components/admin'
 import MemberSelector from '../../components/form/MemberSelector'
 import hasura from '../../hasura'
