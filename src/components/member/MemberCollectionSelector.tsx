@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { defineMessages } from '@formatjs/intl'
 import { Button, Form, InputNumber, Select } from 'antd'
-import { gql } from '@apollo/client'
 import { MemberCollectionProps } from 'lodestar-app-element/src/components/collections/MemberCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

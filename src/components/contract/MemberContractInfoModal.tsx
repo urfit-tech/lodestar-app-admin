@@ -1,24 +1,13 @@
-import {
-  Box,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Flex,
-} from '@chakra-ui/react'
-import { useIntl } from 'react-intl'
-import { ContractWithProducts } from '../../types/contract'
-import contractMessages from './translation'
+import { Box, Button, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react'
 import dayjs from 'dayjs'
-import { FaAngleRight } from 'react-icons/fa'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { FaAngleRight } from 'react-icons/fa'
+import { useIntl } from 'react-intl'
 import { useCurrency } from '../../hooks/currency'
+import { ContractWithProducts } from '../../types/contract'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import MemberContractInfoCouponList from './MemberContractInfoCouponList'
+import contractMessages from './translation'
 
 const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }> = ({ memberContract }) => {
   const theme = useAppTheme()

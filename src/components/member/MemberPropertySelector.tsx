@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
-import { gql } from '@apollo/client'
 import { useIntl } from 'react-intl'
 import * as hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'

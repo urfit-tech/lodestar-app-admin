@@ -1,17 +1,4 @@
-import {
-  converge,
-  curry,
-  evolve,
-  identity,
-  ifElse,
-  isNotNil,
-  map,
-  mapObjIndexed,
-  mergeRight,
-  omit,
-  pipe,
-  values,
-} from 'ramda'
+import { converge, curry, evolve, identity, ifElse, isNotNil, map, mapObjIndexed, mergeRight, omit, pipe, values } from 'ramda'
 
 const generatePartialWithNewKey =
   <O extends object, OldKey extends keyof O, Key extends keyof object>(keysMap: Record<Key, OldKey>) =>

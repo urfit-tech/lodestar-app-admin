@@ -1,26 +1,14 @@
-import { Space } from 'antd'
-import { useIntl } from 'react-intl'
-import memberMessages from './translation'
-import { ReactComponent as Note } from '../../images/icon/memberNote-note.svg'
-import styled from 'styled-components'
 import { Text } from '@chakra-ui/layout'
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  useToast,
-} from '@chakra-ui/react'
-import { Icon } from '@chakra-ui/react'
-import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { Button, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure, useToast } from '@chakra-ui/react'
+import { Space } from 'antd'
 import axios from 'axios'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { ReactComponent as Note } from '../../images/icon/memberNote-note.svg'
+import memberMessages from './translation'
 
 const StyledStatus = styled.span<{ cursor?: 'pointer' | 'not-allowed' }>`
   display: flex;

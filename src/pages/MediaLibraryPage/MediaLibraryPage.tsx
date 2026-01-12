@@ -15,12 +15,7 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import { v4 as uuid } from 'uuid'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
-import {
-  CaptionUploadButton,
-  DeleteButton,
-  PreviewButton,
-  ReUploadButton,
-} from '../../components/library/VideoLibraryItem'
+import { CaptionUploadButton, DeleteButton, PreviewButton, ReUploadButton } from '../../components/library/VideoLibraryItem'
 import { getVideoDuration } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useAttachments } from '../../hooks/data'

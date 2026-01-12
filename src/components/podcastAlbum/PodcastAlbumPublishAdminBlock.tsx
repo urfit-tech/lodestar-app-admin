@@ -1,14 +1,9 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import AdminPublishBlock, {
-  ChecklistItemProps,
-  PublishEvent,
-  PublishStatus,
-} from '../../components/admin/AdminPublishBlock'
+import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import hasura from '../../hasura'
 import { commonMessages, craftPageMessages, podcastAlbumMessages } from '../../helpers/translation'
 import { PodcastAlbum } from '../../types/podcastAlbum'

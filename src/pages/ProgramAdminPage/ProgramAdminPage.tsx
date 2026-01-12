@@ -6,15 +6,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminBlockSubTitle,
-  AdminBlockTitle,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../components/admin'
+import { AdminBlock, AdminBlockSubTitle, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import SharingCodeTab from '../../components/common/SharingCode/SharingCodeTab'
 import commonMessages from '../../components/common/translation'

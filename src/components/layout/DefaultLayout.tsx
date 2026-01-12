@@ -1,6 +1,7 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Button, Divider, Dropdown, Layout, Menu } from 'antd'
 import dayjs from 'dayjs'
+import minMax from 'dayjs/plugin/minMax'
 import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -20,7 +21,6 @@ import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 import layoutMessages from './translation'
-import minMax from 'dayjs/plugin/minMax'
 
 dayjs.extend(utc)
 dayjs.extend(minMax)

@@ -6,14 +6,7 @@ import { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminBlockTitle,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../components/admin'
+import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import AdminPublishBlock, { PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AnnouncementBasicSettingsForm from '../../components/announcement/AnnouncementBasicSettingsForm'
 import AnnouncementPathSettingsForm from '../../components/announcement/AnnouncementPathSettingsForm'

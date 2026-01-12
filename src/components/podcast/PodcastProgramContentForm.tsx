@@ -1,11 +1,10 @@
 import Icon, { CloseOutlined, ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { UploadChangeParam } from 'antd/lib/upload'
 import { UploadFile } from 'antd/lib/upload/interface'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -14,21 +13,10 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
-import {
-  durationFormatter,
-  durationFormatToSeconds,
-  getFileDuration,
-  handleError,
-  isiPhoneChrome,
-  isWebview,
-} from '../../helpers'
+import { durationFormatter, durationFormatToSeconds, getFileDuration, handleError, isiPhoneChrome, isWebview } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import {
-  appendPodcastProgramAudio,
-  deletePodcastProgramAudio,
-  mergePodcastProgram,
-} from '../../pages/RecordingPageHelpers'
+import { appendPodcastProgramAudio, deletePodcastProgramAudio, mergePodcastProgram } from '../../pages/RecordingPageHelpers'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'

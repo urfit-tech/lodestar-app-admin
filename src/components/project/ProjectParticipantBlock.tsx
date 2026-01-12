@@ -9,6 +9,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError, isValidEmail } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useIdentity } from '../../hooks/identity'
@@ -17,7 +18,6 @@ import RoleAdminBlock from '../admin/RoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
 import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import projectMessages from './translation'
-import hasura from '../../hasura'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);

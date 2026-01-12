@@ -1,19 +1,7 @@
 import Icon, { EditOutlined, MoreOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
 import { Box, Flex } from '@chakra-ui/react'
-import {
-  Button,
-  Checkbox,
-  Dropdown,
-  Form,
-  Input,
-  InputNumber,
-  Menu,
-  message,
-  Modal,
-  Radio,
-  Select,
-  Tooltip,
-} from 'antd'
+import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Radio, Select, Tooltip } from 'antd'
+import { FormInstance } from 'antd/lib/form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import Epub from 'epubjs'
@@ -24,23 +12,16 @@ import { last } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { DeepPick } from 'ts-deep-pick/lib'
 import { v4 as uuidV4 } from 'uuid'
 import { program_content_ebook_toc_insert_input } from '../../hasura'
-import {
-  contentTypeFormat,
-  convertFileToArrayBuffer,
-  generateUrlWithID,
-  getFileDuration,
-  getVideoIDByURL,
-  handleError,
-  uploadFile,
-  uploadFileV2,
-} from '../../helpers'
+import { contentTypeFormat, convertFileToArrayBuffer, generateUrlWithID, getFileDuration, getVideoIDByURL, handleError, uploadFile, uploadFileV2 } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContentEbook } from '../../hooks/ebook'
 import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
+import { ProgramContent } from '../../types/program'
 import { StyledTips } from '../admin'
 import AttachmentSelector, { AttachmentSelectorValue } from '../common/AttachmentSelector'
 import FileUploader from '../common/FileUploader'
@@ -48,14 +29,11 @@ import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ExerciseAdminModalBlock from './ExerciseAdminModalBlock'
+import ExternalLinkAdminModalBlock from './ExternalLinkAdminModalBlock'
 import PracticeAdminModalBlock from './PracticeAdminModalBlock'
 import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
 import type { NavItem } from 'epubjs/types/navigation'
-import { DeepPick } from 'ts-deep-pick/lib'
-import { ProgramContent } from '../../types/program'
-import { FormInstance } from 'antd/lib/form'
-import ExternalLinkAdminModalBlock from './ExternalLinkAdminModalBlock'
 
 const StyledRadio = styled(Radio)`
   && .ant-radio {

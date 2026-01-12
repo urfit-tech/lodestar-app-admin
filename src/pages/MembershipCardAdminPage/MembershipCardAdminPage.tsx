@@ -6,14 +6,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminBlockTitle,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../components/admin'
+import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MemberShipCardDiscountBlock from '../../components/membershipCard/MemberShipCardDiscountBlock'

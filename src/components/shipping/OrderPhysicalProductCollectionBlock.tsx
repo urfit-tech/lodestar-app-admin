@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Divider, message, Spin } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment-timezone'
 import { default as React, useState } from 'react'

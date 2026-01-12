@@ -4,12 +4,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { Fragment } from 'react'
 import { useIntl } from 'react-intl'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
-import {
-  MembershipPlanModal,
-  PeriodPlanModal,
-  PerpetualPlanModal,
-  SubscriptionPlanModal,
-} from '../../components/program/programPlanAdminModals'
+import { MembershipPlanModal, PeriodPlanModal, PerpetualPlanModal, SubscriptionPlanModal } from '../../components/program/programPlanAdminModals'
 import ProgramSubscriptionPlanAdminCard from '../../components/program/ProgramSubscriptionPlanAdminCard'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'

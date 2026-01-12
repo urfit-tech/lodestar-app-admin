@@ -1,5 +1,4 @@
-import { useApolloClient } from '@apollo/client'
-import { gql } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useIntl } from 'react-intl'

@@ -1,23 +1,7 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { Box, Flex, Text } from '@chakra-ui/react'
-import {
-  Button,
-  Checkbox,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Radio,
-  Result,
-  Row,
-  Select,
-  Slider,
-  Spin,
-  Statistic,
-  Steps,
-} from 'antd'
+import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Result, Row, Select, Slider, Spin, Statistic, Steps } from 'antd'
 import { ResultProps } from 'antd/lib/result'
 import { isEmpty } from 'lodash'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'

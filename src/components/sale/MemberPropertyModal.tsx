@@ -8,12 +8,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import {
-  useMemberPropertyCollection,
-  useMutateMemberNote,
-  useMutateMemberProperty,
-  useProperty,
-} from '../../hooks/member'
+import { useMemberPropertyCollection, useMutateMemberNote, useMutateMemberProperty, useProperty } from '../../hooks/member'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const messages = defineMessages({

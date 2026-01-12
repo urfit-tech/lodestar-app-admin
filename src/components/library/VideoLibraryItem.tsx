@@ -1,12 +1,5 @@
 import { DownloadOutlined } from '@ant-design/compatible/node_modules/@ant-design/icons'
-import {
-  CloseCircleOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-  FileWordOutlined,
-  SyncOutlined,
-  UploadOutlined,
-} from '@ant-design/icons'
+import { CloseCircleOutlined, DeleteOutlined, EyeOutlined, FileWordOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons'
 import { StatusBar, useUppy } from '@uppy/react'
 import { Button, List, Modal, Select, Tag, Upload } from 'antd'
 import { ButtonProps } from 'antd/lib/button'

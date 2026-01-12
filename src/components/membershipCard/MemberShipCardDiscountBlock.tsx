@@ -1,6 +1,7 @@
 import { FileAddOutlined, MoreOutlined } from '@ant-design/icons'
 import { Box, Flex, Table as ChakraTable, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
 import { Button, Dropdown, Menu } from 'antd'
+import { ascend, defaultTo, path, prop, sortWith } from 'ramda'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useDeleteCardDiscount, useMembershipCardTerms } from '../../hooks/membershipCard'
@@ -8,7 +9,6 @@ import { MembershipCardTermsProductType } from '../../types/membershipCard'
 import { AdminBlock, AdminPaneTitle } from '../admin'
 import MemberShipCardDiscountModal from './MemberShipCardDiscountModal'
 import membershipCardMessages from './translation'
-import { path, ascend, sortWith, prop, defaultTo } from 'ramda'
 
 const StyledTable = styled(ChakraTable)`
   && {

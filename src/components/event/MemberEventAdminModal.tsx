@@ -1,49 +1,7 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  ButtonGroup,
-  Checkbox,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Textarea,
-  useToast,
-} from '@chakra-ui/react'
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Button, ButtonGroup, Checkbox, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useToast } from '@chakra-ui/react'
 import { FetchButton } from 'lodestar-app-element/src/components/buttons/FetchButton'
 import moment from 'moment'
-import {
-  all,
-  converge,
-  curry,
-  defaultTo,
-  evolve,
-  filter,
-  identity,
-  ifElse,
-  isNotNil,
-  join,
-  map,
-  mergeLeft,
-  path,
-  Path,
-  pickAll,
-  pipe,
-  project,
-  prop,
-  props,
-  tap,
-  without,
-} from 'ramda'
+import { all, converge, curry, defaultTo, evolve, filter, identity, ifElse, isNotNil, join, map, mergeLeft, path, Path, pickAll, pipe, project, prop, props, tap, without } from 'ramda'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Frequency, Options, RRule, Weekday, WeekdayStr } from 'rrule'

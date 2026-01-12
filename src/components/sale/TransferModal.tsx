@@ -1,16 +1,5 @@
 import { SwapOutlined } from '@ant-design/icons'
-import {
-  Box,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react'
 import { Button, Select } from 'antd'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'

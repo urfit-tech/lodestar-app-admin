@@ -248,6 +248,28 @@ export const routesProps = {
     authenticated: true,
   },
 
+  // class schedule management
+  class_schedule_personal: {
+    path: '/class-schedule/personal',
+    pageName: 'PersonalSchedulePage',
+    authenticated: true,
+  },
+  class_schedule_personal_member: {
+    path: '/class-schedule/personal/:memberId',
+    pageName: 'PersonalSchedulePage',
+    authenticated: true,
+  },
+  class_schedule_semester: {
+    path: '/class-schedule/semester',
+    pageName: 'SemesterSchedulePage',
+    authenticated: true,
+  },
+  class_schedule_group: {
+    path: '/class-schedule/group',
+    pageName: 'GroupSchedulePage',
+    authenticated: true,
+  },
+
   // activity
   activity_collection: {
     path: '/activities',
@@ -397,6 +419,11 @@ export const routesProps = {
     authenticated: true,
   },
   member_event_admin: {
+    path: '/members/:memberId/eventSchedule',
+    pageName: 'MemberAdminPage',
+    authenticated: true,
+  },
+  member_event_old_admin: {
     path: '/members/:memberId/event',
     pageName: 'MemberAdminPage',
     authenticated: true,
