@@ -1,5 +1,6 @@
 import { CloseOutlined, DeleteOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { EventClickArg, EventInput } from '@fullcalendar/core'
+import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
@@ -126,7 +127,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
   const { id: appId } = useApp()
 
   const calendarRef = useRef<FullCalendar>(null)
-  const [viewType, setViewType] = useState<'timeGridMonth' | 'timeGridWeek' | 'timeGridDay'>('timeGridWeek')
+  const [viewType, setViewType] = useState<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'>('timeGridWeek')
 
   const [currentDate, setCurrentDate] = useState(new Date())
   const [clickedDate, setClickedDate] = useState<Date | null>(null)
@@ -335,7 +336,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     }
   }, [])
 
-  const changeView = useCallback((view: 'timeGridMonth' | 'timeGridWeek' | 'timeGridDay') => {
+  const changeView = useCallback((view: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay') => {
     const calendarApi = calendarRef.current?.getApi()
     if (calendarApi) {
       calendarApi.changeView(view)
@@ -344,6 +345,9 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
   }, [])
 
   const dateDisplay = useMemo(() => {
+    if (viewType === 'dayGridMonth') {
+      return moment(currentDate).format('YYYY/MM')
+    }
     if (viewType === 'timeGridWeek') {
       const start = moment(currentDate).startOf('isoWeek')
       const end = moment(currentDate).endOf('isoWeek')
@@ -693,7 +697,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
       <CalendarWrapper>
         <CalendarHeader>
           <ViewButtonGroup>
-            <ViewButton $active={viewType === 'timeGridMonth'} onClick={() => changeView('timeGridMonth')}>
+            <ViewButton $active={viewType === 'dayGridMonth'} onClick={() => changeView('dayGridMonth')}>
               {formatMessage(memberMessages.ui.viewMonth)}
             </ViewButton>
             <ViewButton $active={viewType === 'timeGridWeek'} onClick={() => changeView('timeGridWeek')}>
@@ -715,7 +719,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
 
         <FullCalendar
           ref={calendarRef}
-          plugins={[timeGridPlugin, interactionPlugin, rrulePlugin]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
           initialView="timeGridWeek"
           firstDay={1}
           slotDuration="00:30:00"
