@@ -81,6 +81,7 @@ const memberMessages = {
   }),
   ui: defineMessages({
     setOpenTime: { id: 'member.ui.setOpenTime', defaultMessage: '設定開放時間' },
+    editOpenTime: { id: 'member.ui.editOpenTime', defaultMessage: '編輯開放時間' },
     removeOpenTime: { id: 'member.ui.removeOpenTime', defaultMessage: '移除開放時間' },
     weeklyRepeat: { id: 'member.ui.weeklyRepeat', defaultMessage: '每週重複' },
     repeatUntil: { id: 'member.ui.repeatUntil', defaultMessage: '重複至' },
@@ -99,6 +100,8 @@ const memberMessages = {
     addSlot: { id: 'member.ui.addSlot', defaultMessage: '新增時段' },
     removeSlot: { id: 'member.ui.removeSlot', defaultMessage: '刪除時段' },
     copyToAll: { id: 'member.ui.copyToAll', defaultMessage: '複製到所有天' },
+    copySuccess: { id: 'member.ui.copySuccess', defaultMessage: '已複製到所有天' },
+    copyConflictWarning: { id: 'member.ui.copyConflictWarning', defaultMessage: '以下時段有衝突，已跳過：{conflicts}' },
     cancelDeleteMode: { id: 'member.ui.cancelDeleteMode', defaultMessage: '取消移除模式' },
     viewMonth: { id: 'member.ui.viewMonth', defaultMessage: '月' },
     viewWeek: { id: 'member.ui.viewWeek', defaultMessage: '週' },
