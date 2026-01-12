@@ -109,6 +109,75 @@ const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
   color: ${props => !props.isDelivered && '#CDCDCD'};
 `
 
+// 子订单展开组件，显示 order_product 和 order_discount
+const ChildOrderExpandRow: React.VFC<{ orderId: string }> = ({ orderId }) => {
+  const { settings } = useApp()
+  const {
+    loadingExpandRowOrderProduct,
+    loadingOrderDiscountByOrderId,
+    orderProducts,
+    orderDiscounts,
+  } = useOrderLogExpandRow(orderId)
+
+  if (loadingExpandRowOrderProduct || loadingOrderDiscountByOrderId) {
+    return <Skeleton />
+  }
+
+  return (
+    <div style={{ padding: '16px', backgroundColor: '#fafafa' }}>
+      {orderProducts.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          <Typography.Text strong style={{ marginBottom: '8px', display: 'block' }}>
+            商品
+          </Typography.Text>
+          {orderProducts
+            .filter(orderProduct => orderProduct.type !== 'Token')
+            .map((orderProduct, index) => (
+              <StyledRowWrapper key={orderProduct.id} isDelivered={!!orderProduct.deliveredAt}>
+                <div className="row">
+                  <div className="col-8">
+                    <span>{orderProduct.name}</span>
+                    {orderProduct.quantity && <span>{` X ${orderProduct.quantity}`}</span>}
+                  </div>
+                  <div className="col-4 text-right">
+                    {currencyFormatter(
+                      orderProduct.type === 'MerchandiseSpec' && orderProduct?.currencyId === 'LSC'
+                        ? orderProduct.currencyPrice
+                        : orderProduct.price,
+                      orderProduct?.currencyId,
+                      settings['coin.unit'],
+                    )}
+                  </div>
+                </div>
+                {index < orderProducts.filter(p => p.type !== 'Token').length - 1 && <Divider style={{ margin: '8px 0' }} />}
+              </StyledRowWrapper>
+            ))}
+        </div>
+      )}
+
+      {orderDiscounts.length > 0 && (
+        <div>
+          <Typography.Text strong style={{ marginBottom: '8px', display: 'block' }}>
+            折扣
+          </Typography.Text>
+          {orderDiscounts.map((orderDiscount, index) => (
+            <div key={orderDiscount.id} className="row" style={{ marginBottom: index < orderDiscounts.length - 1 ? '8px' : '0' }}>
+              <div className="col-8">{orderDiscount.name}</div>
+              <div className="col-4 text-right">
+                - {currencyFormatter(orderDiscount.price, orderDiscount.type, settings['coin.unit'])}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {orderProducts.length === 0 && orderDiscounts.length === 0 && (
+        <Typography.Text type="secondary">無資料</Typography.Text>
+      )}
+    </div>
+  )
+}
+
 const SaleCollectionExpandRow = ({
   record,
   onRefetchOrderLog,
@@ -409,6 +478,7 @@ const SaleCollectionExpandRow = ({
             pagination={false}
             size="small"
             style={{ marginLeft: '24px' }}
+            expandedRowRender={(record: OrderLogColumn) => <ChildOrderExpandRow orderId={record.id} />}
           />
         </div>
       )}
