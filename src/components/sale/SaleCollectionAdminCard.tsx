@@ -85,7 +85,8 @@ const SaleCollectionAdminCard: React.VFC<{
     loadingOrderLogsMember,
     loadingOrderProductsByOrderIdList,
     loadingOrderDiscountsByOrderIdList,
-    orderLogPreviewCollection,
+    parentOrders,
+    childOrdersMap,
     refetchOrderLogPreviewCollection,
     refetchOrderLogAggregate,
     loadMoreOrderLogPreviewCollection,
@@ -125,19 +126,6 @@ const SaleCollectionAdminCard: React.VFC<{
       </div>
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-  })
-
-  // 組織數據：分離父訂單和子訂單
-  const parentOrders = orderLogPreviewCollection.filter(order => !order.parentOrderId)
-  const childOrdersMap = new Map<string, OrderLogColumn[]>()
-  
-  orderLogPreviewCollection.forEach(order => {
-    if (order.parentOrderId) {
-      if (!childOrdersMap.has(order.parentOrderId)) {
-        childOrdersMap.set(order.parentOrderId, [])
-      }
-      childOrdersMap.get(order.parentOrderId)!.push(order)
-    }
   })
 
   const columns: ColumnProps<OrderLogColumn>[] = [

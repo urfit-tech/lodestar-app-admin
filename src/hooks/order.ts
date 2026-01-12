@@ -5,6 +5,7 @@ import { sum, uniq } from 'ramda'
 import { OrderLog } from '../types/general'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useUserPermissionGroupMembers } from '../hooks/permission'
+import { useMemo } from 'react'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -240,35 +241,65 @@ export const useOrderLogPreviewCollection = (
     { variables: { orderIdList } },
   )
 
-  const orderLogPreviewCollection: Pick<
+  type OrderLogPreview = Pick<
     OrderLog,
     'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options' | 'parentOrderId'
-  >[] =
-    orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
-      const productPrice = sum(
-        orderProductsByOrderIdListData?.order_product
-          .filter(orderProduct => orderProduct.order_id === orderLogPreview.id)
-          .map(orderProduct => orderProduct.price) || [],
-      )
-      const discountPrice = sum(
-        orderDiscountsByOrderIdListData?.order_discount
-          .filter(orderDiscount => orderDiscount.order_id === orderLogPreview.id)
-          .map(orderDiscount => orderDiscount.price) || [],
-      )
-      const shippingFee = orderLogPreview.shipping?.fee || 0
+  >
 
-      return {
-        id: orderLogPreview.id,
-        createdAt: orderLogPreview.created_at,
-        status: orderLogPreview.status,
-        name: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.name || '',
-        email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
-        shipping: orderLogPreview.shipping,
-        totalPrice: Math.max(productPrice - discountPrice + shippingFee),
-        options: orderLogPreview.options,
-        parentOrderId: orderLogPreview.parent_order_id || null,
+  const orderLogPreviewCollection: OrderLogPreview[] = useMemo(
+    () =>
+      orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
+        const productPrice = sum(
+          orderProductsByOrderIdListData?.order_product
+            .filter(orderProduct => orderProduct.order_id === orderLogPreview.id)
+            .map(orderProduct => orderProduct.price) || [],
+        )
+        const discountPrice = sum(
+          orderDiscountsByOrderIdListData?.order_discount
+            .filter(orderDiscount => orderDiscount.order_id === orderLogPreview.id)
+            .map(orderDiscount => orderDiscount.price) || [],
+        )
+        const shippingFee = orderLogPreview.shipping?.fee || 0
+
+        return {
+          id: orderLogPreview.id,
+          createdAt: orderLogPreview.created_at,
+          status: orderLogPreview.status,
+          name: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.name || '',
+          email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
+          shipping: orderLogPreview.shipping,
+          totalPrice: Math.max(productPrice - discountPrice + shippingFee),
+          options: orderLogPreview.options,
+          parentOrderId: orderLogPreview.parent_order_id || null,
+        }
+      }) || [],
+    [
+      orderLogPreviewCollectionData?.order_log,
+      orderProductsByOrderIdListData?.order_product,
+      orderDiscountsByOrderIdListData?.order_discount,
+      orderLogsMemberData?.member,
+    ],
+  )
+
+  // 組織數據：分離父訂單和子訂單
+  const { parentOrders, childOrdersMap } = useMemo(() => {
+    const parents = orderLogPreviewCollection.filter(order => !order.parentOrderId)
+    const childMap = new Map<string, OrderLogPreview[]>()
+    
+    orderLogPreviewCollection.forEach(order => {
+      if (order.parentOrderId) {
+        if (!childMap.has(order.parentOrderId)) {
+          childMap.set(order.parentOrderId, [])
+        }
+        childMap.get(order.parentOrderId)!.push(order)
       }
-    }) || []
+    })
+    
+    return {
+      parentOrders: parents,
+      childOrdersMap: childMap,
+    }
+  }, [orderLogPreviewCollection])
 
   return {
     totalCount,
@@ -283,6 +314,8 @@ export const useOrderLogPreviewCollection = (
     errorOrderProductsByOrderIdList,
     errorOrderDiscountsByOrderIdList,
     orderLogPreviewCollection,
+    parentOrders,
+    childOrdersMap,
     refetchOrderLogPreviewCollection,
     refetchOrderLogAggregate,
     refetchOrderLogsMember,
