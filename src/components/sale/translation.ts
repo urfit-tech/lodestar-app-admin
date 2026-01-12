@@ -2,159 +2,259 @@ import { defineMessages } from 'react-intl'
 
 const saleMessages = {
   '*': defineMessages({
-    program: { id: 'sale.*.program', defaultMessage: '單次課程' },
-    programPlan: { id: 'sale.*.programPlan', defaultMessage: '課程方案' },
-    programContent: { id: 'sale.*.programContent', defaultMessage: '課程內容' },
-    programPackagePlan: { id: 'sale.*.programPackagePlan', defaultMessage: '課程組合' },
-    projectPlan: { id: 'sale.*.projectPlan', defaultMessage: '專案方案' },
-    card: { id: 'sale.*.card', defaultMessage: '會員卡' },
-    activityTicket: { id: 'sale.*.activityTicket', defaultMessage: '活動票券' },
-    merchandiseSpec: { id: 'sale.*.merchandiseSpec', defaultMessage: '商品規格' },
-    podcastProgram: { id: 'sale.*.podcastProgram', defaultMessage: '廣播' },
-    podcastPlan: { id: 'sale.*.podcastPlan', defaultMessage: '廣播頻道' },
-    appointmentPlan: { id: 'sale.*.appointmentPlan', defaultMessage: '預約' },
-    cancel: { id: 'sale.*.cancel', defaultMessage: '取消' },
-    isRequired: { id: 'sale.*.isRequired', defaultMessage: '請輸入{field}' },
+    program: { id: 'sale.*.program', defaultMessage: 'Single course' },
+    programPlan: { id: 'sale.*.programPlan', defaultMessage: 'Course plan' },
+    programContent: { id: 'sale.*.programContent', defaultMessage: 'Course content' },
+    programPackagePlan: { id: 'sale.*.programPackagePlan', defaultMessage: 'Program package' },
+    projectPlan: { id: 'sale.*.projectPlan', defaultMessage: 'Project plan' },
+    card: { id: 'sale.*.card', defaultMessage: 'Membership card' },
+    activityTicket: { id: 'sale.*.activityTicket', defaultMessage: 'Activity ticket' },
+    merchandiseSpec: { id: 'sale.*.merchandiseSpec', defaultMessage: 'Product specification' },
+    podcastProgram: { id: 'sale.*.podcastProgram', defaultMessage: 'Podcast' },
+    podcastPlan: { id: 'sale.*.podcastPlan', defaultMessage: 'Podcast channel' },
+    appointmentPlan: { id: 'sale.*.appointmentPlan', defaultMessage: 'Appointment' },
+    cancel: { id: 'sale.*.cancel', defaultMessage: 'Cancel' },
+    isRequired: { id: 'sale.*.isRequired', defaultMessage: 'Please enter {field}' },
   }),
   SaleCollectionAdminCard: defineMessages({
     calculatingTotalCount: {
       id: 'sale.SaleCollectionAdminCard.calculatingTotalCount',
-      defaultMessage: '計算總筆數中',
+      defaultMessage: 'Calculating total count',
     },
-    successfullyRefreshed: { id: 'note.MemberNoteAdminBlock.successfullyRefreshed', defaultMessage: '資料已更新' },
+    successfullyRefreshed: { id: 'note.MemberNoteAdminBlock.successfullyRefreshed', defaultMessage: 'Data updated' },
     subOrders: {
       id: 'sale.SaleCollectionAdminCard.subOrders',
-      defaultMessage: '子訂單',
+      defaultMessage: 'Sub orders',
     },
   }),
   SaleCollectionExpandRow: defineMessages({
-    productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: '到期' },
-    openEquity: { id: 'sale.SaleCollectionExpandRow.openEquity', defaultMessage: '開通權益' },
-    removeEquity: { id: 'sale.SaleCollectionExpandRow.removeEquity', defaultMessage: '移除權益' },
-    deliver: { id: 'sale.SaleCollectionExpandRow.deliver', defaultMessage: '交付' },
-    remove: { id: 'sale.SaleCollectionExpandRow.remove', defaultMessage: '移除' },
-    open: { id: 'sale.SaleCollectionExpandRow.open', defaultMessage: '開通' },
+    productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: 'Expired' },
+    openEquity: { id: 'sale.SaleCollectionExpandRow.openEquity', defaultMessage: 'Open equity' },
+    removeEquity: { id: 'sale.SaleCollectionExpandRow.removeEquity', defaultMessage: 'Remove equity' },
+    deliver: { id: 'sale.SaleCollectionExpandRow.deliver', defaultMessage: 'Deliver' },
+    remove: { id: 'sale.SaleCollectionExpandRow.remove', defaultMessage: 'Remove' },
+    open: { id: 'sale.SaleCollectionExpandRow.open', defaultMessage: 'Open' },
     updateEquitySuccessfully: {
       id: 'sale.SaleCollectionExpandRow.updateEquitySuccessfully',
-      defaultMessage: '權益異動成功',
+      defaultMessage: 'Equity updated successfully',
     },
 
     removeEquityWarning: {
       id: 'sale.SaleCollectionExpandRow.removeEquityWarning',
-      defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',
+      defaultMessage: 'This operation will remove the usage rights of {productName}. Are you sure you want to remove it?',
     },
     openEquityWarning: {
       id: 'sale.SaleCollectionExpandRow.openEquityWarning',
-      defaultMessage: '此操作將開通 {productName} 的使用權益，確定要開通嗎？',
+      defaultMessage: 'This operation will open the usage rights of {productName}. Are you sure you want to open it?',
     },
-    totalPrice: { id: 'sale.SaleCollectionExpandRow.totalPrice', defaultMessage: '總金額' },
+    totalPrice: { id: 'sale.SaleCollectionExpandRow.totalPrice', defaultMessage: 'Total amount' },
     cancelSubscriptionDate: {
       id: 'sale.SaleCollectionExpandRow.cancelSubscriptionDate',
-      defaultMessage: '已於 {date} 取消訂閱',
+      defaultMessage: 'Subscription cancelled on {date}',
     },
     cashierInfo: {
       id: 'sale.SaleCollectionExpandRow.cashierInfo',
-      defaultMessage: '結帳人員:',
+      defaultMessage: 'Cashier:',
     },
     companyInfo: {
       id: 'sale.SaleCollectionExpandRow.companyInfo',
-      defaultMessage: '結帳公司：{company}',
+      defaultMessage: 'Company: {company}',
     },
     executorsInfo: {
       id: 'sale.SaleCollectionExpandRow.executorsInfo',
-      defaultMessage: '承辦人：',
+      defaultMessage: 'Executor:',
     },
     paymentMethod: {
       id: 'sale.SaleCollectionExpandRow.paymentMethod',
-      defaultMessage: '付款方式：{paymentMethod}',
+      defaultMessage: 'Payment method: {paymentMethod}',
     },
     paymentGateway: {
       id: 'sale.SaleCollectionExpandRow.paymentGateway',
-      defaultMessage: '交易渠道：{paymentGateway}',
+      defaultMessage: 'Payment gateway: {paymentGateway}',
     },
     paymentDeadline: {
       id: 'sale.SaleCollectionExpandRow.paymentDeadline',
-      defaultMessage: '付款期限：{date}',
+      defaultMessage: 'Payment deadline: {date}',
     },
     changeOrderStatus: {
       id: 'sale.SaleCollectionExpandRow.changeOrderStatus',
-      defaultMessage: '變更訂單狀態',
+      defaultMessage: 'Change order status',
     },
     manualInvoice: {
       id: 'sale.SaleCollectionExpandRow.manualInvoice',
-      defaultMessage: '手開發票',
+      defaultMessage: 'Manual invoice',
     },
     invoiceIssuedSuccess: {
       id: 'sale.SaleCollectionExpandRow.invoiceIssuedSuccess',
-      defaultMessage: '發票開立成功',
+      defaultMessage: 'Invoice issued successfully',
     },
     processingMethod: {
       id: 'sale.SaleCollectionExpandRow.processingMethod',
-      defaultMessage: '處理方式',
+      defaultMessage: 'Processing method',
     },
     issueInvoice: {
       id: 'sale.SaleCollectionExpandRow.issueInvoice',
-      defaultMessage: '開立發票',
+      defaultMessage: 'Issue invoice',
     },
     taxType: {
       id: 'sale.SaleCollectionExpandRow.taxType',
-      defaultMessage: '課稅別',
+      defaultMessage: 'Tax type',
     },
     taxable: {
       id: 'sale.SaleCollectionExpandRow.taxable',
-      defaultMessage: '應稅',
+      defaultMessage: 'Taxable',
     },
     zeroTax: {
       id: 'sale.SaleCollectionExpandRow.zeroTax',
-      defaultMessage: '零稅',
+      defaultMessage: 'Zero tax',
     },
     taxExempt: {
       id: 'sale.SaleCollectionExpandRow.taxExempt',
-      defaultMessage: '免稅',
+      defaultMessage: 'Tax exempt',
     },
     mixedTax: {
       id: 'sale.SaleCollectionExpandRow.mixedTax',
-      defaultMessage: '混合稅',
+      defaultMessage: 'Mixed tax',
     },
     priceWithoutTax: {
       id: 'sale.SaleCollectionExpandRow.priceWithoutTax',
-      defaultMessage: '未稅',
+      defaultMessage: 'Price without tax',
     },
     taxAmount: {
       id: 'sale.SaleCollectionExpandRow.taxAmount',
-      defaultMessage: '稅額',
+      defaultMessage: 'Tax amount',
     },
     totalPriceWithTax: {
       id: 'sale.SaleCollectionExpandRow.totalPriceWithTax',
-      defaultMessage: '總金額(含稅)',
+      defaultMessage: 'Total amount (including tax)',
     },
     priceExceedLimit: {
       id: 'sale.SaleCollectionExpandRow.priceExceedLimit',
-      defaultMessage: '金額不能超過 {totalPrice}',
+      defaultMessage: 'Amount cannot exceed {totalPrice}',
     },
     itemCount: {
       id: 'sale.SaleCollectionExpandRow.itemCount',
-      defaultMessage: '商品數量',
+      defaultMessage: 'Item quantity',
     },
     itemUnitPrice: {
       id: 'sale.SaleCollectionExpandRow.itemUnitPrice',
-      defaultMessage: '商品單價',
+      defaultMessage: 'Item unit price',
     },
     itemName: {
       id: 'sale.SaleCollectionExpandRow.itemName',
-      defaultMessage: '產品名',
+      defaultMessage: 'Product name',
     },
     itemNamePlaceholder: {
       id: 'sale.SaleCollectionExpandRow.itemNamePlaceholder',
-      defaultMessage: '請輸入產品名',
+      defaultMessage: 'Please enter product name',
     },
     comment: {
       id: 'sale.SaleCollectionExpandRow.comment',
-      defaultMessage: '備註',
+      defaultMessage: 'Note',
     },
     commentPlaceholder: {
       id: 'sale.SaleCollectionExpandRow.commentPlaceholder',
-      defaultMessage: '請輸入備註',
+      defaultMessage: 'Please enter note',
+    },
+    createChildOrder: {
+      id: 'sale.SaleCollectionExpandRow.createChildOrder',
+      defaultMessage: '建立子訂單',
+    },
+    selectOrderProducts: {
+      id: 'sale.SaleCollectionExpandRow.selectOrderProducts',
+      defaultMessage: '選擇商品',
+    },
+    selectOrderDiscounts: {
+      id: 'sale.SaleCollectionExpandRow.selectOrderDiscounts',
+      defaultMessage: '選擇折扣',
+    },
+    selectPaymentLog: {
+      id: 'sale.SaleCollectionExpandRow.selectPaymentLog',
+      defaultMessage: '選擇付款紀錄',
+    },
+    createPaymentLog: {
+      id: 'sale.SaleCollectionExpandRow.createPaymentLog',
+      defaultMessage: '建立付款紀錄',
+    },
+    childOrderCreated: {
+      id: 'sale.SaleCollectionExpandRow.childOrderCreated',
+      defaultMessage: '子訂單建立成功',
+    },
+    addOrderProduct: {
+      id: 'sale.SaleCollectionExpandRow.addOrderProduct',
+      defaultMessage: '新增商品',
+    },
+    editOrderProduct: {
+      id: 'sale.SaleCollectionExpandRow.editOrderProduct',
+      defaultMessage: '編輯商品',
+    },
+    deleteOrderProduct: {
+      id: 'sale.SaleCollectionExpandRow.deleteOrderProduct',
+      defaultMessage: '刪除商品',
+    },
+    addOrderDiscount: {
+      id: 'sale.SaleCollectionExpandRow.addOrderDiscount',
+      defaultMessage: '新增折扣',
+    },
+    editOrderDiscount: {
+      id: 'sale.SaleCollectionExpandRow.editOrderDiscount',
+      defaultMessage: '編輯折扣',
+    },
+    deleteOrderDiscount: {
+      id: 'sale.SaleCollectionExpandRow.deleteOrderDiscount',
+      defaultMessage: '刪除折扣',
+    },
+    addPaymentLog: {
+      id: 'sale.SaleCollectionExpandRow.addPaymentLog',
+      defaultMessage: '新增付款紀錄',
+    },
+    editPaymentLog: {
+      id: 'sale.SaleCollectionExpandRow.editPaymentLog',
+      defaultMessage: '編輯付款紀錄',
+    },
+    deletePaymentLog: {
+      id: 'sale.SaleCollectionExpandRow.deletePaymentLog',
+      defaultMessage: '刪除付款紀錄',
+    },
+    productName: {
+      id: 'sale.SaleCollectionExpandRow.productName',
+      defaultMessage: '商品名稱',
+    },
+    productPrice: {
+      id: 'sale.SaleCollectionExpandRow.productPrice',
+      defaultMessage: '商品價格',
+    },
+    productQuantity: {
+      id: 'sale.SaleCollectionExpandRow.productQuantity',
+      defaultMessage: '數量',
+    },
+    discountName: {
+      id: 'sale.SaleCollectionExpandRow.discountName',
+      defaultMessage: '折扣名稱',
+    },
+    discountPrice: {
+      id: 'sale.SaleCollectionExpandRow.discountPrice',
+      defaultMessage: '折扣金額',
+    },
+    discountType: {
+      id: 'sale.SaleCollectionExpandRow.discountType',
+      defaultMessage: '折扣類型',
+    },
+    paymentAmount: {
+      id: 'sale.SaleCollectionExpandRow.paymentAmount',
+      defaultMessage: '付款金額',
+    },
+    paymentStatus: {
+      id: 'sale.SaleCollectionExpandRow.paymentStatus',
+      defaultMessage: '付款狀態',
+    },
+    paymentGatewayLabel: {
+      id: 'sale.SaleCollectionExpandRow.paymentGatewayLabel',
+      defaultMessage: '付款渠道',
+    },
+    paymentMethodLabel: {
+      id: 'sale.SaleCollectionExpandRow.paymentMethodLabel',
+      defaultMessage: '付款方式',
     },
   }),
   OrderDetailDrawer: defineMessages({
