@@ -22,6 +22,10 @@ const saleMessages = {
       defaultMessage: '計算總筆數中',
     },
     successfullyRefreshed: { id: 'note.MemberNoteAdminBlock.successfullyRefreshed', defaultMessage: '資料已更新' },
+    subOrders: {
+      id: 'sale.SaleCollectionAdminCard.subOrders',
+      defaultMessage: '子訂單',
+    },
   }),
   SaleCollectionExpandRow: defineMessages({
     productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: '到期' },

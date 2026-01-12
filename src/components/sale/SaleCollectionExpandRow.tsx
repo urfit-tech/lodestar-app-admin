@@ -1,7 +1,8 @@
 import { CopyOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { useToast } from '@chakra-ui/react'
-import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch } from 'antd'
+import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch, Table, Typography } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -111,9 +112,13 @@ const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
 const SaleCollectionExpandRow = ({
   record,
   onRefetchOrderLog,
+  childOrders,
+  columns,
 }: {
   record: OrderLogColumn
   onRefetchOrderLog?: () => void
+  childOrders?: OrderLogColumn[]
+  columns?: ColumnProps<OrderLogColumn>[]
 }) => {
   const { formatMessage } = useIntl()
   const { settings, id: appId, enabledModules } = useApp()
@@ -391,6 +396,22 @@ const SaleCollectionExpandRow = ({
           </>
         )}
       </div>
+
+      {childOrders && childOrders.length > 0 && columns && (
+        <div style={{ margin: '16px' }}>
+          <Typography.Text strong style={{ marginBottom: '8px', display: 'block' }}>
+            {formatMessage(saleMessages.SaleCollectionAdminCard.subOrders)} ({childOrders.length})
+          </Typography.Text>
+          <Table<OrderLogColumn>
+            rowKey="id"
+            columns={columns}
+            dataSource={childOrders}
+            pagination={false}
+            size="small"
+            style={{ marginLeft: '24px' }}
+          />
+        </div>
+      )}
 
       <div className="row col-12 align-items-center pt-3">
         <OrderDetailDrawer

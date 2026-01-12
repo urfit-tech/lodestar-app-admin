@@ -25,6 +25,7 @@ export type OrderLogColumn = {
   totalPrice: number
   options?: any
   parentOrderId?: string | null
+  children?: OrderLogColumn[]
 }
 
 const StyledContainer = styled.div`
@@ -124,6 +125,19 @@ const SaleCollectionAdminCard: React.VFC<{
       </div>
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  })
+
+  // 組織數據：分離父訂單和子訂單
+  const parentOrders = orderLogPreviewCollection.filter(order => !order.parentOrderId)
+  const childOrdersMap = new Map<string, OrderLogColumn[]>()
+  
+  orderLogPreviewCollection.forEach(order => {
+    if (order.parentOrderId) {
+      if (!childOrdersMap.has(order.parentOrderId)) {
+        childOrdersMap.set(order.parentOrderId, [])
+      }
+      childOrdersMap.get(order.parentOrderId)!.push(order)
+    }
   })
 
   const columns: ColumnProps<OrderLogColumn>[] = [
@@ -276,11 +290,19 @@ const SaleCollectionAdminCard: React.VFC<{
             loadingOrderProductsByOrderIdList ||
             loadingOrderDiscountsByOrderIdList
           }
-          dataSource={orderLogPreviewCollection}
+          dataSource={parentOrders}
           columns={columns}
-          expandedRowRender={(record: OrderLogColumn) => (
-            <SaleCollectionExpandRow record={record} onRefetchOrderLog={refetchOrderLogPreviewCollection} />
-          )}
+          expandedRowRender={(record: OrderLogColumn) => {
+            const childOrders = childOrdersMap.get(record.id) || []
+            return (
+              <SaleCollectionExpandRow
+                record={record}
+                onRefetchOrderLog={refetchOrderLogPreviewCollection}
+                childOrders={childOrders}
+                columns={columns}
+              />
+            )
+          }}
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
