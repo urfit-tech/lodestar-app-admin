@@ -129,6 +129,10 @@ const adminMessages = {
       id: 'admin.AdminMenu.adAudience',
       defaultMessage: '廣告受眾',
     },
+    scheduleExpiry: {
+      id: 'admin.AdminMenu.scheduleExpiry',
+      defaultMessage: '設定課時到期日',
+    },
   }),
 }
 export default adminMessages

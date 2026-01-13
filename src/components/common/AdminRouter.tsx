@@ -269,6 +269,11 @@ export const routesProps = {
     pageName: 'GroupSchedulePage',
     authenticated: true,
   },
+  schedule_expiry_setting: {
+    path: '/schedule-expiry-setting',
+    pageName: 'ScheduleExpirySettingPage',
+    authenticated: true,
+  },
 
   // activity
   activity_collection: {

@@ -316,6 +316,11 @@ const AdminMenu: React.FC<MenuProps & { opened?: boolean }> = ({ opened, childre
           key: 'class_schedule_group',
           name: formatMessage(adminMessages.AdminMenu.groupSchedule),
         },
+        {
+          permissionIsAllowed: true,
+          key: 'schedule_expiry_setting',
+          name: formatMessage(adminMessages.AdminMenu.scheduleExpiry),
+        },
       ],
     },
     {
