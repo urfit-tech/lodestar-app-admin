@@ -3733,7 +3733,7 @@
   "schedule.StudentList.lastClassDate": "最後上課日",
   "schedule.StudentList.availableMinutes": "可安排課時",
   "schedule.StudentList.expiresAt": "課時到期日",
-  "schedule.StudentList.noStudents": "目前無符合條件的學生",
+  "schedule.StudentList.noStudents": "目前無符合條件的學生訂單",
   "schedule.StudentList.unpaidWarning": "訂單尚未完成付款",
   "schedule.EditRange.title": "編輯範圍",
   "schedule.EditRange.thisWeek": "本週",
