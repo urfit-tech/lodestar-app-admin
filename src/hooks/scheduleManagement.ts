@@ -2105,30 +2105,58 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  // Filter out any undefined or empty teacher IDs
-  const validTeacherIds = useMemo(() => {
-    return teacherIds.filter(id => id && typeof id === 'string' && id.trim() !== '')
+  // Stabilize teacherIds using JSON serialization to prevent unnecessary re-renders
+  const teacherIdsKey = useMemo(() => {
+    const filtered = teacherIds.filter(id => id && typeof id === 'string' && id.trim() !== '')
+    return JSON.stringify(filtered.sort())
   }, [teacherIds])
 
-  // Default date range: 1 year before and after current date
-  const defaultStartDate = useMemo(() => {
-    return startDate || moment().subtract(1, 'year').startOf('day').toDate()
-  }, [startDate])
+  // Parse back the stable teacher IDs
+  const validTeacherIds = useMemo(() => {
+    try {
+      return JSON.parse(teacherIdsKey) as string[]
+    } catch {
+      return []
+    }
+  }, [teacherIdsKey])
 
-  const defaultEndDate = useMemo(() => {
-    return endDate || moment().add(1, 'year').startOf('day').toDate()
-  }, [endDate])
+  // Stabilize date values using timestamps - use stable default timestamps
+  const startTimestamp = useMemo(() => {
+    if (startDate) {
+      return startDate.getTime()
+    }
+    // Use a stable default: start of today minus 1 year
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today.getTime() - 365 * 24 * 60 * 60 * 1000
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate?.getTime()])
+
+  const endTimestamp = useMemo(() => {
+    if (endDate) {
+      return endDate.getTime()
+    }
+    // Use a stable default: start of today plus 1 year
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today.getTime() + 365 * 24 * 60 * 60 * 1000
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endDate?.getTime()])
 
   useEffect(() => {
     const fetchTeacherOpenTimeEvents = async () => {
       if (!authToken || validTeacherIds.length === 0) {
-        setEvents([])
-        setBusyEvents([])
+        setEvents(prev => (prev.length === 0 ? prev : []))
+        setBusyEvents(prev => (prev.length === 0 ? prev : []))
         return
       }
 
       setLoading(true)
       setError(null)
+
+      // Create Date objects from stable timestamps inside the effect
+      const fetchStartDate = new Date(startTimestamp)
+      const fetchEndDate = new Date(endTimestamp)
 
       try {
         const allEvents: TeacherOpenTimeEvent[] = []
@@ -2148,8 +2176,8 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
             const fetchedData = await getDefaultResourceEventsFethcer(authToken)(
               { type: 'member', targets: [teacherId] },
               {
-                startedAt: defaultStartDate,
-                until: defaultEndDate,
+                startedAt: fetchStartDate,
+                until: fetchEndDate,
               },
             )
 
@@ -2227,7 +2255,7 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
     }
 
     fetchTeacherOpenTimeEvents()
-  }, [authToken, validTeacherIds, defaultStartDate, defaultEndDate])
+  }, [authToken, validTeacherIds, startTimestamp, endTimestamp])
 
   const refetch = useCallback(() => {
     // Trigger re-fetch by updating teacherIds dependency
