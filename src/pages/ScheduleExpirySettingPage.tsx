@@ -1,18 +1,17 @@
-import React, { useRef, useState } from 'react'
-import Icon, { PlusOutlined, SearchOutlined } from '@ant-design/icons'
-import moment from 'moment'
+import Icon, { ClockCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Select, Table, Tabs, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import moment from 'moment'
+import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { ClockCircleOutlined } from '@ant-design/icons'
 import { AdminPageBlock, AdminPageTitle } from '../components/admin'
-import { handleError } from '../helpers'
-import { commonMessages } from '../helpers/translation'
 import AdminCard from '../components/admin/AdminCard'
 import AdminLayout from '../components/layout/AdminLayout'
+import { handleError } from '../helpers'
+import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
@@ -75,7 +74,9 @@ const ScheduleExpirySettingPage: React.VFC = () => {
   // Query
   const { data, loading, refetch } = useQuery<{
     schedule_expiry_setting: ScheduleExpiryData[]
-  }>(GET_SCHEDULE_EXPIRY_SETTINGS)
+  }>(GET_SCHEDULE_EXPIRY_SETTINGS, {
+    variables: { appId },
+  })
 
   const allData = data?.schedule_expiry_setting || []
 
@@ -106,7 +107,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
           item.type === activeTab &&
           item.language === language &&
           item.class_count === classCount &&
-          item.status === 'active'
+          item.status === 'active',
       )
 
       // 若有，先將其封存
@@ -214,8 +215,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
       title: formatMessage(pageMessages.ScheduleExpirySettingPage.operator),
       dataIndex: 'member',
       width: '15%',
-      render: (member: ScheduleExpiryData['member']) =>
-        member ? `${member.name} ${member.email}` : '-',
+      render: (member: ScheduleExpiryData['member']) => (member ? `${member.name} ${member.email}` : '-'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
           <Input
@@ -224,7 +224,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
             onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
             onPressEnter={() => {
               confirm()
-              setFilterOperator(selectedKeys[0] as string || '')
+              setFilterOperator((selectedKeys[0] as string) || '')
             }}
             style={{ width: 188, marginBottom: 8, display: 'block' }}
           />
@@ -233,7 +233,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
               type="primary"
               onClick={() => {
                 confirm()
-                setFilterOperator(selectedKeys[0] as string || '')
+                setFilterOperator((selectedKeys[0] as string) || '')
               }}
               icon={<SearchOutlined />}
               size="small"
@@ -262,11 +262,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
       key: 'action',
       title: '',
       width: '10%',
-      render: () => (
-        <span>
-          {/* TODO: 操作按鈕 (編輯/封存) */}
-        </span>
-      ),
+      render: () => <span>{/* TODO: 操作按鈕 (編輯/封存) */}</span>,
     },
   ]
 
@@ -303,7 +299,9 @@ const ScheduleExpirySettingPage: React.VFC = () => {
                   <Form.Item
                     label={formatMessage(pageMessages.ScheduleExpirySettingPage.language)}
                     name="language"
-                    rules={[{ required: true, message: formatMessage(pageMessages.ScheduleExpirySettingPage.selectLanguage) }]}
+                    rules={[
+                      { required: true, message: formatMessage(pageMessages.ScheduleExpirySettingPage.selectLanguage) },
+                    ]}
                   >
                     <Select
                       style={{ width: 150 }}
@@ -321,7 +319,12 @@ const ScheduleExpirySettingPage: React.VFC = () => {
                   <Form.Item
                     label={formatMessage(pageMessages.ScheduleExpirySettingPage.classCount)}
                     name="classCount"
-                    rules={[{ required: true, message: formatMessage(pageMessages.ScheduleExpirySettingPage.inputClassCount) }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage(pageMessages.ScheduleExpirySettingPage.inputClassCount),
+                      },
+                    ]}
                   >
                     <InputNumber
                       min={1}
@@ -332,7 +335,9 @@ const ScheduleExpirySettingPage: React.VFC = () => {
                   <Form.Item
                     label={formatMessage(pageMessages.ScheduleExpirySettingPage.validDays)}
                     name="validDays"
-                    rules={[{ required: true, message: formatMessage(pageMessages.ScheduleExpirySettingPage.inputValidDays) }]}
+                    rules={[
+                      { required: true, message: formatMessage(pageMessages.ScheduleExpirySettingPage.inputValidDays) },
+                    ]}
                   >
                     <InputNumber
                       min={1}
@@ -341,12 +346,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
                     />
                   </Form.Item>
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                      loading={submitting}
-                      onClick={handleSubmit}
-                    >
+                    <Button type="primary" icon={<PlusOutlined />} loading={submitting} onClick={handleSubmit}>
                       {formatMessage(pageMessages.ScheduleExpirySettingPage.addRule)}
                     </Button>
                   </Form.Item>
@@ -374,8 +374,8 @@ const ScheduleExpirySettingPage: React.VFC = () => {
 
 // TODO:等排課頁面，之後需移動到共用的 GraphQL 檔案中
 const GET_SCHEDULE_EXPIRY_SETTINGS = gql`
-  query GET_SCHEDULE_EXPIRY_SETTINGS {
-    schedule_expiry_setting(order_by: { created_at: desc }) {
+  query GET_SCHEDULE_EXPIRY_SETTINGS($appId: String!) {
+    schedule_expiry_setting(where: { app_id: { _eq: $appId } }, order_by: { created_at: desc }) {
       id
       type
       language

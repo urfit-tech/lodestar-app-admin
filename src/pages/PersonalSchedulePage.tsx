@@ -29,6 +29,7 @@ import {
   updateEvent,
 } from '../helpers/eventHelper/eventFetchers'
 import {
+  useHolidays,
   useMemberOrders,
   useScheduleExpirySettings,
   useStudentOpenTimeEvents,
@@ -81,6 +82,7 @@ const PersonalSchedulePage: React.FC = () => {
   const { memberId } = useParams<{ memberId?: string }>()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
+  const { holidays: defaultExcludeDates } = useHolidays()
 
   // View mode based on URL: if memberId exists, show arrange view
   const viewMode = memberId ? 'arrange' : 'list'
@@ -234,8 +236,8 @@ const PersonalSchedulePage: React.FC = () => {
 
   // Get holidays for calendar
   const holidays = useMemo(() => {
-    return scheduleStore.getHolidays().map(h => h.date)
-  }, [])
+    return defaultExcludeDates.map(h => h.date)
+  }, [defaultExcludeDates])
 
   // Get events for calendar
   const calendarEvents = useMemo(() => {

@@ -24,6 +24,7 @@ import {
   getResourceByTypeTargetFetcher,
 } from '../helpers/eventHelper/eventFetchers'
 import {
+  useHolidays,
   usePublishEvent,
   useScheduleExpirySettings,
   useTeacherOpenTimeEvents,
@@ -64,6 +65,7 @@ const SemesterScheduleCreatePage: React.FC = () => {
   const history = useHistory()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
+  const { holidays: defaultExcludeDates } = useHolidays()
 
   // GraphQL hooks
   const { updateClassGroup } = useUpdateClassGroup()
@@ -112,8 +114,8 @@ const SemesterScheduleCreatePage: React.FC = () => {
 
   // Get holidays for calendar
   const holidays = useMemo(() => {
-    return scheduleStore.getHolidays().map(h => h.date)
-  }, [])
+    return defaultExcludeDates.map(h => h.date)
+  }, [defaultExcludeDates])
 
   // Get events for calendar
   const calendarEvents = useMemo(() => {

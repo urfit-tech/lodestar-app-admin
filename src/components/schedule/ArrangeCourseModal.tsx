@@ -9,6 +9,7 @@ import {
   TeacherBusyEvent,
   TeacherOpenTimeEvent,
   useClassrooms,
+  useHolidays,
 } from '../../hooks/scheduleManagement'
 import {
   DEFAULT_DURATION,
@@ -139,6 +140,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   onSaveDraft,
 }) => {
   const { formatMessage } = useIntl()
+  const { holidays: defaultExcludeDates } = useHolidays()
   const [rows, setRows] = useState<CourseRow[]>([])
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [showDurationWarning, setShowDurationWarning] = useState(false)
@@ -428,7 +430,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       // Check schedule condition constraints
       if (scheduleCondition) {
         const { startDate, endDate, excludedDates, excludeHolidays } = scheduleCondition
-        const holidays = excludeHolidays ? scheduleStore.getHolidays().map(h => h.date) : []
+        const holidays = excludeHolidays ? defaultExcludeDates.map(h => h.date) : []
 
         // Check if date is before start date
         if (startDate && dateForRow.isBefore(moment(startDate), 'day')) {
@@ -772,7 +774,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       }
 
       const { startDate, endDate, totalMinutes, excludedDates, excludeHolidays } = scheduleCondition
-      const holidays = excludeHolidays ? scheduleStore.getHolidays().map(h => h.date) : []
+      const holidays = excludeHolidays ? defaultExcludeDates.map(h => h.date) : []
       const endDateMoment = endDate ? moment(endDate) : null
 
       let accumulatedMinutes = 0
