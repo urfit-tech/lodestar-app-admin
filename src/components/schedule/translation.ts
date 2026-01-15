@@ -250,6 +250,29 @@ const scheduleMessages = {
     courseArranged: { id: 'schedule.SemesterClass.courseArranged', defaultMessage: '課程已安排' },
     courseDeleted: { id: 'schedule.SemesterClass.courseDeleted', defaultMessage: '課程已刪除' },
   }),
+  GroupClass: defineMessages({
+    pageTitle: { id: 'schedule.GroupClass.pageTitle', defaultMessage: '小組班排課管理' },
+    selectClass: { id: 'schedule.GroupClass.selectClass', defaultMessage: '選擇班級' },
+    createClass: { id: 'schedule.GroupClass.createClass', defaultMessage: '建立新班級' },
+    createClassTitle: { id: 'schedule.GroupClass.createClassTitle', defaultMessage: '建立新班級' },
+    createClassConfirm: {
+      id: 'schedule.GroupClass.createClassConfirm',
+      defaultMessage: '確定要建立新的小組班嗎？建立後可在班級設定中修改詳細資訊。',
+    },
+    createClassSuccess: { id: 'schedule.GroupClass.createClassSuccess', defaultMessage: '已建立新班級' },
+    addSchedule: { id: 'schedule.GroupClass.addSchedule', defaultMessage: '新增排課' },
+    preScheduleAction: { id: 'schedule.GroupClass.preScheduleAction', defaultMessage: '預排' },
+    publishAction: { id: 'schedule.GroupClass.publishAction', defaultMessage: '發布' },
+    pendingCount: { id: 'schedule.GroupClass.pendingCount', defaultMessage: '待處理: {count}' },
+    preScheduledCount: { id: 'schedule.GroupClass.preScheduledCount', defaultMessage: '已預排: {count}' },
+    publishedCount: { id: 'schedule.GroupClass.publishedCount', defaultMessage: '已發布: {count}' },
+    noPendingCourses: { id: 'schedule.GroupClass.noPendingCourses', defaultMessage: '沒有待處理的課程' },
+    noPreScheduledCourses: { id: 'schedule.GroupClass.noPreScheduledCourses', defaultMessage: '沒有已預排的課程' },
+    preScheduleSuccess: { id: 'schedule.GroupClass.preScheduleSuccess', defaultMessage: '已預排 {count} 堂課程' },
+    publishSuccess: { id: 'schedule.GroupClass.publishSuccess', defaultMessage: '已發布 {count} 堂課程' },
+    courseArranged: { id: 'schedule.GroupClass.courseArranged', defaultMessage: '課程已安排' },
+    courseDeleted: { id: 'schedule.GroupClass.courseDeleted', defaultMessage: '課程已刪除' },
+  }),
 }
 
 export default scheduleMessages
