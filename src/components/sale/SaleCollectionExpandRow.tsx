@@ -518,7 +518,7 @@ const SaleCollectionExpandRow = ({
               </Button>
             )}
             defaultOrderStatus={orderStatus}
-            totalPrice={totalPrice}
+            parentTotalPrice={totalPrice}
             enableOrderStatusModification={true}
           />
         )}

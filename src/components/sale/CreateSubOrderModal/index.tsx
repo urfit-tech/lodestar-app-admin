@@ -12,6 +12,7 @@ import PaymentLogEditModal from './PaymentLogEditModal'
 import ProductsTab from './ProductsTab'
 import DiscountsTab from './DiscountsTab'
 import PaymentLogsTab from './PaymentLogsTab'
+import OrderStatusTab, { OrderStatusTabRef } from './OrderStatusTab'
 import { EditableOrderDiscount, EditableOrderProduct, EditablePaymentLog } from './types'
 
 const CreateSubOrderModal: React.VFC<{
@@ -45,7 +46,30 @@ const CreateSubOrderModal: React.VFC<{
   memberId: string
   onRefetch: () => void
   renderTrigger?: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => React.ReactElement
-}> = ({ parentOrderId, orderProducts, orderDiscounts, paymentLogs, memberId, onRefetch, renderTrigger }) => {
+  // 订单状态变更相关 props
+  defaultOrderStatus?: string
+  parentTotalPrice?: number
+  minPrice?: number
+  targetPaymentNo?: string
+  showBankAccountSelect?: boolean
+  canModifyOperations?: string[]
+  enableOrderStatusModification?: boolean
+}> = ({
+  parentOrderId,
+  orderProducts,
+  orderDiscounts,
+  paymentLogs,
+  memberId,
+  onRefetch,
+  renderTrigger,
+  defaultOrderStatus,
+  parentTotalPrice = 0,
+  minPrice,
+  targetPaymentNo,
+  showBankAccountSelect = false,
+  canModifyOperations,
+  enableOrderStatusModification = false,
+}) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -58,7 +82,8 @@ const CreateSubOrderModal: React.VFC<{
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const setVisibleRef = useRef<((visible: boolean) => void) | null>(null)
-  
+  const orderStatusTabRef = useRef<OrderStatusTabRef>(null)
+
   // Forms for editing
   const [productForm] = useForm()
   const [discountForm] = useForm()
@@ -140,7 +165,7 @@ const CreateSubOrderModal: React.VFC<{
 
   const handleSaveProduct = async () => {
     if (!editingProduct) return
-    
+
     try {
       const values = await productForm.validateFields()
       const targetValue = Array.isArray(values.target) && values.target.length > 0 ? values.target[0] : undefined
@@ -152,7 +177,7 @@ const CreateSubOrderModal: React.VFC<{
         type: values.type,
         target: targetValue,
       }
-      
+
       if (updatedProduct.isNew) {
         setEditableProducts(products => [...products, { ...updatedProduct, isNew: false }])
       } else {
@@ -169,7 +194,6 @@ const CreateSubOrderModal: React.VFC<{
     setEditingProduct(null)
     productForm.resetFields()
   }
-
 
   // Order Discount CRUD
   const handleAddDiscount = () => {
@@ -193,7 +217,7 @@ const CreateSubOrderModal: React.VFC<{
 
   const handleSaveDiscount = async () => {
     if (!editingDiscount) return
-    
+
     try {
       const values = await discountForm.validateFields()
       const updatedDiscount: EditableOrderDiscount = {
@@ -203,7 +227,7 @@ const CreateSubOrderModal: React.VFC<{
         type: values.type,
         target: values.target,
       }
-      
+
       if (updatedDiscount.isNew) {
         setEditableDiscounts(discounts => [...discounts, { ...updatedDiscount, isNew: false }])
       } else {
@@ -251,6 +275,28 @@ const CreateSubOrderModal: React.VFC<{
   }
 
   const handleCreateChildOrder = async () => {
+    if (editableProducts.length === 0 && !enableOrderStatusModification) {
+      message.error('請至少添加一個商品')
+      return
+    }
+
+    // 如果只修改订单状态，不创建子订单
+    if (enableOrderStatusModification && editableProducts.length === 0 && orderStatusTabRef.current) {
+      setLoading(true)
+      try {
+        await orderStatusTabRef.current.handleSubmit()
+        message.success(formatMessage(saleMessages.SaleCollectionExpandRow.childOrderCreated))
+        onRefetch()
+        setIsModalVisible(false)
+        setVisibleRef.current?.(false)
+        return
+      } catch (error) {
+        handleError(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     if (editableProducts.length === 0) {
       message.error('請至少添加一個商品')
       return
@@ -388,32 +434,30 @@ const CreateSubOrderModal: React.VFC<{
         }}
         renderTrigger={({ setVisible }) => {
           setVisibleRef.current = setVisible
-          return renderTrigger?.({
-            setVisible: (visible: boolean | ((prev: boolean) => boolean)) => {
-              const newVisible = typeof visible === 'function' ? visible(isModalVisible) : visible
-              setIsModalVisible(newVisible)
-              setVisible(newVisible)
-            },
-          }) || null
+          return (
+            renderTrigger?.({
+              setVisible: (visible: boolean | ((prev: boolean) => boolean)) => {
+                const newVisible = typeof visible === 'function' ? visible(isModalVisible) : visible
+                setIsModalVisible(newVisible)
+                setVisible(newVisible)
+              },
+            }) || null
+          )
         }}
         renderFooter={({ setVisible }) => {
           setVisibleRef.current = setVisible
           return (
             <>
-              <Button 
+              <Button
                 onClick={() => {
                   setVisible(false)
                   setIsModalVisible(false)
-                }} 
+                }}
                 className="mr-2"
               >
                 {formatMessage(commonMessages.ui.cancel)}
               </Button>
-              <Button 
-                type="primary" 
-                loading={loading} 
-                onClick={handleCreateChildOrder}
-              >
+              <Button type="primary" loading={loading} onClick={handleCreateChildOrder}>
                 {formatMessage(commonMessages.ui.confirm)}
               </Button>
             </>
@@ -434,7 +478,10 @@ const CreateSubOrderModal: React.VFC<{
                 onCancelProduct={handleCancelProduct}
               />
             </Tabs.TabPane>
-            <Tabs.TabPane key="discounts" tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderDiscounts)}>
+            <Tabs.TabPane
+              key="discounts"
+              tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderDiscounts)}
+            >
               <DiscountsTab
                 discounts={editableDiscounts}
                 products={editableProducts}
@@ -453,6 +500,28 @@ const CreateSubOrderModal: React.VFC<{
                 onAdd={handleAddPaymentLog}
                 onEdit={handleEditPaymentLog}
                 onDelete={handleDeletePaymentLog}
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              key="orderStatus"
+              tab={formatMessage({
+                id: 'order.ui.modifyOrderStatus',
+                defaultMessage: '變更訂單狀態',
+              })}
+            >
+              <OrderStatusTab
+                ref={orderStatusTabRef}
+                orderLogId={parentOrderId}
+                defaultOrderStatus={defaultOrderStatus || 'UNPAID'}
+                paymentLogs={paymentLogs}
+                totalPrice={parentTotalPrice}
+                minPrice={minPrice}
+                targetPaymentNo={targetPaymentNo}
+                showBankAccountSelect={showBankAccountSelect}
+                canModifyOperations={canModifyOperations}
+                onStatusChange={status => {
+                  onRefetch()
+                }}
               />
             </Tabs.TabPane>
           </Tabs>
