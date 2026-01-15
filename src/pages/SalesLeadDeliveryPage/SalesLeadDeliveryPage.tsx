@@ -712,6 +712,18 @@ const ConfirmSection: React.FC<{
           },
   }
 
+  // 使用 aggregate 查詢總數（讓資料庫計算，避免抓回全部資料）
+  const { data: countData, loading: loadingCount } = useQuery<
+    hasura.GetLeadCandidatesCount,
+    hasura.GetLeadCandidatesCountVariables
+  >(GetLeadCandidatesCount, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      condition: leadCandidatesCondition,
+    },
+  })
+
+  // 只取前 50 筆預覽資料
   const { data: leadCandidatesData, loading: loadingLeadCandidates } = useQuery<
     hasura.GetLeadCandidates,
     hasura.GetLeadCandidatesVariables
@@ -719,12 +731,13 @@ const ConfirmSection: React.FC<{
     fetchPolicy: 'no-cache',
     variables: {
       condition: leadCandidatesCondition,
+      limit,
     },
   })
 
-  const leadCandidatesCounts = leadCandidatesData ? leadCandidatesData.member.length : 0
+  const leadCandidatesCounts = countData?.member_aggregate?.aggregate?.count ?? 0
 
-  const members = leadCandidatesData?.member.slice(0, limit).map(member => ({
+  const members = leadCandidatesData?.member.map(member => ({
     ...member,
     managerId: member.manager_id,
     createdAt: new Date(member.created_at),
@@ -776,7 +789,7 @@ const ConfirmSection: React.FC<{
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
-          loading={loadingLeadCandidates}
+          loading={loadingCount || loadingLeadCandidates}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
           value={`${numDeliver} / ${leadCandidatesCounts}`}
@@ -892,7 +905,7 @@ const UpdateLeadManager = gql`
 
 const GetLeadCandidates = gql`
   query GetLeadCandidates($condition: member_bool_exp, $limit: Int) {
-    member(where: $condition, limit: $limit) {
+    member(where: $condition, limit: $limit, order_by: { created_at: desc }) {
       id
       picture_url
       name
@@ -908,6 +921,16 @@ const GetLeadCandidates = gql`
       recycled_at
       last_member_note_called
       last_member_note_answered
+    }
+  }
+`
+
+const GetLeadCandidatesCount = gql`
+  query GetLeadCandidatesCount($condition: member_bool_exp) {
+    member_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
     }
   }
 `
