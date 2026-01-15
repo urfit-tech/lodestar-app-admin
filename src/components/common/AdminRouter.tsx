@@ -279,6 +279,16 @@ export const routesProps = {
     pageName: 'GroupSchedulePage',
     authenticated: true,
   },
+  class_schedule_group_create: {
+    path: '/class-schedule/group/create',
+    pageName: 'GroupScheduleCreatePage',
+    authenticated: true,
+  },
+  class_schedule_group_edit: {
+    path: '/class-schedule/group/:groupId',
+    pageName: 'GroupScheduleEditPage',
+    authenticated: true,
+  },
   schedule_expiry_setting: {
     path: '/schedule-expiry-setting',
     pageName: 'ScheduleExpirySettingPage',
