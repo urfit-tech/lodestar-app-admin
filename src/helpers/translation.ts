@@ -423,6 +423,7 @@ export const commonMessages = {
     podcastCategory: { id: 'common.menu.podcastCategory', defaultMessage: '廣播分類' },
     appointmentPlans: { id: 'common.menu.appointmentPlans', defaultMessage: '預約方案' },
     appointmentCategory: { id: 'common.menu.appointmentCategory', defaultMessage: '預約分類' },
+    scheduleExpirySetting: { id: 'common.menu.scheduleExpirySetting', defaultMessage: '設定課時到期日' },
     appointments: { id: 'common.menu.appointments', defaultMessage: '預約紀錄' },
     creatorDisplayManagement: { id: 'common.menu.creatorDisplayManagement', defaultMessage: '講師牆管理' },
     creatorDisplayCategory: { id: 'common.menu.creatorDisplayCategory', defaultMessage: '領域分類' },

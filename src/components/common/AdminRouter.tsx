@@ -264,9 +264,24 @@ export const routesProps = {
     pageName: 'SemesterSchedulePage',
     authenticated: true,
   },
+  class_schedule_semester_create: {
+    path: '/class-schedule/semester/create',
+    pageName: 'SemesterScheduleCreatePage',
+    authenticated: true,
+  },
+  class_schedule_semester_edit: {
+    path: '/class-schedule/semester/:groupId',
+    pageName: 'SemesterScheduleEditPage',
+    authenticated: true,
+  },
   class_schedule_group: {
     path: '/class-schedule/group',
     pageName: 'GroupSchedulePage',
+    authenticated: true,
+  },
+  schedule_expiry_setting: {
+    path: '/schedule-expiry-setting',
+    pageName: 'ScheduleExpirySettingPage',
     authenticated: true,
   },
 

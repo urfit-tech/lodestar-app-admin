@@ -13,9 +13,8 @@ export const AdminPageTitle = styled.h1`
 `
 export const AdminPageBlock = styled.div`
   overflow: auto;
-  padding: 2.5rem;
+  padding: 1rem;
   background-color: white;
-  border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 
