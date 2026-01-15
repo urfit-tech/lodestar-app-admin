@@ -3,7 +3,8 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { Order, ScheduleCondition, scheduleStore } from '../../types/schedule'
+import { useHolidays } from '../../hooks/scheduleManagement'
+import { Order, ScheduleCondition } from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const PanelCard = styled(Card)`
@@ -63,7 +64,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   endDateLimitMode = 'latest',
 }) => {
   const { formatMessage } = useIntl()
-  const holidays = scheduleStore.getHolidays()
+  const { holidays } = useHolidays()
 
   // Calculate limits based on selected orders and language expiry settings
   const limits = useMemo(() => {

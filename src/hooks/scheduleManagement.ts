@@ -659,7 +659,6 @@ export const useTeachers = (language?: Language, campus?: string) => {
   return { teachers, loading: false }
 }
 
-
 // =============================================================================
 // Teacher Management from Members (Real Data)
 // =============================================================================
@@ -715,10 +714,7 @@ interface TeacherFromMember {
 // Only get permission groups with names ending with "校"
 export const GET_PERMISSION_GROUPS_FOR_SCHEDULE = gql`
   query GetPermissionGroupsForSchedule {
-    permission_group(
-      where: { name: { _like: "%校" } }
-      order_by: { name: asc }
-    ) {
+    permission_group(where: { name: { _like: "%校" } }, order_by: { name: asc }) {
       id
       name
     }
@@ -800,9 +796,7 @@ export const GET_TEACHERS_FROM_MEMBERS = gql`
  * Hook to get permission groups (as campus options)
  */
 export const usePermissionGroupsAsCampuses = () => {
-  const { data, loading, error, refetch } = useQuery<PermissionGroupData>(
-    GET_PERMISSION_GROUPS_FOR_SCHEDULE
-  )
+  const { data, loading, error, refetch } = useQuery<PermissionGroupData>(GET_PERMISSION_GROUPS_FOR_SCHEDULE)
 
   const campuses = useMemo(() => {
     return (
@@ -829,7 +823,7 @@ export const useTeachersFromMembers = (
   permissionGroupIds?: string[],
   languageFilters?: string[],
   traitFilter?: string,
-  requireLanguage: boolean = false
+  requireLanguage: boolean = false,
 ) => {
   const hasFilter = Boolean(permissionGroupIds?.length)
   const hasLanguageFilter = Boolean(languageFilters?.length)
@@ -837,22 +831,17 @@ export const useTeachersFromMembers = (
   // 如果要求有語言才查詢，且沒有語言，則跳過查詢
   const shouldSkip = requireLanguage && !hasLanguageFilter
 
-  const { data, loading, error, refetch } = useQuery<TeacherMemberData>(
-    GET_TEACHERS_FROM_MEMBERS,
-    {
-      variables: {
-        permissionGroupIds: permissionGroupIds?.length ? permissionGroupIds : [],
-        filterByIds: hasFilter,
-      },
-      skip: shouldSkip,
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<TeacherMemberData>(GET_TEACHERS_FROM_MEMBERS, {
+    variables: {
+      permissionGroupIds: permissionGroupIds?.length ? permissionGroupIds : [],
+      filterByIds: hasFilter,
+    },
+    skip: shouldSkip,
+  })
 
   const teachers = useMemo<TeacherFromMember[]>(() => {
     // Get data from the appropriate field based on filterByIds
-    const memberPermissionGroups = hasFilter
-      ? data?.filtered_member_permission_group
-      : data?.member_permission_group
+    const memberPermissionGroups = hasFilter ? data?.filtered_member_permission_group : data?.member_permission_group
 
     if (!memberPermissionGroups) return []
 
@@ -912,9 +901,7 @@ export const useTeachersFromMembers = (
 
     // Apply language filters (支援多語言篩選)
     if (languageFilters && languageFilters.length > 0) {
-      result = result.filter(t =>
-        languageFilters.some(lang => t.languages.includes(lang))
-      )
+      result = result.filter(t => languageFilters.some(lang => t.languages.includes(lang)))
     }
 
     // Apply trait filter
@@ -958,12 +945,7 @@ export const GET_MEMBER_ORDERS_FOR_SCHEDULE = gql`
       username
       email
     }
-    order_log(
-      where: {
-        member_id: { _eq: $memberId }
-      }
-      order_by: { created_at: desc }
-    ) {
+    order_log(where: { member_id: { _eq: $memberId } }, order_by: { created_at: desc }) {
       id
       status
       member_id
@@ -998,7 +980,6 @@ const mapClassTypeToScheduleType = (classType: string | undefined): ScheduleType
   }
 }
 
-
 /**
  * Hook to get orders by member from GraphQL (real data from order_log)
  */
@@ -1010,7 +991,7 @@ export const useMemberOrders = (memberId: string | undefined, scheduleType?: Sch
         memberId: memberId || '',
       },
       skip: !memberId,
-    }
+    },
   )
 
   const orders: Order[] = useMemo(() => {
@@ -1090,12 +1071,7 @@ export const useMemberOrders = (memberId: string | undefined, scheduleType?: Sch
 export const GET_MEMBERS_FOR_SCHEDULE = gql`
   query GetMembersForSchedule($searchTerm: String) {
     member(
-      where: {
-        _or: [
-          { name: { _ilike: $searchTerm } }
-          { email: { _ilike: $searchTerm } }
-        ]
-      }
+      where: { _or: [{ name: { _ilike: $searchTerm } }, { email: { _ilike: $searchTerm } }] }
       order_by: { name: asc }
       limit: 100
     ) {
@@ -1110,15 +1086,15 @@ export const GET_MEMBERS_FOR_SCHEDULE = gql`
  * Hook to get members (students) from GraphQL
  */
 export const useMembers = (searchTerm?: string) => {
-  const { data, loading, error, refetch } = useQuery<
-    GetMembersForScheduleData,
-    GetMembersForScheduleVariables
-  >(GET_MEMBERS_FOR_SCHEDULE, {
-    variables: {
-      searchTerm: searchTerm ? `%${searchTerm}%` : '',
+  const { data, loading, error, refetch } = useQuery<GetMembersForScheduleData, GetMembersForScheduleVariables>(
+    GET_MEMBERS_FOR_SCHEDULE,
+    {
+      variables: {
+        searchTerm: searchTerm ? `%${searchTerm}%` : '',
+      },
+      skip: !searchTerm, // 沒有搜尋文字時不查詢
     },
-    skip: !searchTerm, // 沒有搜尋文字時不查詢
-  })
+  )
 
   const members = useMemo(() => {
     return (
@@ -1159,13 +1135,10 @@ interface MembersByIdsData {
  * @param memberIds - Array of member IDs to fetch
  */
 export const useMembersByIds = (memberIds: string[]) => {
-  const { data, loading, error, refetch } = useQuery<MembersByIdsData>(
-    GET_MEMBERS_BY_IDS_FOR_SCHEDULE,
-    {
-      variables: { memberIds },
-      skip: memberIds.length === 0,
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<MembersByIdsData>(GET_MEMBERS_BY_IDS_FOR_SCHEDULE, {
+    variables: { memberIds },
+    skip: memberIds.length === 0,
+  })
 
   const members = useMemo(() => {
     return (
@@ -1181,7 +1154,6 @@ export const useMembersByIds = (memberIds: string[]) => {
   return { members, loading, error, refetch }
 }
 
-
 // =============================================================================
 // Class Group GraphQL Queries & Mutations
 // =============================================================================
@@ -1190,11 +1162,7 @@ export const useMembersByIds = (memberIds: string[]) => {
 export const GET_CLASS_GROUPS_FOR_SCHEDULE = gql`
   query GetClassGroupsForSchedule($type: String, $appId: String!) {
     class_group(
-      where: {
-        app_id: { _eq: $appId }
-        type: { _eq: $type }
-        deleted_at: { _is_null: true }
-      }
+      where: { app_id: { _eq: $appId }, type: { _eq: $type }, deleted_at: { _is_null: true } }
       order_by: { created_at: desc }
     ) {
       id
@@ -1282,10 +1250,7 @@ export const UPDATE_CLASS_GROUP = gql`
 // GraphQL mutation to soft delete class group
 export const DELETE_CLASS_GROUP = gql`
   mutation DeleteClassGroup($id: uuid!) {
-    update_class_group_by_pk(
-      pk_columns: { id: $id }
-      _set: { deleted_at: "now()" }
-    ) {
+    update_class_group_by_pk(pk_columns: { id: $id }, _set: { deleted_at: "now()" }) {
       id
       deleted_at
     }
@@ -1307,17 +1272,11 @@ export const INSERT_CLASS_GROUP_ORDER = gql`
 // GraphQL mutation to remove order from class group
 export const DELETE_CLASS_GROUP_ORDER = gql`
   mutation DeleteClassGroupOrder($classGroupId: uuid!, $orderId: String!) {
-    delete_class_group_order(
-      where: {
-        class_group_id: { _eq: $classGroupId }
-        order_id: { _eq: $orderId }
-      }
-    ) {
+    delete_class_group_order(where: { class_group_id: { _eq: $classGroupId }, order_id: { _eq: $orderId } }) {
       affected_rows
     }
   }
 `
-
 
 // GraphQL query to get orders by IDs (for orders already in a class group)
 export const GET_ORDERS_BY_IDS = gql`
@@ -1359,9 +1318,7 @@ export const GET_AVAILABLE_ORDERS_FOR_CLASS = gql`
       where: {
         app_id: { _eq: $appId }
         id: { _nin: $excludeOrderIds }
-        order_products: {
-          options: { _contains: { options: { class_type: $classType, language: $language } } }
-        }
+        order_products: { options: { _contains: { options: { class_type: $classType, language: $language } } } }
       }
       order_by: { created_at: desc }
     ) {
@@ -1375,11 +1332,7 @@ export const GET_AVAILABLE_ORDERS_FOR_CLASS = gql`
       }
       options
       expired_at
-      order_products(
-        where: {
-          options: { _contains: { options: { class_type: $classType, language: $language } } }
-        }
-      ) {
+      order_products(where: { options: { _contains: { options: { class_type: $classType, language: $language } } } }) {
         id
         name
         options
@@ -1505,18 +1458,15 @@ export const useOrdersByType = (type: ScheduleType, campus?: string, language?: 
  */
 export const useClassGroups = (type?: 'semester' | 'group') => {
   const { id: appId } = useApp()
-  
-  const { data, loading, error, refetch } = useQuery<GetClassGroupsData>(
-    GET_CLASS_GROUPS_FOR_SCHEDULE,
-    {
-      variables: {
-        type: type || undefined,
-        appId,
-      },
-      skip: !appId,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+
+  const { data, loading, error, refetch } = useQuery<GetClassGroupsData>(GET_CLASS_GROUPS_FOR_SCHEDULE, {
+    variables: {
+      type: type || undefined,
+      appId,
+    },
+    skip: !appId,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const classGroups = useMemo(() => {
     if (!data?.class_group) return []
@@ -1530,14 +1480,11 @@ export const useClassGroups = (type?: 'semester' | 'group') => {
  * Hook to get class group by ID
  */
 export const useClassGroup = (classGroupId: string | undefined) => {
-  const { data, loading, error, refetch } = useQuery<GetClassGroupByIdData>(
-    GET_CLASS_GROUP_BY_ID,
-    {
-      variables: { id: classGroupId },
-      skip: !classGroupId,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<GetClassGroupByIdData>(GET_CLASS_GROUP_BY_ID, {
+    variables: { id: classGroupId },
+    skip: !classGroupId,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const classGroup = useMemo(() => {
     if (!data?.class_group?.length) return undefined
@@ -1549,13 +1496,7 @@ export const useClassGroup = (classGroupId: string | undefined) => {
 
 const GET_CLASSROOMS_FOR_SCHEDULE = gql`
   query GetClassroomsForSchedule($campusId: uuid) {
-    classroom(
-      where: {
-        campus_id: { _eq: $campusId }
-        is_active: { _eq: true }
-      }
-      order_by: { name: asc }
-    ) {
+    classroom(where: { campus_id: { _eq: $campusId }, is_active: { _eq: true } }, order_by: { name: asc }) {
       id
       name
       campus_id
@@ -1568,14 +1509,11 @@ const GET_CLASSROOMS_FOR_SCHEDULE = gql`
  * Hook to get classrooms
  */
 export const useClassrooms = (campus?: string) => {
-  const { data, loading, error } = useQuery<{ classroom: Classroom[] }>(
-    GET_CLASSROOMS_FOR_SCHEDULE,
-    {
-      variables: { campusId: campus },
-      skip: !campus,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+  const { data, loading, error } = useQuery<{ classroom: Classroom[] }>(GET_CLASSROOMS_FOR_SCHEDULE, {
+    variables: { campusId: campus },
+    skip: !campus,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const classrooms = useMemo(() => {
     if (data?.classroom) {
@@ -1607,9 +1545,26 @@ export const useCampuses = () => {
  * Hook to get holidays
  */
 export const useHolidays = () => {
+  const { settings } = useApp()
+
   const holidays = useMemo(() => {
-    return scheduleStore.getHolidays()
-  }, [])
+    const excludeDatesStr = settings['appointment.default_exclude_dates'] || ''
+    if (!excludeDatesStr.trim()) {
+      return []
+    }
+
+    // Parse dates from string like "2025-12-31, 2026-01-01"
+    return excludeDatesStr
+      .split(',')
+      .map((dateStr: string) => dateStr.trim())
+      .filter((dateStr: string) => dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr))
+      .map((dateStr: string, index: number) => ({
+        id: `holiday-${index + 1}`,
+        date: new Date(dateStr),
+        name: dateStr,
+        isFixed: true,
+      }))
+  }, [settings])
 
   return { holidays, loading: false }
 }
@@ -1638,11 +1593,20 @@ export const useConflictCheck = () => {
       teacherId?: string,
       classroomId?: string,
       excludeEventId?: string,
-      classroomIds?: string[]
+      classroomIds?: string[],
     ) => {
-      return scheduleStore.hasConflict(date, startTime, endTime, teacherId, classroomId, excludeEventId, undefined, classroomIds)
+      return scheduleStore.hasConflict(
+        date,
+        startTime,
+        endTime,
+        teacherId,
+        classroomId,
+        excludeEventId,
+        undefined,
+        classroomIds,
+      )
     },
-    []
+    [],
   )
 
   return { checkConflict }
@@ -1660,7 +1624,7 @@ export const useCreateScheduleEvent = () => {
 
   const createEvent = useCallback(async (event: Omit<ScheduleEvent, 'id'>): Promise<ScheduleEvent> => {
     setLoading(true)
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         const newEvent = scheduleStore.addEvent(event)
         setLoading(false)
@@ -1681,7 +1645,7 @@ export const useUpdateScheduleEvent = () => {
   const updateEvent = useCallback(
     async (id: string, updates: Partial<ScheduleEvent>): Promise<ScheduleEvent | undefined> => {
       setLoading(true)
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         setTimeout(() => {
           const updatedEvent = scheduleStore.updateEvent(id, updates)
           setLoading(false)
@@ -1689,7 +1653,7 @@ export const useUpdateScheduleEvent = () => {
         }, 200)
       })
     },
-    []
+    [],
   )
 
   return { updateEvent, loading }
@@ -1703,7 +1667,7 @@ export const useDeleteScheduleEvent = () => {
 
   const deleteEvent = useCallback(async (id: string): Promise<boolean> => {
     setLoading(true)
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         const result = scheduleStore.deleteEvent(id)
         setLoading(false)
@@ -1724,7 +1688,7 @@ export const useUpdateClassGroup = () => {
   const updateClassGroup = useCallback(
     async (id: string, updates: Partial<ClassGroup>): Promise<ClassGroup | undefined> => {
       const setInput: Record<string, any> = {}
-      
+
       if (updates.name !== undefined) setInput.name = updates.name
       if (updates.campusId !== undefined) setInput.campus_id = updates.campusId
       if (updates.language !== undefined) setInput.language = updates.language
@@ -1743,7 +1707,7 @@ export const useUpdateClassGroup = () => {
       }
       return undefined
     },
-    [updateMutation]
+    [updateMutation],
   )
 
   return { updateClassGroup, loading }
@@ -1754,7 +1718,7 @@ export const useUpdateClassGroup = () => {
  */
 export const useCreateClassGroup = () => {
   const { id: appId } = useApp()
-  
+
   const [insertMutation, { loading }] = useMutation<InsertClassGroupData>(INSERT_CLASS_GROUP)
 
   const createClassGroup = useCallback(
@@ -1782,12 +1746,11 @@ export const useCreateClassGroup = () => {
 
       return transformClassGroupData(data.insert_class_group_one)
     },
-    [insertMutation, appId]
+    [insertMutation, appId],
   )
 
   return { createClassGroup, loading }
 }
-
 
 /**
  * Hook to delete (soft delete) a class group
@@ -1804,12 +1767,11 @@ export const useDeleteClassGroup = () => {
 
       return !!data?.update_class_group_by_pk?.deleted_at
     },
-    [deleteMutation]
+    [deleteMutation],
   )
 
   return { deleteClassGroup, loading }
 }
-
 
 // Type definitions for order queries (uses OrderLogData defined above)
 interface GetOrdersByIdsData {
@@ -1828,14 +1790,11 @@ interface GetAssignedOrderIdsData {
  * Hook to get orders by their IDs (for orders already in a class group)
  */
 export const useOrdersByIds = (orderIds: string[]) => {
-  const { data, loading, error, refetch } = useQuery<GetOrdersByIdsData>(
-    GET_ORDERS_BY_IDS,
-    {
-      variables: { orderIds },
-      skip: orderIds.length === 0,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<GetOrdersByIdsData>(GET_ORDERS_BY_IDS, {
+    variables: { orderIds },
+    skip: orderIds.length === 0,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const orders = useMemo(() => {
     return data?.order_log || []
@@ -1852,19 +1811,18 @@ export const useOrdersByIds = (orderIds: string[]) => {
 export const useAvailableOrdersForClass = (
   classType: 'semester' | 'group',
   language: string,
-  excludeOrderIds: string[] = []
+  excludeOrderIds: string[] = [],
 ) => {
   const { id: appId } = useApp()
-  
+
   // Map class type to Chinese label used in order_product.options
   // 學期班 searches for 團體班 orders, 小組班 searches for 小組班 orders
   const classTypeLabel = classType === 'semester' ? '團體班' : '小組班'
 
   // First get all assigned order IDs
-  const { data: assignedData } = useQuery<GetAssignedOrderIdsData>(
-    GET_ASSIGNED_ORDER_IDS,
-    { fetchPolicy: 'cache-and-network' }
-  )
+  const { data: assignedData } = useQuery<GetAssignedOrderIdsData>(GET_ASSIGNED_ORDER_IDS, {
+    fetchPolicy: 'cache-and-network',
+  })
 
   // Combine excluded IDs with already assigned IDs
   const allExcludedIds = useMemo(() => {
@@ -1872,19 +1830,16 @@ export const useAvailableOrdersForClass = (
     return [...new Set([...excludeOrderIds, ...assignedIds])]
   }, [assignedData, excludeOrderIds])
 
-  const { data, loading, error, refetch } = useQuery<GetAvailableOrdersData>(
-    GET_AVAILABLE_ORDERS_FOR_CLASS,
-    {
-      variables: {
-        appId,
-        classType: classTypeLabel,
-        language: language || '',
-        excludeOrderIds: allExcludedIds.length > 0 ? allExcludedIds : [''],
-      },
-      skip: !appId || !language,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<GetAvailableOrdersData>(GET_AVAILABLE_ORDERS_FOR_CLASS, {
+    variables: {
+      appId,
+      classType: classTypeLabel,
+      language: language || '',
+      excludeOrderIds: allExcludedIds.length > 0 ? allExcludedIds : [''],
+    },
+    skip: !appId || !language,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const orders = useMemo(() => {
     return data?.order_log || []
@@ -1917,7 +1872,7 @@ export const useAddOrderToClassGroup = () => {
         return false
       }
     },
-    [insertMutation]
+    [insertMutation],
   )
 
   return { addOrderToClassGroup, loading }
@@ -1945,7 +1900,7 @@ export const useRemoveOrderFromClassGroup = () => {
         return false
       }
     },
-    [deleteMutation]
+    [deleteMutation],
   )
 
   return { removeOrderFromClassGroup, loading }
@@ -1975,7 +1930,7 @@ export const useClassGroupOrders = () => {
         return false
       }
     },
-    [insertOrderMutation]
+    [insertOrderMutation],
   )
 
   const removeOrderFromClassGroup = useCallback(
@@ -1993,7 +1948,7 @@ export const useClassGroupOrders = () => {
         return false
       }
     },
-    [deleteOrderMutation]
+    [deleteOrderMutation],
   )
 
   return {
@@ -2011,7 +1966,7 @@ export const useSaveScheduleTemplate = () => {
 
   const saveTemplate = useCallback(async (template: Omit<ScheduleTemplate, 'id'>): Promise<ScheduleTemplate> => {
     setLoading(true)
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         const saved = scheduleStore.saveTemplate(template)
         setLoading(false)
@@ -2054,8 +2009,8 @@ export const useScheduleCalculation = () => {
 
         // Check if date should be excluded
         const dateStr = currentDate.toISOString().split('T')[0]
-        const isExcluded = excludedDates.some((d) => d.toISOString().split('T')[0] === dateStr)
-        const isHoliday = excludeHolidays && holidays.some((h) => h.date.toISOString().split('T')[0] === dateStr)
+        const isExcluded = excludedDates.some(d => d.toISOString().split('T')[0] === dateStr)
+        const isHoliday = excludeHolidays && holidays.some(h => h.date.toISOString().split('T')[0] === dateStr)
 
         if (!isExcluded && !isHoliday) {
           dates.push(new Date(currentDate))
@@ -2071,7 +2026,7 @@ export const useScheduleCalculation = () => {
 
       return dates
     },
-    [holidays]
+    [holidays],
   )
 
   return { calculateScheduleDates }
@@ -2143,11 +2098,7 @@ export interface TeacherBusyEvent {
  * @param startDate - Start date for fetching events
  * @param endDate - End date for fetching events
  */
-export const useTeacherOpenTimeEvents = (
-  teacherIds: string[],
-  startDate?: Date,
-  endDate?: Date
-) => {
+export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date, endDate?: Date) => {
   const { authToken } = useAuth()
   const [events, setEvents] = useState<TeacherOpenTimeEvent[]>([])
   const [busyEvents, setBusyEvents] = useState<TeacherBusyEvent[]>([])
@@ -2199,16 +2150,14 @@ export const useTeacherOpenTimeEvents = (
               {
                 startedAt: defaultStartDate,
                 until: defaultEndDate,
-              }
+              },
             )
 
             if (fetchedData?.resourceEvents) {
               // Filter for active events
               const activeEvents = getActiveEvents(fetchedData.resourceEvents as GeneralEventApi[])
               const availableEvents = getAvailableEvents(activeEvents)
-              const nonAvailableEvents = activeEvents.filter(
-                event => event.extendedProps?.role !== 'available'
-              )
+              const nonAvailableEvents = activeEvents.filter(event => event.extendedProps?.role !== 'available')
 
               // Convert to TeacherOpenTimeEvent format
               availableEvents.forEach(event => {
@@ -2304,11 +2253,11 @@ export const useTeacherOpenTimeEvents = (
  * 外課：色塊顯示「外」標記
  */
 export const STUDENT_EVENT_COLORS = {
-  open: '#fed7aa',      // 開放時間
-  template: '#a8a29e',  // 固定課表
+  open: '#fed7aa', // 開放時間
+  template: '#a8a29e', // 固定課表
   scheduled: '#fdba74', // 已預排
   published: '#f97316', // 已發布
-  pending: '#64748B',   // 待處理
+  pending: '#64748B', // 待處理
 }
 
 /**
@@ -2342,11 +2291,7 @@ export interface StudentOpenTimeEvent {
  * @param startDate - Start date for fetching events
  * @param endDate - End date for fetching events
  */
-export const useStudentOpenTimeEvents = (
-  studentId: string | undefined,
-  startDate?: Date,
-  endDate?: Date
-) => {
+export const useStudentOpenTimeEvents = (studentId: string | undefined, startDate?: Date, endDate?: Date) => {
   const { authToken } = useAuth()
   const [events, setEvents] = useState<StudentOpenTimeEvent[]>([])
   const [loading, setLoading] = useState(false)
@@ -2378,7 +2323,7 @@ export const useStudentOpenTimeEvents = (
           {
             startedAt: defaultStartDate,
             until: defaultEndDate,
-          }
+          },
         )
 
         if (fetchedData?.resourceEvents) {
@@ -2493,11 +2438,7 @@ export interface PersonalScheduleListEvent extends ScheduleEvent {
 
 // GraphQL query to get personal schedule events directly from event table
 const GET_PERSONAL_SCHEDULE_EVENTS = gql`
-  query GetPersonalScheduleEvents(
-    $startDate: timestamptz!
-    $endDate: timestamptz!
-    $scheduleTypeFilter: jsonb!
-  ) {
+  query GetPersonalScheduleEvents($startDate: timestamptz!, $endDate: timestamptz!, $scheduleTypeFilter: jsonb!) {
     event(
       where: {
         deleted_at: { _is_null: true }
@@ -2556,9 +2497,7 @@ interface MembersData {
  * Hook to get all personal schedule events for list view
  * Fetches real events from GraphQL event table filtered by scheduleType === 'personal'
  */
-export const usePersonalScheduleListEvents = (
-  status?: 'published' | 'pre-scheduled' | 'all'
-) => {
+export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-scheduled' | 'all') => {
   // Default date range: 1 year before and after current date
   const startDate = useMemo(() => {
     return moment().subtract(1, 'year').startOf('day').toISOString()
@@ -2569,17 +2508,19 @@ export const usePersonalScheduleListEvents = (
   }, [])
 
   // Query events from GraphQL
-  const { data: eventsData, loading: eventsLoading, error: eventsError, refetch } = useQuery<PersonalScheduleEventsData>(
-    GET_PERSONAL_SCHEDULE_EVENTS,
-    {
-      variables: {
-        startDate,
-        endDate,
-        scheduleTypeFilter: { scheduleType: 'personal' },
-      },
-      fetchPolicy: 'network-only',
-    }
-  )
+  const {
+    data: eventsData,
+    loading: eventsLoading,
+    error: eventsError,
+    refetch,
+  } = useQuery<PersonalScheduleEventsData>(GET_PERSONAL_SCHEDULE_EVENTS, {
+    variables: {
+      startDate,
+      endDate,
+      scheduleTypeFilter: { scheduleType: 'personal' },
+    },
+    fetchPolicy: 'network-only',
+  })
 
   // Extract unique member IDs from events
   const memberIds = useMemo(() => {
@@ -2655,7 +2596,9 @@ export const usePersonalScheduleListEvents = (
           date: new Date(event.started_at),
           startTime: moment(event.started_at).format('HH:mm'),
           endTime: moment(event.ended_at).format('HH:mm'),
-          duration: (metadata.duration as number) || Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
+          duration:
+            (metadata.duration as number) ||
+            Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
           material: (metadata.material as string) || event.title || '',
           needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
           createdBy: '',
@@ -2670,11 +2613,11 @@ export const usePersonalScheduleListEvents = (
 
   console.log('[usePersonalScheduleListEvents] Final events count:', events.length)
 
-  return { 
-    events, 
-    loading: eventsLoading, 
-    error: eventsError ? new Error(eventsError.message) : null, 
-    refetch 
+  return {
+    events,
+    loading: eventsLoading,
+    error: eventsError ? new Error(eventsError.message) : null,
+    refetch,
   }
 }
 
@@ -2697,10 +2640,7 @@ interface GetScheduleExpirySettingsData {
 
 const GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE = gql`
   query GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE {
-    schedule_expiry_setting(
-      where: { status: { _eq: "active" } }
-      order_by: { class_count: asc }
-    ) {
+    schedule_expiry_setting(where: { status: { _eq: "active" } }, order_by: { class_count: asc }) {
       id
       type
       language
@@ -2715,9 +2655,7 @@ const GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE = gql`
  * Hook to get schedule expiry settings and calculate expiry dates for orders
  */
 export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal') => {
-  const { data, loading, error } = useQuery<GetScheduleExpirySettingsData>(
-    GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE
-  )
+  const { data, loading, error } = useQuery<GetScheduleExpirySettingsData>(GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE)
 
   // Map type to DB value
   const dbType = scheduleType === 'personal' ? 'individual' : scheduleType === 'group' ? 'group' : 'individual'
@@ -2742,7 +2680,7 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
       const expiryDate = moment(startDate).add(matchingSetting.valid_days, 'days').toDate()
       return expiryDate
     },
-    [settings]
+    [settings],
   )
 
   // Function to get the max expiry date for a language (using the highest class_count rule)
@@ -2752,13 +2690,14 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
       if (languageSettings.length === 0) return null
 
       // Get the setting with the highest valid_days for this language
-      const maxSetting = languageSettings.reduce((max, s) => 
-        s.valid_days > max.valid_days ? s : max
-      , languageSettings[0])
+      const maxSetting = languageSettings.reduce(
+        (max, s) => (s.valid_days > max.valid_days ? s : max),
+        languageSettings[0],
+      )
 
       return moment(startDate).add(maxSetting.valid_days, 'days').toDate()
     },
-    [settings]
+    [settings],
   )
 
   return {
@@ -2774,7 +2713,6 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
 // Publish Events Mutation
 // =============================================================================
 
-
 // =============================================================================
 // Class Group Events Hook (for semester/group class schedules)
 // =============================================================================
@@ -2783,10 +2721,7 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
 const GET_CLASS_GROUP_EVENTS = gql`
   query GetClassGroupEvents($classId: String!) {
     event(
-      where: {
-        deleted_at: { _is_null: true }
-        metadata: { _contains: { classId: $classId } }
-      }
+      where: { deleted_at: { _is_null: true }, metadata: { _contains: { classId: $classId } } }
       order_by: { started_at: asc }
     ) {
       id
@@ -2822,14 +2757,11 @@ interface ClassGroupEventsData {
  * @param classId - The class group ID to fetch events for
  */
 export const useClassGroupEvents = (classId: string | undefined) => {
-  const { data, loading, error, refetch } = useQuery<ClassGroupEventsData>(
-    GET_CLASS_GROUP_EVENTS,
-    {
-      variables: { classId: classId || '' },
-      skip: !classId,
-      fetchPolicy: 'cache-and-network',
-    }
-  )
+  const { data, loading, error, refetch } = useQuery<ClassGroupEventsData>(GET_CLASS_GROUP_EVENTS, {
+    variables: { classId: classId || '' },
+    skip: !classId,
+    fetchPolicy: 'cache-and-network',
+  })
 
   const events = useMemo<ScheduleEvent[]>(() => {
     if (!data?.event || !classId) return []
@@ -2877,10 +2809,7 @@ export const useClassGroupEvents = (classId: string | undefined) => {
 
 const PUBLISH_EVENT = gql`
   mutation PublishEvent($eventId: uuid!, $publishedAt: timestamptz!) {
-    update_event_by_pk(
-      pk_columns: { id: $eventId }
-      _set: { published_at: $publishedAt }
-    ) {
+    update_event_by_pk(pk_columns: { id: $eventId }, _set: { published_at: $publishedAt }) {
       id
       published_at
     }
@@ -2907,17 +2836,15 @@ export const usePublishEvent = () => {
       })
       return result.data?.update_event_by_pk
     },
-    [publishEventMutation]
+    [publishEventMutation],
   )
 
   const publishEvents = useCallback(
     async (eventIds: string[], publishedAt: Date = new Date()) => {
-      const results = await Promise.all(
-        eventIds.map(eventId => publishEvent(eventId, publishedAt))
-      )
+      const results = await Promise.all(eventIds.map(eventId => publishEvent(eventId, publishedAt)))
       return results
     },
-    [publishEvent]
+    [publishEvent],
   )
 
   return { publishEvent, publishEvents, loading }

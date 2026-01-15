@@ -26,6 +26,7 @@ import {
 import {
   useClassGroup,
   useClassGroupEvents,
+  useHolidays,
   usePublishEvent,
   useScheduleExpirySettings,
   useTeacherOpenTimeEvents,
@@ -74,6 +75,7 @@ const SemesterScheduleEditPage: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
+  const { holidays: defaultExcludeDates } = useHolidays()
 
   // Class group loaded from GraphQL
   const { classGroup, loading, error, refetch: refetchClassGroup } = useClassGroup(groupId)
@@ -129,8 +131,8 @@ const SemesterScheduleEditPage: React.FC = () => {
 
   // Get holidays for calendar
   const holidays = useMemo(() => {
-    return scheduleStore.getHolidays().map(h => h.date)
-  }, [])
+    return defaultExcludeDates.map(h => h.date)
+  }, [defaultExcludeDates])
 
   // Get events for calendar - merge API events with local pending events
   const calendarEvents = useMemo(() => {

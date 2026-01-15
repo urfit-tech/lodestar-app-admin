@@ -18,6 +18,7 @@ import {
 import {
   useClassGroups,
   useCreateClassGroup,
+  useHolidays,
   useOrdersByIds,
   useScheduleExpirySettings,
   useTeacherOpenTimeEvents,
@@ -82,6 +83,7 @@ const StackedPanels = styled.div`
 
 const GroupSchedulePage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { holidays: defaultExcludeDates } = useHolidays()
 
   // View mode: list or arrange
   const [viewMode, setViewMode] = useState<'list' | 'arrange'>('list')
@@ -115,8 +117,8 @@ const GroupSchedulePage: React.FC = () => {
 
   // Get holidays for calendar
   const holidays = useMemo(() => {
-    return scheduleStore.getHolidays().map(h => h.date)
-  }, [])
+    return defaultExcludeDates.map(h => h.date)
+  }, [defaultExcludeDates])
 
   // Get events for calendar
   const calendarEvents = useMemo(() => {
