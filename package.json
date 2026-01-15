@@ -7,7 +7,7 @@
     "start": "PUBLIC_URL=/admin react-app-rewired start",
     "build": "PUBLIC_URL=/admin CI=false env-cmd -f .env.${NODE_ENV:-production} react-app-rewired --max-old-space-size=8192 build",
     "test": "react-scripts test",
-    "typegen": "graphql-codegen",
+    "typegen": "NODE_ENV=development graphql-codegen",
     "format:organize-imports": "organize-imports-cli ./src/***/**/*.ts[x]",
     "format:prettier": "prettier --write ./src/***/**/*.ts[x]",
     "format": "npm run format:organize-imports && npm run format:prettier",
