@@ -2,8 +2,8 @@ import { CopyOutlined } from '@ant-design/icons'
 import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { useToast } from '@chakra-ui/react'
 import { Button, Divider, Form, Input, InputNumber, message, Select, Skeleton, Switch, Table, Typography } from 'antd'
-import { ColumnProps } from 'antd/lib/table'
 import { useForm } from 'antd/lib/form/Form'
+import { ColumnProps } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -25,7 +25,6 @@ import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import CreateSubOrderModal from './CreateSubOrderModal'
-import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderDetailDrawer from './OrderDetailDrawer'
 import { OrderLogColumn } from './SaleCollectionAdminCard'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
@@ -113,12 +112,8 @@ const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
 // 子订单展开组件，显示 order_product 和 order_discount
 const ChildOrderExpandRow: React.VFC<{ orderId: string }> = ({ orderId }) => {
   const { settings } = useApp()
-  const {
-    loadingExpandRowOrderProduct,
-    loadingOrderDiscountByOrderId,
-    orderProducts,
-    orderDiscounts,
-  } = useOrderLogExpandRow(orderId)
+  const { loadingExpandRowOrderProduct, loadingOrderDiscountByOrderId, orderProducts, orderDiscounts } =
+    useOrderLogExpandRow(orderId)
 
   if (loadingExpandRowOrderProduct || loadingOrderDiscountByOrderId) {
     return <Skeleton />
@@ -150,7 +145,9 @@ const ChildOrderExpandRow: React.VFC<{ orderId: string }> = ({ orderId }) => {
                     )}
                   </div>
                 </div>
-                {index < orderProducts.filter(p => p.type !== 'Token').length - 1 && <Divider style={{ margin: '8px 0' }} />}
+                {index < orderProducts.filter(p => p.type !== 'Token').length - 1 && (
+                  <Divider style={{ margin: '8px 0' }} />
+                )}
               </StyledRowWrapper>
             ))}
         </div>
@@ -162,7 +159,11 @@ const ChildOrderExpandRow: React.VFC<{ orderId: string }> = ({ orderId }) => {
             折扣
           </Typography.Text>
           {orderDiscounts.map((orderDiscount, index) => (
-            <div key={orderDiscount.id} className="row" style={{ marginBottom: index < orderDiscounts.length - 1 ? '8px' : '0' }}>
+            <div
+              key={orderDiscount.id}
+              className="row"
+              style={{ marginBottom: index < orderDiscounts.length - 1 ? '8px' : '0' }}
+            >
               <div className="col-8">{orderDiscount.name}</div>
               <div className="col-4 text-right">
                 - {currencyFormatter(orderDiscount.price, orderDiscount.type, settings['coin.unit'])}
@@ -199,6 +200,8 @@ const SaleCollectionExpandRow = ({
   const orderLogId = record.id
   const orderStatus = record.status
   const totalPrice = record.totalPrice
+  const customSetting = JSON.parse(settings['custom'] || '{}')
+  const isOrderEditingEnabled = customSetting.orderEditing === true
 
   const {
     loadingExpandRowOrderLog,
@@ -499,20 +502,24 @@ const SaleCollectionExpandRow = ({
           }}
         />
         {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
-          <ModifyOrderStatusModal
+          <CreateSubOrderModal
+            parentOrderId={orderLogId}
+            orderProducts={orderProducts}
+            orderDiscounts={orderDiscounts}
+            paymentLogs={paymentLogs}
+            memberId={orderLog.memberId || ''}
+            onRefetch={() => {
+              onRefetchOrderLog?.()
+              refetchOrderLogExpandRow()
+            }}
             renderTrigger={({ setVisible }) => (
               <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
                 {formatMessage(saleMessages.SaleCollectionExpandRow.changeOrderStatus)}
               </Button>
             )}
-            orderLogId={orderLogId}
             defaultOrderStatus={orderStatus}
-            paymentLogs={paymentLogs}
-            onRefetch={() => {
-              onRefetchOrderLog?.()
-              refetchOrderLogExpandRow()
-            }}
             totalPrice={totalPrice}
+            enableOrderStatusModification={true}
           />
         )}
         {currentUserRole === 'app-owner' &&
@@ -573,7 +580,7 @@ const SaleCollectionExpandRow = ({
             複製付款連結
           </Button>
         )}
-        {orderLog.memberId && (
+        {orderLog.memberId && isOrderEditingEnabled && (
           <CreateSubOrderModal
             parentOrderId={orderLogId}
             orderProducts={orderProducts}
