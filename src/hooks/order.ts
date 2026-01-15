@@ -494,6 +494,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
       query GetExpandRowOrderLog($orderId: String!) {
         order_log_by_pk(id: $orderId) {
           id
+          member_id
           expired_at
           shipping
           invoice_options
@@ -518,6 +519,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
       query GetExpandRowOrderProduct($orderId: String) {
         order_product(where: { order_id: { _eq: $orderId } }) {
           id
+          product_id
           delivered_at
           name
           started_at
@@ -623,6 +625,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
 
   const orderLog = {
     id: expandRowOrderLog?.order_log_by_pk?.id,
+    memberId: expandRowOrderLog?.order_log_by_pk?.member_id,
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
     invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
@@ -633,6 +636,7 @@ export const useOrderLogExpandRow = (orderId: string) => {
   const orderProducts =
     expandRowOrderProduct?.order_product.map(v => ({
       id: v.id,
+      productId: v.product_id,
       type: v.product.type,
       deliveredAt: v.delivered_at,
       name: v.name,

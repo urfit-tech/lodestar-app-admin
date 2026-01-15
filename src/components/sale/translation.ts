@@ -158,103 +158,103 @@ const saleMessages = {
     },
     createChildOrder: {
       id: 'sale.SaleCollectionExpandRow.createChildOrder',
-      defaultMessage: '建立子訂單',
+      defaultMessage: '變更訂單',
     },
     selectOrderProducts: {
       id: 'sale.SaleCollectionExpandRow.selectOrderProducts',
-      defaultMessage: '選擇商品',
+      defaultMessage: 'Select products',
     },
     selectOrderDiscounts: {
       id: 'sale.SaleCollectionExpandRow.selectOrderDiscounts',
-      defaultMessage: '選擇折扣',
+      defaultMessage: 'Select discounts',
     },
     selectPaymentLog: {
       id: 'sale.SaleCollectionExpandRow.selectPaymentLog',
-      defaultMessage: '選擇付款紀錄',
+      defaultMessage: 'Select payment logs',
     },
     createPaymentLog: {
       id: 'sale.SaleCollectionExpandRow.createPaymentLog',
-      defaultMessage: '建立付款紀錄',
+      defaultMessage: 'Create payment log',
     },
     childOrderCreated: {
       id: 'sale.SaleCollectionExpandRow.childOrderCreated',
-      defaultMessage: '子訂單建立成功',
+      defaultMessage: '訂單變更成功',
     },
     addOrderProduct: {
       id: 'sale.SaleCollectionExpandRow.addOrderProduct',
-      defaultMessage: '新增商品',
+      defaultMessage: 'Add product',
     },
     editOrderProduct: {
       id: 'sale.SaleCollectionExpandRow.editOrderProduct',
-      defaultMessage: '編輯商品',
+      defaultMessage: 'Edit product',
     },
     deleteOrderProduct: {
       id: 'sale.SaleCollectionExpandRow.deleteOrderProduct',
-      defaultMessage: '刪除商品',
+      defaultMessage: 'Delete product',
     },
     addOrderDiscount: {
       id: 'sale.SaleCollectionExpandRow.addOrderDiscount',
-      defaultMessage: '新增折扣',
+      defaultMessage: 'Add discount',
     },
     editOrderDiscount: {
       id: 'sale.SaleCollectionExpandRow.editOrderDiscount',
-      defaultMessage: '編輯折扣',
+      defaultMessage: 'Edit discount',
     },
     deleteOrderDiscount: {
       id: 'sale.SaleCollectionExpandRow.deleteOrderDiscount',
-      defaultMessage: '刪除折扣',
+      defaultMessage: 'Delete discount',
     },
     addPaymentLog: {
       id: 'sale.SaleCollectionExpandRow.addPaymentLog',
-      defaultMessage: '新增付款紀錄',
+      defaultMessage: 'Add payment log',
     },
     editPaymentLog: {
       id: 'sale.SaleCollectionExpandRow.editPaymentLog',
-      defaultMessage: '編輯付款紀錄',
+      defaultMessage: 'Edit payment log',
     },
     deletePaymentLog: {
       id: 'sale.SaleCollectionExpandRow.deletePaymentLog',
-      defaultMessage: '刪除付款紀錄',
+      defaultMessage: 'Delete payment log',
     },
     productName: {
       id: 'sale.SaleCollectionExpandRow.productName',
-      defaultMessage: '商品名稱',
+      defaultMessage: 'Product name',
     },
     productPrice: {
       id: 'sale.SaleCollectionExpandRow.productPrice',
-      defaultMessage: '商品價格',
+      defaultMessage: 'Product price',
     },
     productQuantity: {
       id: 'sale.SaleCollectionExpandRow.productQuantity',
-      defaultMessage: '數量',
+      defaultMessage: 'Quantity',
     },
     discountName: {
       id: 'sale.SaleCollectionExpandRow.discountName',
-      defaultMessage: '折扣名稱',
+      defaultMessage: 'Discount name',
     },
     discountPrice: {
       id: 'sale.SaleCollectionExpandRow.discountPrice',
-      defaultMessage: '折扣金額',
+      defaultMessage: 'Discount amount',
     },
     discountType: {
       id: 'sale.SaleCollectionExpandRow.discountType',
-      defaultMessage: '折扣類型',
+      defaultMessage: 'Discount type',
     },
     paymentAmount: {
       id: 'sale.SaleCollectionExpandRow.paymentAmount',
-      defaultMessage: '付款金額',
+      defaultMessage: 'Payment amount',
     },
     paymentStatus: {
       id: 'sale.SaleCollectionExpandRow.paymentStatus',
-      defaultMessage: '付款狀態',
+      defaultMessage: 'Payment status',
     },
     paymentGatewayLabel: {
       id: 'sale.SaleCollectionExpandRow.paymentGatewayLabel',
-      defaultMessage: '付款渠道',
+      defaultMessage: 'Payment gateway',
     },
     paymentMethodLabel: {
       id: 'sale.SaleCollectionExpandRow.paymentMethodLabel',
-      defaultMessage: '付款方式',
+      defaultMessage: 'Payment method',
     },
   }),
   OrderDetailDrawer: defineMessages({

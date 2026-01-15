@@ -24,6 +24,7 @@ import { PaymentCompany } from '../../pages/NewMemberContractCreationPage/Member
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
+import CreateSubOrderModal from './CreateSubOrderModal'
 import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderDetailDrawer from './OrderDetailDrawer'
 import { OrderLogColumn } from './SaleCollectionAdminCard'
@@ -571,6 +572,24 @@ const SaleCollectionExpandRow = ({
           >
             複製付款連結
           </Button>
+        )}
+        {orderLog.memberId && (
+          <CreateSubOrderModal
+            parentOrderId={orderLogId}
+            orderProducts={orderProducts}
+            orderDiscounts={orderDiscounts}
+            paymentLogs={paymentLogs}
+            memberId={orderLog.memberId}
+            onRefetch={() => {
+              onRefetchOrderLog?.()
+              refetchOrderLogExpandRow()
+            }}
+            renderTrigger={({ setVisible }) => (
+              <Button size="middle" className="ml-2" onClick={() => setVisible(true)}>
+                {formatMessage(saleMessages.SaleCollectionExpandRow.createChildOrder)}
+              </Button>
+            )}
+          />
         )}
         <AdminModal
           visible={!!issueInvoiceResults}
@@ -1156,7 +1175,7 @@ const DiscountCode: React.VFC<{ type: 'Coupon' | 'Voucher'; target: string }> = 
 
   useEffect(() => {
     getDiscountCode(apolloClient, type, target).then(setCode)
-  }, [type, target])
+  }, [apolloClient, type, target])
 
   return code ? <> - {code}</> : <></>
 }
