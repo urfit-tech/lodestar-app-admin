@@ -4,8 +4,6 @@ import hasura from '../hasura'
 import { sum, uniq } from 'ramda'
 import { OrderLog } from '../types/general'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useUserPermissionGroupMembers } from '../hooks/permission'
-import { useMemo } from 'react'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -89,7 +87,6 @@ export const useOrderLogPreviewCollection = (
           shipping
           member_id
           options
-          parent_order_id
         }
       }
     `,
@@ -216,170 +213,18 @@ export const useOrderLogPreviewCollection = (
     { variables: { orderIdList } },
   )
 
-  type OrderLogPreview = Pick<
+  const orderLogPreviewCollection: Pick<
     OrderLog,
-    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options' | 'parentOrderId'
-  >
-
-  const orderLogPreviewCollection: OrderLogPreview[] = useMemo(
-    () =>
-      orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
-        const productPrice = sum(
-          orderProductsByOrderIdListData?.order_product
-            .filter(orderProduct => orderProduct.order_id === orderLogPreview.id)
-            .map(orderProduct => orderProduct.price) || [],
-        )
-        const discountPrice = sum(
-          orderDiscountsByOrderIdListData?.order_discount
-            .filter(orderDiscount => orderDiscount.order_id === orderLogPreview.id)
-            .map(orderDiscount => orderDiscount.price) || [],
-        )
-        const shippingFee = orderLogPreview.shipping?.fee || 0
-
-        return {
-          id: orderLogPreview.id,
-          createdAt: orderLogPreview.created_at,
-          status: orderLogPreview.status,
-          name: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.name || '',
-          email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
-          shipping: orderLogPreview.shipping,
-          totalPrice: Math.max(productPrice - discountPrice + shippingFee),
-          options: orderLogPreview.options,
-          parentOrderId: orderLogPreview.parent_order_id || null,
-        }
-      }) || [],
-    [
-      orderLogPreviewCollectionData?.order_log,
-      orderProductsByOrderIdListData?.order_product,
-      orderDiscountsByOrderIdListData?.order_discount,
-      orderLogsMemberData?.member,
-    ],
-  )
-
-  const existingOrderIds = new Set(orderLogPreviewCollectionData?.order_log?.map(order => order.id) || [])
-  const parentOrderIds = new Set(
-    orderLogPreviewCollectionData?.order_log
-      ?.filter(order => order.parent_order_id)
-      .map(order => order.parent_order_id!) || [],
-  )
-  const missingParentOrderIds = Array.from(parentOrderIds).filter(parentId => !existingOrderIds.has(parentId))
-
-  // 查詢缺失的父訂單
-  const { data: missingParentOrdersData } = useQuery<
-    hasura.GetOrderLogPreviewCollection,
-    hasura.GetOrderLogPreviewCollectionVariables
-  >(
-    gql`
-      query GetOrderLogPreviewCollection($condition: order_log_bool_exp, $limit: Int) {
-        order_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
-          id
-          created_at
-          status
-          shipping
-          member_id
-          options
-          parent_order_id
-        }
-      }
-    `,
-    {
-      variables: {
-        condition: {
-          id: { _in: missingParentOrderIds },
-        },
-      },
-      skip: missingParentOrderIds.length === 0,
-    },
-  )
-
-  // 查詢缺失父訂單的 member 資料
-  const missingParentMemberIds = uniq(missingParentOrdersData?.order_log?.map(order => order.member_id) || [])
-
-  const { data: missingParentMembersData } = useQuery<hasura.GetOrderLogsMember, hasura.GetOrderLogsMemberVariables>(
-    gql`
-      query GetOrderLogsMember($memberIds: [String!]) {
-        member(where: { id: { _in: $memberIds } }) {
-          id
-          name
-          email
-        }
-      }
-    `,
-    {
-      variables: { memberIds: missingParentMemberIds },
-      skip: missingParentMemberIds.length === 0,
-    },
-  )
-
-  // 查詢缺失父訂單的 order_product 資料
-  const { data: missingParentOrderProductsData } = useQuery<
-    hasura.GetOrderProductsByOrderIdList,
-    hasura.GetOrderProductsByOrderIdListVariables
-  >(
-    gql`
-      query GetOrderProductsByOrderIdList($orderIdList: [String!]) {
-        order_product(where: { order_id: { _in: $orderIdList } }) {
-          id
-          order_id
-          price
-        }
-      }
-    `,
-    {
-      variables: { orderIdList: missingParentOrderIds },
-      skip: missingParentOrderIds.length === 0,
-    },
-  )
-
-  // 查詢缺失父訂單的 order_discount 資料
-  const { data: missingParentOrderDiscountsData } = useQuery<
-    hasura.GetOrderDiscountsByOrderIdList,
-    hasura.GetOrderDiscountsByOrderIdListVariables
-  >(
-    gql`
-      query GetOrderDiscountsByOrderIdList($orderIdList: [String!]) {
-        order_discount(where: { order_id: { _in: $orderIdList } }) {
-          id
-          order_id
-          price
-        }
-      }
-    `,
-    {
-      variables: { orderIdList: missingParentOrderIds },
-      skip: missingParentOrderIds.length === 0,
-    },
-  )
-
-  // 合併缺失的父訂單到 orderLogPreviewCollection
-  const mergedOrderLogPreviewCollection: OrderLogPreview[] = useMemo(() => {
-    if (!missingParentOrdersData?.order_log?.length) {
-      return orderLogPreviewCollection
-    }
-
-    // 合併所有 member 資料
-    const allMembers = [...(orderLogsMemberData?.member || []), ...(missingParentMembersData?.member || [])]
-
-    // 合併所有 order_product 資料
-    const allOrderProducts = [
-      ...(orderProductsByOrderIdListData?.order_product || []),
-      ...(missingParentOrderProductsData?.order_product || []),
-    ]
-
-    // 合併所有 order_discount 資料
-    const allOrderDiscounts = [
-      ...(orderDiscountsByOrderIdListData?.order_discount || []),
-      ...(missingParentOrderDiscountsData?.order_discount || []),
-    ]
-
-    const missingParentOrders: OrderLogPreview[] = missingParentOrdersData.order_log.map(orderLogPreview => {
+    'id' | 'createdAt' | 'status' | 'name' | 'email' | 'shipping' | 'totalPrice' | 'options'
+  >[] =
+    orderLogPreviewCollectionData?.order_log.map(orderLogPreview => {
       const productPrice = sum(
-        allOrderProducts
+        orderProductsByOrderIdListData?.order_product
           .filter(orderProduct => orderProduct.order_id === orderLogPreview.id)
           .map(orderProduct => orderProduct.price) || [],
       )
       const discountPrice = sum(
-        allOrderDiscounts
+        orderDiscountsByOrderIdListData?.order_discount
           .filter(orderDiscount => orderDiscount.order_id === orderLogPreview.id)
           .map(orderDiscount => orderDiscount.price) || [],
       )
@@ -389,50 +234,13 @@ export const useOrderLogPreviewCollection = (
         id: orderLogPreview.id,
         createdAt: orderLogPreview.created_at,
         status: orderLogPreview.status,
-        name: allMembers.find(v => v.id === orderLogPreview.member_id)?.name || '',
-        email: allMembers.find(v => v.id === orderLogPreview.member_id)?.email || '',
+        name: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.name || '',
+        email: orderLogsMemberData?.member.find(v => v.id === orderLogPreview.member_id)?.email || '',
         shipping: orderLogPreview.shipping,
         totalPrice: Math.max(productPrice - discountPrice + shippingFee),
         options: orderLogPreview.options,
-        parentOrderId: orderLogPreview.parent_order_id || null,
       }
-    })
-
-    // 合併現有訂單和缺失的父訂單，避免重複
-    const existingIds = new Set(orderLogPreviewCollection.map(order => order.id))
-    const newOrders = missingParentOrders.filter(order => !existingIds.has(order.id))
-
-    return [...orderLogPreviewCollection, ...newOrders]
-  }, [
-    orderLogPreviewCollection,
-    missingParentOrdersData?.order_log,
-    orderProductsByOrderIdListData?.order_product,
-    orderDiscountsByOrderIdListData?.order_discount,
-    orderLogsMemberData?.member,
-    missingParentMembersData?.member,
-    missingParentOrderProductsData?.order_product,
-    missingParentOrderDiscountsData?.order_discount,
-  ])
-
-  // 組織數據：分離父訂單和子訂單
-  const { parentOrders, childOrdersMap } = useMemo(() => {
-    const parents = mergedOrderLogPreviewCollection.filter(order => !order.parentOrderId)
-    const childMap = new Map<string, OrderLogPreview[]>()
-
-    mergedOrderLogPreviewCollection.forEach(order => {
-      if (order.parentOrderId) {
-        if (!childMap.has(order.parentOrderId)) {
-          childMap.set(order.parentOrderId, [])
-        }
-        childMap.get(order.parentOrderId)!.push(order)
-      }
-    })
-
-    return {
-      parentOrders: parents,
-      childOrdersMap: childMap,
-    }
-  }, [mergedOrderLogPreviewCollection])
+    }) || []
 
   return {
     totalCount,
@@ -447,8 +255,6 @@ export const useOrderLogPreviewCollection = (
     errorOrderProductsByOrderIdList,
     errorOrderDiscountsByOrderIdList,
     orderLogPreviewCollection,
-    parentOrders,
-    childOrdersMap,
     refetchOrderLogPreviewCollection,
     refetchOrderLogAggregate,
     refetchOrderLogsMember,
@@ -469,7 +275,6 @@ export const useOrderLogExpandRow = (orderId: string) => {
       query GetExpandRowOrderLog($orderId: String!) {
         order_log_by_pk(id: $orderId) {
           id
-          member_id
           expired_at
           shipping
           invoice_options
@@ -494,7 +299,6 @@ export const useOrderLogExpandRow = (orderId: string) => {
       query GetExpandRowOrderProduct($orderId: String) {
         order_product(where: { order_id: { _eq: $orderId } }) {
           id
-          product_id
           delivered_at
           name
           started_at
@@ -600,7 +404,6 @@ export const useOrderLogExpandRow = (orderId: string) => {
 
   const orderLog = {
     id: expandRowOrderLog?.order_log_by_pk?.id,
-    memberId: expandRowOrderLog?.order_log_by_pk?.member_id,
     expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
     shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
     invoiceOptions: expandRowOrderLog?.order_log_by_pk?.invoice_options,
@@ -611,7 +414,6 @@ export const useOrderLogExpandRow = (orderId: string) => {
   const orderProducts =
     expandRowOrderProduct?.order_product.map(v => ({
       id: v.id,
-      productId: v.product_id,
       type: v.product.type,
       deliveredAt: v.delivered_at,
       name: v.name,

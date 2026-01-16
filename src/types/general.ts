@@ -103,7 +103,6 @@ export type OrderLog = {
   }
   invoiceOptions?: InvoiceProps
   invoiceIssuedAt?: Date
-  parentOrderId?: string | null
 }
 
 export type PaymentLog = {

@@ -2,115 +2,115 @@ import { defineMessages } from 'react-intl'
 
 const voucherMessages = {
   '*': defineMessages({
-    cancel: { id: 'voucher.*.cancel', defaultMessage: 'Cancel' },
-    confirm: { id: 'voucher.*.confirm', defaultMessage: 'Confirm' },
-    isRequired: { id: 'voucher.*.isRequired', defaultMessage: 'Please enter {field}' },
+    cancel: { id: 'voucher.*.cancel', defaultMessage: '取消' },
+    confirm: { id: 'voucher.*.confirm', defaultMessage: '確定' },
+    isRequired: { id: 'voucher.*.isRequired', defaultMessage: '請輸入{field}' },
   }),
   VoucherPlanCard: defineMessages({
-    fromNow: { id: 'voucher.VoucherPlanCard.fromNow', defaultMessage: 'From now' },
-    forever: { id: 'voucher.VoucherPlanCard.forever', defaultMessage: 'No expiration' },
+    fromNow: { id: 'voucher.VoucherPlanCard.fromNow', defaultMessage: '即日起' },
+    forever: { id: 'voucher.VoucherPlanCard.forever', defaultMessage: '無使用期限' },
     exchangeItemsNumber: {
       id: 'voucher.VoucherPlanCard.exchangeItemsNumber',
-      defaultMessage: 'Can exchange {number} items',
+      defaultMessage: '可兌換 {number} 個項目',
     },
     exchangedCount: {
       id: 'voucher.VoucherPlanCard.exchangedCount',
-      defaultMessage: '{exchanged}/{total} vouchers',
+      defaultMessage: '{exchanged}/{total} 張',
     },
     pinCode: {
       id: 'voucher.VoucherPlanCard.pinCode',
-      defaultMessage: 'PIN code: {pinCode}',
+      defaultMessage: 'PIN碼：{pinCode}',
     },
   }),
   VoucherPlanAdminModal: defineMessages({
     amount: {
       id: 'voucher.VoucherPlanAdminModal.amount',
-      defaultMessage: 'vouchers',
+      defaultMessage: '張',
     },
     price: {
       id: 'voucher.VoucherPlanAdminModal.price',
-      defaultMessage: 'dollar',
+      defaultMessage: '元',
     },
-    voucherCodes: { id: 'voucher.VoucherPlanAdminModal.voucherCodes', defaultMessage: 'Voucher codes' },
-    voucherCategory: { id: 'voucher.VoucherPlanAdminModal.VoucherCategory', defaultMessage: 'Voucher category' },
+    voucherCodes: { id: 'voucher.VoucherPlanAdminModal.voucherCodes', defaultMessage: '兌換碼' },
+    voucherCategory: { id: 'voucher.VoucherPlanAdminModal.VoucherCategory', defaultMessage: '兌換分類' },
     errorVoucherCodes: {
       id: 'voucher.VoucherPlanAdminModal.errorVoucherCodes',
-      defaultMessage: 'At least one voucher code',
+      defaultMessage: '至少一組兌換碼',
     },
     voucherPlanTitle: {
       id: 'voucher.VoucherPlanAdminModal.voucherPlanTitle',
-      defaultMessage: 'Voucher plan name',
+      defaultMessage: '兌換方案名稱',
     },
     exchangeItemsAmount: {
       id: 'voucher.VoucherPlanAdminModal.exchangeItemsAmount',
-      defaultMessage: 'Exchange items amount',
+      defaultMessage: '兌換項目數量',
     },
     errorExchangeItemsAmount: {
       id: 'voucher.VoucherPlanAdminModal.errorExchangeItemsAmount',
-      defaultMessage: 'Amount must be at least 1',
+      defaultMessage: '數量至少為 1',
     },
     exchangeItems: {
       id: 'voucher.VoucherPlanAdminModal.exchangeItems',
-      defaultMessage: 'Exchange items',
+      defaultMessage: '兌換項目',
     },
     errorExchangeItems: {
       id: 'voucher.VoucherPlanAdminModal.errorExchangeItems',
-      defaultMessage: 'Select at least one exchange item',
+      defaultMessage: '至少選一個兌換項目',
     },
     isTransferable: {
       id: 'voucher.VoucherPlanAdminModal.isTransferable',
-      defaultMessage: 'Allow users to transfer',
+      defaultMessage: '允許用戶自行轉贈',
     },
     isSaleable: {
       id: 'voucher.VoucherPlanAdminModal.isSaleable',
-      defaultMessage: 'Saleable (per unit)',
+      defaultMessage: '可銷售（每份）',
     },
     successfullySaved: {
       id: 'voucher.VoucherPlanAdminModal.successfullySaved',
-      defaultMessage: 'Saved successfully',
+      defaultMessage: '儲存成功',
     },
     successfullyCreated: {
       id: 'voucher.VoucherPlanAdminModal.successfullyCreated',
-      defaultMessage: 'Created successfully',
+      defaultMessage: '建立成功',
     },
     duplicateVoucherCode: {
       id: 'voucher.VoucherPlanAdminModal.duplicateVoucherCode',
-      defaultMessage: 'This voucher code has been used',
+      defaultMessage: '該兌換碼已被使用',
     },
     availableDateRange: {
       id: 'voucher.VoucherPlanAdminModal.availableDateRange',
-      defaultMessage: 'Validity period',
+      defaultMessage: '有效期限',
     },
-    startedAt: { id: 'voucher.VoucherPlanAdminModal.startedAt', defaultMessage: 'Start time' },
-    endedAt: { id: 'voucher.VoucherPlanAdminModal.endedAt', defaultMessage: 'End time' },
+    startedAt: { id: 'voucher.VoucherPlanAdminModal.startedAt', defaultMessage: '開始時間' },
+    endedAt: { id: 'voucher.VoucherPlanAdminModal.endedAt', defaultMessage: '結束時間' },
     description: {
       id: 'voucher.VoucherPlanAdminModal.description',
-      defaultMessage: 'Usage restrictions and description',
+      defaultMessage: '使用限制與描述',
     },
-    optional: { id: 'voucher.VoucherPlanAdminModal.optional', defaultMessage: 'Optional' },
+    optional: { id: 'voucher.VoucherPlanAdminModal.optional', defaultMessage: '非必填' },
     exchangePinCode: {
       id: 'voucher.VoucherPlanAdminModal.exchangePinCode',
-      defaultMessage: 'Require PIN code to exchange',
+      defaultMessage: '需使用 PIN 碼兌換',
     },
     pinCodePlaceholder: {
       id: 'voucher.VoucherPlanAdminModal.pinCodePlaceholder',
-      defaultMessage: 'Please set 4-6 digit number',
+      defaultMessage: '請設定 4 - 6 碼數字',
     },
     exchangeBonusCoins: {
       id: 'voucher.VoucherPlanAdminModal.exchangeBonusCoins',
-      defaultMessage: 'Bonus coins after exchange',
+      defaultMessage: '兌換完成加贈代幣',
     },
     bonusCoinAmount: {
       id: 'voucher.VoucherPlanAdminModal.bonusCoinAmount',
-      defaultMessage: 'Bonus amount',
+      defaultMessage: '加贈數量',
     },
     bonusCoinsEndedAt: {
       id: 'voucher.VoucherPlanAdminModal.bonusCoinsEndedAt',
-      defaultMessage: 'Validity period',
+      defaultMessage: '有效期限',
     },
     bonusCoinsPlaceholder: {
       id: 'voucher.VoucherPlanAdminModal.bonusCoinsPlaceholder',
-      defaultMessage: 'Bonus coins cannot be 0',
+      defaultMessage: '加贈代幣不可為0',
     },
   }),
 }

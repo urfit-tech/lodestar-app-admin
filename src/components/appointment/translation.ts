@@ -2,101 +2,101 @@ import { defineMessages } from 'react-intl'
 
 const appointmentMessages = {
   '*': defineMessages({
-    detail: { id: 'appointmentMessages.*.detail', defaultMessage: 'Details' },
-    appointmentIssueAndResult: { id: 'appointmentMessages.*.appointmentIssueAndResult', defaultMessage: 'Question record form' },
+    detail: { id: 'appointmentMessages.*.detail', defaultMessage: '詳情' },
+    appointmentIssueAndResult: { id: 'appointmentMessages.*.appointmentIssueAndResult', defaultMessage: '提問紀錄單' },
     appointmentConfigureMeetingRoom: {
       id: 'appointmentMessages.*.appointmentConfigureMeetingRoom',
       defaultMessage: 'Configure a meeting room',
     },
     fetchDataError: {
       id: 'appointmentMessages.*.fetchDataError',
-      defaultMessage: 'Load error',
+      defaultMessage: '讀取錯誤',
     },
-    create: { id: 'appointmentMessages.*.create', defaultMessage: 'Create' },
-    cancel: { id: 'appointmentMessages.*.cancel', defaultMessage: 'Cancel' },
+    create: { id: 'appointmentMessages.*.create', defaultMessage: '建立' },
+    cancel: { id: 'appointmentMessages.*.cancel', defaultMessage: '取消' },
   }),
   AppointmentPeriodCard: defineMessages({
     meetingLinkNotSet: {
       id: 'appointmentMessages.AppointmentPeriodCard.meetingLinkNotSet',
-      defaultMessage: 'Meeting link not set',
+      defaultMessage: '尚未設定會議連結',
     },
-    finished: { id: 'appointmentMessages.AppointmentPeriodCard.finished', defaultMessage: 'Finished' },
+    finished: { id: 'appointmentMessages.AppointmentPeriodCard.finished', defaultMessage: '已結束' },
     appointmentText: {
       id: 'appointment.AppointmentPeriodCard.appointmentText',
       defaultMessage: '{name} 已預約你的「{title}」',
     },
-    addToCalendar: { id: 'appointment.AppointmentPeriodCard.addToCalendar', defaultMessage: 'Add to calendar' },
-    joinMeeting: { id: 'appointment.AppointmentPeriodCard.joinMeeting', defaultMessage: 'Join meeting' },
+    addToCalendar: { id: 'appointment.AppointmentPeriodCard.addToCalendar', defaultMessage: '加入行事曆' },
+    joinMeeting: { id: 'appointment.AppointmentPeriodCard.joinMeeting', defaultMessage: '進入會議' },
     appointmentCanceledAt: {
       id: 'appointment.AppointmentPeriodCard.appointmentCanceledAt',
-      defaultMessage: 'Appointment cancelled at {time}',
+      defaultMessage: '已於 {time} 取消預約',
     },
     periodDurationAtMost: {
       id: 'appointment.AppointmentPeriodCard.periodDurationAtMost',
-      defaultMessage: 'Consultation limited to {duration} minutes per session',
+      defaultMessage: '諮詢一次 {duration} 分鐘為限',
     },
-    cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: 'Cancel appointment' },
+    cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: '取消預約' },
     rescheduleAppointment: {
       id: 'appointment.AppointmentPeriodCard.rescheduleAppointment',
-      defaultMessage: 'Reschedule',
+      defaultMessage: '更換時段',
     },
     notRescheduleAppointmentPeriod: {
       id: 'appointment.AppointmentPeriodCard.notRescheduleAppointmentPeriod',
-      defaultMessage: 'No available time slots to reschedule',
+      defaultMessage: '無可更換的時段',
     },
     rescheduleOriginScheduled: {
       id: 'appointment.AppointmentPeriodCard.rescheduleOriginScheduled',
-      defaultMessage: 'Original time slot',
+      defaultMessage: '原時段',
     },
     rescheduled: {
       id: 'appointment.AppointmentPeriodCard.rescheduled',
-      defaultMessage: 'Rescheduled to:',
+      defaultMessage: '更換為：',
     },
     rescheduleSuccess: {
       id: 'appointment.AppointmentPeriodCard.rescheduleSuccess',
-      defaultMessage: 'Rescheduled successfully',
+      defaultMessage: '更換成功',
     },
     rescheduleSuccessAppointmentPlanTitle: {
       id: 'appointment.AppointmentPeriodCard.rescheduleSuccessAppointmentPlanTitle',
-      defaultMessage: '{title} has been rescheduled to',
+      defaultMessage: '{title} 已更換時段為',
     },
     rescheduleAppointmentPlanTitle: {
       id: 'appointment.AppointmentPeriodCard.rescheduleAppointmentPlanTitle',
-      defaultMessage: 'Reschedule: {title}',
+      defaultMessage: '更換時段：{title}',
     },
-    rescheduleConfirm: { id: 'appointment.AppointmentPeriodCard.rescheduleConfirm', defaultMessage: 'Confirm reschedule' },
-    rescheduleCancel: { id: 'appointment.AppointmentPeriodCard.rescheduleCancel', defaultMessage: 'Reselect time slot' },
-    confirm: { id: 'appointment.AppointmentPeriodCard.confirm', defaultMessage: 'OK' },
+    rescheduleConfirm: { id: 'appointment.AppointmentPeriodCard.rescheduleConfirm', defaultMessage: '確定更換' },
+    rescheduleCancel: { id: 'appointment.AppointmentPeriodCard.rescheduleCancel', defaultMessage: '重選時段' },
+    confirm: { id: 'appointment.AppointmentPeriodCard.confirm', defaultMessage: '好' },
     notYetConfigured: {
       id: 'appointment.AppointmentPeriodCard.notYetConfigured',
       defaultMessage: 'not yet configured',
     },
     downloadMeetingRecord: {
       id: 'appointment.AppointmentPeriodCard.downloadMeetingRecord',
-      defaultMessage: 'Download recording',
+      defaultMessage: '下載錄影',
     },
   }),
   AppointmentDetailModal: defineMessages({
-    email: { id: 'appointmentMessages.AppointmentDetailModal.email', defaultMessage: 'Email' },
-    phone: { id: 'appointmentMessages.AppointmentDetailModal.phone', defaultMessage: 'Phone' },
+    email: { id: 'appointmentMessages.AppointmentDetailModal.email', defaultMessage: '信箱' },
+    phone: { id: 'appointmentMessages.AppointmentDetailModal.phone', defaultMessage: '電話' },
     orderUpdatedTime: {
       id: 'appointmentMessages.AppointmentDetailModal.orderUpdatedTime',
-      defaultMessage: 'Order updated date',
+      defaultMessage: '訂單更新日期',
     },
-    canceledReason: { id: 'appointmentMessages.AppointmentDetailModal.canceledReason', defaultMessage: 'Cancellation reason' },
+    canceledReason: { id: 'appointmentMessages.AppointmentDetailModal.canceledReason', defaultMessage: '取消原因' },
   }),
   AppointmentIssueAndResultModal: defineMessages({
     appointmentIssue: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentIssue',
-      defaultMessage: 'Student question',
+      defaultMessage: '學員提問',
     },
     appointmentDate: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentDate',
-      defaultMessage: 'Consultation date',
+      defaultMessage: '諮詢日期',
     },
     appointmentResult: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentResult',
-      defaultMessage: 'Consultation key points record',
+      defaultMessage: '諮詢重點紀錄',
     },
     appointmentResultNotation: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentResultNotation',

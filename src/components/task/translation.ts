@@ -4,19 +4,19 @@ const taskMessages = {
   MemberTaskAdminModal: defineMessages({
     executorNotAvailable: {
       id: 'task.MemberTaskAdminModal.executorNotAvailable',
-      defaultMessage: 'This executor cannot be assigned during this time period',
+      defaultMessage: '此時段不可指派此執行人員',
     },
     memberNotAvailable: {
       id: 'task.MemberTaskAdminModal.memberNotAvailable',
-      defaultMessage: 'This member cannot be assigned during this time period',
+      defaultMessage: '此時段不可指派此學員',
     },
   }),
 
   MemberTaskAdminBlock: defineMessages({
-    switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: 'Switch to calendar mode' },
-    switchTable: { id: 'member.ui.switchTable', defaultMessage: 'Switch to list mode' },
-    executor: { id: 'member.label.executor', defaultMessage: 'Executor' },
-    author: { id: 'member.label.author', defaultMessage: 'Creator' },
+    switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
+    switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
+    executor: { id: 'member.label.executor', defaultMessage: '執行者' },
+    author: { id: 'member.label.author', defaultMessage: '建立者' },
     group: { id: 'member.label.group', defaultMessage: 'Group' },
   }),
 

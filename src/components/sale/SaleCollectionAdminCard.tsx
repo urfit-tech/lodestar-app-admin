@@ -24,8 +24,6 @@ export type OrderLogColumn = {
   status: string
   totalPrice: number
   options?: any
-  parentOrderId?: string | null
-  children?: OrderLogColumn[]
 }
 
 const StyledContainer = styled.div`
@@ -77,8 +75,7 @@ const SaleCollectionAdminCard: React.VFC<{
     loadingOrderLogsMember,
     loadingOrderProductsByOrderIdList,
     loadingOrderDiscountsByOrderIdList,
-    parentOrders,
-    childOrdersMap,
+    orderLogPreviewCollection,
     refetchOrderLogPreviewCollection,
     refetchOrderLogAggregate,
     loadMoreOrderLogPreviewCollection,
@@ -270,19 +267,11 @@ const SaleCollectionAdminCard: React.VFC<{
             loadingOrderProductsByOrderIdList ||
             loadingOrderDiscountsByOrderIdList
           }
-          dataSource={parentOrders}
+          dataSource={orderLogPreviewCollection}
           columns={columns}
-          expandedRowRender={(record: OrderLogColumn) => {
-            const childOrders = childOrdersMap.get(record.id) || []
-            return (
-              <SaleCollectionExpandRow
-                record={record}
-                onRefetchOrderLog={refetchOrderLogPreviewCollection}
-                childOrders={childOrders}
-                columns={columns}
-              />
-            )
-          }}
+          expandedRowRender={(record: OrderLogColumn) => (
+            <SaleCollectionExpandRow record={record} onRefetchOrderLog={refetchOrderLogPreviewCollection} />
+          )}
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />

@@ -2,10 +2,10 @@ import { defineMessages } from 'react-intl'
 
 const commonMessages = {
   '*': defineMessages({
-    save: { id: 'common.*.save', defaultMessage: 'Save' },
-    cancel: { id: 'common.*.cancel', defaultMessage: 'Cancel' },
-    confirm: { id: 'common.*.confirm', defaultMessage: 'Confirm' },
-    successfullySaved: { id: 'common.*.successfullySaved', defaultMessage: 'Saved successfully' },
+    save: { id: 'common.*.save', defaultMessage: '存檔' },
+    cancel: { id: 'common.*.cancel', defaultMessage: '取消' },
+    confirm: { id: 'common.*.confirm', defaultMessage: '確定' },
+    successfullySaved: { id: 'common.*.successfullySaved', defaultMessage: '儲存成功' },
   }),
   MetaProductDeletionBlock: defineMessages({
     delete: {
@@ -22,69 +22,69 @@ const commonMessages = {
     },
     deleteProduct: {
       id: 'common.MetaProductDeletionBlock.deleteProduct',
-      defaultMessage: 'Delete {metaProduct}',
+      defaultMessage: '刪除{metaProduct}',
     },
     deleteConfirmation: {
       id: 'common.MetaProductDeletionBlock.deleteConfirmation',
-      defaultMessage: '{metaProduct} cannot be recovered once deleted. Are you sure you want to delete it?',
+      defaultMessage: '{metaProduct}一經刪除即不可恢復，確定要刪除嗎？',
     },
     deleteProductWarning: {
       id: 'common.MetaProductDeletionBlock.deleteProductWarning',
-      defaultMessage: 'Please carefully confirm whether you really want to delete {metaProduct}, as it cannot be recovered once deleted.',
+      defaultMessage: '請仔細確認是否真的要刪除{metaProduct}，因為一旦刪除就無法恢復。',
     },
   }),
   ProductSkuModal: defineMessages({
     channelSkuDuplicated: {
       id: 'common.ProductSkuModal.channelSkuDuplicated',
-      defaultMessage: 'Channel SKU is duplicated, please reset',
+      defaultMessage: '通路料號重複，請重新設定',
     },
     productChannelSkuDuplicated: {
       id: 'common.ProductSkuModal.productChannelSkuDuplicated',
-      defaultMessage: 'Channel SKU {channelSku} is duplicated with "{productName}", please reset',
+      defaultMessage: '通路料號 {channelSku} 與「{productName}」重複，請重新設定',
     },
     productChannelUpdateError: {
       id: 'common.ProductSkuModal.productChannelUpdateError',
-      defaultMessage: 'Error occurred while updating channel SKU, please reset.',
+      defaultMessage: '更新通路料號發生錯誤，請重新設定。',
     },
   }),
   UnAuthCover: defineMessages({
-    unAuth: { id: 'common.UnAuthCover.unAuth', defaultMessage: 'No permission' },
+    unAuth: { id: 'common.UnAuthCover.unAuth', defaultMessage: '無此權限' },
   }),
   ManagerInput: defineMessages({
     loadError: {
       id: 'common.ManagerInput.loadError',
-      defaultMessage: 'Load error',
+      defaultMessage: '讀取錯誤',
     },
   }),
   SalesMemberInput: defineMessages({
     loadError: {
       id: 'common.SalesMemberInput.loadError',
-      defaultMessage: 'Load error',
+      defaultMessage: '讀取錯誤',
     },
   }),
   SharingCode: defineMessages({
-    title: { id: 'common.SharingCode.title', defaultMessage: 'Promotion URL' },
+    title: { id: 'common.SharingCode.title', defaultMessage: '推廣網址' },
     description: {
       id: 'common.SharingCode.description',
       defaultMessage:
-        '1. When students purchase through the "Promotion URL" you set, the order will be marked as ordered through the promotion URL.\n2. Deleting or modifying will directly replace and invalidate the original URL. Therefore, after the URL is publicly promoted, it is not recommended to delete or modify it again.',
+        '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
     },
-    code: { id: 'common.SharingCode.code', defaultMessage: 'Set URL' },
+    code: { id: 'common.SharingCode.code', defaultMessage: '設定網址' },
     codeIsRequired: {
       id: 'common.SharingCode.code.IsRequired',
-      defaultMessage: 'URL is not filled in',
+      defaultMessage: '未填寫設定網址',
     },
     codeDuplicated: {
       id: 'common.SharingCode.Duplicated',
-      defaultMessage: 'Promotion URL cannot be duplicated',
+      defaultMessage: '推廣網址不可重複',
     },
-    note: { id: 'common.SharingCode.note', defaultMessage: 'Usage note' },
+    note: { id: 'common.SharingCode.note', defaultMessage: '用途備註' },
     copiedToClipboard: {
       id: 'common.SharingCode.copiedToClipboard',
-      defaultMessage: 'Copied to clipboard',
+      defaultMessage: '已複製到剪貼簿',
     },
-    copy: { id: 'common.SharingCode.copy', defaultMessage: 'Copy' },
-    addUrl: { id: 'common.SharingCode.addUrl', defaultMessage: 'Add URL' },
+    copy: { id: 'common.SharingCode.copy', defaultMessage: '複製' },
+    addUrl: { id: 'common.SharingCode.addUrl', defaultMessage: '新增網址' },
   }),
 }
 
