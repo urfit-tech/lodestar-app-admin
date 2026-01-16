@@ -1,18 +1,18 @@
 import { Button, message, Tabs, Typography } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
-import React, { useState, useEffect, useRef } from 'react'
-import { useIntl } from 'react-intl'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import React, { useEffect, useRef, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import AdminModal from '../../admin/AdminModal'
 import saleMessages from '../translation'
-import PaymentLogEditModal from './PaymentLogEditModal'
-import ProductsTab from './ProductsTab'
 import DiscountsTab from './DiscountsTab'
-import PaymentLogsTab from './PaymentLogsTab'
 import OrderStatusTab, { OrderStatusTabRef } from './OrderStatusTab'
+import PaymentLogEditModal from './PaymentLogEditModal'
+import PaymentLogsTab from './PaymentLogsTab'
+import ProductsTab from './ProductsTab'
 import { EditableOrderDiscount, EditableOrderProduct, EditablePaymentLog } from './types'
 
 const CreateSubOrderModal: React.VFC<{
@@ -54,6 +54,7 @@ const CreateSubOrderModal: React.VFC<{
   showBankAccountSelect?: boolean
   canModifyOperations?: string[]
   enableOrderStatusModification?: boolean
+  isOrderEditingEnabled?: boolean
 }> = ({
   parentOrderId,
   orderProducts,
@@ -69,6 +70,7 @@ const CreateSubOrderModal: React.VFC<{
   showBankAccountSelect = false,
   canModifyOperations,
   enableOrderStatusModification = false,
+  isOrderEditingEnabled = false,
 }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
@@ -466,42 +468,52 @@ const CreateSubOrderModal: React.VFC<{
       >
         <div>
           <Tabs defaultActiveKey="products">
-            <Tabs.TabPane key="products" tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderProducts)}>
-              <ProductsTab
-                products={editableProducts}
-                editingProduct={editingProduct}
-                productForm={productForm}
-                onAdd={handleAddProduct}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-                onSaveProduct={handleSaveProduct}
-                onCancelProduct={handleCancelProduct}
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane
-              key="discounts"
-              tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderDiscounts)}
-            >
-              <DiscountsTab
-                discounts={editableDiscounts}
-                products={editableProducts}
-                editingDiscount={editingDiscount}
-                discountForm={discountForm}
-                onAdd={handleAddDiscount}
-                onEdit={handleEditDiscount}
-                onDelete={handleDeleteDiscount}
-                onSaveDiscount={handleSaveDiscount}
-                onCancelDiscount={handleCancelDiscount}
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane key="paymentLogs" tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectPaymentLog)}>
-              <PaymentLogsTab
-                paymentLogs={editablePaymentLogs}
-                onAdd={handleAddPaymentLog}
-                onEdit={handleEditPaymentLog}
-                onDelete={handleDeletePaymentLog}
-              />
-            </Tabs.TabPane>
+            {isOrderEditingEnabled && (
+              <>
+                <Tabs.TabPane
+                  key="products"
+                  tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderProducts)}
+                >
+                  <ProductsTab
+                    products={editableProducts}
+                    editingProduct={editingProduct}
+                    productForm={productForm}
+                    onAdd={handleAddProduct}
+                    onEdit={handleEditProduct}
+                    onDelete={handleDeleteProduct}
+                    onSaveProduct={handleSaveProduct}
+                    onCancelProduct={handleCancelProduct}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  key="discounts"
+                  tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectOrderDiscounts)}
+                >
+                  <DiscountsTab
+                    discounts={editableDiscounts}
+                    products={editableProducts}
+                    editingDiscount={editingDiscount}
+                    discountForm={discountForm}
+                    onAdd={handleAddDiscount}
+                    onEdit={handleEditDiscount}
+                    onDelete={handleDeleteDiscount}
+                    onSaveDiscount={handleSaveDiscount}
+                    onCancelDiscount={handleCancelDiscount}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  key="paymentLogs"
+                  tab={formatMessage(saleMessages.SaleCollectionExpandRow.selectPaymentLog)}
+                >
+                  <PaymentLogsTab
+                    paymentLogs={editablePaymentLogs}
+                    onAdd={handleAddPaymentLog}
+                    onEdit={handleEditPaymentLog}
+                    onDelete={handleDeletePaymentLog}
+                  />
+                </Tabs.TabPane>
+              </>
+            )}
             <Tabs.TabPane
               key="orderStatus"
               tab={formatMessage({

@@ -25,6 +25,7 @@ import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import CreateSubOrderModal from './CreateSubOrderModal'
+import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderDetailDrawer from './OrderDetailDrawer'
 import { OrderLogColumn } from './SaleCollectionAdminCard'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
@@ -501,27 +502,25 @@ const SaleCollectionExpandRow = ({
             refetchOrderLogExpandRow()
           }}
         />
-        {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) && settings['feature.modify_order_status.enabled'] === '1' && (
-          <CreateSubOrderModal
-            parentOrderId={orderLogId}
-            orderProducts={orderProducts}
-            orderDiscounts={orderDiscounts}
-            paymentLogs={paymentLogs}
-            memberId={orderLog.memberId || ''}
-            onRefetch={() => {
-              onRefetchOrderLog?.()
-              refetchOrderLogExpandRow()
-            }}
-            renderTrigger={({ setVisible }) => (
-              <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
-                {formatMessage(saleMessages.SaleCollectionExpandRow.changeOrderStatus)}
-              </Button>
-            )}
-            defaultOrderStatus={orderStatus}
-            parentTotalPrice={totalPrice}
-            enableOrderStatusModification={true}
-          />
-        )}
+        {Boolean(permissions.MODIFY_MEMBER_ORDER_STATUS) &&
+          settings['feature.modify_order_status.enabled'] === '1' &&
+          !isOrderEditingEnabled && (
+            <ModifyOrderStatusModal
+              renderTrigger={({ setVisible }) => (
+                <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
+                  {formatMessage(saleMessages.SaleCollectionExpandRow.changeOrderStatus)}
+                </Button>
+              )}
+              orderLogId={orderLogId}
+              defaultOrderStatus={orderStatus}
+              paymentLogs={paymentLogs}
+              onRefetch={() => {
+                onRefetchOrderLog?.()
+                refetchOrderLogExpandRow()
+              }}
+              totalPrice={totalPrice}
+            />
+          )}
         {currentUserRole === 'app-owner' &&
           orderProducts.some(v =>
             ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.type),
@@ -596,6 +595,7 @@ const SaleCollectionExpandRow = ({
                 {formatMessage(saleMessages.SaleCollectionExpandRow.createChildOrder)}
               </Button>
             )}
+            isOrderEditingEnabled={isOrderEditingEnabled}
           />
         )}
         <AdminModal
