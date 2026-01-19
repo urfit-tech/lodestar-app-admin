@@ -2879,6 +2879,215 @@ export const usePublishEvent = () => {
 }
 
 // =============================================================================
+// Multiple Class Groups Events Hook (for semester/group list pages)
+// =============================================================================
+
+// GraphQL query to get all events for a schedule type (semester or group)
+const GET_EVENTS_BY_SCHEDULE_TYPE = gql`
+  query GetEventsByScheduleType($scheduleType: String!) {
+    event(
+      where: {
+        deleted_at: { _is_null: true }
+        metadata: { _contains: { scheduleType: $scheduleType } }
+      }
+      order_by: { updated_at: desc }
+    ) {
+      id
+      title
+      started_at
+      ended_at
+      metadata
+      published_at
+      created_at
+      updated_at
+    }
+  }
+`
+
+interface EventsByScheduleTypeData {
+  event: Array<{
+    id: string
+    title: string | null
+    started_at: string
+    ended_at: string
+    metadata: Record<string, any> | null
+    published_at: string | null
+    created_at: string
+    updated_at: string
+  }>
+}
+
+export interface ClassGroupEventsSummary {
+  classId: string
+  latestEvent: {
+    id: string
+    teacherId?: string
+    teacherName?: string
+    teacherEmail?: string
+    studentIds?: string[]
+    createdBy?: string
+    createdByEmail?: string
+    updatedAt: Date
+  } | null
+  studentIds: string[]
+  memberMap: Map<string, { name: string; email: string }>
+  // Date range (earliest to latest)
+  dateRange: {
+    startDate: Date | null
+    endDate: Date | null
+  }
+  // Time range (from events)
+  timeRange: {
+    startTime: string | null // HH:mm format in Taiwan timezone
+    endTime: string | null // HH:mm format in Taiwan timezone
+  }
+}
+
+/**
+ * Hook to get events for multiple class groups by schedule type
+ * Returns events grouped by classId with the latest teacher/student/creator info
+ * @param scheduleType - 'semester' or 'group'
+ * @param classIds - Array of class group IDs to filter (optional)
+ */
+export const useMultipleClassGroupsEvents = (
+  scheduleType: 'semester' | 'group',
+  classIds?: string[],
+) => {
+  const { data: eventsData, loading: eventsLoading, error: eventsError, refetch } = useQuery<EventsByScheduleTypeData>(
+    GET_EVENTS_BY_SCHEDULE_TYPE,
+    {
+      variables: { scheduleType },
+      fetchPolicy: 'cache-and-network',
+    },
+  )
+
+  // Collect all unique member IDs from events
+  const memberIds = useMemo(() => {
+    if (!eventsData?.event) return []
+    const ids = new Set<string>()
+    eventsData.event.forEach(event => {
+      const metadata = event.metadata
+      if (metadata?.teacherId) ids.add(metadata.teacherId)
+      if (metadata?.studentIds) {
+        (metadata.studentIds as string[]).forEach(id => ids.add(id))
+      }
+      if (metadata?.createdBy) ids.add(metadata.createdBy)
+    })
+    return Array.from(ids)
+  }, [eventsData])
+
+  // Query member names
+  const { data: membersData, loading: membersLoading } = useQuery<MembersData>(GET_MEMBERS_BY_IDS, {
+    variables: { memberIds },
+    skip: memberIds.length === 0,
+  })
+
+  // Build member map for quick lookup
+  const memberMap = useMemo(() => {
+    const map = new Map<string, { name: string; email: string }>()
+    membersData?.member?.forEach(member => {
+      map.set(member.id, { name: member.name, email: member.email })
+    })
+    return map
+  }, [membersData])
+
+  // Group events by classId and get summary info
+  const eventsByClassId = useMemo(() => {
+    const map = new Map<string, ClassGroupEventsSummary>()
+
+    if (!eventsData?.event) return map
+
+    // Filter by classIds if provided
+    const filteredEvents = classIds
+      ? eventsData.event.filter(e => e.metadata?.classId && classIds.includes(e.metadata.classId))
+      : eventsData.event
+
+    // Group events by classId
+    filteredEvents.forEach(event => {
+      const classId = event.metadata?.classId as string
+      if (!classId) return
+
+      if (!map.has(classId)) {
+        map.set(classId, {
+          classId,
+          latestEvent: null,
+          studentIds: [],
+          memberMap,
+          dateRange: { startDate: null, endDate: null },
+          timeRange: { startTime: null, endTime: null },
+        })
+      }
+
+      const summary = map.get(classId)!
+
+      // Collect all student IDs
+      const eventStudentIds = (event.metadata?.studentIds as string[]) || []
+      eventStudentIds.forEach(id => {
+        if (!summary.studentIds.includes(id)) {
+          summary.studentIds.push(id)
+        }
+      })
+
+      // Update date range
+      const eventDate = new Date(event.started_at)
+      if (!summary.dateRange.startDate || eventDate < summary.dateRange.startDate) {
+        summary.dateRange.startDate = eventDate
+      }
+      if (!summary.dateRange.endDate || eventDate > summary.dateRange.endDate) {
+        summary.dateRange.endDate = eventDate
+      }
+
+      // Update time range (convert to Taiwan timezone HH:mm format)
+      const startedAt = new Date(event.started_at)
+      const endedAt = new Date(event.ended_at)
+      const startTimeStr = startedAt.toLocaleTimeString('zh-TW', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Taipei'
+      })
+      const endTimeStr = endedAt.toLocaleTimeString('zh-TW', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Taipei'
+      })
+
+      // Use first event's time as default (or could aggregate unique times)
+      if (!summary.timeRange.startTime) {
+        summary.timeRange.startTime = startTimeStr
+        summary.timeRange.endTime = endTimeStr
+      }
+
+      // Set latest event info (events are already sorted by updated_at desc)
+      if (!summary.latestEvent) {
+        const teacherInfo = event.metadata?.teacherId ? memberMap.get(event.metadata.teacherId) : undefined
+        summary.latestEvent = {
+          id: event.id,
+          teacherId: event.metadata?.teacherId,
+          teacherName: teacherInfo?.name,
+          teacherEmail: teacherInfo?.email,
+          studentIds: eventStudentIds,
+          createdBy: event.metadata?.createdBy,
+          createdByEmail: event.metadata?.createdByEmail,
+          updatedAt: new Date(event.updated_at),
+        }
+      }
+    })
+
+    return map
+  }, [eventsData, classIds, memberMap])
+
+  return {
+    eventsByClassId,
+    memberMap,
+    loading: eventsLoading || membersLoading,
+    error: eventsError,
+    refetch,
+  }
+}
+
+// =============================================================================
 // Export types for convenience
 // =============================================================================
 
