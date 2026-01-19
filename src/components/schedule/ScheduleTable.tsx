@@ -1,8 +1,9 @@
-import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Input, Menu, Modal, Popover, Table, Tabs, Typography } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Input, Modal, Popover, Space, Table, Tabs, Typography } from 'antd'
+import { ColumnsType, ColumnType } from 'antd/lib/table'
+import { FilterDropdownProps } from 'antd/lib/table/interface'
 import dayjs from 'dayjs'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { usePermissionGroupsAsCampuses, usePersonalScheduleListEvents } from '../../hooks/scheduleManagement'
@@ -10,7 +11,6 @@ import { mockStudents, ScheduleEvent, ScheduleStatus, scheduleStore, ScheduleTyp
 import scheduleMessages from './translation'
 
 const { TabPane } = Tabs
-const { Search } = Input
 
 const TableWrapper = styled.div`
   background: white;
@@ -32,9 +32,20 @@ interface ScheduleTableProps {
 const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onDelete }) => {
   const { formatMessage } = useIntl()
   const [activeTab, setActiveTab] = useState<ScheduleStatus>('published')
-  const [searchText, setSearchText] = useState('')
   const [deleteModalVisible, setDeleteModalVisible] = useState(false)
   const [eventToDelete, setEventToDelete] = useState<ScheduleEvent | null>(null)
+  const searchInput = useRef<any>(null)
+
+  // Filter states
+  const [filters, setFilters] = useState<{
+    campus: string | null
+    language: string | null
+    person: string | null
+  }>({
+    campus: null,
+    language: null,
+    person: null,
+  })
 
   // Use real API data for personal schedule type
   const apiStatus = useMemo(() => {
@@ -63,16 +74,39 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     apiLoading,
   )
 
-  const campuses = scheduleType === 'personal' ? permissionCampuses : scheduleStore.getCampuses()
-  const teachers = scheduleType === 'personal' ? [] : scheduleStore.getTeachers()
+  const campuses = useMemo(() => {
+    return scheduleType === 'personal' ? permissionCampuses : scheduleStore.getCampuses()
+  }, [scheduleType, permissionCampuses])
+
+  const teachers = useMemo(() => {
+    return scheduleType === 'personal' ? [] : scheduleStore.getTeachers()
+  }, [scheduleType])
 
   const events = useMemo(() => {
     // Use API data for personal type, mock store for others
     let allEvents: ScheduleEvent[] =
       scheduleType === 'personal' ? apiEvents : scheduleStore.getEvents(scheduleType, activeTab)
 
-    if (searchText) {
-      const search = searchText.toLowerCase()
+    // Apply campus filter (fuzzy search)
+    if (filters.campus) {
+      const search = filters.campus.toLowerCase()
+      allEvents = allEvents.filter(event => {
+        const campus = campuses.find(c => c.id === event.campus)
+        return campus?.name.toLowerCase().includes(search)
+      })
+    }
+
+    // Apply language filter (fuzzy search)
+    if (filters.language) {
+      const search = filters.language.toLowerCase()
+      allEvents = allEvents.filter(event => {
+        return event.language?.toLowerCase().includes(search)
+      })
+    }
+
+    // Apply person filter (fuzzy search on student/teacher/settingPerson name and email)
+    if (filters.person) {
+      const search = filters.person.toLowerCase()
       allEvents = allEvents.filter(event => {
         // Search by student name/email
         if (scheduleType === 'personal') {
@@ -106,14 +140,8 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
           }
         }
 
-        // Search by campus
-        const campus = campuses.find(c => c.id === event.campus)
-        if (campus?.name.toLowerCase().includes(search)) {
-          return true
-        }
-
-        // Search by material
-        if (event.material?.toLowerCase().includes(search)) {
+        // Search by setting person
+        if (event.createdBy?.toLowerCase().includes(search) || event.createdByEmail?.toLowerCase().includes(search)) {
           return true
         }
 
@@ -123,7 +151,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
 
     // Sort by date (most recent first)
     return allEvents.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
-  }, [scheduleType, activeTab, searchText, apiEvents, campuses, teachers])
+  }, [scheduleType, activeTab, filters, apiEvents, campuses, teachers])
 
   const loading = scheduleType === 'personal' ? apiLoading : false
 
@@ -181,6 +209,58 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     [scheduleType, formatMessage],
   )
 
+  // Helper function to get column search props
+  const getColumnSearchProps = useCallback(
+    (filterKey: 'campus' | 'language' | 'person'): Partial<ColumnType<ScheduleEvent>> => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInput}
+            placeholder="搜尋..."
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => {
+              confirm()
+              setFilters(prev => ({ ...prev, [filterKey]: (selectedKeys[0] as string) || null }))
+            }}
+            style={{ marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilters(prev => ({ ...prev, [filterKey]: (selectedKeys[0] as string) || null }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              查詢
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters?.()
+                setFilters(prev => ({ ...prev, [filterKey]: null }))
+                confirm()
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              重置
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilterDropdownVisibleChange: (visible: boolean) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100)
+        }
+      },
+    }),
+    [],
+  )
+
   const handleDeleteClick = useCallback((event: ScheduleEvent) => {
     setEventToDelete(event)
     setDeleteModalVisible(true)
@@ -208,7 +288,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       dataIndex: 'campus',
       key: 'campus',
       render: campusId => campuses.find(c => c.id === campusId)?.name || campusId,
-      filterSearch: true,
+      ...getColumnSearchProps('campus'),
     },
     {
       title: formatMessage(scheduleMessages.ScheduleTable.language),
@@ -227,6 +307,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
         }
         return labels[lang] || lang
       },
+      ...getColumnSearchProps('language'),
     },
     {
       title: formatMessage(scheduleMessages.ScheduleTable.courseDate),
@@ -254,6 +335,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       title: formatMessage(scheduleMessages.ScheduleTable.studentName),
       key: 'student',
       render: (_, record) => getStudentDisplay(record),
+      ...getColumnSearchProps('person'),
     },
   ]
 
@@ -274,6 +356,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       title: formatMessage(scheduleMessages.ScheduleTable.studentList),
       key: 'studentList',
       render: (_, record) => getStudentDisplay(record),
+      ...getColumnSearchProps('person'),
     },
   ]
 
@@ -308,6 +391,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
           '-'
         )
       },
+      ...getColumnSearchProps('person'),
     },
     {
       title: formatMessage(scheduleMessages.ScheduleTable.settingPerson),
@@ -320,6 +404,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
           </Typography.Text>
         </div>
       ),
+      ...getColumnSearchProps('person'),
     },
     {
       title: formatMessage(scheduleMessages.ScheduleTable.lastUpdated),
@@ -329,25 +414,14 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       render: date => dayjs(date).format('YYYY-MM-DD HH:mm'),
     },
     {
-      title: '',
+      title: '操作',
       key: 'actions',
-      width: 60,
-      render: (_, record) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => onEdit(record)}>
-                {formatMessage(scheduleMessages['*'].edit)}
-              </Menu.Item>
-              <Menu.Item key="delete" icon={<DeleteOutlined />} danger onClick={() => handleDeleteClick(record)}>
-                {formatMessage(scheduleMessages['*'].delete)}
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
+      width: 120,
+      render: (_: any, record: ScheduleEvent) => (
+        <Space>
+          <Button type="text" icon={<EditOutlined />} onClick={() => onEdit(record)} />
+          <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDeleteClick(record)} />
+        </Space>
       ),
     },
   ]
@@ -361,16 +435,6 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
         <TabPane tab={formatMessage(scheduleMessages['*'].published)} key="published" />
         <TabPane tab={formatMessage(scheduleMessages['*'].preScheduled)} key="pre-scheduled" />
       </Tabs>
-
-      <div style={{ marginBottom: 16 }}>
-        <Search
-          placeholder={formatMessage(scheduleMessages['*'].search)}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-          style={{ width: 300 }}
-          allowClear
-        />
-      </div>
 
       <Table
         columns={columns}

@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Col, message, Row, Space, Typography } from 'antd'
+import { Button, Col, message, Row, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -679,14 +679,11 @@ const PersonalSchedulePage: React.FC = () => {
         {viewMode === 'list' ? (
           <>
             {/* List View */}
-            <ActionBar>
-              <Typography.Title level={5} style={{ margin: 0 }}>
-                {formatMessage(scheduleMessages['*'].personal)}
-              </Typography.Title>
+            <div className="my-3 d-flex justify-content-end">
               <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenStudentSelection}>
                 新增排課
               </Button>
-            </ActionBar>
+            </div>
 
             <ScheduleTable scheduleType="personal" onEdit={handleEditFromTable} onDelete={handleDeleteEvent} />
           </>
