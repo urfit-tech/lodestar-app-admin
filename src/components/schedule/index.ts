@@ -1,5 +1,6 @@
 export { default as AddOrdersToClassModal } from './AddOrdersToClassModal'
 export { default as ArrangeCourseModal } from './ArrangeCourseModal'
+export { default as ClassScheduleListPage } from './ClassScheduleListPage'
 export { default as ClassSettingsPanel } from './ClassSettingsPanel'
 export { default as OrderSelectionPanel } from './OrderSelectionPanel'
 export { default as ScheduleCalendar } from './ScheduleCalendar'
