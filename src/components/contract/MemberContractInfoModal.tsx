@@ -1,30 +1,35 @@
 import {
   Box,
   Button,
+  Flex,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   useDisclosure,
-  Flex,
 } from '@chakra-ui/react'
-import { useIntl } from 'react-intl'
-import { ContractWithProducts } from '../../types/contract'
-import contractMessages from './translation'
 import dayjs from 'dayjs'
-import { FaAngleRight } from 'react-icons/fa'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { FaAngleRight } from 'react-icons/fa'
+import { useIntl } from 'react-intl'
 import { useCurrency } from '../../hooks/currency'
+import { ContractWithProducts } from '../../types/contract'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import MemberContractInfoCouponList from './MemberContractInfoCouponList'
+import contractMessages from './translation'
 
 const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }> = ({ memberContract }) => {
   const theme = useAppTheme()
   const { formatMessage } = useIntl()
   const { formatCurrency } = useCurrency()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { id: appId } = useApp()
+
+  const HIDE_COUPON_SITES = ['sixdigital', 'nschool', 'kkschool', 'xlab']
+  const contractListHideCoupon = HIDE_COUPON_SITES.includes(appId)
 
   return (
     <Box>
@@ -79,7 +84,7 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
                   </Box>
                 ) : null}
 
-                {memberContract.coupons?.length > 0 ? (
+                {!contractListHideCoupon && memberContract.coupons?.length > 0 ? (
                   <Box mt="0.5rem" mb="0.25rem">
                     <Flex fontWeight="bold" mb="0.125rem">
                       <Box>【{formatMessage(contractMessages['*'].coupon)}】</Box>
@@ -89,7 +94,9 @@ const MemberContractInfoModal: React.FC<{ memberContract: ContractWithProducts }
                   </Box>
                 ) : null}
 
-                {memberContract.coinLogs?.length > 0 && memberContract.coinLogs.some(coinLog => coinLog.amount > 0) ? (
+                {!contractListHideCoupon &&
+                memberContract.coinLogs?.length > 0 &&
+                memberContract.coinLogs.some(coinLog => coinLog.amount > 0) ? (
                   <Box mt="0.5rem" mb="0.25rem">
                     <Flex fontWeight="bold" mb="0.125rem">
                       <Box>【{formatMessage(contractMessages['*'].coin)}】</Box>
