@@ -1739,6 +1739,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "Same permission group list call selector function",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Lead Selector Function",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "List Recycling Function",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "Lead Delete",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "Lead Multiple Missed",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "Overall Sales Performance",
   "form.PermissionGroup.SALES_READ": "View All Orders",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "View All Sales Records",

@@ -1106,22 +1106,6 @@ const SalesLeadTable: React.VFC<{
                   </Center>
                 </Dropdown>
               )}
-              {variant !== 'completed' && (
-                <Button
-                  icon={<CheckOutlined />}
-                  className="mr-2"
-                  onClick={() =>
-                    handleLeadStatus(
-                      selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
-                      manager.id,
-                      leads,
-                      'completed',
-                    )
-                  }
-                >
-                  {formatMessage(saleMessages.SalesLeadTable.completed)}
-                </Button>
-              )}
               {variant === 'completed' && (
                 <Button
                   icon={<CloseOutlined />}
@@ -1153,6 +1137,22 @@ const SalesLeadTable: React.VFC<{
               </Button>
               {variant !== 'completed' && (
                 <>
+                  {Boolean(permissions.SALES_MEMBER_LIST_MULTIPLE_MISSED) && (
+                    <Button
+                      icon={<CheckOutlined />}
+                      className="mr-2"
+                      onClick={() =>
+                        handleLeadStatus(
+                          selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                          manager.id,
+                          leads,
+                          'completed',
+                        )
+                      }
+                    >
+                      {formatMessage(saleMessages.SalesLeadTable.completed)}
+                    </Button>
+                  )}
                   {Boolean(permissions.SALES_MEMBER_LIST_RECYCLE) && (
                     <Button
                       icon={<SyncOutlined />}
@@ -1183,20 +1183,22 @@ const SalesLeadTable: React.VFC<{
                   >
                     {formatMessage(saleMessages.SalesLeadTable.reject)}
                   </Button>
-                  <Button
-                    icon={<DeleteOutlined />}
-                    className="mr-2"
-                    onClick={() =>
-                      handleLeadStatus(
-                        selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
-                        manager.id,
-                        leads,
-                        'delete',
-                      )
-                    }
-                  >
-                    {formatMessage(saleMessages.SalesLeadTable.delete)}
-                  </Button>
+                  {Boolean(permissions.SALES_MEMBER_LIST_DELETE) && (
+                    <Button
+                      icon={<DeleteOutlined />}
+                      className="mr-2"
+                      onClick={() =>
+                        handleLeadStatus(
+                          selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                          manager.id,
+                          leads,
+                          'delete',
+                        )
+                      }
+                    >
+                      {formatMessage(saleMessages.SalesLeadTable.delete)}
+                    </Button>
+                  )}
                 </>
               )}
               <TransferModal

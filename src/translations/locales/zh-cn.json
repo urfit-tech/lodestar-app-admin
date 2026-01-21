@@ -1739,6 +1739,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "同权限组名单拨打选择器功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "名单拨打选择器功能",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "名单回收功能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "名单删除功能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "名单多次未接功能",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "所有业绩总表",
   "form.PermissionGroup.SALES_READ": "查看所有订单",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "查看所有销售记录",
