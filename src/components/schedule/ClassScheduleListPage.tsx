@@ -7,12 +7,7 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { scheduleMessages } from '.'
-import {
-  useClassGroups,
-  useDeleteClassGroup,
-  useMultipleClassGroupsEvents,
-  usePermissionGroupsAsCampuses,
-} from '../../hooks/scheduleManagement'
+import { useClassGroups, useDeleteClassGroup, useMultipleClassGroupsEvents, usePermissionGroupsAsCampuses } from '../../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../../images/icon'
 import { ClassGroup } from '../../types/schedule'
 import { AdminPageTitle } from '../admin'
@@ -161,19 +156,26 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
       const summary = eventsByClassId.get(classGroupId)
       if (!summary?.latestEvent) return '-'
 
-      const { createdBy, createdByEmail } = summary.latestEvent
-      if (!createdBy && !createdByEmail) return '-'
+      const { createdBy, createdByEmail, updatedBy, updatedByEmail } = summary.latestEvent
+      // Prefer updatedBy over createdBy
+      const displayId = updatedBy || createdBy
+      const displayEmail = updatedByEmail || createdByEmail
+
+      if (!displayId && !displayEmail) return '-'
+
+      // Try to get member info from memberMap
+      const memberInfo = displayId ? memberMap.get(displayId) : undefined
 
       return (
         <div>
-          <div>{createdBy || '-'}</div>
+          <div>{memberInfo?.name || displayId || '-'}</div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            {createdByEmail || '-'}
+            {memberInfo?.email || displayEmail || '-'}
           </Typography.Text>
         </div>
       )
     },
-    [eventsByClassId],
+    [eventsByClassId, memberMap],
   )
 
   // Helper function to render date range

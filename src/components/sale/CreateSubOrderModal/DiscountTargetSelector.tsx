@@ -1,7 +1,6 @@
 import { Select } from 'antd'
 import React, { useMemo, useState } from 'react'
-import { useCouponPlanCollection } from '../../../hooks/checkout'
-import { useVoucherPlanCollection } from '../../../hooks/checkout'
+import { useCouponPlanCollection, useVoucherPlanCollection } from '../../../hooks/checkout'
 
 const DiscountTargetSelector: React.VFC<{
   discountType: string
@@ -61,7 +60,8 @@ const DiscountTargetSelector: React.VFC<{
     return filteredOptions
   }, [filteredOptions, selectedOption])
 
-  const isLoading = (discountType === 'Coupon' && loadingCouponPlans) || (discountType === 'Voucher' && loadingVoucherPlans)
+  const isLoading =
+    (discountType === 'Coupon' && loadingCouponPlans) || (discountType === 'Voucher' && loadingVoucherPlans)
 
   const handleChange = (val: string | undefined) => {
     onChange?.(val)

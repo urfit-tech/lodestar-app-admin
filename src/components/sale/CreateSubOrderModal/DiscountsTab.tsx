@@ -1,9 +1,8 @@
 import { EditOutlined } from '@ant-design/icons'
-import { Button, Typography } from 'antd'
-import { Form } from 'antd'
+import { Button, Form, Typography } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { currencyFormatter } from '../../../helpers'
 import { PlusIcon, TrashOIcon } from '../../../images/icon'
 import saleMessages from '../translation'
@@ -20,7 +19,17 @@ const DiscountsTab: React.VFC<{
   onDelete: (id: string) => void
   onSaveDiscount: () => void
   onCancelDiscount: () => void
-}> = ({ discounts, products, editingDiscount, discountForm, onAdd, onEdit, onDelete, onSaveDiscount, onCancelDiscount }) => {
+}> = ({
+  discounts,
+  products,
+  editingDiscount,
+  discountForm,
+  onAdd,
+  onEdit,
+  onDelete,
+  onSaveDiscount,
+  onCancelDiscount,
+}) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
 
@@ -43,14 +52,10 @@ const DiscountsTab: React.VFC<{
             <span>{discount.name}</span>
             {' - '}
             {currencyFormatter(
-              products.length === 1 &&
-                products[0].type === 'MerchandiseSpec' &&
-                products[0]?.currencyId === 'LSC'
+              products.length === 1 && products[0].type === 'MerchandiseSpec' && products[0]?.currencyId === 'LSC'
                 ? discount?.coins
                 : discount.price,
-              products.length === 1 &&
-                products[0].type === 'MerchandiseSpec' &&
-                discount.type === 'Coin'
+              products.length === 1 && products[0].type === 'MerchandiseSpec' && discount.type === 'Coin'
                 ? 'LSC'
                 : discount.type,
               settings['coin.unit'],
@@ -59,19 +64,8 @@ const DiscountsTab: React.VFC<{
           <div>
             {!editingDiscount && (
               <>
-                <Button
-                  type="link"
-                  size="small"
-                  icon={<EditOutlined />}
-                  onClick={() => onEdit(discount)}
-                />
-                <Button
-                  type="link"
-                  size="small"
-                  danger
-                  icon={<TrashOIcon />}
-                  onClick={() => onDelete(discount.id)}
-                />
+                <Button type="link" size="small" icon={<EditOutlined />} onClick={() => onEdit(discount)} />
+                <Button type="link" size="small" danger icon={<TrashOIcon />} onClick={() => onDelete(discount.id)} />
               </>
             )}
           </div>

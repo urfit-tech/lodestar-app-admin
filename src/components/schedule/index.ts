@@ -1,4 +1,5 @@
 export { default as AddOrdersToClassModal } from './AddOrdersToClassModal'
+export { CollapsibleScheduleCard, ScheduleCard } from './styles'
 export { default as ArrangeCourseModal } from './ArrangeCourseModal'
 export { default as ClassScheduleListPage } from './ClassScheduleListPage'
 export { default as ClassSettingsPanel } from './ClassSettingsPanel'

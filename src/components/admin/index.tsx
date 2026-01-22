@@ -10,6 +10,7 @@ export const AdminPageTitle = styled.h1`
   font-weight: bold;
   line-height: 1;
   letter-spacing: 0.2px;
+  align-items: center;
 `
 export const AdminPageBlock = styled.div`
   overflow: auto;

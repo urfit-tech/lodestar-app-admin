@@ -1,19 +1,13 @@
 import { CloseOutlined, SearchOutlined } from '@ant-design/icons'
-import { Badge, Checkbox, Collapse, Empty, Input, Pagination, Select, Space, Spin, Table, Tag, Typography } from 'antd'
+import { Checkbox, Empty, Input, Pagination, Select, Space, Spin, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import {
-  usePermissionGroupsAsCampuses,
-  useTeacherOpenTimeEvents,
-  useTeachersFromMembers,
-} from '../../hooks/scheduleManagement'
+import { usePermissionGroupsAsCampuses, useTeacherOpenTimeEvents, useTeachersFromMembers } from '../../hooks/scheduleManagement'
 import { Language, ScheduleCondition, scheduleStore, SCHEDULE_COLORS, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
-
-const { Panel } = Collapse
 
 const SelectedTeachersRow = styled.div`
   display: flex;
@@ -57,14 +51,15 @@ const FilterRow = styled.div`
 `
 
 const LANGUAGE_LABELS: Record<Language, string> = {
-  'zh-TW': '中文(繁)',
-  'zh-CN': '中文(簡)',
-  'en-US': '英文',
-  ja: '日文',
-  ko: '韓文',
-  de: '德文',
-  fr: '法文',
-  es: '西文',
+  '中文': '中文',
+  '英文': '英文',
+  '日文': '日文',
+  '韓文': '韓文',
+  '德文': '德文',
+  '法文': '法文',
+  '西文': '西文',
+  '台語': '台語',
+  '粵語': '粵語',
 }
 
 interface TeacherListPanelProps {
@@ -100,7 +95,6 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   const [selectedTraits, setSelectedTraits] = useState<string[]>([])
   const [selectedLevel, setSelectedLevel] = useState<number | undefined>()
   const [currentPage, setCurrentPage] = useState(1)
-  const [isCollapsed, setIsCollapsed] = useState(false)
 
   // 當校區 prop 改變時，同步更新篩選器
   React.useEffect(() => {
@@ -437,7 +431,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
   return (
     <>
-      {/* Selected Teachers Display - 顯示在 Collapse 外部，收起時仍可見 */}
+      {/* Selected Teachers Display */}
       {selectedTeachers.length > 0 && (
         <SelectedTeachersRow>
           {selectedTeachers.map((teacher, index) => (
@@ -451,23 +445,8 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
         </SelectedTeachersRow>
       )}
 
-      <Collapse
-        activeKey={isCollapsed ? [] : ['1']}
-        onChange={() => setIsCollapsed(!isCollapsed)}
-        ghost
-        style={{ marginBottom: 0 }}
-      >
-        <Panel
-          header={
-            <Space>
-              <Typography.Text strong>{formatMessage(scheduleMessages.TeacherList.title)}</Typography.Text>
-              <Badge count={selectedTeachers.length} style={{ backgroundColor: SCHEDULE_COLORS.today }} />
-            </Space>
-          }
-          key="1"
-        >
-          {/* Filters */}
-          <FilterRow>
+      {/* Filters */}
+      <FilterRow>
             <Input
               placeholder={formatMessage(scheduleMessages['*'].search)}
               prefix={<SearchOutlined />}
@@ -532,49 +511,47 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
                   {level} 星
                 </Select.Option>
               ))}
-            </Select>
-          </FilterRow>
+        </Select>
+      </FilterRow>
 
-          {/* Max Selection Warning */}
-          {!canSelectMore && (
-            <Typography.Text type="warning" style={{ display: 'block', marginBottom: 8 }}>
-              {formatMessage(scheduleMessages.TeacherList.maxSelection)}
-            </Typography.Text>
-          )}
+      {/* Max Selection Warning */}
+      {!canSelectMore && (
+        <Typography.Text type="warning" style={{ display: 'block', marginBottom: 8 }}>
+          {formatMessage(scheduleMessages.TeacherList.maxSelection)}
+        </Typography.Text>
+      )}
 
-          {/* Loading State */}
-          {isLoading && (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <Spin tip="載入中..." />
-            </div>
-          )}
+      {/* Loading State */}
+      {isLoading && (
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <Spin tip="載入中..." />
+        </div>
+      )}
 
-          {/* Teachers Table */}
-          {!isLoading && filteredTeachers.length > 0 ? (
-            <>
-              <Table columns={columns} dataSource={paginatedTeachers} rowKey="id" pagination={false} size="small" />
-              <div style={{ marginTop: 16, textAlign: 'right' }}>
-                <Pagination
-                  current={currentPage}
-                  pageSize={pageSize}
-                  total={filteredTeachers.length}
-                  onChange={setCurrentPage}
-                  showSizeChanger={false}
-                  showTotal={total => `共 ${total} 位老師`}
-                  itemRender={(page, type, element) => {
-                    if (type === 'page' && !visiblePages.has(page)) {
-                      return null
-                    }
-                    return element
-                  }}
-                />
-              </div>
-            </>
-          ) : !isLoading ? (
-            <Empty description={formatMessage(scheduleMessages.TeacherList.noTeachers)} />
-          ) : null}
-        </Panel>
-      </Collapse>
+      {/* Teachers Table */}
+      {!isLoading && filteredTeachers.length > 0 ? (
+        <>
+          <Table columns={columns} dataSource={paginatedTeachers} rowKey="id" pagination={false} size="small" />
+          <div style={{ marginTop: 16, textAlign: 'right' }}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredTeachers.length}
+              onChange={setCurrentPage}
+              showSizeChanger={false}
+              showTotal={total => `共 ${total} 位老師`}
+              itemRender={(page, type, element) => {
+                if (type === 'page' && !visiblePages.has(page)) {
+                  return null
+                }
+                return element
+              }}
+            />
+          </div>
+        </>
+      ) : !isLoading ? (
+        <Empty description={formatMessage(scheduleMessages.TeacherList.noTeachers)} />
+      ) : null}
     </>
   )
 }

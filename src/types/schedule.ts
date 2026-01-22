@@ -13,7 +13,10 @@ export interface Teacher {
   id: string
   name: string
   email: string
-  campus: string
+  campus: string // 主要校區名稱（向後相容）
+  campusId?: string // 主要校區 ID
+  campusIds: string[] // 所有校區 ID（支援多校區）
+  campusNames: string[] // 所有校區名稱（支援多校區）
   languages: Language[]
   traits: string[]
   level: string
@@ -26,10 +29,9 @@ export interface Student {
   id: string
   name: string
   email: string
-  campus: string
   internalNote?: string
-  preferredTeachers?: string[]
-  excludedTeachers?: string[]
+  preferredTeachers?: string
+  excludedTeachers?: string
 }
 
 export interface Order {
@@ -45,15 +47,17 @@ export interface Order {
   expiresAt?: Date // 課時到期日：開課日 + 有效天數，初始無值，預排/發布後才有值
   lastClassDate?: Date
   status: string // order_log status: 'SUCCESS', 'UNPAID', etc.
-  campus: string
   materials: string[] // 教材列表：從同一訂單的 order_products 中 options.options.product === '教材' 的項目取得 title
 }
 
 export interface Classroom {
   id: string
   name: string
-  campus: string
+  campus: string // 向後相容
+  campusId?: string // 校區 ID（關聯到 permission_group）
+  campusName?: string // 校區名稱
   capacity: number
+  systemName?: string // 系統欄位名稱
 }
 
 export interface TimeSlot {
@@ -84,6 +88,8 @@ export interface ScheduleEvent {
   onlineRoomUrl?: string
   createdBy: string
   createdByEmail: string
+  updatedBy?: string
+  updatedByEmail?: string
   updatedAt: Date
   isExternal?: boolean // External class marked with '外'
 }
@@ -117,6 +123,31 @@ export interface ScheduleTemplate {
   classroomId?: string
   material?: string
   needsOnlineRoom: boolean
+}
+
+// Template types for multi-row templates bound to editor (member_id)
+export interface CourseRowData {
+  weekday: number // 1-7
+  duration: number // minutes
+  startTime: string // 'HH:mm'
+  material: string
+  materialType: 'order' | 'undecided' | 'custom'
+  customMaterial: string
+  teacherId?: string
+  classroomIds: string[]
+  needsOnlineRoom: boolean
+}
+
+export interface ScheduleTemplateProps {
+  id: string
+  appId: string
+  memberId: string // Editor who created the template
+  name: string
+  language: Language
+  rrule?: string // Recurrence rule
+  courseRows: CourseRowData[]
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface Holiday {
@@ -207,6 +238,9 @@ export const mockTeachers: Teacher[] = [
     name: '王小明',
     email: 'wang@example.com',
     campus: 'campus-1',
+    campusId: 'campus-1',
+    campusIds: ['campus-1'],
+    campusNames: ['台北校區'],
     languages: ['中文', '英文'],
     traits: ['耐心', '幽默'],
     level: 'Senior',
@@ -218,6 +252,9 @@ export const mockTeachers: Teacher[] = [
     name: '李美玲',
     email: 'li@example.com',
     campus: 'campus-1',
+    campusId: 'campus-1',
+    campusIds: ['campus-1', 'campus-2'], // 屬於多個校區的老師
+    campusNames: ['台北校區', '台中校區'],
     languages: ['中文', '日文'],
     traits: ['細心', '專業'],
     level: 'Senior',
@@ -228,6 +265,9 @@ export const mockTeachers: Teacher[] = [
     name: 'John Smith',
     email: 'john@example.com',
     campus: 'campus-1',
+    campusId: 'campus-1',
+    campusIds: ['campus-1'],
+    campusNames: ['台北校區'],
     languages: ['英文'],
     traits: ['活潑', '互動性強'],
     level: 'Mid',
@@ -238,6 +278,9 @@ export const mockTeachers: Teacher[] = [
     name: '田中太郎',
     email: 'tanaka@example.com',
     campus: 'campus-2',
+    campusId: 'campus-2',
+    campusIds: ['campus-2'],
+    campusNames: ['台中校區'],
     languages: ['日文', '英文'],
     traits: ['嚴謹', '系統化'],
     level: 'Senior',
@@ -248,6 +291,9 @@ export const mockTeachers: Teacher[] = [
     name: '陳志偉',
     email: 'chen@example.com',
     campus: 'campus-2',
+    campusId: 'campus-2',
+    campusIds: ['campus-2'],
+    campusNames: ['台中校區'],
     languages: ['中文', '韓文'],
     traits: ['親切', '有耐心'],
     level: 'Junior',
@@ -261,36 +307,31 @@ export const mockStudents: Student[] = [
     id: 'student-1',
     name: '張小華',
     email: 'zhang@example.com',
-    campus: 'campus-1',
     internalNote: '學習進度快，可加快教學速度',
-    preferredTeachers: ['teacher-1'],
-    excludedTeachers: [],
+    preferredTeachers: 'teacher-1',
+    excludedTeachers: 'teacher-2',
   },
   {
     id: 'student-2',
     name: '林美麗',
     email: 'lin@example.com',
-    campus: 'campus-1',
     internalNote: '需要更多練習時間',
   },
   {
     id: 'student-3',
     name: '陳大明',
     email: 'chendm@example.com',
-    campus: 'campus-1',
   },
   {
     id: 'student-4',
     name: '黃志強',
     email: 'huang@example.com',
-    campus: 'campus-2',
-    preferredTeachers: ['teacher-4'],
+    preferredTeachers: 'teacher-4',
   },
   {
     id: 'student-5',
     name: '王美琪',
     email: 'wangmq@example.com',
-    campus: 'campus-2',
   },
 ]
 
@@ -321,7 +362,6 @@ export const mockOrders: Order[] = [
     expiresAt: futureDate(150),
     lastClassDate: pastDate(3),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -336,7 +376,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(10),
     expiresAt: futureDate(170),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -352,7 +391,6 @@ export const mockOrders: Order[] = [
     expiresAt: futureDate(120),
     lastClassDate: pastDate(7),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -367,7 +405,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(5),
     expiresAt: futureDate(175),
     status: 'UNPAID', // Unpaid order
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -383,7 +420,6 @@ export const mockOrders: Order[] = [
     expiresAt: futureDate(135),
     lastClassDate: pastDate(2),
     status: 'SUCCESS',
-    campus: 'campus-2',
     materials: [],
   },
   // Semester class orders
@@ -399,7 +435,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(20),
     expiresAt: futureDate(180),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -414,7 +449,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(18),
     expiresAt: futureDate(182),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -429,7 +463,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(15),
     expiresAt: futureDate(185),
     status: 'UNPAID', // Unpaid
-    campus: 'campus-1',
     materials: [],
   },
   // Group class orders
@@ -445,7 +478,6 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(25),
     expiresAt: futureDate(155),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
   {
@@ -460,18 +492,17 @@ export const mockOrders: Order[] = [
     createdAt: pastDate(22),
     expiresAt: futureDate(158),
     status: 'SUCCESS',
-    campus: 'campus-1',
     materials: [],
   },
 ]
 
 // Mock Classrooms
 export const mockClassrooms: Classroom[] = [
-  { id: 'room-1', name: '教室 101', campus: 'campus-1', capacity: 10 },
-  { id: 'room-2', name: '教室 102', campus: 'campus-1', capacity: 6 },
-  { id: 'room-3', name: '教室 103', campus: 'campus-1', capacity: 15 },
-  { id: 'room-4', name: '教室 201', campus: 'campus-2', capacity: 8 },
-  { id: 'room-5', name: '教室 202', campus: 'campus-2', capacity: 12 },
+  { id: 'room-1', name: '教室 101', campus: 'campus-1', campusId: 'campus-1', campusName: '台北校區', capacity: 10 },
+  { id: 'room-2', name: '教室 102', campus: 'campus-1', campusId: 'campus-1', campusName: '台北校區', capacity: 6 },
+  { id: 'room-3', name: '教室 103', campus: 'campus-1', campusId: 'campus-1', campusName: '台北校區', capacity: 15 },
+  { id: 'room-4', name: '教室 201', campus: 'campus-2', campusId: 'campus-2', campusName: '台中校區', capacity: 8 },
+  { id: 'room-5', name: '教室 202', campus: 'campus-2', campusId: 'campus-2', campusName: '台中校區', capacity: 12 },
 ]
 
 // Mock Class Groups (for semester and group classes)
@@ -668,9 +699,6 @@ class ScheduleManagementStore {
 
   // Students
   getStudents(campus?: string): Student[] {
-    if (campus) {
-      return mockStudents.filter(s => s.campus === campus)
-    }
     return [...mockStudents]
   }
 
@@ -693,9 +721,6 @@ class ScheduleManagementStore {
     let result = mockOrders.filter(
       o => o.type === type && o.availableMinutes > 0 && o.expiresAt && o.expiresAt > new Date()
     )
-    if (campus) {
-      result = result.filter(o => o.campus === campus)
-    }
     if (language) {
       result = result.filter(o => o.language === language)
     }

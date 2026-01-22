@@ -1,27 +1,11 @@
-import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Col, Input, message, Modal, Radio, Row, Select, Space, TimePicker, Tooltip, Typography } from 'antd'
+import { AppstoreOutlined, CopyOutlined, DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
+import { Button, Col, Input, List, message, Modal, Popconfirm, Radio, Row, Select, Space, TimePicker, Tooltip, Typography } from 'antd'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import {
-  StudentOpenTimeEvent,
-  TeacherBusyEvent,
-  TeacherOpenTimeEvent,
-  useClassrooms,
-  useHolidays,
-} from '../../hooks/scheduleManagement'
-import {
-  DEFAULT_DURATION,
-  DURATION_OPTIONS,
-  Language,
-  ScheduleCondition,
-  ScheduleEvent,
-  ScheduleStatus,
-  scheduleStore,
-  ScheduleType,
-  Teacher,
-} from '../../types/schedule'
+import { StudentOpenTimeEvent, TeacherBusyEvent, TeacherOpenTimeEvent, useHolidays } from '../../hooks/scheduleManagement'
+import { Classroom, DEFAULT_DURATION, DURATION_OPTIONS, Language, ScheduleCondition, ScheduleEvent, ScheduleStatus, scheduleStore, ScheduleTemplateProps, ScheduleType, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const FormRow = styled.div`
@@ -109,11 +93,15 @@ export interface ArrangeCourseModalProps {
   studentOpenTimeEvents?: StudentOpenTimeEvent[] // Student's existing events for conflict detection
   teacherOpenTimeEvents?: TeacherOpenTimeEvent[] // Teacher's available open time events for validation
   teacherBusyEvents?: TeacherBusyEvent[] // Teacher's existing events for conflict checks
+  classrooms?: Classroom[] // Available classrooms for selection
   onClose: () => void
   onSave: (events: Partial<ScheduleEvent>[]) => void
-  onSaveTemplate?: (row: CourseRow) => void
-  onApplyTemplate?: () => CourseRow | null
   onSaveDraft?: (rows: CourseRow[]) => void // Save draft when closing
+  // Template props - multi-row templates bound to editor
+  templates?: ScheduleTemplateProps[]
+  onSaveTemplate?: (name: string, rows: CourseRow[], rrule?: string) => Promise<void>
+  onApplyTemplate?: (template: ScheduleTemplateProps) => void
+  onDeleteTemplate?: (templateId: string) => Promise<void>
 }
 
 const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
@@ -131,13 +119,16 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   studentId,
   studentName,
   studentOpenTimeEvents = [],
-  teacherOpenTimeEvents = [],
   teacherBusyEvents = [],
+  classrooms = [],
   onClose,
   onSave,
+  onSaveDraft,
+  // Template props
+  templates = [],
   onSaveTemplate,
   onApplyTemplate,
-  onSaveDraft,
+  onDeleteTemplate,
 }) => {
   const { formatMessage } = useIntl()
   const { holidays: defaultExcludeDates } = useHolidays()
@@ -147,10 +138,16 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   const [showMinutesMismatchWarning, setShowMinutesMismatchWarning] = useState(false)
   const [minutesMismatch, setMinutesMismatch] = useState(0)
   const [materialSearch, setMaterialSearch] = useState('')
+  // Template state
+  const [showTemplateSelectModal, setShowTemplateSelectModal] = useState(false)
+  const [showTemplateSaveModal, setShowTemplateSaveModal] = useState(false)
+  const [templateName, setTemplateName] = useState('')
+  const [templateSaveLoading, setTemplateSaveLoading] = useState(false)
+  const [templateDeleteLoading, setTemplateDeleteLoading] = useState<string | null>(null)
   type GeneratedEventsResult = { events: Partial<ScheduleEvent>[]; minutesMismatch: number }
 
-  const showClassroom = scheduleType === 'group'
-  const { classrooms, loading: classroomsLoading } = useClassrooms(showClassroom ? campus : undefined)
+  // 教室選擇在所有排課類型下都顯示（至少可選「尚未排定」或「外課」）
+  const showClassroom = true
   const columnSpans = useMemo(
     () =>
       showClassroom
@@ -185,6 +182,39 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     return orderMaterials.filter(m => m.toLowerCase().includes(searchLower))
   }, [orderMaterials, materialSearch])
 
+  // 取得所選老師的校區 IDs（可能有多個）
+  const getTeacherCampusIds = useCallback(
+    (teacherId?: string): string[] => {
+      if (!teacherId) return []
+      const teacher = selectedTeachers.find(t => t.id === teacherId)
+      if (!teacher) return []
+      // 使用新的 campusIds 欄位，或回退到 campusId
+      return teacher.campusIds || (teacher.campusId ? [teacher.campusId] : [])
+    },
+    [selectedTeachers],
+  )
+
+  // 根據老師校區過濾教室
+  const getFilteredClassrooms = useCallback(
+    (teacherId?: string): Classroom[] => {
+      const campusIds = getTeacherCampusIds(teacherId)
+      // 如果沒有選擇老師或老師沒有校區，顯示所有教室
+      if (campusIds.length === 0) return classrooms
+      // 過濾出屬於老師校區的教室
+      return classrooms.filter(c => c.campusId && campusIds.includes(c.campusId))
+    },
+    [classrooms, getTeacherCampusIds],
+  )
+
+  // 判斷是否需要顯示校區前綴（老師有多個校區時）
+  const shouldShowCampusPrefix = useCallback(
+    (teacherId?: string): boolean => {
+      const campusIds = getTeacherCampusIds(teacherId)
+      return campusIds.length > 1
+    },
+    [getTeacherCampusIds],
+  )
+
   // Calculate total duration of all rows
   const totalDuration = useMemo(() => {
     return rows.reduce((sum, row) => sum + row.duration, 0)
@@ -205,11 +235,8 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
   // Create default row
   const createDefaultRow = useCallback((date: Date, teacher?: Teacher): CourseRow => {
-    const clickedHour = date.getHours()
-    const clickedMinute = date.getMinutes()
+    // Use the clicked date/time directly from the calendar
     const defaultStartTime = moment(date)
-      .hour(clickedHour || 10)
-      .minute(clickedMinute || 0)
     const weekday = moment(date).day() || 7 // 0 = Sunday -> 7
 
     return {
@@ -325,15 +352,11 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       teacherConflicts: Array<{ date: string; startTime: string; endTime: string; teacherName?: string }>
       roomConflicts: Array<{ date: string; startTime: string; endTime: string; roomName?: string }>
       studentConflicts: Array<{ date: string; startTime: string; endTime: string }>
-      teacherNotAvailable: Array<{ date: string; startTime: string; endTime: string; teacherName?: string }>
-      studentNotAvailable: Array<{ date: string; startTime: string; endTime: string }>
       scheduleConditionErrors: Array<{ date: string; errorType: string }>
     } = {
       teacherConflicts: [],
       roomConflicts: [],
       studentConflicts: [],
-      teacherNotAvailable: [],
-      studentNotAvailable: [],
       scheduleConditionErrors: [],
     }
 
@@ -373,20 +396,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
       const eventDateStr = moment(event.start).format('YYYY-MM-DD')
       return eventDateStr === rowDateStr
-    }
-
-    const isWithinEventTime = (
-      event: { start: Date; end: Date; rrule?: string },
-      rowStartNum: number,
-      rowEndNum: number,
-      rowWeekday: number,
-      rowDateStr: string,
-    ): boolean => {
-      if (!isEventApplicableOnDate(event, rowWeekday, rowDateStr)) return false
-
-      const eventStartNum = parseInt(moment(event.start).format('HH:mm').replace(':', ''))
-      const eventEndNum = parseInt(moment(event.end).format('HH:mm').replace(':', ''))
-      return rowStartNum >= eventStartNum && rowEndNum <= eventEndNum
     }
 
     const hasOverlapWithEvent = (
@@ -513,31 +522,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         })
       }
 
-      // Check if selected time is within teacher's open time (if teacher has open time events)
-      if (row.teacherId && teacherOpenTimeEvents.length > 0) {
-        const teacherEvents = teacherOpenTimeEvents.filter(e => e.teacherId === row.teacherId)
-
-        // Only validate if this teacher has open time events defined
-        if (teacherEvents.length > 0) {
-          // Check if the row time falls within any of the teacher's open time slots
-          const isWithinOpenTime = teacherEvents.some(event =>
-            isWithinEventTime(event, rowStartNum, rowEndNum, rowWeekday, dateStr),
-          )
-
-          if (!isWithinOpenTime) {
-            const selectedTeacher = selectedTeachers.find(t => t.id === row.teacherId)
-            rowErrors.push('teacherNotAvailable')
-            isValid = false
-            allConflictDetails.teacherNotAvailable.push({
-              date: dateStr,
-              startTime: rowStartTime,
-              endTime: rowEndTime,
-              teacherName: selectedTeacher?.name,
-            })
-          }
-        }
-      }
-
       // Check conflicts with teacher's existing events (API)
       if (row.teacherId && teacherBusyEvents.length > 0) {
         const busyEvents = teacherBusyEvents.filter(e => e.teacherId === row.teacherId)
@@ -566,29 +550,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
             })
           }
         })
-      }
-
-      // Check if selected time is within student's open time (if open time exists)
-      if (studentOpenTimeEvents.length > 0) {
-        const openTimeEvents = studentOpenTimeEvents.filter(
-          event => event.extendedProps.status === 'open' || event.extendedProps.role === 'available',
-        )
-
-        if (openTimeEvents.length > 0) {
-          const isWithinStudentOpenTime = openTimeEvents.some(event =>
-            isWithinEventTime(event, rowStartNum, rowEndNum, rowWeekday, dateStr),
-          )
-
-          if (!isWithinStudentOpenTime) {
-            rowErrors.push('studentNotAvailable')
-            isValid = false
-            allConflictDetails.studentNotAvailable.push({
-              date: dateStr,
-              startTime: rowStartTime,
-              endTime: rowEndTime,
-            })
-          }
-        }
       }
 
       // Check for conflicts with student's existing events (API)
@@ -654,8 +615,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         allConflictDetails.teacherConflicts.length > 0 ||
         allConflictDetails.roomConflicts.length > 0 ||
         allConflictDetails.studentConflicts.length > 0 ||
-        allConflictDetails.teacherNotAvailable.length > 0 ||
-        allConflictDetails.studentNotAvailable.length > 0 ||
         allConflictDetails.scheduleConditionErrors.length > 0
 
       if (hasAnyConflict) {
@@ -690,18 +649,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           conflictMessages.push(`教室時間衝突：\n${roomConflictStr}`)
         }
 
-        if (allConflictDetails.teacherNotAvailable.length > 0) {
-          const teacherNotAvailableStr = allConflictDetails.teacherNotAvailable
-            .map(c => `${formatConflictTime(c)}${c.teacherName ? ` (${c.teacherName})` : ''}`)
-            .join('\n')
-          conflictMessages.push(`教師無開放時間：\n${teacherNotAvailableStr}`)
-        }
-
-        if (allConflictDetails.studentNotAvailable.length > 0) {
-          const studentNotAvailableStr = allConflictDetails.studentNotAvailable.map(formatConflictTime).join('\n')
-          conflictMessages.push(`學員無開放時間：\n${studentNotAvailableStr}`)
-        }
-
         message.error({
           content: (
             <div style={{ whiteSpace: 'pre-line', textAlign: 'left' }}>
@@ -723,11 +670,11 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     studentId,
     studentName,
     studentOpenTimeEvents,
-    teacherOpenTimeEvents,
     teacherBusyEvents,
     selectedTeachers,
     scheduleCondition,
     getClassroomState,
+    defaultExcludeDates,
   ])
 
   // Generate repeated events based on schedule condition
@@ -921,29 +868,82 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     onClose()
   }, [rows, onSaveDraft, onClose])
 
-  const handleSaveTemplate = useCallback(() => {
-    if (rows.length > 0 && onSaveTemplate) {
-      onSaveTemplate(rows[0])
-      message.success(formatMessage(scheduleMessages.ArrangeModal.templateSaved))
-    }
-  }, [rows, onSaveTemplate, formatMessage])
+  // Template handlers
+  const handleOpenTemplateSelectModal = useCallback(() => {
+    setShowTemplateSelectModal(true)
+  }, [])
 
-  const handleApplyTemplate = useCallback(() => {
-    if (onApplyTemplate) {
-      const template = onApplyTemplate()
-      if (template) {
-        setRows([
-          {
-            ...template,
-            id: `new-${Date.now()}`,
-            startTime: moment(template.startTime),
-          },
-        ])
-      } else {
-        message.info(formatMessage(scheduleMessages.ArrangeModal.noTemplate))
-      }
+  const handleOpenTemplateSaveModal = useCallback(() => {
+    setTemplateName('')
+    setShowTemplateSaveModal(true)
+  }, [])
+
+  const handleSaveTemplateClick = useCallback(async () => {
+    if (!templateName.trim()) {
+      message.warning(formatMessage(scheduleMessages.ArrangeModal.templateNameRequired))
+      return
     }
-  }, [onApplyTemplate, formatMessage])
+
+    if (rows.length === 0 || !onSaveTemplate) return
+
+    setTemplateSaveLoading(true)
+    try {
+      await onSaveTemplate(templateName.trim(), rows)
+      message.success(formatMessage(scheduleMessages.ArrangeModal.templateSaved))
+      setShowTemplateSaveModal(false)
+      setTemplateName('')
+    } catch (error) {
+      console.error('Failed to save template:', error)
+      message.error('儲存模板失敗')
+    } finally {
+      setTemplateSaveLoading(false)
+    }
+  }, [templateName, rows, onSaveTemplate, formatMessage])
+
+  const handleApplyTemplateClick = useCallback(
+    (template: ScheduleTemplateProps) => {
+      if (onApplyTemplate) {
+        onApplyTemplate(template)
+      }
+
+      // Convert template course rows to CourseRow format
+      const newRows: CourseRow[] = template.courseRows.map((data, index) => ({
+        id: `template-${Date.now()}-${index}`,
+        weekday: data.weekday,
+        duration: data.duration,
+        startTime: moment(data.startTime, 'HH:mm'),
+        material: data.material,
+        materialType: data.materialType,
+        customMaterial: data.customMaterial,
+        teacherId: data.teacherId,
+        classroomIds: data.classroomIds?.length ? data.classroomIds : [CLASSROOM_UNASSIGNED],
+        needsOnlineRoom: data.needsOnlineRoom,
+      }))
+
+      setRows(newRows)
+      setShowTemplateSelectModal(false)
+      message.success(formatMessage(scheduleMessages.ArrangeModal.templateApplied))
+    },
+    [onApplyTemplate, formatMessage],
+  )
+
+  const handleDeleteTemplateClick = useCallback(
+    async (templateId: string) => {
+      if (!onDeleteTemplate) return
+
+      setTemplateDeleteLoading(templateId)
+      try {
+        await onDeleteTemplate(templateId)
+        message.success(formatMessage(scheduleMessages.ArrangeModal.templateDeleted))
+      } catch (error) {
+        console.error('Failed to delete template:', error)
+        message.error('刪除模板失敗')
+      } finally {
+        setTemplateDeleteLoading(null)
+      }
+    },
+    [onDeleteTemplate, formatMessage],
+  )
 
   const weekdayOptions = [
     { value: 1, label: '週一' },
@@ -966,13 +966,14 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           <Button key="cancel" onClick={handleClose}>
             {formatMessage(scheduleMessages['*'].cancel)}
           </Button>,
+          // Template buttons (multi-row)
           scheduleType === 'personal' && onSaveTemplate && (
-            <Button key="saveTemplate" onClick={handleSaveTemplate}>
+            <Button key="saveTemplate" icon={<SaveOutlined />} onClick={handleOpenTemplateSaveModal}>
               {formatMessage(scheduleMessages.ArrangeModal.saveTemplate)}
             </Button>
           ),
           scheduleType === 'personal' && onApplyTemplate && (
-            <Button key="applyTemplate" onClick={handleApplyTemplate}>
+            <Button key="applyTemplate" icon={<AppstoreOutlined />} onClick={handleOpenTemplateSelectModal}>
               {formatMessage(scheduleMessages.ArrangeModal.applyTemplate)}
             </Button>
           ),
@@ -1017,25 +1018,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           const rowErrors = errors[row.id] || []
           const hasError = rowErrors.length > 0
           const endTime = moment(row.startTime).add(row.duration, 'minutes')
-          const classroomState = getClassroomState(row)
-          const dateForRow = moment(selectedDate).isoWeekday(row.weekday)
-          const classroomOptions = showClassroom
-            ? classrooms.map(room => {
-                const conflict = scheduleStore.hasConflict(
-                  dateForRow.toDate(),
-                  row.startTime.format('HH:mm'),
-                  endTime.format('HH:mm'),
-                  undefined,
-                  room.id,
-                  existingEvent?.id,
-                )
-                return {
-                  value: room.id,
-                  label: room.name,
-                  disabled: conflict.hasRoomConflict,
-                }
-              })
-            : []
 
           return (
             <StyledFormRow key={row.id} style={{ backgroundColor: hasError ? '#fff2f0' : 'transparent' }}>
@@ -1160,7 +1142,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                   </Tooltip>
                 </Col>
 
-                {/* Classroom */}
                 {showClassroom && (
                   <Col span={columnSpans.classroom}>
                     <Tooltip
@@ -1172,16 +1153,14 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                       color="red"
                     >
                       <Select
-                        mode="multiple"
-                        value={row.classroomIds}
-                        onChange={vals => updateRow(row.id, { classroomIds: normalizeClassroomSelection(vals) })}
+                        value={row.classroomIds[0] || CLASSROOM_UNASSIGNED}
+                        onChange={val => {
+                          updateRow(row.id, { classroomIds: [val] })
+                        }}
                         size="small"
                         style={{ width: '100%' }}
                         className={rowErrors.includes('roomConflict') ? 'ant-select-error' : ''}
                         placeholder={formatMessage(scheduleMessages.ArrangeModal.selectClassroom)}
-                        maxTagCount={1}
-                        allowClear
-                        loading={classroomsLoading}
                       >
                         <Select.Option value={CLASSROOM_UNASSIGNED}>
                           {formatMessage(scheduleMessages.ArrangeModal.classroomUndecided)}
@@ -1189,9 +1168,13 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                         <Select.Option value={CLASSROOM_EXTERNAL}>
                           {formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
                         </Select.Option>
-                        {classroomOptions.map(option => (
-                          <Select.Option key={option.value} value={option.value} disabled={option.disabled}>
-                            {option.label}
+                        {/* 根據所選老師過濾教室，多校區時顯示前綴 */}
+                        {getFilteredClassrooms(row.teacherId).map(c => (
+                          <Select.Option key={c.id} value={c.id}>
+                            {shouldShowCampusPrefix(row.teacherId) && c.campusName
+                              ? `[${c.campusName}] `
+                              : ''}
+                            {c.name} ({c.capacity}人)
                           </Select.Option>
                         ))}
                       </Select>
@@ -1253,12 +1236,6 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                   {rowErrors.includes('roomConflict') && (
                     <ErrorTag>{formatMessage(scheduleMessages.ArrangeModal.roomConflict)}</ErrorTag>
                   )}
-                  {rowErrors.includes('teacherNotAvailable') && (
-                    <ErrorTag>{formatMessage(scheduleMessages.ArrangeModal.teacherNotAvailable)}</ErrorTag>
-                  )}
-                  {rowErrors.includes('studentNotAvailable') && (
-                    <ErrorTag>{formatMessage(scheduleMessages.ArrangeModal.studentNotAvailable)}</ErrorTag>
-                  )}
                 </div>
               )}
             </StyledFormRow>
@@ -1306,6 +1283,82 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           {formatMessage(scheduleMessages.ArrangeModal.minutesMismatchHint)}
         </Typography.Text>
       </WarningModal>
+
+      {/* Template Select Modal */}
+      <Modal
+        title={formatMessage(scheduleMessages.ArrangeModal.selectTemplate)}
+        visible={showTemplateSelectModal}
+        onCancel={() => setShowTemplateSelectModal(false)}
+        footer={null}
+        width={600}
+      >
+        {templates.length === 0 ? (
+          <Typography.Text type="secondary">
+            {formatMessage(scheduleMessages.ArrangeModal.noTemplate)}
+          </Typography.Text>
+        ) : (
+          <List
+            dataSource={templates}
+            renderItem={template => (
+              <List.Item
+                key={template.id}
+                actions={[
+                  <Button
+                    key="apply"
+                    type="primary"
+                    size="small"
+                    onClick={() => handleApplyTemplateClick(template)}
+                  >
+                    {formatMessage(scheduleMessages.ArrangeModal.applyTemplate)}
+                  </Button>,
+                  <Popconfirm
+                    key="delete"
+                    title={formatMessage(scheduleMessages.ArrangeModal.deleteTemplateConfirm)}
+                    onConfirm={() => handleDeleteTemplateClick(template.id)}
+                    okText={formatMessage(scheduleMessages['*'].confirm)}
+                    cancelText={formatMessage(scheduleMessages['*'].cancel)}
+                    overlayInnerStyle={{ padding: 8 }}
+                    overlayStyle={{ padding: 8 }}
+                  >
+                    <Button
+                      danger
+                      size="small"
+                      loading={templateDeleteLoading === template.id}
+                    >
+                      {formatMessage(scheduleMessages['*'].delete)}
+                    </Button>
+                  </Popconfirm>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={template.name}
+                />
+              </List.Item>
+            )}
+          />
+        )}
+      </Modal>
+
+      {/* Template Save Modal */}
+      <Modal
+        title={formatMessage(scheduleMessages.ArrangeModal.saveTemplate)}
+        visible={showTemplateSaveModal}
+        onCancel={() => setShowTemplateSaveModal(false)}
+        onOk={handleSaveTemplateClick}
+        confirmLoading={templateSaveLoading}
+        okText={formatMessage(scheduleMessages['*'].save)}
+        cancelText={formatMessage(scheduleMessages['*'].cancel)}
+      >
+        <div style={{ marginBottom: 8 }}>
+          <Typography.Text>{formatMessage(scheduleMessages.ArrangeModal.templateName)}</Typography.Text>
+        </div>
+        <Input
+          value={templateName}
+          onChange={e => setTemplateName(e.target.value)}
+          placeholder={formatMessage(scheduleMessages.ArrangeModal.templateNamePlaceholder)}
+          onPressEnter={handleSaveTemplateClick}
+        />
+      </Modal>
     </>
   )
 }

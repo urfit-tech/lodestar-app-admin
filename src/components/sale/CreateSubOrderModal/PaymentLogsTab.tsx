@@ -43,19 +43,8 @@ const PaymentLogsTab: React.VFC<{
             {paymentLog.status || 'UNPAID'}
           </div>
           <div>
-            <Button
-              type="link"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(paymentLog)}
-            />
-            <Button
-              type="link"
-              size="small"
-              danger
-              icon={<TrashOIcon />}
-              onClick={() => onDelete(paymentLog.id)}
-            />
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={() => onEdit(paymentLog)} />
+            <Button type="link" size="small" danger icon={<TrashOIcon />} onClick={() => onDelete(paymentLog.id)} />
           </div>
         </div>
       ))}

@@ -254,9 +254,9 @@ export const routesProps = {
     pageName: 'PersonalSchedulePage',
     authenticated: true,
   },
-  class_schedule_personal_member: {
+  class_schedule_personal_edit: {
     path: '/class-schedule/personal/:memberId',
-    pageName: 'PersonalSchedulePage',
+    pageName: 'PersonalScheduleEditPage',
     authenticated: true,
   },
   class_schedule_semester: {

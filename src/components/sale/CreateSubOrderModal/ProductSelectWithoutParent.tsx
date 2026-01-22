@@ -1,5 +1,5 @@
 import { Select } from 'antd'
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useProductData } from '../../../hooks/productSelector'
 
 const ProductSelectWithoutParent: React.VFC<{
@@ -33,9 +33,7 @@ const ProductSelectWithoutParent: React.VFC<{
   // 加载所有产品类型（仅在首次加载时）
   const allowTypesKey = useMemo(() => allowTypes.join(','), [allowTypes])
   React.useEffect(() => {
-    const typesToLoad = allowTypesRef.current.filter(
-      (type, index) => allowTypesRef.current.indexOf(type) === index
-    )
+    const typesToLoad = allowTypesRef.current.filter((type, index) => allowTypesRef.current.indexOf(type) === index)
     typesToLoad.forEach(type => {
       loadProductTypeRef.current(type)
     })
