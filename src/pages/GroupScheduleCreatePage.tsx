@@ -87,7 +87,7 @@ const GridColumn = styled(Col)`
 const GroupScheduleCreatePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
 
@@ -332,8 +332,8 @@ const GroupScheduleCreatePage: React.FC = () => {
             orderIds: studentOrders.map(o => o.id),
             campus: classGroup?.campusId || '',
             language: classGroup?.language || 'zh-TW',
-            createdBy: 'current-user',
-            createdByEmail: 'user@example.com',
+            createdBy: currentMemberId || '',
+            createdByEmail: currentMember?.email || '',
             updatedAt: new Date(),
           } as ScheduleEvent)
         }
@@ -341,7 +341,7 @@ const GroupScheduleCreatePage: React.FC = () => {
       setStoreUpdateCounter(prev => prev + 1)
       message.success(formatMessage(scheduleMessages.GroupClass.courseArranged))
     },
-    [classGroup, studentOrders, formatMessage],
+    [classGroup, studentOrders, formatMessage, currentMemberId, currentMember],
   )
 
   const handlePreSchedule = useCallback(async () => {
@@ -386,6 +386,10 @@ const GroupScheduleCreatePage: React.FC = () => {
               material: event.material,
               needsOnlineRoom: event.needsOnlineRoom,
               clientEventId: event.id,
+              createdBy: currentMemberId || '',
+              createdByEmail: currentMember?.email || '',
+              updatedBy: currentMemberId || '',
+              updatedByEmail: currentMember?.email || '',
             },
           },
         } as GeneralEventApi
@@ -461,7 +465,7 @@ const GroupScheduleCreatePage: React.FC = () => {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
     }
-  }, [authToken, appId, classGroup, calendarEvents, formatMessage])
+  }, [authToken, appId, classGroup, calendarEvents, formatMessage, currentMemberId, currentMember])
 
   const handlePublish = useCallback(async () => {
     if (!classGroup) {

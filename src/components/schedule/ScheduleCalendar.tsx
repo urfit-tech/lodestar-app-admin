@@ -4,7 +4,7 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Button, message, Space, Switch, Tooltip, Typography } from 'antd'
+import { Button, Space, Switch, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
@@ -20,7 +20,26 @@ dayjs.extend(isSameOrBefore)
 
 const CalendarWrapper = styled.div`
   .fc {
-    height: 600px;
+    width: 100% !important;
+  }
+
+  .fc-scrollgrid {
+    width: 100% !important;
+  }
+
+  .fc-scrollgrid-section > * {
+    width: 100% !important;
+  }
+
+  .fc-scrollgrid table,
+  .fc-col-header,
+  .fc-col-header table,
+  .fc-timegrid-body,
+  .fc-timegrid-body table,
+  .fc-timegrid-slots,
+  .fc-timegrid-slots table {
+    width: 100% !important;
+    table-layout: fixed !important;
   }
 
   .fc-timegrid-slot {
@@ -293,87 +312,19 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     }
   }, [viewDate, onWeekChange])
 
-  // Check if clicked time is within any visible teacher's open time
-  // Uses FullCalendar's rendered events which properly handles rrule expansion
-  const isInTeacherOpenTime = useCallback(
-    (clickedTime: Date): boolean => {
-      // If no teachers selected, skip this check
-      if (selectedTeachers.length === 0) return true
-
-      // If no teacher open time events, skip this check
-      if (teacherOpenTimeEvents.length === 0) return true
-
-      const calendarApi = calendarRef.current?.getApi()
-      if (!calendarApi) return true
-
-      const clickedMoment = dayjs(clickedTime)
-
-      // Get all rendered events from FullCalendar (includes expanded rrule instances)
-      const allEvents = calendarApi.getEvents()
-
-      // Find background events (open time) that belong to visible teachers
-      for (const event of allEvents) {
-        // Only check background events (open time)
-        if (event.display !== 'background') continue
-
-        // Check if this is a teacher open time event
-        const teacherIndex = event.extendedProps?.teacherIndex
-        if (teacherIndex === undefined) continue
-
-        // Get the teacher ID from the original event
-        const teacherId = selectedTeachers[teacherIndex]?.id
-        if (!teacherId || !visibleOpenTimeTeacherIds.has(teacherId)) continue
-
-        // Check if clicked time falls within this event
-        const eventStart = dayjs(event.start)
-        const eventEnd = dayjs(event.end)
-
-        if (clickedMoment.isSameOrAfter(eventStart) && clickedMoment.isBefore(eventEnd)) {
-          return true
-        }
-      }
-      return false
-    },
-    [teacherOpenTimeEvents, visibleOpenTimeTeacherIds, selectedTeachers],
-  )
-
-  // Check if clicked time is within student's open time
-  // Uses FullCalendar's rendered events which properly handles rrule expansion
-  const isInStudentOpenTime = useCallback(
-    (clickedTime: Date): boolean => {
-      // If no student open time events or display is off, skip this check
-      if (studentOpenTimeEvents.length === 0 || !showStudentOpenTime) return true
-
-      const calendarApi = calendarRef.current?.getApi()
-      if (!calendarApi) return true
-
-      const clickedMoment = dayjs(clickedTime)
-
-      // Get all rendered events from FullCalendar (includes expanded rrule instances)
-      const allEvents = calendarApi.getEvents()
-
-      // Find background events (open time) that belong to the student
-      for (const event of allEvents) {
-        // Only check background events (open time)
-        if (event.display !== 'background') continue
-
-        // Check if this is a student open time event (has status in extendedProps)
-        const status = event.extendedProps?.status
-        const role = event.extendedProps?.role
-        if (status !== 'open' && role !== 'available') continue
-
-        // Check if clicked time falls within this event
-        const eventStart = dayjs(event.start)
-        const eventEnd = dayjs(event.end)
-
-        if (clickedMoment.isSameOrAfter(eventStart) && clickedMoment.isBefore(eventEnd)) {
-          return true
-        }
-      }
-      return false
-    },
-    [studentOpenTimeEvents, showStudentOpenTime],
-  )
+  // Listen for container/window resize to update calendar size
+  useEffect(() => {
+    const handleResize = () => {
+      calendarRef.current?.getApi().updateSize()
+    }
+    window.addEventListener('resize', handleResize)
+    // Also trigger once after mount to ensure correct initial size
+    const timeoutId = setTimeout(handleResize, 100)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(timeoutId)
+    }
+  }, [])
 
   const handleDateClick = useCallback(
     (info: DateClickArg) => {
@@ -406,25 +357,9 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         return // Cannot schedule on this slot
       }
 
-      // Check if clicked time is within open time slots
-      const inStudentOpenTime = isInStudentOpenTime(info.date)
-      const inTeacherOpenTime = isInTeacherOpenTime(info.date)
-
-      if (!inStudentOpenTime || !inTeacherOpenTime) {
-        const reasons: string[] = []
-        if (!inStudentOpenTime) {
-          reasons.push(formatMessage(scheduleMessages.Calendar.notInStudentOpenTime))
-        }
-        if (!inTeacherOpenTime) {
-          reasons.push(formatMessage(scheduleMessages.Calendar.notInTeacherOpenTime))
-        }
-        message.warning(reasons.join('、'))
-        return // Cannot schedule outside open time
-      }
-
       onDateClick?.(info.date)
     },
-    [holidays, excludedDates, events, onDateClick, isInStudentOpenTime, isInTeacherOpenTime, formatMessage],
+    [holidays, excludedDates, events, onDateClick],
   )
 
   const handleEventClick = useCallback(
@@ -550,7 +485,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
 
   return (
     <CalendarWrapper>
-      <CalendarHeader>
+        <CalendarHeader>
         <Space>
           <Button icon={<LeftOutlined />} onClick={() => navigateWeek('prev')}>
             {formatMessage(scheduleMessages.Calendar.prevWeek)}

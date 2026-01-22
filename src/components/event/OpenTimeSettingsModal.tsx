@@ -1,28 +1,14 @@
 import { CopyOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, DatePicker, message, Modal, Select, Space, Tooltip, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, message, Modal, Select, Space, Tooltip } from 'antd'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
-
-import {
-  createEmptyWeeklySchedule,
-  DAY_LABELS,
-  DaySchedule,
-  RepeatConfig,
-  TIME_OPTIONS,
-  TimeSlot,
-  WeeklySchedule,
-} from './openTimeSchedule.type'
-import {
-  compareTimeStrings,
-  getAvailableEndTimeOptions,
-  getAvailableStartTimeOptions,
-  isTimeSlotOverlapping,
-  timeStringToMinutes,
-} from './openTimeSchedule.utils'
 import memberMessages from '../member/translation'
+import { createEmptyWeeklySchedule, DaySchedule, RepeatConfig, TimeSlot, TIME_OPTIONS, WeeklySchedule } from './openTimeSchedule.type'
+import { compareTimeStrings, getAvailableEndTimeOptions, getAvailableStartTimeOptions, isTimeSlotOverlapping, timeStringToMinutes } from './openTimeSchedule.utils'
+
 
 const ModalContent = styled.div`
   max-height: 60vh;

@@ -1,20 +1,15 @@
 import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Card, Checkbox, Empty, Table, Tabs, Typography } from 'antd'
+import { Checkbox, Empty, Table, Tabs, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { Order, ScheduleType } from '../../types/schedule'
+import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
 
 const { TabPane } = Tabs
-
-const PanelCard = styled(Card)`
-  .ant-card-body {
-    padding: 16px;
-  }
-`
 
 const UnpaidIcon = styled(ExclamationCircleFilled)`
   color: #ff4d4f;
@@ -175,16 +170,16 @@ const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
 
   if (orders.length === 0) {
     return (
-      <PanelCard title={formatMessage(scheduleMessages.OrderSelection.title)} size="small">
+      <ScheduleCard title={formatMessage(scheduleMessages.OrderSelection.title)} size="small">
         <EmptyWrapper>
           <Empty description="無可用訂單" />
         </EmptyWrapper>
-      </PanelCard>
+      </ScheduleCard>
     )
   }
 
   return (
-    <PanelCard title={formatMessage(scheduleMessages.OrderSelection.title)} size="small">
+    <ScheduleCard title={formatMessage(scheduleMessages.OrderSelection.title)} size="small">
       <SubTitle type="secondary">{formatMessage(scheduleMessages.OrderSelection.subtitle)}</SubTitle>
 
       <Tabs defaultActiveKey={availableLanguages[0]}>
@@ -218,7 +213,7 @@ const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
           )
         })}
       </Tabs>
-    </PanelCard>
+    </ScheduleCard>
   )
 }
 

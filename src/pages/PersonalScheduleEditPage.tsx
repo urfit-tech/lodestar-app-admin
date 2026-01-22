@@ -1,4 +1,4 @@
-import { Button, Col, message, Row, Space, Spin } from 'antd'
+import { Button, Col, Collapse, message, Row, Space, Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -6,13 +6,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageBlock, AdminPageTitle } from '../components/admin'
+import { AdminPageTitle } from '../components/admin'
 import { GeneralEventApi } from '../components/event/events.type'
 import AdminLayout from '../components/layout/AdminLayout'
 import {
   ArrangeCourseModal,
+  CollapsibleScheduleCard,
   OrderSelectionPanel,
   ScheduleCalendar,
+  ScheduleCard,
   ScheduleConditionPanel,
   scheduleMessages,
   StudentInfoPanel,
@@ -24,15 +26,20 @@ import {
   getResourceByTypeTargetFetcher,
   updateEvent,
 } from '../helpers/eventHelper/eventFetchers'
+import { useClassrooms } from '../hooks/classroom'
 import {
+  useDeleteScheduleTemplate,
   useHolidays,
-  useMemberOrders,
+  useSaveScheduleTemplate,
   useScheduleExpirySettings,
+  useScheduleTemplates,
   useStudentOpenTimeEvents,
   useTeacherOpenTimeEvents,
 } from '../hooks/scheduleManagement'
+import { CourseRowData } from '../types/schedule'
+import { useMemberForSchedule } from '../hooks/schedule'
 import { CalendarCheckFillIcon } from '../images/icon'
-import { Language, ScheduleCondition, ScheduleEvent, scheduleStore, Student, Teacher } from '../types/schedule'
+import { Language, ScheduleCondition, ScheduleEvent, scheduleStore, ScheduleTemplateProps, Student, Teacher } from '../types/schedule'
 import type { CourseRow } from '../components/schedule/ArrangeCourseModal'
 
 const PageWrapper = styled.div`
@@ -83,7 +90,7 @@ const PersonalScheduleEditPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { memberId } = useParams<{ memberId: string }>()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
 
@@ -117,7 +124,6 @@ const PersonalScheduleEditPage: React.FC = () => {
         id: memberId,
         name: '', // Will be populated from API
         email: '',
-        campus: '',
       })
       setSelectedOrderIds([])
       setSelectedTeachers([])
@@ -125,7 +131,11 @@ const PersonalScheduleEditPage: React.FC = () => {
   }, [memberId])
 
   // Get orders for selected student from GraphQL
-  const { orders: studentOrders, loading: ordersLoading, memberInfo } = useMemberOrders(memberId, 'personal')
+  const {
+    member,
+    orders: studentOrders,
+    loading: ordersLoading,
+  } = useMemberForSchedule(memberId)
 
   // Get schedule expiry settings for calculating order expiry dates
   const { getMaxExpiryDateForLanguage } = useScheduleExpirySettings('personal')
@@ -152,6 +162,9 @@ const PersonalScheduleEditPage: React.FC = () => {
 
   // Get student open time events (background events for calendar)
   const { events: studentOpenTimeEvents, refetch: refetchStudentEvents } = useStudentOpenTimeEvents(memberId)
+
+  // Get classrooms for selection
+  const { classrooms } = useClassrooms()
 
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
@@ -188,20 +201,35 @@ const PersonalScheduleEditPage: React.FC = () => {
     return usedMinutes
   }, [studentOpenTimeEvents])
 
-  // Merge memberInfo with selectedStudent for display
+  // Merge member data with selectedStudent for display
   const studentWithInfo = useMemo<Student | undefined>(() => {
     if (!selectedStudent) return undefined
+    const memberProps = member?.member_properties || {}
     return {
       ...selectedStudent,
-      name: memberInfo?.name || selectedStudent.name || '',
-      email: memberInfo?.email || selectedStudent.email || '',
+      name: member?.name || selectedStudent.name || '',
+      email: member?.email || selectedStudent.email || '',
+      internalNote: memberProps['內部備註'] || '',
+      preferredTeachers: memberProps['希望安排的老師'] || '',
+      excludedTeachers: memberProps['不希望安排的老師'] || '',
     }
-  }, [selectedStudent, memberInfo])
+  }, [selectedStudent, member])
 
   // Get selected orders
   const selectedOrders = useMemo(() => {
     return studentOrders.filter(o => selectedOrderIds.includes(o.id))
   }, [studentOrders, selectedOrderIds])
+
+  // Template hooks - get templates for the selected language
+  const currentLanguage = useMemo(() => {
+    if (selectedOrders.length === 0) return undefined
+    const languages = [...new Set(selectedOrders.map(o => o.language).filter(Boolean))]
+    return languages[0] // Use first language from selected orders
+  }, [selectedOrders])
+
+  const { templates, refetch: refetchTemplates } = useScheduleTemplates(currentLanguage)
+  const { saveTemplate } = useSaveScheduleTemplate()
+  const { deleteTemplate } = useDeleteScheduleTemplate()
 
   const selectedOrdersForLimits = useMemo(() => {
     return selectedOrders.map(order => {
@@ -267,6 +295,47 @@ const PersonalScheduleEditPage: React.FC = () => {
     setDraftRows(rows)
   }, [])
 
+  // Template handlers
+  const handleSaveTemplate = useCallback(
+    async (name: string, rows: CourseRow[]) => {
+      if (!currentLanguage) {
+        message.error('請先選擇訂單')
+        return
+      }
+
+      // Convert CourseRow[] to CourseRowData[]
+      const courseRows: CourseRowData[] = rows.map(row => ({
+        weekday: row.weekday,
+        duration: row.duration,
+        startTime: row.startTime.format('HH:mm'),
+        material: row.material,
+        materialType: row.materialType,
+        customMaterial: row.customMaterial,
+        teacherId: row.teacherId,
+        classroomIds: row.classroomIds,
+        needsOnlineRoom: row.needsOnlineRoom,
+      }))
+
+      await saveTemplate(name, currentLanguage, courseRows)
+      refetchTemplates()
+    },
+    [currentLanguage, saveTemplate, refetchTemplates],
+  )
+
+  const handleDeleteTemplate = useCallback(
+    async (templateId: string) => {
+      await deleteTemplate(templateId)
+      refetchTemplates()
+    },
+    [deleteTemplate, refetchTemplates],
+  )
+
+  const handleApplyTemplate = useCallback((template: ScheduleTemplateProps) => {
+    // Template application is handled internally by ArrangeCourseModal
+    // This callback is for any additional parent-level logic if needed
+    console.log('Template applied:', template.name)
+  }, [])
+
   // Handlers
   const handleBack = useCallback(() => {
     history.push('/class-schedule/personal')
@@ -287,6 +356,7 @@ const PersonalScheduleEditPage: React.FC = () => {
   const handleDateClick = useCallback((date: Date) => {
     setSelectedDate(date)
     setEditingEvent(undefined)
+    setDraftRows(undefined) // Clear draft to use the new clicked date/time
     setArrangeModalVisible(true)
   }, [])
 
@@ -312,7 +382,7 @@ const PersonalScheduleEditPage: React.FC = () => {
             status: 'pending',
             studentId: selectedStudent?.id,
             orderIds: selectedOrderIds,
-            campus: selectedStudent?.campus || '',
+            campus: '',
             language: (selectedLanguages[0] || 'zh-TW') as Language,
             createdBy: 'current-user',
             createdByEmail: 'user@example.com',
@@ -388,6 +458,10 @@ const PersonalScheduleEditPage: React.FC = () => {
               material: event.material,
               needsOnlineRoom: event.needsOnlineRoom,
               clientEventId: event.id,
+              createdBy: currentMemberId || '',
+              createdByEmail: currentMember?.email || '',
+              updatedBy: currentMemberId || '',
+              updatedByEmail: currentMember?.email || '',
             },
           },
         } as GeneralEventApi
@@ -477,7 +551,7 @@ const PersonalScheduleEditPage: React.FC = () => {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
     }
-  }, [authToken, appId, selectedStudent, calendarEvents, orderMap, refetchStudentEvents])
+  }, [authToken, appId, selectedStudent, calendarEvents, orderMap, refetchStudentEvents, currentMemberId, currentMember])
 
   const handlePublish = useCallback(async () => {
     // Check if all orders are completed (status === 'SUCCESS')
@@ -553,7 +627,7 @@ const PersonalScheduleEditPage: React.FC = () => {
     return selectedOrders.every(o => o.status === 'SUCCESS') && (hasUnpublishedEvents || hasLocalPreScheduled)
   }, [selectedOrders, studentOpenTimeEvents, calendarEvents])
 
-  if (ordersLoading && !memberInfo) {
+  if (ordersLoading && !member) {
     return (
       <AdminLayout>
         <LoadingWrapper>
@@ -614,31 +688,33 @@ const PersonalScheduleEditPage: React.FC = () => {
         </Row>
 
         {/* Teacher List */}
-        <AdminPageBlock className="mb-4">
-          <TeacherListPanel
-            languages={selectedLanguages}
-            campus={selectedStudent?.campus}
-            selectedTeachers={selectedTeachers}
-            onTeacherSelect={handleTeachersChange}
-            useRealData={true}
-          />
-        </AdminPageBlock>
+        <CollapsibleScheduleCard defaultActiveKey={['teacher']} className="mb-4">
+          <Collapse.Panel header={formatMessage(scheduleMessages.TeacherList.title)} key="teacher">
+            <TeacherListPanel
+              languages={selectedLanguages}
+              campus=""
+              selectedTeachers={selectedTeachers}
+              onTeacherSelect={handleTeachersChange}
+              useRealData={true}
+            />
+          </Collapse.Panel>
+        </CollapsibleScheduleCard>
 
         {/* Calendar */}
-        <AdminPageBlock>
+        <ScheduleCard size="small" title={formatMessage(scheduleMessages.Calendar.title)}>
           <ScheduleCalendar
             scheduleType="personal"
             events={calendarEvents}
             selectedTeachers={selectedTeachers}
             teacherOpenTimeEvents={teacherOpenTimeEvents}
             studentOpenTimeEvents={studentOpenTimeEvents}
-            studentName={memberInfo?.name || selectedStudent?.name}
+            studentName={member?.name || selectedStudent?.name}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />
-        </AdminPageBlock>
+        </ScheduleCard>
       </PageWrapper>
 
       {/* Arrange Course Modal */}
@@ -647,7 +723,7 @@ const PersonalScheduleEditPage: React.FC = () => {
         scheduleType="personal"
         selectedDate={selectedDate}
         selectedTeachers={selectedTeachers}
-        campus={selectedStudent?.campus || ''}
+        campus=""
         language={(selectedLanguages[0] || 'zh-TW') as Language}
         orderMaterials={orderMaterials}
         existingEvent={editingEvent}
@@ -659,12 +735,18 @@ const PersonalScheduleEditPage: React.FC = () => {
         studentOpenTimeEvents={studentOpenTimeEvents}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
+        classrooms={classrooms}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)
         }}
         onSave={handleSaveEvents}
         onSaveDraft={handleSaveDraft}
+        // Template props
+        templates={templates}
+        onSaveTemplate={handleSaveTemplate}
+        onApplyTemplate={handleApplyTemplate}
+        onDeleteTemplate={handleDeleteTemplate}
       />
     </AdminLayout>
   )

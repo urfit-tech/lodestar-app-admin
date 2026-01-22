@@ -1,5 +1,5 @@
 import { DeleteOutlined, ExclamationCircleFilled, PlusOutlined } from '@ant-design/icons'
-import { Button, Card, Empty, Input, message, Popconfirm, Space, Spin, Table, Typography } from 'antd'
+import { Button, Empty, Input, message, Popconfirm, Space, Spin, Table, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -7,6 +7,7 @@ import { useIntl } from 'react-intl'
 import { useOrdersByIds, useRemoveOrderFromClassGroup } from '../../hooks/scheduleManagement'
 import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
+import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
 
 const { Search } = Input
@@ -328,17 +329,17 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
 
   if (loading) {
     return (
-      <Card size="small" title={cardTitle} style={{ height: '100%' }}>
+      <ScheduleCard size="small" title={cardTitle}>
         <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
           <Spin />
         </div>
-      </Card>
+      </ScheduleCard>
     )
   }
 
   return (
     <>
-      <Card size="small" title={cardTitle} style={{ height: '100%' }}>
+      <ScheduleCard size="small" title={cardTitle}>
         <div style={{ marginBottom: 12 }}>
           <Search
             placeholder={formatMessage(scheduleMessages['*'].search)}
@@ -371,7 +372,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
             }}
           />
         )}
-      </Card>
+      </ScheduleCard>
 
       {classGroupId && (
         <AddOrdersToClassModal

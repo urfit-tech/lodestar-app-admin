@@ -1,9 +1,10 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Card, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Typography } from 'antd'
+import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Typography } from 'antd'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useCreateClassGroup, useOrdersByIds, usePermissionGroupsAsCampuses } from '../../hooks/scheduleManagement'
 import { ClassGroup, Language } from '../../types/schedule'
+import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
 
 interface ClassSettingsPanelProps {
@@ -215,7 +216,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
 
   return (
     <>
-      <Card size="small" title={cardTitle} style={{ height: '100%' }}>
+      <ScheduleCard size="small" title={cardTitle}>
         <Form layout="vertical" size="middle">
           {/* Row 1: 學期班名稱 */}
           <Form.Item label={formatMessage(scheduleMessages.ClassSettings.className)}>
@@ -310,7 +311,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
             </Col>
           </Row>
         </Form>
-      </Card>
+      </ScheduleCard>
 
       {/* Campus Change Confirmation Modal */}
       <Modal

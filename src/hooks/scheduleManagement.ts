@@ -18,18 +18,18 @@ import { scheduleStore } from '../types/schedule'
 import {
   Campus,
   ClassGroup,
+  CourseRowData,
   Holiday,
   Language,
   Order,
   ScheduleCondition,
   ScheduleEvent,
   ScheduleTemplate,
+  ScheduleTemplateProps,
   ScheduleType,
   Student,
   Teacher,
 } from '../types/schedule'
-
-import hasura from '../hasura'
 
 // Type definitions for order_log / order_products GraphQL queries
 interface OrderProductOptions {
@@ -85,22 +85,6 @@ interface OrderLogData {
     email: string
     picture_url?: string | null
   }
-}
-
-interface MemberPublicData {
-  id: string
-  name: string
-  username: string
-  email: string
-}
-
-interface GetMemberOrdersData {
-  member_public: MemberPublicData[]
-  order_log: OrderLogData[]
-}
-
-interface GetMemberOrdersVariables {
-  memberId: string
 }
 
 // =============================================================================
@@ -179,8 +163,10 @@ interface TeacherFromMember {
   name: string
   email: string
   pictureUrl: string | null
-  campus: string // permission_group name
-  campusId: string // permission_group id
+  campus: string // permission_group name（主要校區，向後相容）
+  campusId: string // permission_group id（主要校區 ID）
+  campusIds: string[] // 所有校區 ID（支援多校區）
+  campusNames: string[] // 所有校區名稱（支援多校區）
   languages: string[] // from member_tags
   traits: string[] // from member_specialities
   note: string // from member_property (內部備註)
@@ -323,7 +309,8 @@ export const useTeachersFromMembers = (
 
     if (!memberPermissionGroups) return []
 
-    // Create a map to deduplicate members (a member might be in multiple permission groups)
+    // Create a map to deduplicate members and aggregate their campuses
+    // (a member might be in multiple permission groups / campuses)
     const memberMap = new Map<string, TeacherFromMember>()
 
     memberPermissionGroups.forEach(mpg => {
@@ -333,8 +320,11 @@ export const useTeachersFromMembers = (
       // If member already exists, merge the campus
       if (memberMap.has(memberId)) {
         const existing = memberMap.get(memberId)!
-        // Optionally append campus if different
-        if (!existing.campus.includes(mpg.permission_group.name)) {
+        // Add new campus if not already included
+        if (!existing.campusIds.includes(mpg.permission_group.id)) {
+          existing.campusIds.push(mpg.permission_group.id)
+          existing.campusNames.push(mpg.permission_group.name)
+          // Also update the legacy campus field (comma-separated)
           existing.campus += `, ${mpg.permission_group.name}`
         }
         return
@@ -367,6 +357,8 @@ export const useTeachersFromMembers = (
         pictureUrl: member.picture_url,
         campus: mpg.permission_group.name,
         campusId: mpg.permission_group.id,
+        campusIds: [mpg.permission_group.id],
+        campusNames: [mpg.permission_group.name],
         languages,
         traits,
         note,
@@ -412,137 +404,6 @@ export const useTeachersFromMembers = (
     availableLanguages,
     availableTraits,
   }
-}
-
-// GraphQL query to get member orders for schedule management
-export const GET_MEMBER_ORDERS_FOR_SCHEDULE = gql`
-  query GetMemberOrdersForSchedule($memberId: String!) {
-    member_public(where: { id: { _eq: $memberId } }) {
-      id
-      name
-      username
-      email
-    }
-    order_log(where: { member_id: { _eq: $memberId } }, order_by: { created_at: desc }) {
-      id
-      status
-      member_id
-      created_at
-      updated_at
-      order_products {
-        id
-        name
-        price
-        options
-        started_at
-        ended_at
-      }
-    }
-  }
-`
-
-/**
- * Map class_type from order_products options to ScheduleType
- */
-const mapClassTypeToScheduleType = (classType: string | undefined): ScheduleType | undefined => {
-  if (!classType) return undefined
-  switch (classType) {
-    case '個人班':
-      return 'personal'
-    case '學期班':
-      return 'semester'
-    case '小組班':
-      return 'group'
-    default:
-      return undefined
-  }
-}
-
-/**
- * Hook to get orders by member from GraphQL (real data from order_log)
- */
-export const useMemberOrders = (memberId: string | undefined, scheduleType?: ScheduleType) => {
-  const { data, loading, error, refetch } = useQuery<GetMemberOrdersData, GetMemberOrdersVariables>(
-    GET_MEMBER_ORDERS_FOR_SCHEDULE,
-    {
-      variables: {
-        memberId: memberId || '',
-      },
-      skip: !memberId,
-    },
-  )
-
-  const orders: Order[] = useMemo(() => {
-    if (!data?.order_log) return []
-
-    const result: Order[] = []
-
-    data.order_log.forEach(orderLog => {
-      // Extract materials from order_products where options.options.product === '教材'
-      const materials: string[] = orderLog.order_products
-        .filter(p => p.options?.options?.product === '教材')
-        .map(p => p.options?.title || p.name)
-        .filter(Boolean)
-
-      // Each order_product can be a separate "order" for scheduling purposes
-      orderLog.order_products.forEach(product => {
-        const options = product.options?.options
-        // Skip if options is not available
-        if (!options) return
-
-        // Skip material products - they are not orders for scheduling
-        if (options.product === '教材') return
-
-        const productClassType = mapClassTypeToScheduleType(options.class_type)
-
-        // Filter by scheduleType if provided (個人班/學期班/小組班)
-        if (scheduleType && productClassType !== scheduleType) {
-          return
-        }
-
-        // Calculate available minutes from total_sessions
-        const totalSessions = options?.total_sessions?.max || 0
-        const totalMinutes = totalSessions * 50 // Each session is 50 minutes
-
-        // Parse dates
-        const createdAt = new Date(orderLog.created_at)
-        // 課時到期日：只在 ended_at 有值時才設定（開課日 + 有效天數，預排/發布後才有值）
-        const expiresAt = product.ended_at ? new Date(product.ended_at) : undefined
-
-        result.push({
-          id: product.id,
-          studentId: orderLog.member_id,
-          productName: product.name,
-          language: options?.language || '', // 保留原始語言值，如 '中文'、'英文'
-          type: productClassType || 'personal',
-          totalMinutes,
-          usedMinutes: 0, // TODO: Calculate from scheduled events
-          availableMinutes: totalMinutes, // TODO: Calculate remaining minutes
-          createdAt,
-          expiresAt,
-          lastClassDate: undefined, // TODO: Get from schedule events
-          status: orderLog.status, // Keep original status: 'SUCCESS', 'UNPAID', etc.
-          campus: '', // TODO: Get from member or order data
-          materials, // 同一訂單中的教材列表
-        })
-      })
-    })
-
-    return result
-  }, [data, scheduleType])
-
-  // Get member info from query result
-  const memberInfo = useMemo(() => {
-    if (!data?.member_public?.[0]) return null
-    const member = data.member_public[0]
-    return {
-      id: member.id,
-      name: member.name || member.username || '',
-      email: member.email || '',
-    }
-  }, [data])
-
-  return { orders, loading, error, refetch, memberInfo }
 }
 
 // GraphQL query to get members by IDs (for student list with real data)
@@ -970,18 +831,6 @@ export const useHolidays = () => {
 }
 
 /**
- * Hook to get schedule template
- */
-export const useScheduleTemplate = (studentId: string | undefined, language: Language | undefined) => {
-  const template = useMemo(() => {
-    if (!studentId || !language) return undefined
-    return scheduleStore.getTemplate(studentId, language)
-  }, [studentId, language])
-
-  return { template, loading: false }
-}
-
-/**
  * Hook to check for conflicts
  */
 export const useConflictCheck = () => {
@@ -1358,32 +1207,13 @@ export const useClassGroupOrders = () => {
   }
 }
 
-/**
- * Hook to save schedule template
- */
-export const useSaveScheduleTemplate = () => {
-  const [loading, setLoading] = useState(false)
-
-  const saveTemplate = useCallback(async (template: Omit<ScheduleTemplate, 'id'>): Promise<ScheduleTemplate> => {
-    setLoading(true)
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const saved = scheduleStore.saveTemplate(template)
-        setLoading(false)
-        resolve(saved)
-      }, 200)
-    })
-  }, [])
-
-  return { saveTemplate, loading }
-}
-
 // =============================================================================
 // Utility Hooks
 // =============================================================================
 
 /**
  * Hook to calculate schedule based on conditions
+ * @deprecated Use the new template system with CourseRowData instead
  */
 export const useScheduleCalculation = () => {
   const { holidays } = useHolidays()
@@ -2029,8 +1859,8 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
             Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
           material: (metadata.material as string) || event.title || '',
           needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
-          createdBy: '',
-          createdByEmail: '',
+          createdBy: (metadata.createdBy as string) || (metadata.updatedBy as string) || '',
+          createdByEmail: (metadata.createdByEmail as string) || (metadata.updatedByEmail as string) || '',
           updatedAt: new Date(event.updated_at),
           isExternal: metadata.classMode === '外課' || metadata.is_external === true,
         }
@@ -2236,10 +2066,21 @@ export const useClassGroupEvents = (classId: string | undefined) => {
 }
 
 const PUBLISH_EVENT = gql`
-  mutation PublishEvent($eventId: uuid!, $publishedAt: timestamptz!) {
-    update_event_by_pk(pk_columns: { id: $eventId }, _set: { published_at: $publishedAt }) {
+  mutation PublishEvent(
+    $eventId: uuid!
+    $publishedAt: timestamptz!
+    $updatedAt: timestamptz!
+    $metadata: jsonb
+  ) {
+    update_event_by_pk(
+      pk_columns: { id: $eventId }
+      _set: { published_at: $publishedAt, updated_at: $updatedAt }
+      _append: { metadata: $metadata }
+    ) {
       id
       published_at
+      updated_at
+      metadata
     }
   }
 `
@@ -2252,19 +2093,26 @@ interface PublishEventData {
 }
 
 export const usePublishEvent = () => {
+  const { currentMemberId, currentMember } = useAuth()
   const [publishEventMutation, { loading }] = useMutation<PublishEventData>(PUBLISH_EVENT)
 
   const publishEvent = useCallback(
     async (eventId: string, publishedAt: Date = new Date()) => {
+      const now = new Date()
       const result = await publishEventMutation({
         variables: {
           eventId,
           publishedAt: publishedAt.toISOString(),
+          updatedAt: now.toISOString(),
+          metadata: {
+            updatedBy: currentMemberId || '',
+            updatedByEmail: currentMember?.email || '',
+          },
         },
       })
       return result.data?.update_event_by_pk
     },
-    [publishEventMutation],
+    [publishEventMutation, currentMemberId, currentMember],
   )
 
   const publishEvents = useCallback(
@@ -2327,6 +2175,8 @@ export interface ClassGroupEventsSummary {
     studentIds?: string[]
     createdBy?: string
     createdByEmail?: string
+    updatedBy?: string
+    updatedByEmail?: string
     updatedAt: Date
   } | null
   studentIds: string[]
@@ -2372,6 +2222,7 @@ export const useMultipleClassGroupsEvents = (
         (metadata.studentIds as string[]).forEach(id => ids.add(id))
       }
       if (metadata?.createdBy) ids.add(metadata.createdBy)
+      if (metadata?.updatedBy) ids.add(metadata.updatedBy)
     })
     return Array.from(ids)
   }, [eventsData])
@@ -2470,6 +2321,8 @@ export const useMultipleClassGroupsEvents = (
           studentIds: eventStudentIds,
           createdBy: event.metadata?.createdBy,
           createdByEmail: event.metadata?.createdByEmail,
+          updatedBy: event.metadata?.updatedBy,
+          updatedByEmail: event.metadata?.updatedByEmail,
           updatedAt: new Date(event.updated_at),
         }
       }
@@ -2487,6 +2340,265 @@ export const useMultipleClassGroupsEvents = (
   }
 }
 
+const GET_SCHEDULE_TEMPLATES = gql`
+  query GetScheduleTemplates($appId: String!, $memberId: String!, $language: String) {
+    schedule_template(
+      where: {
+        app_id: { _eq: $appId }
+        member_id: { _eq: $memberId }
+        language: { _eq: $language }
+      }
+      order_by: { updated_at: desc }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const INSERT_SCHEDULE_TEMPLATE = gql`
+  mutation InsertScheduleTemplate(
+    $memberId: String!
+    $name: String!
+    $language: String!
+    $rrule: String
+    $courseRows: jsonb!
+  ) {
+    insert_schedule_template_one(
+      object: {
+        member_id: $memberId
+        name: $name
+        language: $language
+        rrule: $rrule
+        course_rows: $courseRows
+      }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const UPDATE_SCHEDULE_TEMPLATE = gql`
+  mutation UpdateScheduleTemplate(
+    $id: uuid!
+    $name: String
+    $rrule: String
+    $courseRows: jsonb
+  ) {
+    update_schedule_template_by_pk(
+      pk_columns: { id: $id }
+      _set: { name: $name, rrule: $rrule, course_rows: $courseRows, updated_at: "now()" }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const DELETE_SCHEDULE_TEMPLATE = gql`
+  mutation DeleteScheduleTemplate($id: uuid!) {
+    update_schedule_template_by_pk(
+      pk_columns: { id: $id }
+      _set: { deleted_at: "now()" }
+    ) {
+      id
+    }
+  }
+`
+
+interface ScheduleTemplateData {
+  schedule_template: Array<{
+    id: string
+    app_id: string
+    member_id: string
+    name: string
+    language: string
+    rrule?: string
+    course_rows: CourseRowData[]
+    created_at: string
+    updated_at: string
+  }>
+}
+
+/**
+ * Hook to get schedule templates for the current user
+ * @param language - Filter by language
+ */
+export const useScheduleTemplates = (language?: string) => {
+  const { id: appId } = useApp()
+  const { currentMemberId } = useAuth()
+
+  const { data, loading, error, refetch } = useQuery<ScheduleTemplateData>(GET_SCHEDULE_TEMPLATES, {
+    variables: {
+      appId,
+      memberId: currentMemberId,
+      language: language || undefined,
+    },
+    skip: !appId || !currentMemberId,
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const templates: ScheduleTemplateProps[] = useMemo(() => {
+    if (!data?.schedule_template) return []
+    return data.schedule_template.map(t => ({
+      id: t.id,
+      appId: t.app_id,
+      memberId: t.member_id,
+      name: t.name,
+      language: t.language as Language,
+      rrule: t.rrule,
+      courseRows: t.course_rows,
+      createdAt: new Date(t.created_at),
+      updatedAt: new Date(t.updated_at),
+    }))
+  }, [data])
+
+  return {
+    templates,
+    loading,
+    error,
+    refetch,
+  }
+}
+
+/**
+ * Generate rrule from course rows based on weekdays
+ */
+const generateRruleFromRows = (rows: CourseRowData[]): string => {
+  const weekdayToRruleByday: Record<number, string> = {
+    0: 'SU',
+    1: 'MO',
+    2: 'TU',
+    3: 'WE',
+    4: 'TH',
+    5: 'FR',
+    6: 'SA',
+    7: 'SU', // ISO weekday 7 = Sunday
+  }
+
+  const uniqueWeekdays = [...new Set(rows.map(r => r.weekday))]
+  const bydayValues = uniqueWeekdays
+    .map(w => weekdayToRruleByday[w % 7] || weekdayToRruleByday[w])
+    .filter(Boolean)
+    .join(',')
+
+  return bydayValues ? `FREQ=WEEKLY;BYDAY=${bydayValues}` : ''
+}
+
+/**
+ * Hook to save a new schedule template
+ * Note: app_id is automatically set by Hasura via session variable (X-Hasura-App-Id)
+ */
+export const useSaveScheduleTemplate = () => {
+  const { currentMemberId } = useAuth()
+  const [insertTemplate, { loading, error }] = useMutation(INSERT_SCHEDULE_TEMPLATE)
+
+  const saveTemplate = useCallback(
+    async (name: string, language: string, courseRows: CourseRowData[], rrule?: string) => {
+      if (!currentMemberId) {
+        throw new Error('Missing member ID')
+      }
+
+      // Auto-generate rrule if not provided
+      const finalRrule = rrule || generateRruleFromRows(courseRows)
+
+      const result = await insertTemplate({
+        variables: {
+          memberId: currentMemberId,
+          name,
+          language,
+          rrule: finalRrule || null,
+          courseRows,
+        },
+      })
+
+      return result.data?.insert_schedule_template_one
+    },
+    [currentMemberId, insertTemplate],
+  )
+
+  return {
+    saveTemplate,
+    loading,
+    error,
+  }
+}
+
+/**
+ * Hook to update an existing schedule template
+ */
+export const useUpdateScheduleTemplate = () => {
+  const [updateTemplate, { loading, error }] = useMutation(UPDATE_SCHEDULE_TEMPLATE)
+
+  const update = useCallback(
+    async (id: string, updates: { name?: string; courseRows?: CourseRowData[]; rrule?: string }) => {
+      const result = await updateTemplate({
+        variables: {
+          id,
+          name: updates.name || undefined,
+          courseRows: updates.courseRows || undefined,
+          rrule: updates.rrule || undefined,
+        },
+      })
+
+      return result.data?.update_schedule_template_by_pk
+    },
+    [updateTemplate],
+  )
+
+  return {
+    updateTemplate: update,
+    loading,
+    error,
+  }
+}
+
+/**
+ * Hook to delete a schedule template (soft delete)
+ */
+export const useDeleteScheduleTemplate = () => {
+  const [deleteTemplate, { loading, error }] = useMutation(DELETE_SCHEDULE_TEMPLATE)
+
+  const remove = useCallback(
+    async (id: string) => {
+      const result = await deleteTemplate({
+        variables: { id },
+      })
+
+      return result.data?.update_schedule_template_by_pk
+    },
+    [deleteTemplate],
+  )
+
+  return {
+    deleteTemplate: remove,
+    loading,
+    error,
+  }
+}
+
 // =============================================================================
 // Export types for convenience
 // =============================================================================
@@ -2500,7 +2612,9 @@ export type {
   ScheduleCondition,
   ScheduleEvent,
   ScheduleTemplate,
+  ScheduleTemplateProps,
   ScheduleType,
   Student,
   Teacher,
+  CourseRowData,
 }
