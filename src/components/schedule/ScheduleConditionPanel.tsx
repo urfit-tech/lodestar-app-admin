@@ -1,17 +1,12 @@
-import { Card, Checkbox, DatePicker, InputNumber, Radio, Space, Tag, Typography } from 'antd'
+import { Checkbox, DatePicker, InputNumber, Radio, Space, Tag, Typography } from 'antd'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useHolidays } from '../../hooks/scheduleManagement'
 import { Order, ScheduleCondition } from '../../types/schedule'
+import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
-
-const PanelCard = styled(Card)`
-  .ant-card-body {
-    padding: 16px;
-  }
-`
 
 const FieldRow = styled.div`
   margin-bottom: 16px;
@@ -235,7 +230,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   const isDisabled = selectedOrders.length === 0
 
   return (
-    <PanelCard title={formatMessage(scheduleMessages.ScheduleCondition.title)} size="small" style={{ height: '100%' }}>
+    <ScheduleCard title={formatMessage(scheduleMessages.ScheduleCondition.title)} size="small" style={{ height: '100%' }}>
       {/* Start Date */}
       <FieldRow>
         <FieldLabel>{formatMessage(scheduleMessages.ScheduleCondition.startDate)}</FieldLabel>
@@ -378,7 +373,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
           <WarningText>{formatMessage(scheduleMessages.ScheduleCondition.holidayWarning)}</WarningText>
         )}
       </FieldRow>
-    </PanelCard>
+    </ScheduleCard>
   )
 }
 

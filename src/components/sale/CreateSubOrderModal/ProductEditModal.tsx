@@ -1,12 +1,12 @@
 import { Button, Form, Input, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useState, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
-import AdminModal from '../../admin/AdminModal'
 import { commonMessages } from '../../../helpers/translation'
+import AdminModal from '../../admin/AdminModal'
 import saleMessages from '../translation'
-import { EditableOrderProduct } from './types'
 import ProductSelectWithoutParent from './ProductSelectWithoutParent'
+import { EditableOrderProduct } from './types'
 
 const ProductEditModal: React.VFC<{
   product: EditableOrderProduct
@@ -127,11 +127,7 @@ const ProductEditModal: React.VFC<{
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item
-          label="商品類型"
-          name="type"
-          rules={[{ required: true, message: '請選擇商品類型' }]}
-        >
+        <Form.Item label="商品類型" name="type" rules={[{ required: true, message: '請選擇商品類型' }]}>
           <Select onChange={handleTypeChange}>
             <Select.Option value="ProgramPlan">課程方案</Select.Option>
             <Select.Option value="ProgramPackagePlan">課程包方案</Select.Option>
@@ -148,8 +144,8 @@ const ProductEditModal: React.VFC<{
           label="商品目標"
           name="target"
           tooltip="根據商品類型選擇對應的商品"
-          normalize={(value) => (Array.isArray(value) ? value : value ? [value] : undefined)}
-          getValueFromEvent={(value) => (Array.isArray(value) ? value : value ? [value] : [])}
+          normalize={value => (Array.isArray(value) ? value : value ? [value] : undefined)}
+          getValueFromEvent={value => (Array.isArray(value) ? value : value ? [value] : [])}
         >
           <ProductSelectWithoutParent
             allowTypes={allowTypes}

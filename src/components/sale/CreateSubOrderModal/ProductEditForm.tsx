@@ -1,5 +1,5 @@
 import { Button, Form, Input, InputNumber, Select, Typography } from 'antd'
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../../helpers/translation'
 import saleMessages from '../translation'
@@ -66,7 +66,15 @@ const ProductEditForm: React.VFC<{
   const productAllowTypes = useMemo(() => getAllowTypesForProductType(productType), [productType])
 
   return (
-    <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid #d9d9d9', borderRadius: '4px', backgroundColor: '#fafafa' }}>
+    <div
+      style={{
+        marginBottom: '24px',
+        padding: '16px',
+        border: '1px solid #d9d9d9',
+        borderRadius: '4px',
+        backgroundColor: '#fafafa',
+      }}
+    >
       <Typography.Text strong style={{ display: 'block', marginBottom: '16px' }}>
         {formatMessage(saleMessages.SaleCollectionExpandRow.editOrderProduct)}
       </Typography.Text>
@@ -93,11 +101,7 @@ const ProductEditForm: React.VFC<{
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item
-          label="商品類型"
-          name="type"
-          rules={[{ required: true, message: '請選擇商品類型' }]}
-        >
+        <Form.Item label="商品類型" name="type" rules={[{ required: true, message: '請選擇商品類型' }]}>
           <Select onChange={handleProductTypeChange}>
             <Select.Option value="ProgramPlan">課程方案</Select.Option>
             <Select.Option value="ProgramPackagePlan">課程包方案</Select.Option>
@@ -114,8 +118,8 @@ const ProductEditForm: React.VFC<{
           label="商品目標"
           name="target"
           tooltip="根據商品類型選擇對應的商品"
-          normalize={(value) => (Array.isArray(value) ? value : value ? [value] : undefined)}
-          getValueFromEvent={(value) => (Array.isArray(value) ? value : value ? [value] : [])}
+          normalize={value => (Array.isArray(value) ? value : value ? [value] : undefined)}
+          getValueFromEvent={value => (Array.isArray(value) ? value : value ? [value] : [])}
         >
           <ProductSelectWithoutParent
             allowTypes={productAllowTypes}
@@ -129,9 +133,7 @@ const ProductEditForm: React.VFC<{
           />
         </Form.Item>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <Button onClick={onCancel}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
+          <Button onClick={onCancel}>{formatMessage(commonMessages.ui.cancel)}</Button>
           <Button type="primary" onClick={onSave}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>

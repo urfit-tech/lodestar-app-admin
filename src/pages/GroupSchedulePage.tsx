@@ -1,4 +1,3 @@
-import React from 'react'
 import { ClassScheduleListPage } from '../components/schedule'
 
 const GroupSchedulePage: React.FC = () => {

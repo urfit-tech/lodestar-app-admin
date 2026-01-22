@@ -6,35 +6,24 @@ import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Button, message, Space, Typography } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { RRule, rrulestr } from 'rrule'
 import styled from 'styled-components'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
-import { RRule, rrulestr } from 'rrule'
-
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import {
-  getDefaultResourceEventsFethcer,
-  createEventAndInviteResourceFetcher,
-  deleteEvent,
-  updateEvent,
-} from '../../helpers/eventHelper/eventFetchers'
-import { GeneralEventApi } from './events.type'
-import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
-import { DeleteModalInfo, RepeatConfig, WeeklySchedule } from './openTimeSchedule.type'
-import {
-  compareTimeStrings,
-  eventsToWeeklySchedule,
-  filterFutureEvents,
-  getEventDisplayInfo,
-  timeStringToMinutes,
-} from './openTimeSchedule.utils'
-import OpenTimeSettingsModal from './OpenTimeSettingsModal'
-import DeleteOpenTimeModal from './DeleteOpenTimeModal'
+import { createEventAndInviteResourceFetcher, deleteEvent, getDefaultResourceEventsFethcer, updateEvent } from '../../helpers/eventHelper/eventFetchers'
 import memberMessages from '../member/translation'
+import DeleteOpenTimeModal from './DeleteOpenTimeModal'
+import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
+import { GeneralEventApi } from './events.type'
+import { DeleteModalInfo, RepeatConfig, WeeklySchedule } from './openTimeSchedule.type'
+import { compareTimeStrings, eventsToWeeklySchedule, filterFutureEvents, getEventDisplayInfo, timeStringToMinutes } from './openTimeSchedule.utils'
+import OpenTimeSettingsModal from './OpenTimeSettingsModal'
+
 
 const OPEN_TIME_COLOR = '#C4A35A' // 金色/土黃色
 

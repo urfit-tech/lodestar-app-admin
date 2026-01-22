@@ -14,34 +14,22 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { getDefaultResourceEventsFethcer } from '../helpers/eventHelper/eventFetchers'
 import { getActiveEvents, getAvailableEvents } from '../components/event/eventAdaptor'
 import { GeneralEventApi } from '../components/event/events.type'
-import { scheduleStore, mockCampuses } from '../types/schedule'
+import { scheduleStore } from '../types/schedule'
 import {
   Campus,
   ClassGroup,
-  Classroom,
+  CourseRowData,
   Holiday,
   Language,
   Order,
   ScheduleCondition,
   ScheduleEvent,
   ScheduleTemplate,
+  ScheduleTemplateProps,
   ScheduleType,
   Student,
   Teacher,
 } from '../types/schedule'
-
-// Local type definitions for GraphQL queries (until typegen is run)
-interface GetMembersForScheduleData {
-  member: Array<{
-    id: string
-    name: string | null
-    email: string
-  }>
-}
-
-interface GetMembersForScheduleVariables {
-  searchTerm?: string
-}
 
 // Type definitions for order_log / order_products GraphQL queries
 interface OrderProductOptions {
@@ -98,532 +86,6 @@ interface OrderLogData {
     picture_url?: string | null
   }
 }
-
-interface MemberPublicData {
-  id: string
-  name: string
-  username: string
-  email: string
-}
-
-interface GetMemberOrdersData {
-  member_public: MemberPublicData[]
-  order_log: OrderLogData[]
-}
-
-interface GetMemberOrdersVariables {
-  memberId: string
-}
-
-// =============================================================================
-// GraphQL Queries (Commented - to be enabled when backend is ready)
-// =============================================================================
-
-/*
-// Get schedule events with filters
-export const GET_SCHEDULE_EVENTS = gql`
-  query GetScheduleEvents(
-    $scheduleType: String
-    $status: String
-    $startDate: date
-    $endDate: date
-    $campusId: uuid
-    $teacherId: String
-  ) {
-    schedule_event(
-      where: {
-        schedule_type: { _eq: $scheduleType }
-        status: { _eq: $status }
-        scheduled_date: { _gte: $startDate, _lte: $endDate }
-        campus_id: { _eq: $campusId }
-        teacher_id: { _eq: $teacherId }
-      }
-      order_by: { scheduled_date: asc, start_time: asc }
-    ) {
-      id
-      schedule_type
-      status
-      class_group_id
-      student_id
-      teacher_id
-      classroom_id
-      campus_id
-      language
-      scheduled_date
-      start_time
-      end_time
-      duration
-      material
-      needs_online_room
-      online_room_url
-      is_external
-      created_by
-      created_by_email
-      created_at
-      updated_at
-      schedule_event_students {
-        student_id
-        member {
-          id
-          name
-          email
-        }
-      }
-      schedule_event_orders {
-        order_id
-        deducted_minutes
-      }
-      teacher: member {
-        id
-        name
-        email
-      }
-      classroom {
-        id
-        name
-        capacity
-      }
-      campus {
-        id
-        name
-      }
-      class_group {
-        id
-        name
-        type
-      }
-    }
-  }
-`
-
-// Get teachers with filters
-export const GET_TEACHERS = gql`
-  query GetTeachers($language: String, $campusId: uuid) {
-    teacher_profile(
-      where: {
-        teacher_languages: { language: { _eq: $language } }
-        campus_id: { _eq: $campusId }
-      }
-      order_by: [{ campus_id: asc }, { level: desc }, { years_of_experience: desc }]
-    ) {
-      id
-      member_id
-      campus_id
-      level
-      years_of_experience
-      note
-      member {
-        id
-        name
-        email
-      }
-      teacher_languages {
-        language
-      }
-      teacher_traits {
-        trait
-      }
-      teacher_availabilities {
-        weekday
-        start_time
-        end_time
-        is_recurring
-        specific_date
-      }
-      campus {
-        id
-        name
-      }
-    }
-  }
-`
-
-// Get students with filters
-export const GET_STUDENTS = gql`
-  query GetStudents($campusId: uuid, $searchTerm: String) {
-    member(
-      where: {
-        _and: [
-          { campus_id: { _eq: $campusId } }
-          {
-            _or: [
-              { name: { _ilike: $searchTerm } }
-              { email: { _ilike: $searchTerm } }
-            ]
-          }
-        ]
-      }
-      order_by: { name: asc }
-    ) {
-      id
-      name
-      email
-      campus_id
-      internal_note
-      student_teacher_preferences {
-        teacher_id
-        preference_type
-      }
-    }
-  }
-`
-
-// Get orders by student
-export const GET_ORDERS_BY_STUDENT = gql`
-  query GetOrdersByStudent($studentId: String!, $scheduleType: String) {
-    order_log(
-      where: {
-        member_id: { _eq: $studentId }
-        schedule_type: { _eq: $scheduleType }
-        available_minutes: { _gt: 0 }
-        expires_at: { _gt: "now()" }
-        status: { _eq: "completed" }
-      }
-      order_by: { created_at: desc }
-    ) {
-      id
-      member_id
-      product_name
-      language
-      schedule_type
-      total_minutes
-      used_minutes
-      available_minutes
-      created_at
-      expires_at
-      last_class_date
-      status
-      campus_id
-    }
-  }
-`
-
-// Get class groups
-export const GET_CLASS_GROUPS = gql`
-  query GetClassGroups($type: String, $campusId: uuid) {
-    class_group(
-      where: {
-        type: { _eq: $type }
-        campus_id: { _eq: $campusId }
-        status: { _eq: "active" }
-      }
-      order_by: { name: asc }
-    ) {
-      id
-      name
-      type
-      campus_id
-      language
-      min_students
-      max_students
-      status
-      class_group_students {
-        student_id
-        member {
-          id
-          name
-          email
-        }
-      }
-      class_group_materials {
-        id
-        material_name
-        sort_order
-      }
-      campus {
-        id
-        name
-      }
-    }
-  }
-`
-
-// Get classrooms
-export const GET_CLASSROOMS = gql`
-  query GetClassrooms($campusId: uuid) {
-    classroom(
-      where: {
-        campus_id: { _eq: $campusId }
-        is_active: { _eq: true }
-      }
-      order_by: { name: asc }
-    ) {
-      id
-      name
-      campus_id
-      capacity
-    }
-  }
-`
-
-// Get campuses
-export const GET_CAMPUSES = gql`
-  query GetCampuses {
-    campus(where: { is_active: { _eq: true } }, order_by: { name: asc }) {
-      id
-      name
-      address
-    }
-  }
-`
-
-// Get holidays
-export const GET_HOLIDAYS = gql`
-  query GetHolidays($startDate: date, $endDate: date) {
-    holiday(
-      where: {
-        date: { _gte: $startDate, _lte: $endDate }
-      }
-      order_by: { date: asc }
-    ) {
-      id
-      date
-      name
-      is_fixed
-    }
-  }
-`
-
-// Get schedule templates for a student
-export const GET_SCHEDULE_TEMPLATES = gql`
-  query GetScheduleTemplates($studentId: String!, $language: String) {
-    schedule_template(
-      where: {
-        student_id: { _eq: $studentId }
-        language: { _eq: $language }
-      }
-      order_by: { weekday: asc, start_time: asc }
-    ) {
-      id
-      student_id
-      language
-      weekday
-      start_time
-      duration
-      teacher_id
-      classroom_id
-      material
-      needs_online_room
-    }
-  }
-`
-*/
-
-// =============================================================================
-// GraphQL Mutations (Commented - to be enabled when backend is ready)
-// =============================================================================
-
-/*
-// Create schedule event
-export const CREATE_SCHEDULE_EVENT = gql`
-  mutation CreateScheduleEvent($input: schedule_event_insert_input!) {
-    insert_schedule_event_one(object: $input) {
-      id
-      schedule_type
-      status
-      scheduled_date
-      start_time
-      end_time
-    }
-  }
-`
-
-// Update schedule event
-export const UPDATE_SCHEDULE_EVENT = gql`
-  mutation UpdateScheduleEvent($id: uuid!, $updates: schedule_event_set_input!) {
-    update_schedule_event_by_pk(pk_columns: { id: $id }, _set: $updates) {
-      id
-      schedule_type
-      status
-      scheduled_date
-      start_time
-      end_time
-      updated_at
-    }
-  }
-`
-
-// Delete schedule event
-export const DELETE_SCHEDULE_EVENT = gql`
-  mutation DeleteScheduleEvent($id: uuid!) {
-    delete_schedule_event_by_pk(id: $id) {
-      id
-    }
-  }
-`
-
-// Batch create schedule events
-export const BATCH_CREATE_SCHEDULE_EVENTS = gql`
-  mutation BatchCreateScheduleEvents($events: [schedule_event_insert_input!]!) {
-    insert_schedule_event(objects: $events) {
-      affected_rows
-      returning {
-        id
-        schedule_type
-        status
-        scheduled_date
-      }
-    }
-  }
-`
-
-// Update schedule event status
-export const UPDATE_SCHEDULE_EVENT_STATUS = gql`
-  mutation UpdateScheduleEventStatus($id: uuid!, $status: String!) {
-    update_schedule_event_by_pk(
-      pk_columns: { id: $id }
-      _set: { status: $status, updated_at: "now()" }
-    ) {
-      id
-      status
-      updated_at
-    }
-  }
-`
-
-// Batch update schedule event status
-export const BATCH_UPDATE_SCHEDULE_EVENT_STATUS = gql`
-  mutation BatchUpdateScheduleEventStatus($ids: [uuid!]!, $status: String!) {
-    update_schedule_event(
-      where: { id: { _in: $ids } }
-      _set: { status: $status, updated_at: "now()" }
-    ) {
-      affected_rows
-      returning {
-        id
-        status
-      }
-    }
-  }
-`
-
-// Create class group
-export const CREATE_CLASS_GROUP = gql`
-  mutation CreateClassGroup($input: class_group_insert_input!) {
-    insert_class_group_one(object: $input) {
-      id
-      name
-      type
-      campus_id
-      language
-      min_students
-      max_students
-    }
-  }
-`
-
-// Update class group
-export const UPDATE_CLASS_GROUP = gql`
-  mutation UpdateClassGroup($id: uuid!, $updates: class_group_set_input!) {
-    update_class_group_by_pk(pk_columns: { id: $id }, _set: $updates) {
-      id
-      name
-      type
-      min_students
-      max_students
-      updated_at
-    }
-  }
-`
-
-// Add student to class group
-export const ADD_STUDENT_TO_CLASS_GROUP = gql`
-  mutation AddStudentToClassGroup($classGroupId: uuid!, $studentId: String!) {
-    insert_class_group_student_one(
-      object: { class_group_id: $classGroupId, student_id: $studentId }
-      on_conflict: { constraint: class_group_student_pkey, update_columns: [] }
-    ) {
-      id
-      class_group_id
-      student_id
-    }
-  }
-`
-
-// Remove student from class group
-export const REMOVE_STUDENT_FROM_CLASS_GROUP = gql`
-  mutation RemoveStudentFromClassGroup($classGroupId: uuid!, $studentId: String!) {
-    delete_class_group_student(
-      where: {
-        class_group_id: { _eq: $classGroupId }
-        student_id: { _eq: $studentId }
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
-
-// Save schedule template
-export const SAVE_SCHEDULE_TEMPLATE = gql`
-  mutation SaveScheduleTemplate($input: schedule_template_insert_input!) {
-    insert_schedule_template_one(
-      object: $input
-      on_conflict: {
-        constraint: schedule_template_student_id_language_weekday_key
-        update_columns: [start_time, duration, teacher_id, classroom_id, material, needs_online_room]
-      }
-    ) {
-      id
-      student_id
-      language
-      weekday
-      start_time
-      duration
-    }
-  }
-`
-
-// Delete schedule template
-export const DELETE_SCHEDULE_TEMPLATE = gql`
-  mutation DeleteScheduleTemplate($id: uuid!) {
-    delete_schedule_template_by_pk(id: $id) {
-      id
-    }
-  }
-`
-
-// Check for conflicts
-export const CHECK_SCHEDULE_CONFLICTS = gql`
-  query CheckScheduleConflicts(
-    $date: date!
-    $startTime: time!
-    $endTime: time!
-    $teacherId: String
-    $classroomId: uuid
-    $excludeEventId: uuid
-  ) {
-    teacher_conflict: schedule_event(
-      where: {
-        scheduled_date: { _eq: $date }
-        teacher_id: { _eq: $teacherId }
-        id: { _neq: $excludeEventId }
-        _or: [
-          { start_time: { _lt: $endTime }, end_time: { _gt: $startTime } }
-        ]
-      }
-    ) {
-      id
-      start_time
-      end_time
-    }
-    classroom_conflict: schedule_event(
-      where: {
-        scheduled_date: { _eq: $date }
-        classroom_id: { _eq: $classroomId }
-        id: { _neq: $excludeEventId }
-        _or: [
-          { start_time: { _lt: $endTime }, end_time: { _gt: $startTime } }
-        ]
-      }
-    ) {
-      id
-      start_time
-      end_time
-    }
-  }
-`
-*/
 
 // =============================================================================
 // Custom Hooks (Using in-memory mock data)
@@ -701,8 +163,10 @@ interface TeacherFromMember {
   name: string
   email: string
   pictureUrl: string | null
-  campus: string // permission_group name
-  campusId: string // permission_group id
+  campus: string // permission_group name（主要校區，向後相容）
+  campusId: string // permission_group id（主要校區 ID）
+  campusIds: string[] // 所有校區 ID（支援多校區）
+  campusNames: string[] // 所有校區名稱（支援多校區）
   languages: string[] // from member_tags
   traits: string[] // from member_specialities
   note: string // from member_property (內部備註)
@@ -845,7 +309,8 @@ export const useTeachersFromMembers = (
 
     if (!memberPermissionGroups) return []
 
-    // Create a map to deduplicate members (a member might be in multiple permission groups)
+    // Create a map to deduplicate members and aggregate their campuses
+    // (a member might be in multiple permission groups / campuses)
     const memberMap = new Map<string, TeacherFromMember>()
 
     memberPermissionGroups.forEach(mpg => {
@@ -855,8 +320,11 @@ export const useTeachersFromMembers = (
       // If member already exists, merge the campus
       if (memberMap.has(memberId)) {
         const existing = memberMap.get(memberId)!
-        // Optionally append campus if different
-        if (!existing.campus.includes(mpg.permission_group.name)) {
+        // Add new campus if not already included
+        if (!existing.campusIds.includes(mpg.permission_group.id)) {
+          existing.campusIds.push(mpg.permission_group.id)
+          existing.campusNames.push(mpg.permission_group.name)
+          // Also update the legacy campus field (comma-separated)
           existing.campus += `, ${mpg.permission_group.name}`
         }
         return
@@ -889,6 +357,8 @@ export const useTeachersFromMembers = (
         pictureUrl: member.picture_url,
         campus: mpg.permission_group.name,
         campusId: mpg.permission_group.id,
+        campusIds: [mpg.permission_group.id],
+        campusNames: [mpg.permission_group.name],
         languages,
         traits,
         note,
@@ -934,179 +404,6 @@ export const useTeachersFromMembers = (
     availableLanguages,
     availableTraits,
   }
-}
-
-// GraphQL query to get member orders for schedule management
-export const GET_MEMBER_ORDERS_FOR_SCHEDULE = gql`
-  query GetMemberOrdersForSchedule($memberId: String!) {
-    member_public(where: { id: { _eq: $memberId } }) {
-      id
-      name
-      username
-      email
-    }
-    order_log(where: { member_id: { _eq: $memberId } }, order_by: { created_at: desc }) {
-      id
-      status
-      member_id
-      created_at
-      updated_at
-      order_products {
-        id
-        name
-        price
-        options
-        started_at
-        ended_at
-      }
-    }
-  }
-`
-
-/**
- * Map class_type from order_products options to ScheduleType
- */
-const mapClassTypeToScheduleType = (classType: string | undefined): ScheduleType | undefined => {
-  if (!classType) return undefined
-  switch (classType) {
-    case '個人班':
-      return 'personal'
-    case '學期班':
-      return 'semester'
-    case '小組班':
-      return 'group'
-    default:
-      return undefined
-  }
-}
-
-/**
- * Hook to get orders by member from GraphQL (real data from order_log)
- */
-export const useMemberOrders = (memberId: string | undefined, scheduleType?: ScheduleType) => {
-  const { data, loading, error, refetch } = useQuery<GetMemberOrdersData, GetMemberOrdersVariables>(
-    GET_MEMBER_ORDERS_FOR_SCHEDULE,
-    {
-      variables: {
-        memberId: memberId || '',
-      },
-      skip: !memberId,
-    },
-  )
-
-  const orders: Order[] = useMemo(() => {
-    if (!data?.order_log) return []
-
-    const result: Order[] = []
-
-    data.order_log.forEach(orderLog => {
-      // Extract materials from order_products where options.options.product === '教材'
-      const materials: string[] = orderLog.order_products
-        .filter(p => p.options?.options?.product === '教材')
-        .map(p => p.options?.title || p.name)
-        .filter(Boolean)
-
-      // Each order_product can be a separate "order" for scheduling purposes
-      orderLog.order_products.forEach(product => {
-        const options = product.options?.options
-        // Skip if options is not available
-        if (!options) return
-
-        // Skip material products - they are not orders for scheduling
-        if (options.product === '教材') return
-
-        const productClassType = mapClassTypeToScheduleType(options.class_type)
-
-        // Filter by scheduleType if provided (個人班/學期班/小組班)
-        if (scheduleType && productClassType !== scheduleType) {
-          return
-        }
-
-        // Calculate available minutes from total_sessions
-        const totalSessions = options?.total_sessions?.max || 0
-        const totalMinutes = totalSessions * 50 // Each session is 50 minutes
-
-        // Parse dates
-        const createdAt = new Date(orderLog.created_at)
-        // 課時到期日：只在 ended_at 有值時才設定（開課日 + 有效天數，預排/發布後才有值）
-        const expiresAt = product.ended_at ? new Date(product.ended_at) : undefined
-
-        result.push({
-          id: product.id,
-          studentId: orderLog.member_id,
-          productName: product.name,
-          language: options?.language || '', // 保留原始語言值，如 '中文'、'英文'
-          type: productClassType || 'personal',
-          totalMinutes,
-          usedMinutes: 0, // TODO: Calculate from scheduled events
-          availableMinutes: totalMinutes, // TODO: Calculate remaining minutes
-          createdAt,
-          expiresAt,
-          lastClassDate: undefined, // TODO: Get from schedule events
-          status: orderLog.status, // Keep original status: 'SUCCESS', 'UNPAID', etc.
-          campus: '', // TODO: Get from member or order data
-          materials, // 同一訂單中的教材列表
-        })
-      })
-    })
-
-    return result
-  }, [data, scheduleType])
-
-  // Get member info from query result
-  const memberInfo = useMemo(() => {
-    if (!data?.member_public?.[0]) return null
-    const member = data.member_public[0]
-    return {
-      id: member.id,
-      name: member.name || member.username || '',
-      email: member.email || '',
-    }
-  }, [data])
-
-  return { orders, loading, error, refetch, memberInfo }
-}
-
-// GraphQL query to get members for schedule management
-export const GET_MEMBERS_FOR_SCHEDULE = gql`
-  query GetMembersForSchedule($searchTerm: String) {
-    member(
-      where: { _or: [{ name: { _ilike: $searchTerm } }, { email: { _ilike: $searchTerm } }] }
-      order_by: { name: asc }
-      limit: 100
-    ) {
-      id
-      name
-      email
-    }
-  }
-`
-
-/**
- * Hook to get members (students) from GraphQL
- */
-export const useMembers = (searchTerm?: string) => {
-  const { data, loading, error, refetch } = useQuery<GetMembersForScheduleData, GetMembersForScheduleVariables>(
-    GET_MEMBERS_FOR_SCHEDULE,
-    {
-      variables: {
-        searchTerm: searchTerm ? `%${searchTerm}%` : '',
-      },
-      skip: !searchTerm, // 沒有搜尋文字時不查詢
-    },
-  )
-
-  const members = useMemo(() => {
-    return (
-      data?.member.map(m => ({
-        id: m.id,
-        name: m.name || '',
-        email: m.email,
-      })) || []
-    )
-  }, [data])
-
-  return { members, loading, error, refetch }
 }
 
 // GraphQL query to get members by IDs (for student list with real data)
@@ -1494,42 +791,6 @@ export const useClassGroup = (classGroupId: string | undefined) => {
   return { classGroup, loading, error, refetch }
 }
 
-const GET_CLASSROOMS_FOR_SCHEDULE = gql`
-  query GetClassroomsForSchedule($campusId: uuid) {
-    classroom(where: { campus_id: { _eq: $campusId }, is_active: { _eq: true } }, order_by: { name: asc }) {
-      id
-      name
-      campus_id
-      capacity
-    }
-  }
-`
-
-/**
- * Hook to get classrooms
- */
-export const useClassrooms = (campus?: string) => {
-  const { data, loading, error } = useQuery<{ classroom: Classroom[] }>(GET_CLASSROOMS_FOR_SCHEDULE, {
-    variables: { campusId: campus },
-    skip: !campus,
-    fetchPolicy: 'cache-and-network',
-  })
-
-  const classrooms = useMemo(() => {
-    if (data?.classroom) {
-      return data.classroom.map(c => ({
-        id: c.id,
-        name: c.name,
-        campus: (c as any).campus_id || campus || '',
-        capacity: c.capacity,
-      }))
-    }
-    return scheduleStore.getClassrooms(campus)
-  }, [data, campus])
-
-  return { classrooms, loading, error }
-}
-
 /**
  * Hook to get campuses
  */
@@ -1567,18 +828,6 @@ export const useHolidays = () => {
   }, [settings])
 
   return { holidays, loading: false }
-}
-
-/**
- * Hook to get schedule template
- */
-export const useScheduleTemplate = (studentId: string | undefined, language: Language | undefined) => {
-  const template = useMemo(() => {
-    if (!studentId || !language) return undefined
-    return scheduleStore.getTemplate(studentId, language)
-  }, [studentId, language])
-
-  return { template, loading: false }
 }
 
 /**
@@ -1958,32 +1207,13 @@ export const useClassGroupOrders = () => {
   }
 }
 
-/**
- * Hook to save schedule template
- */
-export const useSaveScheduleTemplate = () => {
-  const [loading, setLoading] = useState(false)
-
-  const saveTemplate = useCallback(async (template: Omit<ScheduleTemplate, 'id'>): Promise<ScheduleTemplate> => {
-    setLoading(true)
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const saved = scheduleStore.saveTemplate(template)
-        setLoading(false)
-        resolve(saved)
-      }, 200)
-    })
-  }, [])
-
-  return { saveTemplate, loading }
-}
-
 // =============================================================================
 // Utility Hooks
 // =============================================================================
 
 /**
  * Hook to calculate schedule based on conditions
+ * @deprecated Use the new template system with CourseRowData instead
  */
 export const useScheduleCalculation = () => {
   const { holidays } = useHolidays()
@@ -2629,8 +1859,8 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
             Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
           material: (metadata.material as string) || event.title || '',
           needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
-          createdBy: '',
-          createdByEmail: '',
+          createdBy: (metadata.createdBy as string) || (metadata.updatedBy as string) || '',
+          createdByEmail: (metadata.createdByEmail as string) || (metadata.updatedByEmail as string) || '',
           updatedAt: new Date(event.updated_at),
           isExternal: metadata.classMode === '外課' || metadata.is_external === true,
         }
@@ -2836,10 +2066,21 @@ export const useClassGroupEvents = (classId: string | undefined) => {
 }
 
 const PUBLISH_EVENT = gql`
-  mutation PublishEvent($eventId: uuid!, $publishedAt: timestamptz!) {
-    update_event_by_pk(pk_columns: { id: $eventId }, _set: { published_at: $publishedAt }) {
+  mutation PublishEvent(
+    $eventId: uuid!
+    $publishedAt: timestamptz!
+    $updatedAt: timestamptz!
+    $metadata: jsonb
+  ) {
+    update_event_by_pk(
+      pk_columns: { id: $eventId }
+      _set: { published_at: $publishedAt, updated_at: $updatedAt }
+      _append: { metadata: $metadata }
+    ) {
       id
       published_at
+      updated_at
+      metadata
     }
   }
 `
@@ -2852,19 +2093,26 @@ interface PublishEventData {
 }
 
 export const usePublishEvent = () => {
+  const { currentMemberId, currentMember } = useAuth()
   const [publishEventMutation, { loading }] = useMutation<PublishEventData>(PUBLISH_EVENT)
 
   const publishEvent = useCallback(
     async (eventId: string, publishedAt: Date = new Date()) => {
+      const now = new Date()
       const result = await publishEventMutation({
         variables: {
           eventId,
           publishedAt: publishedAt.toISOString(),
+          updatedAt: now.toISOString(),
+          metadata: {
+            updatedBy: currentMemberId || '',
+            updatedByEmail: currentMember?.email || '',
+          },
         },
       })
       return result.data?.update_event_by_pk
     },
-    [publishEventMutation],
+    [publishEventMutation, currentMemberId, currentMember],
   )
 
   const publishEvents = useCallback(
@@ -2927,6 +2175,8 @@ export interface ClassGroupEventsSummary {
     studentIds?: string[]
     createdBy?: string
     createdByEmail?: string
+    updatedBy?: string
+    updatedByEmail?: string
     updatedAt: Date
   } | null
   studentIds: string[]
@@ -2972,6 +2222,7 @@ export const useMultipleClassGroupsEvents = (
         (metadata.studentIds as string[]).forEach(id => ids.add(id))
       }
       if (metadata?.createdBy) ids.add(metadata.createdBy)
+      if (metadata?.updatedBy) ids.add(metadata.updatedBy)
     })
     return Array.from(ids)
   }, [eventsData])
@@ -3070,6 +2321,8 @@ export const useMultipleClassGroupsEvents = (
           studentIds: eventStudentIds,
           createdBy: event.metadata?.createdBy,
           createdByEmail: event.metadata?.createdByEmail,
+          updatedBy: event.metadata?.updatedBy,
+          updatedByEmail: event.metadata?.updatedByEmail,
           updatedAt: new Date(event.updated_at),
         }
       }
@@ -3087,13 +2340,271 @@ export const useMultipleClassGroupsEvents = (
   }
 }
 
+const GET_SCHEDULE_TEMPLATES = gql`
+  query GetScheduleTemplates($appId: String!, $memberId: String!, $language: String) {
+    schedule_template(
+      where: {
+        app_id: { _eq: $appId }
+        member_id: { _eq: $memberId }
+        language: { _eq: $language }
+      }
+      order_by: { updated_at: desc }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const INSERT_SCHEDULE_TEMPLATE = gql`
+  mutation InsertScheduleTemplate(
+    $memberId: String!
+    $name: String!
+    $language: String!
+    $rrule: String
+    $courseRows: jsonb!
+  ) {
+    insert_schedule_template_one(
+      object: {
+        member_id: $memberId
+        name: $name
+        language: $language
+        rrule: $rrule
+        course_rows: $courseRows
+      }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const UPDATE_SCHEDULE_TEMPLATE = gql`
+  mutation UpdateScheduleTemplate(
+    $id: uuid!
+    $name: String
+    $rrule: String
+    $courseRows: jsonb
+  ) {
+    update_schedule_template_by_pk(
+      pk_columns: { id: $id }
+      _set: { name: $name, rrule: $rrule, course_rows: $courseRows, updated_at: "now()" }
+    ) {
+      id
+      app_id
+      member_id
+      name
+      language
+      rrule
+      course_rows
+      created_at
+      updated_at
+    }
+  }
+`
+
+const DELETE_SCHEDULE_TEMPLATE = gql`
+  mutation DeleteScheduleTemplate($id: uuid!) {
+    update_schedule_template_by_pk(
+      pk_columns: { id: $id }
+      _set: { deleted_at: "now()" }
+    ) {
+      id
+    }
+  }
+`
+
+interface ScheduleTemplateData {
+  schedule_template: Array<{
+    id: string
+    app_id: string
+    member_id: string
+    name: string
+    language: string
+    rrule?: string
+    course_rows: CourseRowData[]
+    created_at: string
+    updated_at: string
+  }>
+}
+
+/**
+ * Hook to get schedule templates for the current user
+ * @param language - Filter by language
+ */
+export const useScheduleTemplates = (language?: string) => {
+  const { id: appId } = useApp()
+  const { currentMemberId } = useAuth()
+
+  const { data, loading, error, refetch } = useQuery<ScheduleTemplateData>(GET_SCHEDULE_TEMPLATES, {
+    variables: {
+      appId,
+      memberId: currentMemberId,
+      language: language || undefined,
+    },
+    skip: !appId || !currentMemberId,
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const templates: ScheduleTemplateProps[] = useMemo(() => {
+    if (!data?.schedule_template) return []
+    return data.schedule_template.map(t => ({
+      id: t.id,
+      appId: t.app_id,
+      memberId: t.member_id,
+      name: t.name,
+      language: t.language as Language,
+      rrule: t.rrule,
+      courseRows: t.course_rows,
+      createdAt: new Date(t.created_at),
+      updatedAt: new Date(t.updated_at),
+    }))
+  }, [data])
+
+  return {
+    templates,
+    loading,
+    error,
+    refetch,
+  }
+}
+
+/**
+ * Generate rrule from course rows based on weekdays
+ */
+const generateRruleFromRows = (rows: CourseRowData[]): string => {
+  const weekdayToRruleByday: Record<number, string> = {
+    0: 'SU',
+    1: 'MO',
+    2: 'TU',
+    3: 'WE',
+    4: 'TH',
+    5: 'FR',
+    6: 'SA',
+    7: 'SU', // ISO weekday 7 = Sunday
+  }
+
+  const uniqueWeekdays = [...new Set(rows.map(r => r.weekday))]
+  const bydayValues = uniqueWeekdays
+    .map(w => weekdayToRruleByday[w % 7] || weekdayToRruleByday[w])
+    .filter(Boolean)
+    .join(',')
+
+  return bydayValues ? `FREQ=WEEKLY;BYDAY=${bydayValues}` : ''
+}
+
+/**
+ * Hook to save a new schedule template
+ * Note: app_id is automatically set by Hasura via session variable (X-Hasura-App-Id)
+ */
+export const useSaveScheduleTemplate = () => {
+  const { currentMemberId } = useAuth()
+  const [insertTemplate, { loading, error }] = useMutation(INSERT_SCHEDULE_TEMPLATE)
+
+  const saveTemplate = useCallback(
+    async (name: string, language: string, courseRows: CourseRowData[], rrule?: string) => {
+      if (!currentMemberId) {
+        throw new Error('Missing member ID')
+      }
+
+      // Auto-generate rrule if not provided
+      const finalRrule = rrule || generateRruleFromRows(courseRows)
+
+      const result = await insertTemplate({
+        variables: {
+          memberId: currentMemberId,
+          name,
+          language,
+          rrule: finalRrule || null,
+          courseRows,
+        },
+      })
+
+      return result.data?.insert_schedule_template_one
+    },
+    [currentMemberId, insertTemplate],
+  )
+
+  return {
+    saveTemplate,
+    loading,
+    error,
+  }
+}
+
+/**
+ * Hook to update an existing schedule template
+ */
+export const useUpdateScheduleTemplate = () => {
+  const [updateTemplate, { loading, error }] = useMutation(UPDATE_SCHEDULE_TEMPLATE)
+
+  const update = useCallback(
+    async (id: string, updates: { name?: string; courseRows?: CourseRowData[]; rrule?: string }) => {
+      const result = await updateTemplate({
+        variables: {
+          id,
+          name: updates.name || undefined,
+          courseRows: updates.courseRows || undefined,
+          rrule: updates.rrule || undefined,
+        },
+      })
+
+      return result.data?.update_schedule_template_by_pk
+    },
+    [updateTemplate],
+  )
+
+  return {
+    updateTemplate: update,
+    loading,
+    error,
+  }
+}
+
+/**
+ * Hook to delete a schedule template (soft delete)
+ */
+export const useDeleteScheduleTemplate = () => {
+  const [deleteTemplate, { loading, error }] = useMutation(DELETE_SCHEDULE_TEMPLATE)
+
+  const remove = useCallback(
+    async (id: string) => {
+      const result = await deleteTemplate({
+        variables: { id },
+      })
+
+      return result.data?.update_schedule_template_by_pk
+    },
+    [deleteTemplate],
+  )
+
+  return {
+    deleteTemplate: remove,
+    loading,
+    error,
+  }
+}
+
 // =============================================================================
 // Export types for convenience
 // =============================================================================
 
 export type {
   Campus,
-  Classroom,
   ClassGroup,
   Holiday,
   Language,
@@ -3101,7 +2612,9 @@ export type {
   ScheduleCondition,
   ScheduleEvent,
   ScheduleTemplate,
+  ScheduleTemplateProps,
   ScheduleType,
   Student,
   Teacher,
+  CourseRowData,
 }

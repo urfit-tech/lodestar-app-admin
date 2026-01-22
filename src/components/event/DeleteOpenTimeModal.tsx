@@ -1,11 +1,11 @@
-import { Button, DatePicker, Modal, Radio, Space, Typography } from 'antd'
+import { Button, DatePicker, Modal, Radio, Space } from 'antd'
 import moment from 'moment'
 import React, { useCallback, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-
-import { DeleteModalInfo, DeleteType } from './openTimeSchedule.type'
 import memberMessages from '../member/translation'
+import { DeleteModalInfo, DeleteType } from './openTimeSchedule.type'
+
 
 const EventInfo = styled.div`
   font-size: 16px;

@@ -73,7 +73,7 @@ const SemesterScheduleEditPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { groupId } = useParams<{ groupId: string }>()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
 
@@ -301,6 +301,10 @@ const SemesterScheduleEditPage: React.FC = () => {
               material: event.material,
               needsOnlineRoom: event.needsOnlineRoom,
               clientEventId: event.id, // Track local event ID for mapping
+              createdBy: currentMemberId || '',
+              createdByEmail: currentMember?.email || '',
+              updatedBy: currentMemberId || '',
+              updatedByEmail: currentMember?.email || '',
             },
           },
         } as GeneralEventApi
@@ -373,7 +377,7 @@ const SemesterScheduleEditPage: React.FC = () => {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
     }
-  }, [authToken, appId, classGroup, calendarEvents, formatMessage, refetchEvents])
+  }, [authToken, appId, classGroup, calendarEvents, formatMessage, refetchEvents, currentMemberId, currentMember])
 
   const handlePublish = useCallback(async () => {
     if (!classGroup) {

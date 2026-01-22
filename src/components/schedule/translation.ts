@@ -100,6 +100,7 @@ const scheduleMessages = {
     selectedTeachers: { id: 'schedule.TeacherList.selectedTeachers', defaultMessage: 'Selected teachers' },
   }),
   Calendar: defineMessages({
+    title: { id: 'schedule.Calendar.title', defaultMessage: '行事曆' },
     today: { id: 'schedule.Calendar.today', defaultMessage: '今天' },
     prevWeek: { id: 'schedule.Calendar.prevWeek', defaultMessage: '上一週' },
     nextWeek: { id: 'schedule.Calendar.nextWeek', defaultMessage: '下一週' },
@@ -151,6 +152,13 @@ const scheduleMessages = {
     applyTemplate: { id: 'schedule.ArrangeModal.applyTemplate', defaultMessage: '套用模板' },
     noTemplate: { id: 'schedule.ArrangeModal.noTemplate', defaultMessage: '目前無儲存的固定模板' },
     templateSaved: { id: 'schedule.ArrangeModal.templateSaved', defaultMessage: '模板已儲存' },
+    selectTemplate: { id: 'schedule.ArrangeModal.selectTemplate', defaultMessage: '選擇模板' },
+    templateName: { id: 'schedule.ArrangeModal.templateName', defaultMessage: '模板名稱' },
+    templateNamePlaceholder: { id: 'schedule.ArrangeModal.templateNamePlaceholder', defaultMessage: '輸入模板名稱' },
+    deleteTemplateConfirm: { id: 'schedule.ArrangeModal.deleteTemplateConfirm', defaultMessage: '確定要刪除此模板嗎？' },
+    templateDeleted: { id: 'schedule.ArrangeModal.templateDeleted', defaultMessage: '模板已刪除' },
+    templateApplied: { id: 'schedule.ArrangeModal.templateApplied', defaultMessage: '模板已套用' },
+    templateNameRequired: { id: 'schedule.ArrangeModal.templateNameRequired', defaultMessage: '請輸入模板名稱' },
     // New messages for enhanced functionality
     minutes: { id: 'schedule.ArrangeModal.minutes', defaultMessage: '分鐘' },
     totalDuration: { id: 'schedule.ArrangeModal.totalDuration', defaultMessage: '本次安排課時' },
