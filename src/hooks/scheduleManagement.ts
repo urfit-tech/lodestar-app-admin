@@ -133,11 +133,7 @@ interface PermissionGroupData {
   }>
 }
 
-interface MemberPermissionGroupItem {
-  permission_group: {
-    id: string
-    name: string
-  }
+interface TeacherMemberItem {
   member: {
     id: string
     name: string | null
@@ -150,12 +146,17 @@ interface MemberPermissionGroupItem {
       property: { id: string; name: string }
       value: string
     }>
+    member_permission_groups: Array<{
+      permission_group: {
+        id: string
+        name: string
+      }
+    }>
   }
 }
 
 interface TeacherMemberData {
-  member_permission_group?: MemberPermissionGroupItem[]
-  filtered_member_permission_group?: MemberPermissionGroupItem[]
+  member_category: TeacherMemberItem[]
 }
 
 interface TeacherFromMember {
@@ -185,24 +186,14 @@ export const GET_PERMISSION_GROUPS_FOR_SCHEDULE = gql`
   }
 `
 
-// GraphQL query to get teachers from members by permission group
-// If permissionGroupIds is provided, filter by those IDs
-// Otherwise, get all members from permission groups ending with "校"
+// GraphQL query to get teachers by member_category (會員分類為「老師」)
+// Campus info is retrieved from member_permission_groups
 export const GET_TEACHERS_FROM_MEMBERS = gql`
-  query GetTeachersFromMembers($permissionGroupIds: [uuid!], $filterByIds: Boolean!) {
-    member_permission_group(
-      where: {
-        _or: [
-          { _and: [{ permission_group_id: { _in: $permissionGroupIds } }] }
-          { _and: [{ permission_group: { name: { _like: "%校" } } }] }
-        ]
-      }
+  query GetTeachersFromMembers {
+    member_category(
+      where: { category: { name: { _eq: "老師" } } }
       order_by: { member: { name: asc } }
-    ) @skip(if: $filterByIds) {
-      permission_group {
-        id
-        name
-      }
+    ) {
       member {
         id
         name
@@ -222,34 +213,11 @@ export const GET_TEACHERS_FROM_MEMBERS = gql`
           }
           value
         }
-      }
-    }
-    filtered_member_permission_group: member_permission_group(
-      where: { permission_group_id: { _in: $permissionGroupIds } }
-      order_by: { member: { name: asc } }
-    ) @include(if: $filterByIds) {
-      permission_group {
-        id
-        name
-      }
-      member {
-        id
-        name
-        email
-        picture_url
-        star
-        member_tags {
-          tag_name
-        }
-        member_specialities {
-          tag_name
-        }
-        member_properties {
-          property {
+        member_permission_groups(where: { permission_group: { name: { _like: "%校" } } }) {
+          permission_group {
             id
             name
           }
-          value
         }
       }
     }
@@ -275,10 +243,9 @@ export const usePermissionGroupsAsCampuses = () => {
 }
 
 /**
- * Hook to get teachers from members by permission groups
- * If permissionGroupIds is provided, filter by those IDs
- * Otherwise, get all members from permission groups ending with "校"
- * @param permissionGroupIds - Array of permission group IDs to filter teachers (optional)
+ * Hook to get teachers from members by member_category (會員分類為「老師」)
+ * Campus info is retrieved from member_permission_groups
+ * @param permissionGroupIds - Array of permission group IDs to filter teachers by campus (optional)
  * @param languageFilters - Optional language filters array (from member tags, e.g. ['中文', '英文'])
  * @param traitFilter - Optional trait filter (from member specialities)
  * @param requireLanguage - If true, skip query when no language filters provided
@@ -289,46 +256,39 @@ export const useTeachersFromMembers = (
   traitFilter?: string,
   requireLanguage: boolean = false,
 ) => {
-  const hasFilter = Boolean(permissionGroupIds?.length)
   const hasLanguageFilter = Boolean(languageFilters?.length)
 
   // 如果要求有語言才查詢，且沒有語言，則跳過查詢
   const shouldSkip = requireLanguage && !hasLanguageFilter
 
   const { data, loading, error, refetch } = useQuery<TeacherMemberData>(GET_TEACHERS_FROM_MEMBERS, {
-    variables: {
-      permissionGroupIds: permissionGroupIds?.length ? permissionGroupIds : [],
-      filterByIds: hasFilter,
-    },
     skip: shouldSkip,
   })
 
   const teachers = useMemo<TeacherFromMember[]>(() => {
-    // Get data from the appropriate field based on filterByIds
-    const memberPermissionGroups = hasFilter ? data?.filtered_member_permission_group : data?.member_permission_group
+    const memberCategories = data?.member_category
 
-    if (!memberPermissionGroups) return []
+    if (!memberCategories) return []
 
-    // Create a map to deduplicate members and aggregate their campuses
-    // (a member might be in multiple permission groups / campuses)
+    // Create a map to deduplicate members
     const memberMap = new Map<string, TeacherFromMember>()
 
-    memberPermissionGroups.forEach(mpg => {
-      const member = mpg.member
+    memberCategories.forEach(mc => {
+      const member = mc.member
       const memberId = member.id
 
-      // If member already exists, merge the campus
-      if (memberMap.has(memberId)) {
-        const existing = memberMap.get(memberId)!
-        // Add new campus if not already included
-        if (!existing.campusIds.includes(mpg.permission_group.id)) {
-          existing.campusIds.push(mpg.permission_group.id)
-          existing.campusNames.push(mpg.permission_group.name)
-          // Also update the legacy campus field (comma-separated)
-          existing.campus += `, ${mpg.permission_group.name}`
+      // Skip if already processed (shouldn't happen, but just in case)
+      if (memberMap.has(memberId)) return
+
+      // Extract campus info from member_permission_groups
+      const campusIds: string[] = []
+      const campusNames: string[] = []
+      member.member_permission_groups.forEach(mpg => {
+        if (!campusIds.includes(mpg.permission_group.id)) {
+          campusIds.push(mpg.permission_group.id)
+          campusNames.push(mpg.permission_group.name)
         }
-        return
-      }
+      })
 
       // Extract languages from tags
       const languages = member.member_tags.map(t => t.tag_name)
@@ -355,10 +315,10 @@ export const useTeachersFromMembers = (
         name: member.name || '',
         email: member.email,
         pictureUrl: member.picture_url,
-        campus: mpg.permission_group.name,
-        campusId: mpg.permission_group.id,
-        campusIds: [mpg.permission_group.id],
-        campusNames: [mpg.permission_group.name],
+        campus: campusNames[0] || '',
+        campusId: campusIds[0] || '',
+        campusIds,
+        campusNames,
         languages,
         traits,
         note,
@@ -368,6 +328,11 @@ export const useTeachersFromMembers = (
     })
 
     let result = Array.from(memberMap.values())
+
+    // Apply permission group filter (filter by campus)
+    if (permissionGroupIds && permissionGroupIds.length > 0) {
+      result = result.filter(t => t.campusIds.some(id => permissionGroupIds.includes(id)))
+    }
 
     // Apply language filters (支援多語言篩選)
     if (languageFilters && languageFilters.length > 0) {
@@ -380,7 +345,7 @@ export const useTeachersFromMembers = (
     }
 
     return result
-  }, [data, hasFilter, languageFilters, traitFilter])
+  }, [data, permissionGroupIds, languageFilters, traitFilter])
 
   // Get unique languages from all teachers
   const availableLanguages = useMemo(() => {
