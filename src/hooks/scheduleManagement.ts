@@ -1892,13 +1892,13 @@ interface ScheduleExpirySetting {
   status: string
 }
 
-interface GetScheduleExpirySettingsData {
-  schedule_expiry_setting: ScheduleExpirySetting[]
+interface GetScheduleValidityRulesData {
+  schedule_validity_rule: ScheduleExpirySetting[]
 }
 
-const GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE = gql`
-  query GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE {
-    schedule_expiry_setting(where: { status: { _eq: "active" } }, order_by: { class_count: asc }) {
+const GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE = gql`
+  query GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE {
+    schedule_validity_rule(where: { status: { _eq: "active" }, deleted_at: { _is_null: true } }, order_by: { class_count: asc }) {
       id
       type
       language
@@ -1913,15 +1913,15 @@ const GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE = gql`
  * Hook to get schedule expiry settings and calculate expiry dates for orders
  */
 export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal') => {
-  const { data, loading, error } = useQuery<GetScheduleExpirySettingsData>(GET_SCHEDULE_EXPIRY_SETTINGS_FOR_SCHEDULE)
+  const { data, loading, error } = useQuery<GetScheduleValidityRulesData>(GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE)
 
   // Map type to DB value
   const dbType = scheduleType === 'personal' ? 'individual' : scheduleType === 'group' ? 'group' : 'individual'
 
   // Get settings filtered by type
   const settings = useMemo(() => {
-    if (!data?.schedule_expiry_setting) return []
-    return data.schedule_expiry_setting.filter(s => s.type === dbType)
+    if (!data?.schedule_validity_rule) return []
+    return data.schedule_validity_rule.filter(s => s.type === dbType)
   }, [data, dbType])
 
   // Function to calculate expiry date for an order based on language and class count

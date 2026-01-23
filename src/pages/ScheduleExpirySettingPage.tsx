@@ -15,7 +15,7 @@ import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
-type ScheduleExpiryData = {
+type ScheduleValidityRule = {
   id: string
   type: string
   language: string
@@ -23,8 +23,8 @@ type ScheduleExpiryData = {
   valid_days: number
   status: string
   created_at: string
-  archived_at: string | null
-  member: {
+  deleted_at: string | null
+  schedule_validity_rule_member: {
     name: string
     email: string
   } | null
@@ -68,24 +68,25 @@ const ScheduleExpirySettingPage: React.VFC = () => {
   const searchInputRef = useRef<Input>(null)
 
   // Mutation
-  const [insertScheduleExpirySetting] = useMutation(INSERT_SCHEDULE_EXPIRY_SETTING)
-  const [archiveScheduleExpirySetting] = useMutation(ARCHIVE_SCHEDULE_EXPIRY_SETTING)
+  const [insertScheduleValidityRule] = useMutation(INSERT_SCHEDULE_VALIDITY_RULE)
+  const [archiveScheduleValidityRule] = useMutation(ARCHIVE_SCHEDULE_VALIDITY_RULE)
 
   // Query
   const { data, loading, refetch } = useQuery<{
-    schedule_expiry_setting: ScheduleExpiryData[]
-  }>(GET_SCHEDULE_EXPIRY_SETTINGS, {
+    schedule_validity_rule: ScheduleValidityRule[]
+  }>(GET_SCHEDULE_VALIDITY_RULES, {
     variables: { appId },
   })
 
-  const allData = data?.schedule_expiry_setting || []
+  const allData = data?.schedule_validity_rule || []
 
   // 套用篩選條件
   const filteredData = allData.filter(item => {
     if (filterLanguages.length > 0 && !filterLanguages.includes(item.language)) return false
     if (filterStatuses.length > 0 && !filterStatuses.includes(item.status)) return false
     if (filterOperator) {
-      const operatorText = item.member ? `${item.member.name} ${item.member.email}`.toLowerCase() : ''
+      const member = item.schedule_validity_rule_member
+      const operatorText = member ? `${member.name} ${member.email}`.toLowerCase() : ''
       if (!operatorText.includes(filterOperator.toLowerCase())) return false
     }
     return true
@@ -112,24 +113,21 @@ const ScheduleExpirySettingPage: React.VFC = () => {
 
       // 若有，先將其封存
       if (existingData) {
-        await archiveScheduleExpirySetting({
+        await archiveScheduleValidityRule({
           variables: {
             id: existingData.id,
-            updatedBy: currentMemberId,
           },
         })
       }
 
       // 新增新規則
-      await insertScheduleExpirySetting({
+      await insertScheduleValidityRule({
         variables: {
-          appId,
           type: activeTab, // individual 或 group
           language,
           classCount,
           validDays,
           status: 'active',
-          updatedBy: currentMemberId,
         },
       })
       message.success(formatMessage(pageMessages.ScheduleExpirySettingPage.addRuleSuccess))
@@ -156,7 +154,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
     archived: formatMessage(pageMessages.ScheduleExpirySettingPage.statusArchived),
   }
 
-  const columns: ColumnProps<ScheduleExpiryData>[] = [
+  const columns: ColumnProps<ScheduleValidityRule>[] = [
     {
       key: 'language',
       title: formatMessage(pageMessages.ScheduleExpirySettingPage.language),
@@ -199,23 +197,24 @@ const ScheduleExpirySettingPage: React.VFC = () => {
       sorter: (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     },
     {
-      key: 'archived_at',
+      key: 'deleted_at',
       title: formatMessage(pageMessages.ScheduleExpirySettingPage.archivedAt),
-      dataIndex: 'archived_at',
+      dataIndex: 'deleted_at',
       width: '15%',
       render: (value: string | null) => renderDate(value),
       sorter: (a, b) => {
-        if (!a.archived_at) return 1
-        if (!b.archived_at) return -1
-        return new Date(a.archived_at).getTime() - new Date(b.archived_at).getTime()
+        if (!a.deleted_at) return 1
+        if (!b.deleted_at) return -1
+        return new Date(a.deleted_at).getTime() - new Date(b.deleted_at).getTime()
       },
     },
     {
       key: 'member',
       title: formatMessage(pageMessages.ScheduleExpirySettingPage.operator),
-      dataIndex: 'member',
+      dataIndex: 'schedule_validity_rule_member',
       width: '15%',
-      render: (member: ScheduleExpiryData['member']) => (member ? `${member.name} ${member.email}` : '-'),
+      render: (member: ScheduleValidityRule['schedule_validity_rule_member']) =>
+        member ? `${member.name} ${member.email}` : '-',
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
           <Input
@@ -354,7 +353,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
               </AdminCard>
             )}
             <AdminPageBlock>
-              <Table<ScheduleExpiryData>
+              <Table<ScheduleValidityRule>
                 loading={loading}
                 rowKey="id"
                 columns={columns}
@@ -373,9 +372,9 @@ const ScheduleExpirySettingPage: React.VFC = () => {
 }
 
 // TODO:等排課頁面，之後需移動到共用的 GraphQL 檔案中
-const GET_SCHEDULE_EXPIRY_SETTINGS = gql`
-  query GET_SCHEDULE_EXPIRY_SETTINGS($appId: String!) {
-    schedule_expiry_setting(where: { app_id: { _eq: $appId } }, order_by: { created_at: desc }) {
+const GET_SCHEDULE_VALIDITY_RULES = gql`
+  query GET_SCHEDULE_VALIDITY_RULES($appId: String!) {
+    schedule_validity_rule(where: { app_id: { _eq: $appId }, deleted_at: { _is_null: true } }, order_by: { created_at: desc }) {
       id
       type
       language
@@ -383,8 +382,8 @@ const GET_SCHEDULE_EXPIRY_SETTINGS = gql`
       valid_days
       status
       created_at
-      archived_at
-      member {
+      deleted_at
+      schedule_validity_rule_member {
         name
         email
       }
@@ -392,25 +391,21 @@ const GET_SCHEDULE_EXPIRY_SETTINGS = gql`
   }
 `
 
-const INSERT_SCHEDULE_EXPIRY_SETTING = gql`
-  mutation INSERT_SCHEDULE_EXPIRY_SETTING(
-    $appId: String!
+const INSERT_SCHEDULE_VALIDITY_RULE = gql`
+  mutation INSERT_SCHEDULE_VALIDITY_RULE(
     $type: String!
     $language: String!
-    $classCount: numeric!
-    $validDays: numeric!
+    $classCount: Int!
+    $validDays: Int!
     $status: String!
-    $updatedBy: String!
   ) {
-    insert_schedule_expiry_setting_one(
+    insert_schedule_validity_rule_one(
       object: {
-        app_id: $appId
         type: $type
         language: $language
         class_count: $classCount
         valid_days: $validDays
         status: $status
-        updated_by: $updatedBy
       }
     ) {
       id
@@ -418,11 +413,11 @@ const INSERT_SCHEDULE_EXPIRY_SETTING = gql`
   }
 `
 
-const ARCHIVE_SCHEDULE_EXPIRY_SETTING = gql`
-  mutation ARCHIVE_SCHEDULE_EXPIRY_SETTING($id: uuid!, $updatedBy: String!) {
-    update_schedule_expiry_setting_by_pk(
+const ARCHIVE_SCHEDULE_VALIDITY_RULE = gql`
+  mutation ARCHIVE_SCHEDULE_VALIDITY_RULE($id: uuid!) {
+    update_schedule_validity_rule_by_pk(
       pk_columns: { id: $id }
-      _set: { status: "archived", archived_at: "now()", updated_by: $updatedBy }
+      _set: { status: "archived", deleted_at: "now()" }
     ) {
       id
     }
