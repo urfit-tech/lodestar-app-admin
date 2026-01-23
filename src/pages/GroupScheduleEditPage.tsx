@@ -13,6 +13,7 @@ import {
   ArrangeCourseModal,
   ClassSettingsPanel,
   ScheduleCalendar,
+  ScheduleConditionPanel,
   scheduleMessages,
   StudentListPanel,
   TeacherListPanel,
@@ -22,6 +23,7 @@ import {
   createInvitationFetcher,
   getResourceByTypeTargetFetcher,
 } from '../helpers/eventHelper/eventFetchers'
+import { useClassrooms } from '../hooks/classroom'
 import {
   useClassGroup,
   useClassGroupEvents,
@@ -100,6 +102,7 @@ const GroupScheduleEditPage: React.FC = () => {
   const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
+  const { classrooms } = useClassrooms()
 
   // Class group loaded from GraphQL
   const { classGroup, loading, error, refetch: refetchClassGroup } = useClassGroup(groupId)
@@ -311,6 +314,10 @@ const GroupScheduleEditPage: React.FC = () => {
 
   const handleTeachersChange = useCallback((teachers: Teacher[]) => {
     setSelectedTeachers(teachers)
+  }, [])
+
+  const handleConditionChange = useCallback((updates: Partial<ScheduleCondition>) => {
+    setScheduleCondition(prev => ({ ...prev, ...updates }))
   }, [])
 
   const handleDateClick = useCallback((date: Date) => {
@@ -575,6 +582,17 @@ const GroupScheduleEditPage: React.FC = () => {
           </GridColumn>
         </Row>
 
+        {/* Schedule Condition */}
+        <AdminPageBlock className="mb-4">
+          <ScheduleConditionPanel
+            selectedOrders={[]}
+            condition={scheduleCondition}
+            onConditionChange={handleConditionChange}
+            hideMinutesOption={true}
+            expiryDateByOrderId={expiryDateByOrderId}
+          />
+        </AdminPageBlock>
+
         {/* Teacher List */}
         <AdminPageBlock className="mb-4">
           <TeacherListPanel
@@ -614,6 +632,7 @@ const GroupScheduleEditPage: React.FC = () => {
         scheduleCondition={scheduleCondition}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
+        classrooms={classrooms}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)

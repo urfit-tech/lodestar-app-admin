@@ -23,6 +23,7 @@ import {
   createInvitationFetcher,
   getResourceByTypeTargetFetcher,
 } from '../helpers/eventHelper/eventFetchers'
+import { useClassrooms } from '../hooks/classroom'
 import {
   useHolidays,
   usePublishEvent,
@@ -66,6 +67,7 @@ const SemesterScheduleCreatePage: React.FC = () => {
   const { authToken } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
+  const { classrooms } = useClassrooms()
 
   // GraphQL hooks
   const { updateClassGroup } = useUpdateClassGroup()
@@ -478,6 +480,7 @@ const SemesterScheduleCreatePage: React.FC = () => {
         scheduleCondition={scheduleCondition}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
+        classrooms={classrooms}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)
