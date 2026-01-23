@@ -1117,7 +1117,7 @@ const pageMessages = {
     groupClass: { id: 'page.ScheduleExpirySettingPage.groupClass', defaultMessage: '小組班' },
     language: { id: 'page.ScheduleExpirySettingPage.language', defaultMessage: '語言' },
     classCount: { id: 'page.ScheduleExpirySettingPage.classCount', defaultMessage: '滿堂數(堂)' },
-    validDays: { id: 'page.ScheduleExpirySettingPage.validDays', defaultMessage: '有效天數（天）' },
+    validDays: { id: 'page.ScheduleExpirySettingPage.validDays', defaultMessage: '有效月數（月）' },
     status: { id: 'page.ScheduleExpirySettingPage.status', defaultMessage: '狀態' },
     statusActive: { id: 'page.ScheduleExpirySettingPage.statusActive', defaultMessage: '使用中' },
     statusArchived: { id: 'page.ScheduleExpirySettingPage.statusArchived', defaultMessage: '已封存' },
