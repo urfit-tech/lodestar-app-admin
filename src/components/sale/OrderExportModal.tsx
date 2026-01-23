@@ -330,7 +330,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                       'ProgramPackagePlan',
                       'PodcastProgram',
                       'ActivityTicket',
-                      'Merchandise',
+                      'MerchandiseSpec',
                       'ProjectPlan',
                       'AppointmentPlan',
                       'VoucherPlan',
