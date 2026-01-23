@@ -23,6 +23,7 @@ import {
   createInvitationFetcher,
   getResourceByTypeTargetFetcher,
 } from '../helpers/eventHelper/eventFetchers'
+import { useClassrooms } from '../hooks/classroom'
 import {
   useClassGroup,
   useClassGroupEvents,
@@ -76,6 +77,7 @@ const SemesterScheduleEditPage: React.FC = () => {
   const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
+  const { classrooms } = useClassrooms()
 
   // Class group loaded from GraphQL
   const { classGroup, loading, error, refetch: refetchClassGroup } = useClassGroup(groupId)
@@ -520,6 +522,7 @@ const SemesterScheduleEditPage: React.FC = () => {
         scheduleCondition={scheduleCondition}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
+        classrooms={classrooms}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)

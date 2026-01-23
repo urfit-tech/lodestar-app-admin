@@ -13,6 +13,7 @@ import {
   ArrangeCourseModal,
   ClassSettingsPanel,
   ScheduleCalendar,
+  ScheduleConditionPanel,
   scheduleMessages,
   StudentListPanel,
   TeacherListPanel,
@@ -22,6 +23,7 @@ import {
   createInvitationFetcher,
   getResourceByTypeTargetFetcher,
 } from '../helpers/eventHelper/eventFetchers'
+import { useClassrooms } from '../hooks/classroom'
 import {
   useHolidays,
   useOrdersByIds,
@@ -90,6 +92,7 @@ const GroupScheduleCreatePage: React.FC = () => {
   const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
+  const { classrooms } = useClassrooms()
 
   // GraphQL hooks
   const { updateClassGroup } = useUpdateClassGroup()
@@ -301,6 +304,10 @@ const GroupScheduleCreatePage: React.FC = () => {
 
   const handleTeachersChange = useCallback((teachers: Teacher[]) => {
     setSelectedTeachers(teachers)
+  }, [])
+
+  const handleConditionChange = useCallback((updates: Partial<ScheduleCondition>) => {
+    setScheduleCondition(prev => ({ ...prev, ...updates }))
   }, [])
 
   const handleDateClick = useCallback((date: Date) => {
@@ -562,6 +569,17 @@ const GroupScheduleCreatePage: React.FC = () => {
           </GridColumn>
         </Row>
 
+        {/* Schedule Condition */}
+        <AdminPageBlock className="mb-4">
+          <ScheduleConditionPanel
+            selectedOrders={[]}
+            condition={scheduleCondition}
+            onConditionChange={handleConditionChange}
+            hideMinutesOption={true}
+            expiryDateByOrderId={expiryDateByOrderId}
+          />
+        </AdminPageBlock>
+
         {/* Teacher List */}
         <AdminPageBlock className="mb-4">
           <TeacherListPanel
@@ -601,6 +619,7 @@ const GroupScheduleCreatePage: React.FC = () => {
         scheduleCondition={scheduleCondition}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
+        classrooms={classrooms}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)
