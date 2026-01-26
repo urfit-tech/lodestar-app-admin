@@ -1739,6 +1739,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "Danh sách nhóm quyền giống nhau gọi hàm chọn",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Liệt kê chức năng thiết bị lựa chọn quay số",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "Chức năng tái chế danh sách",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "Chức năng xóa danh sách",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "Chức năng nhiều cuộc gọi nhỡ",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "Tổng số bảng hiệu suất",
   "form.PermissionGroup.SALES_READ": "Xem tất cả các đơn đặt hàng",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "Kiểm tra tất cả các hồ sơ bán hàng",

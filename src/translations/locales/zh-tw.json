@@ -1740,6 +1740,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "同權限組名單撥打選擇器功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "名單撥打選擇器功能",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "名單回收功能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "名單刪除功能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "名單多次未接功能",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "業績總表",
   "form.PermissionGroup.SALES_READ": "查看所有訂單",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "查看所有銷售紀錄",
