@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { usePermissionGroupsAsCampuses, useTeacherOpenTimeEvents, useTeachersFromMembers } from '../../hooks/scheduleManagement'
-import { Language, ScheduleCondition, scheduleStore, SCHEDULE_COLORS, Teacher } from '../../types/schedule'
+import { Language, ScheduleCondition, SCHEDULE_COLORS, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const SelectedTeachersRow = styled.div`
@@ -69,9 +69,7 @@ interface TeacherListPanelProps {
   selectedTeachers: Teacher[]
   onTeacherSelect: (teachers: Teacher[]) => void
   maxSelection?: number
-  /** Enable real data mode using GraphQL queries from member table */
-  useRealData?: boolean
-  /** Permission group IDs to filter teachers by (used as campus in real data mode) */
+  /** Permission group IDs to filter teachers by */
   permissionGroupIds?: string[]
   scheduleCondition?: ScheduleCondition
   enableAvailabilitySort?: boolean
@@ -83,7 +81,6 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   selectedTeachers,
   onTeacherSelect,
   maxSelection = 3,
-  useRealData = false,
   permissionGroupIds,
   scheduleCondition,
   enableAvailabilitySort = false,
@@ -111,44 +108,28 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   const pageSize = 5
 
   // Real data hooks
-  const { campuses: realCampuses, loading: campusesLoading } = usePermissionGroupsAsCampuses()
+  const { campuses, loading: campusesLoading } = usePermissionGroupsAsCampuses()
   const {
     teachers: realTeachers,
     loading: teachersLoading,
     availableTraits,
   } = useTeachersFromMembers(
-    useRealData ? (selectedCampusIds.length > 0 ? selectedCampusIds : undefined) : undefined,
+    selectedCampusIds.length > 0 ? selectedCampusIds : undefined,
     languages, // 使用訂單語言作為基本查詢條件
     undefined, // traitFilter
     true, // requireLanguage: 沒有訂單語言時不查詢
   )
 
-  // Fallback to mock data if not using real data
-  const mockCampuses = useMemo(() => scheduleStore.getCampuses(), [])
-  const campuses = useRealData ? realCampuses : mockCampuses
-
-  // Get all unique traits from mock teachers
-  const mockAllTraits = useMemo(() => {
-    const teachers = scheduleStore.getTeachers()
-    const traits = new Set<string>()
-    teachers.forEach(t => t.traits.forEach(trait => traits.add(trait)))
-    return Array.from(traits)
-  }, [])
-
-  // Get all unique levels
+  // Get all unique levels from real teachers
   const allLevels = useMemo(() => {
-    if (useRealData) {
-      const levels = new Set<number>()
-      realTeachers.forEach(t => {
-        if (t.level > 0) levels.add(t.level)
-      })
-      return Array.from(levels).sort((a, b) => b - a) // Descending order
-    }
-    const teachers = scheduleStore.getTeachers()
-    return Array.from(new Set(teachers.map(t => parseInt(t.level, 10) || 0))).filter(l => l > 0)
-  }, [useRealData, realTeachers])
+    const levels = new Set<number>()
+    realTeachers.forEach(t => {
+      if (t.level > 0) levels.add(t.level)
+    })
+    return Array.from(levels).sort((a, b) => b - a) // Descending order
+  }, [realTeachers])
 
-  const allTraits = useRealData ? availableTraits : mockAllTraits
+  const allTraits = availableTraits
 
   // Convert real teachers to Teacher type for compatibility
   const convertedRealTeachers = useMemo<Teacher[]>(() => {
@@ -157,6 +138,8 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       name: t.name,
       email: t.email,
       campus: t.campusId,
+      campusIds: t.campusIds,
+      campusNames: t.campusNames,
       languages: t.languages as Language[],
       traits: t.traits,
       level: t.level > 0 ? `${t.level} 星` : '-',
@@ -172,19 +155,8 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       return []
     }
 
-    let teachers: Teacher[]
-
-    if (useRealData) {
-      // 使用 GraphQL 查詢的結果，hook 已經根據訂單語言過濾
-      teachers = convertedRealTeachers
-    } else {
-      // Mock data 模式：需要在前端根據訂單語言過濾
-      teachers = scheduleStore.getTeachers()
-      if (selectedCampusIds.length > 0) {
-        teachers = teachers.filter(t => selectedCampusIds.includes(t.campus))
-      }
-      teachers = teachers.filter(t => languages.some(lang => t.languages.includes(lang as Language)))
-    }
+    // 使用 GraphQL 查詢的結果，hook 已經根據訂單語言過濾
+    let teachers: Teacher[] = convertedRealTeachers
 
     // 以下為額外篩選器（可選）
 
@@ -219,11 +191,9 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
     return teachers
   }, [
-    useRealData,
     convertedRealTeachers,
     languages,
     selectedLanguages,
-    selectedCampusIds,
     selectedTraits,
     selectedLevel,
     searchText,
@@ -339,7 +309,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   )
 
   const canSelectMore = selectedTeachers.length < maxSelection
-  const isLoading = useRealData && (campusesLoading || teachersLoading)
+  const isLoading = campusesLoading || teachersLoading
 
   const columns: ColumnsType<Teacher> = [
     {

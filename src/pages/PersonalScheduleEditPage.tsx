@@ -39,7 +39,7 @@ import {
 import { CourseRowData } from '../types/schedule'
 import { useMemberForSchedule } from '../hooks/schedule'
 import { CalendarCheckFillIcon } from '../images/icon'
-import { Language, ScheduleCondition, ScheduleEvent, scheduleStore, ScheduleTemplateProps, Student, Teacher } from '../types/schedule'
+import { Language, ScheduleCondition, ScheduleEvent, ScheduleTemplateProps, Student, Teacher } from '../types/schedule'
 import type { CourseRow } from '../components/schedule/ArrangeCourseModal'
 
 const PageWrapper = styled.div`
@@ -111,8 +111,8 @@ const PersonalScheduleEditPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [editingEvent, setEditingEvent] = useState<ScheduleEvent | undefined>()
 
-  // State to trigger re-render when store changes
-  const [storeUpdateCounter, setStoreUpdateCounter] = useState(0)
+  // Local pending events (events that haven't been submitted to API yet)
+  const [pendingEvents, setPendingEvents] = useState<ScheduleEvent[]>([])
 
   // Draft rows for saving between modal sessions
   const [draftRows, setDraftRows] = useState<CourseRow[] | undefined>()
@@ -259,12 +259,11 @@ const PersonalScheduleEditPage: React.FC = () => {
     return defaultExcludeDates.map(h => h.date)
   }, [defaultExcludeDates])
 
-  // Get events for calendar
+  // Get events for calendar (local pending events)
   const calendarEvents = useMemo(() => {
     if (!selectedStudent) return []
-    return scheduleStore.getEvents('personal').filter(e => e.studentId === selectedStudent.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStudent, storeUpdateCounter])
+    return pendingEvents.filter(e => e.studentId === selectedStudent.id)
+  }, [selectedStudent, pendingEvents])
 
   // Get materials from selected orders
   const orderMaterials = useMemo(() => {
@@ -368,33 +367,38 @@ const PersonalScheduleEditPage: React.FC = () => {
 
   const handleSaveEvents = useCallback(
     (events: Partial<ScheduleEvent>[]) => {
-      // Save to in-memory store only (pending status)
-      events.forEach(event => {
-        if (event.id && !event.id.startsWith('local-')) {
-          // Update existing event
-          scheduleStore.updateEvent(event.id, event)
-        } else {
-          // Add new event to local store
-          scheduleStore.addEvent({
-            ...event,
-            id: `local-${Date.now()}-${Math.random()}`,
-            scheduleType: 'personal',
-            status: 'pending',
-            studentId: selectedStudent?.id,
-            orderIds: selectedOrderIds,
-            campus: '',
-            language: (selectedLanguages[0] || 'zh-TW') as Language,
-            createdBy: 'current-user',
-            createdByEmail: 'user@example.com',
-            updatedAt: new Date(),
-          } as ScheduleEvent)
-        }
+      // Save to local pending events state (pending status)
+      setPendingEvents(prev => {
+        const newEvents = [...prev]
+        events.forEach(event => {
+          if (event.id && !event.id.startsWith('local-')) {
+            // Update existing event
+            const index = newEvents.findIndex(e => e.id === event.id)
+            if (index >= 0) {
+              newEvents[index] = { ...newEvents[index], ...event }
+            }
+          } else {
+            // Add new event to local pending events
+            newEvents.push({
+              ...event,
+              id: `local-${Date.now()}-${Math.random()}`,
+              scheduleType: 'personal',
+              status: 'pending',
+              studentId: selectedStudent?.id,
+              orderIds: selectedOrderIds,
+              campus: '',
+              language: (selectedLanguages[0] || 'zh-TW') as Language,
+              createdBy: currentMember?.name || 'current-user',
+              createdByEmail: currentMember?.email || 'user@example.com',
+              updatedAt: new Date(),
+            } as ScheduleEvent)
+          }
+        })
+        return newEvents
       })
-      // Trigger re-render to update calendar
-      setStoreUpdateCounter(prev => prev + 1)
       message.success('課程已加入待處理')
     },
-    [selectedStudent, selectedOrderIds, selectedLanguages],
+    [selectedStudent, selectedOrderIds, selectedLanguages, currentMember],
   )
 
   const handlePreSchedule = useCallback(async () => {
@@ -530,18 +534,23 @@ const PersonalScheduleEditPage: React.FC = () => {
         )
       }
 
-      // Update local store status to pre-scheduled and save API event IDs
-      pendingEvents.forEach((event, index) => {
-        const createdEvent = resolveCreatedEvent(event, index)
-        const apiEventId = createdEvent?.id
-        scheduleStore.updateEvent(event.id, {
-          status: 'pre-scheduled',
-          apiEventId,
-        })
-      })
-
-      // Trigger re-render to update calendar
-      setStoreUpdateCounter(prev => prev + 1)
+      // Update local pending events status to pre-scheduled and save API event IDs
+      // Note: pendingEvents here refers to the local variable from calendarEvents.filter()
+      const submittedEventIds = new Set(pendingEvents.map(e => e.id))
+      setPendingEvents(prev =>
+        prev.map((event, index) => {
+          if (submittedEventIds.has(event.id)) {
+            const createdEvent = resolveCreatedEvent(event, index)
+            const apiEventId = createdEvent?.id
+            return {
+              ...event,
+              status: 'pre-scheduled' as const,
+              apiEventId,
+            }
+          }
+          return event
+        }),
+      )
 
       // Refetch student events
       refetchStudentEvents()
@@ -593,14 +602,15 @@ const PersonalScheduleEditPage: React.FC = () => {
         }),
       )
 
-      // Update local store
-      calendarEvents
-        .filter(e => e.status === 'pre-scheduled')
-        .forEach(event => {
-          scheduleStore.updateEvent(event.id, { status: 'published' })
-        })
-
-      setStoreUpdateCounter(prev => prev + 1)
+      // Update local pending events status to published
+      setPendingEvents(prev =>
+        prev.map(event => {
+          if (event.status === 'pre-scheduled') {
+            return { ...event, status: 'published' as const }
+          }
+          return event
+        }),
+      )
       refetchStudentEvents()
 
       message.success(`已發布 ${unpublishedEvents.length} 堂課程`)
@@ -695,7 +705,7 @@ const PersonalScheduleEditPage: React.FC = () => {
               campus=""
               selectedTeachers={selectedTeachers}
               onTeacherSelect={handleTeachersChange}
-              useRealData={true}
+              
             />
           </Collapse.Panel>
         </CollapsibleScheduleCard>
@@ -736,6 +746,7 @@ const PersonalScheduleEditPage: React.FC = () => {
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
         classrooms={classrooms}
+        existingScheduleEvents={calendarEvents}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)

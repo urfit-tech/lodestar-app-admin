@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Modal, Popover, Space, Table, Tabs, Typography } from 'antd'
+import { Button, Input, Modal, Space, Table, Tabs, Typography } from 'antd'
 import { ColumnsType, ColumnType } from 'antd/lib/table'
 import { FilterDropdownProps } from 'antd/lib/table/interface'
 import dayjs from 'dayjs'
@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { usePermissionGroupsAsCampuses, usePersonalScheduleListEvents } from '../../hooks/scheduleManagement'
-import { mockStudents, ScheduleEvent, ScheduleStatus, scheduleStore, ScheduleType, Student } from '../../types/schedule'
+import { ScheduleEvent, ScheduleStatus, ScheduleType } from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const { TabPane } = Tabs
@@ -16,11 +16,6 @@ const TableWrapper = styled.div`
   background: white;
   border-radius: 8px;
   padding: 16px;
-`
-
-const StudentListPopover = styled.div`
-  max-height: 200px;
-  overflow-y: auto;
 `
 
 interface ScheduleTableProps {
@@ -75,17 +70,12 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
   )
 
   const campuses = useMemo(() => {
-    return scheduleType === 'personal' ? permissionCampuses : scheduleStore.getCampuses()
-  }, [scheduleType, permissionCampuses])
-
-  const teachers = useMemo(() => {
-    return scheduleType === 'personal' ? [] : scheduleStore.getTeachers()
-  }, [scheduleType])
+    return permissionCampuses
+  }, [permissionCampuses])
 
   const events = useMemo(() => {
-    // Use API data for personal type, mock store for others
-    let allEvents: ScheduleEvent[] =
-      scheduleType === 'personal' ? apiEvents : scheduleStore.getEvents(scheduleType, activeTab)
+    // Use API data for personal type (semester/group types are not used in this component)
+    let allEvents: ScheduleEvent[] = scheduleType === 'personal' ? apiEvents : []
 
     // Apply campus filter (fuzzy search)
     if (filters.campus) {
@@ -108,36 +98,21 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     if (filters.person) {
       const search = filters.person.toLowerCase()
       allEvents = allEvents.filter(event => {
-        // Search by student name/email
-        if (scheduleType === 'personal') {
-          const apiEvent = event as any
-          if (
-            apiEvent.studentName?.toLowerCase().includes(search) ||
-            apiEvent.studentEmail?.toLowerCase().includes(search)
-          ) {
-            return true
-          }
-        } else if (event.studentId) {
-          const student = scheduleStore.getStudentById(event.studentId)
-          if (student?.name.toLowerCase().includes(search) || student?.email.toLowerCase().includes(search)) {
-            return true
-          }
+        // Search by student name/email (personal schedule uses API event with studentName/Email)
+        const apiEvent = event as any
+        if (
+          apiEvent.studentName?.toLowerCase().includes(search) ||
+          apiEvent.studentEmail?.toLowerCase().includes(search)
+        ) {
+          return true
         }
 
         // Search by teacher name/email
-        if (scheduleType === 'personal') {
-          const apiEvent = event as any
-          if (
-            apiEvent.teacherName?.toLowerCase().includes(search) ||
-            apiEvent.teacherEmail?.toLowerCase().includes(search)
-          ) {
-            return true
-          }
-        } else if (event.teacherId) {
-          const teacher = teachers.find(t => t.id === event.teacherId)
-          if (teacher?.name.toLowerCase().includes(search) || teacher?.email.toLowerCase().includes(search)) {
-            return true
-          }
+        if (
+          apiEvent.teacherName?.toLowerCase().includes(search) ||
+          apiEvent.teacherEmail?.toLowerCase().includes(search)
+        ) {
+          return true
         }
 
         // Search by setting person
@@ -151,62 +126,25 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
 
     // Sort by date (most recent first)
     return allEvents.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
-  }, [scheduleType, activeTab, filters, apiEvents, campuses, teachers])
+  }, [scheduleType, activeTab, filters, apiEvents, campuses])
 
   const loading = scheduleType === 'personal' ? apiLoading : false
 
   const getStudentDisplay = useCallback(
     (event: ScheduleEvent): React.ReactNode => {
-      if (scheduleType === 'personal') {
-        const apiEvent = event as any
-        if (!apiEvent.studentName && !apiEvent.studentEmail) return '-'
-        return (
-          <div>
-            <div>{apiEvent.studentName || '-'}</div>
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {apiEvent.studentEmail || '-'}
-            </Typography.Text>
-          </div>
-        )
-      }
-
-      if ((scheduleType === 'semester' || scheduleType === 'group') && event.studentIds) {
-        const students = event.studentIds.map(id => mockStudents.find(s => s.id === id)).filter(Boolean) as Student[]
-
-        if (students.length === 0) return '-'
-
-        const firstStudent = students[0]
-        const othersCount = students.length - 1
-
-        const content = (
-          <StudentListPopover>
-            {students.map(s => (
-              <div key={s.id}>
-                {s.name} / {s.email}
-              </div>
-            ))}
-          </StudentListPopover>
-        )
-
-        return (
-          <Popover content={content} trigger="hover">
-            <div style={{ cursor: 'pointer' }}>
-              <div>
-                {firstStudent.name} / {firstStudent.email}
-              </div>
-              {othersCount > 0 && (
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                  {formatMessage(scheduleMessages.ScheduleTable.andOthers, { count: othersCount })}
-                </Typography.Text>
-              )}
-            </div>
-          </Popover>
-        )
-      }
-
-      return '-'
+      // Only personal schedule type is used in this component
+      const apiEvent = event as any
+      if (!apiEvent.studentName && !apiEvent.studentEmail) return '-'
+      return (
+        <div>
+          <div>{apiEvent.studentName || '-'}</div>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {apiEvent.studentEmail || '-'}
+          </Typography.Text>
+        </div>
+      )
     },
-    [scheduleType, formatMessage],
+    [],
   )
 
   // Helper function to get column search props
@@ -339,52 +277,18 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     },
   ]
 
-  const classColumns: ColumnsType<ScheduleEvent> = [
-    ...baseColumns,
-    {
-      title: formatMessage(scheduleMessages.ScheduleTable.className),
-      key: 'className',
-      render: (_, record) => {
-        if (record.classId) {
-          const classGroup = scheduleStore.getClassGroupById(record.classId)
-          return classGroup?.name || '-'
-        }
-        return '-'
-      },
-    },
-    {
-      title: formatMessage(scheduleMessages.ScheduleTable.studentList),
-      key: 'studentList',
-      render: (_, record) => getStudentDisplay(record),
-      ...getColumnSearchProps('person'),
-    },
-  ]
-
   const commonEndColumns: ColumnsType<ScheduleEvent> = [
     {
       title: formatMessage(scheduleMessages.ScheduleTable.teacherName),
       key: 'teacher',
       render: (_, record) => {
-        if (scheduleType === 'personal') {
-          const apiEvent = record as any
-          return apiEvent.teacherName ? (
-            <div>
-              <div>{apiEvent.teacherName}</div>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {apiEvent.teacherEmail || '-'}
-              </Typography.Text>
-            </div>
-          ) : (
-            '-'
-          )
-        }
-
-        const teacher = teachers.find(t => t.id === record.teacherId)
-        return teacher ? (
+        // Only personal schedule type is used in this component
+        const apiEvent = record as any
+        return apiEvent.teacherName ? (
           <div>
-            <div>{teacher.name}</div>
+            <div>{apiEvent.teacherName}</div>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {teacher.email}
+              {apiEvent.teacherEmail || '-'}
             </Typography.Text>
           </div>
         ) : (
@@ -426,8 +330,8 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     },
   ]
 
-  const columns =
-    scheduleType === 'personal' ? [...personalColumns, ...commonEndColumns] : [...classColumns, ...commonEndColumns]
+  // Only personal schedule type is used in this component
+  const columns = [...personalColumns, ...commonEndColumns]
 
   return (
     <TableWrapper>

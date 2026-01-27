@@ -10,7 +10,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import { scheduleMessages, ScheduleTable, StudentSelectionModal } from '../components/schedule'
 import { deleteEvent } from '../helpers/eventHelper/eventFetchers'
 import { CalendarCheckFillIcon } from '../images/icon'
-import { ScheduleEvent, scheduleStore } from '../types/schedule'
+import { ScheduleEvent } from '../types/schedule'
 
 import type { MemberForSchedule } from '../hooks/schedule'
 
@@ -61,12 +61,10 @@ const PersonalSchedulePage: React.FC = () => {
   const handleDelete = useCallback(
     async (event: ScheduleEvent) => {
       try {
-        // If the event has an API event ID, delete it via API
+        // Delete event via API (ScheduleTable will refetch events automatically)
         if (event.apiEventId && authToken) {
           await deleteEvent(authToken)(new Date())(event.apiEventId)
         }
-        // Also delete from local store
-        scheduleStore.deleteEvent(event.id)
         message.success('課程已刪除')
       } catch (error) {
         console.error('Failed to delete event:', error)

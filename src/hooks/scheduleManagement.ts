@@ -1,11 +1,3 @@
-/**
- * Schedule Management GraphQL Hooks
- *
- * This file contains GraphQL queries and mutations for the schedule management feature.
- * Currently using in-memory mock data from scheduleManagementStore.
- * Uncomment the GraphQL sections when backend is ready.
- */
-
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
@@ -14,21 +6,13 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { getDefaultResourceEventsFethcer } from '../helpers/eventHelper/eventFetchers'
 import { getActiveEvents, getAvailableEvents } from '../components/event/eventAdaptor'
 import { GeneralEventApi } from '../components/event/events.type'
-import { scheduleStore } from '../types/schedule'
 import {
-  Campus,
   ClassGroup,
   CourseRowData,
-  Holiday,
   Language,
-  Order,
-  ScheduleCondition,
   ScheduleEvent,
-  ScheduleTemplate,
   ScheduleTemplateProps,
   ScheduleType,
-  Student,
-  Teacher,
 } from '../types/schedule'
 
 // Type definitions for order_log / order_products GraphQL queries
@@ -85,40 +69,6 @@ interface OrderLogData {
     email: string
     picture_url?: string | null
   }
-}
-
-// =============================================================================
-// Custom Hooks (Using in-memory mock data)
-// =============================================================================
-
-/**
- * Hook to get schedule events
- */
-export const useScheduleEvents = (type?: ScheduleType, status?: string) => {
-  const [events, setEvents] = useState<ScheduleEvent[]>(() => scheduleStore.getEvents(type, status))
-  const [loading, setLoading] = useState(false)
-
-  const refetch = useCallback(() => {
-    setLoading(true)
-    // Simulate API call delay
-    setTimeout(() => {
-      setEvents(scheduleStore.getEvents(type, status))
-      setLoading(false)
-    }, 100)
-  }, [type, status])
-
-  return { events, loading, refetch }
-}
-
-/**
- * Hook to get teachers with filters
- */
-export const useTeachers = (language?: Language, campus?: string) => {
-  const teachers = useMemo(() => {
-    return scheduleStore.getTeachers(language, campus)
-  }, [language, campus])
-
-  return { teachers, loading: false }
 }
 
 // =============================================================================
@@ -369,51 +319,6 @@ export const useTeachersFromMembers = (
     availableLanguages,
     availableTraits,
   }
-}
-
-// GraphQL query to get members by IDs (for student list with real data)
-export const GET_MEMBERS_BY_IDS_FOR_SCHEDULE = gql`
-  query GetMembersByIdsForSchedule($memberIds: [String!]!) {
-    member(where: { id: { _in: $memberIds } }) {
-      id
-      name
-      email
-      picture_url
-    }
-  }
-`
-
-interface MembersByIdsData {
-  member: Array<{
-    id: string
-    name: string | null
-    email: string
-    picture_url: string | null
-  }>
-}
-
-/**
- * Hook to get members by IDs (for student list with real data)
- * @param memberIds - Array of member IDs to fetch
- */
-export const useMembersByIds = (memberIds: string[]) => {
-  const { data, loading, error, refetch } = useQuery<MembersByIdsData>(GET_MEMBERS_BY_IDS_FOR_SCHEDULE, {
-    variables: { memberIds },
-    skip: memberIds.length === 0,
-  })
-
-  const members = useMemo(() => {
-    return (
-      data?.member.map(m => ({
-        id: m.id,
-        name: m.name || '',
-        email: m.email,
-        pictureUrl: m.picture_url,
-      })) || []
-    )
-  }, [data])
-
-  return { members, loading, error, refetch }
 }
 
 // =============================================================================
@@ -669,53 +574,6 @@ const transformClassGroupData = (data: ClassGroupData): ClassGroup => ({
 })
 
 /**
- * Hook to get students with filters (uses mock data for backward compatibility)
- * @deprecated Use useMembers instead for real data
- */
-export const useStudents = (campus?: string) => {
-  const students = useMemo(() => {
-    return scheduleStore.getStudents(campus)
-  }, [campus])
-
-  return { students, loading: false }
-}
-
-/**
- * Hook to get student by ID
- */
-export const useStudent = (studentId: string | undefined) => {
-  const student = useMemo(() => {
-    if (!studentId) return undefined
-    return scheduleStore.getStudentById(studentId)
-  }, [studentId])
-
-  return { student, loading: false }
-}
-
-/**
- * Hook to get orders by student
- */
-export const useOrdersByStudent = (studentId: string | undefined, type?: ScheduleType) => {
-  const orders = useMemo(() => {
-    if (!studentId) return []
-    return scheduleStore.getOrdersByStudent(studentId, type)
-  }, [studentId, type])
-
-  return { orders, loading: false }
-}
-
-/**
- * Hook to get orders by type
- */
-export const useOrdersByType = (type: ScheduleType, campus?: string, language?: Language) => {
-  const orders = useMemo(() => {
-    return scheduleStore.getOrdersByType(type, campus, language)
-  }, [type, campus, language])
-
-  return { orders, loading: false }
-}
-
-/**
  * Hook to get class groups
  */
 export const useClassGroups = (type?: 'semester' | 'group') => {
@@ -756,16 +614,6 @@ export const useClassGroup = (classGroupId: string | undefined) => {
   return { classGroup, loading, error, refetch }
 }
 
-/**
- * Hook to get campuses
- */
-export const useCampuses = () => {
-  const campuses = useMemo(() => {
-    return scheduleStore.getCampuses()
-  }, [])
-
-  return { campuses, loading: false }
-}
 
 /**
  * Hook to get holidays
@@ -793,104 +641,6 @@ export const useHolidays = () => {
   }, [settings])
 
   return { holidays, loading: false }
-}
-
-/**
- * Hook to check for conflicts
- */
-export const useConflictCheck = () => {
-  const checkConflict = useCallback(
-    (
-      date: Date,
-      startTime: string,
-      endTime: string,
-      teacherId?: string,
-      classroomId?: string,
-      excludeEventId?: string,
-      classroomIds?: string[],
-    ) => {
-      return scheduleStore.hasConflict(
-        date,
-        startTime,
-        endTime,
-        teacherId,
-        classroomId,
-        excludeEventId,
-        undefined,
-        classroomIds,
-      )
-    },
-    [],
-  )
-
-  return { checkConflict }
-}
-
-// =============================================================================
-// Mutation Hooks (Using in-memory mock data)
-// =============================================================================
-
-/**
- * Hook to create schedule event
- */
-export const useCreateScheduleEvent = () => {
-  const [loading, setLoading] = useState(false)
-
-  const createEvent = useCallback(async (event: Omit<ScheduleEvent, 'id'>): Promise<ScheduleEvent> => {
-    setLoading(true)
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const newEvent = scheduleStore.addEvent(event)
-        setLoading(false)
-        resolve(newEvent)
-      }, 200)
-    })
-  }, [])
-
-  return { createEvent, loading }
-}
-
-/**
- * Hook to update schedule event
- */
-export const useUpdateScheduleEvent = () => {
-  const [loading, setLoading] = useState(false)
-
-  const updateEvent = useCallback(
-    async (id: string, updates: Partial<ScheduleEvent>): Promise<ScheduleEvent | undefined> => {
-      setLoading(true)
-      return new Promise(resolve => {
-        setTimeout(() => {
-          const updatedEvent = scheduleStore.updateEvent(id, updates)
-          setLoading(false)
-          resolve(updatedEvent)
-        }, 200)
-      })
-    },
-    [],
-  )
-
-  return { updateEvent, loading }
-}
-
-/**
- * Hook to delete schedule event
- */
-export const useDeleteScheduleEvent = () => {
-  const [loading, setLoading] = useState(false)
-
-  const deleteEvent = useCallback(async (id: string): Promise<boolean> => {
-    setLoading(true)
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const result = scheduleStore.deleteEvent(id)
-        setLoading(false)
-        resolve(result)
-      }, 200)
-    })
-  }, [])
-
-  return { deleteEvent, loading }
 }
 
 /**
@@ -1118,131 +868,6 @@ export const useRemoveOrderFromClassGroup = () => {
   )
 
   return { removeOrderFromClassGroup, loading }
-}
-
-/**
- * Hook to manage class group orders (add/remove orders from class group)
- */
-export const useClassGroupOrders = () => {
-  const [insertOrderMutation, { loading: insertLoading }] = useMutation(INSERT_CLASS_GROUP_ORDER)
-  const [deleteOrderMutation, { loading: deleteLoading }] = useMutation(DELETE_CLASS_GROUP_ORDER)
-
-  const addOrderToClassGroup = useCallback(
-    async (classGroupId: string, orderId: string): Promise<boolean> => {
-      try {
-        await insertOrderMutation({
-          variables: {
-            object: {
-              class_group_id: classGroupId,
-              order_id: orderId,
-            },
-          },
-        })
-        return true
-      } catch (error) {
-        console.error('Failed to add order to class group:', error)
-        return false
-      }
-    },
-    [insertOrderMutation],
-  )
-
-  const removeOrderFromClassGroup = useCallback(
-    async (classGroupId: string, orderId: string): Promise<boolean> => {
-      try {
-        await deleteOrderMutation({
-          variables: {
-            classGroupId,
-            orderId,
-          },
-        })
-        return true
-      } catch (error) {
-        console.error('Failed to remove order from class group:', error)
-        return false
-      }
-    },
-    [deleteOrderMutation],
-  )
-
-  return {
-    addOrderToClassGroup,
-    removeOrderFromClassGroup,
-    loading: insertLoading || deleteLoading,
-  }
-}
-
-// =============================================================================
-// Utility Hooks
-// =============================================================================
-
-/**
- * Hook to calculate schedule based on conditions
- * @deprecated Use the new template system with CourseRowData instead
- */
-export const useScheduleCalculation = () => {
-  const { holidays } = useHolidays()
-
-  const calculateScheduleDates = useCallback(
-    (condition: ScheduleCondition, template: ScheduleTemplate): Date[] => {
-      const dates: Date[] = []
-      const { startDate, endDate, totalMinutes, excludedDates, excludeHolidays } = condition
-      const { weekday, duration } = template
-
-      let currentDate = new Date(startDate)
-      let accumulatedMinutes = 0
-
-      // Find the first matching weekday
-      while (currentDate.getDay() !== weekday) {
-        currentDate.setDate(currentDate.getDate() + 1)
-      }
-
-      while (true) {
-        // Check end conditions
-        if (endDate && currentDate > endDate) break
-        if (totalMinutes && accumulatedMinutes >= totalMinutes) break
-
-        // Check if date should be excluded
-        const dateStr = currentDate.toISOString().split('T')[0]
-        const isExcluded = excludedDates.some(d => d.toISOString().split('T')[0] === dateStr)
-        const isHoliday = excludeHolidays && holidays.some(h => h.date.toISOString().split('T')[0] === dateStr)
-
-        if (!isExcluded && !isHoliday) {
-          dates.push(new Date(currentDate))
-          accumulatedMinutes += duration
-        }
-
-        // Move to next week
-        currentDate.setDate(currentDate.getDate() + 7)
-
-        // Safety limit
-        if (dates.length > 100) break
-      }
-
-      return dates
-    },
-    [holidays],
-  )
-
-  return { calculateScheduleDates }
-}
-
-/**
- * Hook to get teacher color assignment
- */
-export const useTeacherColors = () => {
-  const getTeacherColor = useCallback((teacherId: string, teacherIndex: number) => {
-    const colorSets = [
-      { light: '#bfdbfe', medium: '#93c5fd', dark: '#3b82f6' }, // Blue
-      { light: '#fbcfe8', medium: '#f9a8d4', dark: '#ec4899' }, // Pink
-      { light: '#e9d5ff', medium: '#d8b4fe', dark: '#a855f7' }, // Purple
-      { light: '#bbf7d0', medium: '#86efac', dark: '#22c55e' }, // Green
-      { light: '#fed7aa', medium: '#fdba74', dark: '#f97316' }, // Orange
-    ]
-    return colorSets[teacherIndex % colorSets.length]
-  }, [])
-
-  return { getTeacherColor }
 }
 
 // =============================================================================
@@ -2358,30 +1983,6 @@ const INSERT_SCHEDULE_TEMPLATE = gql`
   }
 `
 
-const UPDATE_SCHEDULE_TEMPLATE = gql`
-  mutation UpdateScheduleTemplate(
-    $id: uuid!
-    $name: String
-    $rrule: String
-    $courseRows: jsonb
-  ) {
-    update_schedule_template_by_pk(
-      pk_columns: { id: $id }
-      _set: { name: $name, rrule: $rrule, course_rows: $courseRows, updated_at: "now()" }
-    ) {
-      id
-      app_id
-      member_id
-      name
-      language
-      rrule
-      course_rows
-      created_at
-      updated_at
-    }
-  }
-`
-
 const DELETE_SCHEDULE_TEMPLATE = gql`
   mutation DeleteScheduleTemplate($id: uuid!) {
     update_schedule_template_by_pk(
@@ -2512,35 +2113,6 @@ export const useSaveScheduleTemplate = () => {
 }
 
 /**
- * Hook to update an existing schedule template
- */
-export const useUpdateScheduleTemplate = () => {
-  const [updateTemplate, { loading, error }] = useMutation(UPDATE_SCHEDULE_TEMPLATE)
-
-  const update = useCallback(
-    async (id: string, updates: { name?: string; courseRows?: CourseRowData[]; rrule?: string }) => {
-      const result = await updateTemplate({
-        variables: {
-          id,
-          name: updates.name || undefined,
-          courseRows: updates.courseRows || undefined,
-          rrule: updates.rrule || undefined,
-        },
-      })
-
-      return result.data?.update_schedule_template_by_pk
-    },
-    [updateTemplate],
-  )
-
-  return {
-    updateTemplate: update,
-    loading,
-    error,
-  }
-}
-
-/**
  * Hook to delete a schedule template (soft delete)
  */
 export const useDeleteScheduleTemplate = () => {
@@ -2565,21 +2137,119 @@ export const useDeleteScheduleTemplate = () => {
 }
 
 // =============================================================================
+// Schedule Conflict Detection Utility
+// =============================================================================
+
+export interface ConflictCheckParams {
+  date: Date
+  startTime: string // HH:mm format
+  endTime: string // HH:mm format
+  teacherId?: string
+  classroomId?: string
+  classroomIds?: string[]
+  studentId?: string
+  excludeEventId?: string
+}
+
+export interface ConflictCheckResult {
+  hasTeacherConflict: boolean
+  hasRoomConflict: boolean
+  hasStudentConflict: boolean
+  conflictDetails: {
+    teacherConflicts: Array<{ startTime: string; endTime: string; teacherName?: string }>
+    roomConflicts: Array<{ startTime: string; endTime: string; roomName?: string }>
+    studentConflicts: Array<{ startTime: string; endTime: string }>
+  }
+}
+
+/**
+ * Check for schedule conflicts with existing events
+ *
+ * @param params - The conflict check parameters
+ * @param existingEvents - List of existing schedule events to check against
+ * @param teachers - Optional list of teachers for name lookup
+ * @param classrooms - Optional list of classrooms for name lookup
+ * @returns ConflictCheckResult with conflict status and details
+ */
+export const checkScheduleConflict = (
+  params: ConflictCheckParams,
+  existingEvents: ScheduleEvent[],
+  teachers?: Array<{ id: string; name: string }>,
+  classrooms?: Array<{ id: string; name: string }>,
+): ConflictCheckResult => {
+  const { date, startTime, endTime, teacherId, classroomId, classroomIds, studentId, excludeEventId } = params
+
+  const dateStr = date.toISOString().split('T')[0]
+  const relevantEvents = existingEvents.filter(e => {
+    const eventDateStr = e.date instanceof Date ? e.date.toISOString().split('T')[0] : String(e.date).split('T')[0]
+    return eventDateStr === dateStr && e.id !== excludeEventId
+  })
+
+  const hasTimeOverlap = (event: ScheduleEvent): boolean => {
+    const eventStart = parseInt(event.startTime.replace(':', ''))
+    const eventEnd = parseInt(event.endTime.replace(':', ''))
+    const newStart = parseInt(startTime.replace(':', ''))
+    const newEnd = parseInt(endTime.replace(':', ''))
+    return newStart < eventEnd && newEnd > eventStart
+  }
+
+  // Teacher conflicts
+  const teacherConflictEvents = teacherId
+    ? relevantEvents.filter(e => e.teacherId === teacherId && hasTimeOverlap(e))
+    : []
+  const hasTeacherConflict = teacherConflictEvents.length > 0
+
+  // Room conflicts
+  const targetClassroomIds = [...(classroomId ? [classroomId] : []), ...(classroomIds || [])].filter(Boolean)
+  const roomConflictEvents =
+    targetClassroomIds.length > 0
+      ? relevantEvents.filter(e => {
+          const eventClassroomIds = e.classroomIds || (e.classroomId ? [e.classroomId] : [])
+          return eventClassroomIds.some(id => targetClassroomIds.includes(id)) && hasTimeOverlap(e)
+        })
+      : []
+  const hasRoomConflict = roomConflictEvents.length > 0
+
+  // Student conflicts
+  const studentConflictEvents = studentId
+    ? relevantEvents.filter(e => e.studentId === studentId && hasTimeOverlap(e))
+    : []
+  const hasStudentConflict = studentConflictEvents.length > 0
+
+  // Build conflict details
+  const conflictDetails = {
+    teacherConflicts: teacherConflictEvents.map(e => ({
+      startTime: e.startTime,
+      endTime: e.endTime,
+      teacherName: teachers?.find(t => t.id === e.teacherId)?.name,
+    })),
+    roomConflicts: roomConflictEvents.map(e => {
+      const eventClassroomIds = e.classroomIds || (e.classroomId ? [e.classroomId] : [])
+      const firstRoomId = eventClassroomIds[0]
+      return {
+        startTime: e.startTime,
+        endTime: e.endTime,
+        roomName: firstRoomId ? classrooms?.find(c => c.id === firstRoomId)?.name : undefined,
+      }
+    }),
+    studentConflicts: studentConflictEvents.map(e => ({
+      startTime: e.startTime,
+      endTime: e.endTime,
+    })),
+  }
+
+  return { hasTeacherConflict, hasRoomConflict, hasStudentConflict, conflictDetails }
+}
+
+// =============================================================================
 // Export types for convenience
 // =============================================================================
 
 export type {
-  Campus,
   ClassGroup,
-  Holiday,
+  CourseRowData,
   Language,
-  Order,
-  ScheduleCondition,
   ScheduleEvent,
-  ScheduleTemplate,
   ScheduleTemplateProps,
   ScheduleType,
-  Student,
-  Teacher,
-  CourseRowData,
 }
