@@ -47,6 +47,7 @@ interface ScheduleConditionPanelProps {
   expiryDateByLanguage?: Record<string, Date | null>
   minutesLimitMode?: 'sum' | 'minPerStudent'
   endDateLimitMode?: 'latest' | 'earliest'
+  disabled?: boolean // Explicitly control disabled state (defaults to selectedOrders.length === 0)
 }
 
 const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
@@ -57,16 +58,37 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   expiryDateByLanguage = {},
   minutesLimitMode = 'sum',
   endDateLimitMode = 'latest',
+  disabled,
 }) => {
   const { formatMessage } = useIntl()
   const { holidays } = useHolidays()
 
   // Calculate limits based on selected orders and language expiry settings
   const limits = useMemo(() => {
+    const defaultMaxDate = moment().add(180, 'day')
+
+    // Calculate max end date from expiryDateByLanguage (used for semester/group classes)
+    const calculateMaxEndDateFromLanguage = (): moment.Moment => {
+      const languageExpiryDates = Object.values(expiryDateByLanguage).filter(
+        (date): date is Date => date !== null && date !== undefined,
+      )
+
+      if (languageExpiryDates.length > 0) {
+        // Use the earliest expiry date (most restrictive)
+        const earliestExpiry = languageExpiryDates.reduce(
+          (earliest, date) => (moment(date).isBefore(earliest) ? moment(date) : earliest),
+          moment(languageExpiryDates[0]),
+        )
+        return earliestExpiry
+      }
+      return defaultMaxDate
+    }
+
+    // When no orders selected (semester/group classes), still calculate maxEndDate from expiryDateByLanguage
     if (selectedOrders.length === 0) {
       return {
-        maxStartDate: moment().add(180, 'day'),
-        maxEndDate: moment().add(180, 'day'),
+        maxStartDate: defaultMaxDate,
+        maxEndDate: calculateMaxEndDateFromLanguage(),
         maxMinutes: 0,
         earliestOrderDate: moment(),
       }
@@ -79,10 +101,10 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
     )
 
     // Get unique languages from selected orders
-    const selectedLanguages = [...new Set(selectedOrders.map(o => o.language).filter(Boolean))]
+    const selectedLanguages = Array.from(new Set(selectedOrders.map(o => o.language).filter(Boolean)))
 
     // Calculate max end date based on language expiry settings
-    let maxEndDate = moment().add(180, 'day') // Default fallback
+    let maxEndDate = defaultMaxDate // Default fallback
 
     if (selectedLanguages.length > 0) {
       // Find the earliest expiry date among all selected languages
@@ -101,7 +123,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
     }
 
     // Fallback to order's expiresAt if no language expiry settings
-    if (maxEndDate.isSame(moment().add(180, 'day'), 'day')) {
+    if (maxEndDate.isSame(defaultMaxDate, 'day')) {
       const expiryDates = selectedOrders
         .map(order => order.expiresAt)
         .filter((date): date is Date => Boolean(date))
@@ -227,7 +249,8 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
     return startDate.isSameOrAfter(moment(), 'day') && startDate.isSameOrBefore(limits.maxStartDate, 'day')
   }, [condition.startDate, limits.maxStartDate])
 
-  const isDisabled = selectedOrders.length === 0
+  // Use explicit disabled prop if provided, otherwise default to disabled when no orders selected
+  const isDisabled = disabled !== undefined ? disabled : selectedOrders.length === 0
 
   return (
     <ScheduleCard title={formatMessage(scheduleMessages.ScheduleCondition.title)} size="small" style={{ height: '100%' }}>

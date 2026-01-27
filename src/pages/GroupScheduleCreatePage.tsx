@@ -1,4 +1,4 @@
-import { Button, Col, message, Row, Space } from 'antd'
+import { Button, message, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -39,7 +39,6 @@ import {
   Order,
   ScheduleCondition,
   ScheduleEvent,
-  scheduleStore,
   Teacher,
 } from '../types/schedule'
 
@@ -59,32 +58,17 @@ const ActionBar = styled.div`
   gap: 8px;
 `
 
-const GridColumn = styled(Col)`
-  display: flex;
-  flex-direction: column;
+const ThreeColumnGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   margin-bottom: 16px;
 
-  @media (min-width: 768px) {
-    margin-bottom: 0;
-  }
-
-  > * {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-card-body {
-    flex: 1;
-    overflow: auto;
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
   }
 `
+
 
 const GroupScheduleCreatePage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -118,8 +102,8 @@ const GroupScheduleCreatePage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [editingEvent, setEditingEvent] = useState<ScheduleEvent | undefined>()
 
-  // State to trigger re-render when store changes
-  const [storeUpdateCounter, setStoreUpdateCounter] = useState(0)
+  // Local pending events (events that haven't been submitted to API yet)
+  const [pendingEvents, setPendingEvents] = useState<ScheduleEvent[]>([])
 
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
@@ -150,12 +134,11 @@ const GroupScheduleCreatePage: React.FC = () => {
     return defaultExcludeDates.map(h => h.date)
   }, [defaultExcludeDates])
 
-  // Get events for calendar
+  // Get events for calendar (local pending events)
   const calendarEvents = useMemo(() => {
     if (!classGroup) return []
-    return scheduleStore.getEvents('group').filter(e => e.classId === classGroup.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classGroup, storeUpdateCounter])
+    return pendingEvents.filter(e => e.classId === classGroup.id)
+  }, [classGroup, pendingEvents])
 
   // Get materials from class group
   const classMaterials = useMemo(() => {
@@ -325,35 +308,43 @@ const GroupScheduleCreatePage: React.FC = () => {
   const handleSaveEvents = useCallback(
     (events: Partial<ScheduleEvent>[]) => {
       const studentIds = Array.from(new Set(studentOrders.map(order => order.studentId)))
-      events.forEach(event => {
-        if (event.id && !event.id.startsWith('local-')) {
-          scheduleStore.updateEvent(event.id, event)
-        } else {
-          scheduleStore.addEvent({
-            ...event,
-            id: `local-${Date.now()}-${Math.random()}`,
-            scheduleType: 'group',
-            status: 'pending',
-            classId: classGroup?.id,
-            studentIds,
-            orderIds: studentOrders.map(o => o.id),
-            campus: classGroup?.campusId || '',
-            language: classGroup?.language || 'zh-TW',
-            createdBy: currentMemberId || '',
-            createdByEmail: currentMember?.email || '',
-            updatedAt: new Date(),
-          } as ScheduleEvent)
-        }
+      setPendingEvents(prev => {
+        const newEvents = [...prev]
+        events.forEach(event => {
+          if (event.id && !event.id.startsWith('local-')) {
+            // Update existing event
+            const index = newEvents.findIndex(e => e.id === event.id)
+            if (index >= 0) {
+              newEvents[index] = { ...newEvents[index], ...event }
+            }
+          } else {
+            // Add new event to local pending events
+            newEvents.push({
+              ...event,
+              id: `local-${Date.now()}-${Math.random()}`,
+              scheduleType: 'group',
+              status: 'pending',
+              classId: classGroup?.id,
+              studentIds,
+              orderIds: studentOrders.map(o => o.id),
+              campus: classGroup?.campusId || '',
+              language: (classGroup?.language || 'zh-TW') as Language,
+              createdBy: currentMemberId || '',
+              createdByEmail: currentMember?.email || '',
+              updatedAt: new Date(),
+            } as ScheduleEvent)
+          }
+        })
+        return newEvents
       })
-      setStoreUpdateCounter(prev => prev + 1)
       message.success(formatMessage(scheduleMessages.GroupClass.courseArranged))
     },
     [classGroup, studentOrders, formatMessage, currentMemberId, currentMember],
   )
 
   const handlePreSchedule = useCallback(async () => {
-    const pendingEvents = calendarEvents.filter(e => e.status === 'pending')
-    if (pendingEvents.length === 0) {
+    const eventsToPreSchedule = calendarEvents.filter(e => e.status === 'pending')
+    if (eventsToPreSchedule.length === 0) {
       message.warning(formatMessage(scheduleMessages.GroupClass.noPendingCourses))
       return
     }
@@ -365,7 +356,7 @@ const GroupScheduleCreatePage: React.FC = () => {
 
     try {
       // Convert pending events to API format with clientEventId for tracking
-      const apiEvents: GeneralEventApi[] = pendingEvents.map(event => {
+      const apiEvents: GeneralEventApi[] = eventsToPreSchedule.map(event => {
         const startDateTime = moment(event.date)
           .hour(parseInt(event.startTime?.split(':')[0] || '0'))
           .minute(parseInt(event.startTime?.split(':')[1] || '0'))
@@ -423,7 +414,7 @@ const GroupScheduleCreatePage: React.FC = () => {
         createdEventByClientId.get(pendingEvent.id) || createdEventsArray[index]
 
       // Invite teacher resources
-      const teacherIds = [...new Set(pendingEvents.filter(e => e.teacherId).map(e => e.teacherId!))]
+      const teacherIds = Array.from(new Set(eventsToPreSchedule.filter(e => e.teacherId).map(e => e.teacherId!)))
       if (teacherIds.length > 0 && createdEventsArray.length > 0) {
         const teacherResources = await getResourceByTypeTargetFetcher(authToken)({
           type: 'member',
@@ -439,7 +430,7 @@ const GroupScheduleCreatePage: React.FC = () => {
 
         // Invite each teacher to their respective events
         await Promise.all(
-          pendingEvents.map(async (event, index) => {
+          eventsToPreSchedule.map(async (event, index) => {
             const createdEvent = resolveCreatedEvent(event, index)
             if (event.teacherId && createdEvent) {
               const teacherResource = teacherResourceMap.get(event.teacherId)
@@ -456,18 +447,23 @@ const GroupScheduleCreatePage: React.FC = () => {
         )
       }
 
-      // Update local store status with API event IDs
-      pendingEvents.forEach((event, index) => {
-        const createdEvent = resolveCreatedEvent(event, index)
-        const apiEventId = createdEvent?.id
-        scheduleStore.updateEvent(event.id, {
-          status: 'pre-scheduled',
-          apiEventId,
-        })
-      })
-
-      setStoreUpdateCounter(prev => prev + 1)
-      message.success(formatMessage(scheduleMessages.GroupClass.preScheduleSuccess, { count: pendingEvents.length }))
+      // Update local pending events status to pre-scheduled and save API event IDs
+      const submittedEventIds = new Set(eventsToPreSchedule.map(e => e.id))
+      setPendingEvents(prev =>
+        prev.map((event, index) => {
+          if (submittedEventIds.has(event.id)) {
+            const createdEvent = resolveCreatedEvent(event, index)
+            const apiEventId = createdEvent?.id
+            return {
+              ...event,
+              status: 'pre-scheduled' as const,
+              apiEventId,
+            }
+          }
+          return event
+        }),
+      )
+      message.success(formatMessage(scheduleMessages.GroupClass.preScheduleSuccess, { count: eventsToPreSchedule.length }))
     } catch (error) {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
@@ -498,12 +494,15 @@ const GroupScheduleCreatePage: React.FC = () => {
       const eventIds = preScheduledEvents.map(e => e.apiEventId!)
       await publishEvents(eventIds)
 
-      // Update local store status
-      preScheduledEvents.forEach(event => {
-        scheduleStore.updateEvent(event.id, { status: 'published' })
-      })
-
-      setStoreUpdateCounter(prev => prev + 1)
+      // Update local pending events status to published
+      setPendingEvents(prev =>
+        prev.map(event => {
+          if (event.status === 'pre-scheduled') {
+            return { ...event, status: 'published' as const }
+          }
+          return event
+        }),
+      )
       message.success(formatMessage(scheduleMessages.GroupClass.publishSuccess, { count: preScheduledEvents.length }))
     } catch (error) {
       console.error('Failed to publish events:', error)
@@ -543,42 +542,34 @@ const GroupScheduleCreatePage: React.FC = () => {
           </Space>
         </ActionBar>
 
-        {/* Class Settings and Student List */}
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <GridColumn xs={24} md={12}>
-            <ClassSettingsPanel
-              classGroup={classGroup}
-              classType="group"
-              onChange={handleClassGroupUpdate}
-              onCampusChange={handleCampusChange}
-              onCreateClass={handleCreateClass}
-            />
-          </GridColumn>
-          <GridColumn xs={24} md={12}>
-            <StudentListPanel
-              orderIds={classGroup?.orderIds || []}
-              classGroupId={classGroup?.id}
-              scheduleType="group"
-              language={classGroup?.language}
-              campusId={classGroup?.campusId}
-              maxStudents={classGroup?.maxStudents}
-              events={calendarEvents}
-              expiryDateByOrderId={expiryDateByOrderId}
-              onOrdersChanged={handleRefetchClassGroup}
-            />
-          </GridColumn>
-        </Row>
-
-        {/* Schedule Condition */}
-        <AdminPageBlock className="mb-4">
+        {/* Top Section: Three-column grid */}
+        <ThreeColumnGrid>
+          <ClassSettingsPanel
+            classGroup={classGroup}
+            classType="group"
+            onChange={handleClassGroupUpdate}
+            onCampusChange={handleCampusChange}
+            onCreateClass={handleCreateClass}
+          />
+          <StudentListPanel
+            orderIds={classGroup?.orderIds || []}
+            classGroupId={classGroup?.id}
+            scheduleType="group"
+            language={classGroup?.language}
+            campusId={classGroup?.campusId}
+            maxStudents={classGroup?.maxStudents}
+            events={calendarEvents}
+            expiryDateByOrderId={expiryDateByOrderId}
+            onOrdersChanged={handleRefetchClassGroup}
+          />
           <ScheduleConditionPanel
             selectedOrders={[]}
             condition={scheduleCondition}
             onConditionChange={handleConditionChange}
             hideMinutesOption={true}
-            expiryDateByOrderId={expiryDateByOrderId}
+            disabled={false}
           />
-        </AdminPageBlock>
+        </ThreeColumnGrid>
 
         {/* Teacher List */}
         <AdminPageBlock className="mb-4">
@@ -587,7 +578,7 @@ const GroupScheduleCreatePage: React.FC = () => {
             campus={classGroup?.campusId}
             selectedTeachers={selectedTeachers}
             onTeacherSelect={handleTeachersChange}
-            useRealData={true}
+            
           />
         </AdminPageBlock>
 
@@ -620,6 +611,7 @@ const GroupScheduleCreatePage: React.FC = () => {
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
         classrooms={classrooms}
+        existingScheduleEvents={calendarEvents}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)

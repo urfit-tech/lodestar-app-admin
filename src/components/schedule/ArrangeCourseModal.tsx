@@ -4,8 +4,8 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StudentOpenTimeEvent, TeacherBusyEvent, TeacherOpenTimeEvent, useHolidays } from '../../hooks/scheduleManagement'
-import { Classroom, DEFAULT_DURATION, DURATION_OPTIONS, Language, ScheduleCondition, ScheduleEvent, ScheduleStatus, scheduleStore, ScheduleTemplateProps, ScheduleType, Teacher } from '../../types/schedule'
+import { checkScheduleConflict, StudentOpenTimeEvent, TeacherBusyEvent, TeacherOpenTimeEvent, useHolidays } from '../../hooks/scheduleManagement'
+import { Classroom, DEFAULT_DURATION, DURATION_OPTIONS, Language, ScheduleCondition, ScheduleEvent, ScheduleStatus, ScheduleTemplateProps, ScheduleType, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const FormRow = styled.div`
@@ -94,6 +94,7 @@ export interface ArrangeCourseModalProps {
   teacherOpenTimeEvents?: TeacherOpenTimeEvent[] // Teacher's available open time events for validation
   teacherBusyEvents?: TeacherBusyEvent[] // Teacher's existing events for conflict checks
   classrooms?: Classroom[] // Available classrooms for selection
+  existingScheduleEvents?: ScheduleEvent[] // Existing schedule events for conflict detection
   onClose: () => void
   onSave: (events: Partial<ScheduleEvent>[]) => void
   onSaveDraft?: (rows: CourseRow[]) => void // Save draft when closing
@@ -121,6 +122,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   studentOpenTimeEvents = [],
   teacherBusyEvents = [],
   classrooms = [],
+  existingScheduleEvents = [],
   onClose,
   onSave,
   onSaveDraft,
@@ -485,22 +487,27 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       }
 
       const { assignedIds } = getClassroomState(row)
-      const conflict = scheduleStore.hasConflict(
-        dateForRow.toDate(),
-        row.startTime.format('HH:mm'),
-        endTime.format('HH:mm'),
-        row.teacherId,
-        assignedIds[0],
-        existingEvent?.id,
-        studentId,
-        assignedIds.length > 0 ? assignedIds : undefined,
+      const conflict = checkScheduleConflict(
+        {
+          date: dateForRow.toDate(),
+          startTime: row.startTime.format('HH:mm'),
+          endTime: endTime.format('HH:mm'),
+          teacherId: row.teacherId,
+          classroomId: assignedIds[0],
+          classroomIds: assignedIds.length > 0 ? assignedIds : undefined,
+          studentId,
+          excludeEventId: existingEvent?.id,
+        },
+        existingScheduleEvents,
+        selectedTeachers,
+        classrooms,
       )
 
       if (conflict.hasTeacherConflict) {
         rowErrors.push('teacherConflict')
         isValid = false
         // Collect teacher conflict details
-        conflict.conflictDetails.teacherConflicts.forEach(tc => {
+        conflict.conflictDetails.teacherConflicts.forEach((tc: { startTime: string; endTime: string; teacherName?: string }) => {
           allConflictDetails.teacherConflicts.push({ date: dateStr, ...tc })
         })
       }
@@ -509,7 +516,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         rowErrors.push('studentConflict')
         isValid = false
         // Collect student conflict details
-        conflict.conflictDetails.studentConflicts.forEach(sc => {
+        conflict.conflictDetails.studentConflicts.forEach((sc: { startTime: string; endTime: string }) => {
           allConflictDetails.studentConflicts.push({ date: dateStr, ...sc })
         })
       }
@@ -517,7 +524,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       if (conflict.hasRoomConflict) {
         rowErrors.push('roomConflict')
         isValid = false
-        conflict.conflictDetails.roomConflicts.forEach(rc => {
+        conflict.conflictDetails.roomConflicts.forEach((rc: { startTime: string; endTime: string; roomName?: string }) => {
           allConflictDetails.roomConflicts.push({ date: dateStr, ...rc })
         })
       }

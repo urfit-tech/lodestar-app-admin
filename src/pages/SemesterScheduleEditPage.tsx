@@ -34,7 +34,7 @@ import {
   useUpdateClassGroup,
 } from '../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../images/icon'
-import { ClassGroup, Language, ScheduleCondition, ScheduleEvent, scheduleStore, Teacher } from '../types/schedule'
+import { ClassGroup, Language, ScheduleCondition, ScheduleEvent, Teacher } from '../types/schedule'
 
 const PageWrapper = styled.div`
   padding: 16px 0;
@@ -98,8 +98,8 @@ const SemesterScheduleEditPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [editingEvent, setEditingEvent] = useState<ScheduleEvent | undefined>()
 
-  // State to trigger re-render when store changes
-  const [storeUpdateCounter, setStoreUpdateCounter] = useState(0)
+  // Local pending events (events that haven't been submitted to API yet)
+  const [localPendingEvents, setLocalPendingEvents] = useState<ScheduleEvent[]>([])
 
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
@@ -140,18 +140,17 @@ const SemesterScheduleEditPage: React.FC = () => {
   const calendarEvents = useMemo(() => {
     if (!classGroup) return []
 
-    // Get local pending events (not yet synced to API)
-    const localEvents = scheduleStore
-      .getEvents('semester')
-      .filter(e => e.classId === classGroup.id && e.status === 'pending' && !e.apiEventId)
+    // Filter local pending events for this class group
+    const filteredLocalEvents = localPendingEvents.filter(
+      e => e.classId === classGroup.id && e.status === 'pending' && !e.apiEventId,
+    )
 
     // Combine API events with local pending events
     // API events already have status (pre-scheduled or published)
-    const combinedEvents = [...apiEvents, ...localEvents]
+    const combinedEvents = [...apiEvents, ...filteredLocalEvents]
 
     return combinedEvents
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classGroup, apiEvents, storeUpdateCounter])
+  }, [classGroup, apiEvents, localPendingEvents])
 
   // Get materials from class group
   const classMaterials = useMemo(() => {
@@ -235,35 +234,43 @@ const SemesterScheduleEditPage: React.FC = () => {
 
   const handleSaveEvents = useCallback(
     (events: Partial<ScheduleEvent>[]) => {
-      events.forEach(event => {
-        if (event.id && !event.id.startsWith('local-')) {
-          scheduleStore.updateEvent(event.id, event)
-        } else {
-          scheduleStore.addEvent({
-            ...event,
-            id: `local-${Date.now()}-${Math.random()}`,
-            scheduleType: 'semester',
-            status: 'pending',
-            classId: classGroup?.id,
-            studentIds: [], // Students are invited per event via event_temporally_exclusive_resource
-            orderIds: [],
-            campus: classGroup?.campusId || '',
-            language: classGroup?.language || 'zh-TW',
-            createdBy: 'current-user',
-            createdByEmail: 'user@example.com',
-            updatedAt: new Date(),
-          } as ScheduleEvent)
-        }
+      setLocalPendingEvents(prev => {
+        const newEvents = [...prev]
+        events.forEach(event => {
+          if (event.id && !event.id.startsWith('local-')) {
+            // Update existing local event
+            const index = newEvents.findIndex(e => e.id === event.id)
+            if (index >= 0) {
+              newEvents[index] = { ...newEvents[index], ...event }
+            }
+          } else {
+            // Add new event to local pending events
+            newEvents.push({
+              ...event,
+              id: `local-${Date.now()}-${Math.random()}`,
+              scheduleType: 'semester',
+              status: 'pending',
+              classId: classGroup?.id,
+              studentIds: [], // Students are invited per event via event_temporally_exclusive_resource
+              orderIds: [],
+              campus: classGroup?.campusId || '',
+              language: (classGroup?.language || 'zh-TW') as Language,
+              createdBy: 'current-user',
+              createdByEmail: 'user@example.com',
+              updatedAt: new Date(),
+            } as ScheduleEvent)
+          }
+        })
+        return newEvents
       })
-      setStoreUpdateCounter(prev => prev + 1)
       message.success(formatMessage(scheduleMessages.SemesterClass.courseArranged))
     },
     [classGroup, formatMessage],
   )
 
   const handlePreSchedule = useCallback(async () => {
-    const pendingEvents = calendarEvents.filter(e => e.status === 'pending')
-    if (pendingEvents.length === 0) {
+    const eventsToPreSchedule = calendarEvents.filter(e => e.status === 'pending')
+    if (eventsToPreSchedule.length === 0) {
       message.warning(formatMessage(scheduleMessages.SemesterClass.noPendingCourses))
       return
     }
@@ -275,7 +282,7 @@ const SemesterScheduleEditPage: React.FC = () => {
 
     try {
       // Convert pending events to API format with clientEventId for tracking
-      const apiEvents: GeneralEventApi[] = pendingEvents.map(event => {
+      const apiEventsToCreate: GeneralEventApi[] = eventsToPreSchedule.map(event => {
         const startDateTime = moment(event.date)
           .hour(parseInt(event.startTime?.split(':')[0] || '0'))
           .minute(parseInt(event.startTime?.split(':')[1] || '0'))
@@ -313,7 +320,7 @@ const SemesterScheduleEditPage: React.FC = () => {
       })
 
       // Create events via API
-      const createdEvents = await createEventFetcher(authToken)(appId)({ events: apiEvents })
+      const createdEvents = await createEventFetcher(authToken)(appId)({ events: apiEventsToCreate })
       const createdEventsArray = Array.isArray(createdEvents) ? createdEvents : []
 
       // Build mapping from clientEventId to created event
@@ -333,7 +340,7 @@ const SemesterScheduleEditPage: React.FC = () => {
         createdEventByClientId.get(pendingEvent.id) || createdEventsArray[index]
 
       // Invite teacher resources
-      const teacherIds = [...new Set(pendingEvents.filter(e => e.teacherId).map(e => e.teacherId!))]
+      const teacherIds = Array.from(new Set(eventsToPreSchedule.filter(e => e.teacherId).map(e => e.teacherId!)))
       if (teacherIds.length > 0 && createdEventsArray.length > 0) {
         const teacherResources = await getResourceByTypeTargetFetcher(authToken)({
           type: 'member',
@@ -349,7 +356,7 @@ const SemesterScheduleEditPage: React.FC = () => {
 
         // Invite each teacher to their respective events
         await Promise.all(
-          pendingEvents.map(async (event, index) => {
+          eventsToPreSchedule.map(async (event, index) => {
             const createdEvent = resolveCreatedEvent(event, index)
             if (event.teacherId && createdEvent) {
               const teacherResource = teacherResourceMap.get(event.teacherId)
@@ -366,15 +373,13 @@ const SemesterScheduleEditPage: React.FC = () => {
         )
       }
 
-      // Remove local events from store (they are now in API)
-      pendingEvents.forEach(event => {
-        scheduleStore.deleteEvent(event.id)
-      })
+      // Remove submitted events from local pending events (they are now in API)
+      const submittedEventIds = new Set(eventsToPreSchedule.map(e => e.id))
+      setLocalPendingEvents(prev => prev.filter(e => !submittedEventIds.has(e.id)))
 
       // Refetch events from API to get the latest state
       await refetchEvents()
-      setStoreUpdateCounter(prev => prev + 1)
-      message.success(formatMessage(scheduleMessages.SemesterClass.preScheduleSuccess, { count: pendingEvents.length }))
+      message.success(formatMessage(scheduleMessages.SemesterClass.preScheduleSuccess, { count: eventsToPreSchedule.length }))
     } catch (error) {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
@@ -407,7 +412,6 @@ const SemesterScheduleEditPage: React.FC = () => {
 
       // Refetch events from API to get the latest state
       await refetchEvents()
-      setStoreUpdateCounter(prev => prev + 1)
       message.success(
         formatMessage(scheduleMessages.SemesterClass.publishSuccess, { count: preScheduledEvents.length }),
       )
@@ -480,6 +484,7 @@ const SemesterScheduleEditPage: React.FC = () => {
             onConditionChange={handleConditionChange}
             hideMinutesOption={true}
             expiryDateByLanguage={expiryDateByLanguage}
+            disabled={false}
           />
         </ThreeColumnGrid>
 
@@ -490,7 +495,7 @@ const SemesterScheduleEditPage: React.FC = () => {
             campus={classGroup?.campusId}
             selectedTeachers={selectedTeachers}
             onTeacherSelect={handleTeachersChange}
-            useRealData={true}
+            
           />
         </AdminPageBlock>
 
@@ -523,6 +528,7 @@ const SemesterScheduleEditPage: React.FC = () => {
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
         classrooms={classrooms}
+        existingScheduleEvents={calendarEvents}
         onClose={() => {
           setArrangeModalVisible(false)
           setEditingEvent(undefined)
