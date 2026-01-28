@@ -46,10 +46,6 @@ const PersonalSchedulePage: React.FC = () => {
 
   const handleEdit = useCallback(
     (event: ScheduleEvent) => {
-      if (event.status !== 'pending') {
-        message.info('已預排/已發布的課程暫不支援編輯')
-        return
-      }
       // Navigate to edit page with member ID
       if (event.studentId) {
         history.push(`/class-schedule/personal/${event.studentId}`)
