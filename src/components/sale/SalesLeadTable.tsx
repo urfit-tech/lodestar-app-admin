@@ -1170,6 +1170,20 @@ const SalesLeadTable: React.VFC<{
               >
                 {formatMessage(saleMessages.SalesLeadTable.invalid)}
               </Button>
+              <Button
+                icon={<StopOutlined />}
+                className="mr-2"
+                onClick={() =>
+                  handleLeadStatus(
+                    selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                    manager.id,
+                    leads,
+                    'reject',
+                  )
+                }
+              >
+                {formatMessage(saleMessages.SalesLeadTable.reject)}
+              </Button>
               {variant !== 'completed' && (
                 <>
                   {Boolean(permissions.SALES_MEMBER_LIST_RECYCLE) && (
@@ -1188,20 +1202,6 @@ const SalesLeadTable: React.VFC<{
                       {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
-                  <Button
-                    icon={<StopOutlined />}
-                    className="mr-2"
-                    onClick={() =>
-                      handleLeadStatus(
-                        selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
-                        manager.id,
-                        leads,
-                        'reject',
-                      )
-                    }
-                  >
-                    {formatMessage(saleMessages.SalesLeadTable.reject)}
-                  </Button>
                   <Button
                     icon={<DeleteOutlined />}
                     className="mr-2"
