@@ -1,11 +1,43 @@
 import { AppstoreOutlined, CopyOutlined, DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Col, Input, List, message, Modal, Popconfirm, Radio, Row, Select, Space, TimePicker, Tooltip, Typography } from 'antd'
+import {
+  Button,
+  Col,
+  Input,
+  List,
+  message,
+  Modal,
+  Popconfirm,
+  Radio,
+  Row,
+  Select,
+  Space,
+  TimePicker,
+  Tooltip,
+  Typography,
+} from 'antd'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { checkScheduleConflict, StudentOpenTimeEvent, TeacherBusyEvent, TeacherOpenTimeEvent, useHolidays } from '../../hooks/scheduleManagement'
-import { Classroom, DEFAULT_DURATION, DURATION_OPTIONS, Language, ScheduleCondition, ScheduleEvent, ScheduleStatus, ScheduleTemplateProps, ScheduleType, Teacher } from '../../types/schedule'
+import {
+  checkScheduleConflict,
+  StudentOpenTimeEvent,
+  TeacherBusyEvent,
+  TeacherOpenTimeEvent,
+  useHolidays,
+} from '../../hooks/scheduleManagement'
+import {
+  Classroom,
+  DEFAULT_DURATION,
+  DURATION_OPTIONS,
+  Language,
+  ScheduleCondition,
+  ScheduleEvent,
+  ScheduleStatus,
+  ScheduleTemplateProps,
+  ScheduleType,
+  Teacher,
+} from '../../types/schedule'
 import scheduleMessages from './translation'
 
 const FormRow = styled.div`
@@ -507,9 +539,11 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         rowErrors.push('teacherConflict')
         isValid = false
         // Collect teacher conflict details
-        conflict.conflictDetails.teacherConflicts.forEach((tc: { startTime: string; endTime: string; teacherName?: string }) => {
-          allConflictDetails.teacherConflicts.push({ date: dateStr, ...tc })
-        })
+        conflict.conflictDetails.teacherConflicts.forEach(
+          (tc: { startTime: string; endTime: string; teacherName?: string }) => {
+            allConflictDetails.teacherConflicts.push({ date: dateStr, ...tc })
+          },
+        )
       }
 
       if (conflict.hasStudentConflict) {
@@ -524,14 +558,24 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       if (conflict.hasRoomConflict) {
         rowErrors.push('roomConflict')
         isValid = false
-        conflict.conflictDetails.roomConflicts.forEach((rc: { startTime: string; endTime: string; roomName?: string }) => {
-          allConflictDetails.roomConflicts.push({ date: dateStr, ...rc })
-        })
+        conflict.conflictDetails.roomConflicts.forEach(
+          (rc: { startTime: string; endTime: string; roomName?: string }) => {
+            allConflictDetails.roomConflicts.push({ date: dateStr, ...rc })
+          },
+        )
       }
 
       // Check conflicts with teacher's existing events (API)
       if (row.teacherId && teacherBusyEvents.length > 0) {
-        const busyEvents = teacherBusyEvents.filter(e => e.teacherId === row.teacherId)
+        const busyEvents = teacherBusyEvents.filter(e => {
+          if (e.teacherId !== row.teacherId) return false
+          // Exclude the event being edited (use event_id from extendedProps, which is the API event ID)
+          if (existingEvent?.apiEventId) {
+            const originalEventId = e.extendedProps?.originalEvent?.extendedProps?.event_id
+            if (originalEventId === existingEvent.apiEventId) return false
+          }
+          return true
+        })
         busyEvents.forEach(event => {
           if (!hasOverlapWithEvent(event, rowStartNum, rowEndNum, rowWeekday, dateStr)) {
             return
@@ -561,7 +605,15 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
       // Check for conflicts with student's existing events (API)
       if (studentOpenTimeEvents.length > 0) {
-        const busyEvents = studentOpenTimeEvents.filter(event => event.extendedProps.status !== 'open')
+        const busyEvents = studentOpenTimeEvents.filter(event => {
+          if (event.extendedProps.status === 'open') return false
+          // Exclude the event being edited (use event_id from extendedProps, which is the API event ID)
+          if (existingEvent?.apiEventId) {
+            const originalEventId = event.extendedProps?.originalEvent?.extendedProps?.event_id
+            if (originalEventId === existingEvent.apiEventId) return false
+          }
+          return true
+        })
 
         busyEvents.forEach(event => {
           if (!hasOverlapWithEvent(event, rowStartNum, rowEndNum, rowWeekday, dateStr)) {
@@ -1178,9 +1230,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                         {/* 根據所選老師過濾教室，多校區時顯示前綴 */}
                         {getFilteredClassrooms(row.teacherId).map(c => (
                           <Select.Option key={c.id} value={c.id}>
-                            {shouldShowCampusPrefix(row.teacherId) && c.campusName
-                              ? `[${c.campusName}] `
-                              : ''}
+                            {shouldShowCampusPrefix(row.teacherId) && c.campusName ? `[${c.campusName}] ` : ''}
                             {c.name} ({c.capacity}人)
                           </Select.Option>
                         ))}
@@ -1300,9 +1350,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         width={600}
       >
         {templates.length === 0 ? (
-          <Typography.Text type="secondary">
-            {formatMessage(scheduleMessages.ArrangeModal.noTemplate)}
-          </Typography.Text>
+          <Typography.Text type="secondary">{formatMessage(scheduleMessages.ArrangeModal.noTemplate)}</Typography.Text>
         ) : (
           <List
             dataSource={templates}
@@ -1310,12 +1358,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
               <List.Item
                 key={template.id}
                 actions={[
-                  <Button
-                    key="apply"
-                    type="primary"
-                    size="small"
-                    onClick={() => handleApplyTemplateClick(template)}
-                  >
+                  <Button key="apply" type="primary" size="small" onClick={() => handleApplyTemplateClick(template)}>
                     {formatMessage(scheduleMessages.ArrangeModal.applyTemplate)}
                   </Button>,
                   <Popconfirm
@@ -1327,19 +1370,13 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                     overlayInnerStyle={{ padding: 8 }}
                     overlayStyle={{ padding: 8 }}
                   >
-                    <Button
-                      danger
-                      size="small"
-                      loading={templateDeleteLoading === template.id}
-                    >
+                    <Button danger size="small" loading={templateDeleteLoading === template.id}>
                       {formatMessage(scheduleMessages['*'].delete)}
                     </Button>
                   </Popconfirm>,
                 ]}
               >
-                <List.Item.Meta
-                  title={template.name}
-                />
+                <List.Item.Meta title={template.name} />
               </List.Item>
             )}
           />
