@@ -374,7 +374,7 @@ const ScheduleExpirySettingPage: React.VFC = () => {
 // TODO:等排課頁面，之後需移動到共用的 GraphQL 檔案中
 const GET_SCHEDULE_VALIDITY_RULES = gql`
   query GET_SCHEDULE_VALIDITY_RULES($appId: String!) {
-    schedule_validity_rule(where: { app_id: { _eq: $appId }, deleted_at: { _is_null: true } }, order_by: { created_at: desc }) {
+    schedule_validity_rule(where: { app_id: { _eq: $appId } }, order_by: { created_at: desc }) {
       id
       type
       language
@@ -400,13 +400,7 @@ const INSERT_SCHEDULE_VALIDITY_RULE = gql`
     $status: String!
   ) {
     insert_schedule_validity_rule_one(
-      object: {
-        type: $type
-        language: $language
-        class_count: $classCount
-        valid_days: $validDays
-        status: $status
-      }
+      object: { type: $type, language: $language, class_count: $classCount, valid_days: $validDays, status: $status }
     ) {
       id
     }
@@ -415,10 +409,7 @@ const INSERT_SCHEDULE_VALIDITY_RULE = gql`
 
 const ARCHIVE_SCHEDULE_VALIDITY_RULE = gql`
   mutation ARCHIVE_SCHEDULE_VALIDITY_RULE($id: uuid!) {
-    update_schedule_validity_rule_by_pk(
-      pk_columns: { id: $id }
-      _set: { status: "archived", deleted_at: "now()" }
-    ) {
+    update_schedule_validity_rule_by_pk(pk_columns: { id: $id }, _set: { status: "archived", deleted_at: "now()" }) {
       id
     }
   }

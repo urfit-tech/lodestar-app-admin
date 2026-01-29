@@ -4,7 +4,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
 import { GeneralEventApi } from '../components/event/events.type'
@@ -27,6 +27,7 @@ import {
   updateEvent,
 } from '../helpers/eventHelper/eventFetchers'
 import { useClassrooms } from '../hooks/classroom'
+import { useMemberForSchedule } from '../hooks/schedule'
 import {
   useDeleteScheduleTemplate,
   useHolidays,
@@ -35,11 +36,18 @@ import {
   useScheduleTemplates,
   useStudentOpenTimeEvents,
   useTeacherOpenTimeEvents,
+  useTeachersFromMembers,
 } from '../hooks/scheduleManagement'
-import { CourseRowData } from '../types/schedule'
-import { useMemberForSchedule } from '../hooks/schedule'
 import { CalendarCheckFillIcon } from '../images/icon'
-import { Language, ScheduleCondition, ScheduleEvent, ScheduleTemplateProps, Student, Teacher } from '../types/schedule'
+import {
+  CourseRowData,
+  Language,
+  ScheduleCondition,
+  ScheduleEvent,
+  ScheduleTemplateProps,
+  Student,
+  Teacher,
+} from '../types/schedule'
 import type { CourseRow } from '../components/schedule/ArrangeCourseModal'
 
 const PageWrapper = styled.div`
@@ -86,13 +94,27 @@ const LoadingWrapper = styled.div`
   min-height: 400px;
 `
 
+// Location state type for event data passed from list page
+interface LocationState {
+  eventToEdit?: {
+    orderIds: string[]
+    teacherId?: string
+    language: string
+    campus: string
+  }
+}
+
 const PersonalScheduleEditPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const location = useLocation<LocationState>()
   const { memberId } = useParams<{ memberId: string }>()
   const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
   const { holidays: defaultExcludeDates } = useHolidays()
+
+  // Get event data passed from list page
+  const eventToEdit = location.state?.eventToEdit
 
   // Selected student for arranging
   const [selectedStudent, setSelectedStudent] = useState<Student | undefined>()
@@ -131,11 +153,7 @@ const PersonalScheduleEditPage: React.FC = () => {
   }, [memberId])
 
   // Get orders for selected student from GraphQL
-  const {
-    member,
-    orders: studentOrders,
-    loading: ordersLoading,
-  } = useMemberForSchedule(memberId)
+  const { member, orders: studentOrders, loading: ordersLoading } = useMemberForSchedule(memberId)
 
   // Get schedule expiry settings for calculating order expiry dates
   const { getMaxExpiryDateForLanguage } = useScheduleExpirySettings('personal')
@@ -166,8 +184,51 @@ const PersonalScheduleEditPage: React.FC = () => {
   // Get classrooms for selection
   const { classrooms } = useClassrooms()
 
+  // Get all teachers for pre-selecting from event data
+  const { teachers: allTeachers } = useTeachersFromMembers()
+
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
+
+  // Pre-select orders and teachers when navigating from list page with event data
+  useEffect(() => {
+    if (eventToEdit && studentOrders.length > 0 && allTeachers.length > 0) {
+      // Set selected orders if provided
+      if (eventToEdit.orderIds && eventToEdit.orderIds.length > 0) {
+        // Only select orders that exist in studentOrders
+        const validOrderIds = eventToEdit.orderIds.filter(id => studentOrders.some(o => o.id === id))
+        if (validOrderIds.length > 0) {
+          setSelectedOrderIds(validOrderIds)
+        }
+      }
+
+      // Set selected teacher if provided
+      if (eventToEdit.teacherId) {
+        const teacherFromMember = allTeachers.find(t => t.id === eventToEdit.teacherId)
+        if (teacherFromMember) {
+          // Convert TeacherFromMember to Teacher type
+          const teacher: Teacher = {
+            id: teacherFromMember.id,
+            name: teacherFromMember.name,
+            email: teacherFromMember.email,
+            campus: teacherFromMember.campus,
+            campusId: teacherFromMember.campusId,
+            campusIds: teacherFromMember.campusIds,
+            campusNames: teacherFromMember.campusNames,
+            languages: teacherFromMember.languages as Language[],
+            traits: teacherFromMember.traits,
+            level: String(teacherFromMember.level),
+            yearsOfExperience: teacherFromMember.yearsOfExperience,
+            note: teacherFromMember.note,
+          }
+          setSelectedTeachers([teacher])
+        }
+      }
+
+      // Clear location state after processing to avoid re-applying on subsequent renders
+      history.replace(location.pathname, {})
+    }
+  }, [eventToEdit, studentOrders, allTeachers, history, location.pathname])
 
   // Calculate used minutes per order from scheduled events
   const usedMinutesByOrder = useMemo<Record<string, number>>(() => {
@@ -560,7 +621,16 @@ const PersonalScheduleEditPage: React.FC = () => {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
     }
-  }, [authToken, appId, selectedStudent, calendarEvents, orderMap, refetchStudentEvents, currentMemberId, currentMember])
+  }, [
+    authToken,
+    appId,
+    selectedStudent,
+    calendarEvents,
+    orderMap,
+    refetchStudentEvents,
+    currentMemberId,
+    currentMember,
+  ])
 
   const handlePublish = useCallback(async () => {
     // Check if all orders are completed (status === 'SUCCESS')
@@ -705,7 +775,6 @@ const PersonalScheduleEditPage: React.FC = () => {
               campus=""
               selectedTeachers={selectedTeachers}
               onTeacherSelect={handleTeachersChange}
-              
             />
           </Collapse.Panel>
         </CollapsibleScheduleCard>
