@@ -46,9 +46,19 @@ const PersonalSchedulePage: React.FC = () => {
 
   const handleEdit = useCallback(
     (event: ScheduleEvent) => {
-      // Navigate to edit page with member ID
+      // Navigate to edit page with member ID and event data
       if (event.studentId) {
-        history.push(`/class-schedule/personal/${event.studentId}`)
+        history.push({
+          pathname: `/class-schedule/personal/${event.studentId}`,
+          state: {
+            eventToEdit: {
+              orderIds: event.orderIds,
+              teacherId: event.teacherId,
+              language: event.language,
+              campus: event.campus,
+            },
+          },
+        })
       }
     },
     [history],
