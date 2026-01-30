@@ -2,7 +2,7 @@ import { Button, Col, Collapse, message, Row, Space, Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -101,6 +101,7 @@ interface LocationState {
     teacherId?: string
     language: string
     campus: string
+    date?: Date
   }
 }
 
@@ -114,7 +115,7 @@ const PersonalScheduleEditPage: React.FC = () => {
   const { holidays: defaultExcludeDates } = useHolidays()
 
   // Get event data passed from list page
-  const eventToEdit = location.state?.eventToEdit
+  const [eventToEdit, setEventToEdit] = useState<LocationState['eventToEdit']>(location.state?.eventToEdit)
 
   // Selected student for arranging
   const [selectedStudent, setSelectedStudent] = useState<Student | undefined>()
@@ -190,45 +191,78 @@ const PersonalScheduleEditPage: React.FC = () => {
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
 
-  // Pre-select orders and teachers when navigating from list page with event data
+  // Store event data from navigation state and clear location state
   useEffect(() => {
-    if (eventToEdit && studentOrders.length > 0 && allTeachers.length > 0) {
-      // Set selected orders if provided
-      if (eventToEdit.orderIds && eventToEdit.orderIds.length > 0) {
-        // Only select orders that exist in studentOrders
-        const validOrderIds = eventToEdit.orderIds.filter(id => studentOrders.some(o => o.id === id))
-        if (validOrderIds.length > 0) {
-          setSelectedOrderIds(validOrderIds)
-        }
-      }
-
-      // Set selected teacher if provided
-      if (eventToEdit.teacherId) {
-        const teacherFromMember = allTeachers.find(t => t.id === eventToEdit.teacherId)
-        if (teacherFromMember) {
-          // Convert TeacherFromMember to Teacher type
-          const teacher: Teacher = {
-            id: teacherFromMember.id,
-            name: teacherFromMember.name,
-            email: teacherFromMember.email,
-            campus: teacherFromMember.campus,
-            campusId: teacherFromMember.campusId,
-            campusIds: teacherFromMember.campusIds,
-            campusNames: teacherFromMember.campusNames,
-            languages: teacherFromMember.languages as Language[],
-            traits: teacherFromMember.traits,
-            level: String(teacherFromMember.level),
-            yearsOfExperience: teacherFromMember.yearsOfExperience,
-            note: teacherFromMember.note,
-          }
-          setSelectedTeachers([teacher])
-        }
-      }
-
-      // Clear location state after processing to avoid re-applying on subsequent renders
+    if (location.state?.eventToEdit) {
+      setEventToEdit(location.state.eventToEdit)
       history.replace(location.pathname, {})
     }
-  }, [eventToEdit, studentOrders, allTeachers, history, location.pathname])
+  }, [location.state, history, location.pathname])
+
+  const hasInitializedScheduleCondition = useRef(false)
+
+  // Pre-fill schedule condition when navigating from list
+  useEffect(() => {
+    if (!eventToEdit || hasInitializedScheduleCondition.current) return
+    if (eventToEdit.date) {
+      setScheduleCondition(prev => ({
+        ...prev,
+        startDate: new Date(eventToEdit.date),
+      }))
+    }
+    hasInitializedScheduleCondition.current = true
+  }, [eventToEdit])
+
+  const hasInitializedOrderSelection = useRef(false)
+  const hasInitializedTeacherSelection = useRef(false)
+
+  // Pre-select orders when navigating from list page with event data
+  useEffect(() => {
+    if (!eventToEdit || hasInitializedOrderSelection.current) return
+    if (studentOrders.length === 0) return
+
+    if (eventToEdit.orderIds && eventToEdit.orderIds.length > 0) {
+      // Only select orders that exist in studentOrders
+      const validOrderIds = eventToEdit.orderIds.filter(id => studentOrders.some(o => o.id === id))
+      if (validOrderIds.length > 0) {
+        setSelectedOrderIds(validOrderIds)
+      }
+    }
+
+    hasInitializedOrderSelection.current = true
+  }, [eventToEdit, studentOrders])
+
+  // Pre-select teacher when navigating from list page with event data
+  useEffect(() => {
+    if (!eventToEdit || hasInitializedTeacherSelection.current) return
+    if (!eventToEdit.teacherId) {
+      hasInitializedTeacherSelection.current = true
+      return
+    }
+    if (allTeachers.length === 0) return
+
+    const teacherFromMember = allTeachers.find(t => t.id === eventToEdit.teacherId)
+    if (teacherFromMember) {
+      // Convert TeacherFromMember to Teacher type
+      const teacher: Teacher = {
+        id: teacherFromMember.id,
+        name: teacherFromMember.name,
+        email: teacherFromMember.email,
+        campus: teacherFromMember.campus,
+        campusId: teacherFromMember.campusId,
+        campusIds: teacherFromMember.campusIds,
+        campusNames: teacherFromMember.campusNames,
+        languages: teacherFromMember.languages as Language[],
+        traits: teacherFromMember.traits,
+        level: String(teacherFromMember.level),
+        yearsOfExperience: teacherFromMember.yearsOfExperience,
+        note: teacherFromMember.note,
+      }
+      setSelectedTeachers([teacher])
+    }
+
+    hasInitializedTeacherSelection.current = true
+  }, [eventToEdit, allTeachers])
 
   // Calculate used minutes per order from scheduled events
   const usedMinutesByOrder = useMemo<Record<string, number>>(() => {
