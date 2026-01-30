@@ -2,22 +2,34 @@ import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { flatten, sum } from 'ramda'
 import hasura from '../hasura'
+import { getValidSalePrice, selectPrimaryPlan } from '../helpers/price'
 import { PeriodType } from '../types/general'
 import { MemberBriefProps } from '../types/member'
 import { ProgramPackageProps } from '../types/programPackage'
 
 export const useProgramPackageCollection = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE_COLLECTION>(gql`
-    query GET_PROGRAM_PACKAGE_COLLECTION {
-      program_package(order_by: { published_at: desc_nulls_last }) {
-        id
-        title
-        cover_url
-        published_at
-        is_private
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE_COLLECTION>(
+    gql`
+      query GET_PROGRAM_PACKAGE_COLLECTION {
+        program_package(order_by: { published_at: desc_nulls_last }) {
+          id
+          title
+          cover_url
+          published_at
+          is_private
+          program_package_plans(where: { published_at: { _lte: "now()" } }, order_by: [{ position: asc }, { created_at: asc }]) {
+            id
+            list_price
+            sale_price
+            sold_at
+            period_amount
+            period_type
+          }
+        }
       }
-    }
-  `)
+    `,
+    { fetchPolicy: 'cache-and-network' },
+  )
 
   const { data: enrollmentData } = useQuery<hasura.GET_PROGRAM_PACKAGE_ENROLLMENT>(
     gql`
@@ -44,17 +56,29 @@ export const useProgramPackageCollection = () => {
     publishedAt: string
     programPackageEnrollment: number
     isPrivate: boolean
+    listPrice: number | null
+    salePrice: number | null
+    periodAmount: number | null
+    periodType: string | null
   }[] =
     loading || error || !data
       ? []
-      : data.program_package.map(v => ({
-          id: v.id,
-          title: v.title || '',
-          coverUrl: v?.cover_url || '',
-          publishedAt: v.published_at,
-          programPackageEnrollment: 0,
-          isPrivate: v.is_private,
-        }))
+      : data.program_package.map(v => {
+          const plan = selectPrimaryPlan(v.program_package_plans)
+
+          return {
+            id: v.id,
+            title: v.title || '',
+            coverUrl: v?.cover_url || '',
+            publishedAt: v.published_at,
+            programPackageEnrollment: 0,
+            isPrivate: v.is_private,
+            listPrice: plan?.list_price ?? null,
+            salePrice: getValidSalePrice(plan?.sale_price, plan?.sold_at),
+            periodAmount: plan?.period_amount || null,
+            periodType: plan?.period_type || null,
+          }
+        })
 
   if (enrollmentData) {
     programPackages.forEach(v => {

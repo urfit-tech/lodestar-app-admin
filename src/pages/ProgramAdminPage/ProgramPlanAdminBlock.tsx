@@ -1,7 +1,7 @@
 import { Skeleton, Space } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { Fragment } from 'react'
+import React, { Fragment, useCallback } from 'react'
 import { useIntl } from 'react-intl'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import {
@@ -33,6 +33,12 @@ const ProgramPlanAdminBlock: React.FC<{
 
   const hasMembershipCardPermission = enabledModules.membership_card && currentUserRole === 'app-owner'
 
+  // 合併 refetch：同時更新課程資料和排序列表
+  const handleRefetch = useCallback(() => {
+    onRefetch?.()
+    refetchProgramPlanSorts()
+  }, [onRefetch, refetchProgramPlanSorts])
+
   if (!program) {
     return <Skeleton active />
   }
@@ -46,7 +52,7 @@ const ProgramPlanAdminBlock: React.FC<{
             renderTrigger={({ onOpen }) => (
               <ModalTriggerButton title={formatMessage(commonMessages.ui.perpetualPlan)} onOpen={onOpen} />
             )}
-            onRefetch={onRefetch}
+            onRefetch={handleRefetch}
           />
 
           <PeriodPlanModal
@@ -54,7 +60,7 @@ const ProgramPlanAdminBlock: React.FC<{
             renderTrigger={({ onOpen }) => (
               <ModalTriggerButton title={formatMessage(commonMessages.ui.periodPlan)} onOpen={onOpen} />
             )}
-            onRefetch={onRefetch}
+            onRefetch={handleRefetch}
           />
 
           <SubscriptionPlanModal
@@ -62,7 +68,7 @@ const ProgramPlanAdminBlock: React.FC<{
             renderTrigger={({ onOpen }) => (
               <ModalTriggerButton title={formatMessage(commonMessages.ui.subscriptionPlan)} onOpen={onOpen} />
             )}
-            onRefetch={onRefetch}
+            onRefetch={handleRefetch}
           />
 
           {hasMembershipCardPermission && (
@@ -71,7 +77,7 @@ const ProgramPlanAdminBlock: React.FC<{
               renderTrigger={({ onOpen }) => (
                 <ModalTriggerButton title={formatMessage(commonMessages.ui.membershipPlan)} onOpen={onOpen} />
               )}
-              onRefetch={onRefetch}
+              onRefetch={handleRefetch}
             />
           )}
         </Space>
@@ -107,7 +113,7 @@ const ProgramPlanAdminBlock: React.FC<{
               <ProgramSubscriptionPlanAdminCard
                 programId={program.id}
                 programPlan={programPlan}
-                onRefetch={onRefetch}
+                onRefetch={handleRefetch}
               />
             </div>
           </Fragment>
