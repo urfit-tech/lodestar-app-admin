@@ -2149,6 +2149,7 @@ export interface ConflictCheckParams {
   classroomIds?: string[]
   studentId?: string
   excludeEventId?: string
+  excludeApiEventId?: string
 }
 
 export interface ConflictCheckResult {
@@ -2160,6 +2161,19 @@ export interface ConflictCheckResult {
     roomConflicts: Array<{ startTime: string; endTime: string; roomName?: string }>
     studentConflicts: Array<{ startTime: string; endTime: string }>
   }
+}
+
+/**
+ * 判斷事件是否與目標 ID 匹配
+ * 同時比對 id 和 apiEventId，因為事件在不同階段可能用不同 ID 識別
+ */
+const isEventMatch = (event: ScheduleEvent, targetId?: string, targetApiEventId?: string): boolean => {
+  if (!targetId && !targetApiEventId) return false
+
+  const idsToExclude = [targetId, targetApiEventId].filter(Boolean)
+  const eventIds = [event.id, event.apiEventId].filter(Boolean)
+
+  return eventIds.some(id => idsToExclude.includes(id))
 }
 
 /**
@@ -2177,12 +2191,13 @@ export const checkScheduleConflict = (
   teachers?: Array<{ id: string; name: string }>,
   classrooms?: Array<{ id: string; name: string }>,
 ): ConflictCheckResult => {
-  const { date, startTime, endTime, teacherId, classroomId, classroomIds, studentId, excludeEventId } = params
+  const { date, startTime, endTime, teacherId, classroomId, classroomIds, studentId, excludeEventId, excludeApiEventId } =
+    params
 
   const dateStr = date.toISOString().split('T')[0]
   const relevantEvents = existingEvents.filter(e => {
     const eventDateStr = e.date instanceof Date ? e.date.toISOString().split('T')[0] : String(e.date).split('T')[0]
-    return eventDateStr === dateStr && e.id !== excludeEventId
+    return eventDateStr === dateStr && !isEventMatch(e, excludeEventId, excludeApiEventId)
   })
 
   const hasTimeOverlap = (event: ScheduleEvent): boolean => {
