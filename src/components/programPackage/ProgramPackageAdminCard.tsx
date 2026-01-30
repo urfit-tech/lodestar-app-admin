@@ -3,8 +3,10 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { currencyFormatter } from '../../helpers'
 import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
+import { PeriodTypeLabel } from '../common/Period'
 
 const StyledWrapper = styled.div`
   overflow: hidden;
@@ -21,7 +23,7 @@ const StyledCover = styled.div<{ src?: string | null }>`
 `
 const StyledDescription = styled.div`
   padding: 1.25rem;
-  height: 80px;
+  min-height: 100px;
 `
 const StyledTitle = styled(Typography.Title)`
   && {
@@ -39,12 +41,25 @@ const StyledSoldQuantity = styled.div`
   color: var(--gray-dark);
   text-align: center;
 `
+const StyledPriceLabel = styled.span`
+  color: ${props => props.theme['@primary-color']};
+
+  & > span:first-child:not(:last-child) {
+    margin-right: 0.5rem;
+    color: ${props => props.theme['@text-color-secondary']};
+    text-decoration: line-through;
+  }
+`
 const ProgramPackageAdminCard: React.FC<{
   id: string
   coverUrl?: string | null
   title: string
   programPackageEnrollment: number
-}> = ({ id, coverUrl, title, programPackageEnrollment }) => {
+  listPrice?: number | null
+  salePrice?: number | null
+  periodAmount?: number | null
+  periodType?: string | null
+}> = ({ id, coverUrl, title, programPackageEnrollment, listPrice, salePrice, periodAmount, periodType }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -54,6 +69,19 @@ const ProgramPackageAdminCard: React.FC<{
 
         <StyledDescription>
           <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
+          {listPrice !== null && listPrice !== undefined && (
+            <div className="text-right mt-2">
+              <StyledPriceLabel>
+                <span>{currencyFormatter(listPrice)}</span>
+                {salePrice !== null && salePrice !== undefined && <span>{currencyFormatter(salePrice)}</span>}
+                {!!periodType && (
+                  <>
+                    /<PeriodTypeLabel periodType={periodType} />
+                  </>
+                )}
+              </StyledPriceLabel>
+            </div>
+          )}
         </StyledDescription>
 
         <StyledSoldQuantity>

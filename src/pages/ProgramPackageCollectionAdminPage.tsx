@@ -1,7 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -113,6 +112,10 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
                         coverUrl={programPackage.coverUrl}
                         title={programPackage.title}
                         programPackageEnrollment={programPackage.programPackageEnrollment}
+                        listPrice={programPackage.listPrice}
+                        salePrice={programPackage.salePrice}
+                        periodAmount={programPackage.periodAmount}
+                        periodType={programPackage.periodType}
                       />
                     </div>
                   ))}

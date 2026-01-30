@@ -339,7 +339,13 @@ const useProgramPreviewCollection = (
 
   const programPreviews: ProgramPreviewProps[] =
     data?.program.map(program => {
-      const plan = program.program_plans[0]
+      const now = Date.now()
+      // 優先找有有效特價的方案（sale_price 可以是 0，所以用 !== null 檢查）
+      const planWithSale = program.program_plans.find(
+        p => p.sale_price !== null && p.sold_at && new Date(p.sold_at).getTime() > now,
+      )
+      // 如果沒有有效特價，取排序第一個（已按 position → created_at 排序）
+      const plan = planWithSale || program.program_plans[0]
 
       return {
         id: program.id,
@@ -356,7 +362,8 @@ const useProgramPreviewCollection = (
             name: programRole.member?.name || programRole.member?.username || '',
           })),
         listPrice: plan?.list_price ?? null,
-        salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
+        salePrice:
+          plan?.sale_price !== null && plan?.sold_at && new Date(plan.sold_at).getTime() > now ? plan.sale_price : null,
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
         isPrivate: program.is_private,
@@ -488,7 +495,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       updated_at
       published_at
       is_private
-      program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
+      program_plans(where: { published_at: { _lte: "now()" } }, order_by: [{ position: asc }, { created_at: asc }]) {
         id
         list_price
         sale_price
