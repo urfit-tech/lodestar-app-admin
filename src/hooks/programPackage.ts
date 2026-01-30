@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { flatten, sum } from 'ramda'
 import hasura from '../hasura'
+import { getValidSalePrice, selectPrimaryPlan } from '../helpers/price'
 import { PeriodType } from '../types/general'
 import { MemberBriefProps } from '../types/member'
 import { ProgramPackageProps } from '../types/programPackage'
@@ -63,13 +64,7 @@ export const useProgramPackageCollection = () => {
     loading || error || !data
       ? []
       : data.program_package.map(v => {
-          const now = Date.now()
-          // 優先找有有效特價的方案（sale_price 可以是 0，所以用 !== null 檢查）
-          const planWithSale = v.program_package_plans?.find(
-            (p: any) => p.sale_price !== null && p.sold_at && new Date(p.sold_at).getTime() > now
-          )
-          // 如果沒有有效特價，取排序第一個（已按 position → created_at 排序）
-          const plan = planWithSale || v.program_package_plans?.[0]
+          const plan = selectPrimaryPlan(v.program_package_plans)
 
           return {
             id: v.id,
@@ -79,7 +74,7 @@ export const useProgramPackageCollection = () => {
             programPackageEnrollment: 0,
             isPrivate: v.is_private,
             listPrice: plan?.list_price ?? null,
-            salePrice: plan?.sale_price !== null && plan?.sold_at && new Date(plan.sold_at).getTime() > now ? plan.sale_price : null,
+            salePrice: getValidSalePrice(plan?.sale_price, plan?.sold_at),
             periodAmount: plan?.period_amount || null,
             periodType: plan?.period_type || null,
           }

@@ -16,6 +16,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import ProgramAdminCard from '../components/program/ProgramAdminCard'
 import hasura from '../hasura'
 import { handleError } from '../helpers'
+import { getValidSalePrice, selectPrimaryPlan } from '../helpers/price'
 import { commonMessages, programMessages } from '../helpers/translation'
 import { useActivatedTemplateForProgram } from '../hooks/programLayoutTemplate'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../types/program'
@@ -339,13 +340,7 @@ const useProgramPreviewCollection = (
 
   const programPreviews: ProgramPreviewProps[] =
     data?.program.map(program => {
-      const now = Date.now()
-      // 優先找有有效特價的方案（sale_price 可以是 0，所以用 !== null 檢查）
-      const planWithSale = program.program_plans.find(
-        p => p.sale_price !== null && p.sold_at && new Date(p.sold_at).getTime() > now,
-      )
-      // 如果沒有有效特價，取排序第一個（已按 position → created_at 排序）
-      const plan = planWithSale || program.program_plans[0]
+      const plan = selectPrimaryPlan(program.program_plans)
 
       return {
         id: program.id,
@@ -362,8 +357,7 @@ const useProgramPreviewCollection = (
             name: programRole.member?.name || programRole.member?.username || '',
           })),
         listPrice: plan?.list_price ?? null,
-        salePrice:
-          plan?.sale_price !== null && plan?.sold_at && new Date(plan.sold_at).getTime() > now ? plan.sale_price : null,
+        salePrice: getValidSalePrice(plan?.sale_price, plan?.sold_at),
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
         isPrivate: program.is_private,
