@@ -529,6 +529,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           classroomIds: assignedIds.length > 0 ? assignedIds : undefined,
           studentId,
           excludeEventId: existingEvent?.id,
+          excludeApiEventId: existingEvent?.apiEventId,
         },
         existingScheduleEvents,
         selectedTeachers,
