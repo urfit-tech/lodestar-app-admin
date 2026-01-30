@@ -2,7 +2,7 @@ import { Button, message, Space, Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -32,17 +32,11 @@ import {
   usePublishEvent,
   useScheduleExpirySettings,
   useTeacherOpenTimeEvents,
+  useTeachersFromMembers,
   useUpdateClassGroup,
 } from '../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../images/icon'
-import {
-  ClassGroup,
-  Language,
-  Order,
-  ScheduleCondition,
-  ScheduleEvent,
-  Teacher,
-} from '../types/schedule'
+import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher } from '../types/schedule'
 
 const PageWrapper = styled.div`
   padding: 16px 0;
@@ -78,7 +72,6 @@ const ThreeColumnGrid = styled.div`
   }
 `
 
-
 const GroupScheduleEditPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -96,6 +89,7 @@ const GroupScheduleEditPage: React.FC = () => {
   const { orders: orderLogs } = useOrdersByIds(classGroup?.orderIds || [])
   const { calculateExpiryDate } = useScheduleExpirySettings('group')
   const [selectedTeachers, setSelectedTeachers] = useState<Teacher[]>([])
+  const { teachers: allTeachers } = useTeachersFromMembers()
 
   // Schedule condition
   const [scheduleCondition, setScheduleCondition] = useState<ScheduleCondition>({
@@ -114,6 +108,8 @@ const GroupScheduleEditPage: React.FC = () => {
 
   // Publish loading state
   const [publishLoading, setPublishLoading] = useState(false)
+  const hasInitializedScheduleCondition = useRef(false)
+  const hasInitializedTeachers = useRef(false)
 
   // Handle class group not found
   useEffect(() => {
@@ -122,6 +118,69 @@ const GroupScheduleEditPage: React.FC = () => {
       history.push('/class-schedule/group')
     }
   }, [classGroup, loading, error, history])
+
+  // Initialize schedule condition from existing events
+  useEffect(() => {
+    if (hasInitializedScheduleCondition.current) return
+    if (!apiEvents || apiEvents.length === 0) return
+
+    const eventDates = apiEvents.map(event => event.date).filter(Boolean)
+    if (eventDates.length === 0) return
+
+    const startDate = new Date(Math.min(...eventDates.map(date => date.getTime())))
+    const endDate = new Date(Math.max(...eventDates.map(date => date.getTime())))
+
+    setScheduleCondition(prev => ({
+      ...prev,
+      startDate,
+      endDate,
+    }))
+    hasInitializedScheduleCondition.current = true
+  }, [apiEvents])
+
+  // Initialize selected teachers from existing events
+  useEffect(() => {
+    if (hasInitializedTeachers.current) return
+    if (selectedTeachers.length > 0) {
+      hasInitializedTeachers.current = true
+      return
+    }
+    if (!apiEvents || apiEvents.length === 0 || allTeachers.length === 0) return
+
+    const sortedEvents = [...apiEvents].sort((a, b) => b.date.getTime() - a.date.getTime())
+    const teacherIds: string[] = []
+    sortedEvents.forEach(event => {
+      if (event.teacherId && !teacherIds.includes(event.teacherId)) {
+        teacherIds.push(event.teacherId)
+      }
+    })
+
+    if (teacherIds.length === 0) return
+
+    const selected = teacherIds
+      .map(id => allTeachers.find(t => t.id === id))
+      .filter(Boolean)
+      .slice(0, 3)
+      .map(teacherFromMember => ({
+        id: teacherFromMember!.id,
+        name: teacherFromMember!.name,
+        email: teacherFromMember!.email,
+        campus: teacherFromMember!.campus,
+        campusId: teacherFromMember!.campusId,
+        campusIds: teacherFromMember!.campusIds,
+        campusNames: teacherFromMember!.campusNames,
+        languages: teacherFromMember!.languages as Language[],
+        traits: teacherFromMember!.traits,
+        level: String(teacherFromMember!.level),
+        yearsOfExperience: teacherFromMember!.yearsOfExperience,
+        note: teacherFromMember!.note,
+      }))
+
+    if (selected.length > 0) {
+      setSelectedTeachers(selected)
+      hasInitializedTeachers.current = true
+    }
+  }, [apiEvents, allTeachers, selectedTeachers])
 
   // Get selected teacher IDs for fetching open time events
   const selectedTeacherIds = useMemo(() => {
