@@ -38,6 +38,7 @@ import {
   ScheduleType,
   Teacher,
 } from '../../types/schedule'
+import { GeneralEventApi } from '../event/events.type'
 import scheduleMessages from './translation'
 
 const FormRow = styled.div`
@@ -208,6 +209,23 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     const assignedIds = ids.filter(id => id !== CLASSROOM_UNASSIGNED && id !== CLASSROOM_EXTERNAL)
     return { assignedIds, isExternal, isUnassigned }
   }, [])
+
+  const existingEventIds = useMemo(() => {
+    return new Set([existingEvent?.id, existingEvent?.apiEventId].filter(Boolean) as string[])
+  }, [existingEvent])
+
+  const isSameExistingApiEvent = useCallback(
+    (originalEvent?: GeneralEventApi) => {
+      if (!originalEvent || existingEventIds.size === 0) return false
+      const originalId = (originalEvent as any).extendedProps?.event_id || (originalEvent as any).id
+      if (originalId && existingEventIds.has(originalId)) return true
+      const clientEventId =
+        (originalEvent as any).extendedProps?.event_metadata?.clientEventId ||
+        (originalEvent as any).extendedProps?.metadata?.clientEventId
+      return Boolean(clientEventId && existingEvent?.id && clientEventId === existingEvent.id)
+    },
+    [existingEventIds, existingEvent],
+  )
 
   // Filter materials based on search
   const filteredMaterials = useMemo(() => {
@@ -570,11 +588,8 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       if (row.teacherId && teacherBusyEvents.length > 0) {
         const busyEvents = teacherBusyEvents.filter(e => {
           if (e.teacherId !== row.teacherId) return false
-          // Exclude the event being edited (use event_id from extendedProps, which is the API event ID)
-          if (existingEvent?.apiEventId) {
-            const originalEventId = e.extendedProps?.originalEvent?.extendedProps?.event_id
-            if (originalEventId === existingEvent.apiEventId) return false
-          }
+          // Exclude the event being edited (match API event id or clientEventId)
+          if (isSameExistingApiEvent(e.extendedProps?.originalEvent)) return false
           return true
         })
         busyEvents.forEach(event => {
@@ -608,11 +623,8 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       if (studentOpenTimeEvents.length > 0) {
         const busyEvents = studentOpenTimeEvents.filter(event => {
           if (event.extendedProps.status === 'open') return false
-          // Exclude the event being edited (use event_id from extendedProps, which is the API event ID)
-          if (existingEvent?.apiEventId) {
-            const originalEventId = event.extendedProps?.originalEvent?.extendedProps?.event_id
-            if (originalEventId === existingEvent.apiEventId) return false
-          }
+          // Exclude the event being edited (match API event id or clientEventId)
+          if (isSameExistingApiEvent(event.extendedProps?.originalEvent)) return false
           return true
         })
 
@@ -735,6 +747,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     scheduleCondition,
     getClassroomState,
     defaultExcludeDates,
+    isSameExistingApiEvent,
   ])
 
   // Generate repeated events based on schedule condition
