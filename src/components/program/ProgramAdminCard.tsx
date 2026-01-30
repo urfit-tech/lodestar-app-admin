@@ -71,7 +71,7 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
             <div className="text-right pb-3">
               <StyledPriceLabel>
                 <span>{currencyFormatter(listPrice)}</span>
-                {!!salePrice && <span>{currencyFormatter(salePrice)}</span>}
+                {salePrice !== null && <span>{currencyFormatter(salePrice)}</span>}
                 {!!periodType && (
                   <>
                     /<PeriodTypeLabel periodType={periodType} />

@@ -16,6 +16,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import ProgramAdminCard from '../components/program/ProgramAdminCard'
 import hasura from '../hasura'
 import { handleError } from '../helpers'
+import { getValidSalePrice, selectPrimaryPlan } from '../helpers/price'
 import { commonMessages, programMessages } from '../helpers/translation'
 import { useActivatedTemplateForProgram } from '../hooks/programLayoutTemplate'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../types/program'
@@ -339,7 +340,7 @@ const useProgramPreviewCollection = (
 
   const programPreviews: ProgramPreviewProps[] =
     data?.program.map(program => {
-      const plan = program.program_plans[0]
+      const plan = selectPrimaryPlan(program.program_plans)
 
       return {
         id: program.id,
@@ -356,7 +357,7 @@ const useProgramPreviewCollection = (
             name: programRole.member?.name || programRole.member?.username || '',
           })),
         listPrice: plan?.list_price ?? null,
-        salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
+        salePrice: getValidSalePrice(plan?.sale_price, plan?.sold_at),
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
         isPrivate: program.is_private,
@@ -488,7 +489,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       updated_at
       published_at
       is_private
-      program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
+      program_plans(where: { published_at: { _lte: "now()" } }, order_by: [{ position: asc }, { created_at: asc }]) {
         id
         list_price
         sale_price
