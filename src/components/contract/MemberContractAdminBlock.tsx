@@ -1,4 +1,4 @@
-import { MoreOutlined } from '@ant-design/icons'
+import { HistoryOutlined, MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Flex } from '@chakra-ui/react'
 import { Card, Dropdown, Menu, message, Skeleton } from 'antd'
@@ -14,6 +14,8 @@ import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { ContractValue, ContractWithProducts } from '../../types/contract'
 import PrimaryButton from '../common/PrimaryButton'
+import MemberContractChangeModal from './MemberContractChangeModal'
+import MemberContractHistoryModal from './MemberContractHistoryModal'
 import MemberContractInfoModal from './MemberContractInfoModal'
 
 const messages = defineMessages({
@@ -26,6 +28,7 @@ const messages = defineMessages({
     id: 'contract.text.deleteContractWarning',
     defaultMessage: '你確定要解除合約？此操作無法復原，請審慎評估！',
   },
+  changeContract: { id: 'contract.ui.changeContract', defaultMessage: '變更合約' },
 })
 
 const StyledLabel = styled.span<{ variant?: 'default' | 'agreed' | 'revoked' }>`
@@ -49,6 +52,12 @@ const StyledDescription = styled.div`
   letter-spacing: 0.2px;
 `
 
+// 檢查合約是否有歷史記錄
+const hasHistory = (contract: ContractWithProducts): boolean => {
+  const options = (contract.options as any) || {}
+  return (Array.isArray(options.snapshots) && options.snapshots.length > 0) || !!options.previousValues
+}
+
 const MemberContractAdminBlock: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
@@ -59,6 +68,10 @@ const MemberContractAdminBlock: React.FC<{
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
+  const [changeModalVisible, setChangeModalVisible] = useState(false)
+  const [selectedContract, setSelectedContract] = useState<ContractWithProducts | null>(null)
+  const [historyModalVisible, setHistoryModalVisible] = useState(false)
+  const [selectedContractForHistory, setSelectedContractForHistory] = useState<ContractWithProducts | null>(null)
 
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
@@ -110,6 +123,32 @@ const MemberContractAdminBlock: React.FC<{
     }
   }
 
+  const handleContractChange = (contract: ContractWithProducts) => {
+    setSelectedContract(contract)
+    setChangeModalVisible(true)
+  }
+
+  const handleChangeModalClose = () => {
+    setChangeModalVisible(false)
+    setSelectedContract(null)
+  }
+
+  const handleChangeSuccess = () => {
+    refetchContracts()
+  }
+
+  const handleHistoryClick = (contract: ContractWithProducts, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setSelectedContractForHistory(contract)
+    setHistoryModalVisible(true)
+  }
+
+  const handleHistoryModalClose = () => {
+    setHistoryModalVisible(false)
+    setSelectedContractForHistory(null)
+  }
+
   return (
     <div className="container">
       <a
@@ -130,7 +169,18 @@ const MemberContractAdminBlock: React.FC<{
           <Card
             title={
               <div className="d-flex align-items-center justify-content-between">
-                <span className="mr-1">{contract.title}</span>
+                <div className="d-flex align-items-center">
+                  <span className="mr-1">{contract.title}</span>
+                  {hasHistory(contract) && (
+                    <span className="ml-2">
+                      <HistoryOutlined
+                        className="cursor-pointer"
+                        style={{ fontSize: '16px', color: 'var(--gray-darker)' }}
+                        onClick={e => handleHistoryClick(contract, e)}
+                      />
+                    </span>
+                  )}
+                </div>
                 <div className="d-flex align-items-center">
                   {contract.revokedAt ? (
                     <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
@@ -206,26 +256,62 @@ const MemberContractAdminBlock: React.FC<{
             <Flex justifyContent="space-between" alignItems="center" mt="1rem">
               <MemberContractInfoModal memberContract={contract} />
 
-              {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
-                <Button
-                  loading={revokeLoading}
-                  variant="outline"
-                  color={theme.colors.danger['500']}
-                  border={`1px solid ${theme.colors.danger['500']} !important`}
-                  _hover={{
-                    filter: 'brightness(1.1)',
-                  }}
-                  onClick={e => {
-                    e.preventDefault()
-                    handleContractRevoke(contract.id, contract.values)
-                  }}
-                >
-                  {formatMessage(messages.revokeContract)}
-                </Button>
-              )}
+              <Flex gap="0.5rem">
+                {!contract.revokedAt && (
+                  <Button
+                    variant="outline"
+                    color={theme.colors.primary['500']}
+                    border={`1px solid ${theme.colors.primary['500']} !important`}
+                    _hover={{
+                      filter: 'brightness(1.1)',
+                    }}
+                    onClick={e => {
+                      e.preventDefault()
+                      handleContractChange(contract)
+                    }}
+                  >
+                    {formatMessage(messages.changeContract)}
+                  </Button>
+                )}
+
+                {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
+                  <Button
+                    loading={revokeLoading}
+                    variant="outline"
+                    color={theme.colors.danger['500']}
+                    border={`1px solid ${theme.colors.danger['500']} !important`}
+                    _hover={{
+                      filter: 'brightness(1.1)',
+                    }}
+                    onClick={e => {
+                      e.preventDefault()
+                      handleContractRevoke(contract.id, contract.values)
+                    }}
+                  >
+                    {formatMessage(messages.revokeContract)}
+                  </Button>
+                )}
+              </Flex>
             </Flex>
           </Card>
         ))}
+
+      {selectedContract && (
+        <MemberContractChangeModal
+          contract={selectedContract}
+          isOpen={changeModalVisible}
+          onClose={handleChangeModalClose}
+          onSuccess={handleChangeSuccess}
+        />
+      )}
+
+      {selectedContractForHistory && (
+        <MemberContractHistoryModal
+          contract={selectedContractForHistory}
+          isOpen={historyModalVisible}
+          onClose={handleHistoryModalClose}
+        />
+      )}
     </div>
   )
 }
@@ -308,4 +394,5 @@ const REVOKE_MEMBER_CONTRACT = gql`
     }
   }
 `
+
 export default MemberContractAdminBlock

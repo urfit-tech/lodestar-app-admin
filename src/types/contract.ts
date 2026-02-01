@@ -8,7 +8,7 @@ export type Contract = {
   createdAt: Date
   agreedIp: string | null
   agreedOptions: any
-  options: any
+  options?: any
   revokedAt: Date | null
 }
 export type ContractWithProducts = Contract & {
