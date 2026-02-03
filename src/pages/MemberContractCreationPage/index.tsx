@@ -372,7 +372,7 @@ const useContractInfo = (appId: string, memberId: string) => {
           period_amount
           period_type
         }
-        appointment_plan(distinct_on: [creator_id]) {
+        appointment_plan(distinct_on: [creator_id], where: { app_id: { _eq: $appId } }) {
           id
           creator {
             id
