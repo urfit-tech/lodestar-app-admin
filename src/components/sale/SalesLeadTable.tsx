@@ -77,6 +77,7 @@ const TableWrapper = styled.div`
   }
 `
 const StyledMemberNote = styled.span`
+  max-width: 400px;
   white-space: pre-wrap;
   display: -webkit-box;
   -webkit-line-clamp: 5;
@@ -754,7 +755,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'memberNote',
       dataIndex: 'memberNote',
-      width: 300,
+      width: 400,
       title: formatMessage(saleMessages.SalesLeadTable.memberNote),
       ...getColumnSearchProps((value?: string) =>
         onFilter({
