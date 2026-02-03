@@ -33,14 +33,7 @@ import {
   useUpdateClassGroup,
 } from '../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../images/icon'
-import {
-  ClassGroup,
-  Language,
-  Order,
-  ScheduleCondition,
-  ScheduleEvent,
-  Teacher,
-} from '../types/schedule'
+import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher } from '../types/schedule'
 
 const PageWrapper = styled.div`
   padding: 16px 0;
@@ -68,7 +61,6 @@ const ThreeColumnGrid = styled.div`
     grid-template-columns: 1fr;
   }
 `
-
 
 const GroupScheduleCreatePage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -311,29 +303,29 @@ const GroupScheduleCreatePage: React.FC = () => {
       setPendingEvents(prev => {
         const newEvents = [...prev]
         events.forEach(event => {
-          if (event.id && !event.id.startsWith('local-')) {
-            // Update existing event
+          if (event.id) {
             const index = newEvents.findIndex(e => e.id === event.id)
             if (index >= 0) {
               newEvents[index] = { ...newEvents[index], ...event }
+              return
             }
-          } else {
-            // Add new event to local pending events
-            newEvents.push({
-              ...event,
-              id: `local-${Date.now()}-${Math.random()}`,
-              scheduleType: 'group',
-              status: 'pending',
-              classId: classGroup?.id,
-              studentIds,
-              orderIds: studentOrders.map(o => o.id),
-              campus: classGroup?.campusId || '',
-              language: (classGroup?.language || 'zh-TW') as Language,
-              createdBy: currentMemberId || '',
-              createdByEmail: currentMember?.email || '',
-              updatedAt: new Date(),
-            } as ScheduleEvent)
           }
+
+          // Add new event to local pending events
+          newEvents.push({
+            ...event,
+            id: `local-${Date.now()}-${Math.random()}`,
+            scheduleType: 'group',
+            status: 'pending',
+            classId: classGroup?.id,
+            studentIds,
+            orderIds: studentOrders.map(o => o.id),
+            campus: classGroup?.campusId || '',
+            language: (classGroup?.language || 'zh-TW') as Language,
+            createdBy: currentMemberId || '',
+            createdByEmail: currentMember?.email || '',
+            updatedAt: new Date(),
+          } as ScheduleEvent)
         })
         return newEvents
       })
@@ -463,7 +455,9 @@ const GroupScheduleCreatePage: React.FC = () => {
           return event
         }),
       )
-      message.success(formatMessage(scheduleMessages.GroupClass.preScheduleSuccess, { count: eventsToPreSchedule.length }))
+      message.success(
+        formatMessage(scheduleMessages.GroupClass.preScheduleSuccess, { count: eventsToPreSchedule.length }),
+      )
     } catch (error) {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
@@ -578,7 +572,6 @@ const GroupScheduleCreatePage: React.FC = () => {
             campus={classGroup?.campusId}
             selectedTeachers={selectedTeachers}
             onTeacherSelect={handleTeachersChange}
-            
           />
         </AdminPageBlock>
 

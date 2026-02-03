@@ -1286,9 +1286,15 @@ export interface PersonalScheduleListEvent extends ScheduleEvent {
 
 // GraphQL query to get personal schedule events directly from event table
 const GET_PERSONAL_SCHEDULE_EVENTS = gql`
-  query GetPersonalScheduleEvents($startDate: timestamptz!, $endDate: timestamptz!, $scheduleTypeFilter: jsonb!) {
+  query GetPersonalScheduleEvents(
+    $appId: String!
+    $startDate: timestamptz!
+    $endDate: timestamptz!
+    $scheduleTypeFilter: jsonb!
+  ) {
     event(
       where: {
+        app_id: { _eq: $appId }
         deleted_at: { _is_null: true }
         started_at: { _gte: $startDate, _lte: $endDate }
         metadata: { _contains: $scheduleTypeFilter }
@@ -1346,6 +1352,7 @@ interface MembersData {
  * Fetches real events from GraphQL event table filtered by scheduleType === 'personal'
  */
 export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-scheduled' | 'all') => {
+  const { id: appId } = useApp()
   // Default date range: 1 year before and after current date
   const startDate = useMemo(() => {
     return moment().subtract(1, 'year').startOf('day').toISOString()
@@ -1353,6 +1360,13 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
 
   const endDate = useMemo(() => {
     return moment().add(1, 'year').endOf('day').toISOString()
+  }, [])
+
+  const isUuid = useCallback((value?: string | null) => {
+    if (!value) return false
+    return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
+      value,
+    )
   }, [])
 
   // Query events from GraphQL
@@ -1363,10 +1377,12 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
     refetch,
   } = useQuery<PersonalScheduleEventsData>(GET_PERSONAL_SCHEDULE_EVENTS, {
     variables: {
+      appId,
       startDate,
       endDate,
       scheduleTypeFilter: { scheduleType: 'personal' },
     },
+    skip: !appId,
     fetchPolicy: 'network-only',
   })
 
@@ -1378,6 +1394,8 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
       const metadata = event.metadata
       if (metadata?.studentId) ids.add(metadata.studentId)
       if (metadata?.teacherId) ids.add(metadata.teacherId)
+      if (metadata?.createdBy) ids.add(metadata.createdBy)
+      if (metadata?.updatedBy) ids.add(metadata.updatedBy)
     })
     return Array.from(ids)
   }, [eventsData])
@@ -1426,6 +1444,12 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
         // Get member info
         const studentInfo = metadata.studentId ? memberMap.get(metadata.studentId) : undefined
         const teacherInfo = metadata.teacherId ? memberMap.get(metadata.teacherId) : undefined
+        const createdByInfo = metadata.createdBy ? memberMap.get(metadata.createdBy) : undefined
+        const updatedByInfo = metadata.updatedBy ? memberMap.get(metadata.updatedBy) : undefined
+        const createdByRaw = metadata.createdBy as string | undefined
+        const updatedByRaw = metadata.updatedBy as string | undefined
+        const createdByRawName = createdByRaw && !isUuid(createdByRaw) ? createdByRaw : ''
+        const updatedByRawName = updatedByRaw && !isUuid(updatedByRaw) ? updatedByRaw : ''
 
         const eventData: PersonalScheduleListEvent = {
           id: event.id,
@@ -1449,8 +1473,20 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
             Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
           material: (metadata.material as string) || event.title || '',
           needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
-          createdBy: (metadata.createdBy as string) || (metadata.updatedBy as string) || '',
-          createdByEmail: (metadata.createdByEmail as string) || (metadata.updatedByEmail as string) || '',
+          createdBy:
+            createdByInfo?.name ||
+            updatedByInfo?.name ||
+            (metadata.createdByName as string) ||
+            (metadata.updatedByName as string) ||
+            createdByRawName ||
+            updatedByRawName ||
+            '',
+          createdByEmail:
+            createdByInfo?.email ||
+            updatedByInfo?.email ||
+            (metadata.createdByEmail as string) ||
+            (metadata.updatedByEmail as string) ||
+            '',
           updatedAt: new Date(event.updated_at),
           isExternal: metadata.classMode === '外課' || metadata.is_external === true,
         }
@@ -1781,6 +1817,11 @@ export interface ClassGroupEventsSummary {
     startTime: string | null // HH:mm format in Taiwan timezone
     endTime: string | null // HH:mm format in Taiwan timezone
   }
+  // Unique time slots across events (HH:mm format in Taiwan timezone)
+  timeSlots: Array<{
+    startTime: string
+    endTime: string
+  }>
 }
 
 /**
@@ -1856,6 +1897,7 @@ export const useMultipleClassGroupsEvents = (
           memberMap,
           dateRange: { startDate: null, endDate: null },
           timeRange: { startTime: null, endTime: null },
+          timeSlots: [],
         })
       }
 
@@ -1894,10 +1936,12 @@ export const useMultipleClassGroupsEvents = (
         timeZone: 'Asia/Taipei'
       })
 
-      // Use first event's time as default (or could aggregate unique times)
-      if (!summary.timeRange.startTime) {
-        summary.timeRange.startTime = startTimeStr
-        summary.timeRange.endTime = endTimeStr
+      // Collect unique time slots
+      const hasSlot = summary.timeSlots.some(
+        slot => slot.startTime === startTimeStr && slot.endTime === endTimeStr,
+      )
+      if (!hasSlot) {
+        summary.timeSlots.push({ startTime: startTimeStr, endTime: endTimeStr })
       }
 
       // Set latest event info (events are already sorted by updated_at desc)
@@ -1916,6 +1960,22 @@ export const useMultipleClassGroupsEvents = (
           updatedAt: new Date(event.updated_at),
         }
       }
+    })
+
+    // Finalize time slots (sort and derive timeRange)
+    map.forEach(summary => {
+      summary.timeSlots.sort((a, b) => {
+        const aStart = parseInt(a.startTime.replace(':', ''), 10)
+        const bStart = parseInt(b.startTime.replace(':', ''), 10)
+        if (aStart !== bStart) return aStart - bStart
+        const aEnd = parseInt(a.endTime.replace(':', ''), 10)
+        const bEnd = parseInt(b.endTime.replace(':', ''), 10)
+        return aEnd - bEnd
+      })
+
+      const firstSlot = summary.timeSlots[0]
+      summary.timeRange.startTime = firstSlot?.startTime || null
+      summary.timeRange.endTime = firstSlot?.endTime || null
     })
 
     return map

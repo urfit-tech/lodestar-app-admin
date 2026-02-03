@@ -31,6 +31,7 @@ import { useMemberForSchedule } from '../hooks/schedule'
 import {
   useDeleteScheduleTemplate,
   useHolidays,
+  usePersonalScheduleListEvents,
   useSaveScheduleTemplate,
   useScheduleExpirySettings,
   useScheduleTemplates,
@@ -181,6 +182,7 @@ const PersonalScheduleEditPage: React.FC = () => {
 
   // Get student open time events (background events for calendar)
   const { events: studentOpenTimeEvents, refetch: refetchStudentEvents } = useStudentOpenTimeEvents(memberId)
+  const { events: apiPersonalEvents, refetch: refetchPersonalEvents } = usePersonalScheduleListEvents('all')
 
   // Get classrooms for selection
   const { classrooms } = useClassrooms()
@@ -354,11 +356,19 @@ const PersonalScheduleEditPage: React.FC = () => {
     return defaultExcludeDates.map(h => h.date)
   }, [defaultExcludeDates])
 
-  // Get events for calendar (local pending events)
+  const apiEventsForStudent = useMemo(() => {
+    if (!selectedStudent) return []
+    return apiPersonalEvents.filter(e => e.studentId === selectedStudent.id)
+  }, [apiPersonalEvents, selectedStudent])
+
+  // Get events for calendar (API events + local pending events without apiEventId)
   const calendarEvents = useMemo(() => {
     if (!selectedStudent) return []
-    return pendingEvents.filter(e => e.studentId === selectedStudent.id)
-  }, [selectedStudent, pendingEvents])
+    const localEvents = pendingEvents.filter(e => e.studentId === selectedStudent.id && !e.apiEventId)
+    return [...apiEventsForStudent, ...localEvents]
+  }, [selectedStudent, pendingEvents, apiEventsForStudent])
+
+  const pendingEventIdSet = useMemo(() => new Set(pendingEvents.map(e => e.id)), [pendingEvents])
 
   // Get materials from selected orders
   const orderMaterials = useMemo(() => {
@@ -384,6 +394,52 @@ const PersonalScheduleEditPage: React.FC = () => {
     studentOrders.forEach(order => map.set(order.id, order))
     return map
   }, [studentOrders])
+
+  const buildPersonalEventPayload = useCallback(
+    (event: Partial<ScheduleEvent>): GeneralEventApi => {
+      const date = event.date || selectedDate
+      const startDateTime = moment(date)
+        .hour(parseInt(event.startTime?.split(':')[0] || '0'))
+        .minute(parseInt(event.startTime?.split(':')[1] || '0'))
+        .toDate()
+      const endDateTime = moment(date)
+        .hour(parseInt(event.endTime?.split(':')[0] || '0'))
+        .minute(parseInt(event.endTime?.split(':')[1] || '0'))
+        .toDate()
+
+      const orderIds = event.orderIds || selectedOrderIds
+      const orderProductNames =
+        orderIds
+          ?.map(orderId => orderMap.get(orderId)?.productName)
+          .filter(Boolean)
+          .join(', ') || ''
+
+      return {
+        start: startDateTime,
+        end: endDateTime,
+        title: event.material || '',
+        extendedProps: {
+          description: '',
+          metadata: {
+            title: orderProductNames,
+            scheduleType: 'personal',
+            studentId: selectedStudent?.id,
+            orderIds,
+            campus: event.campus || '',
+            language: (event.language || selectedLanguages[0] || 'zh-TW') as Language,
+            teacherId: event.teacherId,
+            duration: event.duration,
+            material: event.material,
+            needsOnlineRoom: event.needsOnlineRoom,
+            updatedBy: currentMemberId || '',
+            updatedByEmail: currentMember?.email || '',
+            updatedByName: currentMember?.name || '',
+          },
+        },
+      } as GeneralEventApi
+    },
+    [selectedDate, selectedOrderIds, selectedLanguages, selectedStudent, orderMap, currentMemberId, currentMember],
+  )
 
   const handleSaveDraft = useCallback((rows: CourseRow[]) => {
     setDraftRows(rows)
@@ -461,18 +517,62 @@ const PersonalScheduleEditPage: React.FC = () => {
   }, [])
 
   const handleSaveEvents = useCallback(
-    (events: Partial<ScheduleEvent>[]) => {
-      // Save to local pending events state (pending status)
-      setPendingEvents(prev => {
-        const newEvents = [...prev]
-        events.forEach(event => {
-          if (event.id && !event.id.startsWith('local-')) {
-            // Update existing event
-            const index = newEvents.findIndex(e => e.id === event.id)
-            if (index >= 0) {
-              newEvents[index] = { ...newEvents[index], ...event }
+    async (events: Partial<ScheduleEvent>[]) => {
+      const apiUpdates: Array<{ event: Partial<ScheduleEvent>; eventId: string }> = []
+      const localExistingEvents: Partial<ScheduleEvent>[] = []
+      const localNewEvents: Partial<ScheduleEvent>[] = []
+
+      events.forEach(event => {
+        const hasLocalId = Boolean(event.id && pendingEventIdSet.has(event.id))
+        const apiEventId =
+          event.apiEventId ||
+          (event.id && !event.id.startsWith('local-') && !pendingEventIdSet.has(event.id) ? event.id : undefined)
+
+        if (apiEventId) {
+          apiUpdates.push({ event, eventId: apiEventId })
+        }
+
+        if (hasLocalId) {
+          localExistingEvents.push(event)
+        } else if (!apiEventId) {
+          localNewEvents.push(event)
+        }
+      })
+      let hasError = false
+
+      if (apiUpdates.length > 0) {
+        if (!authToken) {
+          message.error('無法更新課程：缺少認證資訊')
+          hasError = true
+        } else {
+          try {
+            await Promise.all(
+              apiUpdates.map(({ event, eventId }) => updateEvent(authToken)(buildPersonalEventPayload(event))(eventId)),
+            )
+            refetchStudentEvents()
+            refetchPersonalEvents()
+          } catch (error) {
+            console.error('Failed to update events:', error)
+            message.error('課程更新失敗')
+            hasError = true
+          }
+        }
+      }
+
+      if (localExistingEvents.length > 0 || localNewEvents.length > 0) {
+        // Save to local pending events state (pending status)
+        setPendingEvents(prev => {
+          const newEvents = [...prev]
+          localExistingEvents.forEach(event => {
+            if (event.id) {
+              const index = newEvents.findIndex(e => e.id === event.id)
+              if (index >= 0) {
+                newEvents[index] = { ...newEvents[index], ...event }
+                return
+              }
             }
-          } else {
+          })
+          localNewEvents.forEach(event => {
             // Add new event to local pending events
             newEvents.push({
               ...event,
@@ -487,13 +587,26 @@ const PersonalScheduleEditPage: React.FC = () => {
               createdByEmail: currentMember?.email || 'user@example.com',
               updatedAt: new Date(),
             } as ScheduleEvent)
-          }
+          })
+          return newEvents
         })
-        return newEvents
-      })
-      message.success('課程已加入待處理')
+      }
+
+      if (!hasError) {
+        message.success(localNewEvents.length > 0 ? '課程已加入待處理' : '課程已更新')
+      }
     },
-    [selectedStudent, selectedOrderIds, selectedLanguages, currentMember],
+    [
+      authToken,
+      buildPersonalEventPayload,
+      pendingEventIdSet,
+      refetchPersonalEvents,
+      refetchStudentEvents,
+      selectedStudent,
+      selectedOrderIds,
+      selectedLanguages,
+      currentMember,
+    ],
   )
 
   const handlePreSchedule = useCallback(async () => {
@@ -559,8 +672,10 @@ const PersonalScheduleEditPage: React.FC = () => {
               clientEventId: event.id,
               createdBy: currentMemberId || '',
               createdByEmail: currentMember?.email || '',
+              createdByName: currentMember?.name || '',
               updatedBy: currentMemberId || '',
               updatedByEmail: currentMember?.email || '',
+              updatedByName: currentMember?.name || '',
             },
           },
         } as GeneralEventApi
@@ -649,6 +764,7 @@ const PersonalScheduleEditPage: React.FC = () => {
 
       // Refetch student events
       refetchStudentEvents()
+      refetchPersonalEvents()
 
       message.success(`已預排 ${pendingEvents.length} 堂課程`)
     } catch (error) {
@@ -701,8 +817,17 @@ const PersonalScheduleEditPage: React.FC = () => {
 
       await Promise.all(
         unpublishedEvents.map(event => {
-          const eventId = event.extendedProps?.originalEvent?.extendedProps?.event_id
-          return updateEvent(authToken)({ published_at: publishedAt } as any)(eventId)
+          const originalEvent = event.extendedProps?.originalEvent
+          const eventId = originalEvent?.extendedProps?.event_id
+          const existingMetadata = originalEvent?.extendedProps?.event_metadata as Record<string, any> | undefined
+          const metadata = {
+            ...(existingMetadata || {}),
+            updatedBy: currentMemberId || '',
+            updatedByEmail: currentMember?.email || '',
+            updatedByName: currentMember?.name || '',
+          }
+
+          return updateEvent(authToken)({ published_at: publishedAt, metadata } as any)(eventId)
         }),
       )
 
@@ -724,7 +849,16 @@ const PersonalScheduleEditPage: React.FC = () => {
     } finally {
       setPublishLoading(false)
     }
-  }, [authToken, selectedOrders, studentOpenTimeEvents, calendarEvents, formatMessage, refetchStudentEvents])
+  }, [
+    authToken,
+    selectedOrders,
+    studentOpenTimeEvents,
+    calendarEvents,
+    formatMessage,
+    refetchStudentEvents,
+    currentMemberId,
+    currentMember,
+  ])
 
   const canPublish = useMemo(() => {
     const hasUnpublishedEvents = studentOpenTimeEvents.some(event => {

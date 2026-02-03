@@ -22,6 +22,7 @@ import {
   createEventFetcher,
   createInvitationFetcher,
   getResourceByTypeTargetFetcher,
+  updateEvent,
 } from '../helpers/eventHelper/eventFetchers'
 import { useClassrooms } from '../hooks/classroom'
 import {
@@ -219,6 +220,48 @@ const SemesterScheduleEditPage: React.FC = () => {
     return combinedEvents
   }, [classGroup, apiEvents, localPendingEvents])
 
+  const apiEventIdSet = useMemo(() => new Set(apiEvents.map(e => e.id)), [apiEvents])
+  const localPendingEventIdSet = useMemo(() => new Set(localPendingEvents.map(e => e.id)), [localPendingEvents])
+
+  const buildSemesterEventPayload = useCallback(
+    (event: Partial<ScheduleEvent>): GeneralEventApi => {
+      const date = event.date || selectedDate
+      const startDateTime = moment(date)
+        .hour(parseInt(event.startTime?.split(':')[0] || '0'))
+        .minute(parseInt(event.startTime?.split(':')[1] || '0'))
+        .toDate()
+      const endDateTime = moment(date)
+        .hour(parseInt(event.endTime?.split(':')[0] || '0'))
+        .minute(parseInt(event.endTime?.split(':')[1] || '0'))
+        .toDate()
+
+      return {
+        start: startDateTime,
+        end: endDateTime,
+        title: event.material || classGroup?.name || '',
+        extendedProps: {
+          description: '',
+          metadata: {
+            title: classGroup?.name || '',
+            scheduleType: 'semester',
+            classId: classGroup?.id,
+            studentIds: [],
+            orderIds: [],
+            campus: event.campus || classGroup?.campusId || '',
+            language: (event.language || classGroup?.language || 'zh-TW') as Language,
+            teacherId: event.teacherId,
+            duration: event.duration,
+            material: event.material,
+            needsOnlineRoom: event.needsOnlineRoom,
+            updatedBy: currentMemberId || '',
+            updatedByEmail: currentMember?.email || '',
+          },
+        },
+      } as GeneralEventApi
+    },
+    [classGroup, selectedDate, currentMemberId, currentMember],
+  )
+
   // Get materials from class group
   const classMaterials = useMemo(() => {
     return classGroup?.materials || []
@@ -300,17 +343,58 @@ const SemesterScheduleEditPage: React.FC = () => {
   }, [])
 
   const handleSaveEvents = useCallback(
-    (events: Partial<ScheduleEvent>[]) => {
-      setLocalPendingEvents(prev => {
-        const newEvents = [...prev]
-        events.forEach(event => {
-          if (event.id && !event.id.startsWith('local-')) {
-            // Update existing local event
-            const index = newEvents.findIndex(e => e.id === event.id)
-            if (index >= 0) {
-              newEvents[index] = { ...newEvents[index], ...event }
+    async (events: Partial<ScheduleEvent>[]) => {
+      const apiUpdates: Array<{ event: Partial<ScheduleEvent>; eventId: string }> = []
+      const localExistingEvents: Partial<ScheduleEvent>[] = []
+      const localNewEvents: Partial<ScheduleEvent>[] = []
+
+      events.forEach(event => {
+        const apiEventId = event.apiEventId || (event.id && apiEventIdSet.has(event.id) ? event.id : undefined)
+        const hasLocalId = Boolean(event.id && localPendingEventIdSet.has(event.id))
+
+        if (apiEventId) {
+          apiUpdates.push({ event, eventId: apiEventId })
+        }
+
+        if (hasLocalId) {
+          localExistingEvents.push(event)
+        } else if (!apiEventId) {
+          localNewEvents.push(event)
+        }
+      })
+      let hasError = false
+
+      if (apiUpdates.length > 0) {
+        if (!authToken) {
+          message.error('無法更新課程：缺少認證資訊')
+          hasError = true
+        } else {
+          try {
+            await Promise.all(
+              apiUpdates.map(({ event, eventId }) => updateEvent(authToken)(buildSemesterEventPayload(event))(eventId)),
+            )
+            refetchEvents()
+          } catch (error) {
+            console.error('Failed to update events:', error)
+            message.error('課程更新失敗')
+            hasError = true
+          }
+        }
+      }
+
+      if (localExistingEvents.length > 0 || localNewEvents.length > 0) {
+        setLocalPendingEvents(prev => {
+          const newEvents = [...prev]
+          localExistingEvents.forEach(event => {
+            if (event.id) {
+              const index = newEvents.findIndex(e => e.id === event.id)
+              if (index >= 0) {
+                newEvents[index] = { ...newEvents[index], ...event }
+                return
+              }
             }
-          } else {
+          })
+          localNewEvents.forEach(event => {
             // Add new event to local pending events
             newEvents.push({
               ...event,
@@ -326,13 +410,24 @@ const SemesterScheduleEditPage: React.FC = () => {
               createdByEmail: 'user@example.com',
               updatedAt: new Date(),
             } as ScheduleEvent)
-          }
+          })
+          return newEvents
         })
-        return newEvents
-      })
-      message.success(formatMessage(scheduleMessages.SemesterClass.courseArranged))
+      }
+
+      if (!hasError) {
+        message.success(formatMessage(scheduleMessages.SemesterClass.courseArranged))
+      }
     },
-    [classGroup, formatMessage],
+    [
+      apiEventIdSet,
+      localPendingEventIdSet,
+      authToken,
+      buildSemesterEventPayload,
+      refetchEvents,
+      classGroup,
+      formatMessage,
+    ],
   )
 
   const handlePreSchedule = useCallback(async () => {

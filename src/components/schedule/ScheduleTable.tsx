@@ -57,18 +57,6 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
 
   const { campuses: permissionCampuses } = usePermissionGroupsAsCampuses()
 
-  // Debug log
-  console.log(
-    '[ScheduleTable] scheduleType:',
-    scheduleType,
-    'apiStatus:',
-    apiStatus,
-    'apiEvents:',
-    apiEvents?.length,
-    'apiLoading:',
-    apiLoading,
-  )
-
   const campuses = useMemo(() => {
     return permissionCampuses
   }, [permissionCampuses])
@@ -81,8 +69,8 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     if (filters.campus) {
       const search = filters.campus.toLowerCase()
       allEvents = allEvents.filter(event => {
-        const campus = campuses.find(c => c.id === event.campus)
-        return campus?.name.toLowerCase().includes(search)
+        const campusName = campuses.find(c => c.id === event.campus)?.name || ''
+        return campusName.toLowerCase().includes(search)
       })
     }
 
@@ -124,28 +112,25 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       })
     }
 
-    // Sort by date (most recent first)
-    return allEvents.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
+    // Sort by date (most recent first) without mutating source
+    return [...allEvents].sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
   }, [scheduleType, activeTab, filters, apiEvents, campuses])
 
   const loading = scheduleType === 'personal' ? apiLoading : false
 
-  const getStudentDisplay = useCallback(
-    (event: ScheduleEvent): React.ReactNode => {
-      // Only personal schedule type is used in this component
-      const apiEvent = event as any
-      if (!apiEvent.studentName && !apiEvent.studentEmail) return '-'
-      return (
-        <div>
-          <div>{apiEvent.studentName || '-'}</div>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            {apiEvent.studentEmail || '-'}
-          </Typography.Text>
-        </div>
-      )
-    },
-    [],
-  )
+  const getStudentDisplay = useCallback((event: ScheduleEvent): React.ReactNode => {
+    // Only personal schedule type is used in this component
+    const apiEvent = event as any
+    if (!apiEvent.studentName && !apiEvent.studentEmail) return '-'
+    return (
+      <div>
+        <div>{apiEvent.studentName || '-'}</div>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          {apiEvent.studentEmail || '-'}
+        </Typography.Text>
+      </div>
+    )
+  }, [])
 
   // Helper function to get column search props
   const getColumnSearchProps = useCallback(
@@ -300,14 +285,20 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     {
       title: formatMessage(scheduleMessages.ScheduleTable.settingPerson),
       key: 'settingPerson',
-      render: (_, record) => (
-        <div>
-          <div>{record.createdBy}</div>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            {record.createdByEmail}
-          </Typography.Text>
-        </div>
-      ),
+      render: (_, record) => {
+        const displayName = record.createdBy || record.createdByEmail || '-'
+        const displayEmail = record.createdBy ? record.createdByEmail : ''
+        return (
+          <div>
+            <div>{displayName}</div>
+            {displayEmail ? (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {displayEmail}
+              </Typography.Text>
+            ) : null}
+          </div>
+        )
+      },
       ...getColumnSearchProps('person'),
     },
     {

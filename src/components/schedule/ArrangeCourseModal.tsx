@@ -170,6 +170,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   const [rows, setRows] = useState<CourseRow[]>([])
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [showDurationWarning, setShowDurationWarning] = useState(false)
+  const [durationWarningTotal, setDurationWarningTotal] = useState<number | null>(null)
   const [showMinutesMismatchWarning, setShowMinutesMismatchWarning] = useState(false)
   const [minutesMismatch, setMinutesMismatch] = useState(0)
   const [materialSearch, setMaterialSearch] = useState('')
@@ -389,6 +390,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       const newTotal = otherRowsDuration + newDuration
 
       if (availableMinutes > 0 && newTotal > availableMinutes) {
+        setDurationWarningTotal(newTotal)
         setShowDurationWarning(true)
       }
 
@@ -462,6 +464,12 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       const eventStartNum = parseInt(moment(event.start).format('HH:mm').replace(':', ''))
       const eventEndNum = parseInt(moment(event.end).format('HH:mm').replace(':', ''))
       return rowStartNum < eventEndNum && rowEndNum > eventStartNum
+    }
+
+    const addRowError = (rowErrors: string[], errorKey: string) => {
+      if (!rowErrors.includes(errorKey)) {
+        rowErrors.push(errorKey)
+      }
     }
 
     rows.forEach(row => {
@@ -672,8 +680,44 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         return rowClassroomKey === otherKey
       })
       if (duplicates.length > 0) {
-        rowErrors.push('duplicate')
+        addRowError(rowErrors, 'duplicate')
         isValid = false
+      }
+
+      // Check for overlapping rows within the modal (same time range)
+      const overlappingRows = rows.filter(r => {
+        if (r.id === row.id) return false
+        if (r.weekday !== row.weekday) return false
+        const otherStartNum = parseInt(r.startTime.format('HH:mm').replace(':', ''))
+        const otherEndNum = parseInt(moment(r.startTime).add(r.duration, 'minutes').format('HH:mm').replace(':', ''))
+        return rowStartNum < otherEndNum && rowEndNum > otherStartNum
+      })
+
+      if (overlappingRows.length > 0) {
+        if (studentId) {
+          addRowError(rowErrors, 'studentConflict')
+          isValid = false
+        }
+
+        if (row.teacherId && overlappingRows.some(r => r.teacherId === row.teacherId)) {
+          addRowError(rowErrors, 'teacherConflict')
+          isValid = false
+        }
+
+        const hasRoomOverlap =
+          !rowClassroomState.isExternal &&
+          !rowClassroomState.isUnassigned &&
+          rowClassroomState.assignedIds.length > 0 &&
+          overlappingRows.some(r => {
+            const otherState = getClassroomState(r)
+            if (otherState.isExternal || otherState.isUnassigned) return false
+            return otherState.assignedIds.some(id => rowClassroomState.assignedIds.includes(id))
+          })
+
+        if (hasRoomOverlap) {
+          addRowError(rowErrors, 'roomConflict')
+          isValid = false
+        }
       }
 
       if (rowErrors.length > 0) {
@@ -756,7 +800,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       const events: Partial<ScheduleEvent>[] = []
       let minutesMismatch = 0
 
-      if (!scheduleCondition) {
+      if (!scheduleCondition || existingEvent) {
         // No repeat, just return single events for each row
         return {
           events: baseRows.map(row => {
@@ -768,6 +812,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
             return {
               id: row.id.startsWith('new-') ? undefined : row.id,
+              apiEventId: row.id === existingEvent?.id ? existingEvent?.apiEventId : undefined,
               scheduleType,
               status: 'pending' as ScheduleStatus,
               campus,
@@ -905,7 +950,16 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
       return { events, minutesMismatch }
     },
-    [scheduleCondition, scheduleType, campus, language, selectedDate, getClassroomState],
+    [
+      scheduleCondition,
+      scheduleType,
+      campus,
+      language,
+      selectedDate,
+      getClassroomState,
+      defaultExcludeDates,
+      existingEvent,
+    ],
   )
 
   const handleSave = useCallback(() => {
@@ -914,14 +968,22 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       return
     }
 
-    // Check for duration limit
-    if (isExceedingLimit) {
+    // Generate events (with repeat logic if condition exists)
+    const { events, minutesMismatch } = generateRepeatedEvents(rows)
+    const generatedTotal = events.reduce((sum, event) => sum + (event.duration || 0), 0)
+
+    if (availableMinutes > 0 && generatedTotal > availableMinutes) {
+      setDurationWarningTotal(generatedTotal)
       setShowDurationWarning(true)
       return
     }
 
-    // Generate events (with repeat logic if condition exists)
-    const { events, minutesMismatch } = generateRepeatedEvents(rows)
+    // Check for duration limit (base rows)
+    if (isExceedingLimit) {
+      setDurationWarningTotal(totalDuration)
+      setShowDurationWarning(true)
+      return
+    }
 
     if (minutesMismatch !== 0) {
       setMinutesMismatch(minutesMismatch)
@@ -931,7 +993,17 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
     onSave(events)
     onClose()
-  }, [rows, validateRows, isExceedingLimit, generateRepeatedEvents, onSave, onClose, formatMessage])
+  }, [
+    rows,
+    validateRows,
+    generateRepeatedEvents,
+    availableMinutes,
+    isExceedingLimit,
+    totalDuration,
+    onSave,
+    onClose,
+    formatMessage,
+  ])
 
   const handleClose = useCallback(() => {
     // Save draft before closing
@@ -1327,7 +1399,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       >
         <Typography.Text>
           {formatMessage(scheduleMessages.ArrangeModal.durationWarningMessage, {
-            total: totalDuration,
+            total: durationWarningTotal ?? totalDuration,
             available: availableMinutes,
           })}
         </Typography.Text>
