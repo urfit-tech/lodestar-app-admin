@@ -7,7 +7,12 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { scheduleMessages } from '.'
-import { useClassGroups, useDeleteClassGroup, useMultipleClassGroupsEvents, usePermissionGroupsAsCampuses } from '../../hooks/scheduleManagement'
+import {
+  useClassGroups,
+  useDeleteClassGroup,
+  useMultipleClassGroupsEvents,
+  usePermissionGroupsAsCampuses,
+} from '../../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../../images/icon'
 import { ClassGroup } from '../../types/schedule'
 import { AdminPageTitle } from '../admin'
@@ -24,6 +29,11 @@ const TableWrapper = styled.div`
 `
 
 const StudentListPopover = styled.div`
+  max-height: 200px;
+  overflow-y: auto;
+`
+
+const TimeSlotPopover = styled.div`
   max-height: 200px;
   overflow-y: auto;
 `
@@ -210,9 +220,27 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
   const renderTimeRange = useCallback(
     (classGroupId: string) => {
       const summary = eventsByClassId.get(classGroupId)
-      if (!summary?.timeRange.startTime || !summary?.timeRange.endTime) return '-'
+      const timeSlots = summary?.timeSlots || []
+      if (timeSlots.length === 0) return '-'
+      if (timeSlots.length === 1) {
+        return `${timeSlots[0].startTime}-${timeSlots[0].endTime}`
+      }
 
-      return `${summary.timeRange.startTime}-${summary.timeRange.endTime}`
+      const content = (
+        <TimeSlotPopover>
+          {timeSlots.map((slot, index) => (
+            <div key={index}>
+              {slot.startTime}-{slot.endTime}
+            </div>
+          ))}
+        </TimeSlotPopover>
+      )
+
+      return (
+        <Popover content={content} trigger="hover" placement="bottom">
+          <div style={{ cursor: 'pointer' }}>多時段 ({timeSlots.length})</div>
+        </Popover>
+      )
     },
     [eventsByClassId],
   )
@@ -283,8 +311,8 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
     if (filters.campus) {
       const searchText = filters.campus.toLowerCase()
       result = result.filter(group => {
-        const campusName = group.campusId ? campusMap.get(group.campusId) : ''
-        return campusName?.toLowerCase().includes(searchText)
+        const campusName = group.campusId ? campusMap.get(group.campusId) || '' : ''
+        return campusName.toLowerCase().includes(searchText)
       })
     }
 
@@ -318,10 +346,10 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
           }
         }
 
-        // Check setting person
+        // Check setting person (updated only)
         if (summary.latestEvent) {
-          const { createdBy, createdByEmail } = summary.latestEvent
-          if (createdBy?.toLowerCase().includes(searchText) || createdByEmail?.toLowerCase().includes(searchText)) {
+          const { updatedBy, updatedByEmail } = summary.latestEvent
+          if (updatedBy?.toLowerCase().includes(searchText) || updatedByEmail?.toLowerCase().includes(searchText)) {
             return true
           }
         }
@@ -397,10 +425,10 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
       title: '課程時間',
       key: 'timeRange',
       sorter: (a: ClassGroup, b: ClassGroup) => {
-        const aRange = eventsByClassId.get(a.id)?.timeRange
-        const bRange = eventsByClassId.get(b.id)?.timeRange
-        const aTime = aRange?.startTime ? parseInt(aRange.startTime.replace(':', '')) : 0
-        const bTime = bRange?.startTime ? parseInt(bRange.startTime.replace(':', '')) : 0
+        const aSlots = eventsByClassId.get(a.id)?.timeSlots || []
+        const bSlots = eventsByClassId.get(b.id)?.timeSlots || []
+        const aTime = aSlots[0]?.startTime ? parseInt(aSlots[0].startTime.replace(':', ''), 10) : 0
+        const bTime = bSlots[0]?.startTime ? parseInt(bSlots[0].startTime.replace(':', ''), 10) : 0
         return aTime - bTime
       },
       render: (_: any, record: ClassGroup) => renderTimeRange(record.id),
