@@ -250,7 +250,20 @@ export const MemberCollectionBlock: React.VFC<{
   const { permissions, currentUserRole } = useAuth()
   const { id: appId, enabledModules, settings } = useApp()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
+  const MEMBER_VISIBLE_COLUMNS_STORAGE_KEY = 'lodestar.member.visibleColumnIds'
+  const DEFAULT_VISIBLE_COLUMN_IDS = ['#', 'email', 'createdAt', 'consumption']
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(MEMBER_VISIBLE_COLUMNS_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : DEFAULT_VISIBLE_COLUMN_IDS
+    } catch {
+      return DEFAULT_VISIBLE_COLUMN_IDS
+    }
+  })
+  const handleVisibleColumnIdsChange = (ids: string[]) => {
+    setVisibleColumnIds(ids)
+    localStorage.setItem(MEMBER_VISIBLE_COLUMNS_STORAGE_KEY, JSON.stringify(ids))
+  }
 
   const [sortOrder, setSortOrder] = useState<{
     createdAt: SortOrder
@@ -337,7 +350,7 @@ export const MemberCollectionBlock: React.VFC<{
           <MemberFieldFilter
             allColumns={allColumns}
             visibleColumnIds={visibleColumnIds}
-            setVisibleColumnIds={setVisibleColumnIds}
+            setVisibleColumnIds={handleVisibleColumnIdsChange}
           />
           <MemberImportExportControlPanel
             permissions={permissions}
