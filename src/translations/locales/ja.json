@@ -1739,6 +1739,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "同じ権限グループリスト呼び出しセレクター関数",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "リードコール選択機能",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "リスト回収機能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "リスト削除機能",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "リスト複数回未応答機能",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "すべての業績総表",
   "form.PermissionGroup.SALES_READ": "すべての注文の表示",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "すべての販売記録の表示",

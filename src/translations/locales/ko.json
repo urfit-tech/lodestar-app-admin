@@ -1739,6 +1739,8 @@
   "form.PermissionGroup.SALES_LEAD_SAME_PERMISSION_GROUP_SELECTOR": "동일한 권한 그룹 목록 호출 선택기 함수",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "잠재 고객 선택기 기능",
   "form.PermissionGroup.SALES_MEMBER_LIST_RECYCLE": "목록 회수 기능",
+  "form.PermissionGroup.SALES_MEMBER_LIST_DELETE": "목록 삭제 기능",
+  "form.PermissionGroup.SALES_MEMBER_LIST_MULTIPLE_MISSED": "목록 다중 부재중 기능",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "모든 실적 총괄",
   "form.PermissionGroup.SALES_READ": "모든 주문 보기",
   "form.PermissionGroup.SALES_RECORDS_ADMIN": "모든 판매 기록 보기",
