@@ -1337,6 +1337,14 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
         const updatedByRaw = metadata.updatedBy as string | undefined
         const createdByRawName = createdByRaw && !isUuid(createdByRaw) ? createdByRaw : ''
         const updatedByRawName = updatedByRaw && !isUuid(updatedByRaw) ? updatedByRaw : ''
+        const metadataClassroomIds = Array.isArray(metadata.classroomIds)
+          ? (metadata.classroomIds as string[]).filter(Boolean)
+          : []
+        const metadataClassroomId =
+          (metadata.classroomId as string | undefined) ||
+          (metadataClassroomIds.length > 0 ? metadataClassroomIds[0] : undefined)
+        const resolvedClassroomIds =
+          metadataClassroomIds.length > 0 ? metadataClassroomIds : metadataClassroomId ? [metadataClassroomId] : undefined
 
         const eventData: PersonalScheduleListEvent = {
           id: event.id,
@@ -1348,10 +1356,12 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
           studentEmail: studentInfo?.email,
           orderIds: (metadata.orderIds as string[]) || [],
           teacherId: metadata.teacherId as string | undefined,
+          classroomId: metadataClassroomId,
+          classroomIds: resolvedClassroomIds,
           teacherName: teacherInfo?.name,
           teacherEmail: teacherInfo?.email,
           campus: campusValue,
-          language: (metadata.language as Language) || 'zh-TW',
+          language: (metadata.language as Language) || '中文',
           date: new Date(event.started_at),
           startTime: moment(event.started_at).format('HH:mm'),
           endTime: moment(event.ended_at).format('HH:mm'),
@@ -1359,7 +1369,8 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
             (metadata.duration as number) ||
             Math.round((new Date(event.ended_at).getTime() - new Date(event.started_at).getTime()) / (1000 * 60)),
           material: (metadata.material as string) || event.title || '',
-          needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
+          needsOnlineRoom:
+            typeof metadata.needsOnlineRoom === 'boolean' ? (metadata.needsOnlineRoom as boolean) : false,
           createdBy:
             createdByInfo?.name ||
             updatedByInfo?.name ||
