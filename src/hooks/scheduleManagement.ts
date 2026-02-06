@@ -1303,8 +1303,6 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
   const events = useMemo<PersonalScheduleListEvent[]>(() => {
     if (!eventsData?.event) return []
 
-    console.log('[usePersonalScheduleListEvents] Raw events from GraphQL:', eventsData.event.length)
-
     return eventsData.event
       .filter(event => {
         // Filter by status if specified
@@ -1316,6 +1314,11 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
       .map(event => {
         const metadata = event.metadata || {}
         const publishedAt = event.published_at
+        const campusValue =
+          (metadata.campus as string | undefined) ||
+          (metadata.campusId as string | undefined) ||
+          (metadata.campus_id as string | undefined) ||
+          ''
 
         // Determine status
         let eventStatus: 'pending' | 'pre-scheduled' | 'published' = 'pending'
@@ -1347,7 +1350,7 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
           teacherId: metadata.teacherId as string | undefined,
           teacherName: teacherInfo?.name,
           teacherEmail: teacherInfo?.email,
-          campus: (metadata.campus as string) || '',
+          campus: campusValue,
           language: (metadata.language as Language) || 'zh-TW',
           date: new Date(event.started_at),
           startTime: moment(event.started_at).format('HH:mm'),
@@ -1378,8 +1381,6 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
         return eventData
       })
   }, [eventsData, status, memberMap, isUuid])
-
-  console.log('[usePersonalScheduleListEvents] Final events count:', events.length)
 
   return {
     events,
