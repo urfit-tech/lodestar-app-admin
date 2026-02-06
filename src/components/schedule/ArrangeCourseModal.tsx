@@ -268,6 +268,22 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     [getTeacherCampusIds],
   )
 
+  // Resolve campus for each generated event.
+  // Priority: selected row teacher campus -> existing event campus (edit mode) -> modal campus prop.
+  const resolveCampusForRow = useCallback(
+    (row: CourseRow): string => {
+      if (row.teacherId) {
+        const teacher = selectedTeachers.find(t => t.id === row.teacherId)
+        const teacherCampus = teacher?.campusId || teacher?.campusIds?.[0] || teacher?.campus
+        if (teacherCampus) return teacherCampus
+      }
+
+      if (existingEvent?.campus) return existingEvent.campus
+      return campus || ''
+    },
+    [selectedTeachers, existingEvent, campus],
+  )
+
   // Calculate total duration of all rows
   const totalDuration = useMemo(() => {
     return rows.reduce((sum, row) => sum + row.duration, 0)
@@ -815,7 +831,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
               apiEventId: row.id === existingEvent?.id ? existingEvent?.apiEventId : undefined,
               scheduleType,
               status: 'pending' as ScheduleStatus,
-              campus,
+              campus: resolveCampusForRow(row),
               language,
               date: dateForRow.toDate(),
               startTime: row.startTime.format('HH:mm'),
@@ -902,7 +918,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           events.push({
             scheduleType,
             status: 'pending' as ScheduleStatus,
-            campus,
+            campus: resolveCampusForRow(row),
             language,
             date: dateForRow.toDate(),
             startTime: row.startTime.format('HH:mm'),
@@ -953,12 +969,12 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     [
       scheduleCondition,
       scheduleType,
-      campus,
       language,
       selectedDate,
       getClassroomState,
       defaultExcludeDates,
       existingEvent,
+      resolveCampusForRow,
     ],
   )
 

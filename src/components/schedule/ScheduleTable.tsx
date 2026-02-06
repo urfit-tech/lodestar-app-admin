@@ -61,6 +61,27 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     return permissionCampuses
   }, [permissionCampuses])
 
+  const campusMap = useMemo(() => {
+    return new Map(campuses.map(campus => [campus.id, campus.name]))
+  }, [campuses])
+
+  const getCampusDisplay = useCallback(
+    (campusValue?: string | null) => {
+      if (!campusValue) return '-'
+      return campusMap.get(campusValue) || campusValue
+    },
+    [campusMap],
+  )
+
+  const getCampusSearchText = useCallback(
+    (campusValue?: string | null) => {
+      if (!campusValue) return ''
+      const campusName = campusMap.get(campusValue) || ''
+      return `${campusName} ${campusValue}`.trim().toLowerCase()
+    },
+    [campusMap],
+  )
+
   const events = useMemo(() => {
     // Use API data for personal type (semester/group types are not used in this component)
     let allEvents: ScheduleEvent[] = scheduleType === 'personal' ? apiEvents : []
@@ -69,8 +90,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
     if (filters.campus) {
       const search = filters.campus.toLowerCase()
       allEvents = allEvents.filter(event => {
-        const campusName = campuses.find(c => c.id === event.campus)?.name || ''
-        return campusName.toLowerCase().includes(search)
+        return getCampusSearchText(event.campus).includes(search)
       })
     }
 
@@ -114,7 +134,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
 
     // Sort by date (most recent first) without mutating source
     return [...allEvents].sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
-  }, [scheduleType, activeTab, filters, apiEvents, campuses])
+  }, [scheduleType, filters, apiEvents, getCampusSearchText])
 
   const loading = scheduleType === 'personal' ? apiLoading : false
 
@@ -210,7 +230,7 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({ scheduleType, onEdit, onD
       title: formatMessage(scheduleMessages.ScheduleTable.campus),
       dataIndex: 'campus',
       key: 'campus',
-      render: campusId => campuses.find(c => c.id === campusId)?.name || campusId,
+      render: campusId => getCampusDisplay(campusId),
       ...getColumnSearchProps('campus'),
     },
     {
