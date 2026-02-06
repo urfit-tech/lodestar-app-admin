@@ -6,6 +6,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { getDefaultResourceEventsFethcer } from '../helpers/eventHelper/eventFetchers'
 import { getActiveEvents, getAvailableEvents } from '../components/event/eventAdaptor'
 import { GeneralEventApi } from '../components/event/events.type'
+import hasura from '../hasura'
 import {
   ClassGroup,
   CourseRowData,
@@ -15,99 +16,14 @@ import {
   ScheduleType,
 } from '../types/schedule'
 
-// Type definitions for order_log / order_products GraphQL queries
-interface OrderProductOptions {
-  id: string
-  price: number
-  title: string
-  amount: number
-  options: {
-    product: string
-    language: string
-    class_mode: string
-    class_type: string
-    program_type: string
-    location_type: string
-    total_sessions: {
-      max: number
-      min: number
-    }
-    weekly_frequency: {
-      max: number
-      min: number
-    }
-  }
-  quantity: number
-  productId: string
-  currencyId: string
-  isContract: boolean
-  totalPrice: number
-  currencyPrice: number
-}
-
-interface OrderProductData {
-  id: string
-  name: string
-  price: number
-  options: OrderProductOptions
-  started_at: string | null
-  ended_at: string | null
-}
-
-interface OrderLogData {
-  id: string
-  status: string
-  member_id: string
-  created_at: string
-  updated_at: string | null
-  expired_at?: string | null
-  options?: any
-  order_products: OrderProductData[]
-  member?: {
-    id: string
-    name: string
-    email: string
-    picture_url?: string | null
-  }
+type ClassGroupRow = hasura.GetClassGroupsForSchedule['class_group'][number]
+type ClassGroupRowLike = Omit<ClassGroupRow, 'class_group_orders'> & {
+  class_group_orders?: ClassGroupRow['class_group_orders']
 }
 
 // =============================================================================
 // Teacher Management from Members (Real Data)
 // =============================================================================
-
-// Type definitions for teacher queries
-interface PermissionGroupData {
-  permission_group: Array<{
-    id: string
-    name: string
-  }>
-}
-
-interface TeacherMemberItem {
-  member: {
-    id: string
-    name: string | null
-    email: string
-    picture_url: string | null
-    star: number
-    member_tags: Array<{ tag_name: string }>
-    member_specialities: Array<{ tag_name: string }>
-    member_properties: Array<{
-      property: { id: string; name: string }
-      value: string
-    }>
-    member_permission_groups: Array<{
-      permission_group: {
-        id: string
-        name: string
-      }
-    }>
-  }
-}
-
-interface TeacherMemberData {
-  member_category: TeacherMemberItem[]
-}
 
 interface TeacherFromMember {
   id: string
@@ -178,7 +94,10 @@ export const GET_TEACHERS_FROM_MEMBERS = gql`
  * Hook to get permission groups (as campus options)
  */
 export const usePermissionGroupsAsCampuses = () => {
-  const { data, loading, error, refetch } = useQuery<PermissionGroupData>(GET_PERMISSION_GROUPS_FOR_SCHEDULE)
+  const { data, loading, error, refetch } = useQuery<
+    hasura.GetPermissionGroupsForSchedule,
+    hasura.GetPermissionGroupsForScheduleVariables
+  >(GET_PERMISSION_GROUPS_FOR_SCHEDULE)
 
   const campuses = useMemo(() => {
     return (
@@ -211,7 +130,10 @@ export const useTeachersFromMembers = (
   // 如果要求有語言才查詢，且沒有語言，則跳過查詢
   const shouldSkip = requireLanguage && !hasLanguageFilter
 
-  const { data, loading, error, refetch } = useQuery<TeacherMemberData>(GET_TEACHERS_FROM_MEMBERS, {
+  const { data, loading, error, refetch } = useQuery<
+    hasura.GetTeachersFromMembers,
+    hasura.GetTeachersFromMembersVariables
+  >(GET_TEACHERS_FROM_MEMBERS, {
     skip: shouldSkip,
   })
 
@@ -264,7 +186,7 @@ export const useTeachersFromMembers = (
         id: member.id,
         name: member.name || '',
         email: member.email,
-        pictureUrl: member.picture_url,
+        pictureUrl: member.picture_url ?? null,
         campus: campusNames[0] || '',
         campusId: campusIds[0] || '',
         campusIds,
@@ -519,57 +441,20 @@ export const GET_ASSIGNED_ORDER_IDS = gql`
   }
 `
 
-// Type definitions for class group GraphQL responses
-interface ClassGroupData {
-  id: string
-  app_id: string
-  name: string
-  type: 'semester' | 'group'
-  campus_id: string | null
-  language: string
-  min_students: number
-  max_students: number
-  materials: string[]
-  status: 'draft' | 'scheduled' | 'published' | 'archived'
-  created_at: string
-  updated_at: string
-  class_group_orders?: Array<{ order_id: string }>
-}
-
-interface GetClassGroupsData {
-  class_group: ClassGroupData[]
-}
-
-interface GetClassGroupByIdData {
-  class_group: ClassGroupData[]
-}
-
-interface InsertClassGroupData {
-  insert_class_group_one: ClassGroupData
-}
-
-interface UpdateClassGroupData {
-  update_class_group_by_pk: ClassGroupData
-}
-
-interface DeleteClassGroupData {
-  update_class_group_by_pk: { id: string; deleted_at: string }
-}
-
 // Helper function to transform GraphQL data to ClassGroup type
-const transformClassGroupData = (data: ClassGroupData): ClassGroup => ({
+const transformClassGroupData = (data: ClassGroupRowLike): ClassGroup => ({
   id: data.id,
   appId: data.app_id,
   name: data.name,
-  type: data.type,
+  type: data.type as 'semester' | 'group',
   campusId: data.campus_id,
   language: data.language as Language,
   minStudents: data.min_students,
   maxStudents: data.max_students,
-  materials: data.materials || [],
-  status: data.status,
-  createdAt: new Date(data.created_at),
-  updatedAt: new Date(data.updated_at),
+  materials: (data.materials as string[] | null) || [],
+  status: data.status as ClassGroup['status'],
+  createdAt: new Date(data.created_at || 0),
+  updatedAt: new Date(data.updated_at || 0),
   orderIds: data.class_group_orders?.map(o => o.order_id) || [],
 })
 
@@ -579,7 +464,10 @@ const transformClassGroupData = (data: ClassGroupData): ClassGroup => ({
 export const useClassGroups = (type?: 'semester' | 'group') => {
   const { id: appId } = useApp()
 
-  const { data, loading, error, refetch } = useQuery<GetClassGroupsData>(GET_CLASS_GROUPS_FOR_SCHEDULE, {
+  const { data, loading, error, refetch } = useQuery<
+    hasura.GetClassGroupsForSchedule,
+    hasura.GetClassGroupsForScheduleVariables
+  >(GET_CLASS_GROUPS_FOR_SCHEDULE, {
     variables: {
       type: type || undefined,
       appId,
@@ -600,11 +488,14 @@ export const useClassGroups = (type?: 'semester' | 'group') => {
  * Hook to get class group by ID
  */
 export const useClassGroup = (classGroupId: string | undefined) => {
-  const { data, loading, error, refetch } = useQuery<GetClassGroupByIdData>(GET_CLASS_GROUP_BY_ID, {
-    variables: { id: classGroupId },
-    skip: !classGroupId,
-    fetchPolicy: 'cache-and-network',
-  })
+  const { data, loading, error, refetch } = useQuery<hasura.GetClassGroupById, hasura.GetClassGroupByIdVariables>(
+    GET_CLASS_GROUP_BY_ID,
+    {
+      variables: { id: classGroupId },
+      skip: !classGroupId,
+      fetchPolicy: 'cache-and-network',
+    },
+  )
 
   const classGroup = useMemo(() => {
     if (!data?.class_group?.length) return undefined
@@ -647,7 +538,9 @@ export const useHolidays = () => {
  * Hook to update class group
  */
 export const useUpdateClassGroup = () => {
-  const [updateMutation, { loading }] = useMutation<UpdateClassGroupData>(UPDATE_CLASS_GROUP)
+  const [updateMutation, { loading }] = useMutation<hasura.UpdateClassGroup, hasura.UpdateClassGroupVariables>(
+    UPDATE_CLASS_GROUP,
+  )
 
   const updateClassGroup = useCallback(
     async (id: string, updates: Partial<ClassGroup>): Promise<ClassGroup | undefined> => {
@@ -683,7 +576,9 @@ export const useUpdateClassGroup = () => {
 export const useCreateClassGroup = () => {
   const { id: appId } = useApp()
 
-  const [insertMutation, { loading }] = useMutation<InsertClassGroupData>(INSERT_CLASS_GROUP)
+  const [insertMutation, { loading }] = useMutation<hasura.InsertClassGroup, hasura.InsertClassGroupVariables>(
+    INSERT_CLASS_GROUP,
+  )
 
   const createClassGroup = useCallback(
     async (group: Omit<ClassGroup, 'id' | 'createdAt' | 'updatedAt' | 'appId'>): Promise<ClassGroup> => {
@@ -720,7 +615,9 @@ export const useCreateClassGroup = () => {
  * Hook to delete (soft delete) a class group
  */
 export const useDeleteClassGroup = () => {
-  const [deleteMutation, { loading }] = useMutation<DeleteClassGroupData>(DELETE_CLASS_GROUP)
+  const [deleteMutation, { loading }] = useMutation<hasura.DeleteClassGroup, hasura.DeleteClassGroupVariables>(
+    DELETE_CLASS_GROUP,
+  )
 
   const deleteClassGroup = useCallback(
     async (id: string): Promise<boolean> => {
@@ -737,28 +634,18 @@ export const useDeleteClassGroup = () => {
   return { deleteClassGroup, loading }
 }
 
-// Type definitions for order queries (uses OrderLogData defined above)
-interface GetOrdersByIdsData {
-  order_log: OrderLogData[]
-}
-
-interface GetAvailableOrdersData {
-  order_log: OrderLogData[]
-}
-
-interface GetAssignedOrderIdsData {
-  class_group_order: Array<{ order_id: string }>
-}
-
 /**
  * Hook to get orders by their IDs (for orders already in a class group)
  */
 export const useOrdersByIds = (orderIds: string[]) => {
-  const { data, loading, error, refetch } = useQuery<GetOrdersByIdsData>(GET_ORDERS_BY_IDS, {
-    variables: { orderIds },
-    skip: orderIds.length === 0,
-    fetchPolicy: 'cache-and-network',
-  })
+  const { data, loading, error, refetch } = useQuery<hasura.GetOrdersByIds, hasura.GetOrdersByIdsVariables>(
+    GET_ORDERS_BY_IDS,
+    {
+      variables: { orderIds },
+      skip: orderIds.length === 0,
+      fetchPolicy: 'cache-and-network',
+    },
+  )
 
   const orders = useMemo(() => {
     return data?.order_log || []
@@ -784,17 +671,24 @@ export const useAvailableOrdersForClass = (
   const classTypeLabel = classType === 'semester' ? '團體班' : '小組班'
 
   // First get all assigned order IDs
-  const { data: assignedData } = useQuery<GetAssignedOrderIdsData>(GET_ASSIGNED_ORDER_IDS, {
+  const { data: assignedData } = useQuery<
+    hasura.GetAssignedOrderIds,
+    hasura.GetAssignedOrderIdsVariables
+  >(GET_ASSIGNED_ORDER_IDS, {
     fetchPolicy: 'cache-and-network',
   })
 
   // Combine excluded IDs with already assigned IDs
   const allExcludedIds = useMemo(() => {
     const assignedIds = assignedData?.class_group_order?.map(o => o.order_id) || []
-    return [...new Set([...excludeOrderIds, ...assignedIds])]
+    const combined = [...excludeOrderIds, ...assignedIds]
+    return combined.filter((value, index, self) => self.indexOf(value) === index)
   }, [assignedData, excludeOrderIds])
 
-  const { data, loading, error, refetch } = useQuery<GetAvailableOrdersData>(GET_AVAILABLE_ORDERS_FOR_CLASS, {
+  const { data, loading, error, refetch } = useQuery<
+    hasura.GetAvailableOrdersForClass,
+    hasura.GetAvailableOrdersForClassVariables
+  >(GET_AVAILABLE_ORDERS_FOR_CLASS, {
     variables: {
       appId,
       classType: classTypeLabel,
@@ -816,7 +710,10 @@ export const useAvailableOrdersForClass = (
  * Hook to add an order to a class group
  */
 export const useAddOrderToClassGroup = () => {
-  const [insertMutation, { loading }] = useMutation(INSERT_CLASS_GROUP_ORDER)
+  const [insertMutation, { loading }] = useMutation<
+    hasura.InsertClassGroupOrder,
+    hasura.InsertClassGroupOrderVariables
+  >(INSERT_CLASS_GROUP_ORDER)
 
   const addOrderToClassGroup = useCallback(
     async (classGroupId: string, orderId: string): Promise<boolean> => {
@@ -846,7 +743,10 @@ export const useAddOrderToClassGroup = () => {
  * Hook to remove an order from a class group
  */
 export const useRemoveOrderFromClassGroup = () => {
-  const [deleteMutation, { loading }] = useMutation(DELETE_CLASS_GROUP_ORDER)
+  const [deleteMutation, { loading }] = useMutation<
+    hasura.DeleteClassGroupOrder,
+    hasura.DeleteClassGroupOrderVariables
+  >(DELETE_CLASS_GROUP_ORDER)
 
   const removeOrderFromClassGroup = useCallback(
     async (classGroupId: string, orderId: string): Promise<boolean> => {
@@ -1325,28 +1225,6 @@ const GET_MEMBERS_BY_IDS = gql`
   }
 `
 
-interface PersonalScheduleEventsData {
-  event: Array<{
-    id: string
-    title: string | null
-    description: string | null
-    started_at: string
-    ended_at: string
-    metadata: Record<string, any> | null
-    published_at: string | null
-    created_at: string
-    updated_at: string
-  }>
-}
-
-interface MembersData {
-  member: Array<{
-    id: string
-    name: string
-    email: string
-  }>
-}
-
 /**
  * Hook to get all personal schedule events for list view
  * Fetches real events from GraphQL event table filtered by scheduleType === 'personal'
@@ -1375,16 +1253,19 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
     loading: eventsLoading,
     error: eventsError,
     refetch,
-  } = useQuery<PersonalScheduleEventsData>(GET_PERSONAL_SCHEDULE_EVENTS, {
-    variables: {
-      appId,
-      startDate,
-      endDate,
-      scheduleTypeFilter: { scheduleType: 'personal' },
+  } = useQuery<hasura.GetPersonalScheduleEvents, hasura.GetPersonalScheduleEventsVariables>(
+    GET_PERSONAL_SCHEDULE_EVENTS,
+    {
+      variables: {
+        appId,
+        startDate,
+        endDate,
+        scheduleTypeFilter: { scheduleType: 'personal' },
+      },
+      skip: !appId,
+      fetchPolicy: 'network-only',
     },
-    skip: !appId,
-    fetchPolicy: 'network-only',
-  })
+  )
 
   // Extract unique member IDs from events
   const memberIds = useMemo(() => {
@@ -1401,10 +1282,13 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
   }, [eventsData])
 
   // Query member names
-  const { data: membersData } = useQuery<MembersData>(GET_MEMBERS_BY_IDS, {
-    variables: { memberIds },
-    skip: memberIds.length === 0,
-  })
+  const { data: membersData } = useQuery<hasura.GetMembersByIds, hasura.GetMembersByIdsVariables>(
+    GET_MEMBERS_BY_IDS,
+    {
+      variables: { memberIds },
+      skip: memberIds.length === 0,
+    },
+  )
 
   // Build member map for quick lookup
   const memberMap = useMemo(() => {
@@ -1493,7 +1377,7 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
 
         return eventData
       })
-  }, [eventsData, status, memberMap])
+  }, [eventsData, status, memberMap, isUuid])
 
   console.log('[usePersonalScheduleListEvents] Final events count:', events.length)
 
@@ -1508,19 +1392,6 @@ export const usePersonalScheduleListEvents = (status?: 'published' | 'pre-schedu
 // =============================================================================
 // Schedule Expiry Settings Hook
 // =============================================================================
-
-interface ScheduleExpirySetting {
-  id: string
-  type: string
-  language: string
-  class_count: number
-  valid_days: number
-  status: string
-}
-
-interface GetScheduleValidityRulesData {
-  schedule_validity_rule: ScheduleExpirySetting[]
-}
 
 const GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE = gql`
   query GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE {
@@ -1539,7 +1410,10 @@ const GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE = gql`
  * Hook to get schedule expiry settings and calculate expiry dates for orders
  */
 export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal') => {
-  const { data, loading, error } = useQuery<GetScheduleValidityRulesData>(GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE)
+  const { data, loading, error } = useQuery<
+    hasura.GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE,
+    hasura.GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULEVariables
+  >(GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE)
 
   // Map type to DB value
   const dbType = scheduleType === 'personal' ? 'individual' : scheduleType === 'group' ? 'group' : 'individual'
@@ -1621,31 +1495,20 @@ const GET_CLASS_GROUP_EVENTS = gql`
   }
 `
 
-interface ClassGroupEventsData {
-  event: Array<{
-    id: string
-    title: string | null
-    description: string | null
-    started_at: string
-    ended_at: string
-    metadata: Record<string, any> | null
-    published_at: string | null
-    created_at: string
-    updated_at: string
-  }>
-}
-
 /**
  * Hook to get events for a specific class group (semester/group class)
  * Fetches events from GraphQL where metadata.classId matches the provided classId
  * @param classId - The class group ID to fetch events for
  */
 export const useClassGroupEvents = (classId: string | undefined) => {
-  const { data, loading, error, refetch } = useQuery<ClassGroupEventsData>(GET_CLASS_GROUP_EVENTS, {
-    variables: { classId: classId || '' },
-    skip: !classId,
-    fetchPolicy: 'cache-and-network',
-  })
+  const { data, loading, error, refetch } = useQuery<hasura.GetClassGroupEvents, hasura.GetClassGroupEventsVariables>(
+    GET_CLASS_GROUP_EVENTS,
+    {
+      variables: { classId: classId || '' },
+      skip: !classId,
+      fetchPolicy: 'cache-and-network',
+    },
+  )
 
   const events = useMemo<ScheduleEvent[]>(() => {
     if (!data?.event || !classId) return []
@@ -1711,16 +1574,11 @@ const PUBLISH_EVENT = gql`
   }
 `
 
-interface PublishEventData {
-  update_event_by_pk: {
-    id: string
-    published_at: string
-  } | null
-}
-
 export const usePublishEvent = () => {
   const { currentMemberId, currentMember } = useAuth()
-  const [publishEventMutation, { loading }] = useMutation<PublishEventData>(PUBLISH_EVENT)
+  const [publishEventMutation, { loading }] = useMutation<hasura.PublishEvent, hasura.PublishEventVariables>(
+    PUBLISH_EVENT,
+  )
 
   const publishEvent = useCallback(
     async (eventId: string, publishedAt: Date = new Date()) => {
@@ -1778,19 +1636,6 @@ const GET_EVENTS_BY_SCHEDULE_TYPE = gql`
   }
 `
 
-interface EventsByScheduleTypeData {
-  event: Array<{
-    id: string
-    title: string | null
-    started_at: string
-    ended_at: string
-    metadata: Record<string, any> | null
-    published_at: string | null
-    created_at: string
-    updated_at: string
-  }>
-}
-
 export interface ClassGroupEventsSummary {
   classId: string
   latestEvent: {
@@ -1834,13 +1679,13 @@ export const useMultipleClassGroupsEvents = (
   scheduleType: 'semester' | 'group',
   classIds?: string[],
 ) => {
-  const { data: eventsData, loading: eventsLoading, error: eventsError, refetch } = useQuery<EventsByScheduleTypeData>(
-    GET_EVENTS_BY_SCHEDULE_TYPE,
-    {
-      variables: { scheduleType },
-      fetchPolicy: 'cache-and-network',
-    },
-  )
+  const { data: eventsData, loading: eventsLoading, error: eventsError, refetch } = useQuery<
+    hasura.GetEventsByScheduleType,
+    hasura.GetEventsByScheduleTypeVariables
+  >(GET_EVENTS_BY_SCHEDULE_TYPE, {
+    variables: { scheduleType },
+    fetchPolicy: 'cache-and-network',
+  })
 
   // Collect all unique member IDs from events
   const memberIds = useMemo(() => {
@@ -1859,10 +1704,13 @@ export const useMultipleClassGroupsEvents = (
   }, [eventsData])
 
   // Query member names
-  const { data: membersData, loading: membersLoading } = useQuery<MembersData>(GET_MEMBERS_BY_IDS, {
-    variables: { memberIds },
-    skip: memberIds.length === 0,
-  })
+  const { data: membersData, loading: membersLoading } = useQuery<hasura.GetMembersByIds, hasura.GetMembersByIdsVariables>(
+    GET_MEMBERS_BY_IDS,
+    {
+      variables: { memberIds },
+      skip: memberIds.length === 0,
+    },
+  )
 
   // Build member map for quick lookup
   const memberMap = useMemo(() => {
@@ -2054,20 +1902,6 @@ const DELETE_SCHEDULE_TEMPLATE = gql`
   }
 `
 
-interface ScheduleTemplateData {
-  schedule_template: Array<{
-    id: string
-    app_id: string
-    member_id: string
-    name: string
-    language: string
-    rrule?: string
-    course_rows: CourseRowData[]
-    created_at: string
-    updated_at: string
-  }>
-}
-
 /**
  * Hook to get schedule templates for the current user
  * @param language - Filter by language
@@ -2076,10 +1910,13 @@ export const useScheduleTemplates = (language?: string) => {
   const { id: appId } = useApp()
   const { currentMemberId } = useAuth()
 
-  const { data, loading, error, refetch } = useQuery<ScheduleTemplateData>(GET_SCHEDULE_TEMPLATES, {
+  const { data, loading, error, refetch } = useQuery<
+    hasura.GetScheduleTemplates,
+    hasura.GetScheduleTemplatesVariables
+  >(GET_SCHEDULE_TEMPLATES, {
     variables: {
       appId,
-      memberId: currentMemberId,
+      memberId: currentMemberId || '',
       language: language || undefined,
     },
     skip: !appId || !currentMemberId,
@@ -2094,8 +1931,8 @@ export const useScheduleTemplates = (language?: string) => {
       memberId: t.member_id,
       name: t.name,
       language: t.language as Language,
-      rrule: t.rrule,
-      courseRows: t.course_rows,
+      rrule: t.rrule || undefined,
+      courseRows: (t.course_rows as CourseRowData[]) || [],
       createdAt: new Date(t.created_at),
       updatedAt: new Date(t.updated_at),
     }))
@@ -2124,7 +1961,9 @@ const generateRruleFromRows = (rows: CourseRowData[]): string => {
     7: 'SU', // ISO weekday 7 = Sunday
   }
 
-  const uniqueWeekdays = [...new Set(rows.map(r => r.weekday))]
+  const uniqueWeekdays = rows
+    .map(r => r.weekday)
+    .filter((value, index, self) => self.indexOf(value) === index)
   const bydayValues = uniqueWeekdays
     .map(w => weekdayToRruleByday[w % 7] || weekdayToRruleByday[w])
     .filter(Boolean)
@@ -2139,7 +1978,10 @@ const generateRruleFromRows = (rows: CourseRowData[]): string => {
  */
 export const useSaveScheduleTemplate = () => {
   const { currentMemberId } = useAuth()
-  const [insertTemplate, { loading, error }] = useMutation(INSERT_SCHEDULE_TEMPLATE)
+  const [insertTemplate, { loading, error }] = useMutation<
+    hasura.InsertScheduleTemplate,
+    hasura.InsertScheduleTemplateVariables
+  >(INSERT_SCHEDULE_TEMPLATE)
 
   const saveTemplate = useCallback(
     async (name: string, language: string, courseRows: CourseRowData[], rrule?: string) => {
@@ -2176,7 +2018,10 @@ export const useSaveScheduleTemplate = () => {
  * Hook to delete a schedule template (soft delete)
  */
 export const useDeleteScheduleTemplate = () => {
-  const [deleteTemplate, { loading, error }] = useMutation(DELETE_SCHEDULE_TEMPLATE)
+  const [deleteTemplate, { loading, error }] = useMutation<
+    hasura.DeleteScheduleTemplate,
+    hasura.DeleteScheduleTemplateVariables
+  >(DELETE_SCHEDULE_TEMPLATE)
 
   const remove = useCallback(
     async (id: string) => {
