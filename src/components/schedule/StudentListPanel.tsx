@@ -211,6 +211,76 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
   }, [uniqueStudentCount, maxStudents])
 
   const isGroup = scheduleType === 'group'
+  const groupEmailColumns: ColumnsType<StudentOrderRow> = isGroup
+    ? [
+        {
+          title: formatMessage(scheduleMessages.StudentList.email),
+          key: 'email',
+          dataIndex: 'email',
+          width: 180,
+          ellipsis: true,
+          render: (email: string) => (
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {email || '-'}
+            </Typography.Text>
+          ),
+        },
+      ]
+    : []
+
+  const groupDetailColumns: ColumnsType<StudentOrderRow> = isGroup
+    ? [
+        {
+          title: formatMessage(scheduleMessages.StudentList.lastClassDate),
+          key: 'lastClassDate',
+          dataIndex: 'lastClassDate',
+          width: 120,
+          sorter: (a: StudentOrderRow, b: StudentOrderRow) =>
+            (a.lastClassDate?.getTime() || 0) - (b.lastClassDate?.getTime() || 0),
+          defaultSortOrder: 'descend' as const,
+          render: (date: Date | undefined) => (date ? dayjs(date).format('YYYY-MM-DD') : '-'),
+        },
+        {
+          title: formatMessage(scheduleMessages.StudentList.availableMinutes),
+          key: 'availableMinutes',
+          dataIndex: 'availableMinutes',
+          width: 120,
+          render: (minutes: number | undefined) => (minutes ? `${minutes}` : '-'),
+        },
+        {
+          title: formatMessage(scheduleMessages.StudentList.expiresAt),
+          key: 'expiresAt',
+          dataIndex: 'expiresAt',
+          width: 120,
+          sorter: (a: StudentOrderRow, b: StudentOrderRow) =>
+            (a.expiresAt?.getTime() || 0) - (b.expiresAt?.getTime() || 0),
+          render: (date: Date | null | undefined) => (date ? dayjs(date).format('YYYY-MM-DD') : '-'),
+        },
+      ]
+    : []
+
+  const actionColumns: ColumnsType<StudentOrderRow> = classGroupId
+    ? [
+        {
+          title: '',
+          key: 'action',
+          width: 50,
+          render: (_: any, record: StudentOrderRow) => (
+            <Popconfirm
+              title="確定要移除嗎？"
+              onConfirm={() => handleRemoveStudent(record.orderId)}
+              okText="確定"
+              cancelText="取消"
+              overlayInnerStyle={{ padding: 8 }}
+              overlayStyle={{ padding: 8 }}
+            >
+              <Button type="text" size="small" danger icon={<DeleteOutlined />} loading={removeLoading} />
+            </Popconfirm>
+          ),
+        },
+      ]
+    : []
+
   const columns: ColumnsType<StudentOrderRow> = [
     {
       title: formatMessage(scheduleMessages.StudentList.name),
@@ -230,79 +300,15 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         </div>
       ),
     },
-    ...(isGroup
-      ? [
-          {
-            title: formatMessage(scheduleMessages.StudentList.email),
-            key: 'email',
-            dataIndex: 'email',
-            width: 180,
-            ellipsis: true,
-            render: (email: string) => (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {email || '-'}
-              </Typography.Text>
-            ),
-          },
-        ]
-      : []),
+    ...groupEmailColumns,
     {
       title: formatMessage(scheduleMessages.StudentList.productName),
       key: 'productName',
       dataIndex: 'productName',
       ellipsis: true,
     },
-    ...(isGroup
-      ? [
-          {
-            title: formatMessage(scheduleMessages.StudentList.lastClassDate),
-            key: 'lastClassDate',
-            dataIndex: 'lastClassDate',
-            width: 120,
-            sorter: (a: StudentOrderRow, b: StudentOrderRow) =>
-              (a.lastClassDate?.getTime() || 0) - (b.lastClassDate?.getTime() || 0),
-            defaultSortOrder: 'descend',
-            render: (date: Date | undefined) => (date ? dayjs(date).format('YYYY-MM-DD') : '-'),
-          },
-          {
-            title: formatMessage(scheduleMessages.StudentList.availableMinutes),
-            key: 'availableMinutes',
-            dataIndex: 'availableMinutes',
-            width: 120,
-            render: (minutes: number | undefined) => (minutes ? `${minutes}` : '-'),
-          },
-          {
-            title: formatMessage(scheduleMessages.StudentList.expiresAt),
-            key: 'expiresAt',
-            dataIndex: 'expiresAt',
-            width: 120,
-            sorter: (a: StudentOrderRow, b: StudentOrderRow) =>
-              (a.expiresAt?.getTime() || 0) - (b.expiresAt?.getTime() || 0),
-            render: (date: Date | null | undefined) => (date ? dayjs(date).format('YYYY-MM-DD') : '-'),
-          },
-        ]
-      : []),
-    ...(classGroupId
-      ? [
-          {
-            title: '',
-            key: 'action',
-            width: 50,
-            render: (_: any, record: StudentOrderRow) => (
-              <Popconfirm
-                title="確定要移除嗎？"
-                onConfirm={() => handleRemoveStudent(record.orderId)}
-                okText="確定"
-                cancelText="取消"
-                overlayInnerStyle={{ padding: 8 }}
-                overlayStyle={{ padding: 8 }}
-              >
-                <Button type="text" size="small" danger icon={<DeleteOutlined />} loading={removeLoading} />
-              </Popconfirm>
-            ),
-          },
-        ]
-      : []),
+    ...groupDetailColumns,
+    ...actionColumns,
   ]
 
   const handleOrdersAdded = () => {
@@ -381,7 +387,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           scheduleType={scheduleType}
           language={language}
           existingOrderIds={orderIds}
-          campusId={campusId}
+          campusId={campusId ?? undefined}
           onClose={() => setAddModalVisible(false)}
           onOrdersAdded={handleOrdersAdded}
         />

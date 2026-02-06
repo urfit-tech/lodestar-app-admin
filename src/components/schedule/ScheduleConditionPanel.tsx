@@ -3,7 +3,6 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useHolidays } from '../../hooks/scheduleManagement'
 import { Order, ScheduleCondition } from '../../types/schedule'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
@@ -46,6 +45,7 @@ interface ScheduleConditionPanelProps {
   hideMinutesOption?: boolean
   expiryDateByLanguage?: Record<string, Date | null>
   minutesLimitMode?: 'sum' | 'minPerStudent'
+  minutesLimitOverride?: number
   endDateLimitMode?: 'latest' | 'earliest'
   disabled?: boolean // Explicitly control disabled state (defaults to selectedOrders.length === 0)
 }
@@ -57,11 +57,18 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   hideMinutesOption = false,
   expiryDateByLanguage = {},
   minutesLimitMode = 'sum',
+  minutesLimitOverride,
   endDateLimitMode = 'latest',
   disabled,
 }) => {
   const { formatMessage } = useIntl()
-  const { holidays } = useHolidays()
+
+  const normalizedMinutesLimitOverride = useMemo(() => {
+    if (typeof minutesLimitOverride !== 'number') {
+      return undefined
+    }
+    return Math.max(0, minutesLimitOverride)
+  }, [minutesLimitOverride])
 
   // Calculate limits based on selected orders and language expiry settings
   const limits = useMemo(() => {
@@ -89,7 +96,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
       return {
         maxStartDate: defaultMaxDate,
         maxEndDate: calculateMaxEndDateFromLanguage(),
-        maxMinutes: 0,
+        maxMinutes: normalizedMinutesLimitOverride ?? 0,
         earliestOrderDate: moment(),
       }
     }
@@ -156,13 +163,20 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
     return {
       maxStartDate: earliestOrderDate.clone().add(180, 'day'),
       maxEndDate,
-      maxMinutes: totalMinutes,
+      maxMinutes: normalizedMinutesLimitOverride ?? totalMinutes,
       earliestOrderDate,
     }
-  }, [selectedOrders, expiryDateByLanguage, minutesLimitMode, endDateLimitMode])
+  }, [selectedOrders, expiryDateByLanguage, minutesLimitMode, normalizedMinutesLimitOverride, endDateLimitMode])
 
   // Mode: endDate or totalLessons
-  const [mode, setMode] = React.useState<'endDate' | 'totalLessons'>('endDate')
+  const [mode, setMode] = React.useState<'endDate' | 'totalLessons'>(() =>
+    condition.totalMinutes !== undefined ? 'totalLessons' : 'endDate',
+  )
+
+  React.useEffect(() => {
+    const nextMode = condition.totalMinutes !== undefined ? 'totalLessons' : 'endDate'
+    setMode(prevMode => (prevMode === nextMode ? prevMode : nextMode))
+  }, [condition.totalMinutes, condition.endDate])
 
   // Calculate max lessons (1 lesson = 50 minutes)
   const maxLessons = Math.floor(limits.maxMinutes / 50)
@@ -189,10 +203,14 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   )
 
   const handleTotalLessonsChange = useCallback(
-    (value: number | null) => {
-      if (value !== null && value >= 0) {
+    (value: number | string | null | undefined) => {
+      if (typeof value === 'number' && value >= 0) {
         // Convert lessons to minutes for storage (1 lesson = 50 minutes)
         onConditionChange({ totalMinutes: value * 50, endDate: undefined })
+        return
+      }
+      if (value === null || value === undefined || value === '') {
+        onConditionChange({ totalMinutes: undefined })
       }
     },
     [onConditionChange],
@@ -263,7 +281,6 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
           disabledDate={date => date.isBefore(moment(), 'day') || date.isAfter(limits.maxStartDate, 'day')}
           disabled={isDisabled}
           style={{ width: '100%' }}
-          status={!isStartDateValid ? 'error' : undefined}
         />
         <HelpText type="secondary">{formatMessage(scheduleMessages.ScheduleCondition.startDateHint)}</HelpText>
         {!isStartDateValid && (
@@ -332,15 +349,17 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
               </Radio>
               {mode === 'totalLessons' && (
                 <div style={{ marginLeft: 24 }}>
-                  <InputNumber
-                    value={condition.totalMinutes ? Math.floor(condition.totalMinutes / 50) : undefined}
-                    onChange={handleTotalLessonsChange}
-                    min={0}
-                    max={maxLessons}
-                    disabled={isDisabled}
-                    style={{ width: '100%' }}
-                    addonAfter="堂"
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <InputNumber
+                      value={condition.totalMinutes ? Math.floor(condition.totalMinutes / 50) : undefined}
+                      onChange={handleTotalLessonsChange}
+                      min={0}
+                      max={maxLessons}
+                      disabled={isDisabled}
+                      style={{ flex: 1 }}
+                    />
+                    <span>堂</span>
+                  </div>
                   <HelpText type="secondary">
                     {formatMessage(scheduleMessages.ScheduleCondition.scheduledLessonsLimit, {
                       limit: maxLessons,

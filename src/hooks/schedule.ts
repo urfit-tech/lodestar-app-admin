@@ -71,7 +71,6 @@ export const useMemberForSchedule = (
         order_log(
           where: {
             member_id: { _eq: $memberId }
-            status: { _eq: "SUCCESS" }
           },
           order_by: { created_at: desc }
         ) {
@@ -130,19 +129,49 @@ export const useMemberForSchedule = (
 
     return pipe(
       chain((orderLog: (typeof data.order_log)[number]) => {
+        const getRawProductOptions = (product: (typeof orderLog.order_products)[number]) =>
+          ((product.options as any) || {}) as Record<string, any>
+
+        const getProductOptions = (product: (typeof orderLog.order_products)[number]) =>
+          (getRawProductOptions(product).options || {}) as Record<string, any>
+
+        const getClassType = (product: (typeof orderLog.order_products)[number]) => {
+          const rawOptions = getRawProductOptions(product)
+          const productOptions = getProductOptions(product)
+          return rawOptions.class_type || productOptions.class_type || ''
+        }
+
+        const getLanguage = (product: (typeof orderLog.order_products)[number]) => {
+          const rawOptions = getRawProductOptions(product)
+          const productOptions = getProductOptions(product)
+
+          const candidates = [
+            productOptions.language,
+            rawOptions.language,
+            productOptions.target_language,
+            rawOptions.target_language,
+            productOptions.language_type,
+            rawOptions.language_type,
+          ].filter(Boolean)
+
+          const detailedLanguage = candidates.find(language => language !== '中文' && language !== '外文')
+          return detailedLanguage || candidates[0] || ''
+        }
+
         const materials: string[] = pipe(
-          filter((p: (typeof orderLog.order_products)[number]) => p.options?.options?.product === '教材'),
-          map((p: (typeof orderLog.order_products)[number]) => p.options?.title || p.name),
+          filter((product: (typeof orderLog.order_products)[number]) => getProductOptions(product)?.product === '教材'),
+          map((product: (typeof orderLog.order_products)[number]) => (product.options as any)?.title || product.name),
           filter(Boolean),
         )(orderLog.order_products) as string[]
 
         return pipe(
           filter((product: (typeof orderLog.order_products)[number]) => {
-            const options = product.options?.options
-            return options && options.product !== '教材'
+            const options = getProductOptions(product)
+            if (!options || options.product === '教材') return false
+            return getClassType(product) === '個人班'
           }),
           map((product: (typeof orderLog.order_products)[number]) => {
-            const options = product.options?.options
+            const options = getProductOptions(product)
             const totalSessions = options?.total_sessions?.max || 0
             const totalMinutes = totalSessions * 50
 
@@ -150,13 +179,13 @@ export const useMemberForSchedule = (
               id: product.id,
               studentId: orderLog.member_id,
               productName: product.name,
-              language: options?.language || '',
-              type: options?.class_type || '',
+              language: getLanguage(product),
+              type: 'personal',
               totalMinutes,
               usedMinutes: 0, // Will be calculated from scheduled events
               availableMinutes: totalMinutes, // Will be calculated as totalMinutes - usedMinutes
               createdAt: new Date(orderLog.created_at),
-              expiresAt: undefined, // 開課日 + 有效天數，預排/發布後才有值
+              expiresAt: undefined, // 開課日 + 有效月數，預排/發布後才有值
               status: orderLog.status,
               materials,
             }
