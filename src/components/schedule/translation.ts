@@ -184,23 +184,69 @@ const scheduleMessages = {
   }),
   PreSchedule: defineMessages({
     title: { id: 'schedule.PreSchedule.title', defaultMessage: 'Pre-schedule confirmation' },
+    confirmTitle: { id: 'schedule.PreSchedule.confirmTitle', defaultMessage: '確認預排課程' },
     confirmMessage: { id: 'schedule.PreSchedule.confirmMessage', defaultMessage: 'Confirm pre-scheduling the following courses?' },
+    confirmDescription: {
+      id: 'schedule.PreSchedule.confirmDescription',
+      defaultMessage:
+        '您確定要預排以下課程嗎？共計 {count} 堂課。預排後，您可以隨時返回進行修改，或將其正式發布。',
+    },
     success: { id: 'schedule.PreSchedule.success', defaultMessage: 'Pre-scheduled successfully' },
+    successWithCount: { id: 'schedule.PreSchedule.successWithCount', defaultMessage: '已預排 {count} 堂課程' },
   }),
   Publish: defineMessages({
     title: { id: 'schedule.Publish.title', defaultMessage: 'Publish confirmation' },
     confirmMessage: { id: 'schedule.Publish.confirmMessage', defaultMessage: 'Confirm publishing the following courses?' },
     success: { id: 'schedule.Publish.success', defaultMessage: 'Published successfully' },
+    successWithCount: { id: 'schedule.Publish.successWithCount', defaultMessage: '已發布 {count} 堂課程' },
     disabled: { id: 'schedule.Publish.disabled', defaultMessage: 'Order status must be completed to publish' },
+    disabledIncompleteOrders: {
+      id: 'schedule.Publish.disabledIncompleteOrders',
+      defaultMessage: '有訂單尚未為已完成狀態',
+    },
+    modeSelectDescription: { id: 'schedule.Publish.modeSelectDescription', defaultMessage: '請選擇要發布的課時模式（可複選）' },
+    pendingLessonsLabel: { id: 'schedule.Publish.pendingLessonsLabel', defaultMessage: '待調整課時' },
+    pendingLessonsDescription: {
+      id: 'schedule.Publish.pendingLessonsDescription',
+      defaultMessage: '尚未預排或剛建立的課程，發布後將通知學生與老師',
+    },
+    preScheduledLessonsLabel: { id: 'schedule.Publish.preScheduledLessonsLabel', defaultMessage: '已預排課時' },
+    preScheduledLessonsDescription: {
+      id: 'schedule.Publish.preScheduledLessonsDescription',
+      defaultMessage: '已預排但尚未正式發布的課程，將一併通知學生與老師',
+    },
+    nextStep: { id: 'schedule.Publish.nextStep', defaultMessage: '下一步' },
+    selectModeRequired: { id: 'schedule.Publish.selectModeRequired', defaultMessage: '請至少選擇一種發布模式' },
+    noEventsForSelectedModes: { id: 'schedule.Publish.noEventsForSelectedModes', defaultMessage: '所選模式目前沒有可發布課時' },
     minStudentsRequired: {
       id: 'schedule.Publish.minStudentsRequired',
       defaultMessage: 'Need to reach minimum class size of {count} students to publish',
     },
     correctionMode: { id: 'schedule.Publish.correctionMode', defaultMessage: 'Correction mode' },
+    correctionModeTitle: { id: 'schedule.Publish.correctionModeTitle', defaultMessage: '安排課程：修正模式' },
+    correctionModeDescription: {
+      id: 'schedule.Publish.correctionModeDescription',
+      defaultMessage: '有課程尚未完成設定，請補齊後再發布',
+    },
+    goToCorrection: { id: 'schedule.Publish.goToCorrection', defaultMessage: '前往修正' },
+    correctionIncompleteSave: {
+      id: 'schedule.Publish.correctionIncompleteSave',
+      defaultMessage: '尚有未完成欄位，請補齊後再儲存',
+    },
+    teacherOrClassroomConflict: {
+      id: 'schedule.Publish.teacherOrClassroomConflict',
+      defaultMessage: '老師或教室時間衝突',
+    },
     correctionHint: {
       id: 'schedule.Publish.correctionHint',
       defaultMessage: 'Please complete the following missing items',
     },
+    finalConfirmTitle: { id: 'schedule.Publish.finalConfirmTitle', defaultMessage: '發布最終確認' },
+    finalConfirmDescription: {
+      id: 'schedule.Publish.finalConfirmDescription',
+      defaultMessage: '您確定要發布以下課程嗎？共計 {count} 堂課。發布後將通知學生與老師。',
+    },
+    confirmPublish: { id: 'schedule.Publish.confirmPublish', defaultMessage: '確認發布' },
     missingTeacher: { id: 'schedule.Publish.missingTeacher', defaultMessage: 'Missing teacher' },
     missingClassroom: { id: 'schedule.Publish.missingClassroom', defaultMessage: 'Missing classroom' },
     missingMaterial: { id: 'schedule.Publish.missingMaterial', defaultMessage: 'Missing material' },
