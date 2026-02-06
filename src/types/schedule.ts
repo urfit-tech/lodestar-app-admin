@@ -44,7 +44,7 @@ export interface Order {
   usedMinutes: number
   availableMinutes: number
   createdAt: Date
-  expiresAt?: Date // 課時到期日：開課日 + 有效天數，初始無值，預排/發布後才有值
+  expiresAt?: Date // 課時到期日：開課日 + 有效月數，初始無值，預排/發布後才有值
   lastClassDate?: Date
   status: string // order_log status: 'SUCCESS', 'UNPAID', etc.
   materials: string[] // 教材列表：從同一訂單的 order_products 中 options.options.product === '教材' 的項目取得 title

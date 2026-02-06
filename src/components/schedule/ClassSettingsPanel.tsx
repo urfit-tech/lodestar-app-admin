@@ -260,7 +260,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label={formatMessage(scheduleMessages.ClassSettings.campus)}>
-                <Select value={currentData.campusId} onChange={handleCampusChange} style={{ width: '100%' }}>
+                <Select value={currentData.campusId ?? undefined} onChange={handleCampusChange} style={{ width: '100%' }}>
                   {campuses.map(c => (
                     <Select.Option key={c.id} value={c.id}>
                       {c.name}

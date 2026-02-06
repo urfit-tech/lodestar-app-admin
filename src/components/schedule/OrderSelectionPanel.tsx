@@ -34,7 +34,8 @@ interface OrderSelectionPanelProps {
   onSelectOrders: (orderIds: string[]) => void
   scheduleType: ScheduleType
   usedMinutesByOrder?: Record<string, number>
-  expiryDateByLanguage?: Record<string, Date | null>
+  lastClassDateByOrderId?: Record<string, Date | null>
+  expiryDateByOrderId?: Record<string, Date | null>
 }
 
 const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
@@ -43,7 +44,8 @@ const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
   onSelectOrders,
   scheduleType,
   usedMinutesByOrder = {},
-  expiryDateByLanguage = {},
+  lastClassDateByOrderId = {},
+  expiryDateByOrderId = {},
 }) => {
   const { formatMessage } = useIntl()
 
@@ -133,7 +135,10 @@ const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
       title: formatMessage(scheduleMessages.OrderSelection.lastClassDate),
       dataIndex: 'lastClassDate',
       key: 'lastClassDate',
-      render: date => (date ? dayjs(date).format('YYYY-MM-DD') : '-'),
+      render: (_date, record) => {
+        const lastClassDate = lastClassDateByOrderId[record.id] || record.lastClassDate
+        return lastClassDate ? dayjs(lastClassDate).format('YYYY-MM-DD') : '-'
+      },
     },
     {
       title: formatMessage(scheduleMessages.OrderSelection.availableMinutes),
@@ -160,9 +165,7 @@ const OrderSelectionPanel: React.FC<OrderSelectionPanelProps> = ({
       dataIndex: 'expiresAt',
       key: 'expiresAt',
       render: (date, record) => {
-        // Use language-based expiry date if available
-        const languageExpiryDate = expiryDateByLanguage[record.language]
-        const displayDate = languageExpiryDate || date
+        const displayDate = expiryDateByOrderId[record.id] || date
         return displayDate ? dayjs(displayDate).format('YYYY-MM-DD') : '-'
       },
     },
