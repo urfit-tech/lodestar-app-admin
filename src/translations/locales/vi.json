@@ -1652,6 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "Tất cả các chức năng phân loại thành viên",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "Thiết lập chức năng hợp đồng",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "Hủy chức năng hợp đồng",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "Hiển thị chức năng hợp đồng",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "Xem thông tin mã giảm giá thành viên",
   "form.PermissionGroup.MEMBER_CREATE": "Thêm thành viên",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Chỉnh sửa email",
