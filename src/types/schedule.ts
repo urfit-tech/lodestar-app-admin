@@ -2,6 +2,33 @@ export type ScheduleType = 'personal' | 'semester' | 'group'
 
 export type ScheduleStatus = 'pending' | 'pre-scheduled' | 'published'
 
+export interface ClassScheduleEventMetadata {
+  title?: string
+  scheduleType: 'semester' | 'group'
+  classId: string
+  studentIds: string[]
+  orderIds: string[]
+  publishedStudentIds: string[]
+  preScheduledStudentIds: string[]
+  teacherId?: string
+  classroomId?: string
+  classroomIds?: string[]
+  classMode?: '一般' | '外課'
+  is_external?: boolean
+  duration?: number
+  material?: string
+  needsOnlineRoom?: boolean
+  campus?: string
+  language?: Language | string
+  clientEventId?: string
+  createdBy?: string
+  createdByEmail?: string
+  createdByName?: string
+  updatedBy?: string
+  updatedByEmail?: string
+  updatedByName?: string
+}
+
 export type Language = '中文' | '德文' | '日文' | '法文' | '英文' | '西文' | '韓文' | '台語' | '粵語'
 
 export interface Campus {
