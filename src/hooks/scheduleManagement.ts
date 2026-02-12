@@ -9,12 +9,14 @@ import { GeneralEventApi } from '../components/event/events.type'
 import hasura from '../hasura'
 import {
   ClassGroup,
+  ClassScheduleEventMetadata,
   CourseRowData,
   Language,
   ScheduleEvent,
   ScheduleTemplateProps,
   ScheduleType,
 } from '../types/schedule'
+import { parseClassMetadata } from '../components/schedule/editor/classFlow/metadata'
 
 type ClassGroupRow = hasura.GetClassGroupsForSchedule['class_group'][number]
 type ClassGroupRowLike = Omit<ClassGroupRow, 'class_group_orders'> & {
@@ -1491,7 +1493,10 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
 const GET_CLASS_GROUP_EVENTS = gql`
   query GetClassGroupEvents($classId: String!) {
     event(
-      where: { deleted_at: { _is_null: true }, metadata: { _contains: { classId: $classId } } }
+      where: {
+        deleted_at: { _is_null: true }
+        metadata: { _contains: { classId: $classId } }
+      }
       order_by: { started_at: asc }
     ) {
       id
@@ -1525,42 +1530,52 @@ export const useClassGroupEvents = (classId: string | undefined) => {
   const events = useMemo<ScheduleEvent[]>(() => {
     if (!data?.event || !classId) return []
 
-    return data.event.map(event => {
-      const metadata = event.metadata || {}
-      const publishedAt = event.published_at
+    return data.event
+      .map(event => {
+        const metadata = parseClassMetadata(event.metadata)
+        if (!metadata) {
+          return null
+        }
 
-      // Determine status based on published_at
-      let status: 'pending' | 'pre-scheduled' | 'published' = 'pre-scheduled'
-      if (publishedAt) {
-        status = 'published'
-      }
+        const publishedAt = event.published_at
 
-      const startDate = new Date(event.started_at)
-      const endDate = new Date(event.ended_at)
+        // Determine status based on published_at
+        let status: 'pending' | 'pre-scheduled' | 'published' = 'pre-scheduled'
+        if (publishedAt) {
+          status = 'published'
+        }
 
-      return {
-        id: event.id,
-        apiEventId: event.id,
-        scheduleType: (metadata.scheduleType as 'personal' | 'semester' | 'group') || 'semester',
-        status,
-        classId,
-        studentIds: (metadata.studentIds as string[]) || [],
-        orderIds: (metadata.orderIds as string[]) || [],
-        teacherId: metadata.teacherId as string | undefined,
-        campus: (metadata.campus as string) || '',
-        language: (metadata.language as Language) || 'zh-TW',
-        date: startDate,
-        startTime: moment(startDate).format('HH:mm'),
-        endTime: moment(endDate).format('HH:mm'),
-        duration: (metadata.duration as number) || Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60)),
-        material: (metadata.material as string) || event.title || '',
-        needsOnlineRoom: (metadata.needsOnlineRoom as boolean) || false,
-        createdBy: '',
-        createdByEmail: '',
-        updatedAt: new Date(event.updated_at),
-        isExternal: metadata.classMode === '外課' || metadata.is_external === true,
-      } as ScheduleEvent
-    })
+        const startDate = new Date(event.started_at)
+        const endDate = new Date(event.ended_at)
+
+        return {
+          id: event.id,
+          apiEventId: event.id,
+          scheduleType: metadata.scheduleType,
+          status,
+          classId,
+          studentIds: metadata.studentIds || [],
+          orderIds: metadata.orderIds || [],
+          teacherId: metadata.teacherId,
+          classroomId: metadata.classroomId || metadata.classroomIds?.[0],
+          classroomIds: metadata.classroomIds || [],
+          campus: metadata.campus || '',
+          language: (metadata.language as Language) || 'zh-TW',
+          date: startDate,
+          startTime: moment(startDate).format('HH:mm'),
+          endTime: moment(endDate).format('HH:mm'),
+          duration: metadata.duration || Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60)),
+          material: metadata.material || event.title || '',
+          needsOnlineRoom: typeof metadata.needsOnlineRoom === 'boolean' ? metadata.needsOnlineRoom : false,
+          createdBy: metadata.createdByName || metadata.createdBy || '',
+          createdByEmail: metadata.createdByEmail || '',
+          updatedBy: metadata.updatedByName || metadata.updatedBy || '',
+          updatedByEmail: metadata.updatedByEmail || '',
+          updatedAt: new Date(event.updated_at),
+          isExternal: metadata.classMode === '外課' || metadata.is_external === true,
+        } as ScheduleEvent
+      })
+      .filter((event): event is ScheduleEvent => Boolean(event))
   }, [data, classId])
 
   return { events, loading, error, refetch }
@@ -1704,10 +1719,11 @@ export const useMultipleClassGroupsEvents = (
     if (!eventsData?.event) return []
     const ids = new Set<string>()
     eventsData.event.forEach(event => {
-      const metadata = event.metadata
+      const metadata = parseClassMetadata(event.metadata)
+      if (!metadata) return
       if (metadata?.teacherId) ids.add(metadata.teacherId)
       if (metadata?.studentIds) {
-        (metadata.studentIds as string[]).forEach(id => ids.add(id))
+        metadata.studentIds.forEach(id => ids.add(id))
       }
       if (metadata?.createdBy) ids.add(metadata.createdBy)
       if (metadata?.updatedBy) ids.add(metadata.updatedBy)
@@ -1740,13 +1756,20 @@ export const useMultipleClassGroupsEvents = (
     if (!eventsData?.event) return map
 
     // Filter by classIds if provided
-    const filteredEvents = classIds
-      ? eventsData.event.filter(e => e.metadata?.classId && classIds.includes(e.metadata.classId))
-      : eventsData.event
+    const filteredEvents = eventsData.event
+      .map(event => {
+        const metadata = parseClassMetadata(event.metadata)
+        if (!metadata) return null
+        return { event, metadata }
+      })
+      .filter((item): item is { event: hasura.GetEventsByScheduleType['event'][number]; metadata: ClassScheduleEventMetadata } =>
+        Boolean(item),
+      )
+      .filter(item => (classIds ? classIds.includes(item.metadata.classId) : true))
 
     // Group events by classId
-    filteredEvents.forEach(event => {
-      const classId = event.metadata?.classId as string
+    filteredEvents.forEach(({ event, metadata }) => {
+      const classId = metadata.classId
       if (!classId) return
 
       if (!map.has(classId)) {
@@ -1764,7 +1787,7 @@ export const useMultipleClassGroupsEvents = (
       const summary = map.get(classId)!
 
       // Collect all student IDs
-      const eventStudentIds = (event.metadata?.studentIds as string[]) || []
+      const eventStudentIds = metadata.studentIds || []
       eventStudentIds.forEach(id => {
         if (!summary.studentIds.includes(id)) {
           summary.studentIds.push(id)
@@ -1806,17 +1829,17 @@ export const useMultipleClassGroupsEvents = (
 
       // Set latest event info (events are already sorted by updated_at desc)
       if (!summary.latestEvent) {
-        const teacherInfo = event.metadata?.teacherId ? memberMap.get(event.metadata.teacherId) : undefined
+        const teacherInfo = metadata.teacherId ? memberMap.get(metadata.teacherId) : undefined
         summary.latestEvent = {
           id: event.id,
-          teacherId: event.metadata?.teacherId,
+          teacherId: metadata.teacherId,
           teacherName: teacherInfo?.name,
           teacherEmail: teacherInfo?.email,
           studentIds: eventStudentIds,
-          createdBy: event.metadata?.createdBy,
-          createdByEmail: event.metadata?.createdByEmail,
-          updatedBy: event.metadata?.updatedBy,
-          updatedByEmail: event.metadata?.updatedByEmail,
+          createdBy: metadata.createdByName || metadata.createdBy,
+          createdByEmail: metadata.createdByEmail,
+          updatedBy: metadata.updatedByName || metadata.updatedBy,
+          updatedByEmail: metadata.updatedByEmail,
           updatedAt: new Date(event.updated_at),
         }
       }
