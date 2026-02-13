@@ -112,19 +112,21 @@ const MemberContractAdminBlock: React.FC<{
 
   return (
     <div className="container">
-      <a
-        href={
-          settings['contract_page.v2.enabled'] === '1'
-            ? `/admin/members/${memberId}/contract/create`
-            : `/admin/members/${memberId}/new-contract`
-        }
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <PrimaryButton className="mb-5">{formatMessage(commonMessages.ui.createContract)}</PrimaryButton>
-      </a>
+      {permissions.MEMBER_CONTRACT_INSERT && (
+        <a
+          href={
+            settings['contract_page.v2.enabled'] === '1'
+              ? `/admin/members/${memberId}/contract/create`
+              : `/admin/members/${memberId}/new-contract`
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <PrimaryButton className="mb-5">{formatMessage(commonMessages.ui.createContract)}</PrimaryButton>
+        </a>
+      )}
 
-      {contracts
+      {permissions.MEMBER_CONTRACT_VIEW && contracts
         .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())
         .map(contract => (
           <Card
@@ -259,7 +261,7 @@ const useMemberContracts = (memberId: string) => {
     data?.member_contract.map(v => {
       return {
         id: v.id,
-        title: v.contract.name,
+        title: v.contract?.name ?? '',
         values: v.values,
         startedAt: v.started_at && new Date(v.started_at),
         endedAt: v.ended_at && new Date(v.ended_at),
