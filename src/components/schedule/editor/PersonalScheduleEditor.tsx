@@ -1,4 +1,20 @@
-import { Button, Checkbox, Col, Collapse, Form, Input, message, Modal, Row, Select, Space, Spin, Table, Tooltip, Typography } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Col,
+  Collapse,
+  Form,
+  Input,
+  message,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tooltip,
+  Typography,
+} from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -7,9 +23,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../admin'
-import { GeneralEventApi } from '../../event/events.type'
-import AdminLayout from '../../layout/AdminLayout'
 import {
   ArrangeCourseModal,
   CollapsibleScheduleCard,
@@ -51,8 +64,11 @@ import {
   Student,
   Teacher,
 } from '../../../types/schedule'
-import type { CourseRow } from '../ArrangeCourseModal'
+import { AdminPageTitle } from '../../admin'
+import { GeneralEventApi } from '../../event/events.type'
+import AdminLayout from '../../layout/AdminLayout'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
+import type { CourseRow } from '../ArrangeCourseModal'
 
 const PageWrapper = styled.div`
   padding: 16px 0;
@@ -150,6 +166,8 @@ type PublishFlowStep = 'selectMode' | 'correctionPrompt' | 'correctionEdit' | 'f
 type PublishMode = 'pending' | 'preScheduled'
 type CorrectionField = 'teacherId' | 'classroomId' | 'material' | 'needsOnlineRoom' | 'teacherConflict' | 'roomConflict'
 type PublishEventDraft = Omit<ScheduleEvent, 'needsOnlineRoom'> & { needsOnlineRoom?: boolean }
+type PublishTarget = { event: PublishEventDraft; eventId: string }
+type PreScheduleResult = { createdEventIds: string[]; createdEventIdByLocalKey: Map<string, string> }
 
 interface SchedulePreviewRow {
   key: string
@@ -578,7 +596,11 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const resolveTeacherLabel = useCallback(
     (teacherId?: string) => {
       if (!teacherId) return '-'
-      return allTeachers.find(teacher => teacher.id === teacherId)?.name || selectedTeachers.find(teacher => teacher.id === teacherId)?.name || '-'
+      return (
+        allTeachers.find(teacher => teacher.id === teacherId)?.name ||
+        selectedTeachers.find(teacher => teacher.id === teacherId)?.name ||
+        '-'
+      )
     },
     [allTeachers, selectedTeachers],
   )
@@ -871,7 +893,10 @@ const PersonalScheduleEditorInner: React.FC = () => {
     ],
   )
 
-  const pendingCalendarEvents = useMemo(() => calendarEvents.filter(event => event.status === 'pending'), [calendarEvents])
+  const pendingCalendarEvents = useMemo(
+    () => calendarEvents.filter(event => event.status === 'pending'),
+    [calendarEvents],
+  )
   const preScheduledCalendarEvents = useMemo(
     () => calendarEvents.filter(event => event.status === 'pre-scheduled'),
     [calendarEvents],
@@ -882,7 +907,10 @@ const PersonalScheduleEditorInner: React.FC = () => {
     () => calendarEvents.some(event => event.status === 'pending' || event.status === 'pre-scheduled'),
     [calendarEvents],
   )
-  const canPublish = useMemo(() => !hasIncompleteOrders && hasPublishableEvents, [hasIncompleteOrders, hasPublishableEvents])
+  const canPublish = useMemo(
+    () => !hasIncompleteOrders && hasPublishableEvents,
+    [hasIncompleteOrders, hasPublishableEvents],
+  )
 
   const getIncompleteFields = useCallback(
     (event: PublishEventDraft): CorrectionField[] => {
@@ -980,8 +1008,10 @@ const PersonalScheduleEditorInner: React.FC = () => {
   )
 
   const preScheduleEvents = useCallback(
-    async (eventsToPreSchedule: PublishEventDraft[]) => {
-      if (eventsToPreSchedule.length === 0) return []
+    async (eventsToPreSchedule: PublishEventDraft[]): Promise<PreScheduleResult> => {
+      if (eventsToPreSchedule.length === 0) {
+        return { createdEventIds: [], createdEventIdByLocalKey: new Map<string, string>() }
+      }
       if (!authToken || !appId || !selectedStudent?.id) {
         throw new Error('MISSING_REQUIRED_INFORMATION')
       }
@@ -1042,7 +1072,6 @@ const PersonalScheduleEditorInner: React.FC = () => {
       })
 
       const createdEventIds = Array.from(new Set(Array.from(createdEventIdByLocalKey.values())))
-      const createdEventIdPayload = createdEventIds.map(id => ({ id }))
 
       if (createdEventIds.length > 0) {
         await createInvitationFetcher(authToken)([
@@ -1050,7 +1079,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
             temporally_exclusive_resource_id: studentResource.temporally_exclusive_resource_id,
             role: 'participant',
           } as any,
-        ])(createdEventIdPayload)
+        ])(createdEventIds)
       }
 
       const teacherIds = uniqueStrings(eventsToPreSchedule.map(event => event.teacherId))
@@ -1068,7 +1097,8 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
         await Promise.all(
           eventsToPreSchedule.map(async event => {
-            const createdEventId = createdEventIdByLocalKey.get(event.id) || createdEventIdByLocalKey.get(getEventKey(event))
+            const createdEventId =
+              createdEventIdByLocalKey.get(event.id) || createdEventIdByLocalKey.get(getEventKey(event))
             if (!createdEventId || !event.teacherId) return
             const teacherResource = teacherResourceMap.get(event.teacherId)
             if (!teacherResource) return
@@ -1077,7 +1107,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
                 temporally_exclusive_resource_id: teacherResource.temporally_exclusive_resource_id,
                 role: 'host',
               } as any,
-            ])([{ id: createdEventId }])
+            ])([createdEventId])
           }),
         )
       }
@@ -1098,7 +1128,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
       await Promise.all([refetchStudentEvents(), refetchPersonalEvents()])
 
-      return createdEventIds
+      return { createdEventIds, createdEventIdByLocalKey }
     },
     [
       authToken,
@@ -1113,38 +1143,27 @@ const PersonalScheduleEditorInner: React.FC = () => {
   )
 
   const publishEventIds = useCallback(
-    async (events: PublishEventDraft[], eventIds: string[]) => {
+    async (publishTargets: PublishTarget[]) => {
       if (!authToken) {
         throw new Error('MISSING_AUTH_TOKEN')
       }
-      if (eventIds.length === 0) {
+      if (publishTargets.length === 0) {
         return
       }
 
       const publishedAt = new Date().toISOString()
-      const eventByApiId = new Map<string, PublishEventDraft>()
-      events.forEach(event => {
-        const eventId = event.apiEventId || (!event.id.startsWith('local-') ? event.id : undefined)
-        if (eventId) {
-          eventByApiId.set(eventId, event)
-        }
-      })
 
       await Promise.all(
-        eventIds.map(eventId => {
-          const draftEvent = eventByApiId.get(eventId)
-          const metadata = draftEvent
-            ? buildPersonalEventMetadata(draftEvent)
-            : {
-                updatedBy: currentMemberId || '',
-                updatedByEmail: currentMember?.email || '',
-                updatedByName: currentMember?.name || '',
-              }
+        publishTargets.map(({ event, eventId }) => {
+          const metadata = buildPersonalEventMetadata(event)
+          if (process.env.NODE_ENV !== 'production' && metadata?.scheduleType !== 'personal') {
+            console.warn('Unexpected scheduleType while publishing personal event', { eventId, metadata, event })
+          }
           return updateEvent(authToken)({ published_at: publishedAt, metadata } as any)(eventId)
         }),
       )
 
-      const publishedIdSet = new Set(eventIds)
+      const publishedIdSet = new Set(publishTargets.map(({ eventId }) => eventId))
       store.setState(prev => ({
         pendingEvents: prev.pendingEvents.map(event => {
           const eventId = event.apiEventId || (!event.id.startsWith('local-') ? event.id : undefined)
@@ -1157,7 +1176,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
       await Promise.all([refetchStudentEvents(), refetchPersonalEvents()])
     },
-    [authToken, buildPersonalEventMetadata, currentMemberId, currentMember, refetchStudentEvents, refetchPersonalEvents, store],
+    [authToken, buildPersonalEventMetadata, refetchStudentEvents, refetchPersonalEvents, store],
   )
 
   const handleOpenPreScheduleModal = useCallback(() => {
@@ -1174,7 +1193,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
     try {
       await preScheduleEvents(pendingCalendarEvents.map(event => toPublishDraft(event)))
       setPreScheduleModalVisible(false)
-      message.success(formatMessage(scheduleMessages.PreSchedule.successWithCount, { count: pendingCalendarEvents.length }))
+      message.success(
+        formatMessage(scheduleMessages.PreSchedule.successWithCount, { count: pendingCalendarEvents.length }),
+      )
     } catch (error) {
       console.error('Failed to pre-schedule events:', error)
       message.error('預排失敗，請稍後再試')
@@ -1291,14 +1312,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
     const isSaved = await handleSaveEvents(correctionEvents)
     if (!isSaved) return
     setPublishFlowStep('finalConfirm')
-  }, [
-    validateCorrectionDrafts,
-    publishEventDrafts,
-    correctionEventKeys,
-    getEventKey,
-    formatMessage,
-    handleSaveEvents,
-  ])
+  }, [validateCorrectionDrafts, publishEventDrafts, correctionEventKeys, getEventKey, formatMessage, handleSaveEvents])
 
   const handleConfirmPublish = useCallback(async () => {
     if (publishEventDrafts.length === 0) {
@@ -1309,22 +1323,46 @@ const PersonalScheduleEditorInner: React.FC = () => {
     store.setState({ publishLoading: true })
     try {
       const pendingEventsForPublish = publishEventDrafts.filter(event => event.status === 'pending')
-      const preScheduledEventIds = publishEventDrafts
+      const preScheduledPublishTargets: PublishTarget[] = publishEventDrafts
         .filter(event => event.status === 'pre-scheduled')
-        .map(event => event.apiEventId || (!event.id.startsWith('local-') ? event.id : undefined))
-        .filter((eventId): eventId is string => Boolean(eventId))
+        .map(event => {
+          const eventId = event.apiEventId || (!event.id.startsWith('local-') ? event.id : undefined)
+          if (!eventId) return null
+          return { event, eventId }
+        })
+        .filter((target): target is PublishTarget => Boolean(target))
 
-      const createdEventIds =
-        pendingEventsForPublish.length > 0 ? await preScheduleEvents(pendingEventsForPublish) : []
+      const preScheduleResult =
+        pendingEventsForPublish.length > 0
+          ? await preScheduleEvents(pendingEventsForPublish)
+          : { createdEventIds: [], createdEventIdByLocalKey: new Map<string, string>() }
 
-      const publishEventIdList = Array.from(new Set([...preScheduledEventIds, ...createdEventIds]))
-      if (publishEventIdList.length === 0) {
+      const pendingPublishTargets: PublishTarget[] = pendingEventsForPublish
+        .map(event => {
+          const eventId =
+            preScheduleResult.createdEventIdByLocalKey.get(getEventKey(event)) ||
+            preScheduleResult.createdEventIdByLocalKey.get(event.id)
+          if (!eventId) return null
+          return { event, eventId }
+        })
+        .filter((target): target is PublishTarget => Boolean(target))
+
+      const publishTargetByEventId = new Map<string, PublishTarget>()
+      const allPublishTargets = [...preScheduledPublishTargets, ...pendingPublishTargets]
+      allPublishTargets.forEach(target => {
+        if (!publishTargetByEventId.has(target.eventId)) {
+          publishTargetByEventId.set(target.eventId, target)
+        }
+      })
+      const publishTargets = Array.from(publishTargetByEventId.values())
+
+      if (publishTargets.length === 0) {
         message.warning(formatMessage(scheduleMessages.Publish.noEventsForSelectedModes))
         return
       }
 
-      await publishEventIds(publishEventDrafts, publishEventIdList)
-      message.success(formatMessage(scheduleMessages.Publish.successWithCount, { count: publishEventIdList.length }))
+      await publishEventIds(publishTargets)
+      message.success(formatMessage(scheduleMessages.Publish.successWithCount, { count: publishTargets.length }))
       handleClosePublishModal()
     } catch (error) {
       console.error('Failed to publish events:', error)
@@ -1337,6 +1375,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
     formatMessage,
     store,
     preScheduleEvents,
+    getEventKey,
     publishEventIds,
     handleClosePublishModal,
   ])
@@ -1386,7 +1425,12 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
   const preScheduleColumns = useMemo<ColumnsType<SchedulePreviewRow>>(
     () => [
-      { title: formatMessage(scheduleMessages.ScheduleTable.courseDate), dataIndex: 'dateLabel', key: 'dateLabel', width: 120 },
+      {
+        title: formatMessage(scheduleMessages.ScheduleTable.courseDate),
+        dataIndex: 'dateLabel',
+        key: 'dateLabel',
+        width: 120,
+      },
       { title: formatMessage(scheduleMessages.ArrangeModal.week), dataIndex: 'weekLabel', key: 'weekLabel', width: 90 },
       {
         title: formatMessage(scheduleMessages.ScheduleTable.courseTime),
@@ -1394,10 +1438,30 @@ const PersonalScheduleEditorInner: React.FC = () => {
         key: 'courseTimeLabel',
         width: 140,
       },
-      { title: formatMessage(scheduleMessages.ArrangeModal.duration), dataIndex: 'duration', key: 'duration', width: 100 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.classroom), dataIndex: 'classroomLabel', key: 'classroomLabel', width: 160 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.teacher), dataIndex: 'teacherLabel', key: 'teacherLabel', width: 130 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.material), dataIndex: 'materialLabel', key: 'materialLabel', width: 140 },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.duration),
+        dataIndex: 'duration',
+        key: 'duration',
+        width: 100,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.classroom),
+        dataIndex: 'classroomLabel',
+        key: 'classroomLabel',
+        width: 160,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.teacher),
+        dataIndex: 'teacherLabel',
+        key: 'teacherLabel',
+        width: 130,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.material),
+        dataIndex: 'materialLabel',
+        key: 'materialLabel',
+        width: 140,
+      },
       {
         title: formatMessage(scheduleMessages.ArrangeModal.needsOnlineRoom),
         dataIndex: 'needsOnlineRoomLabel',
@@ -1410,13 +1474,43 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
   const publishFinalColumns = useMemo<ColumnsType<SchedulePreviewRow>>(
     () => [
-      { title: formatMessage(scheduleMessages.ScheduleTable.courseDate), dataIndex: 'dateLabel', key: 'dateLabel', width: 120 },
+      {
+        title: formatMessage(scheduleMessages.ScheduleTable.courseDate),
+        dataIndex: 'dateLabel',
+        key: 'dateLabel',
+        width: 120,
+      },
       { title: formatMessage(scheduleMessages.ArrangeModal.week), dataIndex: 'weekLabel', key: 'weekLabel', width: 90 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.startTime), dataIndex: 'startTimeLabel', key: 'startTimeLabel', width: 110 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.duration), dataIndex: 'duration', key: 'duration', width: 100 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.classroom), dataIndex: 'classroomLabel', key: 'classroomLabel', width: 160 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.teacher), dataIndex: 'teacherLabel', key: 'teacherLabel', width: 130 },
-      { title: formatMessage(scheduleMessages.ArrangeModal.material), dataIndex: 'materialLabel', key: 'materialLabel', width: 140 },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.startTime),
+        dataIndex: 'startTimeLabel',
+        key: 'startTimeLabel',
+        width: 110,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.duration),
+        dataIndex: 'duration',
+        key: 'duration',
+        width: 100,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.classroom),
+        dataIndex: 'classroomLabel',
+        key: 'classroomLabel',
+        width: 160,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.teacher),
+        dataIndex: 'teacherLabel',
+        key: 'teacherLabel',
+        width: 130,
+      },
+      {
+        title: formatMessage(scheduleMessages.ArrangeModal.material),
+        dataIndex: 'materialLabel',
+        key: 'materialLabel',
+        width: 140,
+      },
       {
         title: formatMessage(scheduleMessages.ArrangeModal.needsOnlineRoom),
         dataIndex: 'needsOnlineRoomLabel',
@@ -1560,8 +1654,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
           const eventKey = getEventKey(event)
           const rowErrors = correctionErrors[eventKey] || []
           const hasError = rowErrors.includes('needsOnlineRoom')
-          const value =
-            typeof event.needsOnlineRoom === 'boolean' ? (event.needsOnlineRoom ? 'yes' : 'no') : undefined
+          const value = typeof event.needsOnlineRoom === 'boolean' ? (event.needsOnlineRoom ? 'yes' : 'no') : undefined
           return (
             <Form.Item style={{ marginBottom: 0 }} validateStatus={hasError ? 'error' : ''}>
               <Select
@@ -1633,7 +1726,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
             <Button onClick={handleOpenPreScheduleModal} disabled={pendingCalendarEvents.length === 0}>
               預排
             </Button>
-            <Tooltip title={hasIncompleteOrders ? formatMessage(scheduleMessages.Publish.disabledIncompleteOrders) : ''}>
+            <Tooltip
+              title={hasIncompleteOrders ? formatMessage(scheduleMessages.Publish.disabledIncompleteOrders) : ''}
+            >
               <span>
                 <Button type="primary" onClick={handleOpenPublishModal} disabled={!canPublish} loading={publishLoading}>
                   發布
