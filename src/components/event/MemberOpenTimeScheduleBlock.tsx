@@ -15,15 +15,25 @@ import { RRule, rrulestr } from 'rrule'
 import styled from 'styled-components'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
-import { createEventAndInviteResourceFetcher, deleteEvent, getDefaultResourceEventsFethcer, updateEvent } from '../../helpers/eventHelper/eventFetchers'
+import {
+  createEventAndInviteResourceFetcher,
+  deleteEvent,
+  getDefaultResourceEventsFethcer,
+  updateEvent,
+} from '../../helpers/eventHelper/eventFetchers'
 import memberMessages from '../member/translation'
 import DeleteOpenTimeModal from './DeleteOpenTimeModal'
 import { getActiveEvents, getAvailableEvents } from './eventAdaptor'
 import { GeneralEventApi } from './events.type'
 import { DeleteModalInfo, RepeatConfig, WeeklySchedule } from './openTimeSchedule.type'
-import { compareTimeStrings, eventsToWeeklySchedule, filterFutureEvents, getEventDisplayInfo, timeStringToMinutes } from './openTimeSchedule.utils'
+import {
+  compareTimeStrings,
+  eventsToWeeklySchedule,
+  filterFutureEvents,
+  getEventDisplayInfo,
+  timeStringToMinutes,
+} from './openTimeSchedule.utils'
 import OpenTimeSettingsModal from './OpenTimeSettingsModal'
-
 
 const OPEN_TIME_COLOR = '#C4A35A' // 金色/土黃色
 
@@ -120,12 +130,12 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
 
   const [currentDate, setCurrentDate] = useState(new Date())
   const [clickedDate, setClickedDate] = useState<Date | null>(null)
-  
+
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  
+
   const [isEditMode, setIsEditMode] = useState(false)
   const [editingEvents, setEditingEvents] = useState<GeneralEventApi[] | null>(null)
-  
+
   const [isDeleteMode, setIsDeleteMode] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedEventForDelete, setSelectedEventForDelete] = useState<DeleteModalInfo | null>(null)
@@ -181,8 +191,8 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         {
           startedAt: moment().subtract(eventPaginationDuration).startOf('day').toDate(),
           until: moment().add(eventPaginationDuration).startOf('day').toDate(),
-        }
-      )
+        },
+      ),
   )
 
   const { trigger: createEvents, isMutating: isCreating } = useSWRMutation(
@@ -196,11 +206,11 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
           events: GeneralEventApi[]
           invitedResource: Array<{ temporally_exclusive_resource_id: string; role: string }>
         }
-      }
+      },
     ) => {
       if (!authToken || !appId) throw new Error('未授權')
       return createEventAndInviteResourceFetcher(authToken)(appId)(arg)
-    }
+    },
   )
 
   const { trigger: deleteEventTrigger, isMutating: isDeleting } = useSWRMutation(
@@ -208,7 +218,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     async (_, { arg }: { arg: { eventId: string } }) => {
       if (!authToken) throw new Error('未授權')
       return deleteEvent(authToken)(new Date())(arg.eventId)
-    }
+    },
   )
 
   const { trigger: updateEventTrigger } = useSWRMutation(
@@ -216,7 +226,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     async (_, { arg }: { arg: { eventId: string; payload: Partial<GeneralEventApi> } }) => {
       if (!authToken) throw new Error('未授權')
       return updateEvent(authToken)(arg.payload)(arg.eventId)
-    }
+    },
   )
 
   const openTimeEvents = useMemo(() => {
@@ -256,7 +266,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
       setClickedDate(info.date)
       setIsSettingsModalOpen(true)
     },
-    [isDeleteMode]
+    [isDeleteMode],
   )
 
   const handleSelect = useCallback(
@@ -268,7 +278,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
       setClickedDate(info.start)
       setIsSettingsModalOpen(true)
     },
-    [isDeleteMode]
+    [isDeleteMode],
   )
 
   const handleEventClick = useCallback(
@@ -302,7 +312,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         setIsSettingsModalOpen(true)
       }
     },
-    [isDeleteMode, openTimeEvents]
+    [isDeleteMode, openTimeEvents],
   )
 
   const navigateWeek = useCallback((direction: 'prev' | 'next') => {
@@ -456,9 +466,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
               }
             }
 
-            const hasOverlap = existingEventRanges.some(
-              range => startDate < range.end && range.start < endDate
-            )
+            const hasOverlap = existingEventRanges.some(range => startDate < range.end && range.start < endDate)
             if (hasOverlap) {
               externalConflicts.push({
                 dayLabel: daySchedule.dayLabel,
@@ -502,7 +510,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         message.error('設定開放時間失敗')
       }
     },
-    [clickedDate, fetchedData, createEvents, deleteEventTrigger, refetchEvents, sanitizeScheduleForSave]
+    [clickedDate, fetchedData, createEvents, deleteEventTrigger, refetchEvents, sanitizeScheduleForSave],
   )
 
   const handleDeleteOpenTime = useCallback(
@@ -541,11 +549,15 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
               }
 
               // 更新原事件的 until 為前一天
+              const eventMetadata =
+                (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
+                (event.extendedProps?.metadata as Record<string, any> | undefined) ||
+                {}
               await updateEventTrigger({
                 eventId,
                 payload: {
                   extendedProps: {
-                    ...event.extendedProps,
+                    metadata: eventMetadata,
                     until: previousDay.toISOString(),
                   },
                 } as Partial<GeneralEventApi>,
@@ -625,11 +637,15 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
             }
 
             if (isRecurring) {
+              const eventMetadata =
+                (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
+                (event.extendedProps?.metadata as Record<string, any> | undefined) ||
+                {}
               await updateEventTrigger({
                 eventId,
                 payload: {
                   extendedProps: {
-                    ...event.extendedProps,
+                    metadata: eventMetadata,
                     until: moment(untilDate).endOf('day').toISOString(),
                   },
                 } as Partial<GeneralEventApi>,
@@ -655,7 +671,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         message.error('移除開放時間失敗')
       }
     },
-    [selectedEventForDelete, fetchedData, deleteEventTrigger, updateEventTrigger, createEvents, refetchEvents]
+    [selectedEventForDelete, fetchedData, deleteEventTrigger, updateEventTrigger, createEvents, refetchEvents],
   )
 
   if (isLoading) {
