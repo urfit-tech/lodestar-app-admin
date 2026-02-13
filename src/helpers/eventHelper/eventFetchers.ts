@@ -189,15 +189,36 @@ export const createEventFetcher = curry(
 )
 
 export const createInvitationFetcher = curry(
-    async (authToken: string, eventResources: Array<FetchedResource> | undefined, eventIds: Array<{ id: string }> | undefined) => {
-        if (eventResources && eventIds && eventResources?.length > 0 && eventIds?.length > 0) {
-            return (await axios.post(
-                `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
-                { eventResources, eventIds },
-                authedConfig(authToken)({})
-            )).data
-        }
-        else {
+    async (
+        authToken: string,
+        eventResources: Array<FetchedResource> | undefined,
+        eventIds: Array<string | { id: string }> | undefined
+    ) => {
+        const normalizedEventIds = (eventIds || [])
+            .map(eventId => typeof eventId === 'string' ? eventId : eventId?.id)
+            .filter((eventId): eventId is string => !!eventId)
+
+        if (eventResources && eventResources.length > 0 && normalizedEventIds.length > 0) {
+            try {
+                return (await axios.post(
+                    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/event/invite-resource`,
+                    { eventResources, eventIds: normalizedEventIds },
+                    authedConfig(authToken)({})
+                )).data
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error('Failed to invite resource', {
+                        status: error.response?.status,
+                        data: error.response?.data,
+                        payload: {
+                            eventResources,
+                            eventIds: normalizedEventIds,
+                        },
+                    })
+                }
+                throw error
+            }
+        } else {
             throw new Error(`Failed to invite resource: event resources or event ids is empty.`)
         }
     }
