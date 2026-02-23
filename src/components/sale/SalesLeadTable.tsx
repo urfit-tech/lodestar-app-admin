@@ -1202,20 +1202,6 @@ const SalesLeadTable: React.VFC<{
                       {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
-                  <Button
-                    icon={<StopOutlined />}
-                    className="mr-2"
-                    onClick={() =>
-                      handleLeadStatus(
-                        selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
-                        manager.id,
-                        leads,
-                        'reject',
-                      )
-                    }
-                  >
-                    {formatMessage(saleMessages.SalesLeadTable.reject)}
-                  </Button>
                   {Boolean(permissions.SALES_MEMBER_LIST_DELETE) && (
                     <Button
                       icon={<DeleteOutlined />}
