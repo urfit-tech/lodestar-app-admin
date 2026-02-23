@@ -29,11 +29,6 @@ const MemberPermissionForm: React.FC<{
   const { currentMemberId, currentUserRole, permissions: currentMemberPermissions } = useAuth()
   const [form] = useForm<FieldProps>()
 
-  const [updateMemberPermissionGroup] = useMutation<
-    hasura.UPDATE_MEMBER_PERMISSION_GROUP,
-    hasura.UPDATE_MEMBER_PERMISSION_GROUPVariables
-  >(UPDATE_MEMBER_PERMISSION_GROUP)
-
   const [updateMemberPermission] = useMutation<
     hasura.UPDATE_MEMBER_PERMISSION,
     hasura.UPDATE_MEMBER_PERMISSIONVariables
@@ -91,29 +86,21 @@ const MemberPermissionForm: React.FC<{
     ]
 
     try {
-      if (permissionIdsToInsert.length + permissionIdsToDelete.length > 0)
-        await updateMemberPermission({
-          variables: {
-            memberId: memberAdmin.id,
-            insertPermissions: permissionIdsToInsert.map(id => ({
-              member_id: memberAdmin.id,
-              permission_id: id,
-            })),
-            deletePermissionIds: permissionIdsToDelete,
-          },
-        })
-
-      if (groupIdsToInsert.length + groupIdsToDelete.length > 0)
-        await updateMemberPermissionGroup({
-          variables: {
-            memberId: memberAdmin.id,
-            insertPermissionGroups: groupIdsToInsert.map(id => ({
-              member_id: memberAdmin.id,
-              permission_group_id: id,
-            })),
-            deletePermissionGroupIds: groupIdsToDelete,
-          },
-        })
+      await updateMemberPermission({
+        variables: {
+          memberId: memberAdmin.id,
+          insertPermissionGroups: groupIdsToInsert.map(id => ({
+            member_id: memberAdmin.id,
+            permission_group_id: id,
+          })),
+          deletePermissionGroupIds: groupIdsToDelete,
+          insertPermissions: permissionIdsToInsert.map(id => ({
+            member_id: memberAdmin.id,
+            permission_id: id,
+          })),
+          deletePermissionIds: permissionIdsToDelete,
+        },
+      })
 
       if (isPermittedToUpdateRole)
         updateMemberRole({
@@ -223,28 +210,10 @@ const MemberPermissionForm: React.FC<{
 const UPDATE_MEMBER_PERMISSION = gql`
   mutation UPDATE_MEMBER_PERMISSION(
     $memberId: String!
-    $insertPermissions: [member_permission_extra_insert_input!]!
-    $deletePermissionIds: [String!]!
-  ) {
-    delete_member_permission_extra(
-      where: { member_id: { _eq: $memberId }, permission_id: { _in: $deletePermissionIds } }
-    ) {
-      affected_rows
-    }
-    insert_member_permission_extra(
-      objects: $insertPermissions
-      on_conflict: { constraint: member_permission_pkey, update_columns: [] }
-    ) {
-      affected_rows
-    }
-  }
-`
-
-const UPDATE_MEMBER_PERMISSION_GROUP = gql`
-  mutation UPDATE_MEMBER_PERMISSION_GROUP(
-    $memberId: String!
     $insertPermissionGroups: [member_permission_group_insert_input!]!
     $deletePermissionGroupIds: [uuid!]!
+    $insertPermissions: [member_permission_extra_insert_input!]!
+    $deletePermissionIds: [String!]!
   ) {
     delete_member_permission_group(
       where: { member_id: { _eq: $memberId }, permission_group_id: { _in: $deletePermissionGroupIds } }
@@ -254,6 +223,17 @@ const UPDATE_MEMBER_PERMISSION_GROUP = gql`
     insert_member_permission_group(
       objects: $insertPermissionGroups
       on_conflict: { constraint: member_permission_group_pkey, update_columns: [] }
+    ) {
+      affected_rows
+    }
+    delete_member_permission_extra(
+      where: { member_id: { _eq: $memberId }, permission_id: { _in: $deletePermissionIds } }
+    ) {
+      affected_rows
+    }
+    insert_member_permission_extra(
+      objects: $insertPermissions
+      on_conflict: { constraint: member_permission_pkey, update_columns: [] }
     ) {
       affected_rows
     }
