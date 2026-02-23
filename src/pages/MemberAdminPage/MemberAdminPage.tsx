@@ -134,7 +134,7 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        (currentUserRole === 'app-owner' || permissions.SELECT_MEMBER_PERMISSION) && (
+        currentUserRole === 'app-owner' && (
           <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
             <div className="p-5">
               <AdminBlock>

@@ -20,10 +20,9 @@ const StyledBlock = styled.div`
 
 const PermissionInput: React.FC<{
   fixOptions?: string[]
-  uncheckedOptions?: string[]
   value?: string[]
   onChange?: (value: string[]) => void
-}> = ({ fixOptions = [], value, onChange, uncheckedOptions = [] }) => {
+}> = ({ fixOptions = [], value, onChange }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, settings } = useApp()
   const { loadingPermissions, permissions: allPermissions } = usePermissionCollection()
@@ -69,17 +68,10 @@ const PermissionInput: React.FC<{
     <div className="row">
       <div className="col-12 mb-4 ">
         <Checkbox
-          checked={allPermissions
-            .filter(permission => !uncheckedOptions.includes(permission.id))
-            .every(permission => value?.includes(permission.id))}
+          checked={allPermissions.every(permission => value?.includes(permission.id))}
           onChange={e =>
             onChange?.(
-              e.target.checked
-                ? uniq([
-                    ...fixOptions,
-                    ...allPermissions.map(permission => permission.id).filter(id => !uncheckedOptions.includes(id)),
-                  ])
-                : fixOptions,
+              e.target.checked ? uniq([...fixOptions, ...allPermissions.map(permission => permission.id)]) : fixOptions,
             )
           }
         >
@@ -99,7 +91,6 @@ const PermissionInput: React.FC<{
               }
               options={sortBy(prop('id'))(permissionGroups?.[groupId] || []).map(permission => permission.id)}
               fixedOptions={fixOptions}
-              uncheckedOptions={uncheckedOptions}
               value={value}
               onChange={onChange}
             />
@@ -113,10 +104,9 @@ const PermissionGroup: React.FC<{
   label: string
   options: string[]
   fixedOptions?: string[]
-  uncheckedOptions?: string[] // 接收這個參數
   value?: string[]
   onChange?: (value: string[]) => void
-}> = ({ label, options, fixedOptions, uncheckedOptions, value, onChange }) => {
+}> = ({ label, options, fixedOptions, value, onChange }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const otherValue = value?.filter(v => !options.includes(v)) || []
@@ -134,38 +124,21 @@ const PermissionGroup: React.FC<{
   return (
     <StyledBlock>
       <Checkbox
-        // 群組全選狀態：檢查是否全選時，也要把強制 unchecked 的排掉
-        checked={options.filter(opt => !uncheckedOptions?.includes(opt)).every(option => value?.includes(option))}
+        checked={options.every(option => value?.includes(option))}
         onChange={e =>
-          onChange?.(
-            e.target.checked
-              ? [
-                  ...otherValue,
-                  // 按下群組全選時，只加入「非 uncheckedOptions」的項目
-                  ...options.filter(opt => !uncheckedOptions?.includes(opt)),
-                ]
-              : [...otherValue, ...(fixedOptions || [])],
-          )
+          onChange?.(e.target.checked ? [...otherValue, ...options] : [...otherValue, ...(fixedOptions || [])])
         }
       >
         {label}
       </Checkbox>
       <Divider className="my-3" />
       <div className="pl-3">
-        {/* 【這裡改動】：強制過濾 value，確保 uncheckedOptions 在視覺上永遠是未勾選 */}
-        <Checkbox.Group
-          value={value?.filter(v => !uncheckedOptions?.includes(v))}
-          onChange={value => onChange && onChange([...otherValue, ...(value as string[])])}
-        >
+        <Checkbox.Group value={value} onChange={value => onChange && onChange([...otherValue, ...(value as string[])])}>
           {options
             .filter(option => enabledPermissions[option] ?? true)
             .map(option => (
               <div key={option}>
-                <Checkbox
-                  value={option}
-                  // 這裡控制它變灰色 (Disabled)
-                  disabled={fixedOptions?.includes(option) || uncheckedOptions?.includes(option)}
-                >
+                <Checkbox value={option} disabled={fixedOptions?.includes(option)}>
                   {formMessages.PermissionGroup[option as keyof typeof formMessages.PermissionGroup]
                     ? formatMessage(formMessages.PermissionGroup[option as keyof typeof formMessages.PermissionGroup])
                     : option}
