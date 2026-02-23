@@ -1202,20 +1202,22 @@ const SalesLeadTable: React.VFC<{
                       {formatMessage(saleMessages.SalesLeadTable.recycle)}
                     </Button>
                   )}
-                  <Button
-                    icon={<DeleteOutlined />}
-                    className="mr-2"
-                    onClick={() =>
-                      handleLeadStatus(
-                        selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
-                        manager.id,
-                        leads,
-                        'delete',
-                      )
-                    }
-                  >
-                    {formatMessage(saleMessages.SalesLeadTable.delete)}
-                  </Button>
+                  {Boolean(permissions.SALES_MEMBER_LIST_DELETE) && (
+                    <Button
+                      icon={<DeleteOutlined />}
+                      className="mr-2"
+                      onClick={() =>
+                        handleLeadStatus(
+                          selectedRowLeads.map(selectedRowLead => selectedRowLead.id),
+                          manager.id,
+                          leads,
+                          'delete',
+                        )
+                      }
+                    >
+                      {formatMessage(saleMessages.SalesLeadTable.delete)}
+                    </Button>
+                  )}
                 </>
               )}
               <TransferModal
