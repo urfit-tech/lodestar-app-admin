@@ -9,6 +9,7 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
+import { useUserPermissionGroupMembers } from '../../hooks/permission'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
 import saleMessages from './translation'
@@ -62,15 +63,20 @@ type OrderExportPayload = {
   timezone?: string
 }
 
-const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
+const OrderExportModal: React.FC<AdminModalProps & { exportPermission: 'Admin' | 'Group' }> = ({
+  renderTrigger,
+  exportPermission,
+  ...adminModalProps
+}) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [selectedSpeicfy, setSelectedSpecify] = useState<OrderSpecify>('ALL')
   const [selectedProducts, setSelectedProducts] = useState<{ id: string; title: string; children?: any[] }[]>([])
   const [loading, setLoading] = useState(false)
   const toast = useToast()
+  const { permissionGroupsMembers } = useUserPermissionGroupMembers(currentMemberId || '')
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
     form
@@ -106,8 +112,19 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             break
         }
 
+        switch (exportPermission) {
+          case 'Admin':
+            break
+          case 'Group':
+            Object.assign(orderExportPayload, { memberIds: permissionGroupsMembers })
+            break
+        }
+
         switch (exportTarget) {
           case 'orderLog':
+            // FIXME: delete
+            console.log('[送出 exportPayload]', orderExportPayload)
+
             await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/orders/export`, orderExportPayload, {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -139,6 +156,8 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             )
             break
         }
+        // FIXME: delete
+        console.log('[DEBUG] 傳送 export payload：', orderExportPayload)
         toast({
           title: formatMessage(saleMessages.OrderExportModal.requestSuccess),
           status: 'success',
