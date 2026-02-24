@@ -264,7 +264,7 @@ const useMemberTemplate = (certificateId: string, filter?: { name?: string; emai
             count
           }
         }
-        member_certificate(where: $condition, limit: $limit) {
+        member_certificate(where: $condition, limit: $limit, order_by: { id: asc }) {
           id
           member {
             id
