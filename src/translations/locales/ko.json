@@ -1652,6 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "모든 회원 카테고리 기능",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "계약 생성 기능",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "계약 해지 기능",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "계약 표시 기능",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "회원 쿠폰 정보 보기",
   "form.PermissionGroup.MEMBER_CREATE": "회원 추가",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "이메일 편집",

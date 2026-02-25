@@ -13810,9 +13810,9 @@ lodash.upperfirst@^4.3.1:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-element@urfit-tech/lodestar-app-element#v1.95.0:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.95.1:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/8b301f08806cb5a4670b872e3869621fee1bd510"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/33685e43fb466b9e2eb076ed8a1dc6da438972d2"
   dependencies:
     "@apollo/client" "^3.7.11"
     "@babel/cli" "^7.13.16"
