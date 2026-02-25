@@ -1652,7 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "すべての会員カテゴリ機能",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "契約作成機能",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "契約解除機能",
-  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "契約表示機能",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "契約閲覧機能",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "会員クーポン情報の表示",
   "form.PermissionGroup.MEMBER_CREATE": "会員の追加",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "メールアドレスの編集",

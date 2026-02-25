@@ -204,7 +204,7 @@ const formMessages = {
     MEMBER_STAR_ADMIN: { id: 'form.PermissionGroup.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位' },
     MEMBER_CATEGORY_ADMIN: { id: 'form.PermissionGroup.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
     MEMBER_MANAGER_ADMIN: { id: 'form.PermissionGroup.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
-    MEMBER_CONTRACT_VIEW: { id: 'form.PermissionGroup.MEMBER_CONTRACT_VIEW', defaultMessage: '顯示合約功能' },
+    MEMBER_CONTRACT_VIEW: { id: 'form.PermissionGroup.MEMBER_CONTRACT_VIEW', defaultMessage: '檢視合約功能' },
     MEMBER_CONTRACT_INSERT: { id: 'form.PermissionGroup.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
     MEMBER_CONTRACT_REVOKE: { id: 'form.PermissionGroup.MEMBER_CONTRACT_REVOKE', defaultMessage: '解除合約功能' },
     MEMBER_ATTENDANT: { id: 'form.PermissionGroup.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
