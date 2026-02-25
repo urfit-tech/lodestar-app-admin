@@ -1652,6 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "Semua fungsi kategori anggota",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "Atur fungsi kontrak",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "Batalkan fungsi kontrak",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "Tampilkan fungsi kontrak",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "Lihat informasi kupon anggota",
   "form.PermissionGroup.MEMBER_CREATE": "Tambahkan anggota",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Edit email",

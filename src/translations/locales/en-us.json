@@ -1652,6 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "All Member Category Functions",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "Create Contract Function",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "Revoke Contract Function",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "View Contract Function",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "View Member Coupon Plan Info",
   "form.PermissionGroup.MEMBER_CREATE": "Add Member",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Edit Email",

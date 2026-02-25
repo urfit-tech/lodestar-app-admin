@@ -126,6 +126,7 @@ const PermissionGroup: React.FC<{
   } = {
     PRACTICE_ADMIN: !!enabledModules.practice,
     MEMBER_ATTENDANT: !!enabledModules.attend,
+    MEMBER_CONTRACT_VIEW: !!enabledModules.contract,
     MEMBER_CONTRACT_INSERT: !!enabledModules.contract,
     MEMBER_CONTRACT_REVOKE: !!enabledModules.contract,
     SALES_CALL_ADMIN: !!enabledModules.member_assignment,

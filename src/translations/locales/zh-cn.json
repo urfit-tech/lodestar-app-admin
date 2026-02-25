@@ -1652,6 +1652,7 @@
   "form.PermissionGroup.MEMBER_CATEGORY_ADMIN": "所有会员分类功能",
   "form.PermissionGroup.MEMBER_CONTRACT_INSERT": "创建合同功能",
   "form.PermissionGroup.MEMBER_CONTRACT_REVOKE": "解除合同功能",
+  "form.PermissionGroup.MEMBER_CONTRACT_VIEW": "显示合同功能",
   "form.PermissionGroup.MEMBER_COUPON_PLAN_VIEW": "查看会员折扣券信息",
   "form.PermissionGroup.MEMBER_CREATE": "添加会员",
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "编辑邮箱",
