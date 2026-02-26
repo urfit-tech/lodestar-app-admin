@@ -362,8 +362,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
         campusIds: teacherFromMember.campusIds,
         campusNames: teacherFromMember.campusNames,
         languages: teacherFromMember.languages as Language[],
+        teachingLanguages: teacherFromMember.teachingLanguages,
         traits: teacherFromMember.traits,
-        level: String(teacherFromMember.level),
+        level: teacherFromMember.level || '-',
         yearsOfExperience: teacherFromMember.yearsOfExperience,
         note: teacherFromMember.note,
       }

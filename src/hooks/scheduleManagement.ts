@@ -37,10 +37,11 @@ interface TeacherFromMember {
   campusIds: string[] // 所有校區 ID（支援多校區）
   campusNames: string[] // 所有校區名稱（支援多校區）
   languages: string[] // from member_tags
+  teachingLanguages: string[] // from member_property (授課語言)
   traits: string[] // from member_specialities
-  note: string // from member_property (內部備註)
+  note: string // from member_property (備註)
   yearsOfExperience: number // from member_property (年資)
-  level: number // from member_rating
+  level: string // from member_property (等級)
 }
 
 // GraphQL query to get permission groups (as campus options)
@@ -67,7 +68,6 @@ export const GET_TEACHERS_FROM_MEMBERS = gql`
         name
         email
         picture_url
-        star
         member_tags {
           tag_name
         }
@@ -117,13 +117,13 @@ export const usePermissionGroupsAsCampuses = () => {
  * Hook to get teachers from members by member_category (會員分類為「老師」)
  * Campus info is retrieved from member_permission_groups
  * @param permissionGroupIds - Array of permission group IDs to filter teachers by campus (optional)
- * @param languageFilters - Optional language filters array (from member tags, e.g. ['中文', '英文'])
+ * @param languageFilters - Optional teaching language filters array (from member property, e.g. ['中文', '英文'])
  * @param traitFilter - Optional trait filter (from member specialities)
  * @param requireLanguage - If true, skip query when no language filters provided
  */
 export const useTeachersFromMembers = (
   permissionGroupIds?: string[],
-  languageFilters?: string[],
+  languageFilters?: string[], // 教師「授課語言」篩選
   traitFilter?: string,
   requireLanguage: boolean = false,
 ) => {
@@ -138,6 +138,10 @@ export const useTeachersFromMembers = (
   >(GET_TEACHERS_FROM_MEMBERS, {
     skip: shouldSkip,
   })
+
+  const parseTeachingLanguages = useCallback((value: string): string[] => {
+    return Array.from(new Set(value.split(/[、，,/\\\s]+/).map(v => v.trim()).filter(Boolean)))
+  }, [])
 
   const teachers = useMemo<TeacherFromMember[]>(() => {
     const memberCategories = data?.member_category
@@ -170,19 +174,22 @@ export const useTeachersFromMembers = (
       // Extract traits from specialities
       const traits = member.member_specialities.map(s => s.tag_name)
 
-      // Extract note and years of experience from properties
+      // Extract note, level, teaching languages and years of experience from properties
       let note = ''
+      let level = ''
+      let teachingLanguages: string[] = []
       let yearsOfExperience = 0
       member.member_properties.forEach(prop => {
-        if (prop.property.name === '內部備註') {
+        if (prop.property.name === '備註') {
           note = prop.value
+        } else if (prop.property.name === '等級') {
+          level = prop.value
+        } else if (prop.property.name === '授課語言') {
+          teachingLanguages = parseTeachingLanguages(prop.value)
         } else if (prop.property.name === '年資') {
           yearsOfExperience = parseInt(prop.value, 10) || 0
         }
       })
-
-      // Get star rating from member.star field
-      const level = member.star || 0
 
       memberMap.set(memberId, {
         id: member.id,
@@ -194,10 +201,11 @@ export const useTeachersFromMembers = (
         campusIds,
         campusNames,
         languages,
+        teachingLanguages,
         traits,
         note,
         yearsOfExperience,
-        level,
+        level: level.trim(),
       })
     })
 
@@ -208,9 +216,9 @@ export const useTeachersFromMembers = (
       result = result.filter(t => t.campusIds.some(id => permissionGroupIds.includes(id)))
     }
 
-    // Apply language filters (支援多語言篩選)
+    // Apply teaching language filters (支援多語言篩選)
     if (languageFilters && languageFilters.length > 0) {
-      result = result.filter(t => languageFilters.some(lang => t.languages.includes(lang)))
+      result = result.filter(t => languageFilters.some(lang => t.teachingLanguages.includes(lang)))
     }
 
     // Apply trait filter
@@ -219,12 +227,12 @@ export const useTeachersFromMembers = (
     }
 
     return result
-  }, [data, permissionGroupIds, languageFilters, traitFilter])
+  }, [data, languageFilters, parseTeachingLanguages, permissionGroupIds, traitFilter])
 
-  // Get unique languages from all teachers
+  // Get unique teaching languages from all teachers
   const availableLanguages = useMemo(() => {
     const langSet = new Set<string>()
-    teachers.forEach(t => t.languages.forEach(l => langSet.add(l)))
+    teachers.forEach(t => t.teachingLanguages.forEach(l => langSet.add(l)))
     return Array.from(langSet).sort()
   }, [teachers])
 
