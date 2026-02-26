@@ -9,6 +9,7 @@ import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
+import { matchesScheduleOrderProductName } from './utils/orderNameFilter'
 
 const { Search } = Input
 
@@ -57,7 +58,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
   studentIds = [],
   classGroupId,
   scheduleType = 'semester',
-  language = 'zh-TW',
+  language = '',
   campusId,
   maxStudents,
   events = [],
@@ -126,6 +127,8 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           if (options.product === '教材') return false
           if (options.class_type !== classTypeLabel) return false
           if (language && options.language && options.language !== language) return false
+          const productName = options.title || product.name
+          if (!matchesScheduleOrderProductName({ productName, scheduleType, language })) return false
           return true
         })
 

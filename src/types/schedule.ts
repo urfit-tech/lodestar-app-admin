@@ -45,8 +45,9 @@ export interface Teacher {
   campusIds: string[] // 所有校區 ID（支援多校區）
   campusNames: string[] // 所有校區名稱（支援多校區）
   languages: Language[]
+  teachingLanguages: string[]
   traits: string[]
-  level: string
+  level: string // from member_property (等級)
   yearsOfExperience: number
   note?: string
   availableSlots?: TimeSlot[]

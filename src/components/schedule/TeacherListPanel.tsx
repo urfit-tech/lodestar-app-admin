@@ -5,7 +5,11 @@ import dayjs from 'dayjs'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { usePermissionGroupsAsCampuses, useTeacherOpenTimeEvents, useTeachersFromMembers } from '../../hooks/scheduleManagement'
+import {
+  usePermissionGroupsAsCampuses,
+  useTeacherOpenTimeEvents,
+  useTeachersFromMembers,
+} from '../../hooks/scheduleManagement'
 import { Language, ScheduleCondition, SCHEDULE_COLORS, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
 
@@ -51,15 +55,15 @@ const FilterRow = styled.div`
 `
 
 const LANGUAGE_LABELS: Record<Language, string> = {
-  '中文': '中文',
-  '英文': '英文',
-  '日文': '日文',
-  '韓文': '韓文',
-  '德文': '德文',
-  '法文': '法文',
-  '西文': '西文',
-  '台語': '台語',
-  '粵語': '粵語',
+  中文: '中文',
+  英文: '英文',
+  日文: '日文',
+  韓文: '韓文',
+  德文: '德文',
+  法文: '法文',
+  西文: '西文',
+  台語: '台語',
+  粵語: '粵語',
 }
 
 interface TeacherListPanelProps {
@@ -90,7 +94,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   const [selectedCampusIds, setSelectedCampusIds] = useState<string[]>(permissionGroupIds || (campus ? [campus] : []))
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [selectedTraits, setSelectedTraits] = useState<string[]>([])
-  const [selectedLevel, setSelectedLevel] = useState<number | undefined>()
+  const [selectedLevel, setSelectedLevel] = useState<string | undefined>()
   const [currentPage, setCurrentPage] = useState(1)
 
   // 當校區 prop 改變時，同步更新篩選器
@@ -122,11 +126,21 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
   // Get all unique levels from real teachers
   const allLevels = useMemo(() => {
-    const levels = new Set<number>()
+    const levels = new Set<string>()
     realTeachers.forEach(t => {
-      if (t.level > 0) levels.add(t.level)
+      const level = t.level.trim()
+      if (level) levels.add(level)
     })
-    return Array.from(levels).sort((a, b) => b - a) // Descending order
+    return Array.from(levels).sort((a, b) => {
+      const aNum = parseInt(a, 10)
+      const bNum = parseInt(b, 10)
+      const isANum = !Number.isNaN(aNum)
+      const isBNum = !Number.isNaN(bNum)
+      if (isANum && isBNum) return bNum - aNum
+      if (isANum) return -1
+      if (isBNum) return 1
+      return a.localeCompare(b, 'zh-TW')
+    })
   }, [realTeachers])
 
   const allTraits = availableTraits
@@ -141,8 +155,9 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       campusIds: t.campusIds,
       campusNames: t.campusNames,
       languages: t.languages as Language[],
+      teachingLanguages: t.teachingLanguages,
       traits: t.traits,
-      level: t.level > 0 ? `${t.level} 星` : '-',
+      level: t.level || '-',
       yearsOfExperience: t.yearsOfExperience,
       note: t.note,
       availableSlots: [], // Will be populated later
@@ -162,7 +177,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
     // 語言篩選器 - 如果有選擇，進一步篩選
     if (selectedLanguages.length > 0) {
-      teachers = teachers.filter(t => selectedLanguages.some(lang => t.languages.includes(lang as Language)))
+      teachers = teachers.filter(t => selectedLanguages.some(lang => t.teachingLanguages.includes(lang)))
     }
 
     // Traits filter
@@ -172,10 +187,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
     // Level filter
     if (selectedLevel !== undefined) {
-      teachers = teachers.filter(t => {
-        const teacherLevel = typeof t.level === 'string' ? parseInt(t.level, 10) : t.level
-        return teacherLevel === selectedLevel
-      })
+      teachers = teachers.filter(t => t.level === selectedLevel)
     }
 
     // Search filter
@@ -190,14 +202,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
     }
 
     return teachers
-  }, [
-    convertedRealTeachers,
-    languages,
-    selectedLanguages,
-    selectedTraits,
-    selectedLevel,
-    searchText,
-  ])
+  }, [convertedRealTeachers, languages, selectedLanguages, selectedTraits, selectedLevel, searchText])
 
   const availabilityWindow = useMemo(() => {
     if (!enableAvailabilitySort || !scheduleCondition?.startDate) return null
@@ -250,10 +255,18 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
         if (bScore !== aScore) return bScore - aScore
       }
 
-      const levelA = typeof a.level === 'string' ? parseInt(a.level, 10) || 0 : a.level
-      const levelB = typeof b.level === 'string' ? parseInt(b.level, 10) || 0 : b.level
-      if (levelB !== levelA) {
-        return levelB - levelA
+      const levelANum = parseInt(a.level, 10)
+      const levelBNum = parseInt(b.level, 10)
+      const isLevelANumeric = !Number.isNaN(levelANum)
+      const isLevelBNumeric = !Number.isNaN(levelBNum)
+      if (isLevelANumeric && isLevelBNumeric && levelBNum !== levelANum) {
+        return levelBNum - levelANum
+      }
+      if (isLevelANumeric !== isLevelBNumeric) {
+        return isLevelANumeric ? -1 : 1
+      }
+      if (!isLevelANumeric && a.level !== b.level) {
+        return a.level.localeCompare(b.level, 'zh-TW')
       }
 
       if (b.yearsOfExperience !== a.yearsOfExperience) {
@@ -330,8 +343,16 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       render: (_, record) => (
         <div>
           <div>{record.name}</div>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            {record.email}
+          <Typography.Text type="secondary" style={{ fontSize: 12 }} copyable={{ text: record.email }}>
+            <a
+              href={`${process.env.PUBLIC_URL}/members/${record.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={event => event.stopPropagation()}
+              style={{ color: 'inherit' }}
+            >
+              {record.email}
+            </a>
           </Typography.Text>
         </div>
       ),
@@ -344,6 +365,17 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
         const found = campuses.find(c => c.id === campusId)
         return found?.name || campusId
       },
+    },
+    {
+      title: formatMessage(scheduleMessages.ScheduleTable.language),
+      key: 'teachingLanguages',
+      render: (_, record) => (
+        <Space size={[0, 4]} wrap>
+          {record.teachingLanguages.length > 0
+            ? record.teachingLanguages.map(lang => <Tag key={lang}>{LANGUAGE_LABELS[lang as Language] || lang}</Tag>)
+            : '-'}
+        </Space>
+      ),
     },
     {
       title: formatMessage(scheduleMessages.TeacherList.languages),
@@ -373,10 +405,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       title: formatMessage(scheduleMessages.TeacherList.level),
       dataIndex: 'level',
       key: 'level',
-      render: level => {
-        const numLevel = typeof level === 'string' ? parseInt(level, 10) : level
-        return numLevel > 0 ? numLevel : '-'
-      },
+      render: level => level || '-',
     },
     {
       title: formatMessage(scheduleMessages.TeacherList.experience),
@@ -417,70 +446,70 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 
       {/* Filters */}
       <FilterRow>
-            <Input
-              placeholder={formatMessage(scheduleMessages['*'].search)}
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              style={{ width: 200 }}
-              allowClear
-            />
-            <Select
-              mode="multiple"
-              placeholder={formatMessage(scheduleMessages.TeacherList.campus)}
-              value={selectedCampusIds}
-              onChange={setSelectedCampusIds}
-              style={{ width: 200 }}
-              allowClear
-              loading={campusesLoading}
-            >
-              {campuses.map(c => (
-                <Select.Option key={c.id} value={c.id}>
-                  {c.name}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select
-              mode="multiple"
-              placeholder={formatMessage(scheduleMessages.TeacherList.languages)}
-              value={selectedLanguages}
-              onChange={setSelectedLanguages}
-              style={{ width: 200 }}
-              allowClear
-            >
-              {/* 只顯示訂單的語言作為選項 */}
-              {languages?.map(lang => (
-                <Select.Option key={lang} value={lang}>
-                  {lang}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select
-              mode="multiple"
-              placeholder={formatMessage(scheduleMessages.TeacherList.traits)}
-              value={selectedTraits}
-              onChange={setSelectedTraits}
-              style={{ width: 200 }}
-              allowClear
-            >
-              {allTraits.map(trait => (
-                <Select.Option key={trait} value={trait}>
-                  {trait}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select
-              placeholder={formatMessage(scheduleMessages.TeacherList.level)}
-              value={selectedLevel}
-              onChange={setSelectedLevel}
-              style={{ width: 120 }}
-              allowClear
-            >
-              {allLevels.map(level => (
-                <Select.Option key={level} value={level}>
-                  {level} 星
-                </Select.Option>
-              ))}
+        <Input
+          placeholder={formatMessage(scheduleMessages['*'].search)}
+          prefix={<SearchOutlined />}
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+          style={{ width: 200 }}
+          allowClear
+        />
+        <Select
+          mode="multiple"
+          placeholder={formatMessage(scheduleMessages.TeacherList.campus)}
+          value={selectedCampusIds}
+          onChange={setSelectedCampusIds}
+          style={{ width: 200 }}
+          allowClear
+          loading={campusesLoading}
+        >
+          {campuses.map(c => (
+            <Select.Option key={c.id} value={c.id}>
+              {c.name}
+            </Select.Option>
+          ))}
+        </Select>
+        <Select
+          mode="multiple"
+          placeholder={formatMessage(scheduleMessages.ScheduleTable.language)}
+          value={selectedLanguages}
+          onChange={setSelectedLanguages}
+          style={{ width: 200 }}
+          allowClear
+        >
+          {/* 只顯示訂單的語言作為選項 */}
+          {languages?.map(lang => (
+            <Select.Option key={lang} value={lang}>
+              {lang}
+            </Select.Option>
+          ))}
+        </Select>
+        <Select
+          mode="multiple"
+          placeholder={formatMessage(scheduleMessages.TeacherList.traits)}
+          value={selectedTraits}
+          onChange={setSelectedTraits}
+          style={{ width: 200 }}
+          allowClear
+        >
+          {allTraits.map(trait => (
+            <Select.Option key={trait} value={trait}>
+              {trait}
+            </Select.Option>
+          ))}
+        </Select>
+        <Select
+          placeholder={formatMessage(scheduleMessages.TeacherList.level)}
+          value={selectedLevel}
+          onChange={setSelectedLevel}
+          style={{ width: 120 }}
+          allowClear
+        >
+          {allLevels.map(level => (
+            <Select.Option key={level} value={level}>
+              {level}
+            </Select.Option>
+          ))}
         </Select>
       </FilterRow>
 
