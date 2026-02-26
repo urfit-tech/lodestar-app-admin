@@ -39,6 +39,7 @@ import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher 
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
+import { matchesScheduleOrderProductName } from '../utils/orderNameFilter'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 
@@ -247,6 +248,16 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           if (options.product === '教材') return false
           if (options.class_type !== classTypeLabel) return false
           if (classGroup.language && options.language && options.language !== classGroup.language) {
+            return false
+          }
+          const productName = options.title || product.name
+          if (
+            !matchesScheduleOrderProductName({
+              productName,
+              scheduleType,
+              language: classGroup.language,
+            })
+          ) {
             return false
           }
           return true
@@ -668,8 +679,9 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         campusIds: teacherFromMember!.campusIds,
         campusNames: teacherFromMember!.campusNames,
         languages: teacherFromMember!.languages as Language[],
+        teachingLanguages: teacherFromMember!.teachingLanguages,
         traits: teacherFromMember!.traits,
-        level: String(teacherFromMember!.level),
+        level: teacherFromMember!.level || '-',
         yearsOfExperience: teacherFromMember!.yearsOfExperience,
         note: teacherFromMember!.note,
       }))

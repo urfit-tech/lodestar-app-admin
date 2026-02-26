@@ -7,6 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAddOrderToClassGroup, useAvailableOrdersForClass } from '../../hooks/scheduleManagement'
 import { ScheduleType } from '../../types/schedule'
+import { matchesScheduleOrderProductName } from './utils/orderNameFilter'
 
 const SearchWrapper = styled.div`
   margin-bottom: 16px;
@@ -68,11 +69,28 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
     if (!orders) return []
 
     const now = new Date()
+    const classTypeLabel = scheduleType === 'semester' ? '團體班' : '小組班'
 
     return orders
       .map(order => {
-        const firstProduct = order.order_products?.[0]
-        const productOptions = firstProduct?.options as any
+        const matchedProduct = order.order_products?.find(product => {
+          const options = (product.options as any)?.options || {}
+          const productName = options.title || product.name
+
+          if (options.product === '教材') return false
+          if (options.class_type && options.class_type !== classTypeLabel) return false
+          if (language && options.language && options.language !== language) return false
+
+          return matchesScheduleOrderProductName({
+            productName,
+            scheduleType,
+            language,
+          })
+        })
+
+        if (!matchedProduct) return null
+
+        const productOptions = matchedProduct?.options as any
         const productMeta = productOptions?.options || {}
         const orderOptions = order.options as any
         const campusFromOptions =
@@ -83,7 +101,7 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
           memberId: order.member_id,
           memberName: order.member?.name || '(未設定姓名)',
           memberEmail: order.member?.email || '',
-          productName: productMeta?.title || productOptions?.title || firstProduct?.name || '-',
+          productName: productMeta?.title || productOptions?.title || matchedProduct?.name || '-',
           language: productMeta?.language || '-',
           classType: productMeta?.class_type || '-',
           totalSessions: productMeta?.total_sessions?.max || productOptions?.quantity || 0,
@@ -93,13 +111,14 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
           campusId: campusFromOptions,
         }
       })
+      .filter((order): order is OrderForDisplay => Boolean(order))
       .filter(order => {
         if ((order.status || '').includes('EXPIRED')) return false
         if (order.expiredAt && new Date(order.expiredAt) < now) return false
         if (campusId && order.campusId && order.campusId !== campusId) return false
         return true
       })
-  }, [orders, campusId])
+  }, [orders, campusId, scheduleType, language])
 
   // Filter by search text
   const filteredOrders = useMemo(() => {
