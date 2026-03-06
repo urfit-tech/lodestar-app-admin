@@ -226,11 +226,11 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return { start, end }
   }, [scheduleCondition.startDate, scheduleCondition.endDate])
 
-  const { events: teacherOpenTimeEvents, busyEvents: teacherBusyEvents } = useTeacherOpenTimeEvents(
-    selectedTeacherIds,
-    teacherOpenTimeRange.start,
-    teacherOpenTimeRange.end,
-  )
+  const {
+    events: teacherOpenTimeEvents,
+    calendarEvents: teacherTimelineEvents,
+    busyEvents: teacherBusyEvents,
+  } = useTeacherOpenTimeEvents(selectedTeacherIds, teacherOpenTimeRange.start, teacherOpenTimeRange.end)
 
   const holidays = useMemo(() => {
     return defaultExcludeDates.map(h => h.date)
@@ -1864,7 +1864,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             scheduleType={scheduleType}
             events={calendarEvents}
             selectedTeachers={selectedTeachers}
-            teacherOpenTimeEvents={teacherOpenTimeEvents}
+            teacherOpenTimeEvents={teacherTimelineEvents}
             unpaidStudentsByEventId={unpaidStudentsByEventId}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}

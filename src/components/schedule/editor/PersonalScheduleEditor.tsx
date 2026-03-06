@@ -280,7 +280,11 @@ const PersonalScheduleEditorInner: React.FC = () => {
   }, [selectedTeachers])
 
   // Get teacher open time events (background events for calendar)
-  const { events: teacherOpenTimeEvents, busyEvents: teacherBusyEvents } = useTeacherOpenTimeEvents(selectedTeacherIds)
+  const {
+    events: teacherOpenTimeEvents,
+    calendarEvents: teacherTimelineEvents,
+    busyEvents: teacherBusyEvents,
+  } = useTeacherOpenTimeEvents(selectedTeacherIds)
 
   // Get student open time events (background events for calendar)
   const { events: studentOpenTimeEvents, refetch: refetchStudentEvents } = useStudentOpenTimeEvents(memberId)
@@ -1780,7 +1784,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
             scheduleType="personal"
             events={calendarEvents}
             selectedTeachers={selectedTeachers}
-            teacherOpenTimeEvents={teacherOpenTimeEvents}
+            teacherOpenTimeEvents={teacherTimelineEvents}
             studentOpenTimeEvents={studentOpenTimeEvents}
             studentName={member?.name || selectedStudent?.name}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
