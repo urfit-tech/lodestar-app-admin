@@ -11,9 +11,23 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StudentOpenTimeEvent, STUDENT_EVENT_COLORS, TeacherOpenTimeEvent } from '../../hooks/scheduleManagement'
+import {
+  StudentOpenTimeEvent,
+  STUDENT_EVENT_COLORS,
+  TeacherTimelineEvent,
+  TeacherTimelineStatus,
+} from '../../hooks/scheduleManagement'
 import { getStatusColor, ScheduleEvent, ScheduleType, SCHEDULE_COLORS, Teacher } from '../../types/schedule'
 import scheduleMessages from './translation'
+import {
+  buildScheduleEventIdSet,
+  resolveTeacherLayerColor,
+  shouldShowStudentLayerEvent,
+  shouldShowTeacherLayerEvent,
+  StudentLayerStatus,
+  StudentStatusVisibility,
+  TeacherStatusVisibility,
+} from './utils/calendarLayerUtils'
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
@@ -61,6 +75,20 @@ const CalendarWrapper = styled.div`
     font-size: 12px;
   }
 
+  .fc-event.fc-layer-event {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.9;
+  }
+
+  .fc-timegrid-event.fc-layer-event {
+    z-index: 1 !important;
+  }
+
+  .fc-timegrid-event:not(.fc-layer-event) {
+    z-index: 2 !important;
+  }
+
   .fc-event-external::after {
     content: '外';
     position: absolute;
@@ -70,21 +98,6 @@ const CalendarWrapper = styled.div`
     background: rgba(0, 0, 0, 0.3);
     padding: 1px 3px;
     border-radius: 2px;
-  }
-
-  /* Background events with external marker */
-  .fc-bg-event.fc-event-external::after {
-    content: '外';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 11px;
-    color: rgba(0, 0, 0, 0.6);
-    background: rgba(255, 255, 255, 0.5);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-weight: 500;
   }
 
   .holiday-slot {
@@ -133,11 +146,27 @@ const TeacherIndicator = styled.span<{ $color: string }>`
   margin-right: 4px;
 `
 
+const STUDENT_STATUS_LABELS: Record<StudentLayerStatus, string> = {
+  open: '開放時間',
+  scheduled: '已預排',
+  published: '已發布',
+  template: '固定課表',
+}
+
+const TEACHER_STATUS_LABELS: Record<TeacherTimelineStatus, string> = {
+  open: '開放時間',
+  scheduled: '已預排',
+  published: '已發布',
+}
+
+const STUDENT_LAYER_STATUSES: StudentLayerStatus[] = ['open', 'scheduled', 'published', 'template']
+const TEMPLATE_PLACEHOLDER_ENABLED = false
+
 interface ScheduleCalendarProps {
   scheduleType: ScheduleType
   events: ScheduleEvent[]
   selectedTeachers: Teacher[]
-  teacherOpenTimeEvents?: TeacherOpenTimeEvent[]
+  teacherOpenTimeEvents?: TeacherTimelineEvent[]
   studentOpenTimeEvents?: StudentOpenTimeEvent[]
   studentName?: string
   holidays?: Date[]
@@ -167,15 +196,23 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   const { formatMessage } = useIntl()
   const calendarRef = useRef<FullCalendar>(null)
   const [currentDate, setCurrentDate] = useState(viewDate || new Date())
-  // Track which teachers have their open time visible (by teacher ID)
-  const [visibleOpenTimeTeacherIds, setVisibleOpenTimeTeacherIds] = useState<Set<string>>(new Set())
-  // Track if student open time is visible
-  const [showStudentOpenTime, setShowStudentOpenTime] = useState(true)
+  const [visibleTeacherIds, setVisibleTeacherIds] = useState<Set<string>>(new Set())
+  const [teacherStatusVisibility, setTeacherStatusVisibility] = useState<TeacherStatusVisibility>({
+    open: true,
+    scheduled: true,
+    published: true,
+  })
+  const [studentStatusVisibility, setStudentStatusVisibility] = useState<StudentStatusVisibility>({
+    open: true,
+    scheduled: true,
+    published: true,
+    template: false,
+  })
 
   // Auto-enable open time display for newly selected teachers
   useEffect(() => {
     if (selectedTeachers.length > 0) {
-      setVisibleOpenTimeTeacherIds(prev => {
+      setVisibleTeacherIds(prev => {
         const next = new Set(prev)
         selectedTeachers.forEach(teacher => {
           if (teacher?.id) {
@@ -187,21 +224,9 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     }
   }, [selectedTeachers])
 
-  const getTeacherColorSet = useCallback(
-    (teacherId?: string) => {
-      if (!teacherId) return null
-      const index = selectedTeachers.findIndex(t => t.id === teacherId)
-      const colorKeys = ['teacher1', 'teacher2', 'teacher3'] as const
-      if (index >= 0 && index < 3) {
-        return SCHEDULE_COLORS.teacher[colorKeys[index]]
-      }
-      return null
-    },
-    [selectedTeachers],
-  )
+  const scheduleEventIdSet = useMemo(() => buildScheduleEventIdSet(events), [events])
 
   const calendarEvents: EventInput[] = useMemo(() => {
-    // Convert schedule events to calendar events
     const scheduleEventsForCalendar: EventInput[] = events.map(event => {
       const startDateTime = dayjs(event.date)
         .hour(parseInt(event.startTime.split(':')[0]))
@@ -214,14 +239,15 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         .toDate()
 
       const statusColor = getStatusColor(scheduleType, event.status)
-      const teacherColorSet = getTeacherColorSet(event.teacherId)
-      const teacherColor = teacherColorSet
-        ? event.status === 'published'
-          ? teacherColorSet.dark
-          : event.status === 'pre-scheduled'
-          ? teacherColorSet.medium
+      const statusForTeacherLayer: TeacherTimelineStatus | null =
+        event.status === 'published' ? 'published' : event.status === 'pre-scheduled' ? 'scheduled' : null
+      const isTeacherSelected = Boolean(
+        event.teacherId && selectedTeachers.some(teacher => teacher.id === event.teacherId),
+      )
+      const teacherColor =
+        selectedTeachers.length > 0 && statusForTeacherLayer && isTeacherSelected
+          ? resolveTeacherLayerColor(selectedTeachers, event.teacherId, statusForTeacherLayer)
           : statusColor
-        : statusColor
 
       return {
         id: event.id,
@@ -233,26 +259,40 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         extendedProps: {
           event,
           isExternal: event.isExternal,
+          isLayerEvent: false,
         },
         classNames: event.isExternal ? ['fc-event-external'] : [],
       }
     })
 
-    // Convert teacher open time events to background events (only for visible teachers)
-    const teacherBackgroundEvents: EventInput[] = teacherOpenTimeEvents
-      .filter(event => visibleOpenTimeTeacherIds.has(event.teacherId))
+    const teacherLayerEvents: EventInput[] = teacherOpenTimeEvents
+      .filter(event =>
+        shouldShowTeacherLayerEvent(
+          {
+            teacherId: event.teacherId,
+            status: event.extendedProps.status,
+            originalEventId: event.extendedProps.originalEventId,
+          },
+          visibleTeacherIds,
+          teacherStatusVisibility,
+          scheduleEventIdSet,
+        ),
+      )
       .map(event => {
+        const layerColor = resolveTeacherLayerColor(selectedTeachers, event.teacherId, event.extendedProps.status)
         const eventInput: EventInput = {
           id: event.id,
           start: event.start,
           end: event.end,
           title: event.title,
-          backgroundColor: event.backgroundColor,
-          borderColor: event.borderColor,
-          display: 'background' as const,
-          extendedProps: event.extendedProps,
+          backgroundColor: layerColor,
+          borderColor: layerColor,
+          extendedProps: {
+            ...event.extendedProps,
+            isLayerEvent: true,
+          },
+          classNames: ['fc-layer-event', ...(event.extendedProps.isExternal ? ['fc-event-external'] : [])],
         }
-        // Add rrule and duration for recurring events
         if (event.rrule) {
           eventInput.rrule = event.rrule
         }
@@ -262,42 +302,55 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         return eventInput
       })
 
-    // Convert student open time events to background events (only if visible)
-    const studentBackgroundEvents: EventInput[] = showStudentOpenTime
-      ? studentOpenTimeEvents.map(event => {
-          const eventInput: EventInput = {
-            id: event.id,
-            start: event.start,
-            end: event.end,
-            title: event.title,
-            backgroundColor: event.backgroundColor,
-            borderColor: event.borderColor,
-            display: 'background' as const,
-            extendedProps: event.extendedProps,
-            classNames: event.extendedProps.isExternal ? ['fc-event-external'] : [],
-          }
-          // Add rrule and duration for recurring events
-          if (event.rrule) {
-            eventInput.rrule = event.rrule
-          }
-          if (event.duration) {
-            eventInput.duration = event.duration
-          }
-          return eventInput
-        })
-      : []
+    const studentLayerEvents: EventInput[] = studentOpenTimeEvents
+      .filter(event => {
+        const status = event.extendedProps.status
+        if (!STUDENT_LAYER_STATUSES.includes(status as StudentLayerStatus)) {
+          return false
+        }
+        if (event.extendedProps.originalEventId && scheduleEventIdSet.has(event.extendedProps.originalEventId)) {
+          return false
+        }
+        return shouldShowStudentLayerEvent(
+          status as StudentLayerStatus,
+          studentStatusVisibility,
+          TEMPLATE_PLACEHOLDER_ENABLED,
+        )
+      })
+      .map(event => {
+        const eventInput: EventInput = {
+          id: event.id,
+          start: event.start,
+          end: event.end,
+          title: event.title,
+          backgroundColor: event.backgroundColor,
+          borderColor: event.borderColor,
+          extendedProps: {
+            ...event.extendedProps,
+            isLayerEvent: true,
+          },
+          classNames: ['fc-layer-event', ...(event.extendedProps.isExternal ? ['fc-event-external'] : [])],
+        }
+        if (event.rrule) {
+          eventInput.rrule = event.rrule
+        }
+        if (event.duration) {
+          eventInput.duration = event.duration
+        }
+        return eventInput
+      })
 
-    // Combine all events
-    return [...studentBackgroundEvents, ...teacherBackgroundEvents, ...scheduleEventsForCalendar]
+    return [...studentLayerEvents, ...teacherLayerEvents, ...scheduleEventsForCalendar]
   }, [
     events,
     scheduleType,
     selectedTeachers,
-    getTeacherColorSet,
     teacherOpenTimeEvents,
-    visibleOpenTimeTeacherIds,
+    visibleTeacherIds,
+    teacherStatusVisibility,
     studentOpenTimeEvents,
-    showStudentOpenTime,
+    studentStatusVisibility,
+    scheduleEventIdSet,
   ])
 
   useEffect(() => {
@@ -364,8 +417,8 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
 
   const handleEventClick = useCallback(
     (info: EventClickArg) => {
-      // Ignore clicks on background events (open time events)
-      if (info.event.display === 'background') {
+      // Ignore clicks on teacher/student layer events
+      if (info.event.extendedProps?.isLayerEvent) {
         return
       }
 
@@ -419,12 +472,34 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     return `${start.format('YYYY/MM/DD')} - ${end.format('YYYY/MM/DD')}`
   }, [currentDate])
 
+  const studentStatusCounts = useMemo(() => {
+    return studentOpenTimeEvents.reduce<Record<StudentLayerStatus, number>>(
+      (acc, event) => {
+        const status = event.extendedProps.status as StudentLayerStatus
+        if (STUDENT_LAYER_STATUSES.includes(status)) {
+          acc[status] += 1
+        }
+        return acc
+      },
+      { open: 0, scheduled: 0, published: 0, template: 0 },
+    )
+  }, [studentOpenTimeEvents])
+
+  const teacherStatusCounts = useMemo(() => {
+    return teacherOpenTimeEvents.reduce<Record<TeacherTimelineStatus, number>>(
+      (acc, event) => {
+        acc[event.extendedProps.status] += 1
+        return acc
+      },
+      { open: 0, scheduled: 0, published: 0 },
+    )
+  }, [teacherOpenTimeEvents])
+
   const renderEventContent = useCallback(
     (eventInfo: {
-      event: { title: string; extendedProps: { event?: ScheduleEvent; isExternal?: boolean; role?: string } }
+      event: { title: string; extendedProps: { event?: ScheduleEvent; isExternal?: boolean; isLayerEvent?: boolean } }
     }) => {
-      // Skip rendering for background events (teacher open time)
-      if (eventInfo.event.extendedProps.role === 'available') {
+      if (eventInfo.event.extendedProps.isLayerEvent) {
         return null
       }
 
@@ -485,7 +560,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
 
   return (
     <CalendarWrapper>
-        <CalendarHeader>
+      <CalendarHeader>
         <Space>
           <Button icon={<LeftOutlined />} onClick={() => navigateWeek('prev')}>
             {formatMessage(scheduleMessages.Calendar.prevWeek)}
@@ -499,41 +574,98 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         </Space>
         <DateDisplay>{weekDisplay}</DateDisplay>
         <Space size="large">
-          {/* Student open time toggle */}
-          {studentOpenTimeEvents.length > 0 && (
-            <Space size={4}>
-              <TeacherIndicator $color={STUDENT_EVENT_COLORS.open} />
+          {scheduleType === 'personal' && (
+            <Space size="middle">
               <span>{studentName || '學生'}</span>
-              <Tooltip title={showStudentOpenTime ? '隱藏學生時間' : '顯示學生時間'}>
-                <Switch
-                  size="small"
-                  checked={showStudentOpenTime}
-                  onChange={setShowStudentOpenTime}
-                  style={{
-                    backgroundColor: showStudentOpenTime ? STUDENT_EVENT_COLORS.open : undefined,
-                  }}
-                />
-              </Tooltip>
+              {(Object.keys(STUDENT_STATUS_LABELS) as StudentLayerStatus[]).map(status => {
+                const color = STUDENT_EVENT_COLORS[status]
+                const disabled = status === 'template' ? false : studentStatusCounts[status] === 0
+                return (
+                  <Space key={`student-${status}`} size={4}>
+                    <TeacherIndicator $color={color} />
+                    <span>{STUDENT_STATUS_LABELS[status]}</span>
+                    <Tooltip
+                      title={
+                        studentStatusVisibility[status]
+                          ? `隱藏${STUDENT_STATUS_LABELS[status]}`
+                          : `顯示${STUDENT_STATUS_LABELS[status]}`
+                      }
+                    >
+                      <Switch
+                        size="small"
+                        checked={studentStatusVisibility[status]}
+                        disabled={disabled}
+                        onChange={checked =>
+                          setStudentStatusVisibility(prev => ({
+                            ...prev,
+                            [status]: checked,
+                          }))
+                        }
+                        style={{
+                          backgroundColor: studentStatusVisibility[status] ? color : undefined,
+                        }}
+                      />
+                    </Tooltip>
+                  </Space>
+                )
+              })}
             </Space>
           )}
-          {/* Teacher open time toggles */}
+
           {selectedTeachers.length > 0 && (
             <Space size="middle">
+              {(Object.keys(TEACHER_STATUS_LABELS) as TeacherTimelineStatus[]).map(status => {
+                const color =
+                  status === 'published'
+                    ? SCHEDULE_COLORS.teacher.teacher1.dark
+                    : status === 'scheduled'
+                    ? SCHEDULE_COLORS.teacher.teacher1.medium
+                    : SCHEDULE_COLORS.teacher.teacher1.light
+                const disabled = teacherStatusCounts[status] === 0
+                return (
+                  <Space key={`teacher-status-${status}`} size={4}>
+                    <TeacherIndicator $color={color} />
+                    <span>{TEACHER_STATUS_LABELS[status]}</span>
+                    <Tooltip
+                      title={
+                        teacherStatusVisibility[status]
+                          ? `隱藏老師${TEACHER_STATUS_LABELS[status]}`
+                          : `顯示老師${TEACHER_STATUS_LABELS[status]}`
+                      }
+                    >
+                      <Switch
+                        size="small"
+                        checked={teacherStatusVisibility[status]}
+                        disabled={disabled}
+                        onChange={checked =>
+                          setTeacherStatusVisibility(prev => ({
+                            ...prev,
+                            [status]: checked,
+                          }))
+                        }
+                        style={{
+                          backgroundColor: teacherStatusVisibility[status] ? color : undefined,
+                        }}
+                      />
+                    </Tooltip>
+                  </Space>
+                )
+              })}
+
               {selectedTeachers.map((teacher, index) => {
                 const colorKeys = ['teacher1', 'teacher2', 'teacher3'] as const
                 const color = SCHEDULE_COLORS.teacher[colorKeys[index]]?.dark || '#64748B'
-                const lightColor = SCHEDULE_COLORS.teacher[colorKeys[index]]?.light || '#e5e7eb'
-                const isOpenTimeVisible = visibleOpenTimeTeacherIds.has(teacher.id)
+                const isOpenTimeVisible = visibleTeacherIds.has(teacher.id)
                 return (
                   <Space key={teacher.id} size={4}>
                     <TeacherIndicator $color={color} />
                     <span>{teacher.name}</span>
-                    <Tooltip title={isOpenTimeVisible ? '隱藏開放時間' : '顯示開放時間'}>
+                    <Tooltip title={isOpenTimeVisible ? '隱藏老師色塊' : '顯示老師色塊'}>
                       <Switch
                         size="small"
                         checked={isOpenTimeVisible}
                         onChange={checked => {
-                          setVisibleOpenTimeTeacherIds(prev => {
+                          setVisibleTeacherIds(prev => {
                             const next = new Set(prev)
                             if (checked) {
                               next.add(teacher.id)
@@ -544,7 +676,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                           })
                         }}
                         style={{
-                          backgroundColor: isOpenTimeVisible ? lightColor : undefined,
+                          backgroundColor: isOpenTimeVisible ? color : undefined,
                         }}
                       />
                     </Tooltip>
@@ -570,6 +702,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         headerToolbar={false}
         events={calendarEvents}
         editable={false}
+        slotEventOverlap={false}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventContent={renderEventContent}

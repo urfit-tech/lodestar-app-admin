@@ -805,6 +805,29 @@ export interface TeacherOpenTimeEvent {
   }
 }
 
+export type TeacherTimelineStatus = 'open' | 'scheduled' | 'published'
+
+export interface TeacherTimelineEvent {
+  id: string
+  teacherId: string
+  start: Date
+  end: Date
+  title: string
+  backgroundColor: string
+  borderColor: string
+  display: 'background'
+  rrule?: string
+  duration?: number
+  extendedProps: {
+    role: string
+    status: TeacherTimelineStatus
+    teacherIndex: number
+    originalEventId?: string
+    isExternal?: boolean
+    originalEvent: GeneralEventApi
+  }
+}
+
 /**
  * Teacher busy event for conflict checks (non-available time)
  */
@@ -831,6 +854,7 @@ export interface TeacherBusyEvent {
 export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date, endDate?: Date) => {
   const { authToken } = useAuth()
   const [events, setEvents] = useState<TeacherOpenTimeEvent[]>([])
+  const [calendarEvents, setCalendarEvents] = useState<TeacherTimelineEvent[]>([])
   const [busyEvents, setBusyEvents] = useState<TeacherBusyEvent[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
@@ -838,7 +862,7 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
   // Stabilize teacherIds using JSON serialization to prevent unnecessary re-renders
   const teacherIdsKey = useMemo(() => {
     const filtered = teacherIds.filter(id => id && typeof id === 'string' && id.trim() !== '')
-    return JSON.stringify(filtered.sort())
+    return JSON.stringify(filtered)
   }, [teacherIds])
 
   // Parse back the stable teacher IDs
@@ -877,6 +901,7 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
     const fetchTeacherOpenTimeEvents = async () => {
       if (!authToken || validTeacherIds.length === 0) {
         setEvents(prev => (prev.length === 0 ? prev : []))
+        setCalendarEvents(prev => (prev.length === 0 ? prev : []))
         setBusyEvents(prev => (prev.length === 0 ? prev : []))
         return
       }
@@ -890,6 +915,7 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
 
       try {
         const allEvents: TeacherOpenTimeEvent[] = []
+        const allCalendarEvents: TeacherTimelineEvent[] = []
         const allBusyEvents: TeacherBusyEvent[] = []
         const colorSets = [
           { light: '#bfdbfe', medium: '#93c5fd', dark: '#3b82f6' }, // Blue - teacher1
@@ -919,8 +945,9 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
 
               // Convert to TeacherOpenTimeEvent format
               availableEvents.forEach(event => {
+                const originalEventId = (event.extendedProps?.event_id as string | undefined) || event.id || undefined
                 const eventData: TeacherOpenTimeEvent = {
-                  id: `${teacherId}-${event.extendedProps?.event_id || event.id || Math.random()}`,
+                  id: `${teacherId}-${originalEventId || Math.random()}`,
                   teacherId,
                   start: new Date(event.start),
                   end: new Date(event.end),
@@ -944,12 +971,46 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
                 }
 
                 allEvents.push(eventData)
+
+                const timelineEvent: TeacherTimelineEvent = {
+                  id: `${teacherId}-timeline-open-${originalEventId || Math.random()}`,
+                  teacherId,
+                  start: new Date(event.start),
+                  end: new Date(event.end),
+                  title: '',
+                  backgroundColor: colorSet.light,
+                  borderColor: colorSet.light,
+                  display: 'background',
+                  extendedProps: {
+                    role: 'available',
+                    status: 'open',
+                    teacherIndex: i,
+                    originalEventId,
+                    originalEvent: event,
+                  },
+                }
+
+                if ((event as any).rrule) {
+                  timelineEvent.rrule = (event as any).rrule
+                }
+                if ((event as any).duration) {
+                  timelineEvent.duration = (event as any).duration
+                }
+
+                allCalendarEvents.push(timelineEvent)
               })
 
               // Convert non-available events for conflict checks
               nonAvailableEvents.forEach(event => {
+                const originalEventId = (event.extendedProps?.event_id as string | undefined) || event.id || undefined
+                const eventMetadata = event.extendedProps?.event_metadata as Record<string, any> | undefined
+                const isExternal =
+                  eventMetadata?.classMode === '外課' ||
+                  eventMetadata?.is_external === true ||
+                  event.extendedProps?.is_external === true
+
                 const busyEvent: TeacherBusyEvent = {
-                  id: `${teacherId}-busy-${event.extendedProps?.event_id || event.id || Math.random()}`,
+                  id: `${teacherId}-busy-${originalEventId || Math.random()}`,
                   teacherId,
                   start: new Date(event.start),
                   end: new Date(event.end),
@@ -967,6 +1028,46 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
                 }
 
                 allBusyEvents.push(busyEvent)
+
+                const publishedAt = event.extendedProps?.published_at as string | null
+                const status: TeacherTimelineStatus | null = publishedAt
+                  ? 'published'
+                  : event.extendedProps?.event_id
+                  ? 'scheduled'
+                  : null
+
+                if (!status) {
+                  return
+                }
+
+                const timelineColor = status === 'published' ? colorSet.dark : colorSet.medium
+                const timelineEvent: TeacherTimelineEvent = {
+                  id: `${teacherId}-timeline-${status}-${originalEventId || Math.random()}`,
+                  teacherId,
+                  start: new Date(event.start),
+                  end: new Date(event.end),
+                  title: '',
+                  backgroundColor: timelineColor,
+                  borderColor: timelineColor,
+                  display: 'background',
+                  extendedProps: {
+                    role: event.extendedProps?.role || '',
+                    status,
+                    teacherIndex: i,
+                    originalEventId,
+                    isExternal,
+                    originalEvent: event,
+                  },
+                }
+
+                if ((event as any).rrule) {
+                  timelineEvent.rrule = (event as any).rrule
+                }
+                if ((event as any).duration) {
+                  timelineEvent.duration = (event as any).duration
+                }
+
+                allCalendarEvents.push(timelineEvent)
               })
             }
           } catch (err) {
@@ -975,6 +1076,7 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
         }
 
         setEvents(allEvents)
+        setCalendarEvents(allCalendarEvents)
         setBusyEvents(allBusyEvents)
       } catch (err) {
         console.error('Error fetching teacher open time events:', err)
@@ -990,11 +1092,12 @@ export const useTeacherOpenTimeEvents = (teacherIds: string[], startDate?: Date,
   const refetch = useCallback(() => {
     // Trigger re-fetch by updating teacherIds dependency
     setEvents([])
+    setCalendarEvents([])
     setBusyEvents([])
     setLoading(true)
   }, [])
 
-  return { events, busyEvents, loading, error, refetch }
+  return { events, calendarEvents, busyEvents, loading, error, refetch }
 }
 
 // =============================================================================
@@ -1037,6 +1140,7 @@ export interface StudentOpenTimeEvent {
   extendedProps: {
     role: string
     status: StudentEventStatus
+    originalEventId?: string
     isExternal?: boolean
     originalEvent: GeneralEventApi
   }
@@ -1093,6 +1197,7 @@ export const useStudentOpenTimeEvents = (studentId: string | undefined, startDat
             const role = event.extendedProps?.role as string
             const publishedAt = event.extendedProps?.published_at as string | null
             const eventMetadata = event.extendedProps?.event_metadata as Record<string, any> | undefined
+            const originalEventId = (event.extendedProps?.event_id as string | undefined) || event.id || undefined
 
             // 外課判斷：從 metadata 中的 classMode 或 is_external 欄位判斷
             const isExternal =
@@ -1133,7 +1238,7 @@ export const useStudentOpenTimeEvents = (studentId: string | undefined, startDat
             }
 
             const eventData: StudentOpenTimeEvent = {
-              id: `student-${event.extendedProps?.event_id || event.id || Math.random()}`,
+              id: `student-${originalEventId || Math.random()}`,
               studentId,
               start: new Date(event.start),
               end: new Date(event.end),
@@ -1144,6 +1249,7 @@ export const useStudentOpenTimeEvents = (studentId: string | undefined, startDat
               extendedProps: {
                 role,
                 status,
+                originalEventId,
                 isExternal,
                 originalEvent: event,
               },
