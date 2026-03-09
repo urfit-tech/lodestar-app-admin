@@ -117,7 +117,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const [startedAt, setStartedAt] = useState(moment().add(1, 'days').startOf('day').toDate())
   const [period, setPeriod] = useState<{ type: PeriodType; amount: number }>({ type: 'Y', amount: 1 })
 
-  if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
+  if (contractInfoStatus.loading || !!contractInfoStatus.error || !member || contracts.length === 0) {
     return <LoadingPage />
   }
 
