@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { createPathWithBase } from '../../helpers/basePath'
 import {
   usePermissionGroupsAsCampuses,
   useTeacherOpenTimeEvents,
@@ -345,7 +346,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
           <div>{record.name}</div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }} copyable={{ text: record.email }}>
             <a
-              href={`${process.env.PUBLIC_URL}/members/${record.id}`}
+              href={createPathWithBase(`/members/${record.id}`)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={event => event.stopPropagation()}

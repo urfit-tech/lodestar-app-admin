@@ -4,12 +4,12 @@ import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { extname } from 'path'
 import { clone } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { notEmpty, uploadFile } from '../../helpers'
+import { getFileExtension } from '../../helpers/filePath'
 
 const messages = defineMessages({
   uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
@@ -97,7 +97,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
         return
       }
 
-      uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, {
+      uploadFile(withExtension ? path + getFileExtension(file.name) : path, file, authToken, {
         onUploadProgress: progressEvent => {
           onProgress(
             {

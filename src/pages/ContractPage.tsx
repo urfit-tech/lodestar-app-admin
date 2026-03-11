@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client'
 import { Card, Typography } from 'antd'
 import { gql } from '@apollo/client'
 import moment from 'moment'
-import { render } from 'mustache'
+import Mustache from 'mustache'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -65,7 +65,9 @@ const ContractPage: React.FC = () => {
           {formatMessage(memberMessages.label.onlineProgramContract)}
         </StyledTitle>
         <StyledCard>
-          <div dangerouslySetInnerHTML={{ __html: render(memberContract.contract.template, memberContract.values) }} />
+          <div
+            dangerouslySetInnerHTML={{ __html: Mustache.render(memberContract.contract.template, memberContract.values) }}
+          />
         </StyledCard>
         <StyledCard className="text-center">
           {memberContract.revokedAt ? (

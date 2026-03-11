@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { render } from 'mustache'
+import Mustache from 'mustache'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -53,7 +53,7 @@ const MembershipCardPreviewModal: React.VFC<{
       <StyledMembershipCard
         ref={cardRef}
         scale={scale}
-        dangerouslySetInnerHTML={{ __html: render(template, templateVars) }}
+        dangerouslySetInnerHTML={{ __html: Mustache.render(template, templateVars) }}
       />
     </StyledContainer>
   )

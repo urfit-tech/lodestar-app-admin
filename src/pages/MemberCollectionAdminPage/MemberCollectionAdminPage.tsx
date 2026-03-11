@@ -20,6 +20,7 @@ import MemberImportModal from '../../components/member/MemberImportModal'
 import OldMemberExportModal from '../../components/member/OldMemberExportModal'
 import OldMemberImportModal from '../../components/member/OldMemberImportModal'
 import { currencyFormatter, handleError } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMemberCollection, useMembers, useProperty } from '../../hooks/member'
 import { TableIcon } from '../../images/icon'
@@ -689,7 +690,7 @@ export const MemberCollectionTableBlock: React.VFC<{
           pagination={false}
           rowClassName={() => 'cursor-pointer'}
           onRow={record => ({
-            onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
+            onClick: () => window.open(createPathWithBase(`/members/${record.id}`), '_blank'),
           })}
           onChange={(pagination, filters, sorter) => {
             const newSorter = sorter as SorterResult<MemberInfoProps>

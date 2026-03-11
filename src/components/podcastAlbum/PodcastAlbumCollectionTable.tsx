@@ -6,6 +6,7 @@ import { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { PodcastAlbum } from '../../types/podcastAlbum'
@@ -150,7 +151,7 @@ const PodcastAlbumCollectionTable: React.VFC<{
         columns={columns}
         onRow={record => ({
           onClick: () => {
-            window.open(`${process.env.PUBLIC_URL}/podcast-albums/${record.id}?tab=podcastItem`, '_blank')
+            window.open(createPathWithBase(`/podcast-albums/${record.id}?tab=podcastItem`), '_blank')
           },
         })}
       />

@@ -5,6 +5,7 @@ import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 
 interface DeleteMemberModalProps {
@@ -52,7 +53,7 @@ const DeleteMemberModal: React.FC<DeleteMemberModalProps> = ({ email, visible, s
       })
 
       if (response.data.code === 'SUCCESS') {
-        window.open(`${process.env.PUBLIC_URL}/members`, '_self')
+        window.open(createPathWithBase('/members'), '_self')
       } else {
         message.error(response.data.message || 'An unknown error occurred')
       }

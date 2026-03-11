@@ -5,7 +5,7 @@ import 'moment/locale/zh-tw'
 import React, { createContext, useEffect, useState } from 'react'
 import { IntlProvider } from 'react-intl'
 import hasura from '../hasura'
-import defaultLocaleMessages from '../translations/locales/en-us.json'
+import { defaultLocaleMessages, getLocaleMessages } from './localeMessages'
 
 export const SUPPORTED_LOCALES = [
   { locale: 'zh-cn', label: '简体中文' },
@@ -64,12 +64,7 @@ export const LocaleProvider: React.FC = ({ children }) => {
   }, [enabledModules, settings])
 
   moment.locale(currentLocale)
-  let localeMessages: { [key: string]: string } = defaultLocaleMessages
-  try {
-    localeMessages = require(`../translations/locales/${currentLocale}.json`)
-  } catch (error) {
-    console.warn('cannot load the locale:', currentLocale, error)
-  }
+  let localeMessages: { [key: string]: string } = getLocaleMessages(currentLocale)
   localeMessages = { ...localeMessages, ...appLocaleMessages }
 
   return (

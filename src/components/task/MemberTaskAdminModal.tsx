@@ -13,6 +13,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
 import { useDeleteMeet, useGetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
@@ -437,7 +438,7 @@ const MemberTaskAdminModal: React.FC<
                   <StyledLinkIconWrapper
                     onClick={() => {
                       form.getFieldValue('memberId') &&
-                        window.open(`${process.env.PUBLIC_URL}/members/${form.getFieldValue('memberId')}`, '_blank')
+                        window.open(createPathWithBase(`/members/${form.getFieldValue('memberId')}`), '_blank')
                     }}
                   >
                     <Icon component={() => <ExternalLinkIcon />} className="mr-1" />

@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { ContractInfo } from '.'
 import { AdminHeader } from '../../components/admin'
+import { createPathWithBase } from '../../helpers/basePath'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import bgBackground from '../../images/default/bg-background.png'
 import pageMessages from '../translation'
@@ -23,7 +24,7 @@ const ContractLayout: React.FC<{ member: ContractInfo['member']; isMemberTypeBG:
           </Button>
         </Link>
 
-        <a href={`/admin/members/${member.id}/order`} rel="noopener noreferrer">
+        <a href={createPathWithBase(`/members/${member.id}/order`)} rel="noopener noreferrer">
           <Button>{formatMessage(pageMessages.ContractLayout.memberOrderHistory)}</Button>
         </a>
       </AdminHeader>

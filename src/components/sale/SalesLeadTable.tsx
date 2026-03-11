@@ -28,6 +28,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import {
@@ -575,7 +576,7 @@ const SalesLeadTable: React.VFC<{
         return (
           <>
             <Link
-              href={`/admin/members/${lead?.id}`}
+              href={createPathWithBase(`/members/${lead?.id}`)}
               target="_blank"
               rel="noreferrer"
               maxW="250px"

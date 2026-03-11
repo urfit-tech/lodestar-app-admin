@@ -5,12 +5,12 @@ import { CardProps } from 'antd/lib/card'
 import { RcFile } from 'antd/lib/upload/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { extname } from 'path'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminCard from '../../components/admin/AdminCard'
 import * as hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
+import { getFileExtension } from '../../helpers/filePath'
 import { commonMessages } from '../../helpers/translation'
 
 type AppBasicAdminCardProps = CardProps
@@ -29,7 +29,7 @@ const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) 
     }
     setUploading(true)
     const timestamp = Date.now()
-    const key = `images/${appId}/logo_${timestamp}${extname(file.name)}`
+    const key = `images/${appId}/logo_${timestamp}${getFileExtension(file.name)}`
     const logoUrl = `https://${process.env.REACT_APP_S3_BUCKET}/${key}/240?v=${timestamp}`
     uploadFile(key, file, authToken)
       .then(() =>

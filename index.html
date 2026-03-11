@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="shortcut icon" href="./favicon.ico" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
     <link
       rel="stylesheet"
@@ -186,5 +186,9 @@
     <script src="https://unpkg.com/array-flat-polyfill"></script>
     <script src="https://js.tappaysdk.com/tpdirect/v5.1.0"></script>
     <script src="https://meet.jit.si/external_api.js"></script>
+    <script>
+      globalThis.global = globalThis
+    </script>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

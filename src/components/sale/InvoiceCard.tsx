@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
-import { render } from 'mustache'
+import Mustache from 'mustache'
 import { defaultTo, pipe, prop, sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -561,7 +561,7 @@ const Receipt = React.forwardRef<HTMLDivElement, { template: string; templateVar
       <div className="receipt" ref={ref as any}>
         <div
           dangerouslySetInnerHTML={{
-            __html: render(template, templateVariables),
+            __html: Mustache.render(template, templateVariables),
           }}
         />
       </div>

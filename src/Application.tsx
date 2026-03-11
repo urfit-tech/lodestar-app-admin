@@ -12,6 +12,7 @@ import React from 'react'
 import AdminRouter, { RouteProps } from './components/common/AdminRouter'
 import { CustomRendererProps, CustomRendererProvider } from './contexts/CustomRendererContext'
 import { LocaleProvider } from './contexts/LocaleContext'
+import './styles/vendor/antd.less'
 import './styles/default/index.scss'
 
 const Application: React.FC<{

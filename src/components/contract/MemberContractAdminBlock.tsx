@@ -11,6 +11,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { ContractValue, ContractWithProducts } from '../../types/contract'
 import PrimaryButton from '../common/PrimaryButton'
@@ -116,8 +117,8 @@ const MemberContractAdminBlock: React.FC<{
         <a
           href={
             settings['contract_page.v2.enabled'] === '1'
-              ? `/admin/members/${memberId}/contract/create`
-              : `/admin/members/${memberId}/new-contract`
+              ? createPathWithBase(`/members/${memberId}/contract/create`)
+              : createPathWithBase(`/members/${memberId}/new-contract`)
           }
           target="_blank"
           rel="noopener noreferrer"
@@ -151,8 +152,10 @@ const MemberContractAdminBlock: React.FC<{
                               <a
                                 href={
                                   settings['contract_page.v2.enabled'] === '1'
-                                    ? `/admin/members/${memberId}/contract/create?contractSourceId=${contract.id}`
-                                    : `/admin/members/${memberId}/new-contract`
+                                    ? createPathWithBase(
+                                        `/members/${memberId}/contract/create?contractSourceId=${contract.id}`,
+                                      )
+                                    : createPathWithBase(`/members/${memberId}/new-contract`)
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"

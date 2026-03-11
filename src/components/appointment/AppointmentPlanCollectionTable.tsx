@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { createPathWithBase } from '../../helpers/basePath'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
@@ -175,7 +176,7 @@ const AppointmentPlanCollectionTable: React.FC<{
         loading={loadingAppointmentPlans}
         onRow={record => ({
           onClick: () => {
-            window.open(`${process.env.PUBLIC_URL}/appointment-plans/${record.id}`)
+            window.open(createPathWithBase(`/appointment-plans/${record.id}`))
           },
         })}
         columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}

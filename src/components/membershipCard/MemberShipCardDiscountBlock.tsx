@@ -4,6 +4,7 @@ import { Button, Dropdown, Menu } from 'antd'
 import { ascend, defaultTo, path, prop, sortWith } from 'ramda'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { createPathWithBase } from '../../helpers/basePath'
 import { useDeleteCardDiscount, useMembershipCardTerms } from '../../hooks/membershipCard'
 import { MembershipCardTermsProductType } from '../../types/membershipCard'
 import { AdminBlock, AdminPaneTitle } from '../admin'
@@ -132,7 +133,9 @@ const MemberShipCardDiscountBlock: React.FC<{ membershipCardId: string }> = ({ m
                             {discount.type === 'equity' ? (
                               <Menu.Item>
                                 <a
-                                  href={`/admin/programs/${discount?.product?.details?.productTarget}?tab=plan`}
+                                  href={createPathWithBase(
+                                    `/programs/${discount?.product?.details?.productTarget}?tab=plan`,
+                                  )}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >

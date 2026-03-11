@@ -14,6 +14,7 @@ import AdminModal from '../../components/admin/AdminModal'
 import { AnnouncementPreviewModal } from '../../components/announcement/AnnouncementPreviewModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { handleError } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { errorMessages } from '../../helpers/translation'
 import { useAnnouncements } from '../../hooks/announcement'
 import { Announcement } from '../../types/announcement'
@@ -61,7 +62,7 @@ const AnnouncementCollectionTabs: React.FC<{
     return {
       onClick: () => {
         if (permissions.ANNOUNCEMENT_ADMIN) {
-          window.location.href = `${process.env.PUBLIC_URL}/announcements/${announcement.id}`
+          window.location.href = createPathWithBase(`/announcements/${announcement.id}`)
         } else {
           setAnnouncementId(announcement.id)
           setVisible(true)
@@ -236,7 +237,7 @@ const AddNewAnnouncementModal: React.FC = () => {
       if (!result.data) {
         throw new Error(formatMessage(pageMessages.AnnouncementCollectionPage.addFailed))
       }
-      window.location.href = `${process.env.PUBLIC_URL}/announcements/${result.data.insert_announcement?.returning[0].id}`
+      window.location.href = createPathWithBase(`/announcements/${result.data.insert_announcement?.returning[0].id}`)
     } catch (error) {
       handleError(error)
     }

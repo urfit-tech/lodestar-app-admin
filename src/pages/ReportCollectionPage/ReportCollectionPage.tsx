@@ -11,6 +11,7 @@ import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ReportAdminModal from '../../components/report/ReportAdminModal'
 import { handleError } from '../../helpers'
+import { createPathWithBase } from '../../helpers/basePath'
 import { useMemberPermissionGroups } from '../../hooks/member'
 import { useMutateReport, useMutateReportPermissionGroup, useReportCollection } from '../../hooks/report'
 import { ReportProps } from '../../types/report'
@@ -45,7 +46,7 @@ const ReportCollectionPage: React.FC = () => {
     return {
       onClick: () => {
         // check permission
-        window.open(`${process.env.PUBLIC_URL}/report/${record.id}`)
+        window.open(createPathWithBase(`/report/${record.id}`))
       },
     }
   }

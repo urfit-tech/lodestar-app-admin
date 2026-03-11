@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
+import { createPathWithBase } from '../../helpers/basePath'
 import { AppPageProps } from '../../hooks/appPage'
 import CraftPageReplicateModal from './CraftPageReplicateModal'
 import craftPageCollectionPageMessages from './translation'
@@ -42,7 +43,7 @@ const CraftPageCollectionTable: React.VFC<{
   const [searchPageName, setSearchPageName] = useState<string>('')
 
   const openCraftPage = (recordId: string) => {
-    window.open(`${process.env.PUBLIC_URL}/craft-page/${recordId}?tab=editor`, '_blank')
+    window.open(createPathWithBase(`/craft-page/${recordId}?tab=editor`), '_blank')
   }
 
   const columns: ColumnProps<CraftPageColumnProps>[] = [

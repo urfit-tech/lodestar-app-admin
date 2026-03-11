@@ -152,11 +152,24 @@ export const decodeAudio = async (blob: File) => {
 }
 
 export const convertAudioBufferToMp3 = (audioBuffer: AudioBuffer, kbps = 128) => {
+  const mergeUint8Arrays = (chunks: Uint8Array[]) => {
+    const totalLength = chunks.reduce((result, chunk) => result + chunk.length, 0)
+    const merged = new Uint8Array(totalLength)
+    let offset = 0
+
+    chunks.forEach(chunk => {
+      merged.set(chunk, offset)
+      offset += chunk.length
+    })
+
+    return merged
+  }
+
   const wav = toWav(audioBuffer)
   const wavData = lamejs.WavHeader.readHeader(new DataView(wav))
   const mp3encoder = new lamejs.Mp3Encoder(wavData.channels, wavData.sampleRate, kbps)
   const sampleBlockSize = 1152
-  const mp3Data = []
+  const mp3Data: Uint8Array[] = []
   const samples = new Int16Array(wav, wavData.dataOffset, wavData.dataLen / 2)
 
   if (wavData.channels === 1) {
@@ -164,7 +177,7 @@ export const convertAudioBufferToMp3 = (audioBuffer: AudioBuffer, kbps = 128) =>
       const sampleChunk = samples.subarray(i, i + sampleBlockSize)
       const mp3buf = mp3encoder.encodeBuffer(sampleChunk)
       if (mp3buf.length > 0) {
-        mp3Data.push(Buffer.from(mp3buf))
+        mp3Data.push(Uint8Array.from(mp3buf))
       }
     }
   } else {
@@ -181,13 +194,13 @@ export const convertAudioBufferToMp3 = (audioBuffer: AudioBuffer, kbps = 128) =>
       const rightChunk = rightSample.subarray(i, i + sampleBlockSize)
       const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk)
       if (mp3buf.length > 0) {
-        mp3Data.push(Buffer.from(mp3buf))
+        mp3Data.push(Uint8Array.from(mp3buf))
       }
     }
   }
   const mp3buf = mp3encoder.flush()
   if (mp3buf.length > 0) {
-    mp3Data.push(Buffer.from(mp3buf))
+    mp3Data.push(Uint8Array.from(mp3buf))
   }
-  return Buffer.concat(mp3Data)
+  return mergeUint8Arrays(mp3Data)
 }

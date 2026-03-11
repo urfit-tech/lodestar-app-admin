@@ -7,6 +7,7 @@ import React, { Suspense } from 'react'
 import { BrowserRouter, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { QueryParamProvider } from 'use-query-params'
 import LoadablePage from '../../LoadablePage'
+import { createPathWithBase, getRouterBasename, stripBasePath } from '../../helpers/basePath'
 import LoadingPage from '../../pages/LoadingPage'
 import NotFoundPage from '../../pages/NotFoundPage'
 
@@ -718,7 +719,7 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
     : false
 
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter basename={getRouterBasename()}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <Suspense fallback={<LoadingPage />}>
           <Switch>
@@ -733,7 +734,7 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
                     hasPassedCloseSiteTime && routeProps.path !== '/deactivate' ? (
                       <Redirect to="/deactivate" />
                     ) : !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
-                      <Redirect to={`/?back=${window.location.pathname.replace('/admin', '')}`} />
+                      <Redirect to={createPathWithBase(`/?back=${stripBasePath(window.location.pathname)}`)} />
                     ) : typeof routeProps.pageName === 'string' ? (
                       <LoadablePage pageName={routeProps.pageName} />
                     ) : (

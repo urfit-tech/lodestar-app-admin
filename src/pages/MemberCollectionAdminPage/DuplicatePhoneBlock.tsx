@@ -7,6 +7,7 @@ import { Fragment, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { createPathWithBase } from '../../helpers/basePath'
 import { notEmpty } from '../../helpers'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
@@ -118,10 +119,10 @@ const DuplicatePhoneBlock: React.VFC = () => {
                     <StyledDuplicatedNumberMemberList>
                       {members.map(({ id, name, email }) => (
                         <Fragment key={id}>
-                          <StyledDuplicatedNumberMemberItemButton
-                            type="link"
-                            onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
-                          >
+                        <StyledDuplicatedNumberMemberItemButton
+                          type="link"
+                          onClick={() => window.open(createPathWithBase(`/members/${id}`), '_blank')}
+                        >
                             <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
                             <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
                           </StyledDuplicatedNumberMemberItemButton>

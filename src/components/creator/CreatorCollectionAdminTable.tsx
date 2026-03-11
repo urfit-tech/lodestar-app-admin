@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { createPathWithBase } from '../../helpers/basePath'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { CreatorProps } from '../../types/creator'
@@ -145,7 +146,7 @@ const CreatorCollectionAdminTable: React.FC<{
       }),
       render: (name, record) => (
         <a
-          href={`/admin/members/${record.id}`}
+          href={createPathWithBase(`/members/${record.id}`)}
           className="d-flex align-items-center justify-content-start"
           target="_blank"
           rel="noreferrer"

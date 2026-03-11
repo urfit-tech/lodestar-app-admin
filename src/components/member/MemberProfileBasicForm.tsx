@@ -162,7 +162,7 @@ const MemberProfileBasicForm: React.FC<{
         handleError(error)
       }
     } catch (error) {
-      process.env.NODE_ENV === 'development' ?? console.error(error)
+      process.env.NODE_ENV === 'development' && console.error(error)
     } finally {
       setLoading(false)
     }
