@@ -11,6 +11,7 @@ import { handleError } from '../../helpers'
 import { ProgramContentSectionProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
+import { DELETE_PROGRAM_CONTENT_SECTION } from './programContentSectionMutations'
 import programMessages from './translation'
 
 const StyledMenuItem = styled(Menu.Item)`
@@ -328,32 +329,6 @@ const UPDATE_PROGRAM_CONTENT_SECTION = gql`
     ) {
       affected_rows
     }
-  }
-`
-const DELETE_PROGRAM_CONTENT_SECTION = gql`
-  mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!) {
-    delete_program_content_progress(
-      where: { program_content: { content_section_id: { _eq: $programContentSectionId } } }
-    ) {
-      affected_rows
-    }
-    delete_program_content_body(
-      where: { program_contents: { content_section_id: { _eq: $programContentSectionId } } }
-    ) {
-      affected_rows
-    }
-    delete_program_content(where: { content_section_id: { _eq: $programContentSectionId } }) {
-      affected_rows
-    }
-    delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
-      affected_rows
-    }
-    delete_exercise(
-      where: { program_content: { program_content_section: { id: { _eq: $programContentSectionId } } } }
-    ) {
-      affected_rows
-    }
-    #FIXME: should delete relation data, practice, exam and exercise ?
   }
 `
 
