@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const DELETE_PROGRAM_CONTENT_SECTION = gql`
-  mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!) {
+  mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!, $programContentIds: [uuid!]!) {
     delete_program_content_plan(
       where: { program_content: { content_section_id: { _eq: $programContentSectionId } } }
     ) {
@@ -33,14 +33,10 @@ export const DELETE_PROGRAM_CONTENT_SECTION = gql`
     ) {
       affected_rows
     }
-    delete_program_content_ebook_bookmark(
-      where: { program_content: { content_section_id: { _eq: $programContentSectionId } } }
-    ) {
+    delete_program_content_ebook_bookmark(where: { program_content_id: { _in: $programContentIds } }) {
       affected_rows
     }
-    delete_program_content_ebook_highlight(
-      where: { program_content: { content_section_id: { _eq: $programContentSectionId } } }
-    ) {
+    delete_program_content_ebook_highlight(where: { program_content_id: { _in: $programContentIds } }) {
       affected_rows
     }
     delete_program_content_body(
