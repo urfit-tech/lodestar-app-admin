@@ -99,7 +99,10 @@ const ProgramContentSectionAdminCard: React.FC<{
                 onClick={() =>
                   window.confirm(formatMessage(programMessages.ProgramContentSectionAdminCard.deleteSectionWarning)) &&
                   deleteProgramContentSection({
-                    variables: { programContentSectionId: programContentSection.id },
+                    variables: {
+                      programContentIds: programContentSection.programContents.map(programContent => programContent.id),
+                      programContentSectionId: programContentSection.id,
+                    },
                   })
                     .then(() => onRefetch?.())
                     .catch(handleError)
