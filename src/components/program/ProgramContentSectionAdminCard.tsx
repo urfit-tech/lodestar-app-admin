@@ -42,9 +42,10 @@ const ProgramContentSectionAdminCard: React.FC<{
     hasura.UPDATE_PROGRAM_CONTENT_SECTIONVariables
   >(UPDATE_PROGRAM_CONTENT_SECTION)
   const [deleteProgramContentSection] = useMutation<
-    hasura.DELETE_PROGRAM_CONTENT_SECTION,
-    hasura.DELETE_PROGRAM_CONTENT_SECTIONVariables
-  >(DELETE_PROGRAM_CONTENT_SECTION)
+    hasura.DELETE_PROGRAM_CONTENT_SECTION, hasura.DELETE_PROGRAM_CONTENT_SECTIONVariables
+  >(
+    DELETE_PROGRAM_CONTENT_SECTION,
+  )
 
   const [isCollapse, setIsCollapse] = useState(programContentSection.collapsed_status)
   const [isCollapseLoading, setIsCollapseLoading] = useState(false)
@@ -99,7 +100,10 @@ const ProgramContentSectionAdminCard: React.FC<{
                 onClick={() =>
                   window.confirm(formatMessage(programMessages.ProgramContentSectionAdminCard.deleteSectionWarning)) &&
                   deleteProgramContentSection({
-                    variables: { programContentSectionId: programContentSection.id },
+                    variables: {
+                      programContentIds: programContentSection.programContents.map(programContent => programContent.id),
+                      programContentSectionId: programContentSection.id,
+                    },
                   })
                     .then(() => onRefetch?.())
                     .catch(handleError)
