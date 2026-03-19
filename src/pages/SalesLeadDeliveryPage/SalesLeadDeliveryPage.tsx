@@ -64,6 +64,156 @@ type AssignResult = {
   data?: number
   error?: Error
 }
+const PREVIEW_LIMIT = 50
+const LEAD_CANDIDATE_ORDER_BY = 'order_by: [{ created_at: asc }, { id: asc }]'
+
+const buildLeadCandidatesCondition = (filter: Filter, properties: { name: string }[]): member_bool_exp => {
+  const andCondition = []
+
+  if (filter.lastCalledRange && filter.excludeLastCalled) {
+    andCondition.push({
+      _or: [
+        {
+          last_member_note_called: {
+            _lte: moment(filter.lastCalledRange[0]).startOf('day'),
+          },
+        },
+        {
+          last_member_note_called: {
+            _gte: moment(filter.lastCalledRange[1]).endOf('day'),
+          },
+        },
+      ],
+    })
+  }
+
+  if (filter.lastAnsweredRange && filter.excludeLastAnswered) {
+    andCondition.push({
+      _or: [
+        {
+          last_member_note_answered: {
+            _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          },
+        },
+        {
+          last_member_note_answered: {
+            _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+          },
+        },
+      ],
+    })
+  }
+
+  properties.forEach(property => {
+    if (!isEmpty(filter[property.name])) {
+      andCondition.push({
+        member_properties: {
+          property: { name: { _eq: property.name } },
+          value: filter[`is${property.name}ExactMatch`]
+            ? { _eq: `${filter[property.name]}` }
+            : { _like: `%${filter[property.name]}%` },
+        },
+      })
+    }
+  })
+
+  return {
+    member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
+    manager_id: {
+      _is_null: !filter.managerId,
+      _eq: filter.managerId || undefined,
+    },
+    member_categories:
+      filter.categoryIds.length > 0
+        ? {
+            category: {
+              name: {
+                _in: filter.categoryIds,
+              },
+            },
+          }
+        : undefined,
+    created_at: filter.createdAtRange
+      ? {
+          _gte: moment(filter.createdAtRange[0]).startOf('day'),
+          _lte: moment(filter.createdAtRange[1]).endOf('day'),
+        }
+      : undefined,
+    star: filter.starRangeIsNull
+      ? {
+          _is_null: true,
+        }
+      : {
+          _gte: filter.starRange[0],
+          _lte: filter.starRange[1],
+        },
+    last_member_note_called: filter.notCalled
+      ? {
+          _is_null: true,
+        }
+      : filter.lastCalledRange && !filter.excludeLastCalled
+      ? {
+          _gte: moment(filter.lastCalledRange[0]).startOf('day'),
+          _lte: moment(filter.lastCalledRange[1]).endOf('day'),
+        }
+      : undefined,
+    last_member_note_answered: filter.notAnswered
+      ? {
+          _is_null: true,
+        }
+      : filter.lastAnsweredRange && !filter.excludeLastAnswered
+      ? {
+          _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        }
+      : undefined,
+    _and: andCondition.length === 0 ? undefined : andCondition,
+    completed_at:
+      filter.completedLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.completedLead === 'excluded',
+          },
+    _or:
+      filter.closedLead === 'contained' && filter.closedAtRange
+        ? [
+            {
+              closed_at: {
+                _gte: moment(filter.closedAtRange[0]).startOf('day'),
+                _lte: moment(filter.closedAtRange[1]).endOf('day'),
+              },
+            },
+            {
+              closed_at: {
+                _is_null: true,
+              },
+            },
+          ]
+        : undefined,
+    closed_at:
+      filter.closedLead === 'excluded'
+        ? {
+            _is_null: true,
+          }
+        : filter.closedLead === 'only'
+        ? filter.closedAtRange
+          ? {
+              _gte: moment(filter.closedAtRange[0]).startOf('day'),
+              _lte: moment(filter.closedAtRange[1]).endOf('day'),
+            }
+          : {
+              _is_null: false,
+            }
+        : undefined,
+    recycled_at:
+      filter.recycledLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.recycledLead === 'excluded',
+          },
+  }
+}
+
 const SalesLeadDeliveryPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [currentStep, setCurrentStep] = useState(0)
@@ -87,10 +237,10 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     UpdateLeadManager,
   )
 
-  const [getLeadManager] = useLazyQuery<hasura.GetLeadCandidates, hasura.GetLeadCandidatesVariables>(
-    GetLeadCandidates,
-    { fetchPolicy: 'no-cache' },
-  )
+  const [getLeadCandidateIdsForDelivery] = useLazyQuery<
+    hasura.GetLeadCandidateIdsForDelivery,
+    hasura.GetLeadCandidateIdsForDeliveryVariables
+  >(GetLeadCandidateIdsForDelivery, { fetchPolicy: 'no-cache' })
 
   return (
     <AdminLayout>
@@ -125,7 +275,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
             setAssignedResult({
               status: 'info',
             })
-            getLeadManager({ variables: { condition, limit } })
+            getLeadCandidateIdsForDelivery({ variables: { condition, limit } })
               .then(({ data }) => {
                 const memberIds = data?.member.map(m => m.id) || []
                 updateLeadManager({
@@ -506,7 +656,7 @@ const ConfirmSection: React.FC<{
   const [isClearClosedAt, setIsClearClosedAt] = useState(false)
   const [isClearRecycledAt, setIsClearRecycledAt] = useState(false)
 
-  const limit = 50
+  const previewLimit = PREVIEW_LIMIT
 
   const extraColumns = [
     {
@@ -563,181 +713,37 @@ const ConfirmSection: React.FC<{
     })),
   ]
 
-  const andCondition = []
-  if (filter.lastCalledRange && filter.excludeLastCalled) {
-    const lastCalledCondition = {
-      _or: [
-        {
-          last_member_note_called: {
-            _lte: moment(filter.lastCalledRange[0]).startOf('day'),
-          },
-        },
-        {
-          last_member_note_called: {
-            _gte: moment(filter.lastCalledRange[1]).endOf('day'),
-          },
-        },
-      ],
-    }
+  const leadCandidatesCondition = buildLeadCandidatesCondition(filter, properties)
 
-    andCondition.push(lastCalledCondition)
-  }
-
-  if (filter.lastAnsweredRange && filter.excludeLastAnswered) {
-    const lastAnsweredCondition = {
-      _or: [
-        {
-          last_member_note_answered: {
-            _lte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-          },
-        },
-        {
-          last_member_note_answered: {
-            _gte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-          },
-        },
-      ],
-    }
-
-    andCondition.push(lastAnsweredCondition)
-  }
-
-  properties.map(property => {
-    if (!isEmpty(filter[property.name])) {
-      andCondition.push({
-        member_properties: {
-          property: { name: { _eq: property.name } },
-          value: filter[`is${property.name}ExactMatch`]
-            ? { _eq: `${filter[property.name]}` }
-            : { _like: `%${filter[property.name]}%` },
-        },
-      })
-    }
-    return undefined
-  })
-
-  const leadCandidatesCondition = {
-    member_phones: { phone: { _neq: '' }, is_valid: { _neq: false } },
-    manager_id: {
-      _is_null: !filter.managerId,
-      _eq: filter.managerId || undefined,
-    },
-    member_categories:
-      filter.categoryIds.length > 0
-        ? {
-            category: {
-              name: {
-                _in: filter.categoryIds,
-              },
-            },
-          }
-        : undefined,
-    created_at: filter.createdAtRange
-      ? {
-          _gte: moment(filter.createdAtRange[0]).startOf('day'),
-          _lte: moment(filter.createdAtRange[1]).endOf('day'),
-        }
-      : undefined,
-    star: filter.starRangeIsNull
-      ? {
-          _is_null: true,
-        }
-      : {
-          _gte: filter.starRange[0],
-          _lte: filter.starRange[1],
-        },
-    last_member_note_called: filter.notCalled
-      ? {
-          _is_null: true,
-        }
-      : filter.lastCalledRange && !filter.excludeLastCalled
-      ? {
-          _gte: moment(filter.lastCalledRange[0]).startOf('day'),
-          _lte: moment(filter.lastCalledRange[1]).endOf('day'),
-        }
-      : undefined,
-    last_member_note_answered: filter.notAnswered
-      ? {
-          _is_null: true,
-        }
-      : filter.lastAnsweredRange && !filter.excludeLastAnswered
-      ? {
-          _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-          _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-        }
-      : undefined,
-    _and: andCondition.length === 0 ? undefined : andCondition,
-    completed_at:
-      filter.completedLead === 'contained'
-        ? undefined
-        : {
-            _is_null: filter.completedLead === 'excluded',
-          },
-    _or:
-      filter.closedLead === 'contained' && filter.closedAtRange
-        ? [
-            {
-              closed_at: {
-                _gte: moment(filter.closedAtRange[0]).startOf('day'),
-                _lte: moment(filter.closedAtRange[1]).endOf('day'),
-              },
-            },
-            {
-              closed_at: {
-                _is_null: true,
-              },
-            },
-          ]
-        : undefined,
-    closed_at:
-      filter.closedLead === 'excluded'
-        ? {
-            _is_null: true,
-          }
-        : filter.closedLead === 'only'
-        ? filter.closedAtRange
-          ? {
-              _gte: moment(filter.closedAtRange[0]).startOf('day'),
-              _lte: moment(filter.closedAtRange[1]).endOf('day'),
-            }
-          : {
-              _is_null: false,
-            }
-        : undefined,
-    recycled_at:
-      filter.recycledLead === 'contained'
-        ? undefined
-        : {
-            _is_null: filter.recycledLead === 'excluded',
-          },
-  }
-
-  // 使用 aggregate 查詢總數（讓資料庫計算，避免抓回全部資料）
-  const { data: countData, loading: loadingCount } = useQuery<
-    hasura.GetLeadCandidatesCount,
-    hasura.GetLeadCandidatesCountVariables
-  >(GetLeadCandidatesCount, {
+  const {
+    data: leadCandidateCountData,
+    loading: loadingLeadCandidateCount,
+    error: leadCandidateCountError,
+  } = useQuery<hasura.GetLeadCandidatesCount, hasura.GetLeadCandidatesCountVariables>(GetLeadCandidatesCount, {
     fetchPolicy: 'no-cache',
     variables: {
       condition: leadCandidatesCondition,
     },
   })
 
-  // 只取前 50 筆預覽資料
-  const { data: leadCandidatesData, loading: loadingLeadCandidates } = useQuery<
-    hasura.GetLeadCandidates,
-    hasura.GetLeadCandidatesVariables
-  >(GetLeadCandidates, {
+  const {
+    data: leadCandidatePreviewData,
+    loading: loadingLeadCandidatePreview,
+    error: leadCandidatePreviewError,
+  } = useQuery<hasura.GetLeadCandidates, hasura.GetLeadCandidatesVariables>(GetLeadCandidates, {
     fetchPolicy: 'no-cache',
     variables: {
       condition: leadCandidatesCondition,
-      limit,
+      limit: previewLimit,
     },
   })
 
-  const leadCandidatesCounts = countData?.member_aggregate?.aggregate?.count ?? 0
+  const loadingLeadCandidates = loadingLeadCandidateCount || loadingLeadCandidatePreview
+  const leadCandidateQueryError = leadCandidateCountError || leadCandidatePreviewError
+  const leadCandidatesCounts = leadCandidateCountData?.member_aggregate?.aggregate?.count || 0
+  const selectedNumDeliver = leadCandidatesCounts > 0 ? Math.min(numDeliver, leadCandidatesCounts) : 0
 
-  const members = leadCandidatesData?.member.map(member => ({
+  const members = leadCandidatePreviewData?.member.map(member => ({
     ...member,
     managerId: member.manager_id,
     createdAt: new Date(member.created_at),
@@ -752,13 +758,14 @@ const ConfirmSection: React.FC<{
     closedAt: member.closed_at ? moment(member.closed_at).format('YYYY-MM-DD') : null,
     recycledAt: member.recycled_at ? moment(member.recycled_at).format('YYYY-MM-DD') : null,
   })) as MemberCollectionProps[]
+  const previewMembers = leadCandidateQueryError || !members ? [] : members
 
   const { managerWithMemberCountData } = useGetManagerWithMemberCount(managerId as string, appId)
 
   const handleOnNext = () => {
     onNext?.({
       condition: leadCandidatesCondition,
-      limit: numDeliver,
+      limit: selectedNumDeliver,
       managerId: managerId || null,
       isClearCompletedAt,
       isClearClosedAt,
@@ -776,7 +783,7 @@ const ConfirmSection: React.FC<{
     if (
       isManagerLeadLimitValid &&
       isAggregateAvailable &&
-      memberCount.aggregate.count + numDeliver > Number(managerLeadLimit)
+      memberCount.aggregate.count + selectedNumDeliver > Number(managerLeadLimit)
     ) {
       setVisible(true)
     } else {
@@ -789,21 +796,31 @@ const ConfirmSection: React.FC<{
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
-          loading={loadingCount || loadingLeadCandidates}
+          loading={loadingLeadCandidates}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
-          value={`${numDeliver} / ${leadCandidatesCounts}`}
+          value={`${selectedNumDeliver} / ${leadCandidatesCounts}`}
         />
+        {leadCandidateQueryError && (
+          <Text color="var(--error)" display="block" mb={2}>
+            {leadCandidateQueryError.message}
+          </Text>
+        )}
         <div className="mb-2">
           <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
-        {!loadingLeadCandidates && (
+        {!loadingLeadCandidates && !leadCandidateQueryError && (
           <Row className="mb-2">
             <Col span={6}>
-              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={leadCandidatesCounts} />
+              <InputNumber
+                value={selectedNumDeliver}
+                onChange={v => typeof v === 'number' && setNumDeliver(v)}
+                max={leadCandidatesCounts}
+                min={0}
+              />
             </Col>
             <Col span={18}>
-              <Slider value={numDeliver} onChange={setNumDeliver} max={leadCandidatesCounts} />
+              <Slider value={selectedNumDeliver} onChange={setNumDeliver} max={leadCandidatesCounts} />
             </Col>
           </Row>
         )}
@@ -824,13 +841,18 @@ const ConfirmSection: React.FC<{
           </Checkbox>
         </Row>
 
-        <Button type="primary" block onClick={handleClick}>
+        <Button
+          type="primary"
+          block
+          onClick={handleClick}
+          disabled={loadingLeadCandidates || !!leadCandidateQueryError || selectedNumDeliver === 0}
+        >
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
 
         {managerId && (
           <SalesLeadLimitConfirmModel
-            anticipatedDispatchCount={numDeliver}
+            anticipatedDispatchCount={selectedNumDeliver}
             visible={visible}
             setVisible={setVisible}
             setCurrentStep={setCurrentStep}
@@ -841,7 +863,9 @@ const ConfirmSection: React.FC<{
       </div>
       <Box className="container mt-4">
         <Flex alignItems="center" justifyContent="space-between">
-          <Text>{formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.previewResult, { limit })}</Text>
+          <Text>
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.previewResult, { limit: previewLimit })}
+          </Text>
           <MemberFieldFilter
             allColumns={allFieldColumns}
             visibleColumnIds={visibleColumnIds}
@@ -851,9 +875,9 @@ const ConfirmSection: React.FC<{
         <AdminCard className="mb-5 mt-2">
           <MemberCollectionTableBlock
             visibleColumnIds={visibleColumnIds}
-            loadingMembers={loadingLeadCandidates || !members}
-            currentMembers={members}
-            limit={limit}
+            loadingMembers={loadingLeadCandidates}
+            currentMembers={previewMembers}
+            limit={previewLimit}
             properties={properties}
             visibleShowMoreButton={false}
             visibleColumnSearchProps={false}
@@ -903,9 +927,19 @@ const UpdateLeadManager = gql`
   }
 `
 
+const GetLeadCandidatesCount = gql`
+  query GetLeadCandidatesCount($condition: member_bool_exp) {
+    member_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+  }
+`
+
 const GetLeadCandidates = gql`
   query GetLeadCandidates($condition: member_bool_exp, $limit: Int) {
-    member(where: $condition, limit: $limit, order_by: { created_at: desc }) {
+    member(where: $condition, limit: $limit, ${LEAD_CANDIDATE_ORDER_BY}) {
       id
       picture_url
       name
@@ -925,12 +959,10 @@ const GetLeadCandidates = gql`
   }
 `
 
-const GetLeadCandidatesCount = gql`
-  query GetLeadCandidatesCount($condition: member_bool_exp) {
-    member_aggregate(where: $condition) {
-      aggregate {
-        count
-      }
+const GetLeadCandidateIdsForDelivery = gql`
+  query GetLeadCandidateIdsForDelivery($condition: member_bool_exp, $limit: Int) {
+    member(where: $condition, limit: $limit, ${LEAD_CANDIDATE_ORDER_BY}) {
+      id
     }
   }
 `
