@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAddOrderToClassGroup, useAvailableOrdersForClass } from '../../hooks/scheduleManagement'
 import { ScheduleType } from '../../types/schedule'
-import { matchesScheduleOrderProductName } from './utils/orderNameFilter'
+import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from './utils/orderNameFilter'
 
 const SearchWrapper = styled.div`
   margin-bottom: 16px;
@@ -113,7 +113,7 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
       })
       .filter((order): order is OrderForDisplay => Boolean(order))
       .filter(order => {
-        if ((order.status || '').includes('EXPIRED')) return false
+        if (!isOrderStatusValidForSchedule(order.status)) return false
         if (order.expiredAt && new Date(order.expiredAt) < now) return false
         if (campusId && order.campusId && order.campusId !== campusId) return false
         return true

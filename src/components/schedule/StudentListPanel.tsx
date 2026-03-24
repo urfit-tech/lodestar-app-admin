@@ -9,7 +9,7 @@ import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
-import { matchesScheduleOrderProductName } from './utils/orderNameFilter'
+import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from './utils/orderNameFilter'
 
 const { Search } = Input
 
@@ -147,7 +147,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const campusFromOptions =
           orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
 
-        if ((order.status || '').includes('EXPIRED')) {
+        if (!isOrderStatusValidForSchedule(order.status)) {
           return null
         }
 

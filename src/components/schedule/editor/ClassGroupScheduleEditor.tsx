@@ -39,7 +39,7 @@ import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher 
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import { matchesScheduleOrderProductName } from '../utils/orderNameFilter'
+import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from '../utils/orderNameFilter'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 
@@ -282,7 +282,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         )
         const expiresAt = expiryBySetting || (classProduct.ended_at ? new Date(classProduct.ended_at) : undefined)
 
-        if ((orderLog.status || '').includes('EXPIRED')) return null
+        if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
         if (expiresAt && expiresAt < now) return null
         if (classGroup.campusId && campusFromOptions && campusFromOptions !== classGroup.campusId) {
