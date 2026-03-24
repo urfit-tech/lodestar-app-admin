@@ -78,6 +78,7 @@ export const useMemberForSchedule = (
           id
           status
           member_id
+          options
           created_at
           updated_at
           order_products{
@@ -131,6 +132,8 @@ export const useMemberForSchedule = (
     return pipe(
       filter((orderLog: (typeof data.order_log)[number]) => isOrderStatusValidForSchedule(orderLog.status)),
       chain((orderLog: (typeof data.order_log)[number]) => {
+        const orderOptions = (orderLog.options as any) || {}
+
         const getRawProductOptions = (product: (typeof orderLog.order_products)[number]) =>
           ((product.options as any) || {}) as Record<string, any>
 
@@ -182,6 +185,8 @@ export const useMemberForSchedule = (
             const options = getProductOptions(product)
             const totalSessions = options?.total_sessions?.max || 0
             const totalMinutes = totalSessions * 50
+            const campusFromOptions =
+              orderOptions?.campus_id || orderOptions?.campusId || options?.campus_id || options?.campusId || undefined
 
             return {
               id: product.id,
@@ -196,6 +201,7 @@ export const useMemberForSchedule = (
               expiresAt: undefined, // 開課日 + 有效月數，預排/發布後才有值
               status: orderLog.status,
               materials,
+              campus: campusFromOptions,
             }
           }),
         )(orderLog.order_products)

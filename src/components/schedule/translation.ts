@@ -79,6 +79,11 @@ const scheduleMessages = {
       id: 'schedule.ScheduleCondition.exceededLimit',
       defaultMessage: 'Exceeded available class time',
     },
+    exceededLimitDetail: {
+      id: 'schedule.ScheduleCondition.exceededLimitDetail',
+      defaultMessage:
+        '已超過可安排課時。本次安排課時: {arranged} 課時（{arrangedMinutes} 分鐘）| 可安排課時上限: {limit} 課時（{limitMinutes} 分鐘）',
+    },
     excludedDates: { id: 'schedule.ScheduleCondition.excludedDates', defaultMessage: 'Excluded dates' },
     excludeHolidays: { id: 'schedule.ScheduleCondition.excludeHolidays', defaultMessage: 'Exclude fixed holidays' },
     holidayWarning: {
@@ -161,8 +166,13 @@ const scheduleMessages = {
     templateNameRequired: { id: 'schedule.ArrangeModal.templateNameRequired', defaultMessage: '請輸入模板名稱' },
     // New messages for enhanced functionality
     minutes: { id: 'schedule.ArrangeModal.minutes', defaultMessage: '分鐘' },
+    lessons: { id: 'schedule.ArrangeModal.lessons', defaultMessage: '課時' },
     totalDuration: { id: 'schedule.ArrangeModal.totalDuration', defaultMessage: '本次安排課時' },
     availableLimit: { id: 'schedule.ArrangeModal.availableLimit', defaultMessage: '可安排課時上限' },
+    exceedingLimitWarning: {
+      id: 'schedule.ArrangeModal.exceedingLimitWarning',
+      defaultMessage: '已超過可安排課時，請調整課程安排。',
+    },
     durationWarningTitle: { id: 'schedule.ArrangeModal.durationWarningTitle', defaultMessage: '課時超過上限' },
     durationWarningMessage: {
       id: 'schedule.ArrangeModal.durationWarningMessage',

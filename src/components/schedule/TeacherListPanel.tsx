@@ -54,6 +54,13 @@ const FilterRow = styled.div`
   margin-bottom: 16px;
 `
 
+const WordWrapTable = styled(Table)`
+  .ant-table-cell {
+    white-space: normal;
+    word-break: break-word;
+  }
+` as typeof Table
+
 const LANGUAGE_LABELS: Record<Language, string> = {
   中文: '中文',
   英文: '英文',
@@ -530,7 +537,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
       {/* Teachers Table */}
       {!isLoading && filteredTeachers.length > 0 ? (
         <>
-          <Table columns={columns} dataSource={paginatedTeachers} rowKey="id" pagination={false} size="small" />
+          <WordWrapTable columns={columns} dataSource={paginatedTeachers} rowKey="id" pagination={false} size="small" />
           <div style={{ marginTop: 16, textAlign: 'right' }}>
             <Pagination
               current={currentPage}

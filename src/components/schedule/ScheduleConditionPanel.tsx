@@ -1,6 +1,6 @@
 import { Checkbox, DatePicker, InputNumber, Radio, Space, Tag, Typography } from 'antd'
 import moment, { Moment } from 'moment'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { Order, ScheduleCondition } from '../../types/schedule'
@@ -255,6 +255,8 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
     [condition.excludedDates, onConditionChange],
   )
 
+  const [excludedDatePickerOpen, setExcludedDatePickerOpen] = useState(false)
+
   const handleExcludeHolidaysChange = useCallback(
     (checked: boolean) => {
       onConditionChange({ excludeHolidays: checked })
@@ -271,7 +273,11 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   const isDisabled = disabled !== undefined ? disabled : selectedOrders.length === 0
 
   return (
-    <ScheduleCard title={formatMessage(scheduleMessages.ScheduleCondition.title)} size="small" style={{ height: '100%' }}>
+    <ScheduleCard
+      title={formatMessage(scheduleMessages.ScheduleCondition.title)}
+      size="small"
+      style={{ height: '100%' }}
+    >
       {/* Start Date */}
       <FieldRow>
         <FieldLabel>{formatMessage(scheduleMessages.ScheduleCondition.startDate)}</FieldLabel>
@@ -367,7 +373,12 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
                   </HelpText>
                   {condition.totalMinutes && condition.totalMinutes > limits.maxMinutes && (
                     <Typography.Text type="danger" style={{ fontSize: 12 }}>
-                      {formatMessage(scheduleMessages.ScheduleCondition.exceededLimit)}
+                      {formatMessage(scheduleMessages.ScheduleCondition.exceededLimitDetail, {
+                        arranged: Math.floor(condition.totalMinutes / 50),
+                        arrangedMinutes: condition.totalMinutes,
+                        limit: maxLessons,
+                        limitMinutes: limits.maxMinutes,
+                      })}
                     </Typography.Text>
                   )}
                 </div>
@@ -382,13 +393,31 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
         <FieldLabel>{formatMessage(scheduleMessages.ScheduleCondition.excludedDates)}</FieldLabel>
         <DatePicker
           value={null}
-          onChange={handleAddExcludedDate}
+          open={excludedDatePickerOpen}
+          onOpenChange={open => setExcludedDatePickerOpen(open)}
+          onChange={date => {
+            handleAddExcludedDate(date)
+            // Keep picker open for multi-select
+            setTimeout(() => setExcludedDatePickerOpen(true), 0)
+          }}
           disabled={isDisabled}
           style={{ width: '100%' }}
-          placeholder="選擇日期新增"
+          placeholder="選擇日期新增（可連續多選）"
           disabledDate={date => {
-            // Disable dates before start date
             return date.isBefore(moment(condition.startDate), 'day')
+          }}
+          dateRender={current => {
+            const isSelected = condition.excludedDates.some(
+              d => moment(d).format('YYYY-MM-DD') === current.format('YYYY-MM-DD'),
+            )
+            return (
+              <div
+                className="ant-picker-cell-inner"
+                style={isSelected ? { backgroundColor: '#ff4d4f', color: '#fff', borderRadius: '50%' } : undefined}
+              >
+                {current.date()}
+              </div>
+            )
           }}
         />
         {condition.excludedDates.length > 0 && (

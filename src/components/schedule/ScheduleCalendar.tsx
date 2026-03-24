@@ -451,20 +451,22 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     [onWeekChange],
   )
 
-  const goToToday = useCallback(() => {
+  const anchorDate = useMemo(() => viewDate || new Date(), [viewDate])
+
+  const goToAnchorWeek = useCallback(() => {
     const calendarApi = calendarRef.current?.getApi()
     if (calendarApi) {
-      calendarApi.today()
-      setCurrentDate(new Date())
-      const startOfWeek = dayjs().startOf('week').add(1, 'day').toDate()
-      const endOfWeek = dayjs().endOf('week').add(1, 'day').toDate()
+      calendarApi.gotoDate(anchorDate)
+      setCurrentDate(anchorDate)
+      const startOfWeek = dayjs(anchorDate).startOf('week').add(1, 'day').toDate()
+      const endOfWeek = dayjs(anchorDate).endOf('week').add(1, 'day').toDate()
       onWeekChange?.(startOfWeek, endOfWeek)
     }
-  }, [onWeekChange])
+  }, [onWeekChange, anchorDate])
 
-  const isCurrentWeek = useMemo(() => {
-    return dayjs(currentDate).isSame(new Date(), 'week')
-  }, [currentDate])
+  const isAnchorWeek = useMemo(() => {
+    return dayjs(currentDate).isSame(anchorDate, 'week')
+  }, [currentDate, anchorDate])
 
   const weekDisplay = useMemo(() => {
     const start = dayjs(currentDate).startOf('week').add(1, 'day')
@@ -565,7 +567,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           <Button icon={<LeftOutlined />} onClick={() => navigateWeek('prev')}>
             {formatMessage(scheduleMessages.Calendar.prevWeek)}
           </Button>
-          <TodayButton $isToday={isCurrentWeek} onClick={goToToday}>
+          <TodayButton $isToday={isAnchorWeek} onClick={goToAnchorWeek}>
             {formatMessage(scheduleMessages.Calendar.backToToday)}
           </TodayButton>
           <Button icon={<RightOutlined />} onClick={() => navigateWeek('next')}>
@@ -706,7 +708,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventContent={renderEventContent}
-        height="auto"
+        height={700}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric' }}
         dayHeaderContent={arg => {
           const isToday = dayjs(arg.date).isSame(new Date(), 'day')
