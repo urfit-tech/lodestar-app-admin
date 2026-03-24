@@ -8,7 +8,7 @@ import { CountryCode } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import { includes } from 'ramda'
+import { includes, uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -100,6 +100,11 @@ const MemberProfileBasicForm: React.FC<{
       setLoading(true)
       const values = await form.validateFields()
       const { phones, countryCodes } = splitPhoneData(values.phones, ',')
+      const normalizedTags = uniq((values.tags || memberAdmin.tags).map(tag => tag.trim()).filter(Boolean))
+      const normalizedSpecialities = uniq(
+        (values.specialities || []).map(speciality => speciality.trim()).filter(Boolean),
+      )
+      const mergedTagNames = uniq([...normalizedTags, ...normalizedSpecialities])
       try {
         await updateMemberProfileBasic({
           variables: {
@@ -136,11 +141,11 @@ const MemberProfileBasicForm: React.FC<{
                 ? values.managerId || null
                 : memberAdmin.manager?.id,
             assignedAt: values.managerId ? new Date() : null,
-            tags: (values.tags || memberAdmin.tags).map(tag => ({
+            tags: mergedTagNames.map(tag => ({
               name: tag,
               type: '',
             })),
-            memberTags: (values.tags || memberAdmin.tags).map(tag => ({
+            memberTags: normalizedTags.map(tag => ({
               member_id: memberAdmin.id,
               tag_name: tag,
             })),
@@ -149,7 +154,7 @@ const MemberProfileBasicForm: React.FC<{
               category_id: categoryId,
               position: index,
             })),
-            memberSpecialities: values.specialities.map(speciality => ({
+            memberSpecialities: normalizedSpecialities.map(speciality => ({
               member_id: memberAdmin.id,
               tag_name: speciality,
             })),
