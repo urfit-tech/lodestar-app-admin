@@ -22,6 +22,20 @@ export const matchesLanguageProductName = (productName?: string | null, language
   return includesKeyword(productName, language)
 }
 
+/**
+ * 排課系統訂單狀態過濾規則：
+ * - UNPAID（待付款）：要抓（不管有無交付）
+ * - SUCCESS（已完成）：要抓
+ * - EXPIRED（已失效）：不抓
+ * - REFUND / PARTIAL_REFUND（已退款/部分退款）：不抓
+ */
+const EXCLUDED_ORDER_STATUSES = ['EXPIRED', 'REFUND', 'PARTIAL_REFUND']
+
+export const isOrderStatusValidForSchedule = (status?: string | null): boolean => {
+  if (!status) return false
+  return !EXCLUDED_ORDER_STATUSES.some(excluded => status.includes(excluded))
+}
+
 export const matchesScheduleOrderProductName = ({
   productName,
   scheduleType,

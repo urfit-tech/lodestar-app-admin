@@ -3,7 +3,7 @@ import { gql, useQuery } from '@apollo/client'
 import { pipe, pathOr, map, evolve, defaultTo, fromPairs, chain, filter } from 'ramda'
 
 import hasura from '../hasura'
-import { matchesScheduleOrderProductName } from '../components/schedule/utils/orderNameFilter'
+import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from '../components/schedule/utils/orderNameFilter'
 
 export type MemberForSchedule = {
   id: string
@@ -129,6 +129,7 @@ export const useMemberForSchedule = (
     if (!data?.order_log) return []
 
     return pipe(
+      filter((orderLog: (typeof data.order_log)[number]) => isOrderStatusValidForSchedule(orderLog.status)),
       chain((orderLog: (typeof data.order_log)[number]) => {
         const getRawProductOptions = (product: (typeof orderLog.order_products)[number]) =>
           ((product.options as any) || {}) as Record<string, any>
