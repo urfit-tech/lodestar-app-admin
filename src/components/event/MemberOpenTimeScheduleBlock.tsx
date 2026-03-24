@@ -340,6 +340,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     if (calendarApi) {
       calendarApi.changeView(view)
       setViewType(view)
+      setCurrentDate(calendarApi.getDate())
     }
   }, [])
 
@@ -742,17 +743,18 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
           dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric' }}
           dayHeaderContent={arg => {
             const isToday = moment(arg.date).isSame(new Date(), 'day')
+            const isMonthView = viewType === 'dayGridMonth'
             return (
               <div
                 style={{
                   padding: '4px 8px',
-                  backgroundColor: isToday ? OPEN_TIME_COLOR : 'transparent',
-                  color: isToday ? 'white' : 'inherit',
-                  borderRadius: isToday ? '4px' : '0',
+                  backgroundColor: isToday && !isMonthView ? OPEN_TIME_COLOR : 'transparent',
+                  color: isToday && !isMonthView ? 'white' : 'inherit',
+                  borderRadius: isToday && !isMonthView ? '4px' : '0',
                 }}
               >
                 <div>{moment(arg.date).format('ddd')}</div>
-                <div>{moment(arg.date).format('M/D')}</div>
+                {!isMonthView && <div>{moment(arg.date).format('M/D')}</div>}
               </div>
             )
           }}
