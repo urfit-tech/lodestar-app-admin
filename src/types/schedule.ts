@@ -76,6 +76,7 @@ export interface Order {
   lastClassDate?: Date
   status: string // order_log status: 'SUCCESS', 'UNPAID', etc.
   materials: string[] // 教材列表：從同一訂單的 order_products 中 options.options.product === '教材' 的項目取得 title
+  campus?: string // 校區 ID（從訂單 options 中取得，關聯到 permission_group）
 }
 
 export interface Classroom {

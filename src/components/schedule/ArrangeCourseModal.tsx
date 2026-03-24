@@ -235,38 +235,21 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     return orderMaterials.filter(m => m.toLowerCase().includes(searchLower))
   }, [orderMaterials, materialSearch])
 
-  // 取得所選老師的校區 IDs（可能有多個）
-  const getTeacherCampusIds = useCallback(
-    (teacherId?: string): string[] => {
-      if (!teacherId) return []
-      const teacher = selectedTeachers.find(t => t.id === teacherId)
-      if (!teacher) return []
-      // 使用新的 campusIds 欄位，或回退到 campusId
-      return teacher.campusIds || (teacher.campusId ? [teacher.campusId] : [])
-    },
-    [selectedTeachers],
-  )
+  // 根據訂單校區過濾教室
+  const filteredClassrooms = useMemo((): Classroom[] => {
+    // 優先使用訂單校區（campus prop）過濾
+    if (campus) {
+      return classrooms.filter(c => c.campusId === campus)
+    }
+    // 沒有訂單校區時顯示所有教室
+    return classrooms
+  }, [classrooms, campus])
 
-  // 根據老師校區過濾教室
-  const getFilteredClassrooms = useCallback(
-    (teacherId?: string): Classroom[] => {
-      const campusIds = getTeacherCampusIds(teacherId)
-      // 如果沒有選擇老師或老師沒有校區，顯示所有教室
-      if (campusIds.length === 0) return classrooms
-      // 過濾出屬於老師校區的教室
-      return classrooms.filter(c => c.campusId && campusIds.includes(c.campusId))
-    },
-    [classrooms, getTeacherCampusIds],
-  )
-
-  // 判斷是否需要顯示校區前綴（老師有多個校區時）
-  const shouldShowCampusPrefix = useCallback(
-    (teacherId?: string): boolean => {
-      const campusIds = getTeacherCampusIds(teacherId)
-      return campusIds.length > 1
-    },
-    [getTeacherCampusIds],
-  )
+  // 判斷是否需要顯示校區前綴（教室來自多個校區時）
+  const showCampusPrefix = useMemo((): boolean => {
+    const campusIds = new Set(filteredClassrooms.map(c => c.campusId).filter(Boolean))
+    return campusIds.size > 1
+  }, [filteredClassrooms])
 
   // Resolve campus for each generated event.
   // Priority: selected row teacher campus -> existing event campus (edit mode) -> modal campus prop.
@@ -289,18 +272,21 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     return rows.reduce((sum, row) => sum + row.duration, 0)
   }, [rows])
 
+  // Effective available minutes: prioritize schedule condition's totalMinutes over order's availableMinutes
+  const effectiveAvailableMinutes = useMemo(() => {
+    if (scheduleCondition?.totalMinutes) {
+      return scheduleCondition.totalMinutes
+    }
+    return availableMinutes
+  }, [scheduleCondition, availableMinutes])
+
   // Check if total duration exceeds available minutes or schedule condition total minutes
   const isExceedingLimit = useMemo(() => {
-    // Check against order's available minutes
-    if (availableMinutes > 0 && totalDuration > availableMinutes) {
-      return true
-    }
-    // Check against schedule condition's total minutes (if set)
-    if (scheduleCondition?.totalMinutes && totalDuration > scheduleCondition.totalMinutes) {
+    if (effectiveAvailableMinutes > 0 && totalDuration > effectiveAvailableMinutes) {
       return true
     }
     return false
-  }, [totalDuration, availableMinutes, scheduleCondition])
+  }, [totalDuration, effectiveAvailableMinutes])
 
   // Create default row
   const createDefaultRow = useCallback((date: Date, teacher?: Teacher): CourseRow => {
@@ -375,9 +361,20 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   }, [])
 
   const addRow = useCallback(() => {
-    const newRow = createDefaultRow(selectedDate, selectedTeachers[0])
+    const newRow: CourseRow = {
+      id: `new-${Date.now()}-${Math.random()}`,
+      weekday: 0,
+      duration: DEFAULT_DURATION,
+      startTime: moment().startOf('hour'),
+      material: '',
+      materialType: 'undecided',
+      customMaterial: '',
+      teacherId: undefined,
+      classroomIds: [CLASSROOM_UNASSIGNED],
+      needsOnlineRoom: false,
+    }
     setRows(prev => [...prev, newRow])
-  }, [selectedDate, selectedTeachers, createDefaultRow])
+  }, [])
 
   const copyRow = useCallback((row: CourseRow) => {
     const newRow: CourseRow = {
@@ -504,7 +501,12 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
 
       // Check for conflicts
       const endTime = moment(row.startTime).add(row.duration, 'minutes')
-      const dateForRow = moment(selectedDate).isoWeekday(row.weekday)
+      const referenceDate = scheduleCondition?.startDate ? moment(scheduleCondition.startDate) : moment(selectedDate)
+      let dateForRow = referenceDate.clone().isoWeekday(row.weekday)
+      // 若算出的日期早於參考日期，推到下一週
+      if (dateForRow.isBefore(referenceDate, 'day')) {
+        dateForRow = dateForRow.clone().add(1, 'week')
+      }
       const dateStr = dateForRow.format('YYYY-MM-DD')
       const rowStartTime = row.startTime.format('HH:mm')
       const rowEndTime = endTime.format('HH:mm')
@@ -820,7 +822,11 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         // No repeat, just return single events for each row
         return {
           events: baseRows.map(row => {
-            const dateForRow = moment(selectedDate).isoWeekday(row.weekday)
+            let dateForRow = moment(selectedDate).isoWeekday(row.weekday)
+            // 若算出的日期早於 selectedDate，推到下一週
+            if (dateForRow.isBefore(moment(selectedDate), 'day')) {
+              dateForRow = dateForRow.clone().add(1, 'week')
+            }
             const endTime = moment(row.startTime).add(row.duration, 'minutes')
             const classroomState = getClassroomState(row)
             const classroomIds =
@@ -1144,19 +1150,35 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         ].filter(Boolean)}
       >
         {/* Summary info */}
-        {availableMinutes > 0 && (
-          <div style={{ marginBottom: 16, padding: '8px 12px', background: '#f5f5f5', borderRadius: 4 }}>
+        {effectiveAvailableMinutes > 0 && (
+          <div
+            style={{
+              marginBottom: 16,
+              padding: '8px 12px',
+              background: isExceedingLimit ? '#fff2f0' : '#f5f5f5',
+              borderRadius: 4,
+            }}
+          >
             <Space>
-              <Typography.Text>
-                {formatMessage(scheduleMessages.ArrangeModal.totalDuration)}: {totalDuration}{' '}
-                {formatMessage(scheduleMessages.ArrangeModal.minutes)}
+              <Typography.Text type={isExceedingLimit ? 'danger' : undefined}>
+                {formatMessage(scheduleMessages.ArrangeModal.totalDuration)}: {Math.floor(totalDuration / 50)}{' '}
+                {formatMessage(scheduleMessages.ArrangeModal.lessons)}（{totalDuration}{' '}
+                {formatMessage(scheduleMessages.ArrangeModal.minutes)}）
               </Typography.Text>
               <Typography.Text type="secondary">|</Typography.Text>
               <Typography.Text type={isExceedingLimit ? 'danger' : 'secondary'}>
-                {formatMessage(scheduleMessages.ArrangeModal.availableLimit)}: {availableMinutes}{' '}
-                {formatMessage(scheduleMessages.ArrangeModal.minutes)}
+                {formatMessage(scheduleMessages.ArrangeModal.availableLimit)}:{' '}
+                {Math.floor(effectiveAvailableMinutes / 50)} {formatMessage(scheduleMessages.ArrangeModal.lessons)}（
+                {effectiveAvailableMinutes} {formatMessage(scheduleMessages.ArrangeModal.minutes)}）
               </Typography.Text>
             </Space>
+            {isExceedingLimit && (
+              <div style={{ marginTop: 4 }}>
+                <Typography.Text type="danger" style={{ fontSize: 12 }}>
+                  {formatMessage(scheduleMessages.ArrangeModal.exceedingLimitWarning)}
+                </Typography.Text>
+              </div>
+            )}
           </div>
         )}
 
@@ -1329,10 +1351,10 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                         <Select.Option value={CLASSROOM_EXTERNAL}>
                           {formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
                         </Select.Option>
-                        {/* 根據所選老師過濾教室，多校區時顯示前綴 */}
-                        {getFilteredClassrooms(row.teacherId).map(c => (
+                        {/* 根據訂單校區過濾教室，多校區時顯示前綴 */}
+                        {filteredClassrooms.map(c => (
                           <Select.Option key={c.id} value={c.id}>
-                            {shouldShowCampusPrefix(row.teacherId) && c.campusName ? `[${c.campusName}] ` : ''}
+                            {showCampusPrefix && c.campusName ? `[${c.campusName}] ` : ''}
                             {c.name} ({c.capacity}人)
                           </Select.Option>
                         ))}
@@ -1416,7 +1438,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
         <Typography.Text>
           {formatMessage(scheduleMessages.ArrangeModal.durationWarningMessage, {
             total: durationWarningTotal ?? totalDuration,
-            available: availableMinutes,
+            available: effectiveAvailableMinutes,
           })}
         </Typography.Text>
       </WarningModal>

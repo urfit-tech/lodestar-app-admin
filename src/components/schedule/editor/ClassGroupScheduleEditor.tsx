@@ -1,4 +1,19 @@
-import { Button, Checkbox, Form, Input, message, Modal, Select, Space, Spin, Table, Tooltip, Typography } from 'antd'
+import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  message,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tooltip,
+  Typography,
+} from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -101,6 +116,15 @@ type PublishFlowStep = 'selectMode' | 'correctionPrompt' | 'correctionEdit' | 'f
 type PublishMode = 'pending' | 'preScheduled'
 type CorrectionField = 'teacherId' | 'classroomId' | 'material' | 'needsOnlineRoom' | 'teacherConflict' | 'roomConflict'
 type PublishEventDraft = Omit<ScheduleEvent, 'needsOnlineRoom'> & { needsOnlineRoom?: boolean }
+type CorrectionGroupRow = {
+  groupKey: string
+  weekday: number
+  weekLabel: string
+  startTime: string
+  duration: number
+  eventKeys: string[]
+  representative: PublishEventDraft
+}
 
 interface ClassGroupScheduleEditorProps {
   scheduleType: 'semester' | 'group'
@@ -1264,6 +1288,76 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     [validateCorrectionDrafts, formatMessage],
   )
 
+  const updateCorrectionGroup = useCallback(
+    (group: CorrectionGroupRow, updates: Partial<PublishEventDraft>, checkConflict: boolean = false) => {
+      let nextDrafts: PublishEventDraft[] = []
+      setPublishEventDrafts(prev => {
+        nextDrafts = prev.map(event =>
+          group.eventKeys.includes(getEventKey(event)) ? { ...event, ...updates } : event,
+        )
+        return nextDrafts
+      })
+
+      if (checkConflict) {
+        const { errors } = validateCorrectionDrafts(nextDrafts, group.eventKeys)
+        const hasConflict = group.eventKeys.some(key => {
+          const rowErrors = errors[key] || []
+          return rowErrors.includes('teacherConflict') || rowErrors.includes('roomConflict')
+        })
+        if (hasConflict) {
+          message.warning(formatMessage(scheduleMessages.Publish.teacherOrClassroomConflict))
+        }
+      }
+    },
+    [getEventKey, validateCorrectionDrafts, formatMessage],
+  )
+
+  const addCorrectionRow = useCallback(() => {
+    const newId = `correction-new-${Date.now()}-${Math.random()}`
+    const baseDraft: PublishEventDraft = {
+      id: newId,
+      scheduleType: scheduleType,
+      status: 'pending' as const,
+      classId: classGroupId,
+      studentIds: [],
+      orderIds: [],
+      teacherId: undefined,
+      classroomId: undefined,
+      classroomIds: [],
+      campus: classGroup?.campus || '',
+      language: (classGroup?.language || 'en') as Language,
+      date: new Date(),
+      startTime: '09:00',
+      endTime: '10:00',
+      duration: 60,
+      material: undefined,
+      needsOnlineRoom: undefined,
+      createdBy: '',
+      createdByEmail: '',
+      updatedAt: new Date(),
+      isExternal: false,
+    }
+    setPublishEventDrafts(prev => [...prev, baseDraft])
+    setCorrectionEventKeys(prev => [...prev, newId])
+  }, [scheduleType, classGroupId, classGroup])
+
+  const copyCorrectionRow = useCallback((event: PublishEventDraft) => {
+    const newId = `correction-copy-${Date.now()}-${Math.random()}`
+    const copied: PublishEventDraft = {
+      ...event,
+      id: newId,
+      apiEventId: undefined,
+    }
+    setPublishEventDrafts(prev => [...prev, copied])
+    setCorrectionEventKeys(prev => [...prev, newId])
+  }, [])
+
+  const removeCorrectionRow = useCallback((event: PublishEventDraft) => {
+    const eventKey = getEventKey(event)
+    setPublishEventDrafts(prev => prev.filter(e => getEventKey(e) !== eventKey))
+    setCorrectionEventKeys(prev => prev.filter(k => k !== eventKey))
+  }, [])
+
   useEffect(() => {
     if (!publishModalVisible || publishFlowStep !== 'correctionEdit') return
     const { errors } = validateCorrectionDrafts(publishEventDrafts, correctionEventKeys)
@@ -1432,14 +1526,37 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     store,
   ])
 
-  const correctionRows = useMemo(() => {
-    return publishEventDrafts
+  const correctionRows = useMemo((): CorrectionGroupRow[] => {
+    const incompleteEvents = publishEventDrafts
       .filter(event => correctionEventKeys.includes(getEventKey(event)))
       .sort((a, b) => {
-        const dateDiff = moment(a.date).valueOf() - moment(b.date).valueOf()
-        if (dateDiff !== 0) return dateDiff
+        const weekdayA = moment(a.date).day()
+        const weekdayB = moment(b.date).day()
+        if (weekdayA !== weekdayB) return weekdayA - weekdayB
         return a.startTime.localeCompare(b.startTime)
       })
+
+    const groups = new Map<string, CorrectionGroupRow>()
+    for (const event of incompleteEvents) {
+      const weekday = moment(event.date).day()
+      const groupKey = `${weekday}-${event.startTime}-${event.duration}`
+      const existing = groups.get(groupKey)
+      if (existing) {
+        existing.eventKeys.push(getEventKey(event))
+      } else {
+        groups.set(groupKey, {
+          groupKey,
+          weekday,
+          weekLabel: WEEKDAY_LABELS[weekday] || '-',
+          startTime: event.startTime,
+          duration: event.duration,
+          eventKeys: [getEventKey(event)],
+          representative: event,
+        })
+      }
+    }
+
+    return Array.from(groups.values())
   }, [publishEventDrafts, correctionEventKeys])
 
   const buildSchedulePreviewRows = useCallback(
@@ -1574,34 +1691,34 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     [formatMessage],
   )
 
-  const correctionColumns = useMemo<ColumnsType<PublishEventDraft>>(
+  const correctionColumns = useMemo<ColumnsType<CorrectionGroupRow>>(
     () => [
       {
         title: formatMessage(scheduleMessages.ArrangeModal.week),
         key: 'week',
         width: 90,
-        render: (_, event) => resolveWeekLabel(event.date),
+        render: (_, group) => group.weekLabel,
       },
       {
         title: formatMessage(scheduleMessages.ArrangeModal.startTime),
-        dataIndex: 'startTime',
         key: 'startTime',
         width: 110,
+        render: (_, group) => group.startTime,
       },
       {
         title: formatMessage(scheduleMessages.ArrangeModal.duration),
         key: 'duration',
         width: 100,
-        render: (_, event) => event.duration,
+        render: (_, group) => group.duration,
       },
       {
         title: formatMessage(scheduleMessages.ArrangeModal.classroom),
         key: 'classroom',
         width: 180,
-        render: (_, event) => {
-          const eventKey = getEventKey(event)
-          const rowErrors = correctionErrors[eventKey] || []
-          const hasError = rowErrors.includes('classroomId') || rowErrors.includes('roomConflict')
+        render: (_, group) => {
+          const groupErrors = group.eventKeys.flatMap(key => correctionErrors[key] || [])
+          const hasError = groupErrors.includes('classroomId') || groupErrors.includes('roomConflict')
+          const event = group.representative
           const classroomValue = event.isExternal
             ? CORRECTION_EXTERNAL_CLASSROOM
             : getClassroomIds(event)[0] || undefined
@@ -1614,8 +1731,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
                 placeholder={formatMessage(scheduleMessages.ArrangeModal.selectClassroom)}
                 onChange={value => {
                   if (value === CORRECTION_EXTERNAL_CLASSROOM) {
-                    updateCorrectionEvent(
-                      eventKey,
+                    updateCorrectionGroup(
+                      group,
                       {
                         isExternal: true,
                         classroomId: undefined,
@@ -1625,9 +1742,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
                     )
                     return
                   }
-
-                  updateCorrectionEvent(
-                    eventKey,
+                  updateCorrectionGroup(
+                    group,
                     {
                       isExternal: false,
                       classroomId: value,
@@ -1654,19 +1770,18 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         title: formatMessage(scheduleMessages.ArrangeModal.teacher),
         key: 'teacher',
         width: 160,
-        render: (_, event) => {
-          const eventKey = getEventKey(event)
-          const rowErrors = correctionErrors[eventKey] || []
-          const hasError = rowErrors.includes('teacherId') || rowErrors.includes('teacherConflict')
+        render: (_, group) => {
+          const groupErrors = group.eventKeys.flatMap(key => correctionErrors[key] || [])
+          const hasError = groupErrors.includes('teacherId') || groupErrors.includes('teacherConflict')
 
           return (
             <Form.Item style={{ marginBottom: 0 }} validateStatus={hasError ? 'error' : ''}>
               <Select
-                value={event.teacherId}
+                value={group.representative.teacherId}
                 allowClear
                 placeholder={formatMessage(scheduleMessages.ArrangeModal.selectTeacher)}
                 onChange={value => {
-                  updateCorrectionEvent(eventKey, { teacherId: value }, true)
+                  updateCorrectionGroup(group, { teacherId: value }, true)
                 }}
               >
                 {allTeachers.map(teacher => (
@@ -1683,17 +1798,16 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         title: formatMessage(scheduleMessages.ArrangeModal.material),
         key: 'material',
         width: 180,
-        render: (_, event) => {
-          const eventKey = getEventKey(event)
-          const rowErrors = correctionErrors[eventKey] || []
-          const hasError = rowErrors.includes('material')
+        render: (_, group) => {
+          const groupErrors = group.eventKeys.flatMap(key => correctionErrors[key] || [])
+          const hasError = groupErrors.includes('material')
           return (
             <Form.Item style={{ marginBottom: 0 }} validateStatus={hasError ? 'error' : ''}>
               <Input
-                value={event.material}
+                value={group.representative.material}
                 placeholder={formatMessage(scheduleMessages.ArrangeModal.enterMaterialName)}
                 onChange={targetEvent => {
-                  updateCorrectionEvent(eventKey, { material: targetEvent.target.value })
+                  updateCorrectionGroup(group, { material: targetEvent.target.value })
                 }}
               />
             </Form.Item>
@@ -1704,10 +1818,10 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         title: formatMessage(scheduleMessages.ArrangeModal.needsOnlineRoom),
         key: 'needsOnlineRoom',
         width: 150,
-        render: (_, event) => {
-          const eventKey = getEventKey(event)
-          const rowErrors = correctionErrors[eventKey] || []
-          const hasError = rowErrors.includes('needsOnlineRoom')
+        render: (_, group) => {
+          const groupErrors = group.eventKeys.flatMap(key => correctionErrors[key] || [])
+          const hasError = groupErrors.includes('needsOnlineRoom')
+          const event = group.representative
           const value = typeof event.needsOnlineRoom === 'boolean' ? (event.needsOnlineRoom ? 'yes' : 'no') : undefined
 
           return (
@@ -1716,7 +1830,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
                 value={value}
                 allowClear
                 onChange={nextValue => {
-                  updateCorrectionEvent(eventKey, {
+                  updateCorrectionGroup(group, {
                     needsOnlineRoom: nextValue === 'yes' ? true : nextValue === 'no' ? false : undefined,
                   })
                 }}
@@ -1728,15 +1842,45 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           )
         },
       },
+      {
+        title: formatMessage(scheduleMessages.ScheduleTable.actions),
+        key: 'actions',
+        width: 120,
+        fixed: 'right' as const,
+        render: (_, group) => {
+          return (
+            <Space size={4}>
+              <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.addRow)}>
+                <Button icon={<PlusOutlined />} size="small" onClick={addCorrectionRow} />
+              </Tooltip>
+              <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.copyRow)}>
+                <Button icon={<CopyOutlined />} size="small" onClick={() => copyCorrectionRow(group.representative)} />
+              </Tooltip>
+              <Popconfirm
+                title={formatMessage(scheduleMessages.ArrangeModal.removeRow) + '?'}
+                onConfirm={() => removeCorrectionRow(group.representative)}
+                okText={formatMessage(scheduleMessages['*'].confirm)}
+                cancelText={formatMessage(scheduleMessages['*'].cancel)}
+              >
+                <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.removeRow)}>
+                  <Button icon={<DeleteOutlined />} size="small" danger />
+                </Tooltip>
+              </Popconfirm>
+            </Space>
+          )
+        },
+      },
     ],
     [
       formatMessage,
-      resolveWeekLabel,
       correctionErrors,
       getClassroomIds,
-      updateCorrectionEvent,
+      updateCorrectionGroup,
       classrooms,
       allTeachers,
+      addCorrectionRow,
+      copyCorrectionRow,
+      removeCorrectionRow,
     ],
   )
 
@@ -1868,6 +2012,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             unpaidStudentsByEventId={unpaidStudentsByEventId}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
+            viewDate={scheduleCondition.startDate}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />
@@ -2036,7 +2181,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             <Table
               columns={correctionColumns}
               dataSource={correctionRows}
-              rowKey={record => getEventKey(record)}
+              rowKey={record => record.groupKey}
               size="small"
               pagination={false}
               scroll={{ x: 900, y: 360 }}

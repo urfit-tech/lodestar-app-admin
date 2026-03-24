@@ -2138,12 +2138,12 @@ const DELETE_SCHEDULE_TEMPLATE = gql`
 `
 
 /**
- * Hook to get schedule templates for the current user
+ * Hook to get schedule templates for a specific student
+ * @param studentId - The student's member ID to filter templates by
  * @param language - Filter by language
  */
-export const useScheduleTemplates = (language?: string) => {
+export const useScheduleTemplates = (studentId?: string, language?: string) => {
   const { id: appId } = useApp()
-  const { currentMemberId } = useAuth()
 
   const { data, loading, error, refetch } = useQuery<
     hasura.GetScheduleTemplates,
@@ -2151,10 +2151,10 @@ export const useScheduleTemplates = (language?: string) => {
   >(GET_SCHEDULE_TEMPLATES, {
     variables: {
       appId,
-      memberId: currentMemberId || '',
+      memberId: studentId || '',
       language: language || undefined,
     },
-    skip: !appId || !currentMemberId,
+    skip: !appId || !studentId,
     fetchPolicy: 'cache-and-network',
   })
 
@@ -2208,20 +2208,19 @@ const generateRruleFromRows = (rows: CourseRowData[]): string => {
 }
 
 /**
- * Hook to save a new schedule template
+ * Hook to save a new schedule template for a specific student
  * Note: app_id is automatically set by Hasura via session variable (X-Hasura-App-Id)
  */
 export const useSaveScheduleTemplate = () => {
-  const { currentMemberId } = useAuth()
   const [insertTemplate, { loading, error }] = useMutation<
     hasura.InsertScheduleTemplate,
     hasura.InsertScheduleTemplateVariables
   >(INSERT_SCHEDULE_TEMPLATE)
 
   const saveTemplate = useCallback(
-    async (name: string, language: string, courseRows: CourseRowData[], rrule?: string) => {
-      if (!currentMemberId) {
-        throw new Error('Missing member ID')
+    async (studentId: string, name: string, language: string, courseRows: CourseRowData[], rrule?: string) => {
+      if (!studentId) {
+        throw new Error('Missing student ID')
       }
 
       // Auto-generate rrule if not provided
@@ -2229,7 +2228,7 @@ export const useSaveScheduleTemplate = () => {
 
       const result = await insertTemplate({
         variables: {
-          memberId: currentMemberId,
+          memberId: studentId,
           name,
           language,
           rrule: finalRrule || null,
@@ -2239,7 +2238,7 @@ export const useSaveScheduleTemplate = () => {
 
       return result.data?.insert_schedule_template_one
     },
-    [currentMemberId, insertTemplate],
+    [insertTemplate],
   )
 
   return {
