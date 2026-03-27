@@ -1102,6 +1102,7 @@ const MemberContractCreationForm: React.FC<
                             value={customPrice}
                             onChange={e => {
                               setCustomPrice(Number(e))
+                              setCustomTotalPrice(Number(e))
                             }}
                           />
                         </div>
