@@ -176,7 +176,8 @@ const buildInitialState = (): ClassGroupScheduleEditorState => ({
   publishLoading: false,
 })
 
-const uniqueStrings = (values: Array<string | null | undefined>): string[] => {
+const uniqueStrings = (values: Array<string | null | undefined> | undefined): string[] => {
+  if (!values) return []
   const filtered = values.filter((value): value is string => Boolean(value))
   return filtered.filter((value, index, self) => self.indexOf(value) === index)
 }
