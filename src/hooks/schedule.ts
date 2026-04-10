@@ -3,7 +3,7 @@ import { gql, useQuery } from '@apollo/client'
 import { pipe, pathOr, map, evolve, defaultTo, fromPairs, chain, filter } from 'ramda'
 
 import hasura from '../hasura'
-import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from '../components/schedule/utils/orderNameFilter'
+import { isOrderStatusValidForSchedule, classifyOrderProduct } from '../components/schedule/utils/orderNameFilter'
 
 export type MemberForSchedule = {
   id: string
@@ -172,14 +172,15 @@ export const useMemberForSchedule = (
         return pipe(
           filter((product: (typeof orderLog.order_products)[number]) => {
             const options = getProductOptions(product)
-            if (!options || options.product === '教材') return false
-            if (getClassType(product) !== '個人班') return false
+            if (!options) return false
 
             const productName = options.title || product.name
-            return matchesScheduleOrderProductName({
+            const category = classifyOrderProduct({
+              product: options.product,
+              classType: getClassType(product),
               productName,
-              scheduleType: 'personal',
             })
+            return category === 'personal'
           }),
           map((product: (typeof orderLog.order_products)[number]) => {
             const options = getProductOptions(product)
