@@ -268,18 +268,18 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return orderLogs
       .map(orderLog => {
         const classProduct = orderLog.order_products?.find((product: any) => {
-          const options = product.options?.options
+          const rawOptions = product.options || {}
+          const options = rawOptions.options || {}
           if (!options) return false
-          if (options.product === '教材') return false
-          if (options.class_type !== classTypeLabel) return false
-          if (classGroup.language && options.language && options.language !== classGroup.language) {
-            return false
-          }
+
           const productName = options.title || product.name
-          if (
-            classifyOrderProduct({ product: options.product, classType: options.class_type, productName }) !==
-            scheduleType
-          ) {
+          const category = classifyOrderProduct({
+            product: options.product,
+            classType: rawOptions.class_type || options.class_type,
+            productName,
+          })
+          if (category !== scheduleType) return false
+          if (classGroup.language && options.language && options.language !== classGroup.language) {
             return false
           }
           return true
