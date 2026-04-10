@@ -54,7 +54,7 @@ import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher 
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from '../utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 
@@ -277,11 +277,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           }
           const productName = options.title || product.name
           if (
-            !matchesScheduleOrderProductName({
-              productName,
-              scheduleType,
-              language: classGroup.language,
-            })
+            classifyOrderProduct({ product: options.product, classType: options.class_type, productName }) !==
+            scheduleType
           ) {
             return false
           }
