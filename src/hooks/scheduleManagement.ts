@@ -17,6 +17,7 @@ import {
   ScheduleType,
 } from '../types/schedule'
 import { parseClassMetadata } from '../components/schedule/editor/classFlow/metadata'
+import { classifyOrderProduct } from '../components/schedule/utils/orderNameFilter'
 
 type ClassGroupRow = hasura.GetClassGroupsForSchedule['class_group'][number]
 type ClassGroupRowLike = Omit<ClassGroupRow, 'class_group_orders'> & {
@@ -404,14 +405,11 @@ export const GET_ORDERS_BY_IDS = gql`
   }
 `
 
-// GraphQL query to get available orders for class group (not yet assigned)
-// For 團體班: matches by class_type in options OR by name containing 團體
-// For 小組班: matches by name containing 小組 (these orders lack class_type in options)
-export const GET_AVAILABLE_ORDERS_FOR_CLASS_BY_TYPE = gql`
-  query GetAvailableOrdersForClassByType(
+// GraphQL query to get available tuition orders for class group (not yet assigned)
+// Fetches all orders with 學費 products, frontend classifies into semester/group
+export const GET_AVAILABLE_TUITION_ORDERS = gql`
+  query GetAvailableTuitionOrders(
     $appId: String!
-    $classType: String!
-    $language: String!
     $excludeOrderIds: [String!]!
   ) {
     order_log(
@@ -419,47 +417,7 @@ export const GET_AVAILABLE_ORDERS_FOR_CLASS_BY_TYPE = gql`
         app_id: { _eq: $appId }
         id: { _nin: $excludeOrderIds }
         order_products: {
-          _and: [
-            { options: { _contains: { options: { language: $language } } } }
-            { options: { _contains: { options: { class_type: $classType } } } }
-          ]
-        }
-      }
-      order_by: { created_at: desc }
-    ) {
-      id
-      member_id
-      member {
-        id
-        name
-        email
-        picture_url
-      }
-      options
-      expired_at
-      order_products {
-        id
-        name
-        options
-      }
-      created_at
-      status
-    }
-  }
-`
-
-export const GET_AVAILABLE_ORDERS_FOR_CLASS_BY_NAME = gql`
-  query GetAvailableOrdersForClassByName(
-    $appId: String!
-    $namePattern: String!
-    $excludeOrderIds: [String!]!
-  ) {
-    order_log(
-      where: {
-        app_id: { _eq: $appId }
-        id: { _nin: $excludeOrderIds }
-        order_products: {
-          name: { _ilike: $namePattern }
+          options: { _contains: { options: { product: "學費" } } }
         }
       }
       order_by: { created_at: desc }
@@ -707,27 +665,12 @@ export const useOrdersByIds = (orderIds: string[]) => {
   return { orders, loading, error, refetch }
 }
 
-/**
- * Hook to get available orders for a class group (not yet assigned)
- * Uses two strategies to find orders:
- * 1. By class_type in options (e.g. class_type: "團體班") - works for structured orders
- * 2. By name pattern (e.g. name contains "小組" or "團體") - works for custom-named orders
- * Results are deduplicated by order ID.
- *
- * @param classType - 'semester' maps to '團體班', 'group' maps to '小組班'
- * @param excludeOrderIds - Order IDs to exclude (already in this class group)
- */
 export const useAvailableOrdersForClass = (
   classType: 'semester' | 'group',
   language: string,
   excludeOrderIds: string[] = [],
 ) => {
   const { id: appId } = useApp()
-
-  // Map class type to Chinese label used in order_product.options
-  const classTypeLabel = classType === 'semester' ? '團體班' : '小組班'
-  // Name pattern for fallback matching
-  const namePattern = classType === 'semester' ? '%團體%' : '%小組%'
 
   // First get all assigned order IDs
   const { data: assignedData } = useQuery<
@@ -746,58 +689,41 @@ export const useAvailableOrdersForClass = (
 
   const safeExcludedIds = allExcludedIds.length > 0 ? allExcludedIds : ['']
 
-  // Strategy 1: Search by class_type in options (structured orders)
-  const { data: dataByType, loading: loadingByType, error: errorByType, refetch: refetchByType } = useQuery<
-    hasura.GetAvailableOrdersForClassByType,
-    hasura.GetAvailableOrdersForClassByTypeVariables
-  >(GET_AVAILABLE_ORDERS_FOR_CLASS_BY_TYPE, {
+  // Single query: fetch all tuition orders, classify on frontend
+  const { data, loading, error, refetch } = useQuery(GET_AVAILABLE_TUITION_ORDERS, {
     variables: {
       appId,
-      classType: classTypeLabel,
-      language: language || '',
-      excludeOrderIds: safeExcludedIds,
-    },
-    skip: !appId || !language,
-    fetchPolicy: 'cache-and-network',
-  })
-
-  // Strategy 2: Search by name pattern (custom-named orders like "中文小組班")
-  const { data: dataByName, loading: loadingByName, error: errorByName, refetch: refetchByName } = useQuery<
-    hasura.GetAvailableOrdersForClassByName,
-    hasura.GetAvailableOrdersForClassByNameVariables
-  >(GET_AVAILABLE_ORDERS_FOR_CLASS_BY_NAME, {
-    variables: {
-      appId,
-      namePattern,
       excludeOrderIds: safeExcludedIds,
     },
     skip: !appId,
     fetchPolicy: 'cache-and-network',
   })
 
-  // Deduplicate orders from both strategies
+  // Filter orders by class category on frontend
   const orders = useMemo(() => {
-    const byType = dataByType?.order_log || []
-    const byName = dataByName?.order_log || []
-    const seen = new Set<string>()
-    const result: typeof byType = []
+    if (!data?.order_log) return []
 
-    for (const order of [...byType, ...byName]) {
-      if (!seen.has(order.id)) {
-        seen.add(order.id)
-        result.push(order)
-      }
-    }
-    return result
-  }, [dataByType, dataByName])
+    return data.order_log.filter((order: any) => {
+      return order.order_products?.some((product: any) => {
+        const rawOptions = (product.options as any) || {}
+        const options = rawOptions.options || {}
+        const productName = options.title || product.name
 
-  const loading = loadingByType || loadingByName
-  const error = errorByType || errorByName
+        // Classify using unified function
+        const category = classifyOrderProduct({
+          product: options.product,
+          classType: rawOptions.class_type || options.class_type,
+          productName,
+        })
+        if (category !== classType) return false
 
-  const refetch = useCallback(() => {
-    refetchByType()
-    refetchByName()
-  }, [refetchByType, refetchByName])
+        // Language filter
+        if (language && options.language && options.language !== language) return false
+
+        return true
+      })
+    })
+  }, [data, classType, language])
 
   return { orders, loading, error, refetch }
 }
