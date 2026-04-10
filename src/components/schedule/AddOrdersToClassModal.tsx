@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAddOrderToClassGroup, useAvailableOrdersForClass } from '../../hooks/scheduleManagement'
 import { ScheduleType } from '../../types/schedule'
-import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from './utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
 
 const SearchWrapper = styled.div`
   margin-bottom: 16px;
@@ -69,23 +69,24 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
     if (!orders) return []
 
     const now = new Date()
-    const classTypeLabel = scheduleType === 'semester' ? '團體班' : '小組班'
+    const targetCategory = scheduleType === 'semester' ? 'semester' : 'group'
 
     return orders
       .map(order => {
         const matchedProduct = order.order_products?.find(product => {
-          const options = (product.options as any)?.options || {}
+          const rawOptions = (product.options as any) || {}
+          const options = rawOptions.options || {}
           const productName = options.title || product.name
 
-          if (options.product === '教材') return false
-          if (options.class_type && options.class_type !== classTypeLabel) return false
+          const category = classifyOrderProduct({
+            product: options.product,
+            classType: rawOptions.class_type || options.class_type,
+            productName,
+          })
+          if (category !== targetCategory) return false
           if (language && options.language && options.language !== language) return false
 
-          return matchesScheduleOrderProductName({
-            productName,
-            scheduleType,
-            language,
-          })
+          return true
         })
 
         if (!matchedProduct) return null
