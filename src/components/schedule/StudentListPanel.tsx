@@ -9,7 +9,7 @@ import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
-import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from './utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
 
 const { Search } = Input
 
@@ -115,20 +115,26 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
   )
 
   const students = useMemo((): StudentOrderRow[] => {
-    const classTypeLabel = scheduleType === 'semester' ? '團體班' : '小組班'
+    const targetCategory = scheduleType === 'semester' ? 'semester' : 'group'
     const now = new Date()
 
     return orderLogs
       .map(order => {
         const orderOptions = order.options as any
         const classProduct = order.order_products?.find((product: any) => {
-          const options = product.options?.options
+          const rawOptions = product.options || {}
+          const options = rawOptions.options || product.options?.options
           if (!options) return false
-          if (options.product === '教材') return false
-          if (options.class_type !== classTypeLabel) return false
-          if (language && options.language && options.language !== language) return false
+
           const productName = options.title || product.name
-          if (!matchesScheduleOrderProductName({ productName, scheduleType, language })) return false
+          const category = classifyOrderProduct({
+            product: options.product,
+            classType: rawOptions.class_type || options.class_type,
+            productName,
+          })
+          if (category !== targetCategory) return false
+          if (language && options.language && options.language !== language) return false
+
           return true
         })
 

@@ -54,7 +54,7 @@ import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher 
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import { isOrderStatusValidForSchedule, matchesScheduleOrderProductName } from '../utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 
@@ -268,21 +268,18 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return orderLogs
       .map(orderLog => {
         const classProduct = orderLog.order_products?.find((product: any) => {
-          const options = product.options?.options
+          const rawOptions = product.options || {}
+          const options = rawOptions.options || {}
           if (!options) return false
-          if (options.product === '教材') return false
-          if (options.class_type !== classTypeLabel) return false
-          if (classGroup.language && options.language && options.language !== classGroup.language) {
-            return false
-          }
+
           const productName = options.title || product.name
-          if (
-            !matchesScheduleOrderProductName({
-              productName,
-              scheduleType,
-              language: classGroup.language,
-            })
-          ) {
+          const category = classifyOrderProduct({
+            product: options.product,
+            classType: rawOptions.class_type || options.class_type,
+            productName,
+          })
+          if (category !== scheduleType) return false
+          if (classGroup.language && options.language && options.language !== classGroup.language) {
             return false
           }
           return true
