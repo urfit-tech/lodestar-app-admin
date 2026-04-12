@@ -1498,7 +1498,9 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         }),
       )
 
+      await updateClassGroup(classGroup.id, { status: 'published' })
       await refetchEvents()
+      refetchClassGroup()
 
       message.success(formatMessage(classMessageSet.publishSuccess, { count: publishTargets.length }))
       handleClosePublishModal()
@@ -1521,6 +1523,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     classMessageSet,
     handleClosePublishModal,
     refetchEvents,
+    refetchClassGroup,
+    updateClassGroup,
     store,
   ])
 
