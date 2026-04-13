@@ -31,11 +31,16 @@ export type ClassCategory = 'personal' | 'semester' | 'group'
 /**
  * 統一分類訂單產品屬於哪種班別。
  *
- * 規則：
+ * 規則（依序判斷，先匹配者勝出）：
  * 1. product !== '學費' → null（排除註冊費、教材等）
- * 2. class_type === '個人班' 或名稱含「個人」→ personal
- * 3. class_type === '團體班' 或名稱含任一學期班關鍵字 → semester
- * 4. 其餘學費訂單 → group（小組班）
+ * 2. class_type === '個人班' → personal
+ * 3. 名稱含「小組」 → group（覆蓋優先，吃下「小組春團班」等混搭命名）
+ * 4. 名稱含任一學期班關鍵字 → semester
+ * 5. 其餘 → group（兜底）
+ *
+ * 註：小組班與學期班的 class_type 都是「團體班」，所以無法只靠 class_type
+ * 區分，需要靠名稱關鍵字。「小組」前綴比學期班季節關鍵字更具決定性，
+ * 因此規則 3 必須在規則 4 之前。
  */
 export const classifyOrderProduct = (options: {
   product?: string | null
@@ -48,16 +53,17 @@ export const classifyOrderProduct = (options: {
   const classType = normalize(options.classType)
   const productName = normalize(options.productName)
 
-  // 個人班
-  if (classType === '個人班' || includesKeyword(productName, '個人')) {
+  if (classType === '個人班') {
     return 'personal'
   }
 
-  // 學期班
-  if (classType === '團體班' || SEMESTER_KEYWORDS.some(kw => includesKeyword(productName, kw))) {
+  if (includesKeyword(productName, '小組')) {
+    return 'group'
+  }
+
+  if (SEMESTER_KEYWORDS.some(kw => includesKeyword(productName, kw))) {
     return 'semester'
   }
 
-  // 小組班（兜底）
   return 'group'
 }
