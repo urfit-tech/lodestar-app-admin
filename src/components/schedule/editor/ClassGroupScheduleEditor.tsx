@@ -17,7 +17,7 @@ import {
 import { ColumnsType } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -55,6 +55,7 @@ import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
 import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
+import { computeSemesterMaxEndDate } from '../utils/semesterDateRange'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 
@@ -234,7 +235,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   const { updateClassGroup } = useUpdateClassGroup()
   const { teachers: allTeachers } = useTeachersFromMembers()
 
-  const { calculateExpiryDate, getMaxExpiryDateForLanguage } = useScheduleExpirySettings(scheduleType)
+  const { calculateExpiryDate } = useScheduleExpirySettings(scheduleType)
 
   const orderIds = classGroup?.orderIds || []
   const { orders: orderLogs } = useOrdersByIds(orderIds)
@@ -622,12 +623,12 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return map
   }, [scheduleType, classOrders])
 
-  const expiryDateByLanguage = useMemo<Record<string, Date | null>>(() => {
-    if (scheduleType !== 'semester' || !classGroup?.language) return {}
-    return {
-      [classGroup.language]: getMaxExpiryDateForLanguage(classGroup.language, scheduleCondition.startDate),
-    }
-  }, [scheduleType, classGroup?.language, getMaxExpiryDateForLanguage, scheduleCondition.startDate])
+  const expiryDateByLanguage = useMemo<Record<string, Date | null>>(() => ({}), [])
+
+  const semesterMaxEndDate = useMemo<Moment | null | undefined>(() => {
+    if (scheduleType !== 'semester') return undefined
+    return computeSemesterMaxEndDate(classOrders)
+  }, [scheduleType, classOrders])
 
   const groupBaseAvailableMinutes = useMemo(() => {
     if (scheduleType !== 'group') return 0
@@ -1995,6 +1996,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             expiryDateByLanguage={expiryDateByLanguage}
             minutesLimitOverride={scheduleType === 'group' ? groupRemainingMinutes : undefined}
             disabled={false}
+            maxEndDateOverride={semesterMaxEndDate}
           />
         </ThreeColumnGrid>
 
