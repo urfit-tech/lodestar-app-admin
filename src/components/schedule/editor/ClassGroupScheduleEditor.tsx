@@ -302,11 +302,10 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           totalSessions,
           scheduleCondition.startDate,
         )
-        const expiresAt = expiryBySetting || (classProduct.ended_at ? new Date(classProduct.ended_at) : undefined)
+        const expiresAt = expiryBySetting || undefined
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
-        if (expiresAt && expiresAt < now) return null
         if (classGroup.campusId && campusFromOptions && campusFromOptions !== classGroup.campusId) {
           return null
         }
