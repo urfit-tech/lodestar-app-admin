@@ -297,12 +297,15 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         const expiredAt = orderLog.expired_at ? new Date(orderLog.expired_at) : null
         const campusFromOptions =
           orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
-        const expiryBySetting = calculateExpiryDate(
-          productMeta?.language || classGroup.language,
-          totalSessions,
-          scheduleCondition.startDate,
-        )
-        const expiresAt = expiryBySetting || undefined
+        const expiryBySetting =
+          scheduleType === 'semester'
+            ? null
+            : calculateExpiryDate(
+                productMeta?.language || classGroup.language,
+                totalSessions,
+                scheduleCondition.startDate,
+              )
+        const expiresAt = expiryBySetting || (classProduct.ended_at ? new Date(classProduct.ended_at) : undefined)
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
