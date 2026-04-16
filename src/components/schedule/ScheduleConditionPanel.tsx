@@ -48,6 +48,7 @@ interface ScheduleConditionPanelProps {
   minutesLimitOverride?: number
   endDateLimitMode?: 'latest' | 'earliest'
   disabled?: boolean // Explicitly control disabled state (defaults to selectedOrders.length === 0)
+  maxEndDateOverride?: Moment | null // undefined: use expiryDateByLanguage; Moment: use directly; null: no orders available
 }
 
 const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
@@ -60,6 +61,7 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   minutesLimitOverride,
   endDateLimitMode = 'latest',
   disabled,
+  maxEndDateOverride,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -73,6 +75,15 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   // Calculate limits based on selected orders and language expiry settings
   const limits = useMemo(() => {
     const defaultMaxDate = moment().add(180, 'day')
+
+    if (maxEndDateOverride !== undefined) {
+      return {
+        maxStartDate: defaultMaxDate,
+        maxEndDate: maxEndDateOverride,
+        maxMinutes: normalizedMinutesLimitOverride ?? 0,
+        earliestOrderDate: moment(),
+      }
+    }
 
     // Calculate max end date from expiryDateByLanguage (used for semester/group classes)
     const calculateMaxEndDateFromLanguage = (): moment.Moment => {
@@ -166,7 +177,14 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
       maxMinutes: normalizedMinutesLimitOverride ?? totalMinutes,
       earliestOrderDate,
     }
-  }, [selectedOrders, expiryDateByLanguage, minutesLimitMode, normalizedMinutesLimitOverride, endDateLimitMode])
+  }, [
+    selectedOrders,
+    expiryDateByLanguage,
+    minutesLimitMode,
+    normalizedMinutesLimitOverride,
+    endDateLimitMode,
+    maxEndDateOverride,
+  ])
 
   // Mode: endDate or totalLessons
   const [mode, setMode] = React.useState<'endDate' | 'totalLessons'>(() =>
@@ -306,16 +324,19 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
               value={condition.endDate ? moment(condition.endDate) : null}
               onChange={handleEndDateChange}
               disabledDate={date =>
-                date.isBefore(moment(condition.startDate), 'day') || date.isAfter(limits.maxEndDate, 'day')
+                date.isBefore(moment(condition.startDate), 'day') ||
+                (limits.maxEndDate !== null && date.isAfter(limits.maxEndDate, 'day'))
               }
               disabled={isDisabled}
               style={{ width: '100%' }}
             />
             <HelpText type="secondary">
-              {formatMessage(scheduleMessages.ScheduleCondition.endDateRange, {
-                start: moment().format('YYYY-MM-DD'),
-                end: limits.maxEndDate.format('YYYY-MM-DD'),
-              })}
+              {limits.maxEndDate
+                ? formatMessage(scheduleMessages.ScheduleCondition.endDateRange, {
+                    start: moment().format('YYYY-MM-DD'),
+                    end: limits.maxEndDate.format('YYYY-MM-DD'),
+                  })
+                : formatMessage(scheduleMessages.ScheduleCondition.endDateRequiresOrders)}
             </HelpText>
           </>
         ) : (
@@ -333,16 +354,19 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
                     value={condition.endDate ? moment(condition.endDate) : null}
                     onChange={handleEndDateChange}
                     disabledDate={date =>
-                      date.isBefore(moment(condition.startDate), 'day') || date.isAfter(limits.maxEndDate, 'day')
+                      date.isBefore(moment(condition.startDate), 'day') ||
+                      (limits.maxEndDate !== null && date.isAfter(limits.maxEndDate, 'day'))
                     }
                     disabled={isDisabled}
                     style={{ width: '100%' }}
                   />
                   <HelpText type="secondary">
-                    {formatMessage(scheduleMessages.ScheduleCondition.endDateRange, {
-                      start: moment().format('YYYY-MM-DD'),
-                      end: limits.maxEndDate.format('YYYY-MM-DD'),
-                    })}
+                    {limits.maxEndDate
+                      ? formatMessage(scheduleMessages.ScheduleCondition.endDateRange, {
+                          start: moment().format('YYYY-MM-DD'),
+                          end: limits.maxEndDate.format('YYYY-MM-DD'),
+                        })
+                      : formatMessage(scheduleMessages.ScheduleCondition.endDateRequiresOrders)}
                   </HelpText>
                 </div>
               )}

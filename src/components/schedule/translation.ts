@@ -90,6 +90,10 @@ const scheduleMessages = {
       id: 'schedule.ScheduleCondition.holidayWarning',
       defaultMessage: 'Holidays may be scheduled into courses, please confirm again',
     },
+    endDateRequiresOrders: {
+      id: 'schedule.ScheduleCondition.endDateRequiresOrders',
+      defaultMessage: '請先新增訂單以計算可選範圍',
+    },
   }),
   TeacherList: defineMessages({
     title: { id: 'schedule.TeacherList.title', defaultMessage: 'Select teacher schedule to display' },

@@ -1553,7 +1553,9 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
   const { data, loading, error } = useQuery<
     hasura.GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE,
     hasura.GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULEVariables
-  >(GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE)
+  >(GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE, {
+    skip: scheduleType === 'semester',
+  })
 
   // Map type to DB value
   const dbType = scheduleType === 'personal' ? 'individual' : scheduleType === 'group' ? 'group' : 'individual'
