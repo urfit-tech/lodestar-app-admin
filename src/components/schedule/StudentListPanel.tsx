@@ -148,8 +148,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const orderExpiredAt = order.expired_at ? new Date(order.expired_at) : null
         const computedExpiry = expiryDateByOrderId[order.id]
         const hasScheduledEvent = Boolean(hasScheduledEventByOrderId[order.id])
-        const productEndedAt = classProduct.ended_at ? new Date(classProduct.ended_at) : null
-        const expiresAt = hasScheduledEvent ? computedExpiry || productEndedAt : null
+        const expiresAt = hasScheduledEvent ? computedExpiry || null : null
         const campusFromOptions =
           orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
 
@@ -158,10 +157,6 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         }
 
         if (orderExpiredAt && orderExpiredAt < now) {
-          return null
-        }
-
-        if (expiresAt && new Date(expiresAt) < now) {
           return null
         }
 
