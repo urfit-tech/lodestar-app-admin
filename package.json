@@ -180,9 +180,6 @@
     "@types/react": "17",
     "react-error-overlay": "6.0.9"
   },
-  "volta": {
-    "node": "14.19.0"
-  },
   "engines": {
     "node": ">=14.16.0 <17.0.0"
   },
