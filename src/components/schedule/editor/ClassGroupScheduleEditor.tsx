@@ -2,6 +2,7 @@ import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import {
   Button,
   Checkbox,
+  Collapse,
   Form,
   Input,
   message,
@@ -10,6 +11,7 @@ import {
   Select,
   Space,
   Spin,
+  Tag,
   Table,
   Tooltip,
   Typography,
@@ -25,6 +27,7 @@ import styled from 'styled-components'
 import {
   ArrangeCourseModal,
   ClassSettingsPanel,
+  CollapsibleScheduleCard,
   ScheduleCalendar,
   ScheduleConditionPanel,
   scheduleMessages,
@@ -50,7 +53,15 @@ import {
   useUpdateClassGroup,
 } from '../../../hooks/scheduleManagement'
 import { CalendarCheckFillIcon } from '../../../images/icon'
-import { ClassGroup, Language, Order, ScheduleCondition, ScheduleEvent, Teacher } from '../../../types/schedule'
+import {
+  ClassGroup,
+  Language,
+  Order,
+  ScheduleCondition,
+  ScheduleEvent,
+  SCHEDULE_COLORS,
+  Teacher,
+} from '../../../types/schedule'
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
@@ -2003,14 +2014,32 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           />
         </ThreeColumnGrid>
 
-        <AdminPageBlock className="mb-4">
-          <TeacherListPanel
-            languages={classGroup?.language ? [classGroup.language] : []}
-            campus={classGroup?.campusId ?? undefined}
-            selectedTeachers={selectedTeachers}
-            onTeacherSelect={handleTeachersChange}
-          />
-        </AdminPageBlock>
+        <CollapsibleScheduleCard defaultActiveKey={['teacher']} className="mb-4">
+          <Collapse.Panel
+            header={
+              <Space size={[8, 4]} wrap>
+                <span>{formatMessage(scheduleMessages.TeacherList.title)}</span>
+                {selectedTeachers.map((teacher, index) => {
+                  const colorKeys = ['teacher1', 'teacher2', 'teacher3'] as const
+                  const color = SCHEDULE_COLORS.teacher[colorKeys[index]]?.dark || '#64748B'
+                  return (
+                    <Tag key={teacher.id} color={color}>
+                      {teacher.name}
+                    </Tag>
+                  )
+                })}
+              </Space>
+            }
+            key="teacher"
+          >
+            <TeacherListPanel
+              languages={classGroup?.language ? [classGroup.language] : []}
+              campus={classGroup?.campusId ?? undefined}
+              selectedTeachers={selectedTeachers}
+              onTeacherSelect={handleTeachersChange}
+            />
+          </Collapse.Panel>
+        </CollapsibleScheduleCard>
 
         <AdminPageBlock>
           <ScheduleCalendar
