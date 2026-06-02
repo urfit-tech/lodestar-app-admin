@@ -44,6 +44,7 @@ import { useClassrooms } from '../../../hooks/classroom'
 import { useMemberForSchedule } from '../../../hooks/schedule'
 import {
   checkScheduleConflict,
+  getScheduleValidityRuleForClassCount,
   useDeleteScheduleTemplate,
   useHolidays,
   usePersonalScheduleListEvents,
@@ -261,27 +262,34 @@ const PersonalScheduleEditorInner: React.FC = () => {
   // Get schedule expiry settings for calculating order expiry dates
   const { settings } = useScheduleExpirySettings('personal')
 
-  // Calculate expiry date by language (based on schedule condition start date)
+  // Calculate expiry date by selected order threshold (based on schedule condition start date)
   const expiryDateByLanguage = useMemo<Record<string, Date | null>>(() => {
     const result: Record<string, Date | null> = {}
-    const languages = uniqueStrings(studentOrders.map(o => o.language))
+    const ordersForExpiryLimit = studentOrders.filter(order => selectedOrderIds.includes(order.id))
 
-    languages.forEach(lang => {
-      const languageSettings = settings.filter(s => s.language === lang)
-      if (languageSettings.length === 0) {
-        result[lang] = null
+    ordersForExpiryLimit.forEach(order => {
+      const classCount = Math.max(1, Math.round((order.totalMinutes || 0) / 50))
+      const matchingSetting = getScheduleValidityRuleForClassCount(settings, order.language, classCount)
+      const fallbackSetting = settings
+        .filter(setting => setting.language === order.language)
+        .sort((a, b) => a.class_count - b.class_count)[0]
+      const targetSetting = matchingSetting || fallbackSetting
+      if (!targetSetting) {
+        if (!(order.language in result)) {
+          result[order.language] = null
+        }
         return
       }
 
-      const maxValidMonths = languageSettings.reduce(
-        (max, current) => (current.valid_days > max ? current.valid_days : max),
-        languageSettings[0].valid_days,
-      )
-      result[lang] = moment(scheduleCondition.startDate).add(maxValidMonths, 'month').toDate()
+      const expiryDate = moment(scheduleCondition.startDate).add(targetSetting.valid_days, 'month').toDate()
+      const currentExpiryDate = result[order.language]
+      if (!currentExpiryDate || expiryDate < currentExpiryDate) {
+        result[order.language] = expiryDate
+      }
     })
 
     return result
-  }, [studentOrders, settings, scheduleCondition.startDate])
+  }, [studentOrders, selectedOrderIds, settings, scheduleCondition.startDate])
 
   // Get selected teacher IDs for fetching open time events
   const selectedTeacherIds = useMemo(() => {
@@ -473,9 +481,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
       }
 
       const classCount = Math.max(1, Math.round((order.totalMinutes || 0) / 50))
-      const matchingSetting = settings
-        .filter(s => s.language === order.language && s.class_count <= classCount)
-        .sort((a, b) => b.class_count - a.class_count)[0]
+      const matchingSetting = getScheduleValidityRuleForClassCount(settings, order.language, classCount)
       const fallbackSetting = settings
         .filter(s => s.language === order.language)
         .sort((a, b) => a.class_count - b.class_count)[0]
