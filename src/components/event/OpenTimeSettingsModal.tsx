@@ -144,7 +144,7 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
         const lastEndMinutes = timeStringToMinutes(lastSlot.endTime)
 
         // 找到下一個可用的起始時間（上一筆結束時間後一小時）
-        const nextStartTime = TIME_OPTIONS.find(t => timeStringToMinutes(t) >= lastEndMinutes + 60)
+        const nextStartTime = TIME_OPTIONS.find(t => timeStringToMinutes(t) >= lastEndMinutes)
         if (nextStartTime) {
           newStartTime = nextStartTime
           // 結束時間為起始時間後一小時

@@ -12,6 +12,16 @@ import {
 } from './openTimeSchedule.type'
 import { GeneralEventApi } from './events.type'
 
+export type OpenTimeConflict = {
+  dayLabel: string
+  timeRange: string
+}
+
+type OpenTimeEventWithRepeat = GeneralEventApi & {
+  rrule?: RRule | string
+  duration?: number
+}
+
 // 將星期幾轉換為 RRule Weekday
 export const dayOfWeekToRRuleWeekday = (dayOfWeek: number): Weekday => {
   // dayOfWeek: 1=週一, ..., 7=週日
@@ -40,6 +50,50 @@ export const timeStringToMinutes = (time: string): number => {
 // 比較兩個時間字串
 export const compareTimeStrings = (a: string, b: string): number => {
   return timeStringToMinutes(a) - timeStringToMinutes(b)
+}
+
+export const formatOpenTimeConflictMessage = (conflicts: OpenTimeConflict[]): string =>
+  `有時間重疊：${conflicts.map(item => `${item.dayLabel} ${item.timeRange}時間重疊`).join('、')}`
+
+export const getOpenTimeEventDuration = (event: GeneralEventApi): number => {
+  const eventWithRepeat = event as OpenTimeEventWithRepeat
+  return eventWithRepeat.duration ?? moment(event.end).diff(moment(event.start), 'milliseconds')
+}
+
+export const expandOpenTimeEventsInRange = (
+  events: GeneralEventApi[],
+  rangeStart: Date,
+  rangeEnd: Date,
+): GeneralEventApi[] => {
+  return events.flatMap(event => {
+    const eventWithRepeat = event as OpenTimeEventWithRepeat
+    const duration = getOpenTimeEventDuration(event)
+
+    if (eventWithRepeat.rrule) {
+      try {
+        const rule = typeof eventWithRepeat.rrule === 'string' ? rrulestr(eventWithRepeat.rrule) : eventWithRepeat.rrule
+        return rule.between(rangeStart, rangeEnd, true).map(start => ({
+          ...event,
+          start,
+          end: moment(start).add(duration, 'milliseconds').toDate(),
+          extendedProps: {
+            ...event.extendedProps,
+          },
+        }))
+      } catch (error) {
+        console.error('Failed to expand open time rrule:', error)
+        return []
+      }
+    }
+
+    const eventStart = moment(event.start)
+    const eventEnd = moment(event.end)
+    if (eventEnd.isBefore(rangeStart) || eventStart.isAfter(rangeEnd)) {
+      return []
+    }
+
+    return [event]
+  })
 }
 
 // 檢查時間段是否重疊
