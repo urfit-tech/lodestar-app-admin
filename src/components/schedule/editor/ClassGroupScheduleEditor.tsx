@@ -1,4 +1,5 @@
 import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { gql, useMutation } from '@apollo/client'
 import {
   Button,
   Checkbox,
@@ -174,6 +175,16 @@ interface PreScheduleResult {
 const CORRECTION_EXTERNAL_CLASSROOM = '__external__'
 const WEEKDAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
 
+const PUBLISHED_NOTIFICATION_TYPE = 'content'
+
+const INSERT_CLASS_SCHEDULE_NOTIFICATIONS = gql`
+  mutation InsertClassScheduleNotifications($notifications: [notification_insert_input!]!) {
+    insert_notification(objects: $notifications) {
+      affected_rows
+    }
+  }
+`
+
 const buildInitialState = (): ClassGroupScheduleEditorState => ({
   scheduleCondition: {
     startDate: new Date(),
@@ -215,6 +226,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   const [publishEventDrafts, setPublishEventDrafts] = useState<PublishEventDraft[]>([])
   const [correctionEventKeys, setCorrectionEventKeys] = useState<string[]>([])
   const [correctionErrors, setCorrectionErrors] = useState<Record<string, CorrectionField[]>>({})
+  const [campusIdOverride, setCampusIdOverride] = useState<string | undefined>()
 
   const store = useScheduleEditorStoreApi<ClassGroupScheduleEditorState>()
   const {
@@ -245,6 +257,24 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   const { events: apiEvents, loading: eventsLoading, refetch: refetchEvents } = useClassGroupEvents(classGroupId)
   const { updateClassGroup } = useUpdateClassGroup()
   const { teachers: allTeachers } = useTeachersFromMembers()
+  const [insertClassScheduleNotifications] = useMutation(INSERT_CLASS_SCHEDULE_NOTIFICATIONS)
+
+  const effectiveCampusId = campusIdOverride !== undefined ? campusIdOverride : classGroup?.campusId
+  const classGroupForSettings = useMemo(() => {
+    if (!classGroup || effectiveCampusId === undefined || effectiveCampusId === classGroup.campusId) return classGroup
+    return { ...classGroup, campusId: effectiveCampusId }
+  }, [classGroup, effectiveCampusId])
+
+  useEffect(() => {
+    if (campusIdOverride !== undefined && classGroup?.campusId === campusIdOverride) {
+      setCampusIdOverride(undefined)
+    }
+  }, [campusIdOverride, classGroup?.campusId])
+
+  const campusClassrooms = useMemo(() => {
+    if (!effectiveCampusId) return classrooms
+    return classrooms.filter(classroom => classroom.campusId === effectiveCampusId)
+  }, [classrooms, effectiveCampusId])
 
   const { calculateExpiryDate } = useScheduleExpirySettings(scheduleType)
 
@@ -308,7 +338,13 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         const createdAt = new Date(orderLog.created_at)
         const expiredAt = orderLog.expired_at ? new Date(orderLog.expired_at) : null
         const campusFromOptions =
-          orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
+          orderOptions?.campus_id ||
+          orderOptions?.campusId ||
+          productMeta?.campus_id ||
+          productMeta?.campusId ||
+          productOptions?.campus_id ||
+          productOptions?.campusId ||
+          null
         const expiryBySetting =
           scheduleType === 'semester'
             ? null
@@ -324,7 +360,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
-        if (classGroup.campusId && campusFromOptions && campusFromOptions !== classGroup.campusId) {
+        if (effectiveCampusId && campusFromOptions && campusFromOptions !== effectiveCampusId) {
           return null
         }
 
@@ -341,12 +377,12 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           expiresAt,
           lastClassDate: undefined,
           status: orderLog.status,
-          campus: campusFromOptions || classGroup.campusId || '',
+          campus: campusFromOptions || effectiveCampusId || '',
           materials: [],
         } as Order
       })
       .filter(Boolean) as Order[]
-  }, [classGroup, orderLogs, classTypeLabel, calculateExpiryDate, scheduleCondition.startDate, scheduleType])
+  }, [classGroup, orderLogs, classTypeLabel, calculateExpiryDate, scheduleCondition.startDate, scheduleType, effectiveCampusId])
 
   const classStudentIds = useMemo(() => {
     return Array.from(new Set(classOrders.map(order => order.studentId)))
@@ -480,6 +516,36 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
       return allStudentIds.filter(studentId => !paidSet.has(studentId))
     },
     [resolveEventStudentIds, getPaidStudentIdsForEvent],
+  )
+
+  const notifyPublishedMembers = useCallback(
+    async (memberIds: string[], publishedEventCount: number) => {
+      if (scheduleType !== 'semester' || memberIds.length === 0) return
+
+      if (!currentMemberId) {
+        console.warn('Skip schedule publish notifications because source member is missing')
+        return
+      }
+
+      const now = new Date().toISOString()
+      const notifications = uniqueStrings(memberIds).map(memberId => ({
+        source_member_id: currentMemberId,
+        target_member_id: memberId,
+        description: `課程已發布：${classGroup?.name || classTypeLabel}`,
+        extra: `本次發布 ${publishedEventCount} 堂課`,
+        reference_url: `/members/${memberId}/class`,
+        type: PUBLISHED_NOTIFICATION_TYPE,
+        created_at: now,
+        updated_at: now,
+      }))
+
+      if (notifications.length === 0) return
+
+      await insertClassScheduleNotifications({
+        variables: { notifications },
+      })
+    },
+    [classGroup?.name, classTypeLabel, currentMemberId, insertClassScheduleNotifications, scheduleType],
   )
 
   const buildClassEventMetadata = useCallback(
@@ -765,7 +831,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
       if (!classGroup || !confirmed) return
       try {
         await updateClassGroup(classGroup.id, { campusId: newCampus })
-        refetchClassGroup()
+        setCampusIdOverride(newCampus)
+        await refetchClassGroup()
         store.setState({ selectedTeachers: [] })
       } catch (error) {
         console.error('Failed to update campus:', error)
@@ -1516,6 +1583,15 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
       )
 
       await updateClassGroup(classGroup.id, { status: 'published' })
+
+      const publishTeacherIds = uniqueStrings(publishTargets.map(target => target.event.teacherId))
+      try {
+        await notifyPublishedMembers([...publishTeacherIds, ...allPublishStudentIds], publishTargets.length)
+      } catch (notificationError) {
+        console.error('Failed to create schedule publish notifications:', notificationError)
+        message.warning('課程已發布，但前台通知建立失敗，請確認通知資料')
+      }
+
       await refetchEvents()
       refetchClassGroup()
 
@@ -1537,6 +1613,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     getPaidStudentIdsForEvent,
     getPreScheduledStudentIdsForEvent,
     buildClassEventMetadata,
+    notifyPublishedMembers,
     classMessageSet,
     handleClosePublishModal,
     refetchEvents,
@@ -1775,7 +1852,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
                 <Select.Option value={CORRECTION_EXTERNAL_CLASSROOM}>
                   {formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
                 </Select.Option>
-                {classrooms.map(classroom => (
+                {campusClassrooms.map(classroom => (
                   <Select.Option key={classroom.id} value={classroom.id}>
                     {classroom.name}
                   </Select.Option>
@@ -1889,17 +1966,18 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           )
         },
       },
-    ],
+    ].filter(column => scheduleType !== 'semester' || column.key !== 'actions'),
     [
       formatMessage,
       correctionErrors,
       getClassroomIds,
       updateCorrectionGroup,
-      classrooms,
+      campusClassrooms,
       allTeachers,
       addCorrectionRow,
       copyCorrectionRow,
       removeCorrectionRow,
+      scheduleType,
     ],
   )
 
@@ -1985,7 +2063,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
         <ThreeColumnGrid>
           <ClassSettingsPanel
-            classGroup={classGroup}
+            classGroup={classGroupForSettings}
             classType={scheduleType}
             onChange={handleClassGroupUpdate}
             onCampusChange={handleCampusChange}
@@ -1996,7 +2074,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             classGroupId={classGroup?.id}
             scheduleType={scheduleType}
             language={classGroup?.language}
-            campusId={scheduleType === 'group' ? classGroup?.campusId ?? undefined : undefined}
+            campusId={effectiveCampusId ?? undefined}
             maxStudents={scheduleType === 'group' ? classGroup?.maxStudents : undefined}
             events={scheduleType === 'group' ? calendarEvents : []}
             expiryDateByOrderId={scheduleType === 'group' ? expiryDateByOrderId : undefined}
@@ -2034,7 +2112,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           >
             <TeacherListPanel
               languages={classGroup?.language ? [classGroup.language] : []}
-              campus={classGroup?.campusId ?? undefined}
+              campus={effectiveCampusId ?? undefined}
               selectedTeachers={selectedTeachers}
               onTeacherSelect={handleTeachersChange}
             />
@@ -2084,14 +2162,14 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         scheduleType={scheduleType}
         selectedDate={selectedDate}
         selectedTeachers={selectedTeachers}
-        campus={classGroup?.campusId || ''}
+        campus={effectiveCampusId || ''}
         language={(classGroup?.language || 'zh-TW') as Language}
         orderMaterials={classMaterials}
         existingEvent={editingEvent}
         scheduleCondition={scheduleCondition}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
-        classrooms={classrooms}
+        classrooms={campusClassrooms}
         existingScheduleEvents={calendarEvents}
         onClose={() => {
           store.setState({ arrangeModalVisible: false, editingEvent: undefined })

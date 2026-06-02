@@ -131,9 +131,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
   useEffect(() => {
     const customMaterial = currentData.materials.find(m => isCustomMaterialValue(m, materialOptions))
     setCustomMaterialName(customMaterial ? getCustomMaterialInputValue(customMaterial) : '')
-    if (customMaterial || currentData.materials.includes(MATERIAL_CUSTOM_OPTION)) {
-      setCustomMaterialInputVisible(true)
-    }
+    setCustomMaterialInputVisible(Boolean(customMaterial || currentData.materials.includes(MATERIAL_CUSTOM_OPTION)))
   }, [currentData.materials, materialOptions])
 
   const handleFieldChange = useCallback(
