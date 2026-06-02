@@ -29,8 +29,11 @@ import { DeleteModalInfo, RepeatConfig, WeeklySchedule } from './openTimeSchedul
 import {
   compareTimeStrings,
   eventsToWeeklySchedule,
+  expandOpenTimeEventsInRange,
   filterFutureEvents,
+  formatOpenTimeConflictMessage,
   getEventDisplayInfo,
+  getOpenTimeEventDuration,
   timeStringToMinutes,
 } from './openTimeSchedule.utils'
 import OpenTimeSettingsModal from './OpenTimeSettingsModal'
@@ -257,6 +260,154 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     return events
   }, [openTimeEvents, isDeleteMode])
 
+  const buildOccurrenceEvent = useCallback(
+    (
+      originalEvent: GeneralEventApi,
+      occurrenceStart?: Date | null,
+      occurrenceEnd?: Date | null,
+    ): GeneralEventApi => {
+      const start = occurrenceStart || originalEvent.start
+      const end =
+        occurrenceEnd ||
+        moment(start)
+          .add(getOpenTimeEventDuration(originalEvent), 'milliseconds')
+          .toDate()
+
+      return {
+        ...originalEvent,
+        start,
+        end,
+        extendedProps: {
+          ...originalEvent.extendedProps,
+          originalEvent,
+        },
+      }
+    },
+    [],
+  )
+
+  const getEventMetadata = useCallback((event: GeneralEventApi) => {
+    return (
+      (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
+      (event.extendedProps?.metadata as Record<string, any> | undefined) ||
+      {}
+    )
+  }, [])
+
+  const getOriginalUntil = useCallback((event: GeneralEventApi): Date | undefined => {
+    const until = (event as { until?: Date | string }).until
+    if (until) {
+      const parsedUntil = moment(until)
+      return parsedUntil.isValid() ? parsedUntil.toDate() : undefined
+    }
+
+    try {
+      const rule = rrulestr((event as { rrule: string }).rrule)
+      return rule.origOptions.until as Date | undefined
+    } catch (error) {
+      console.error('Failed to parse rrule:', error)
+      return undefined
+    }
+  }, [])
+
+  const buildWeeklyRRule = useCallback((startDate: Date, until?: Date) => {
+    const weekdays = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
+    const startMoment = moment(startDate)
+    const rruleOptions: any = {
+      freq: RRule.WEEKLY,
+      dtstart: startMoment.clone().utc(false).toDate(),
+      byweekday: [weekdays[startMoment.isoWeekday() - 1]],
+      byhour: startMoment.utc(true).hour(),
+    }
+
+    if (until) {
+      rruleOptions.until = until
+    }
+
+    return new RRule(rruleOptions)
+  }, [])
+
+  const updateRecurringEventUntil = useCallback(
+    async (eventId: string, event: GeneralEventApi, until: Date) => {
+      const originalEvent = (event.extendedProps?.originalEvent as GeneralEventApi | undefined) || event
+      if (moment(until).isBefore(moment(originalEvent.start))) {
+        await deleteEventTrigger({ eventId })
+        return
+      }
+
+      const updatedRRule = buildWeeklyRRule(originalEvent.start, until)
+
+      await updateEventTrigger({
+        eventId,
+        payload: {
+          rrule: updatedRRule.toString(),
+          until,
+          extendedProps: {
+            metadata: getEventMetadata(originalEvent),
+          },
+        } as Partial<GeneralEventApi>,
+      })
+    },
+    [buildWeeklyRRule, deleteEventTrigger, getEventMetadata, updateEventTrigger],
+  )
+
+  const createRecurringSegmentAfter = useCallback(
+    async (event: GeneralEventApi, segmentStart: Date, originalUntil: Date | undefined, resourceId: string) => {
+      if (originalUntil && moment(segmentStart).isAfter(originalUntil)) return
+
+      const duration = getOpenTimeEventDuration(event)
+      const segmentEnd = moment(segmentStart).add(duration, 'milliseconds').toDate()
+      const newRrule = buildWeeklyRRule(segmentStart, originalUntil)
+
+      const newEvent: GeneralEventApi = {
+        start: segmentStart,
+        end: segmentEnd,
+        title: event.title || '開放時間',
+        extendedProps: {
+          description: '',
+          metadata: getEventMetadata(event),
+        },
+        rrule: newRrule.toString(),
+        duration,
+      } as any
+
+      if (originalUntil) {
+        ;(newEvent as any).until = originalUntil
+      }
+
+      await createEvents({
+        events: [newEvent],
+        invitedResource: [
+          {
+            temporally_exclusive_resource_id: resourceId,
+            role: 'available',
+          },
+        ],
+      })
+    },
+    [buildWeeklyRRule, createEvents, getEventMetadata],
+  )
+
+  const removeRecurringEventRange = useCallback(
+    async (eventId: string, event: GeneralEventApi, removeUntil: Date, resourceId: string) => {
+      const originalEvent = (event.extendedProps?.originalEvent as GeneralEventApi | undefined) || event
+      const originalUntil = getOriginalUntil(originalEvent)
+      const occurrenceStart = moment(event.start)
+      const removeUntilEnd = moment(removeUntil).endOf('day')
+      const previousDay = occurrenceStart.clone().subtract(1, 'day').endOf('day')
+
+      await updateRecurringEventUntil(eventId, event, previousDay.toDate())
+
+      const nextSegmentStart = occurrenceStart.clone()
+      while (nextSegmentStart.isSameOrBefore(removeUntilEnd, 'day')) {
+        nextSegmentStart.add(7, 'days')
+      }
+
+      await createRecurringSegmentAfter(originalEvent, nextSegmentStart.toDate(), originalUntil, resourceId)
+    },
+    [createRecurringSegmentAfter, getOriginalUntil, updateRecurringEventUntil],
+  )
+
   const handleDateClick = useCallback(
     (info: DateClickArg) => {
       if (isDeleteMode) {
@@ -284,13 +435,14 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
   const handleEventClick = useCallback(
     (info: EventClickArg) => {
       const originalEvent = info.event.extendedProps.originalEvent as GeneralEventApi
+      const occurrenceEvent = buildOccurrenceEvent(originalEvent, info.event.start, info.event.end)
 
       if (isDeleteMode) {
         // 刪除模式：顯示刪除確認對話框
-        const { dayLabel, timeRange } = getEventDisplayInfo(originalEvent)
+        const { dayLabel, timeRange } = getEventDisplayInfo(occurrenceEvent)
 
         setSelectedEventForDelete({
-          event: originalEvent,
+          event: occurrenceEvent,
           dayLabel,
           timeRange,
         })
@@ -312,7 +464,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         setIsSettingsModalOpen(true)
       }
     },
-    [isDeleteMode, openTimeEvents],
+    [buildOccurrenceEvent, isDeleteMode, openTimeEvents],
   )
 
   const navigateWeek = useCallback((direction: 'prev' | 'next') => {
@@ -368,49 +520,25 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         const isEditing = existingEventIds && existingEventIds.length > 0
 
         // 編輯 -> 先刪除舊事件
-        if (isEditing) {
-          for (const eventId of existingEventIds) {
-            await deleteEventTrigger({ eventId })
-          }
-        }
-
         // 將週期時間表轉換為事件
         const events: GeneralEventApi[] = []
         const baseDate = clickedDate || new Date()
         const { sanitizedSchedule, conflicts: internalConflicts } = sanitizeScheduleForSave(schedule)
-        const windowStart = moment(baseDate).startOf('day').toDate()
-        const windowEnd = moment(baseDate).add(7, 'days').endOf('day').toDate()
+        const windowStart = moment(baseDate).startOf('isoWeek').toDate()
+        const windowEnd = moment(baseDate).endOf('isoWeek').toDate()
         const externalConflicts: Array<{ dayLabel: string; timeRange: string }> = []
 
-        // 編輯模式下不檢查外部衝突（因為舊事件已刪除）
-        const existingEvents = isEditing
-          ? []
-          : fetchedData?.resourceEvents
-          ? getAvailableEvents(getActiveEvents(fetchedData.resourceEvents as GeneralEventApi[]))
+        // 先排除正在編輯的舊事件，再和其他既有開放時間比對衝突
+        const editingEventIdSet = new Set(existingEventIds || [])
+        const existingEvents = fetchedData?.resourceEvents
+          ? getAvailableEvents(getActiveEvents(fetchedData.resourceEvents as GeneralEventApi[])).filter(
+              event => !editingEventIdSet.has(event.extendedProps?.event_id),
+            )
           : []
-        const existingEventRanges = existingEvents.flatMap(event => {
-          const durationMs =
-            (event as { duration?: number }).duration ?? moment(event.end).diff(moment(event.start), 'milliseconds')
-          if ((event as { rrule?: string }).rrule) {
-            try {
-              const rule = rrulestr((event as { rrule: string }).rrule)
-              return rule.between(windowStart, windowEnd, true).map(date => ({
-                start: date,
-                end: moment(date).add(durationMs, 'milliseconds').toDate(),
-              }))
-            } catch (error) {
-              console.error('Failed to parse rrule for conflict checking:', error)
-              return []
-            }
-          }
-
-          const eventStart = moment(event.start)
-          const eventEnd = moment(event.end)
-          if (eventEnd.isBefore(windowStart) || eventStart.isAfter(windowEnd)) {
-            return []
-          }
-          return [{ start: eventStart.toDate(), end: eventEnd.toDate() }]
-        })
+        const existingEventRanges = expandOpenTimeEventsInRange(existingEvents, windowStart, windowEnd).map(event => ({
+          start: event.start,
+          end: event.end,
+        }))
 
         sanitizedSchedule.forEach(daySchedule => {
           daySchedule.slots.forEach(slot => {
@@ -481,16 +609,23 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         })
 
         const conflicts = [...internalConflicts, ...externalConflicts]
+        const conflictMessage = formatOpenTimeConflictMessage(conflicts)
         if (conflicts.length > 0) {
-          message.warning(`有時間重疊：${conflicts.map(item => `${item.dayLabel} ${item.timeRange}`).join('、')}`)
+          message.warning(conflictMessage)
         }
 
         if (events.length === 0) {
-          message.warning(conflicts.length > 0 ? '有時間重疊，未新增任何時段' : '請至少設定一個開放時段')
+          message.warning(conflicts.length > 0 ? conflictMessage : '請至少設定一個開放時間')
           return
         }
 
-        const result = await createEvents({
+        if (isEditing) {
+          for (const eventId of existingEventIds) {
+            await deleteEventTrigger({ eventId })
+          }
+        }
+
+        await createEvents({
           events,
           invitedResource: [
             {
@@ -528,103 +663,20 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
 
         const isRecurring = !!(event as any).rrule
         const resource = fetchedData?.resources?.[0]
+        if (isRecurring && !resource) {
+          message.error('找不到資源')
+          return
+        }
 
         switch (deleteType) {
           case 'thisWeek': {
             if (isRecurring && resource) {
-              // 拆分事件策略：
-              // 1. 修改原事件的 until 為本週該時段的前一天
-              // 2. 建立新的重複事件，從下週開始
-              const eventDate = moment(event.start)
-              const thisWeekDate = eventDate.clone().startOf('day')
-              const previousDay = thisWeekDate.clone().subtract(1, 'day').endOf('day')
-              const nextWeekDate = thisWeekDate.clone().add(7, 'days')
-
-              // 解析原始 rrule 取得 until
-              let originalUntil: Date | undefined
-              try {
-                const rule = rrulestr((event as any).rrule)
-                originalUntil = rule.origOptions.until as Date | undefined
-              } catch (e) {
-                console.error('Failed to parse rrule:', e)
-              }
-
-              // 更新原事件的 until 為前一天
-              const eventMetadata =
-                (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
-                (event.extendedProps?.metadata as Record<string, any> | undefined) ||
-                {}
-              await updateEventTrigger({
+              await removeRecurringEventRange(
                 eventId,
-                payload: {
-                  extendedProps: {
-                    metadata: eventMetadata,
-                    until: previousDay.toISOString(),
-                  },
-                } as Partial<GeneralEventApi>,
-              })
-
-              // 建立新事件從下週開始（如果原本沒有結束日期或結束日期在下週之後）
-              if (!originalUntil || moment(originalUntil).isAfter(nextWeekDate)) {
-                const newStartDate = nextWeekDate
-                  .clone()
-                  .hour(eventDate.hour())
-                  .minute(eventDate.minute())
-                  .second(0)
-                  .toDate()
-
-                const eventEndMoment = moment(event.end)
-                const newEndDate = nextWeekDate
-                  .clone()
-                  .hour(eventEndMoment.hour())
-                  .minute(eventEndMoment.minute())
-                  .second(0)
-                  .toDate()
-
-                // 建立新的 rrule
-                const weekdays = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
-                const dayOfWeek = nextWeekDate.isoWeekday()
-                const rruleWeekday = weekdays[dayOfWeek - 1]
-
-                const newRruleOptions: any = {
-                  freq: RRule.WEEKLY,
-                  dtstart: moment(newStartDate).clone().utc(false).toDate(),
-                  byweekday: [rruleWeekday],
-                  byhour: moment(newStartDate).utc(true).hour(),
-                }
-
-                if (originalUntil) {
-                  newRruleOptions.until = moment(originalUntil).clone().utc(false).toDate()
-                }
-
-                const newRrule = new RRule(newRruleOptions)
-
-                const newEvent: GeneralEventApi = {
-                  start: newStartDate,
-                  end: newEndDate,
-                  title: event.title || '開放時間',
-                  extendedProps: {
-                    description: '',
-                    metadata: {},
-                  },
-                  rrule: newRrule.toString(),
-                  duration: moment(newEndDate).diff(moment(newStartDate), 'milliseconds'),
-                } as any
-
-                if (originalUntil) {
-                  ;(newEvent as any).until = originalUntil
-                }
-
-                await createEvents({
-                  events: [newEvent],
-                  invitedResource: [
-                    {
-                      temporally_exclusive_resource_id: resource.temporally_exclusive_resource_id,
-                      role: 'available',
-                    },
-                  ],
-                })
-              }
+                event,
+                moment(event.start).endOf('day').toDate(),
+                resource.temporally_exclusive_resource_id,
+              )
             } else {
               await deleteEventTrigger({ eventId })
             }
@@ -636,21 +688,18 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
               message.error('請選擇日期')
               return
             }
+            if (moment(untilDate).isBefore(moment(event.start), 'day')) {
+              message.error('指定日期不可早於點選日期')
+              return
+            }
 
-            if (isRecurring) {
-              const eventMetadata =
-                (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
-                (event.extendedProps?.metadata as Record<string, any> | undefined) ||
-                {}
-              await updateEventTrigger({
+            if (isRecurring && resource) {
+              await removeRecurringEventRange(
                 eventId,
-                payload: {
-                  extendedProps: {
-                    metadata: eventMetadata,
-                    until: moment(untilDate).endOf('day').toISOString(),
-                  },
-                } as Partial<GeneralEventApi>,
-              })
+                event,
+                moment(untilDate).endOf('day').toDate(),
+                resource.temporally_exclusive_resource_id,
+              )
             } else {
               await deleteEventTrigger({ eventId })
             }
@@ -672,7 +721,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         message.error('移除開放時間失敗')
       }
     },
-    [selectedEventForDelete, fetchedData, deleteEventTrigger, updateEventTrigger, createEvents, refetchEvents],
+    [selectedEventForDelete, fetchedData, deleteEventTrigger, refetchEvents, removeRecurringEventRange],
   )
 
   if (isLoading) {

@@ -120,7 +120,7 @@ const DeleteOpenTimeModal: React.FC<DeleteOpenTimeModalProps> = ({
                     value={untilDate ? moment(untilDate) : null}
                     onChange={date => setUntilDate(date ? date.toDate() : null)}
                     disabled={deleteType !== 'untilDate'}
-                    disabledDate={current => current && current < moment().startOf('day')}
+                    disabledDate={current => current && current < moment(eventInfo.event.start).startOf('day')}
                     placeholder={formatMessage(memberMessages.ui.selectDate)}
                   />
                 </Space>

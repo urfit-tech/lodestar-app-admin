@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import {
+  StudentOpenTimeEvent,
   usePermissionGroupsAsCampuses,
   useTeacherOpenTimeEvents,
   useTeachersFromMembers,
@@ -84,6 +85,7 @@ interface TeacherListPanelProps {
   permissionGroupIds?: string[]
   scheduleCondition?: ScheduleCondition
   enableAvailabilitySort?: boolean
+  studentOpenTimeEvents?: StudentOpenTimeEvent[]
 }
 
 const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
@@ -95,6 +97,7 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
   permissionGroupIds,
   scheduleCondition,
   enableAvailabilitySort = false,
+  studentOpenTimeEvents = [],
 }) => {
   const { formatMessage } = useIntl()
   const [searchText, setSearchText] = useState('')
@@ -227,22 +230,51 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
     availabilityWindow?.end,
   )
 
+  const studentAvailabilityEvents = useMemo(() => {
+    if (!enableAvailabilitySort || !availabilityWindow) return []
+    const windowStart = dayjs(availabilityWindow.start)
+    const windowEnd = dayjs(availabilityWindow.end)
+    return studentOpenTimeEvents.filter(event => {
+      if (event.extendedProps.status !== 'open') return false
+      const eventStart = dayjs(event.start)
+      const eventEnd = dayjs(event.end)
+      return eventEnd.isAfter(windowStart) && eventStart.isBefore(windowEnd)
+    })
+  }, [enableAvailabilitySort, availabilityWindow, studentOpenTimeEvents])
+
   const availabilityScores = useMemo(() => {
     if (!enableAvailabilitySort || !availabilityWindow) return {}
     const scoreMap: Record<string, number> = {}
+    const getOverlapMinutes = (
+      aStart: ReturnType<typeof dayjs>,
+      aEnd: ReturnType<typeof dayjs>,
+      bStart: ReturnType<typeof dayjs>,
+      bEnd: ReturnType<typeof dayjs>,
+    ) => {
+      if (!aEnd.isAfter(bStart) || !bEnd.isAfter(aStart)) return 0
+      const overlapStart = aStart.isAfter(bStart) ? aStart : bStart
+      const overlapEnd = aEnd.isBefore(bEnd) ? aEnd : bEnd
+      return Math.max(0, overlapEnd.diff(overlapStart, 'minute'))
+    }
+
     availabilityEvents.forEach(event => {
       const eventStart = dayjs(event.start)
       const eventEnd = dayjs(event.end)
       const windowStart = dayjs(availabilityWindow.start)
       const windowEnd = dayjs(availabilityWindow.end)
       if (eventEnd.isBefore(windowStart) || eventStart.isAfter(windowEnd)) return
-      const overlapStart = eventStart.isAfter(windowStart) ? eventStart : windowStart
-      const overlapEnd = eventEnd.isBefore(windowEnd) ? eventEnd : windowEnd
-      const minutes = Math.max(0, overlapEnd.diff(overlapStart, 'minute'))
+      const minutes =
+        studentAvailabilityEvents.length > 0
+          ? studentAvailabilityEvents.reduce(
+              (sum, studentEvent) =>
+                sum + getOverlapMinutes(eventStart, eventEnd, dayjs(studentEvent.start), dayjs(studentEvent.end)),
+              0,
+            )
+          : getOverlapMinutes(eventStart, eventEnd, windowStart, windowEnd)
       scoreMap[event.teacherId] = (scoreMap[event.teacherId] || 0) + minutes
     })
     return scoreMap
-  }, [availabilityEvents, availabilityWindow, enableAvailabilitySort])
+  }, [availabilityEvents, availabilityWindow, enableAvailabilitySort, studentAvailabilityEvents])
 
   // Sort teachers
   const filteredTeachers = useMemo(() => {
@@ -251,8 +283,8 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
     // Sort: 同校區 > 開放時間重合度 > 等級(降序) > 年資(降序) > 姓名拼音(升序)
     teachers.sort((a, b) => {
       if (campus) {
-        const aMatch = a.campus === campus ? 0 : 1
-        const bMatch = b.campus === campus ? 0 : 1
+        const aMatch = a.campus === campus || a.campusId === campus || a.campusIds?.includes(campus) ? 0 : 1
+        const bMatch = b.campus === campus || b.campusId === campus || b.campusIds?.includes(campus) ? 0 : 1
         if (aMatch !== bMatch) return aMatch - bMatch
       }
 

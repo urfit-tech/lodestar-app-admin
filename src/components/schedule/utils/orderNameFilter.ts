@@ -28,6 +28,26 @@ export const SEMESTER_KEYWORDS = ['冬季團班', '春季團班', '秋季團班'
 
 export type ClassCategory = 'personal' | 'semester' | 'group'
 
+type OrderProductLike = {
+  name?: string | null
+  options?: Record<string, any> | null
+}
+
+export const getOrderProductRawOptions = (product?: OrderProductLike | null): Record<string, any> => {
+  return ((product?.options || {}) as Record<string, any>) || {}
+}
+
+export const getOrderProductOptionMeta = (product?: OrderProductLike | null): Record<string, any> => {
+  const rawOptions = getOrderProductRawOptions(product)
+  return ((rawOptions.options || {}) as Record<string, any>) || {}
+}
+
+export const getOrderProductTitle = (product?: OrderProductLike | null): string => {
+  const rawOptions = getOrderProductRawOptions(product)
+  const optionMeta = getOrderProductOptionMeta(product)
+  return normalize(optionMeta.title) || normalize(rawOptions.title) || normalize(product?.name)
+}
+
 /**
  * 統一分類訂單產品屬於哪種班別。
  *
