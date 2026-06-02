@@ -72,6 +72,7 @@ export interface Order {
   usedMinutes: number
   availableMinutes: number
   createdAt: Date
+  paymentExpiredAt?: Date
   expiresAt?: Date // 課時到期日：開課日 + 有效月數，初始無值，預排/發布後才有值
   lastClassDate?: Date
   status: string // order_log status: 'SUCCESS', 'UNPAID', etc.

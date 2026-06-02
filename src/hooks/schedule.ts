@@ -81,6 +81,7 @@ export const useMemberForSchedule = (
           options
           created_at
           updated_at
+          expired_at
           order_products{
             id
             name
@@ -163,6 +164,29 @@ export const useMemberForSchedule = (
           return detailedLanguage || candidates[0] || ''
         }
 
+        const resolveCampusId = (product: (typeof orderLog.order_products)[number]) => {
+          const orderLogAny = orderLog as any
+          const rawOptions = getRawProductOptions(product)
+          const productOptions = getProductOptions(product)
+          const candidates = [
+            orderOptions?.campus_id,
+            orderOptions?.campusId,
+            orderOptions?.permission_group_id,
+            orderOptions?.permissionGroupId,
+            rawOptions?.campus_id,
+            rawOptions?.campusId,
+            rawOptions?.permission_group_id,
+            rawOptions?.permissionGroupId,
+            productOptions?.campus_id,
+            productOptions?.campusId,
+            productOptions?.permission_group_id,
+            productOptions?.permissionGroupId,
+            orderLogAny?.campus_id,
+            orderLogAny?.campusId,
+          ]
+          return candidates.find(Boolean)
+        }
+
         const materials: string[] = pipe(
           filter((product: (typeof orderLog.order_products)[number]) => getProductOptions(product)?.product === '教材'),
           map((product: (typeof orderLog.order_products)[number]) => (product.options as any)?.title || product.name),
@@ -186,8 +210,8 @@ export const useMemberForSchedule = (
             const options = getProductOptions(product)
             const totalSessions = options?.total_sessions?.max || 0
             const totalMinutes = totalSessions * 50
-            const campusFromOptions =
-              orderOptions?.campus_id || orderOptions?.campusId || options?.campus_id || options?.campusId || undefined
+            const orderLogAny = orderLog as any
+            const campusFromOptions = resolveCampusId(product)
 
             return {
               id: product.id,
@@ -199,6 +223,7 @@ export const useMemberForSchedule = (
               usedMinutes: 0, // Will be calculated from scheduled events
               availableMinutes: totalMinutes, // Will be calculated as totalMinutes - usedMinutes
               createdAt: new Date(orderLog.created_at),
+              paymentExpiredAt: orderLogAny.expired_at ? new Date(orderLogAny.expired_at) : undefined,
               expiresAt: undefined, // 開課日 + 有效月數，預排/發布後才有值
               status: orderLog.status,
               materials,
