@@ -6,6 +6,11 @@ import { useCreateClassGroup, useOrdersByIds, usePermissionGroupsAsCampuses } fr
 import { ClassGroup, Language } from '../../types/schedule'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
+import {
+  getOrderProductOptionMeta,
+  getOrderProductRawOptions,
+  getOrderProductTitle,
+} from './utils/orderNameFilter'
 
 interface ClassSettingsPanelProps {
   classGroup?: ClassGroup
@@ -26,6 +31,34 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
   { value: '台語', label: '台語' },
   { value: '粵語', label: '粵語' },
 ]
+
+const MATERIAL_UNDECIDED = '尚未決定'
+const MATERIAL_CUSTOM_OPTION = '自選教材'
+const MATERIAL_CUSTOM_PREFIX = `${MATERIAL_CUSTOM_OPTION}-`
+
+const isMaterialProduct = (product: any): boolean => {
+  const rawOptions = getOrderProductRawOptions(product)
+  const optionMeta = getOrderProductOptionMeta(product)
+  const productType = optionMeta.product || rawOptions.product
+  const title = getOrderProductTitle(product)
+
+  if (productType === '教材') return true
+  if (title.includes('外購教材')) return true
+  return false
+}
+
+const isCustomMaterialValue = (material: string, materialOptions: string[]): boolean => {
+  return material !== MATERIAL_UNDECIDED && material !== MATERIAL_CUSTOM_OPTION && !materialOptions.includes(material)
+}
+
+const getCustomMaterialInputValue = (material: string): string => {
+  return material.startsWith(MATERIAL_CUSTOM_PREFIX) ? material.slice(MATERIAL_CUSTOM_PREFIX.length) : material
+}
+
+const buildCustomMaterialValue = (name: string): string => {
+  const trimmedName = name.trim()
+  return trimmedName ? `${MATERIAL_CUSTOM_PREFIX}${trimmedName}` : ''
+}
 
 interface CreateFormData {
   name: string
@@ -60,10 +93,9 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
     const materials = new Set<string>()
     orders.forEach(order => {
       order.order_products?.forEach((product: any) => {
-        // Check if options.options.product === '教材'
-        const options = product.options
-        if (options?.options?.product === '教材' && options?.title) {
-          materials.add(options.title)
+        const title = getOrderProductTitle(product)
+        if (isMaterialProduct(product) && title) {
+          materials.add(title)
         }
       })
     })
@@ -80,6 +112,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
     maxStudents: 15,
   })
   const [customMaterialName, setCustomMaterialName] = useState('')
+  const [customMaterialInputVisible, setCustomMaterialInputVisible] = useState(false)
 
   const isCreateMode = !classGroup
 
@@ -96,10 +129,9 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
       }
 
   useEffect(() => {
-    const customMaterial = currentData.materials.find(
-      m => m !== '尚未決定' && m !== '自選教材' && !materialOptions.includes(m),
-    )
-    setCustomMaterialName(customMaterial || '')
+    const customMaterial = currentData.materials.find(m => isCustomMaterialValue(m, materialOptions))
+    setCustomMaterialName(customMaterial ? getCustomMaterialInputValue(customMaterial) : '')
+    setCustomMaterialInputVisible(Boolean(customMaterial || currentData.materials.includes(MATERIAL_CUSTOM_OPTION)))
   }, [currentData.materials, materialOptions])
 
   const handleFieldChange = useCallback(
@@ -115,24 +147,38 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
 
   const handleMaterialsChange = useCallback(
     (values: string[]) => {
-      const includesCustom = values.includes('自選教材')
-      const filteredValues = values.filter(v => v !== customMaterialName)
-      handleFieldChange('materials', includesCustom ? values : filteredValues)
-      if (!includesCustom && customMaterialName && !values.includes(customMaterialName)) {
+      const includesCustom = values.includes(MATERIAL_CUSTOM_OPTION)
+      const currentCustomMaterialValue = buildCustomMaterialValue(customMaterialName)
+      const hasCustomMaterialValue = values.some(v => isCustomMaterialValue(v, materialOptions))
+      const nextValues = values.filter(v => v !== MATERIAL_CUSTOM_OPTION && !isCustomMaterialValue(v, materialOptions))
+      const shouldKeepCustomMaterial = Boolean(
+        currentCustomMaterialValue && (includesCustom || hasCustomMaterialValue),
+      )
+      if (shouldKeepCustomMaterial) {
+        nextValues.push(currentCustomMaterialValue)
+      }
+      handleFieldChange('materials', nextValues)
+      setCustomMaterialInputVisible(includesCustom || shouldKeepCustomMaterial)
+      if (!includesCustom && currentCustomMaterialValue && !hasCustomMaterialValue) {
         setCustomMaterialName('')
+        setCustomMaterialInputVisible(false)
       }
     },
-    [customMaterialName, handleFieldChange],
+    [customMaterialName, handleFieldChange, materialOptions],
   )
 
   const handleCustomMaterialChange = useCallback(
     (value: string) => {
       setCustomMaterialName(value)
-      const baseMaterials = currentData.materials.filter(m => m !== '自選教材' && m !== customMaterialName)
-      const nextMaterials = value ? [...baseMaterials, value] : baseMaterials
+      setCustomMaterialInputVisible(true)
+      const nextCustomMaterialValue = buildCustomMaterialValue(value)
+      const baseMaterials = currentData.materials.filter(
+        m => m !== MATERIAL_CUSTOM_OPTION && !isCustomMaterialValue(m, materialOptions),
+      )
+      const nextMaterials = nextCustomMaterialValue ? [...baseMaterials, nextCustomMaterialValue] : baseMaterials
       handleFieldChange('materials', nextMaterials)
     },
-    [currentData.materials, customMaterialName, handleFieldChange],
+    [currentData.materials, handleFieldChange, materialOptions],
   )
 
   const handleCampusChange = useCallback(
@@ -199,7 +245,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
 
   const cardTitle = (
     <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-      <span>{classType === 'group' ? '小組班基本設定' : formatMessage(scheduleMessages.ClassSettings.title)}</span>
+      <span>{classType === 'group' ? '小組班資料' : formatMessage(scheduleMessages.ClassSettings.title)}</span>
       {isCreateMode && (
         <Button
           type="primary"
@@ -243,10 +289,10 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
                   {m}
                 </Select.Option>
               ))}
-              <Select.Option value="自選教材">自選教材</Select.Option>
-              <Select.Option value="尚未決定">尚未決定</Select.Option>
+              <Select.Option value={MATERIAL_CUSTOM_OPTION}>{MATERIAL_CUSTOM_OPTION}</Select.Option>
+              <Select.Option value={MATERIAL_UNDECIDED}>{MATERIAL_UNDECIDED}</Select.Option>
             </Select>
-            {(currentData.materials.includes('自選教材') || customMaterialName) && (
+            {customMaterialInputVisible && (
               <Input
                 value={customMaterialName}
                 onChange={e => handleCustomMaterialChange(e.target.value)}

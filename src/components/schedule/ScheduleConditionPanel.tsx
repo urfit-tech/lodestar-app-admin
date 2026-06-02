@@ -263,11 +263,9 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
   )
 
   const handleRemoveExcludedDate = useCallback(
-    (dateToRemove: Date) => {
+    (dateIndex: number) => {
       onConditionChange({
-        excludedDates: condition.excludedDates.filter(
-          d => moment(d).format('YYYY-MM-DD') !== moment(dateToRemove).format('YYYY-MM-DD'),
-        ),
+        excludedDates: condition.excludedDates.filter((_, index) => index !== dateIndex),
       })
     },
     [condition.excludedDates, onConditionChange],
@@ -447,7 +445,14 @@ const ScheduleConditionPanel: React.FC<ScheduleConditionPanelProps> = ({
         {condition.excludedDates.length > 0 && (
           <ExcludedDateTags>
             {condition.excludedDates.map((date, index) => (
-              <Tag key={index} closable onClose={() => handleRemoveExcludedDate(date)}>
+              <Tag
+                key={`${moment(date).format('YYYY-MM-DD')}-${index}`}
+                closable
+                onClose={event => {
+                  event.preventDefault()
+                  handleRemoveExcludedDate(index)
+                }}
+              >
                 {moment(date).format('YYYY-MM-DD')}
               </Tag>
             ))}

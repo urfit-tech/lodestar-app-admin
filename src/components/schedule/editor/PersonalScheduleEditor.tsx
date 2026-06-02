@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import {
   Button,
   Checkbox,
@@ -44,6 +45,7 @@ import { useClassrooms } from '../../../hooks/classroom'
 import { useMemberForSchedule } from '../../../hooks/schedule'
 import {
   checkScheduleConflict,
+  getScheduleValidityRuleForClassCount,
   useDeleteScheduleTemplate,
   useHolidays,
   usePersonalScheduleListEvents,
@@ -122,6 +124,7 @@ interface LocationState {
     language: string
     campus: string
     date?: Date
+    startTime?: string
   }
 }
 
@@ -194,6 +197,14 @@ interface SchedulePreviewRow {
 const CORRECTION_EXTERNAL_CLASSROOM = '__external__'
 const WEEKDAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
 
+const INSERT_SCHEDULE_NOTIFICATIONS = gql`
+  mutation InsertScheduleNotifications($objects: [notification_insert_input!]!) {
+    insert_notification(objects: $objects) {
+      affected_rows
+    }
+  }
+`
+
 const PersonalScheduleEditorInner: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -239,6 +250,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const [publishEventDrafts, setPublishEventDrafts] = useState<PublishEventDraft[]>([])
   const [correctionEventKeys, setCorrectionEventKeys] = useState<string[]>([])
   const [correctionErrors, setCorrectionErrors] = useState<Record<string, CorrectionField[]>>({})
+  const [insertScheduleNotifications] = useMutation(INSERT_SCHEDULE_NOTIFICATIONS)
 
   // Load member data when memberId changes
   useEffect(() => {
@@ -261,27 +273,34 @@ const PersonalScheduleEditorInner: React.FC = () => {
   // Get schedule expiry settings for calculating order expiry dates
   const { settings } = useScheduleExpirySettings('personal')
 
-  // Calculate expiry date by language (based on schedule condition start date)
+  // Calculate expiry date by selected order threshold (based on schedule condition start date)
   const expiryDateByLanguage = useMemo<Record<string, Date | null>>(() => {
     const result: Record<string, Date | null> = {}
-    const languages = uniqueStrings(studentOrders.map(o => o.language))
+    const ordersForExpiryLimit = studentOrders.filter(order => selectedOrderIds.includes(order.id))
 
-    languages.forEach(lang => {
-      const languageSettings = settings.filter(s => s.language === lang)
-      if (languageSettings.length === 0) {
-        result[lang] = null
+    ordersForExpiryLimit.forEach(order => {
+      const classCount = Math.max(1, Math.round((order.totalMinutes || 0) / 50))
+      const matchingSetting = getScheduleValidityRuleForClassCount(settings, order.language, classCount)
+      const fallbackSetting = settings
+        .filter(setting => setting.language === order.language)
+        .sort((a, b) => a.class_count - b.class_count)[0]
+      const targetSetting = matchingSetting || fallbackSetting
+      if (!targetSetting) {
+        if (!(order.language in result)) {
+          result[order.language] = null
+        }
         return
       }
 
-      const maxValidMonths = languageSettings.reduce(
-        (max, current) => (current.valid_days > max ? current.valid_days : max),
-        languageSettings[0].valid_days,
-      )
-      result[lang] = moment(scheduleCondition.startDate).add(maxValidMonths, 'month').toDate()
+      const expiryDate = moment(scheduleCondition.startDate).add(targetSetting.valid_days, 'month').toDate()
+      const currentExpiryDate = result[order.language]
+      if (!currentExpiryDate || expiryDate < currentExpiryDate) {
+        result[order.language] = expiryDate
+      }
     })
 
     return result
-  }, [studentOrders, settings, scheduleCondition.startDate])
+  }, [studentOrders, selectedOrderIds, settings, scheduleCondition.startDate])
 
   // Get selected teacher IDs for fetching open time events
   const selectedTeacherIds = useMemo(() => {
@@ -473,9 +492,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
       }
 
       const classCount = Math.max(1, Math.round((order.totalMinutes || 0) / 50))
-      const matchingSetting = settings
-        .filter(s => s.language === order.language && s.class_count <= classCount)
-        .sort((a, b) => b.class_count - a.class_count)[0]
+      const matchingSetting = getScheduleValidityRuleForClassCount(settings, order.language, classCount)
       const fallbackSetting = settings
         .filter(s => s.language === order.language)
         .sort((a, b) => a.class_count - b.class_count)[0]
@@ -490,6 +507,26 @@ const PersonalScheduleEditorInner: React.FC = () => {
       return acc
     }, {})
   }, [studentOrders, firstClassDateByOrderId, settings])
+
+  const schedulableStudentOrders = useMemo(() => {
+    const today = moment().startOf('day')
+    return studentOrders.filter(order => {
+      const usedMinutes = usedMinutesByOrder[order.id] || 0
+      const remainingMinutes = Math.max(0, order.availableMinutes - usedMinutes)
+      if (remainingMinutes <= 0) return false
+
+      if (order.paymentExpiredAt && moment(order.paymentExpiredAt).isBefore(today, 'day')) {
+        return false
+      }
+
+      const classExpiryDate = expiryDateByOrderId[order.id] || order.expiresAt
+      if (classExpiryDate && moment(classExpiryDate).isBefore(today, 'day')) {
+        return false
+      }
+
+      return true
+    })
+  }, [studentOrders, usedMinutesByOrder, expiryDateByOrderId])
 
   // Merge member data with selectedStudent for display
   const studentWithInfo = useMemo<Student | undefined>(() => {
@@ -507,8 +544,8 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
   // Get selected orders
   const selectedOrders = useMemo(() => {
-    return studentOrders.filter(o => selectedOrderIds.includes(o.id))
-  }, [studentOrders, selectedOrderIds])
+    return schedulableStudentOrders.filter(o => selectedOrderIds.includes(o.id))
+  }, [schedulableStudentOrders, selectedOrderIds])
 
   // Template hooks - get templates for the selected language
   const currentLanguage = useMemo(() => {
@@ -542,6 +579,11 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const orderCampus = useMemo(() => {
     return selectedOrders.find(order => order.campus)?.campus || ''
   }, [selectedOrders])
+
+  const campusClassrooms = useMemo(() => {
+    if (!orderCampus) return classrooms
+    return classrooms.filter(classroom => classroom.campusId === orderCampus)
+  }, [classrooms, orderCampus])
 
   // Get holidays for calendar
   const holidays = useMemo(() => {
@@ -1165,6 +1207,56 @@ const PersonalScheduleEditorInner: React.FC = () => {
     ],
   )
 
+  const sendPublishedScheduleNotifications = useCallback(
+    async (publishTargets: PublishTarget[]) => {
+      if (!currentMemberId || publishTargets.length === 0) return
+
+      const eventsByTargetMemberId = new Map<string, PublishTarget[]>()
+      const addTarget = (memberId: string | undefined, target: PublishTarget) => {
+        if (!memberId) return
+        const targets = eventsByTargetMemberId.get(memberId) || []
+        targets.push(target)
+        eventsByTargetMemberId.set(memberId, targets)
+      }
+
+      publishTargets.forEach(target => {
+        addTarget(selectedStudent?.id || target.event.studentId, target)
+        addTarget(target.event.teacherId, target)
+      })
+
+      const objects = Array.from(eventsByTargetMemberId.entries()).map(([targetMemberId, targets]) => {
+        const sortedTargets = [...targets].sort((a, b) => {
+          const dateDiff = moment(a.event.date).valueOf() - moment(b.event.date).valueOf()
+          if (dateDiff !== 0) return dateDiff
+          return a.event.startTime.localeCompare(b.event.startTime)
+        })
+        const firstEvent = sortedTargets[0].event
+        const firstDate = moment(firstEvent.date).format('YYYY-MM-DD')
+        const firstTime = `${firstEvent.startTime}-${firstEvent.endTime}`
+        const description =
+          sortedTargets.length === 1
+            ? `課程已發布：${firstDate} ${firstTime}`
+            : `已發布 ${sortedTargets.length} 堂課程：${firstDate} 起`
+
+        return {
+          source_member_id: currentMemberId,
+          target_member_id: targetMemberId,
+          description,
+          reference_url: `/members/${targetMemberId}/class`,
+          type: 'content',
+          extra: JSON.stringify({
+            scheduleType: 'personal',
+            eventIds: sortedTargets.map(target => target.eventId),
+          }),
+        }
+      })
+
+      if (objects.length === 0) return
+      await insertScheduleNotifications({ variables: { objects } })
+    },
+    [currentMemberId, insertScheduleNotifications, selectedStudent],
+  )
+
   const publishEventIds = useCallback(
     async (publishTargets: PublishTarget[]) => {
       if (!authToken) {
@@ -1197,9 +1289,23 @@ const PersonalScheduleEditorInner: React.FC = () => {
         }),
       }))
 
+      try {
+        await sendPublishedScheduleNotifications(publishTargets)
+      } catch (error) {
+        console.error('Failed to send schedule notifications:', error)
+        message.warning('課程已發布，但通知發送失敗')
+      }
+
       await Promise.all([refetchStudentEvents(), refetchPersonalEvents()])
     },
-    [authToken, buildPersonalEventMetadata, refetchStudentEvents, refetchPersonalEvents, store],
+    [
+      authToken,
+      buildPersonalEventMetadata,
+      refetchStudentEvents,
+      refetchPersonalEvents,
+      sendPublishedScheduleNotifications,
+      store,
+    ],
   )
 
   const handleOpenPreScheduleModal = useCallback(() => {
@@ -1803,7 +1909,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
           </GridColumn>
           <GridColumn xs={24} sm={24} md={10} lg={10}>
             <OrderSelectionPanel
-              orders={studentOrders}
+              orders={schedulableStudentOrders}
               selectedOrderIds={selectedOrderIds}
               onSelectOrders={handleOrdersChange}
               scheduleType="personal"
@@ -1829,6 +1935,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
               campus={orderCampus}
               selectedTeachers={selectedTeachers}
               onTeacherSelect={handleTeachersChange}
+              scheduleCondition={scheduleCondition}
+              enableAvailabilitySort
+              studentOpenTimeEvents={studentOpenTimeEvents}
             />
           </Collapse.Panel>
         </CollapsibleScheduleCard>
@@ -1844,6 +1953,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
             viewDate={scheduleCondition.startDate}
+            focusTime={eventToEdit?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />
@@ -1867,7 +1977,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
         studentOpenTimeEvents={studentOpenTimeEvents}
         teacherOpenTimeEvents={teacherOpenTimeEvents}
         teacherBusyEvents={teacherBusyEvents}
-        classrooms={classrooms}
+        classrooms={campusClassrooms}
         existingScheduleEvents={calendarEvents}
         onClose={() => {
           store.setState({ arrangeModalVisible: false, editingEvent: undefined })

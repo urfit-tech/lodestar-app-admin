@@ -95,7 +95,13 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
         const productMeta = productOptions?.options || {}
         const orderOptions = order.options as any
         const campusFromOptions =
-          orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
+          orderOptions?.campus_id ||
+          orderOptions?.campusId ||
+          productMeta?.campus_id ||
+          productMeta?.campusId ||
+          productOptions?.campus_id ||
+          productOptions?.campusId ||
+          null
 
         return {
           orderId: order.id,

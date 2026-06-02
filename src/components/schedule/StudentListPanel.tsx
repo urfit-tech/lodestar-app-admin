@@ -150,7 +150,13 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const hasScheduledEvent = Boolean(hasScheduledEventByOrderId[order.id])
         const expiresAt = hasScheduledEvent ? computedExpiry || null : null
         const campusFromOptions =
-          orderOptions?.campus_id || orderOptions?.campusId || productMeta?.campus_id || productMeta?.campusId || null
+          orderOptions?.campus_id ||
+          orderOptions?.campusId ||
+          productMeta?.campus_id ||
+          productMeta?.campusId ||
+          productOptions?.campus_id ||
+          productOptions?.campusId ||
+          null
 
         if (!isOrderStatusValidForSchedule(order.status)) {
           return null

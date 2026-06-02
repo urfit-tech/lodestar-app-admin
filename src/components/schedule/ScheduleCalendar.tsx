@@ -4,7 +4,7 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Button, Space, Switch, Tooltip, Typography } from 'antd'
+import { Button, message, Space, Switch, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
@@ -113,12 +113,40 @@ const CalendarHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 16px;
+`
+
+const CalendarLegend = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 360px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-width: 0;
+`
+
+const LegendGroup = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-width: 0;
+`
+
+const LegendItem = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 `
 
 const DateDisplay = styled.span`
   font-size: 16px;
   font-weight: 500;
+  flex: 0 0 auto;
 `
 
 const TodayButton = styled(Button)<{ $isToday?: boolean }>`
@@ -160,7 +188,13 @@ const TEACHER_STATUS_LABELS: Record<TeacherTimelineStatus, string> = {
 }
 
 const STUDENT_LAYER_STATUSES: StudentLayerStatus[] = ['open', 'scheduled', 'published', 'template']
-const TEMPLATE_PLACEHOLDER_ENABLED = false
+const TEMPLATE_PLACEHOLDER_ENABLED = true
+const TEACHER_STATUS_TOGGLE_COLOR = '#4a4a4a'
+
+const BUSY_SLOT_HINT: Record<'scheduled' | 'published', string> = {
+  scheduled: '此時段已被預排，無法再安排其他課程',
+  published: '此時段已被發布，無法再安排其他課程',
+}
 
 interface ScheduleCalendarProps {
   scheduleType: ScheduleType
@@ -172,10 +206,17 @@ interface ScheduleCalendarProps {
   holidays?: Date[]
   excludedDates?: Date[]
   viewDate?: Date
+  focusTime?: string
   unpaidStudentsByEventId?: Record<string, Array<{ name: string; email: string }>>
   onDateClick?: (date: Date) => void
   onEventClick?: (event: ScheduleEvent) => void
   onWeekChange?: (startDate: Date, endDate: Date) => void
+}
+
+const normalizeScrollTime = (time?: string) => {
+  if (!time) return '08:00:00'
+  const [hour = '08', minute = '00', second = '00'] = time.split(':')
+  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
 const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
@@ -188,6 +229,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   holidays = [],
   excludedDates = [],
   viewDate,
+  focusTime,
   unpaidStudentsByEventId = {},
   onDateClick,
   onEventClick,
@@ -206,7 +248,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     open: true,
     scheduled: true,
     published: true,
-    template: false,
+    template: true,
   })
 
   // Auto-enable open time display for newly selected teachers
@@ -287,9 +329,11 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           title: event.title,
           backgroundColor: layerColor,
           borderColor: layerColor,
+          display: event.display || 'background',
           extendedProps: {
             ...event.extendedProps,
             isLayerEvent: true,
+            layerOwner: 'teacher',
           },
           classNames: ['fc-layer-event', ...(event.extendedProps.isExternal ? ['fc-event-external'] : [])],
         }
@@ -325,9 +369,11 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           title: event.title,
           backgroundColor: event.backgroundColor,
           borderColor: event.borderColor,
+          display: event.display,
           extendedProps: {
             ...event.extendedProps,
             isLayerEvent: true,
+            layerOwner: 'student',
           },
           classNames: ['fc-layer-event', ...(event.extendedProps.isExternal ? ['fc-event-external'] : [])],
         }
@@ -359,11 +405,14 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     if (calendarApi) {
       calendarApi.gotoDate(viewDate)
       setCurrentDate(viewDate)
+      window.setTimeout(() => {
+        calendarApi.scrollToTime(normalizeScrollTime(focusTime))
+      }, 0)
       const startOfWeek = dayjs(viewDate).startOf('week').add(1, 'day').toDate()
       const endOfWeek = dayjs(viewDate).endOf('week').add(1, 'day').toDate()
       onWeekChange?.(startOfWeek, endOfWeek)
     }
-  }, [viewDate, onWeekChange])
+  }, [viewDate, focusTime, onWeekChange])
 
   // Listen for container/window resize to update calendar size
   useEffect(() => {
@@ -383,8 +432,26 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     (info: DateClickArg) => {
       // Check if the clicked slot is a holiday or excluded date
       const clickedDate = dayjs(info.date)
+      const clickedSlotEnd = clickedDate.add(30, 'minute')
       const isHoliday = holidays.some(h => dayjs(h).isSame(clickedDate, 'day'))
       const isExcluded = excludedDates.some(d => dayjs(d).isSame(clickedDate, 'day'))
+      const blockingLayerEvent = calendarRef.current
+        ?.getApi()
+        .getEvents()
+        .find(event => {
+          const status = event.extendedProps?.status as 'scheduled' | 'published' | undefined
+          if (!event.extendedProps?.isLayerEvent || (status !== 'scheduled' && status !== 'published')) {
+            return false
+          }
+          if (!event.start || !event.end) return false
+          return dayjs(event.start).isBefore(clickedSlotEnd) && dayjs(event.end).isAfter(clickedDate)
+        })
+
+      if (blockingLayerEvent) {
+        const status = blockingLayerEvent.extendedProps?.status as 'scheduled' | 'published'
+        message.warning(BUSY_SLOT_HINT[status])
+        return
+      }
 
       // Check if there's already an event at this time that's pre-scheduled or published
       const existingEvent = events.find(e => {
@@ -407,6 +474,9 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
       })
 
       if (isHoliday || isExcluded || existingEvent) {
+        if (existingEvent?.status === 'pre-scheduled' || existingEvent?.status === 'published') {
+          message.warning(BUSY_SLOT_HINT[existingEvent.status === 'published' ? 'published' : 'scheduled'])
+        }
         return // Cannot schedule on this slot
       }
 
@@ -419,6 +489,10 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     (info: EventClickArg) => {
       // Ignore clicks on teacher/student layer events
       if (info.event.extendedProps?.isLayerEvent) {
+        const status = info.event.extendedProps?.status as 'scheduled' | 'published' | undefined
+        if (status === 'scheduled' || status === 'published') {
+          message.warning(BUSY_SLOT_HINT[status])
+        }
         return
       }
 
@@ -575,15 +649,15 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           </Button>
         </Space>
         <DateDisplay>{weekDisplay}</DateDisplay>
-        <Space size="large">
+        <CalendarLegend>
           {scheduleType === 'personal' && (
-            <Space size="middle">
+            <LegendGroup>
               <span>{studentName || '學生'}</span>
               {(Object.keys(STUDENT_STATUS_LABELS) as StudentLayerStatus[]).map(status => {
                 const color = STUDENT_EVENT_COLORS[status]
                 const disabled = status === 'template' ? false : studentStatusCounts[status] === 0
                 return (
-                  <Space key={`student-${status}`} size={4}>
+                  <LegendItem key={`student-${status}`}>
                     <TeacherIndicator $color={color} />
                     <span>{STUDENT_STATUS_LABELS[status]}</span>
                     <Tooltip
@@ -608,24 +682,19 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         }}
                       />
                     </Tooltip>
-                  </Space>
+                  </LegendItem>
                 )
               })}
-            </Space>
+            </LegendGroup>
           )}
 
           {selectedTeachers.length > 0 && (
-            <Space size="middle">
+            <LegendGroup>
               {(Object.keys(TEACHER_STATUS_LABELS) as TeacherTimelineStatus[]).map(status => {
-                const color =
-                  status === 'published'
-                    ? SCHEDULE_COLORS.teacher.teacher1.dark
-                    : status === 'scheduled'
-                    ? SCHEDULE_COLORS.teacher.teacher1.medium
-                    : SCHEDULE_COLORS.teacher.teacher1.light
+                const color = TEACHER_STATUS_TOGGLE_COLOR
                 const disabled = teacherStatusCounts[status] === 0
                 return (
-                  <Space key={`teacher-status-${status}`} size={4}>
+                  <LegendItem key={`teacher-status-${status}`}>
                     <TeacherIndicator $color={color} />
                     <span>{TEACHER_STATUS_LABELS[status]}</span>
                     <Tooltip
@@ -650,7 +719,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         }}
                       />
                     </Tooltip>
-                  </Space>
+                  </LegendItem>
                 )
               })}
 
@@ -659,7 +728,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                 const color = SCHEDULE_COLORS.teacher[colorKeys[index]]?.dark || '#64748B'
                 const isOpenTimeVisible = visibleTeacherIds.has(teacher.id)
                 return (
-                  <Space key={teacher.id} size={4}>
+                  <LegendItem key={teacher.id}>
                     <TeacherIndicator $color={color} />
                     <span>{teacher.name}</span>
                     <Tooltip title={isOpenTimeVisible ? '隱藏老師色塊' : '顯示老師色塊'}>
@@ -682,12 +751,12 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         }}
                       />
                     </Tooltip>
-                  </Space>
+                  </LegendItem>
                 )
               })}
-            </Space>
+            </LegendGroup>
           )}
-        </Space>
+        </CalendarLegend>
       </CalendarHeader>
 
       <FullCalendar
@@ -698,7 +767,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         slotDuration="00:30:00"
         slotMinTime="00:00:00"
         slotMaxTime="23:59:59"
-        scrollTime="08:00:00"
+        scrollTime={normalizeScrollTime(focusTime)}
         allDaySlot={false}
         nowIndicator
         headerToolbar={false}

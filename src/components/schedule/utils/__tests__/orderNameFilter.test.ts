@@ -1,4 +1,4 @@
-import { classifyOrderProduct } from '../orderNameFilter'
+import { classifyOrderProduct, getOrderProductTitle } from '../orderNameFilter'
 
 describe('classifyOrderProduct', () => {
   describe('product 必須是「學費」', () => {
@@ -114,6 +114,20 @@ describe('classifyOrderProduct', () => {
           productName: '中文_其他命名_60堂',
         }),
       ).toBe('group')
+    })
+  })
+
+  describe('order_product metadata 解析', () => {
+    it('getOrderProductTitle 可讀取教材的 options.title', () => {
+      expect(
+        getOrderProductTitle({
+          name: '教材',
+          options: {
+            title: '(A5版) 商用會話',
+            options: { product: '教材' },
+          },
+        }),
+      ).toBe('(A5版) 商用會話')
     })
   })
 })

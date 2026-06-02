@@ -1549,6 +1549,21 @@ const GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE = gql`
 /**
  * Hook to get schedule expiry settings and calculate expiry dates for orders
  */
+type ScheduleValidityRuleLike = {
+  language: string
+  class_count: number
+  valid_days: number
+}
+
+export const getScheduleValidityRuleForClassCount = <T extends ScheduleValidityRuleLike>(
+  settings: T[],
+  language: string,
+  classCount: number,
+): T | undefined =>
+  settings
+    .filter(setting => setting.language === language && setting.class_count <= classCount)
+    .sort((a, b) => b.class_count - a.class_count)[0]
+
 export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal') => {
   const { data, loading, error } = useQuery<
     hasura.GET_SCHEDULE_VALIDITY_RULES_FOR_SCHEDULE,
@@ -1569,10 +1584,8 @@ export const useScheduleExpirySettings = (scheduleType: ScheduleType = 'personal
   // Function to calculate expiry date for an order based on language and class count
   const calculateExpiryDate = useCallback(
     (language: string, classCount: number, startDate: Date): Date | null => {
-      // Find matching setting: same language and class_count >= order's class count
-      const matchingSetting = settings
-        .filter(s => s.language === language && s.class_count <= classCount)
-        .sort((a, b) => b.class_count - a.class_count)[0] // Get the highest matching class_count
+      // Use the highest threshold that does not exceed the purchased class count.
+      const matchingSetting = getScheduleValidityRuleForClassCount(settings, language, classCount)
 
       if (!matchingSetting) return null
 

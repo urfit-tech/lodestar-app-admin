@@ -1336,9 +1336,10 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                       color="red"
                     >
                       <Select
-                        value={row.classroomIds[0] || CLASSROOM_UNASSIGNED}
-                        onChange={val => {
-                          updateRow(row.id, { classroomIds: [val] })
+                        mode="multiple"
+                        value={row.classroomIds?.length ? row.classroomIds : [CLASSROOM_UNASSIGNED]}
+                        onChange={values => {
+                          updateRow(row.id, { classroomIds: normalizeClassroomSelection(values as string[]) })
                         }}
                         size="small"
                         style={{ width: '100%' }}
