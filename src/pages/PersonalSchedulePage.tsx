@@ -57,6 +57,7 @@ const PersonalSchedulePage: React.FC = () => {
               language: event.language,
               campus: event.campus,
               date: event.date,
+              startTime: event.startTime,
             },
           },
         })

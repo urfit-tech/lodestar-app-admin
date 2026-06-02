@@ -367,9 +367,18 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
 
   const handleEdit = useCallback(
     (classGroup: ClassGroup) => {
-      history.push(`/class-schedule/${scheduleType}/${classGroup.id}`)
+      const summary = eventsByClassId.get(classGroup.id)
+      history.push({
+        pathname: `/class-schedule/${scheduleType}/${classGroup.id}`,
+        state: {
+          scheduleFocus: {
+            date: summary?.dateRange.startDate || undefined,
+            startTime: summary?.timeSlots[0]?.startTime,
+          },
+        },
+      })
     },
-    [history, scheduleType],
+    [history, scheduleType, eventsByClassId],
   )
 
   const handleDelete = useCallback(

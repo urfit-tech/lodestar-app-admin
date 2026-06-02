@@ -23,7 +23,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import {
   ArrangeCourseModal,
@@ -144,6 +144,13 @@ interface ClassGroupScheduleEditorProps {
   mode: ClassGroupScheduleEditorMode
 }
 
+interface LocationState {
+  scheduleFocus?: {
+    date?: Date
+    startTime?: string
+  }
+}
+
 interface ClassGroupScheduleEditorState {
   scheduleCondition: ScheduleCondition
   selectedTeachers: Teacher[]
@@ -212,6 +219,7 @@ const getResourceTarget = (resource: any): string | undefined => {
 const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = ({ scheduleType, mode }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const location = useLocation<LocationState>()
   const { groupId } = useParams<{ groupId: string }>()
   const { authToken, currentMemberId, currentMember } = useAuth()
   const { id: appId } = useApp()
@@ -227,6 +235,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   const [correctionEventKeys, setCorrectionEventKeys] = useState<string[]>([])
   const [correctionErrors, setCorrectionErrors] = useState<Record<string, CorrectionField[]>>({})
   const [campusIdOverride, setCampusIdOverride] = useState<string | undefined>()
+  const [scheduleFocus, setScheduleFocus] = useState<LocationState['scheduleFocus']>()
 
   const store = useScheduleEditorStoreApi<ClassGroupScheduleEditorState>()
   const {
@@ -277,6 +286,12 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   }, [classrooms, effectiveCampusId])
 
   const { calculateExpiryDate } = useScheduleExpirySettings(scheduleType)
+
+  useEffect(() => {
+    if (!location.state?.scheduleFocus) return
+    setScheduleFocus(location.state.scheduleFocus)
+    history.replace(location.pathname, {})
+  }, [history, location.pathname, location.state])
 
   const orderIds = classGroup?.orderIds || []
   const { orders: orderLogs } = useOrdersByIds(orderIds)
@@ -2128,7 +2143,8 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             unpaidStudentsByEventId={unpaidStudentsByEventId}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
-            viewDate={scheduleCondition.startDate}
+            viewDate={scheduleFocus?.date || scheduleCondition.startDate}
+            focusTime={scheduleFocus?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />

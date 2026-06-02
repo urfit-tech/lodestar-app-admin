@@ -206,10 +206,17 @@ interface ScheduleCalendarProps {
   holidays?: Date[]
   excludedDates?: Date[]
   viewDate?: Date
+  focusTime?: string
   unpaidStudentsByEventId?: Record<string, Array<{ name: string; email: string }>>
   onDateClick?: (date: Date) => void
   onEventClick?: (event: ScheduleEvent) => void
   onWeekChange?: (startDate: Date, endDate: Date) => void
+}
+
+const normalizeScrollTime = (time?: string) => {
+  if (!time) return '08:00:00'
+  const [hour = '08', minute = '00', second = '00'] = time.split(':')
+  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
 const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
@@ -222,6 +229,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   holidays = [],
   excludedDates = [],
   viewDate,
+  focusTime,
   unpaidStudentsByEventId = {},
   onDateClick,
   onEventClick,
@@ -397,11 +405,14 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     if (calendarApi) {
       calendarApi.gotoDate(viewDate)
       setCurrentDate(viewDate)
+      window.setTimeout(() => {
+        calendarApi.scrollToTime(normalizeScrollTime(focusTime))
+      }, 0)
       const startOfWeek = dayjs(viewDate).startOf('week').add(1, 'day').toDate()
       const endOfWeek = dayjs(viewDate).endOf('week').add(1, 'day').toDate()
       onWeekChange?.(startOfWeek, endOfWeek)
     }
-  }, [viewDate, onWeekChange])
+  }, [viewDate, focusTime, onWeekChange])
 
   // Listen for container/window resize to update calendar size
   useEffect(() => {
@@ -756,7 +767,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         slotDuration="00:30:00"
         slotMinTime="00:00:00"
         slotMaxTime="23:59:59"
-        scrollTime="08:00:00"
+        scrollTime={normalizeScrollTime(focusTime)}
         allDaySlot={false}
         nowIndicator
         headerToolbar={false}

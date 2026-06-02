@@ -124,6 +124,7 @@ interface LocationState {
     language: string
     campus: string
     date?: Date
+    startTime?: string
   }
 }
 
@@ -1952,6 +1953,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
             viewDate={scheduleCondition.startDate}
+            focusTime={eventToEdit?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />
