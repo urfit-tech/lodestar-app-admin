@@ -146,7 +146,7 @@ interface ClassGroupScheduleEditorProps {
 
 interface LocationState {
   scheduleFocus?: {
-    date?: Date
+    date?: Date | string
     startTime?: string
   }
 }
@@ -191,6 +191,12 @@ const INSERT_CLASS_SCHEDULE_NOTIFICATIONS = gql`
     }
   }
 `
+
+const parseScheduleFocusDate = (date?: Date | string): Date | undefined => {
+  if (!date) return undefined
+  const parsedDate = date instanceof Date ? date : new Date(date)
+  return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
+}
 
 const buildInitialState = (): ClassGroupScheduleEditorState => ({
   scheduleCondition: {
@@ -288,10 +294,14 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
   const { calculateExpiryDate } = useScheduleExpirySettings(scheduleType)
 
   useEffect(() => {
-    if (!location.state?.scheduleFocus) return
-    setScheduleFocus(location.state.scheduleFocus)
-    history.replace(location.pathname, {})
-  }, [history, location.pathname, location.state])
+    const focus = location.state?.scheduleFocus
+    if (!focus) return
+
+    setScheduleFocus({
+      date: parseScheduleFocusDate(focus.date),
+      startTime: focus.startTime,
+    })
+  }, [location.state])
 
   const orderIds = classGroup?.orderIds || []
   const { orders: orderLogs } = useOrdersByIds(orderIds)
@@ -880,6 +890,9 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
   const handleConditionChange = useCallback(
     (updates: Partial<ScheduleCondition>) => {
+      if (updates.startDate) {
+        setScheduleFocus(undefined)
+      }
       store.setState(prev => ({
         scheduleCondition: {
           ...prev.scheduleCondition,

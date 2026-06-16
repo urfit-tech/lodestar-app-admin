@@ -123,7 +123,7 @@ interface LocationState {
     teacherId?: string
     language: string
     campus: string
-    date?: Date
+    date?: Date | string
     startTime?: string
   }
 }
@@ -205,6 +205,12 @@ const INSERT_SCHEDULE_NOTIFICATIONS = gql`
   }
 `
 
+const parseScheduleFocusDate = (date?: Date | string): Date | undefined => {
+  if (!date) return undefined
+  const parsedDate = date instanceof Date ? date : new Date(date)
+  return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
+}
+
 const PersonalScheduleEditorInner: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -251,6 +257,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const [correctionEventKeys, setCorrectionEventKeys] = useState<string[]>([])
   const [correctionErrors, setCorrectionErrors] = useState<Record<string, CorrectionField[]>>({})
   const [insertScheduleNotifications] = useMutation(INSERT_SCHEDULE_NOTIFICATIONS)
+  const [scheduleFocus, setScheduleFocus] = useState<{ date?: Date; startTime?: string }>()
 
   // Load member data when memberId changes
   useEffect(() => {
@@ -331,13 +338,20 @@ const PersonalScheduleEditorInner: React.FC = () => {
   // Get all teachers for pre-selecting from event data
   const { teachers: allTeachers } = useTeachersFromMembers()
 
-  // Store event data from navigation state and clear location state
+  // Store event data from navigation state
   useEffect(() => {
-    if (location.state?.eventToEdit) {
-      store.setState({ eventToEdit: location.state.eventToEdit })
-      history.replace(location.pathname, {})
+    const eventToEdit = location.state?.eventToEdit
+    if (!eventToEdit) return
+
+    const focusDate = parseScheduleFocusDate(eventToEdit.date)
+    const normalizedEventToEdit = {
+      ...eventToEdit,
+      date: focusDate,
     }
-  }, [location.state, history, location.pathname, store])
+
+    store.setState({ eventToEdit: normalizedEventToEdit })
+    setScheduleFocus({ date: focusDate, startTime: eventToEdit.startTime })
+  }, [location.state, store])
 
   const hasInitializedScheduleCondition = useRef(false)
 
@@ -345,12 +359,17 @@ const PersonalScheduleEditorInner: React.FC = () => {
   useEffect(() => {
     if (!eventToEdit || hasInitializedScheduleCondition.current) return
     if (eventToEdit.date) {
-      const startDate = eventToEdit.date
+      const startDate = parseScheduleFocusDate(eventToEdit.date)
+      if (!startDate) {
+        hasInitializedScheduleCondition.current = true
+        return
+      }
       store.setState(prev => ({
         scheduleCondition: {
           ...prev.scheduleCondition,
           startDate,
         },
+        selectedDate: startDate,
       }))
     }
     hasInitializedScheduleCondition.current = true
@@ -828,6 +847,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
   const handleConditionChange = useCallback(
     (updates: Partial<ScheduleCondition>) => {
+      if (updates.startDate) {
+        setScheduleFocus(undefined)
+      }
       store.setState(prev => ({
         scheduleCondition: {
           ...prev.scheduleCondition,
@@ -1952,8 +1974,8 @@ const PersonalScheduleEditorInner: React.FC = () => {
             studentName={member?.name || selectedStudent?.name}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
-            viewDate={scheduleCondition.startDate}
-            focusTime={eventToEdit?.startTime}
+            viewDate={scheduleFocus?.date || scheduleCondition.startDate}
+            focusTime={scheduleFocus?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />
