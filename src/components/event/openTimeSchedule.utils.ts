@@ -53,7 +53,7 @@ export const compareTimeStrings = (a: string, b: string): number => {
 }
 
 export const formatOpenTimeConflictMessage = (conflicts: OpenTimeConflict[]): string =>
-  `有時間重疊：${conflicts.map(item => `${item.dayLabel} ${item.timeRange}時間重疊`).join('、')}`
+  `有時間重疊：${conflicts.map(item => `${item.dayLabel}${item.timeRange}時間重疊`).join('、')}`
 
 export const getOpenTimeEventDuration = (event: GeneralEventApi): number => {
   const eventWithRepeat = event as OpenTimeEventWithRepeat
