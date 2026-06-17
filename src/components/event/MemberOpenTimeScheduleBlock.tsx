@@ -138,6 +138,8 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
 
   const [isEditMode, setIsEditMode] = useState(false)
   const [editingEvents, setEditingEvents] = useState<GeneralEventApi[] | null>(null)
+  const [editingOccurrence, setEditingOccurrence] = useState<GeneralEventApi | null>(null)
+  const [isSingleOccurrenceEdit, setIsSingleOccurrenceEdit] = useState(false)
 
   const [isDeleteMode, setIsDeleteMode] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -286,6 +288,15 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
     [],
   )
 
+  const removeRepeatInfo = useCallback((event: GeneralEventApi): GeneralEventApi => {
+    const { rrule, duration, until, ...oneTimeEvent } = event as GeneralEventApi & {
+      rrule?: string
+      duration?: number
+      until?: Date | string
+    }
+    return oneTimeEvent as GeneralEventApi
+  }, [])
+
   const getEventMetadata = useCallback((event: GeneralEventApi) => {
     return (
       (event.extendedProps?.event_metadata as Record<string, any> | undefined) ||
@@ -415,6 +426,10 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
       }
 
       setClickedDate(info.date)
+      setEditingEvents(null)
+      setEditingOccurrence(null)
+      setIsEditMode(false)
+      setIsSingleOccurrenceEdit(false)
       setIsSettingsModalOpen(true)
     },
     [isDeleteMode],
@@ -427,6 +442,10 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
       }
 
       setClickedDate(info.start)
+      setEditingEvents(null)
+      setEditingOccurrence(null)
+      setIsEditMode(false)
+      setIsSingleOccurrenceEdit(false)
       setIsSettingsModalOpen(true)
     },
     [isDeleteMode],
@@ -448,23 +467,15 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         })
         setIsDeleteModalOpen(true)
       } else {
-        // 編輯模式：收集當週所有開放時間事件
-        const weekStart = moment(originalEvent.start).startOf('isoWeek')
-        const weekEnd = moment(originalEvent.start).endOf('isoWeek')
-
-        // 篩選出當週的所有開放時間事件
-        const weekEvents = openTimeEvents.filter(e => {
-          const eventDate = moment(e.start)
-          return eventDate.isBetween(weekStart, weekEnd, 'day', '[]')
-        })
-
-        setEditingEvents(weekEvents)
-        setClickedDate(originalEvent.start)
+        setEditingOccurrence(occurrenceEvent)
+        setEditingEvents([removeRepeatInfo(occurrenceEvent)])
+        setClickedDate(occurrenceEvent.start)
         setIsEditMode(true)
+        setIsSingleOccurrenceEdit(true)
         setIsSettingsModalOpen(true)
       }
     },
-    [buildOccurrenceEvent, isDeleteMode, openTimeEvents],
+    [buildOccurrenceEvent, isDeleteMode, removeRepeatInfo],
   )
 
   const navigateWeek = useCallback((direction: 'prev' | 'next') => {
@@ -518,8 +529,9 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
 
         const resource = fetchedData.resources[0]
         const isEditing = existingEventIds && existingEventIds.length > 0
+        const isSingleEdit = isEditMode && isSingleOccurrenceEdit && !!editingOccurrence
+        const effectiveRepeatConfig = isSingleEdit ? { isWeeklyRepeat: false, repeatUntil: null } : repeatConfig
 
-        // 編輯 -> 先刪除舊事件
         // 將週期時間表轉換為事件
         const events: GeneralEventApi[] = []
         const baseDate = clickedDate || new Date()
@@ -528,7 +540,6 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         const windowEnd = moment(baseDate).endOf('isoWeek').toDate()
         const externalConflicts: Array<{ dayLabel: string; timeRange: string }> = []
 
-        // 先排除正在編輯的舊事件，再和其他既有開放時間比對衝突
         const editingEventIdSet = new Set(existingEventIds || [])
         const existingEvents = fetchedData?.resourceEvents
           ? getAvailableEvents(getActiveEvents(fetchedData.resourceEvents as GeneralEventApi[])).filter(
@@ -572,7 +583,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
               },
             }
 
-            if (repeatConfig.isWeeklyRepeat) {
+            if (effectiveRepeatConfig.isWeeklyRepeat) {
               const weekdays = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
               const rruleWeekday = weekdays[daySchedule.dayOfWeek - 1]
 
@@ -583,15 +594,15 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
                 byhour: moment(startDate).utc(true).hour(),
               }
 
-              if (repeatConfig.repeatUntil) {
-                rruleOptions.until = moment(repeatConfig.repeatUntil).clone().utc(false).toDate()
+              if (effectiveRepeatConfig.repeatUntil) {
+                rruleOptions.until = moment(effectiveRepeatConfig.repeatUntil).clone().utc(false).toDate()
               }
 
               const rrule = new RRule(rruleOptions)
               ;(event as any).rrule = rrule.toString()
               ;(event as any).duration = moment(endDate).diff(moment(startDate), 'milliseconds')
-              if (repeatConfig.repeatUntil) {
-                ;(event as any).until = repeatConfig.repeatUntil
+              if (effectiveRepeatConfig.repeatUntil) {
+                ;(event as any).until = effectiveRepeatConfig.repeatUntil
               }
             }
 
@@ -615,11 +626,28 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         }
 
         if (events.length === 0) {
-          message.warning(conflicts.length > 0 ? conflictMessage : '請至少設定一個開放時間')
+          message.warning(conflicts.length > 0 ? conflictMessage : '請至少設定一個開放時段')
           return
         }
 
-        if (isEditing) {
+        if (isSingleEdit && editingOccurrence) {
+          const sourceEventId = editingOccurrence.extendedProps?.event_id
+          if (!sourceEventId) {
+            message.error('找不到事件 ID')
+            return
+          }
+
+          if ((editingOccurrence as any).rrule) {
+            await removeRecurringEventRange(
+              sourceEventId,
+              editingOccurrence,
+              moment(editingOccurrence.start).endOf('day').toDate(),
+              resource.temporally_exclusive_resource_id,
+            )
+          } else {
+            await deleteEventTrigger({ eventId: sourceEventId })
+          }
+        } else if (isEditing) {
           for (const eventId of existingEventIds) {
             await deleteEventTrigger({ eventId })
           }
@@ -638,7 +666,9 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         message.success(isEditing ? '開放時間編輯成功' : '開放時間設定成功')
         setIsSettingsModalOpen(false)
         setEditingEvents(null)
+        setEditingOccurrence(null)
         setIsEditMode(false)
+        setIsSingleOccurrenceEdit(false)
 
         await refetchEvents()
       } catch (error) {
@@ -646,7 +676,18 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         message.error('設定開放時間失敗')
       }
     },
-    [clickedDate, fetchedData, createEvents, deleteEventTrigger, refetchEvents, sanitizeScheduleForSave],
+    [
+      clickedDate,
+      fetchedData,
+      createEvents,
+      deleteEventTrigger,
+      editingOccurrence,
+      isEditMode,
+      isSingleOccurrenceEdit,
+      refetchEvents,
+      removeRecurringEventRange,
+      sanitizeScheduleForSave,
+    ],
   )
 
   const handleDeleteOpenTime = useCallback(
@@ -677,6 +718,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
                 moment(event.start).endOf('day').toDate(),
                 resource.temporally_exclusive_resource_id,
               )
+              break
             } else {
               await deleteEventTrigger({ eventId })
             }
@@ -700,9 +742,10 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
                 moment(untilDate).endOf('day').toDate(),
                 resource.temporally_exclusive_resource_id,
               )
-            } else {
-              await deleteEventTrigger({ eventId })
+              break
             }
+
+            await deleteEventTrigger({ eventId })
             break
           }
 
@@ -822,7 +865,9 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         onClose={() => {
           setIsSettingsModalOpen(false)
           setEditingEvents(null)
+          setEditingOccurrence(null)
           setIsEditMode(false)
+          setIsSingleOccurrenceEdit(false)
         }}
         onSave={handleSaveOpenTime}
         isLoading={isCreating}
@@ -830,6 +875,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
         initialRepeatConfig={editingEvents ? eventsToWeeklySchedule(editingEvents).repeatConfig : undefined}
         isEditMode={isEditMode}
         existingEventIds={editingEvents?.map(e => e.extendedProps?.event_id).filter(Boolean) as string[] | undefined}
+        singleOccurrenceEdit={isSingleOccurrenceEdit}
       />
 
       {selectedEventForDelete && (

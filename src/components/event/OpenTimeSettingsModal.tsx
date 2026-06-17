@@ -89,6 +89,7 @@ interface OpenTimeSettingsModalProps {
   initialRepeatConfig?: RepeatConfig
   isEditMode?: boolean
   existingEventIds?: string[]
+  singleOccurrenceEdit?: boolean
 }
 
 const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
@@ -100,6 +101,7 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
   initialRepeatConfig,
   isEditMode = false,
   existingEventIds,
+  singleOccurrenceEdit = false,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -114,10 +116,10 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setSchedule(initialSchedule || createEmptyWeeklySchedule())
-      setIsWeeklyRepeat(initialRepeatConfig?.isWeeklyRepeat ?? true)
-      setRepeatUntil(initialRepeatConfig?.repeatUntil ?? null)
+      setIsWeeklyRepeat(singleOccurrenceEdit ? false : initialRepeatConfig?.isWeeklyRepeat ?? true)
+      setRepeatUntil(singleOccurrenceEdit ? null : initialRepeatConfig?.repeatUntil ?? null)
     }
-  }, [isOpen, initialSchedule, initialRepeatConfig])
+  }, [isOpen, initialSchedule, initialRepeatConfig, singleOccurrenceEdit])
 
   // 重置狀態
   const resetState = useCallback(() => {
@@ -144,7 +146,7 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
         const lastEndMinutes = timeStringToMinutes(lastSlot.endTime)
 
         // 找到下一個可用的起始時間（上一筆結束時間後一小時）
-        const nextStartTime = TIME_OPTIONS.find(t => timeStringToMinutes(t) >= lastEndMinutes)
+        const nextStartTime = TIME_OPTIONS.find(t => timeStringToMinutes(t) >= lastEndMinutes + 60)
         if (nextStartTime) {
           newStartTime = nextStartTime
           // 結束時間為起始時間後一小時
@@ -291,9 +293,16 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
       return
     }
 
-    await onSave(schedule, { isWeeklyRepeat, repeatUntil }, isEditMode ? existingEventIds : undefined)
+    await onSave(
+      schedule,
+      {
+        isWeeklyRepeat: singleOccurrenceEdit ? false : isWeeklyRepeat,
+        repeatUntil: singleOccurrenceEdit ? null : repeatUntil,
+      },
+      isEditMode ? existingEventIds : undefined,
+    )
     resetState()
-  }, [schedule, isWeeklyRepeat, repeatUntil, onSave, resetState, isEditMode, existingEventIds])
+  }, [schedule, singleOccurrenceEdit, isWeeklyRepeat, repeatUntil, onSave, resetState, isEditMode, existingEventIds])
 
   // 處理關閉
   const handleClose = useCallback(() => {
@@ -323,82 +332,89 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
       destroyOnClose
     >
       <ModalContent>
-        {schedule.map((daySchedule, dayIndex) => (
-          <DayRow key={daySchedule.dayOfWeek}>
-            <DayLabel>{daySchedule.dayLabel}</DayLabel>
-            <SlotsContainer>
-              {daySchedule.slots.length === 0 ? (
-                <SlotRow>
-                  <NoSlotText>{formatMessage(memberMessages.ui.noOpenTime)}</NoSlotText>
-                  <ActionButtons>
-                    <Tooltip title={formatMessage(memberMessages.ui.addSlot)}>
-                      <Button size="small" icon={<PlusOutlined />} onClick={() => handleAddSlot(dayIndex)} />
-                    </Tooltip>
-                  </ActionButtons>
-                </SlotRow>
-              ) : (
-                daySchedule.slots.map((slot, slotIndex) => {
-                  const isFirstSlot = slotIndex === 0
-                  const startOptions = getStartTimeOptions(daySchedule, slotIndex, slot.id)
-                  const endOptions = getEndTimeOptions(daySchedule, slot.startTime, slot.id)
+        {schedule.map((daySchedule, dayIndex) => {
+          if (singleOccurrenceEdit && daySchedule.slots.length === 0) return null
 
-                  return (
-                    <SlotRow key={slot.id}>
-                      <TimeSelectWrapper>
-                        <Select
-                          value={slot.startTime}
-                          onChange={value => handleUpdateSlotTime(dayIndex, slot.id, 'startTime', value)}
-                          style={{ width: 100 }}
-                          size="small"
-                        >
-                          {startOptions.map(time => (
-                            <Select.Option key={time} value={time}>
-                              {time}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                        <span>-</span>
-                        <Select
-                          value={slot.endTime}
-                          onChange={value => handleUpdateSlotTime(dayIndex, slot.id, 'endTime', value)}
-                          style={{ width: 100 }}
-                          size="small"
-                        >
-                          {endOptions.map(time => (
-                            <Select.Option key={time} value={time}>
-                              {time}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </TimeSelectWrapper>
-                      <ActionButtons>
-                        <Tooltip title={formatMessage(memberMessages.ui.removeSlot)}>
-                          <Button
+          return (
+            <DayRow key={daySchedule.dayOfWeek}>
+              <DayLabel>{daySchedule.dayLabel}</DayLabel>
+              <SlotsContainer>
+                {daySchedule.slots.length === 0 ? (
+                  <SlotRow>
+                    <NoSlotText>{formatMessage(memberMessages.ui.noOpenTime)}</NoSlotText>
+                    <ActionButtons>
+                      <Tooltip title={formatMessage(memberMessages.ui.addSlot)}>
+                        <Button size="small" icon={<PlusOutlined />} onClick={() => handleAddSlot(dayIndex)} />
+                      </Tooltip>
+                    </ActionButtons>
+                  </SlotRow>
+                ) : (
+                  daySchedule.slots.map((slot, slotIndex) => {
+                    const isFirstSlot = slotIndex === 0
+                    const startOptions = getStartTimeOptions(daySchedule, slotIndex, slot.id)
+                    const endOptions = getEndTimeOptions(daySchedule, slot.startTime, slot.id)
+
+                    return (
+                      <SlotRow key={slot.id}>
+                        <TimeSelectWrapper>
+                          <Select
+                            value={slot.startTime}
+                            onChange={value => handleUpdateSlotTime(dayIndex, slot.id, 'startTime', value)}
+                            style={{ width: 100 }}
                             size="small"
-                            icon={<MinusOutlined />}
-                            onClick={() => handleRemoveSlot(dayIndex, slot.id)}
-                          />
-                        </Tooltip>
-                        {isFirstSlot && (
-                          <Tooltip title={formatMessage(memberMessages.ui.copyToAll)}>
-                            <Button size="small" icon={<CopyOutlined />} onClick={() => handleCopyToAll(dayIndex)} />
-                          </Tooltip>
+                          >
+                            {startOptions.map(time => (
+                              <Select.Option key={time} value={time}>
+                                {time}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                          <span>-</span>
+                          <Select
+                            value={slot.endTime}
+                            onChange={value => handleUpdateSlotTime(dayIndex, slot.id, 'endTime', value)}
+                            style={{ width: 100 }}
+                            size="small"
+                          >
+                            {endOptions.map(time => (
+                              <Select.Option key={time} value={time}>
+                                {time}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </TimeSelectWrapper>
+                        {!singleOccurrenceEdit && (
+                          <ActionButtons>
+                            <Tooltip title={formatMessage(memberMessages.ui.removeSlot)}>
+                              <Button
+                                size="small"
+                                icon={<MinusOutlined />}
+                                onClick={() => handleRemoveSlot(dayIndex, slot.id)}
+                              />
+                            </Tooltip>
+                            {isFirstSlot && (
+                              <Tooltip title={formatMessage(memberMessages.ui.copyToAll)}>
+                                <Button size="small" icon={<CopyOutlined />} onClick={() => handleCopyToAll(dayIndex)} />
+                              </Tooltip>
+                            )}
+                            {slotIndex === daySchedule.slots.length - 1 && (
+                              <Tooltip title={formatMessage(memberMessages.ui.addSlot)}>
+                                <Button size="small" icon={<PlusOutlined />} onClick={() => handleAddSlot(dayIndex)} />
+                              </Tooltip>
+                            )}
+                          </ActionButtons>
                         )}
-                        {slotIndex === daySchedule.slots.length - 1 && (
-                          <Tooltip title={formatMessage(memberMessages.ui.addSlot)}>
-                            <Button size="small" icon={<PlusOutlined />} onClick={() => handleAddSlot(dayIndex)} />
-                          </Tooltip>
-                        )}
-                      </ActionButtons>
-                    </SlotRow>
-                  )
-                })
-              )}
-            </SlotsContainer>
-          </DayRow>
-        ))}
+                      </SlotRow>
+                    )
+                  })
+                )}
+              </SlotsContainer>
+            </DayRow>
+          )
+        })}
       </ModalContent>
 
+      {!singleOccurrenceEdit && (
       <RepeatSection>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Checkbox checked={isWeeklyRepeat} onChange={e => setIsWeeklyRepeat(e.target.checked)}>
@@ -421,6 +437,7 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
           )}
         </Space>
       </RepeatSection>
+      )}
     </Modal>
   )
 }
