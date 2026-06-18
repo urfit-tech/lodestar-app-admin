@@ -546,10 +546,19 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
               event => !editingEventIdSet.has(event.extendedProps?.event_id),
             )
           : []
-        const existingEventRanges = expandOpenTimeEventsInRange(existingEvents, windowStart, windowEnd).map(event => ({
-          start: event.start,
-          end: event.end,
-        }))
+        const existingEventRanges = expandOpenTimeEventsInRange(existingEvents, windowStart, windowEnd)
+          .map(event => {
+            const start = moment(event.start)
+            const end = moment(event.end)
+
+            return start.isValid() && end.isValid()
+              ? {
+                  start: start.toDate(),
+                  end: end.toDate(),
+                }
+              : null
+          })
+          .filter((range): range is { start: Date; end: Date } => !!range)
 
         sanitizedSchedule.forEach(daySchedule => {
           daySchedule.slots.forEach(slot => {
@@ -616,6 +625,7 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
             }
 
             events.push(event)
+            existingEventRanges.push({ start: startDate, end: endDate })
           })
         })
 
