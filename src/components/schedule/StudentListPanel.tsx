@@ -9,7 +9,12 @@ import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
-import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
+import {
+  classifyOrderProduct,
+  getOrderCampusIds,
+  isOrderCampusMatched,
+  isOrderStatusValidForSchedule,
+} from './utils/orderNameFilter'
 
 const { Search } = Input
 
@@ -120,7 +125,6 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
 
     return orderLogs
       .map(order => {
-        const orderOptions = order.options as any
         const classProduct = order.order_products?.find((product: any) => {
           const rawOptions = product.options || {}
           const options = rawOptions.options || product.options?.options
@@ -149,14 +153,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const computedExpiry = expiryDateByOrderId[order.id]
         const hasScheduledEvent = Boolean(hasScheduledEventByOrderId[order.id])
         const expiresAt = hasScheduledEvent ? computedExpiry || null : null
-        const campusFromOptions =
-          orderOptions?.campus_id ||
-          orderOptions?.campusId ||
-          productMeta?.campus_id ||
-          productMeta?.campusId ||
-          productOptions?.campus_id ||
-          productOptions?.campusId ||
-          null
+        const campusIds = getOrderCampusIds(order, classProduct)
 
         if (!isOrderStatusValidForSchedule(order.status)) {
           return null
@@ -166,7 +163,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           return null
         }
 
-        if (campusId && campusFromOptions && campusFromOptions !== campusId) {
+        if (!isOrderCampusMatched(campusId, campusIds)) {
           return null
         }
 
@@ -184,7 +181,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           lastClassDate: lastClassDateByOrderId[order.id],
           availableMinutes: totalMinutes,
           expiresAt,
-          campusId: campusFromOptions,
+          campusId: campusIds[0] || null,
         } as StudentOrderRow
       })
       .filter(Boolean) as StudentOrderRow[]

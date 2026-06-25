@@ -66,7 +66,12 @@ import {
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
+import {
+  classifyOrderProduct,
+  getOrderCampusIds,
+  isOrderCampusMatched,
+  isOrderStatusValidForSchedule,
+} from '../utils/orderNameFilter'
 import { computeSemesterMaxEndDate } from '../utils/semesterDateRange'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
@@ -356,20 +361,12 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
         const productOptions = classProduct.options as any
         const productMeta = productOptions?.options || {}
-        const orderOptions = orderLog.options as any
         const totalSessions =
           productMeta?.total_sessions?.max || productOptions?.total_sessions?.max || productOptions?.quantity || 0
         const totalMinutes = totalSessions * 50
         const createdAt = new Date(orderLog.created_at)
         const expiredAt = orderLog.expired_at ? new Date(orderLog.expired_at) : null
-        const campusFromOptions =
-          orderOptions?.campus_id ||
-          orderOptions?.campusId ||
-          productMeta?.campus_id ||
-          productMeta?.campusId ||
-          productOptions?.campus_id ||
-          productOptions?.campusId ||
-          null
+        const campusIds = getOrderCampusIds(orderLog, classProduct)
         const expiryBySetting =
           scheduleType === 'semester'
             ? null
@@ -385,7 +382,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
-        if (effectiveCampusId && campusFromOptions && campusFromOptions !== effectiveCampusId) {
+        if (!isOrderCampusMatched(effectiveCampusId, campusIds)) {
           return null
         }
 
@@ -402,7 +399,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           expiresAt,
           lastClassDate: undefined,
           status: orderLog.status,
-          campus: campusFromOptions || effectiveCampusId || '',
+          campus: campusIds[0] || effectiveCampusId || '',
           materials: [],
         } as Order
       })

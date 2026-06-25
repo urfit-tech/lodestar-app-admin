@@ -1,4 +1,9 @@
-import { classifyOrderProduct, getOrderProductTitle } from '../orderNameFilter'
+import {
+  classifyOrderProduct,
+  getOrderCampusIds,
+  getOrderProductTitle,
+  isOrderCampusMatched,
+} from '../orderNameFilter'
 
 describe('classifyOrderProduct', () => {
   describe('product 必須是「學費」', () => {
@@ -128,6 +133,27 @@ describe('classifyOrderProduct', () => {
           },
         }),
       ).toBe('(A5版) 商用會話')
+    })
+
+    it('getOrderCampusIds 可讀取 order 與 product metadata 的校區 ID', () => {
+      const campusIds = getOrderCampusIds(
+        { options: { campus_id: 'campus-a' } },
+        {
+          options: {
+            permissionGroups: [{ id: 'campus-b' }],
+            options: { campusId: 'campus-c' },
+          },
+        },
+      )
+
+      expect(campusIds).toEqual(['campus-a', 'campus-c', 'campus-b'])
+    })
+
+    it('有指定班級校區時，訂單必須解析到相同校區才可顯示', () => {
+      expect(isOrderCampusMatched('campus-a', ['campus-a'])).toBe(true)
+      expect(isOrderCampusMatched('campus-a', ['campus-b'])).toBe(false)
+      expect(isOrderCampusMatched('campus-a', [])).toBe(false)
+      expect(isOrderCampusMatched(null, [])).toBe(true)
     })
   })
 })
