@@ -1,4 +1,3 @@
-import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import {
   Button,
@@ -8,7 +7,6 @@ import {
   Input,
   message,
   Modal,
-  Popconfirm,
   Select,
   Space,
   Spin,
@@ -66,12 +64,8 @@ import {
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import {
-  classifyOrderProduct,
-  getOrderCampusIds,
-  isOrderCampusMatched,
-  isOrderStatusValidForSchedule,
-} from '../utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
+import { resolveOrderCampusId } from '../utils/orderOptionResolver'
 import { computeSemesterMaxEndDate } from '../utils/semesterDateRange'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
@@ -333,6 +327,28 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return defaultExcludeDates.map(h => h.date)
   }, [defaultExcludeDates])
 
+  const usedMinutesByOrderId = useMemo(() => {
+    if (!classGroup) return {}
+
+    const map: Record<string, number> = {}
+    const classEvents = [
+      ...apiEvents,
+      ...localPendingEvents.filter(event => event.classId === classGroup.id && !event.apiEventId),
+    ]
+
+    classEvents
+      .filter(
+        event => event.status === 'pending' || event.status === 'pre-scheduled' || event.status === 'published',
+      )
+      .forEach(event => {
+        event.orderIds?.forEach(orderId => {
+          map[orderId] = (map[orderId] || 0) + (event.duration || 0)
+        })
+      })
+
+    return map
+  }, [classGroup, apiEvents, localPendingEvents])
+
   const classOrders = useMemo((): Order[] => {
     if (!classGroup) return []
     const now = new Date()
@@ -366,7 +382,9 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
         const totalMinutes = totalSessions * 50
         const createdAt = new Date(orderLog.created_at)
         const expiredAt = orderLog.expired_at ? new Date(orderLog.expired_at) : null
-        const campusIds = getOrderCampusIds(orderLog, classProduct)
+        const orderOptions = orderLog.options as any
+        const campusFromOptions = resolveOrderCampusId(orderOptions, productMeta)
+        const availableMinutes = Math.max(0, totalMinutes - (usedMinutesByOrderId[orderLog.id] || 0))
         const expiryBySetting =
           scheduleType === 'semester'
             ? null
@@ -382,7 +400,10 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
         if (expiredAt && expiredAt < now) return null
-        if (!isOrderCampusMatched(effectiveCampusId, campusIds)) {
+        if (effectiveCampusId && campusFromOptions !== effectiveCampusId) {
+          return null
+        }
+        if (availableMinutes <= 0) {
           return null
         }
 
@@ -393,18 +414,27 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           language: productMeta?.language || classGroup.language || '',
           type: scheduleType,
           totalMinutes,
-          usedMinutes: 0,
-          availableMinutes: totalMinutes,
+          usedMinutes: usedMinutesByOrderId[orderLog.id] || 0,
+          availableMinutes,
           createdAt,
           expiresAt,
           lastClassDate: undefined,
           status: orderLog.status,
-          campus: campusIds[0] || effectiveCampusId || '',
+          campus: campusFromOptions || effectiveCampusId || '',
           materials: [],
         } as Order
       })
       .filter(Boolean) as Order[]
-  }, [classGroup, orderLogs, classTypeLabel, calculateExpiryDate, scheduleCondition.startDate, scheduleType, effectiveCampusId])
+  }, [
+    classGroup,
+    orderLogs,
+    classTypeLabel,
+    calculateExpiryDate,
+    scheduleCondition.startDate,
+    scheduleType,
+    effectiveCampusId,
+    usedMinutesByOrderId,
+  ])
 
   const classStudentIds = useMemo(() => {
     return Array.from(new Set(classOrders.map(order => order.studentId)))
@@ -731,23 +761,6 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     if (scheduleType !== 'semester') return undefined
     return computeSemesterMaxEndDate(classOrders)
   }, [scheduleType, classOrders])
-
-  const groupBaseAvailableMinutes = useMemo(() => {
-    if (scheduleType !== 'group') return 0
-    return classOrders.reduce((sum, order) => sum + order.availableMinutes, 0)
-  }, [scheduleType, classOrders])
-
-  const groupUsedMinutes = useMemo(() => {
-    if (scheduleType !== 'group') return 0
-    return calendarEvents
-      .filter(event => event.status === 'pending' || event.status === 'pre-scheduled' || event.status === 'published')
-      .reduce((sum, event) => sum + (event.duration || 0), 0)
-  }, [scheduleType, calendarEvents])
-
-  const groupRemainingMinutes = useMemo(() => {
-    if (scheduleType !== 'group') return 0
-    return Math.max(0, groupBaseAvailableMinutes - groupUsedMinutes)
-  }, [scheduleType, groupBaseAvailableMinutes, groupUsedMinutes])
 
   const hasInitializedScheduleCondition = useRef(false)
   const hasInitializedTeachers = useRef(false)
@@ -1419,52 +1432,6 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     [getEventKey, validateCorrectionDrafts, formatMessage],
   )
 
-  const addCorrectionRow = useCallback(() => {
-    const newId = `correction-new-${Date.now()}-${Math.random()}`
-    const baseDraft: PublishEventDraft = {
-      id: newId,
-      scheduleType: scheduleType,
-      status: 'pending' as const,
-      classId: classGroupId,
-      studentIds: [],
-      orderIds: [],
-      teacherId: undefined,
-      classroomId: undefined,
-      classroomIds: [],
-      campus: classGroup?.campus || '',
-      language: (classGroup?.language || 'en') as Language,
-      date: new Date(),
-      startTime: '09:00',
-      endTime: '10:00',
-      duration: 60,
-      material: undefined,
-      needsOnlineRoom: undefined,
-      createdBy: '',
-      createdByEmail: '',
-      updatedAt: new Date(),
-      isExternal: false,
-    }
-    setPublishEventDrafts(prev => [...prev, baseDraft])
-    setCorrectionEventKeys(prev => [...prev, newId])
-  }, [scheduleType, classGroupId, classGroup])
-
-  const copyCorrectionRow = useCallback((event: PublishEventDraft) => {
-    const newId = `correction-copy-${Date.now()}-${Math.random()}`
-    const copied: PublishEventDraft = {
-      ...event,
-      id: newId,
-      apiEventId: undefined,
-    }
-    setPublishEventDrafts(prev => [...prev, copied])
-    setCorrectionEventKeys(prev => [...prev, newId])
-  }, [])
-
-  const removeCorrectionRow = useCallback((event: PublishEventDraft) => {
-    const eventKey = getEventKey(event)
-    setPublishEventDrafts(prev => prev.filter(e => getEventKey(e) !== eventKey))
-    setCorrectionEventKeys(prev => prev.filter(k => k !== eventKey))
-  }, [])
-
   useEffect(() => {
     if (!publishModalVisible || publishFlowStep !== 'correctionEdit') return
     const { errors } = validateCorrectionDrafts(publishEventDrafts, correctionEventKeys)
@@ -1963,35 +1930,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
           )
         },
       },
-      {
-        title: formatMessage(scheduleMessages.ScheduleTable.actions),
-        key: 'actions',
-        width: 120,
-        fixed: 'right' as const,
-        render: (_, group) => {
-          return (
-            <Space size={4}>
-              <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.addRow)}>
-                <Button icon={<PlusOutlined />} size="small" onClick={addCorrectionRow} />
-              </Tooltip>
-              <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.copyRow)}>
-                <Button icon={<CopyOutlined />} size="small" onClick={() => copyCorrectionRow(group.representative)} />
-              </Tooltip>
-              <Popconfirm
-                title={formatMessage(scheduleMessages.ArrangeModal.removeRow) + '?'}
-                onConfirm={() => removeCorrectionRow(group.representative)}
-                okText={formatMessage(scheduleMessages['*'].confirm)}
-                cancelText={formatMessage(scheduleMessages['*'].cancel)}
-              >
-                <Tooltip title={formatMessage(scheduleMessages.ArrangeModal.removeRow)}>
-                  <Button icon={<DeleteOutlined />} size="small" danger />
-                </Tooltip>
-              </Popconfirm>
-            </Space>
-          )
-        },
-      },
-    ].filter(column => scheduleType !== 'semester' || column.key !== 'actions'),
+    ],
     [
       formatMessage,
       correctionErrors,
@@ -1999,10 +1938,6 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
       updateCorrectionGroup,
       campusClassrooms,
       allTeachers,
-      addCorrectionRow,
-      copyCorrectionRow,
-      removeCorrectionRow,
-      scheduleType,
     ],
   )
 
@@ -2111,7 +2046,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             onConditionChange={handleConditionChange}
             hideMinutesOption={scheduleType !== 'group'}
             expiryDateByLanguage={expiryDateByLanguage}
-            minutesLimitOverride={scheduleType === 'group' ? groupRemainingMinutes : undefined}
+            minutesLimitMode={scheduleType === 'group' ? 'minPerStudent' : 'sum'}
             disabled={false}
             maxEndDateOverride={semesterMaxEndDate}
           />

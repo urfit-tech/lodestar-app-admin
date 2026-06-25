@@ -7,12 +7,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAddOrderToClassGroup, useAvailableOrdersForClass } from '../../hooks/scheduleManagement'
 import { ScheduleType } from '../../types/schedule'
-import {
-  classifyOrderProduct,
-  getOrderCampusIds,
-  isOrderCampusMatched,
-  isOrderStatusValidForSchedule,
-} from './utils/orderNameFilter'
+import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
+import { resolveOrderCampusId } from './utils/orderOptionResolver'
 
 const SearchWrapper = styled.div`
   margin-bottom: 16px;
@@ -36,7 +32,6 @@ interface OrderForDisplay {
   status?: string
   expiredAt?: string | null
   campusId?: string | null
-  campusIds?: string[]
 }
 
 interface AddOrdersToClassModalProps {
@@ -99,7 +94,8 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
 
         const productOptions = matchedProduct?.options as any
         const productMeta = productOptions?.options || {}
-        const campusIds = getOrderCampusIds(order, matchedProduct)
+        const orderOptions = order.options as any
+        const campusFromOptions = resolveOrderCampusId(orderOptions, productMeta)
 
         return {
           orderId: order.id,
@@ -113,15 +109,14 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
           createdAt: order.created_at,
           status: order.status,
           expiredAt: order.expired_at,
-          campusId: campusIds[0] || null,
-          campusIds,
+          campusId: campusFromOptions,
         }
       })
       .filter((order): order is OrderForDisplay => Boolean(order))
       .filter(order => {
         if (!isOrderStatusValidForSchedule(order.status)) return false
         if (order.expiredAt && new Date(order.expiredAt) < now) return false
-        if (!isOrderCampusMatched(campusId, order.campusIds || [])) return false
+        if (campusId && order.campusId !== campusId) return false
         return true
       })
   }, [orders, campusId, scheduleType, language])
