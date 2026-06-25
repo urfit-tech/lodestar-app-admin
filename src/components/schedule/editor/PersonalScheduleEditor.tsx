@@ -45,6 +45,8 @@ import { useClassrooms } from '../../../hooks/classroom'
 import { useMemberForSchedule } from '../../../hooks/schedule'
 import {
   checkScheduleConflict,
+  STUDENT_EVENT_COLORS,
+  StudentOpenTimeEvent,
   getScheduleValidityRuleForClassCount,
   useDeleteScheduleTemplate,
   useHolidays,
@@ -576,6 +578,63 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const { templates, refetch: refetchTemplates } = useScheduleTemplates(selectedStudent?.id, currentLanguage)
   const { saveTemplate } = useSaveScheduleTemplate()
   const { deleteTemplate } = useDeleteScheduleTemplate()
+
+  const studentCalendarLayerEvents = useMemo<StudentOpenTimeEvent[]>(() => {
+    if (!selectedStudent?.id || templates.length === 0) {
+      return studentOpenTimeEvents
+    }
+
+    const rangeStart = moment(scheduleCondition.startDate).startOf('day')
+    const rangeEnd = scheduleCondition.endDate
+      ? moment(scheduleCondition.endDate).endOf('day')
+      : rangeStart.clone().add(180, 'day').endOf('day')
+    const templateEvents: StudentOpenTimeEvent[] = []
+
+    templates.forEach(template => {
+      template.courseRows.forEach((row, rowIndex) => {
+        const [hourText, minuteText] = row.startTime.split(':')
+        const hour = parseInt(hourText, 10)
+        const minute = parseInt(minuteText, 10)
+        if (Number.isNaN(hour) || Number.isNaN(minute)) return
+
+        const weekday = row.weekday === 0 ? 7 : row.weekday
+        let currentDate = rangeStart.clone().isoWeekday(weekday)
+        if (currentDate.isBefore(rangeStart, 'day')) {
+          currentDate = currentDate.add(1, 'week')
+        }
+
+        while (currentDate.isSameOrBefore(rangeEnd, 'day')) {
+          const start = currentDate.clone().hour(hour).minute(minute).second(0).millisecond(0)
+          const end = start.clone().add(row.duration || 50, 'minutes')
+          templateEvents.push({
+            id: `student-template-${template.id}-${rowIndex}-${start.format('YYYYMMDDHHmm')}`,
+            studentId: selectedStudent.id,
+            start: start.toDate(),
+            end: end.toDate(),
+            title: '固定課表',
+            backgroundColor: STUDENT_EVENT_COLORS.template,
+            borderColor: STUDENT_EVENT_COLORS.template,
+            display: 'background',
+            extendedProps: {
+              role: 'template',
+              status: 'template',
+              originalEventId: `template-${template.id}-${rowIndex}`,
+              originalEvent: {} as GeneralEventApi,
+            },
+          })
+          currentDate = currentDate.add(1, 'week')
+        }
+      })
+    })
+
+    return [...studentOpenTimeEvents, ...templateEvents]
+  }, [
+    scheduleCondition.endDate,
+    scheduleCondition.startDate,
+    selectedStudent,
+    studentOpenTimeEvents,
+    templates,
+  ])
 
   const selectedOrdersForLimits = useMemo(() => {
     return selectedOrders.map(order => {
@@ -1970,7 +2029,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
             events={calendarEvents}
             selectedTeachers={selectedTeachers}
             teacherOpenTimeEvents={teacherTimelineEvents}
-            studentOpenTimeEvents={studentOpenTimeEvents}
+            studentOpenTimeEvents={studentCalendarLayerEvents}
             studentName={member?.name || selectedStudent?.name}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
