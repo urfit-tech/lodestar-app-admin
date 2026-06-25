@@ -372,7 +372,7 @@ const ClassScheduleListPage: React.FC<ClassScheduleListPageProps> = ({ scheduleT
         pathname: `/class-schedule/${scheduleType}/${classGroup.id}`,
         state: {
           scheduleFocus: {
-            date: summary?.dateRange.startDate || undefined,
+            date: summary?.dateRange.startDate?.toISOString(),
             startTime: summary?.timeSlots[0]?.startTime,
           },
         },

@@ -219,6 +219,8 @@ const normalizeScrollTime = (time?: string) => {
   return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
+const FOCUS_SCROLL_RETRY_DELAYS = [0, 50, 150, 300]
+
 const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   scheduleType,
   events,
@@ -237,6 +239,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const calendarRef = useRef<FullCalendar>(null)
+  const focusScrollTimerIds = useRef<number[]>([])
   const [currentDate, setCurrentDate] = useState(viewDate || new Date())
   const [visibleTeacherIds, setVisibleTeacherIds] = useState<Set<string>>(new Set())
   const [teacherStatusVisibility, setTeacherStatusVisibility] = useState<TeacherStatusVisibility>({
@@ -399,20 +402,41 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     scheduleEventIdSet,
   ])
 
+  const clearFocusScrollTimers = useCallback(() => {
+    focusScrollTimerIds.current.forEach(timerId => window.clearTimeout(timerId))
+    focusScrollTimerIds.current = []
+  }, [])
+
+  const scrollToFocusTime = useCallback(() => {
+    const calendarApi = calendarRef.current?.getApi()
+    if (!calendarApi) return
+
+    clearFocusScrollTimers()
+    const scrollTime = normalizeScrollTime(focusTime)
+    FOCUS_SCROLL_RETRY_DELAYS.forEach(delay => {
+      const timerId = window.setTimeout(() => {
+        calendarApi.scrollToTime(scrollTime)
+      }, delay)
+      focusScrollTimerIds.current.push(timerId)
+    })
+  }, [clearFocusScrollTimers, focusTime])
+
+  useEffect(() => {
+    return clearFocusScrollTimers
+  }, [clearFocusScrollTimers])
+
   useEffect(() => {
     if (!viewDate) return
     const calendarApi = calendarRef.current?.getApi()
     if (calendarApi) {
       calendarApi.gotoDate(viewDate)
       setCurrentDate(viewDate)
-      window.setTimeout(() => {
-        calendarApi.scrollToTime(normalizeScrollTime(focusTime))
-      }, 0)
+      scrollToFocusTime()
       const startOfWeek = dayjs(viewDate).startOf('week').add(1, 'day').toDate()
       const endOfWeek = dayjs(viewDate).endOf('week').add(1, 'day').toDate()
       onWeekChange?.(startOfWeek, endOfWeek)
     }
-  }, [viewDate, focusTime, onWeekChange])
+  }, [viewDate, scrollToFocusTime, onWeekChange])
 
   // Listen for container/window resize to update calendar size
   useEffect(() => {
@@ -777,6 +801,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventContent={renderEventContent}
+        datesSet={scrollToFocusTime}
         height={700}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric' }}
         dayHeaderContent={arg => {

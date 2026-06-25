@@ -45,6 +45,8 @@ import { useClassrooms } from '../../../hooks/classroom'
 import { useMemberForSchedule } from '../../../hooks/schedule'
 import {
   checkScheduleConflict,
+  STUDENT_EVENT_COLORS,
+  StudentOpenTimeEvent,
   getScheduleValidityRuleForClassCount,
   useDeleteScheduleTemplate,
   useHolidays,
@@ -123,7 +125,7 @@ interface LocationState {
     teacherId?: string
     language: string
     campus: string
-    date?: Date
+    date?: Date | string
     startTime?: string
   }
 }
@@ -205,6 +207,12 @@ const INSERT_SCHEDULE_NOTIFICATIONS = gql`
   }
 `
 
+const parseScheduleFocusDate = (date?: Date | string): Date | undefined => {
+  if (!date) return undefined
+  const parsedDate = date instanceof Date ? date : new Date(date)
+  return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
+}
+
 const PersonalScheduleEditorInner: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -251,6 +259,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const [correctionEventKeys, setCorrectionEventKeys] = useState<string[]>([])
   const [correctionErrors, setCorrectionErrors] = useState<Record<string, CorrectionField[]>>({})
   const [insertScheduleNotifications] = useMutation(INSERT_SCHEDULE_NOTIFICATIONS)
+  const [scheduleFocus, setScheduleFocus] = useState<{ date?: Date; startTime?: string }>()
 
   // Load member data when memberId changes
   useEffect(() => {
@@ -331,13 +340,20 @@ const PersonalScheduleEditorInner: React.FC = () => {
   // Get all teachers for pre-selecting from event data
   const { teachers: allTeachers } = useTeachersFromMembers()
 
-  // Store event data from navigation state and clear location state
+  // Store event data from navigation state
   useEffect(() => {
-    if (location.state?.eventToEdit) {
-      store.setState({ eventToEdit: location.state.eventToEdit })
-      history.replace(location.pathname, {})
+    const eventToEdit = location.state?.eventToEdit
+    if (!eventToEdit) return
+
+    const focusDate = parseScheduleFocusDate(eventToEdit.date)
+    const normalizedEventToEdit = {
+      ...eventToEdit,
+      date: focusDate,
     }
-  }, [location.state, history, location.pathname, store])
+
+    store.setState({ eventToEdit: normalizedEventToEdit })
+    setScheduleFocus({ date: focusDate, startTime: eventToEdit.startTime })
+  }, [location.state, store])
 
   const hasInitializedScheduleCondition = useRef(false)
 
@@ -345,12 +361,17 @@ const PersonalScheduleEditorInner: React.FC = () => {
   useEffect(() => {
     if (!eventToEdit || hasInitializedScheduleCondition.current) return
     if (eventToEdit.date) {
-      const startDate = eventToEdit.date
+      const startDate = parseScheduleFocusDate(eventToEdit.date)
+      if (!startDate) {
+        hasInitializedScheduleCondition.current = true
+        return
+      }
       store.setState(prev => ({
         scheduleCondition: {
           ...prev.scheduleCondition,
           startDate,
         },
+        selectedDate: startDate,
       }))
     }
     hasInitializedScheduleCondition.current = true
@@ -557,6 +578,63 @@ const PersonalScheduleEditorInner: React.FC = () => {
   const { templates, refetch: refetchTemplates } = useScheduleTemplates(selectedStudent?.id, currentLanguage)
   const { saveTemplate } = useSaveScheduleTemplate()
   const { deleteTemplate } = useDeleteScheduleTemplate()
+
+  const studentCalendarLayerEvents = useMemo<StudentOpenTimeEvent[]>(() => {
+    if (!selectedStudent?.id || templates.length === 0) {
+      return studentOpenTimeEvents
+    }
+
+    const rangeStart = moment(scheduleCondition.startDate).startOf('day')
+    const rangeEnd = scheduleCondition.endDate
+      ? moment(scheduleCondition.endDate).endOf('day')
+      : rangeStart.clone().add(180, 'day').endOf('day')
+    const templateEvents: StudentOpenTimeEvent[] = []
+
+    templates.forEach(template => {
+      template.courseRows.forEach((row, rowIndex) => {
+        const [hourText, minuteText] = row.startTime.split(':')
+        const hour = parseInt(hourText, 10)
+        const minute = parseInt(minuteText, 10)
+        if (Number.isNaN(hour) || Number.isNaN(minute)) return
+
+        const weekday = row.weekday === 0 ? 7 : row.weekday
+        let currentDate = rangeStart.clone().isoWeekday(weekday)
+        if (currentDate.isBefore(rangeStart, 'day')) {
+          currentDate = currentDate.add(1, 'week')
+        }
+
+        while (currentDate.isSameOrBefore(rangeEnd, 'day')) {
+          const start = currentDate.clone().hour(hour).minute(minute).second(0).millisecond(0)
+          const end = start.clone().add(row.duration || 50, 'minutes')
+          templateEvents.push({
+            id: `student-template-${template.id}-${rowIndex}-${start.format('YYYYMMDDHHmm')}`,
+            studentId: selectedStudent.id,
+            start: start.toDate(),
+            end: end.toDate(),
+            title: '固定課表',
+            backgroundColor: STUDENT_EVENT_COLORS.template,
+            borderColor: STUDENT_EVENT_COLORS.template,
+            display: 'background',
+            extendedProps: {
+              role: 'template',
+              status: 'template',
+              originalEventId: `template-${template.id}-${rowIndex}`,
+              originalEvent: {} as GeneralEventApi,
+            },
+          })
+          currentDate = currentDate.add(1, 'week')
+        }
+      })
+    })
+
+    return [...studentOpenTimeEvents, ...templateEvents]
+  }, [
+    scheduleCondition.endDate,
+    scheduleCondition.startDate,
+    selectedStudent,
+    studentOpenTimeEvents,
+    templates,
+  ])
 
   const selectedOrdersForLimits = useMemo(() => {
     return selectedOrders.map(order => {
@@ -828,6 +906,9 @@ const PersonalScheduleEditorInner: React.FC = () => {
 
   const handleConditionChange = useCallback(
     (updates: Partial<ScheduleCondition>) => {
+      if (updates.startDate) {
+        setScheduleFocus(undefined)
+      }
       store.setState(prev => ({
         scheduleCondition: {
           ...prev.scheduleCondition,
@@ -1948,12 +2029,12 @@ const PersonalScheduleEditorInner: React.FC = () => {
             events={calendarEvents}
             selectedTeachers={selectedTeachers}
             teacherOpenTimeEvents={teacherTimelineEvents}
-            studentOpenTimeEvents={studentOpenTimeEvents}
+            studentOpenTimeEvents={studentCalendarLayerEvents}
             studentName={member?.name || selectedStudent?.name}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
-            viewDate={scheduleCondition.startDate}
-            focusTime={eventToEdit?.startTime}
+            viewDate={scheduleFocus?.date || scheduleCondition.startDate}
+            focusTime={scheduleFocus?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}
           />

@@ -301,8 +301,7 @@ const OpenTimeSettingsModal: React.FC<OpenTimeSettingsModalProps> = ({
       },
       isEditMode ? existingEventIds : undefined,
     )
-    resetState()
-  }, [schedule, singleOccurrenceEdit, isWeeklyRepeat, repeatUntil, onSave, resetState, isEditMode, existingEventIds])
+  }, [schedule, singleOccurrenceEdit, isWeeklyRepeat, repeatUntil, onSave, isEditMode, existingEventIds])
 
   // 處理關閉
   const handleClose = useCallback(() => {

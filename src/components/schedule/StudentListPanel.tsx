@@ -10,6 +10,7 @@ import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
 import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
+import { resolveOrderCampusId } from './utils/orderOptionResolver'
 
 const { Search } = Input
 
@@ -73,7 +74,25 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
   const { orders: orderLogs, loading, refetch } = useOrdersByIds(orderIds)
   const { removeOrderFromClassGroup, loading: removeLoading } = useRemoveOrderFromClassGroup()
 
+  const scheduleUsageEvents = useMemo(
+    () =>
+      events.filter(
+        event => event.status === 'pending' || event.status === 'pre-scheduled' || event.status === 'published',
+      ),
+    [events],
+  )
+
   const scheduledEvents = useMemo(() => events.filter(event => event.status !== 'pending'), [events])
+
+  const usedMinutesByOrderId = useMemo(() => {
+    const map: Record<string, number> = {}
+    scheduleUsageEvents.forEach(event => {
+      event.orderIds?.forEach(orderId => {
+        map[orderId] = (map[orderId] || 0) + (event.duration || 0)
+      })
+    })
+    return map
+  }, [scheduleUsageEvents])
 
   const lastClassDateByOrderId = useMemo(() => {
     const map: Record<string, Date> = {}
@@ -120,7 +139,6 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
 
     return orderLogs
       .map(order => {
-        const orderOptions = order.options as any
         const classProduct = order.order_products?.find((product: any) => {
           const rawOptions = product.options || {}
           const options = rawOptions.options || product.options?.options
@@ -149,14 +167,9 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const computedExpiry = expiryDateByOrderId[order.id]
         const hasScheduledEvent = Boolean(hasScheduledEventByOrderId[order.id])
         const expiresAt = hasScheduledEvent ? computedExpiry || null : null
-        const campusFromOptions =
-          orderOptions?.campus_id ||
-          orderOptions?.campusId ||
-          productMeta?.campus_id ||
-          productMeta?.campusId ||
-          productOptions?.campus_id ||
-          productOptions?.campusId ||
-          null
+        const orderOptions = order.options as any
+        const campusFromOptions = resolveOrderCampusId(orderOptions, productMeta)
+        const availableMinutes = Math.max(0, totalMinutes - (usedMinutesByOrderId[order.id] || 0))
 
         if (!isOrderStatusValidForSchedule(order.status)) {
           return null
@@ -166,7 +179,11 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           return null
         }
 
-        if (campusId && campusFromOptions && campusFromOptions !== campusId) {
+        if (campusId && campusFromOptions !== campusId) {
+          return null
+        }
+
+        if (availableMinutes <= 0) {
           return null
         }
 
@@ -182,7 +199,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           language: productMeta?.language || '',
           createdAt: order.created_at,
           lastClassDate: lastClassDateByOrderId[order.id],
-          availableMinutes: totalMinutes,
+          availableMinutes,
           expiresAt,
           campusId: campusFromOptions,
         } as StudentOrderRow
@@ -196,6 +213,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
     expiryDateByOrderId,
     lastClassDateByOrderId,
     hasScheduledEventByOrderId,
+    usedMinutesByOrderId,
   ])
 
   // Apply search filter

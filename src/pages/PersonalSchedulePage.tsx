@@ -56,7 +56,7 @@ const PersonalSchedulePage: React.FC = () => {
               teacherId: event.teacherId,
               language: event.language,
               campus: event.campus,
-              date: event.date,
+              date: event.date?.toISOString(),
               startTime: event.startTime,
             },
           },
