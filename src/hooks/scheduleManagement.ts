@@ -672,22 +672,10 @@ export const useAvailableOrdersForClass = (
 ) => {
   const { id: appId } = useApp()
 
-  // First get all assigned order IDs
-  const { data: assignedData } = useQuery<
-    hasura.GetAssignedOrderIds,
-    hasura.GetAssignedOrderIdsVariables
-  >(GET_ASSIGNED_ORDER_IDS, {
-    fetchPolicy: 'cache-and-network',
-  })
-
-  // Combine excluded IDs with already assigned IDs
-  const allExcludedIds = useMemo(() => {
-    const assignedIds = assignedData?.class_group_order?.map(o => o.order_id) || []
-    const combined = [...excludeOrderIds, ...assignedIds]
-    return combined.filter((value, index, self) => self.indexOf(value) === index)
-  }, [assignedData, excludeOrderIds])
-
-  const safeExcludedIds = allExcludedIds.length > 0 ? allExcludedIds : ['']
+  const safeExcludedIds = useMemo(
+    () => (excludeOrderIds.length > 0 ? Array.from(new Set(excludeOrderIds)) : ['']),
+    [excludeOrderIds],
+  )
 
   // Single query: fetch all tuition orders, classify on frontend
   const { data, loading, error, refetch } = useQuery(GET_AVAILABLE_TUITION_ORDERS, {
@@ -1706,7 +1694,7 @@ export const useClassGroupEvents = (classId: string | undefined) => {
           startTime: moment(startDate).format('HH:mm'),
           endTime: moment(endDate).format('HH:mm'),
           duration: metadata.duration || Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60)),
-          material: metadata.material || event.title || '',
+          material: metadata.material || '',
           needsOnlineRoom: typeof metadata.needsOnlineRoom === 'boolean' ? metadata.needsOnlineRoom : false,
           createdBy: metadata.createdByName || metadata.createdBy || '',
           createdByEmail: metadata.createdByEmail || '',

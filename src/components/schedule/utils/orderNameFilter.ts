@@ -33,6 +33,10 @@ type OrderProductLike = {
   options?: Record<string, any> | null
 }
 
+type OrderLogLike = {
+  options?: Record<string, any> | null
+}
+
 export const getOrderProductRawOptions = (product?: OrderProductLike | null): Record<string, any> => {
   return ((product?.options || {}) as Record<string, any>) || {}
 }
@@ -46,6 +50,79 @@ export const getOrderProductTitle = (product?: OrderProductLike | null): string 
   const rawOptions = getOrderProductRawOptions(product)
   const optionMeta = getOrderProductOptionMeta(product)
   return normalize(optionMeta.title) || normalize(rawOptions.title) || normalize(product?.name)
+}
+
+const normalizeIdValues = (value: any): string[] => {
+  if (value === null || value === undefined) return []
+  if (Array.isArray(value)) {
+    return value.flatMap(normalizeIdValues)
+  }
+  if (typeof value === 'object') {
+    return normalizeIdValues(
+      value.id ||
+        value.value ||
+        value.campus_id ||
+        value.campusId ||
+        value.permission_group_id ||
+        value.permissionGroupId,
+    )
+  }
+
+  const normalized = normalize(String(value))
+  return normalized ? [normalized] : []
+}
+
+const unique = (values: string[]): string[] => {
+  return values.filter((value, index, self) => self.indexOf(value) === index)
+}
+
+export const getOrderCampusIds = (
+  order?: OrderLogLike | null,
+  product?: OrderProductLike | null,
+): string[] => {
+  const orderOptions = ((order?.options || {}) as Record<string, any>) || {}
+  const rawOptions = getOrderProductRawOptions(product)
+  const optionMeta = getOrderProductOptionMeta(product)
+
+  return unique(
+    [
+      orderOptions.campus_id,
+      orderOptions.campusId,
+      orderOptions.campus_ids,
+      orderOptions.campusIds,
+      orderOptions.permission_group_id,
+      orderOptions.permissionGroupId,
+      orderOptions.permission_group_ids,
+      orderOptions.permissionGroupIds,
+      orderOptions.permission_groups,
+      orderOptions.permissionGroups,
+      optionMeta.campus_id,
+      optionMeta.campusId,
+      optionMeta.campus_ids,
+      optionMeta.campusIds,
+      optionMeta.permission_group_id,
+      optionMeta.permissionGroupId,
+      optionMeta.permission_group_ids,
+      optionMeta.permissionGroupIds,
+      optionMeta.permission_groups,
+      optionMeta.permissionGroups,
+      rawOptions.campus_id,
+      rawOptions.campusId,
+      rawOptions.campus_ids,
+      rawOptions.campusIds,
+      rawOptions.permission_group_id,
+      rawOptions.permissionGroupId,
+      rawOptions.permission_group_ids,
+      rawOptions.permissionGroupIds,
+      rawOptions.permission_groups,
+      rawOptions.permissionGroups,
+    ].flatMap(normalizeIdValues),
+  )
+}
+
+export const isOrderCampusMatched = (targetCampusId?: string | null, orderCampusIds: string[] = []): boolean => {
+  if (!targetCampusId) return true
+  return orderCampusIds.includes(targetCampusId)
 }
 
 /**

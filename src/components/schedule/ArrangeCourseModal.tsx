@@ -187,20 +187,19 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
   const columnSpans = useMemo(
     () =>
       showClassroom
-        ? { week: 3, duration: 3, start: 3, material: 4, teacher: 4, classroom: 3, online: 2, actions: 2 }
+        ? { week: 3, duration: 3, start: 3, material: 3, teacher: 4, classroom: 4, online: 2, actions: 2 }
         : { week: 3, duration: 3, start: 3, material: 5, teacher: 5, online: 3, actions: 2 },
     [showClassroom],
   )
 
-  const normalizeClassroomSelection = useCallback((values: string[]) => {
-    if (values.includes(CLASSROOM_EXTERNAL)) {
+  const normalizeClassroomSelection = useCallback((value?: string) => {
+    if (!value || value === CLASSROOM_UNASSIGNED) {
+      return [CLASSROOM_UNASSIGNED]
+    }
+    if (value === CLASSROOM_EXTERNAL) {
       return [CLASSROOM_EXTERNAL]
     }
-    const withoutUnassigned = values.filter(v => v !== CLASSROOM_UNASSIGNED)
-    if (withoutUnassigned.length > 0) {
-      return withoutUnassigned
-    }
-    return [CLASSROOM_UNASSIGNED]
+    return [value]
   }, [])
 
   const getClassroomState = useCallback((row: CourseRow) => {
@@ -250,6 +249,69 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
     const campusIds = new Set(filteredClassrooms.map(c => c.campusId).filter(Boolean))
     return campusIds.size > 1
   }, [filteredClassrooms])
+
+  const getClassroomLabel = useCallback(
+    (classroom: Classroom): string => {
+      const prefix = showCampusPrefix && classroom.campusName ? `[${classroom.campusName}] ` : ''
+      return `${prefix}${classroom.name} (${classroom.capacity}人)`
+    },
+    [showCampusPrefix],
+  )
+
+  const blockingClassroomEvents = useMemo(() => {
+    return existingScheduleEvents.filter(event => event.status === 'pre-scheduled' || event.status === 'published')
+  }, [existingScheduleEvents])
+
+  const getDateForRow = useCallback(
+    (row: CourseRow): Moment => {
+      const referenceDate = scheduleCondition?.startDate ? moment(scheduleCondition.startDate) : moment(selectedDate)
+      const weekday = row.weekday === 0 ? 7 : row.weekday
+      let dateForRow = referenceDate.clone().isoWeekday(weekday)
+      if (dateForRow.isBefore(referenceDate, 'day')) {
+        dateForRow = dateForRow.clone().add(1, 'week')
+      }
+      return dateForRow
+    },
+    [scheduleCondition?.startDate, selectedDate],
+  )
+
+  const getAvailableClassroomsForRow = useCallback(
+    (row: CourseRow): Classroom[] => {
+      const { assignedIds } = getClassroomState(row)
+      const dateForRow = getDateForRow(row)
+      const endTime = moment(row.startTime).add(row.duration, 'minutes')
+
+      return filteredClassrooms.filter(classroom => {
+        if (assignedIds.includes(classroom.id)) {
+          return true
+        }
+
+        const conflict = checkScheduleConflict(
+          {
+            date: dateForRow.toDate(),
+            startTime: row.startTime.format('HH:mm'),
+            endTime: endTime.format('HH:mm'),
+            classroomId: classroom.id,
+            excludeEventId: existingEvent?.id,
+            excludeApiEventId: existingEvent?.apiEventId,
+          },
+          blockingClassroomEvents,
+          undefined,
+          filteredClassrooms,
+        )
+
+        return !conflict.hasRoomConflict
+      })
+    },
+    [
+      blockingClassroomEvents,
+      existingEvent?.apiEventId,
+      existingEvent?.id,
+      filteredClassrooms,
+      getClassroomState,
+      getDateForRow,
+    ],
+  )
 
   // Resolve campus for each generated event.
   // Priority: selected row teacher campus -> existing event campus (edit mode) -> modal campus prop.
@@ -317,7 +379,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           draftRows.map(row => ({
             ...row,
             startTime: moment(row.startTime), // Restore Moment object
-            classroomIds: row.classroomIds?.length ? row.classroomIds : [CLASSROOM_UNASSIGNED],
+            classroomIds: normalizeClassroomSelection(row.classroomIds?.[0]),
           })),
         )
         return
@@ -339,11 +401,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
             teacherId: existingEvent.teacherId,
             classroomIds: existingEvent.isExternal
               ? [CLASSROOM_EXTERNAL]
-              : existingEvent.classroomIds?.length
-              ? existingEvent.classroomIds
-              : existingEvent.classroomId
-              ? [existingEvent.classroomId]
-              : [CLASSROOM_UNASSIGNED],
+              : normalizeClassroomSelection(existingEvent.classroomIds?.[0] || existingEvent.classroomId),
             needsOnlineRoom: existingEvent.needsOnlineRoom,
           },
         ])
@@ -354,7 +412,7 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       setErrors({})
       setMaterialSearch('')
     }
-  }, [visible, selectedDate, existingEvent, selectedTeachers, draftRows, createDefaultRow])
+  }, [visible, selectedDate, existingEvent, selectedTeachers, draftRows, createDefaultRow, normalizeClassroomSelection])
 
   const updateRow = useCallback((id: string, updates: Partial<CourseRow>) => {
     setRows(prev => prev.map(row => (row.id === id ? { ...row, ...updates } : row)))
@@ -386,11 +444,11 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
       materialType: row.materialType,
       customMaterial: row.customMaterial,
       teacherId: row.teacherId,
-      classroomIds: row.classroomIds,
+      classroomIds: normalizeClassroomSelection(row.classroomIds?.[0]),
       needsOnlineRoom: row.needsOnlineRoom,
     }
     setRows(prev => [...prev, newRow])
-  }, [])
+  }, [normalizeClassroomSelection])
 
   const removeRow = useCallback((id: string) => {
     setRows(prev => prev.filter(row => row.id !== id))
@@ -1201,6 +1259,17 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
           const rowErrors = errors[row.id] || []
           const hasError = rowErrors.length > 0
           const endTime = moment(row.startTime).add(row.duration, 'minutes')
+          const availableClassrooms = showClassroom ? getAvailableClassroomsForRow(row) : []
+          const selectedClassroomId = row.classroomIds?.[0] || CLASSROOM_UNASSIGNED
+          const selectedClassroom = filteredClassrooms.find(classroom => classroom.id === selectedClassroomId)
+          const selectedClassroomLabel =
+            selectedClassroomId === CLASSROOM_EXTERNAL
+              ? formatMessage(scheduleMessages.ArrangeModal.classroomExternal)
+              : selectedClassroomId === CLASSROOM_UNASSIGNED
+              ? formatMessage(scheduleMessages.ArrangeModal.classroomUndecided)
+              : selectedClassroom
+              ? getClassroomLabel(selectedClassroom)
+              : ''
 
           return (
             <StyledFormRow key={row.id} style={{ backgroundColor: hasError ? '#fff2f0' : 'transparent' }}>
@@ -1331,34 +1400,55 @@ const ArrangeCourseModal: React.FC<ArrangeCourseModalProps> = ({
                       title={
                         rowErrors.includes('roomConflict')
                           ? formatMessage(scheduleMessages.ArrangeModal.roomConflict)
-                          : ''
+                          : selectedClassroomLabel
                       }
-                      color="red"
+                      color={rowErrors.includes('roomConflict') ? 'red' : undefined}
                     >
                       <Select
-                        mode="multiple"
-                        value={row.classroomIds?.length ? row.classroomIds : [CLASSROOM_UNASSIGNED]}
-                        onChange={values => {
-                          updateRow(row.id, { classroomIds: normalizeClassroomSelection(values as string[]) })
+                        value={selectedClassroomId}
+                        onChange={value => {
+                          updateRow(row.id, { classroomIds: normalizeClassroomSelection(value as string) })
                         }}
                         size="small"
                         style={{ width: '100%' }}
                         className={rowErrors.includes('roomConflict') ? 'ant-select-error' : ''}
                         placeholder={formatMessage(scheduleMessages.ArrangeModal.selectClassroom)}
+                        showSearch
+                        optionFilterProp="label"
+                        optionLabelProp="label"
+                        dropdownMatchSelectWidth={false}
+                        dropdownStyle={{ minWidth: 280, maxWidth: 520 }}
                       >
-                        <Select.Option value={CLASSROOM_UNASSIGNED}>
+                        <Select.Option
+                          value={CLASSROOM_UNASSIGNED}
+                          label={formatMessage(scheduleMessages.ArrangeModal.classroomUndecided)}
+                          title={formatMessage(scheduleMessages.ArrangeModal.classroomUndecided)}
+                        >
                           {formatMessage(scheduleMessages.ArrangeModal.classroomUndecided)}
                         </Select.Option>
-                        <Select.Option value={CLASSROOM_EXTERNAL}>
+                        <Select.Option
+                          value={CLASSROOM_EXTERNAL}
+                          label={formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
+                          title={formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
+                        >
                           {formatMessage(scheduleMessages.ArrangeModal.classroomExternal)}
                         </Select.Option>
-                        {/* 根據訂單校區過濾教室，多校區時顯示前綴 */}
-                        {filteredClassrooms.map(c => (
-                          <Select.Option key={c.id} value={c.id}>
-                            {showCampusPrefix && c.campusName ? `[${c.campusName}] ` : ''}
-                            {c.name} ({c.capacity}人)
-                          </Select.Option>
-                        ))}
+                        {availableClassrooms.map(c => {
+                          const label = getClassroomLabel(c)
+                          return (
+                            <Select.Option key={c.id} value={c.id} label={label} title={label}>
+                              {label}
+                            </Select.Option>
+                          )
+                        })}
+                        {selectedClassroomId !== CLASSROOM_UNASSIGNED &&
+                          selectedClassroomId !== CLASSROOM_EXTERNAL &&
+                          !selectedClassroom &&
+                          row.classroomIds?.map(id => (
+                            <Select.Option key={id} value={id} label={id} title={id}>
+                              {id}
+                            </Select.Option>
+                          ))}
                       </Select>
                     </Tooltip>
                   </Col>

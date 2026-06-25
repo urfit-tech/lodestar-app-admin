@@ -101,18 +101,16 @@ const TeacherListPanel: React.FC<TeacherListPanelProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const [searchText, setSearchText] = useState('')
-  const [selectedCampusIds, setSelectedCampusIds] = useState<string[]>(permissionGroupIds || (campus ? [campus] : []))
+  const [selectedCampusIds, setSelectedCampusIds] = useState<string[]>(permissionGroupIds || [])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [selectedTraits, setSelectedTraits] = useState<string[]>([])
   const [selectedLevel, setSelectedLevel] = useState<string | undefined>()
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 當校區 prop 改變時，同步更新篩選器
+  // permissionGroupIds 是明確篩選條件；campus prop 只用於排序同校區優先
   React.useEffect(() => {
-    if (campus) {
-      setSelectedCampusIds([campus])
-    }
-  }, [campus])
+    setSelectedCampusIds(permissionGroupIds || [])
+  }, [permissionGroupIds])
 
   // 當訂單語言改變時，清空語言篩選器（讓用戶重新選擇）
   React.useEffect(() => {

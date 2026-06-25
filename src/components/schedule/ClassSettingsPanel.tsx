@@ -113,6 +113,7 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
   })
   const [customMaterialName, setCustomMaterialName] = useState('')
   const [customMaterialInputVisible, setCustomMaterialInputVisible] = useState(false)
+  const [customMaterialDraftActive, setCustomMaterialDraftActive] = useState(false)
 
   const isCreateMode = !classGroup
 
@@ -130,9 +131,21 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
 
   useEffect(() => {
     const customMaterial = currentData.materials.find(m => isCustomMaterialValue(m, materialOptions))
-    setCustomMaterialName(customMaterial ? getCustomMaterialInputValue(customMaterial) : '')
-    setCustomMaterialInputVisible(Boolean(customMaterial || currentData.materials.includes(MATERIAL_CUSTOM_OPTION)))
-  }, [currentData.materials, materialOptions])
+    if (customMaterial) {
+      setCustomMaterialName(getCustomMaterialInputValue(customMaterial))
+      setCustomMaterialInputVisible(true)
+      setCustomMaterialDraftActive(false)
+      return
+    }
+
+    if (customMaterialDraftActive || currentData.materials.includes(MATERIAL_CUSTOM_OPTION)) {
+      setCustomMaterialInputVisible(true)
+      return
+    }
+
+    setCustomMaterialName('')
+    setCustomMaterialInputVisible(false)
+  }, [currentData.materials, customMaterialDraftActive, materialOptions])
 
   const handleFieldChange = useCallback(
     (field: keyof CreateFormData, value: any) => {
@@ -158,19 +171,25 @@ const ClassSettingsPanel: React.FC<ClassSettingsPanelProps> = ({
         nextValues.push(currentCustomMaterialValue)
       }
       handleFieldChange('materials', nextValues)
-      setCustomMaterialInputVisible(includesCustom || shouldKeepCustomMaterial)
       if (!includesCustom && currentCustomMaterialValue && !hasCustomMaterialValue) {
         setCustomMaterialName('')
         setCustomMaterialInputVisible(false)
+        setCustomMaterialDraftActive(false)
+        return
       }
+      if (includesCustom) {
+        setCustomMaterialDraftActive(true)
+      }
+      setCustomMaterialInputVisible(includesCustom || shouldKeepCustomMaterial || customMaterialDraftActive)
     },
-    [customMaterialName, handleFieldChange, materialOptions],
+    [customMaterialDraftActive, customMaterialName, handleFieldChange, materialOptions],
   )
 
   const handleCustomMaterialChange = useCallback(
     (value: string) => {
       setCustomMaterialName(value)
       setCustomMaterialInputVisible(true)
+      setCustomMaterialDraftActive(true)
       const nextCustomMaterialValue = buildCustomMaterialValue(value)
       const baseMaterials = currentData.materials.filter(
         m => m !== MATERIAL_CUSTOM_OPTION && !isCustomMaterialValue(m, materialOptions),
