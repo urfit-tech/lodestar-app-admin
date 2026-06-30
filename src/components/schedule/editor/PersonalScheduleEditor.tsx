@@ -71,6 +71,7 @@ import {
 import { AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
+import { isOrderPaymentDeadlineExpiredForSchedule } from '../utils/orderNameFilter'
 import { ScheduleEditorProvider, useScheduleEditorStore, useScheduleEditorStoreApi } from './ScheduleEditorContext'
 import type { CourseRow } from '../ArrangeCourseModal'
 
@@ -536,7 +537,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
       const remainingMinutes = Math.max(0, order.availableMinutes - usedMinutes)
       if (remainingMinutes <= 0) return false
 
-      if (order.paymentExpiredAt && moment(order.paymentExpiredAt).isBefore(today, 'day')) {
+      if (isOrderPaymentDeadlineExpiredForSchedule(order.status, order.paymentExpiredAt)) {
         return false
       }
 

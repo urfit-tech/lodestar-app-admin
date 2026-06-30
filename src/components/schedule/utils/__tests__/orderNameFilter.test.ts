@@ -2,6 +2,7 @@ import {
   classifyOrderProduct,
   getOrderCampusIds,
   getOrderProductTitle,
+  isOrderPaymentDeadlineExpiredForSchedule,
   isOrderCampusMatched,
 } from '../orderNameFilter'
 
@@ -155,5 +156,26 @@ describe('classifyOrderProduct', () => {
       expect(isOrderCampusMatched('campus-a', [])).toBe(false)
       expect(isOrderCampusMatched(null, [])).toBe(true)
     })
+  })
+})
+
+describe('isOrderPaymentDeadlineExpiredForSchedule', () => {
+  const now = new Date('2026-06-29T12:00:00+08:00')
+
+  it('keeps SUCCESS orders schedulable after the payment deadline date', () => {
+    expect(isOrderPaymentDeadlineExpiredForSchedule('SUCCESS', '2026-06-20T12:43:00+08:00', now)).toBe(false)
+  })
+
+  it('excludes unpaid orders when the payment deadline date is before today', () => {
+    expect(isOrderPaymentDeadlineExpiredForSchedule('UNPAID', '2026-06-20T12:43:00+08:00', now)).toBe(true)
+  })
+
+  it('does not treat same-day payment deadline as expired by date', () => {
+    expect(isOrderPaymentDeadlineExpiredForSchedule('UNPAID', '2026-06-29T08:00:00+08:00', now)).toBe(false)
+  })
+
+  it('ignores missing or invalid payment deadline values', () => {
+    expect(isOrderPaymentDeadlineExpiredForSchedule('UNPAID', null, now)).toBe(false)
+    expect(isOrderPaymentDeadlineExpiredForSchedule('UNPAID', 'not-a-date', now)).toBe(false)
   })
 })

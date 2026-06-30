@@ -7,7 +7,11 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAddOrderToClassGroup, useAvailableOrdersForClass } from '../../hooks/scheduleManagement'
 import { ScheduleType } from '../../types/schedule'
-import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
+import {
+  classifyOrderProduct,
+  isOrderPaymentDeadlineExpiredForSchedule,
+  isOrderStatusValidForSchedule,
+} from './utils/orderNameFilter'
 import { resolveOrderCampusId } from './utils/orderOptionResolver'
 
 const SearchWrapper = styled.div`
@@ -115,7 +119,7 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
       .filter((order): order is OrderForDisplay => Boolean(order))
       .filter(order => {
         if (!isOrderStatusValidForSchedule(order.status)) return false
-        if (order.expiredAt && new Date(order.expiredAt) < now) return false
+        if (isOrderPaymentDeadlineExpiredForSchedule(order.status, order.expiredAt, now)) return false
         if (campusId && order.campusId !== campusId) return false
         return true
       })

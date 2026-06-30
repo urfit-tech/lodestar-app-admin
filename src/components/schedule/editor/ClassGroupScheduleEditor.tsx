@@ -64,7 +64,11 @@ import {
 import { AdminPageBlock, AdminPageTitle } from '../../admin'
 import { GeneralEventApi } from '../../event/events.type'
 import AdminLayout from '../../layout/AdminLayout'
-import { classifyOrderProduct, isOrderStatusValidForSchedule } from '../utils/orderNameFilter'
+import {
+  classifyOrderProduct,
+  isOrderPaymentDeadlineExpiredForSchedule,
+  isOrderStatusValidForSchedule,
+} from '../utils/orderNameFilter'
 import { resolveOrderCampusId } from '../utils/orderOptionResolver'
 import { computeSemesterMaxEndDate } from '../utils/semesterDateRange'
 import { buildClassMetadata, getEventKey } from './classFlow/metadata'
@@ -399,7 +403,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             : expiryBySetting || (classProduct.ended_at ? new Date(classProduct.ended_at) : undefined)
 
         if (!isOrderStatusValidForSchedule(orderLog.status)) return null
-        if (expiredAt && expiredAt < now) return null
+        if (isOrderPaymentDeadlineExpiredForSchedule(orderLog.status, expiredAt, now)) return null
         if (effectiveCampusId && campusFromOptions !== effectiveCampusId) {
           return null
         }

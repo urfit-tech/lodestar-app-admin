@@ -24,6 +24,29 @@ export const isOrderStatusValidForSchedule = (status?: string | null): boolean =
   return !EXCLUDED_ORDER_STATUSES.some(excluded => status.includes(excluded))
 }
 
+const SUCCESS_ORDER_STATUS = 'SUCCESS'
+
+const toValidDate = (value?: Date | string | null): Date | null => {
+  if (!value) return null
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+const startOfDay = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate())
+
+export const isOrderPaymentDeadlineExpiredForSchedule = (
+  status?: string | null,
+  paymentExpiredAt?: Date | string | null,
+  now: Date = new Date(),
+): boolean => {
+  if (normalize(status) === SUCCESS_ORDER_STATUS) return false
+
+  const expiredAt = toValidDate(paymentExpiredAt)
+  if (!expiredAt) return false
+
+  return startOfDay(expiredAt).getTime() < startOfDay(now).getTime()
+}
+
 export const SEMESTER_KEYWORDS = ['冬季團班', '春季團班', '秋季團班', '夏季團班', '學期班', '學期團班']
 
 export type ClassCategory = 'personal' | 'semester' | 'group'

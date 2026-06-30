@@ -9,7 +9,11 @@ import { ScheduleEvent, ScheduleType } from '../../types/schedule'
 import AddOrdersToClassModal from './AddOrdersToClassModal'
 import { ScheduleCard } from './styles'
 import scheduleMessages from './translation'
-import { classifyOrderProduct, isOrderStatusValidForSchedule } from './utils/orderNameFilter'
+import {
+  classifyOrderProduct,
+  isOrderPaymentDeadlineExpiredForSchedule,
+  isOrderStatusValidForSchedule,
+} from './utils/orderNameFilter'
 import { resolveOrderCampusId } from './utils/orderOptionResolver'
 
 const { Search } = Input
@@ -175,7 +179,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           return null
         }
 
-        if (orderExpiredAt && orderExpiredAt < now) {
+        if (isOrderPaymentDeadlineExpiredForSchedule(order.status, orderExpiredAt, now)) {
           return null
         }
 
