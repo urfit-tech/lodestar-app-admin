@@ -34,3 +34,21 @@ export const resolveOrderCampusId = (orderOptions?: any, productMeta?: any): str
     productNestedOptions?.permissionGroupId,
   )
 }
+
+export const resolveMemberCampusIds = (member?: any): string[] => {
+  const groups = Array.isArray(member?.member_permission_groups) ? member.member_permission_groups : []
+
+  return Array.from(
+    new Set(
+      groups
+        .flatMap((group: any) => [group?.permission_group_id, group?.permission_group?.id])
+        .filter((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim()))
+        .map(id => id.trim()),
+    ),
+  )
+}
+
+export const isMemberCampusMatched = (targetCampusId?: string | null, member?: any): boolean => {
+  if (!targetCampusId) return true
+  return resolveMemberCampusIds(member).includes(targetCampusId)
+}

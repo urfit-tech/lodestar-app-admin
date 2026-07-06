@@ -14,7 +14,7 @@ import {
   isOrderPaymentDeadlineExpiredForSchedule,
   isOrderStatusValidForSchedule,
 } from './utils/orderNameFilter'
-import { resolveOrderCampusId } from './utils/orderOptionResolver'
+import { resolveMemberCampusIds } from './utils/orderOptionResolver'
 
 const { Search } = Input
 
@@ -171,8 +171,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
         const computedExpiry = expiryDateByOrderId[order.id]
         const hasScheduledEvent = Boolean(hasScheduledEventByOrderId[order.id])
         const expiresAt = hasScheduledEvent ? computedExpiry || null : null
-        const orderOptions = order.options as any
-        const campusFromOptions = resolveOrderCampusId(orderOptions, productMeta)
+        const campusIds = resolveMemberCampusIds(order.member)
         const availableMinutes = Math.max(0, totalMinutes - (usedMinutesByOrderId[order.id] || 0))
 
         if (!isOrderStatusValidForSchedule(order.status)) {
@@ -183,7 +182,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           return null
         }
 
-        if (campusId && campusFromOptions !== campusId) {
+        if (campusId && !campusIds.includes(campusId)) {
           return null
         }
 
@@ -205,7 +204,7 @@ const StudentListPanel: React.FC<StudentListPanelProps> = ({
           lastClassDate: lastClassDateByOrderId[order.id],
           availableMinutes,
           expiresAt,
-          campusId: campusFromOptions,
+          campusId: campusIds[0] || null,
         } as StudentOrderRow
       })
       .filter(Boolean) as StudentOrderRow[]

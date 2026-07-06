@@ -12,7 +12,7 @@ import {
   isOrderPaymentDeadlineExpiredForSchedule,
   isOrderStatusValidForSchedule,
 } from './utils/orderNameFilter'
-import { resolveOrderCampusId } from './utils/orderOptionResolver'
+import { resolveMemberCampusIds } from './utils/orderOptionResolver'
 
 const SearchWrapper = styled.div`
   margin-bottom: 16px;
@@ -35,7 +35,7 @@ interface OrderForDisplay {
   createdAt: string
   status?: string
   expiredAt?: string | null
-  campusId?: string | null
+  campusIds: string[]
 }
 
 interface AddOrdersToClassModalProps {
@@ -98,8 +98,7 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
 
         const productOptions = matchedProduct?.options as any
         const productMeta = productOptions?.options || {}
-        const orderOptions = order.options as any
-        const campusFromOptions = resolveOrderCampusId(orderOptions, productMeta)
+        const campusIds = resolveMemberCampusIds(order.member)
 
         return {
           orderId: order.id,
@@ -113,14 +112,14 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
           createdAt: order.created_at,
           status: order.status,
           expiredAt: order.expired_at,
-          campusId: campusFromOptions,
+          campusIds,
         }
       })
       .filter((order): order is OrderForDisplay => Boolean(order))
       .filter(order => {
         if (!isOrderStatusValidForSchedule(order.status)) return false
         if (isOrderPaymentDeadlineExpiredForSchedule(order.status, order.expiredAt, now)) return false
-        if (campusId && order.campusId !== campusId) return false
+        if (campusId && !order.campusIds.includes(campusId)) return false
         return true
       })
   }, [orders, campusId, scheduleType, language])
