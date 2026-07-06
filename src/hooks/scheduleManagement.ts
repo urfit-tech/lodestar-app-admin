@@ -389,6 +389,13 @@ export const GET_ORDERS_BY_IDS = gql`
         name
         email
         picture_url
+        member_permission_groups(where: { permission_group: { name: { _like: "%校" } } }) {
+          permission_group_id
+          permission_group {
+            id
+            name
+          }
+        }
       }
       options
       expired_at
@@ -429,6 +436,13 @@ export const GET_AVAILABLE_TUITION_ORDERS = gql`
         name
         email
         picture_url
+        member_permission_groups(where: { permission_group: { name: { _like: "%校" } } }) {
+          permission_group_id
+          permission_group {
+            id
+            name
+          }
+        }
       }
       options
       expired_at
