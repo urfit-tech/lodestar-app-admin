@@ -109,8 +109,6 @@ const MemberCoinAdminBlock: React.VFC<{
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
-  const storeCreatedTime = useRef('')
-  const currentIndex = useRef(0)
 
   const [fieldFilter, setFieldFilter] = useState<{
     orderLogId?: string
@@ -118,18 +116,14 @@ const MemberCoinAdminBlock: React.VFC<{
     title?: string
   }>({})
 
-  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection(
-    currentIndex,
-    storeCreatedTime,
-    {
-      ...fieldFilter,
-      memberId,
-    },
-  )
+  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection({
+    ...fieldFilter,
+    memberId,
+  })
   const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
-    useFutureCoinLogCollection(currentIndex, storeCreatedTime, { ...fieldFilter, memberId })
+    useFutureCoinLogCollection({ ...fieldFilter, memberId })
   const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
-    useOrderLogWithCoinsCollection(currentIndex, storeCreatedTime, {
+    useOrderLogWithCoinsCollection({
       ...fieldFilter,
       memberId,
     })
@@ -507,11 +501,11 @@ const MemberCoinAdminBlock: React.VFC<{
     </>
   )
 }
-const useCoinLogCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: { nameAndEmail?: string; title?: string; memberId?: string },
-) => {
+const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
+  // 三個 tab 各自持有分頁狀態。共用同一組 ref 會讓先回應的那個 hook
+  // 決定 storeCreatedTime,而 currentIndex 會被任一 tab 的「載入更多」累加。
+  const storeCreatedTime = useRef('')
+  const currentIndex = useRef(0)
   const condition: hasura.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -538,7 +532,10 @@ const useCoinLogCollection = (
             count
           }
         }
-        coin_log(where: $condition, order_by: { created_at: desc }, limit: $limit, offset: $offset) {
+        # 批次匯入會產生大量 created_at 完全相同的資料列(實務上單一秒數十筆),
+        # 只用 created_at 排序時 Postgres 不保證並列資料的順序穩定,
+        # offset 翻頁就會重複或漏行。補 id 當第二排序鍵讓順序全序化。
+        coin_log(where: $condition, order_by: [{ created_at: desc }, { id: desc }], limit: $limit, offset: $offset) {
           id
           member {
             id
@@ -619,11 +616,9 @@ const useCoinLogCollection = (
   }
 }
 
-const useFutureCoinLogCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: { nameAndEmail?: string; title?: string; memberId?: string },
-) => {
+const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
+  const storeCreatedTime = useRef('')
+  const currentIndex = useRef(0)
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -649,7 +644,7 @@ const useFutureCoinLogCollection = (
             count
           }
         }
-        coin_log(order_by: { created_at: desc }, limit: $limit, offset: $offset, where: $condition) {
+        coin_log(order_by: [{ created_at: desc }, { id: desc }], limit: $limit, offset: $offset, where: $condition) {
           id
           member {
             id
@@ -729,16 +724,14 @@ const useFutureCoinLogCollection = (
   }
 }
 
-const useOrderLogWithCoinsCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: {
-    orderLogId?: string
-    nameAndEmail?: string
-    title?: string
-    memberId?: string
-  },
-) => {
+const useOrderLogWithCoinsCollection = (filter?: {
+  orderLogId?: string
+  nameAndEmail?: string
+  title?: string
+  memberId?: string
+}) => {
+  const storeCreatedTime = useRef('')
+  const currentIndex = useRef(0)
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member_id: filter?.memberId
@@ -769,7 +762,7 @@ const useOrderLogWithCoinsCollection = (
             count
           }
         }
-        order_log(where: $condition, limit: $limit, offset: $offset, order_by: { created_at: desc }) {
+        order_log(where: $condition, limit: $limit, offset: $offset, order_by: [{ created_at: desc }, { id: desc }]) {
           id
           created_at
           member {
