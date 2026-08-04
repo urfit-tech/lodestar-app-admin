@@ -502,10 +502,6 @@ const MemberCoinAdminBlock: React.VFC<{
   )
 }
 const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
-  // 三個 tab 各自持有分頁狀態。共用同一組 ref 會讓先回應的那個 hook
-  // 決定 storeCreatedTime,而 currentIndex 會被任一 tab 的「載入更多」累加。
-  const storeCreatedTime = useRef('')
-  const currentIndex = useRef(0)
   const condition: hasura.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -583,22 +579,27 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
           amount: coinLog.amount,
         }))
 
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
-  }
-
+  // 分頁狀態一律從當下的 data 推導,不另外存 ref。
+  // 舊版把「第一筆的 created_at」與「已翻過幾頁」存在 ref 裡而且從不重設:
+  // 發送代幣後 refetch 只會回到第一頁,但 ref 還停在舊值 ——
+  // created_at 的上界把剛發出去的資料整批擋掉(往下翻也看不到),
+  // offset 則會跳號漏行。改成從 data 推導後,refetch 完自然就是對的。
   const loadMoreCoinLogs = () =>
     fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
+        // 以「目前載入的最新一筆」為上界,避免翻頁途中有新資料插進來把 offset 推移。
+        // 排序是 (created_at desc, id desc),第一筆必為並列群組中的最大值,
+        // 所以 _lte 取到的集合正好從第一筆開始,offset 等於已載入的筆數。
+        condition: data?.coin_log[0]?.created_at
+          ? { ...condition, created_at: { _lte: data.coin_log[0].created_at } }
+          : condition,
         limit: 10,
-        offset: 10 + currentIndex.current,
+        offset: data?.coin_log.length || 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
 
         return Object.assign({}, prev, {
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
@@ -617,8 +618,6 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
 }
 
 const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
-  const storeCreatedTime = useRef('')
-  const currentIndex = useRef(0)
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -691,22 +690,19 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
           endedAt: coinFutureLog.ended_at && new Date(coinFutureLog.ended_at),
           amount: coinFutureLog.amount,
         }))
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
-  }
-
   const loadMoreCoinFutureLogs = () =>
     fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
+        condition: data?.coin_log[0]?.created_at
+          ? { ...condition, created_at: { _lte: data.coin_log[0].created_at } }
+          : condition,
         limit: 10,
-        offset: 10 + currentIndex.current,
+        offset: data?.coin_log.length || 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
 
         return Object.assign({}, prev, {
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
@@ -730,8 +726,6 @@ const useOrderLogWithCoinsCollection = (filter?: {
   title?: string
   memberId?: string
 }) => {
-  const storeCreatedTime = useRef('')
-  const currentIndex = useRef(0)
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member_id: filter?.memberId
@@ -806,22 +800,19 @@ const useOrderLogWithCoinsCollection = (filter?: {
           createdAt: orderLog.created_at,
         }))
 
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.order_log[0]?.created_at ? data?.order_log[0]?.created_at : ''
-  }
-
   const loadMoreOrderLogs = () =>
     fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
+        condition: data?.order_log[0]?.created_at
+          ? { ...condition, created_at: { _lte: data.order_log[0].created_at } }
+          : condition,
         limit: 10,
-        offset: 10 + currentIndex.current,
+        offset: data?.order_log.length || 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
         return Object.assign({}, prev, {
           order_log: [...prev.order_log, ...fetchMoreResult.order_log],
         })
