@@ -99,6 +99,18 @@ const StyledSearchOutlined = styled(SearchOutlined)`
   }
 `
 
+const PAGE_SIZE = 10
+
+// seek pagination 的游標條件:以最後一筆的 (created_at, id) 為座標往下取。
+// 必須與 order_by 的 (created_at desc, id desc) 一致,否則座標無效。
+// 詳見 docs/adr/0001-coin-log-seek-pagination.md
+const afterCursor = (cursor: { created_at: any; id: string }) => ({
+  _or: [
+    { created_at: { _lt: cursor.created_at } },
+    { _and: [{ created_at: { _eq: cursor.created_at } }, { id: { _lt: cursor.id } }] },
+  ],
+})
+
 const MemberCoinAdminBlock: React.VFC<{
   memberId?: string
   withSendingModal?: boolean
@@ -528,9 +540,8 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
             count
           }
         }
-        # 批次匯入會產生大量 created_at 完全相同的資料列(實務上單一秒數十筆),
-        # 只用 created_at 排序時 Postgres 不保證並列資料的順序穩定,
-        # offset 翻頁就會重複或漏行。補 id 當第二排序鍵讓順序全序化。
+        # id 是第二排序鍵,不可移除:批次發送的 created_at 完全相同,
+        # 沒有它排序不唯一,seek 分頁的游標就沒有座標可指。
         coin_log(where: $condition, order_by: [{ created_at: desc }, { id: desc }], limit: $limit, offset: $offset) {
           id
           member {
@@ -553,7 +564,7 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -579,33 +590,37 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
           amount: coinLog.amount,
         }))
 
-  // 分頁狀態一律從當下的 data 推導,不另外存 ref。
-  // 舊版把「第一筆的 created_at」與「已翻過幾頁」存在 ref 裡而且從不重設:
-  // 發送代幣後 refetch 只會回到第一頁,但 ref 還停在舊值 ——
-  // created_at 的上界把剛發出去的資料整批擋掉(往下翻也看不到),
-  // offset 則會跳號漏行。改成從 data 推導後,refetch 完自然就是對的。
-  const loadMoreCoinLogs = () =>
-    fetchMore({
+  const loadMoreCoinLogs = () => {
+    const cursor = data?.coin_log[data.coin_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        // 以「目前載入的最新一筆」為上界,避免翻頁途中有新資料插進來把 offset 推移。
-        // 排序是 (created_at desc, id desc),第一筆必為並列群組中的最大值,
-        // 所以 _lte 取到的集合正好從第一筆開始,offset 等於已載入的筆數。
-        condition: data?.coin_log[0]?.created_at
-          ? { ...condition, created_at: { _lte: data.coin_log[0].created_at } }
-          : condition,
-        limit: 10,
-        offset: data?.coin_log.length || 0,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-        })
+          // aggregate 跟著游標往前推:fetchMore 的 count 是「游標之後還有幾筆」,
+          // 加上已載入的筆數才能還原成總數,否則刪除資料後按鈕不會消失。
+          coin_log_aggregate: {
+            ...fetchMoreResult.coin_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.coin_log_aggregate.aggregate,
+              count: prev.coin_log.length + (fetchMoreResult.coin_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingCoinLogs: loading,
@@ -665,7 +680,7 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -690,25 +705,35 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
           endedAt: coinFutureLog.ended_at && new Date(coinFutureLog.ended_at),
           amount: coinFutureLog.amount,
         }))
-  const loadMoreCoinFutureLogs = () =>
-    fetchMore({
+  const loadMoreCoinFutureLogs = () => {
+    const cursor = data?.coin_log[data.coin_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        condition: data?.coin_log[0]?.created_at
-          ? { ...condition, created_at: { _lte: data.coin_log[0].created_at } }
-          : condition,
-        limit: 10,
-        offset: data?.coin_log.length || 0,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-        })
+          coin_log_aggregate: {
+            ...fetchMoreResult.coin_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.coin_log_aggregate.aggregate,
+              count: prev.coin_log.length + (fetchMoreResult.coin_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingCoinFutureLogs: loading,
@@ -778,7 +803,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -800,24 +825,35 @@ const useOrderLogWithCoinsCollection = (filter?: {
           createdAt: orderLog.created_at,
         }))
 
-  const loadMoreOrderLogs = () =>
-    fetchMore({
+  const loadMoreOrderLogs = () => {
+    const cursor = data?.order_log[data.order_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        condition: data?.order_log[0]?.created_at
-          ? { ...condition, created_at: { _lte: data.order_log[0].created_at } }
-          : condition,
-        limit: 10,
-        offset: data?.order_log.length || 0,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           order_log: [...prev.order_log, ...fetchMoreResult.order_log],
-        })
+          order_log_aggregate: {
+            ...fetchMoreResult.order_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.order_log_aggregate.aggregate,
+              count: prev.order_log.length + (fetchMoreResult.order_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingOrderLogs: loading,
