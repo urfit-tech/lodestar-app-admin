@@ -155,7 +155,10 @@ const MemberCoinAdminBlock: React.VFC<{
     deleteCoinLog(id).then(() => {
       setIsRevokedModalVisible(false)
       message.success(formatMessage(messages.successfullyRevoked))
+      // 發送紀錄與即將發送兩個 tab 的收回按鈕共用這個 handler,
+      // 兩邊都要 refetch,否則留在原 tab 的畫面與 cache 會殘留已刪除的列
       refetchCoinLogs()
+      refetchCoinFutureLogs()
     })
   }
 

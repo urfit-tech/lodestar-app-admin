@@ -96,15 +96,26 @@ seek 只能往下連續取。目前 UI 只有「顯示更多」、沒有頁碼,�
   按鈕正確隱藏。
 - **實際 UI 行為尚未在部署環境驗證**,需上測試站點擊確認。
 
+## 已決定(2026-08-07 討論後補記)
+
+- **不加 `created_at` 索引。** 每筆寫入都要多維護一份索引,寫入成本不划算;
+  且 Hasura 無法表達 row-value 比較 `(created_at, id) < (?, ?)`,只能展開成
+  `_or` + `_and`,Postgres 對這個形狀不保證能從索引中段起跳 —— 即使加了,
+  效能收益也不確定。seek 在本查詢的價值定位為**正確性**,不是效能。
+- **收回代幣後補 refetch「即將發送」tab。** 兩個 tab 的收回按鈕共用
+  `handleRevokeCoin`,原本只 refetch 發送紀錄,在「即將發送」tab 收回後
+  畫面與 cache 會殘留已刪除的列,下一頁游標取到 stale 資料。已併入本次修正。
+
 ## 尚未決定
 
-1. `coin_log` 目前沒有 `created_at` 索引(只有 `pkey(id)` 與 `(member_id, started_at)`),
-   每次查詢仍是整排掃描後排序。seek 的效能優勢要配 `(created_at desc, id desc)` 複合索引
-   才拿得到 —— 但 Hasura 無法表達 row-value 比較 `(created_at, id) < (?, ?)`,
-   只能展開成 `_or` + `_and`,Postgres 對這個形狀不保證會走複合索引。
-   加索引前必須先確認執行計畫。
+1. **排序鍵要不要從 `created_at` 換成 `started_at`(代幣效期)。**
+   產品層的出發點:對使用者而言效期比建立時間重要,且 `created_at` 排序被視為
+   歷史共業。但技術上須三件一起改,不宜順手做:
+   - 全表 83,154 筆中 **12,494 筆(15%)的 `started_at` 為 NULL**(「即日起」),
+     Hasura `desc` 是 NULLS FIRST → 清單頂端會先出現一整塊萬筆級的 NULL 群,
+     且游標條件無法表達 `started_at < NULL`,seek 要拆成 NULL 區/跨區/非 NULL 區三段
+   - 清單第一欄顯示的是建立日期,改排 `started_at` 後該欄會呈現亂序,
+     顯示欄位需一併調整
+   - 現有 `(member_id, started_at)` 索引第一鍵是 `member_id`,全站清單吃不到
 2. `src/pages/PointHistoryAdminPage.tsx:305,381`(點數)有完全相同的 offset 寫法,
-   尚未處理。
-3. `handleRevokeCoin` 刪除後只呼叫 `refetchCoinLogs()`,但「即將發送」tab 的收回按鈕
-   走同一個 function → 在該 tab 收回後,畫面與 cache 不同步。
-   本次未修,待決定是否併入。
+   尚未處理(與本 PR 無關,另案)。
