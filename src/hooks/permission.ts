@@ -374,7 +374,8 @@ export const useUserPermissionGroupMembers = (memberId: string) => {
 
   return {
     loading,
-    permissionGroupsMembersOrderId
+    permissionGroupsMembersOrderId,
+    permissionGroupsMembers
   }
 }
 
