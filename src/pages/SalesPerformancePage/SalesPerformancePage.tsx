@@ -1,7 +1,7 @@
 import Icon, { DollarOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
 import { Box } from '@chakra-ui/layout'
-import { DatePicker, Select, Skeleton, Table } from 'antd'
+import { Alert, DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
@@ -73,17 +73,26 @@ const SalesPerformancePage: React.VFC = () => {
 
   const isAdminPermission = currentUserRole === 'app-owner' || Boolean(permissions.SALES_PERFORMANCE_ADMIN)
 
-  useEffect(() => {
-    if (!currentMemberDepartmentLoading) {
-      currentMemberDepartment && setActiveDepartment(currentMemberDepartment)
-    }
-  }, [currentMemberDepartment, currentMemberDepartmentLoading])
+  // effective viewing scope, larger permission wins: admin > department (同機構) > division (同組別)
+  const scope: 'admin' | 'department' | 'division' | 'callOnly' = isAdminPermission
+    ? 'admin'
+    : permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN
+    ? 'department'
+    : permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN
+    ? 'division'
+    : 'callOnly'
 
   useEffect(() => {
-    if (!loadingCurrentMemberDivision) {
+    if (scope !== 'admin' && !currentMemberDepartmentLoading) {
+      currentMemberDepartment && setActiveDepartment(currentMemberDepartment)
+    }
+  }, [currentMemberDepartment, currentMemberDepartmentLoading, scope])
+
+  useEffect(() => {
+    if ((scope === 'division' || scope === 'callOnly') && !loadingCurrentMemberDivision) {
       currentMemberDivision && setActiveGroupName(currentMemberDivision)
     }
-  }, [currentMemberDivision, loadingCurrentMemberDivision])
+  }, [currentMemberDivision, loadingCurrentMemberDivision, scope])
 
   if (
     !permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN &&
@@ -93,6 +102,13 @@ const SalesPerformancePage: React.VFC = () => {
   ) {
     return <ForbiddenPage />
   }
+
+  // scoped viewers must have the member properties their scope locks onto;
+  // falling back to an unfiltered view would leak data outside their scope
+  const missingScopeProperty =
+    (scope === 'department' || scope === 'division') &&
+    ((!currentMemberDepartmentLoading && !currentMemberDepartment) ||
+      (scope === 'division' && !loadingCurrentMemberDivision && !currentMemberDivision))
 
   const filterMemberContracts = activeManagerId
     ? activeGroupName
@@ -136,9 +152,7 @@ const SalesPerformancePage: React.VFC = () => {
         </span>
       </AdminPageTitle>
       <Box className="d-flex flex-wrap mb-4">
-        {isAdminPermission ||
-        Boolean(isAdminPermission && permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ||
-        !Boolean(permissions.SALES_VIEW_SAME_DEPARTMENT_PERFORMANCE_ADMIN) ? (
+        {scope === 'admin' || scope === 'callOnly' ? (
           <Select
             className="mr-3"
             style={{ width: 200 }}
@@ -150,12 +164,7 @@ const SalesPerformancePage: React.VFC = () => {
             onChange={v => {
               setActiveDepartment(v)
               setActiveManagerId(undefined)
-              if (
-                isAdminPermission ||
-                (isAdminPermission && permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ||
-                !Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN)
-              )
-                setActiveGroupName(undefined)
+              setActiveGroupName(undefined)
             }}
           >
             {uniqBy(manager => manager.department, managers || []).map(manager => (
@@ -165,9 +174,7 @@ const SalesPerformancePage: React.VFC = () => {
             ))}
           </Select>
         ) : null}
-        {isAdminPermission ||
-        (isAdminPermission && permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ||
-        !Boolean(permissions.SALES_VIEW_SAME_DIVISION_PERFORMANCE_ADMIN) ? (
+        {scope !== 'division' ? (
           <Select
             className="mr-3"
             style={{ width: 200 }}
@@ -219,7 +226,13 @@ const SalesPerformancePage: React.VFC = () => {
         <DatePicker className="mr-2 mb-10" picker="month" onChange={date => date && setMonth(date.startOf('month'))} />
       </Box>
 
-      {currentMemberId ? (
+      {missingScopeProperty ? (
+        <Alert
+          showIcon
+          type="warning"
+          message={formatMessage(pageMessages.SalesPerformancePage.missingScopePropertyNotice)}
+        />
+      ) : currentMemberId ? (
         <SalesPerformanceTable loading={loading} memberContracts={filterMemberContracts} />
       ) : (
         <Skeleton active />
