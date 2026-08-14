@@ -705,6 +705,10 @@ const pageMessages = {
   SalesPerformancePage: defineMessages({
     departmentPlaceholder: { id: 'page.SalesPerformancePage.departmentPlaceholder', defaultMessage: '機構' },
     groupPlaceholder: { id: 'page.SalesPerformancePage.groupPlaceholder', defaultMessage: '組別' },
+    missingScopePropertyNotice: {
+      id: 'page.SalesPerformancePage.missingScopePropertyNotice',
+      defaultMessage: '尚未設定您的機構／組別會員屬性，暫時無法顯示業績資料，請聯絡管理員。',
+    },
     managerPlaceholder: { id: 'page.SalesPerformancePage.managerPlaceholder', defaultMessage: '業務顧問' },
     signedDate: { id: 'page.SalesPerformancePage.signedDate', defaultMessage: '簽署日' },
     approvedDate: { id: 'page.SalesPerformancePage.approvedDate', defaultMessage: '通過日' },
