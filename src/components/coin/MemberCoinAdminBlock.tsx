@@ -99,6 +99,18 @@ const StyledSearchOutlined = styled(SearchOutlined)`
   }
 `
 
+const PAGE_SIZE = 10
+
+// seek pagination 的游標條件:以最後一筆的 (created_at, id) 為座標往下取。
+// 必須與 order_by 的 (created_at desc, id desc) 一致,否則座標無效。
+// 詳見 docs/adr/0001-coin-log-seek-pagination.md
+const afterCursor = (cursor: { created_at: any; id: string }) => ({
+  _or: [
+    { created_at: { _lt: cursor.created_at } },
+    { _and: [{ created_at: { _eq: cursor.created_at } }, { id: { _lt: cursor.id } }] },
+  ],
+})
+
 const MemberCoinAdminBlock: React.VFC<{
   memberId?: string
   withSendingModal?: boolean
@@ -109,8 +121,6 @@ const MemberCoinAdminBlock: React.VFC<{
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
-  const storeCreatedTime = useRef('')
-  const currentIndex = useRef(0)
 
   const [fieldFilter, setFieldFilter] = useState<{
     orderLogId?: string
@@ -118,18 +128,14 @@ const MemberCoinAdminBlock: React.VFC<{
     title?: string
   }>({})
 
-  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection(
-    currentIndex,
-    storeCreatedTime,
-    {
-      ...fieldFilter,
-      memberId,
-    },
-  )
+  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection({
+    ...fieldFilter,
+    memberId,
+  })
   const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
-    useFutureCoinLogCollection(currentIndex, storeCreatedTime, { ...fieldFilter, memberId })
+    useFutureCoinLogCollection({ ...fieldFilter, memberId })
   const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
-    useOrderLogWithCoinsCollection(currentIndex, storeCreatedTime, {
+    useOrderLogWithCoinsCollection({
       ...fieldFilter,
       memberId,
     })
@@ -149,7 +155,10 @@ const MemberCoinAdminBlock: React.VFC<{
     deleteCoinLog(id).then(() => {
       setIsRevokedModalVisible(false)
       message.success(formatMessage(messages.successfullyRevoked))
+      // 發送紀錄與即將發送兩個 tab 的收回按鈕共用這個 handler,
+      // 兩邊都要 refetch,否則留在原 tab 的畫面與 cache 會殘留已刪除的列
       refetchCoinLogs()
+      refetchCoinFutureLogs()
     })
   }
 
@@ -507,11 +516,7 @@ const MemberCoinAdminBlock: React.VFC<{
     </>
   )
 }
-const useCoinLogCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: { nameAndEmail?: string; title?: string; memberId?: string },
-) => {
+const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
   const condition: hasura.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -538,7 +543,9 @@ const useCoinLogCollection = (
             count
           }
         }
-        coin_log(where: $condition, order_by: { created_at: desc }, limit: $limit, offset: $offset) {
+        # id 是第二排序鍵,不可移除:批次發送的 created_at 完全相同,
+        # 沒有它排序不唯一,seek 分頁的游標就沒有座標可指。
+        coin_log(where: $condition, order_by: [{ created_at: desc }, { id: desc }], limit: $limit, offset: $offset) {
           id
           member {
             id
@@ -560,7 +567,7 @@ const useCoinLogCollection = (
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -586,28 +593,37 @@ const useCoinLogCollection = (
           amount: coinLog.amount,
         }))
 
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
-  }
-
-  const loadMoreCoinLogs = () =>
-    fetchMore({
+  const loadMoreCoinLogs = () => {
+    const cursor = data?.coin_log[data.coin_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
-        limit: 10,
-        offset: 10 + currentIndex.current,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
-
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-        })
+          // aggregate 跟著游標往前推:fetchMore 的 count 是「游標之後還有幾筆」,
+          // 加上已載入的筆數才能還原成總數,否則刪除資料後按鈕不會消失。
+          coin_log_aggregate: {
+            ...fetchMoreResult.coin_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.coin_log_aggregate.aggregate,
+              count: prev.coin_log.length + (fetchMoreResult.coin_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingCoinLogs: loading,
@@ -619,11 +635,7 @@ const useCoinLogCollection = (
   }
 }
 
-const useFutureCoinLogCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: { nameAndEmail?: string; title?: string; memberId?: string },
-) => {
+const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
     member_id: filter?.memberId
       ? {
@@ -649,7 +661,7 @@ const useFutureCoinLogCollection = (
             count
           }
         }
-        coin_log(order_by: { created_at: desc }, limit: $limit, offset: $offset, where: $condition) {
+        coin_log(order_by: [{ created_at: desc }, { id: desc }], limit: $limit, offset: $offset, where: $condition) {
           id
           member {
             id
@@ -671,7 +683,7 @@ const useFutureCoinLogCollection = (
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -696,28 +708,35 @@ const useFutureCoinLogCollection = (
           endedAt: coinFutureLog.ended_at && new Date(coinFutureLog.ended_at),
           amount: coinFutureLog.amount,
         }))
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.coin_log[0]?.created_at ? data?.coin_log[0]?.created_at : ''
-  }
-
-  const loadMoreCoinFutureLogs = () =>
-    fetchMore({
+  const loadMoreCoinFutureLogs = () => {
+    const cursor = data?.coin_log[data.coin_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
-        limit: 10,
-        offset: 10 + currentIndex.current,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
-
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-        })
+          coin_log_aggregate: {
+            ...fetchMoreResult.coin_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.coin_log_aggregate.aggregate,
+              count: prev.coin_log.length + (fetchMoreResult.coin_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingCoinFutureLogs: loading,
@@ -729,16 +748,12 @@ const useFutureCoinLogCollection = (
   }
 }
 
-const useOrderLogWithCoinsCollection = (
-  currentIndex: React.MutableRefObject<number>,
-  storeCreatedTime: React.MutableRefObject<string>,
-  filter?: {
-    orderLogId?: string
-    nameAndEmail?: string
-    title?: string
-    memberId?: string
-  },
-) => {
+const useOrderLogWithCoinsCollection = (filter?: {
+  orderLogId?: string
+  nameAndEmail?: string
+  title?: string
+  memberId?: string
+}) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member_id: filter?.memberId
@@ -769,7 +784,7 @@ const useOrderLogWithCoinsCollection = (
             count
           }
         }
-        order_log(where: $condition, limit: $limit, offset: $offset, order_by: { created_at: desc }) {
+        order_log(where: $condition, limit: $limit, offset: $offset, order_by: [{ created_at: desc }, { id: desc }]) {
           id
           created_at
           member {
@@ -791,7 +806,7 @@ const useOrderLogWithCoinsCollection = (
     {
       variables: {
         condition,
-        limit: 10,
+        limit: PAGE_SIZE,
         offset: 0,
       },
     },
@@ -813,27 +828,35 @@ const useOrderLogWithCoinsCollection = (
           createdAt: orderLog.created_at,
         }))
 
-  if (storeCreatedTime.current === '' && data) {
-    storeCreatedTime.current = data?.order_log[0]?.created_at ? data?.order_log[0]?.created_at : ''
-  }
-
-  const loadMoreOrderLogs = () =>
-    fetchMore({
+  const loadMoreOrderLogs = () => {
+    const cursor = data?.order_log[data.order_log.length - 1]
+    if (!cursor) {
+      return Promise.resolve()
+    }
+    return fetchMore({
       variables: {
-        condition: { ...condition, created_at: { _lte: storeCreatedTime.current } },
-        limit: 10,
-        offset: 10 + currentIndex.current,
+        condition: { _and: [condition, afterCursor(cursor)] },
+        limit: PAGE_SIZE,
+        offset: 0,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
         }
-        currentIndex.current += 10
-        return Object.assign({}, prev, {
+        return {
+          ...prev,
           order_log: [...prev.order_log, ...fetchMoreResult.order_log],
-        })
+          order_log_aggregate: {
+            ...fetchMoreResult.order_log_aggregate,
+            aggregate: {
+              ...fetchMoreResult.order_log_aggregate.aggregate,
+              count: prev.order_log.length + (fetchMoreResult.order_log_aggregate.aggregate?.count || 0),
+            },
+          },
+        }
       },
     })
+  }
 
   return {
     loadingOrderLogs: loading,
