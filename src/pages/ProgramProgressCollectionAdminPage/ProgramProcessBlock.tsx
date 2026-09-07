@@ -491,10 +491,10 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
           title
           duration
           metadata
-          practices(where: { updated_at: { _lte: $lastUpdatedAt } }) {
+          practices(where: { updated_at: { _lte: $lastUpdatedAt }, member: $memberCondition }) {
             member_id
           }
-          exercises(where: { updated_at: { _lte: $lastUpdatedAt } }) {
+          exercises(where: { updated_at: { _lte: $lastUpdatedAt }, member: $memberCondition }) {
             id
             member_id
             answer
@@ -503,7 +503,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
               passing_score
             }
           }
-          program_content_progress(where: { updated_at: { _lte: $lastUpdatedAt } }) {
+          program_content_progress(where: { updated_at: { _lte: $lastUpdatedAt }, member: $memberCondition }) {
             member_id
             progress
             created_at
