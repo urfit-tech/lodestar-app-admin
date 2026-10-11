@@ -1,9 +1,10 @@
 import { Button, Icon, Spinner } from '@chakra-ui/react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { createOauthState, rememberOauthNonce } from '../../helpers/oauthState'
 import FacebookLogoImage from '../../images/FB-logo.png'
 import GoogleLogoImage from '../../images/google-logo.png'
 import { ReactComponent as LineIcon } from '../../images/line-icon.svg'
@@ -28,26 +29,33 @@ const GoogleLogo = styled.span`
   background-position: center;
 `
 
+// remember this page's nonce as soon as a button is shown (covers opening the link in a new tab)
+const useRememberOauthNonce = () => {
+  useEffect(() => {
+    rememberOauthNonce()
+  }, [])
+}
+
 const FacebookLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLinkToken }) => {
+  useRememberOauthNonce()
   const { settings } = useApp()
   const { formatMessage } = useIntl()
   const [back] = useQueryParam('back', StringParam)
 
   return (
     <a
+      onClick={rememberOauthNonce}
       href={'https://www.facebook.com/v6.0/dialog/oauth?client_id={{CLIENT_ID}}&redirect_uri={{REDIRECT_URI}}&scope={{SCOPE}}&state={{STATE}}&response_type=token'
         .replace('{{CLIENT_ID}}', `${settings['auth.facebook_app_id']}`)
         .replace('{{REDIRECT_URI}}', `${window.location.origin}/oauth2`)
         .replace('{{SCOPE}}', 'public_profile,email')
         .replace(
           '{{STATE}}',
-          btoa(
-            JSON.stringify({
-              provider: 'facebook',
-              redirect: back || window.location.pathname + window.location.search,
-              accountLinkToken: accountLinkToken,
-            }),
-          ),
+          createOauthState({
+            provider: 'facebook',
+            redirect: back || window.location.pathname + window.location.search,
+            accountLinkToken: accountLinkToken,
+          }),
         )}
     >
       <Button
@@ -67,25 +75,25 @@ const FacebookLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ account
 }
 
 const GoogleLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLinkToken }) => {
+  useRememberOauthNonce()
   const { settings } = useApp()
   const { formatMessage } = useIntl()
   const [back] = useQueryParam('back', StringParam)
 
   return (
     <a
+      onClick={rememberOauthNonce}
       href={'https://accounts.google.com/o/oauth2/v2/auth?client_id={{CLIENT_ID}}&response_type=token&scope={{SCOPE}}&access_type=online&redirect_uri={{REDIRECT_URI}}&state={{STATE}}&suppress_webview_warning=true'
         .replace('{{CLIENT_ID}}', `${settings['auth.google_client_id']}`)
         .replace('{{REDIRECT_URI}}', `${window.location.origin}/oauth2`)
         .replace('{{SCOPE}}', 'openid profile email')
         .replace(
           '{{STATE}}',
-          btoa(
-            JSON.stringify({
-              provider: 'google',
-              redirect: back || window.location.pathname + window.location.search,
-              accountLinkToken: accountLinkToken,
-            }),
-          ),
+          createOauthState({
+            provider: 'google',
+            redirect: back || window.location.pathname + window.location.search,
+            accountLinkToken: accountLinkToken,
+          }),
         )}
     >
       <Button
@@ -105,6 +113,7 @@ const GoogleLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLi
 }
 
 const LineLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLinkToken }) => {
+  useRememberOauthNonce()
   const { settings, loading } = useApp()
   const { formatMessage } = useIntl()
   const [back] = useQueryParam('back', StringParam)
@@ -115,19 +124,18 @@ const LineLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLink
 
   return (
     <a
+      onClick={rememberOauthNonce}
       href={'https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id={{CLIENT_ID}}&redirect_uri={{REDIRECT_URI}}&state={{STATE}}&scope={{SCOPE}}'
         .replace('{{CLIENT_ID}}', `${settings['auth.line_client_id']}`)
         .replace('{{REDIRECT_URI}}', `${window.location.origin}/oauth2`)
         .replace('{{SCOPE}}', 'profile%20openid%20email')
         .replace(
           '{{STATE}}',
-          btoa(
-            JSON.stringify({
-              provider: 'line',
-              redirect: back || window.location.pathname + window.location.search,
-              accountLinkToken: accountLinkToken,
-            }),
-          ),
+          createOauthState({
+            provider: 'line',
+            redirect: back || window.location.pathname + window.location.search,
+            accountLinkToken: accountLinkToken,
+          }),
         )}
     >
       <Button
@@ -147,6 +155,7 @@ const LineLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLink
 }
 
 const ParentingLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accountLinkToken }) => {
+  useRememberOauthNonce()
   const { settings, loading } = useApp()
   const { formatMessage } = useIntl()
   const [back] = useQueryParam('back', StringParam)
@@ -156,19 +165,18 @@ const ParentingLoginButton: React.VFC<{ accountLinkToken?: string }> = ({ accoun
   }
   return (
     <a
+      onClick={rememberOauthNonce}
       href={'https://accounts.parenting.com.tw/oauth/authorize?response_type=code&client_id={{CLIENT_ID}}&redirect_uri={{REDIRECT_URI}}&state={{STATE}}&scope={{SCOPE}}'
         .replace('{{CLIENT_ID}}', `${settings['auth.parenting.client_id']}`)
         .replace('{{REDIRECT_URI}}', encodeURIComponent(`${window.location.origin}/oauth2/parenting`))
         .replace('{{SCOPE}}', '')
         .replace(
           '{{STATE}}',
-          btoa(
-            JSON.stringify({
-              provider: 'parenting',
-              redirect: back || window.location.pathname + window.location.search,
-              accountLinkToken: accountLinkToken,
-            }),
-          ),
+          createOauthState({
+            provider: 'parenting',
+            redirect: back || window.location.pathname + window.location.search,
+            accountLinkToken: accountLinkToken,
+          }),
         )}
     >
       <Button

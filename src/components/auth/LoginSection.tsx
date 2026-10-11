@@ -99,7 +99,7 @@ const LoginSection: React.VFC<{
           <FacebookLoginButton accountLinkToken={accountLinkToken} />
         </div>
       )}
-      {!!settings['auth.line_client_id'] && !!settings['auth.line_client_secret'] && (
+      {!!settings['auth.line_client_id'] && (
         <div className="mb-3" style={{ width: '100%' }}>
           <LineLoginButton accountLinkToken={accountLinkToken} />
         </div>
@@ -114,9 +114,7 @@ const LoginSection: React.VFC<{
         <>
           {!!settings['auth.facebook_app_id'] ||
             !!settings['auth.google_client_id'] ||
-            (!!settings['auth.line_client_id'] && !!settings['auth.line_client_secret'] && (
-              <StyledDivider>{formatMessage(authMessages['*'].or)}</StyledDivider>
-            ))}
+            (!!settings['auth.line_client_id'] && <StyledDivider>{formatMessage(authMessages['*'].or)}</StyledDivider>)}
 
           <InputGroup className="mb-3">
             <Input
