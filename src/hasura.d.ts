@@ -161699,13 +161699,6 @@ export type GetMeetByIdVariables = Exact<{
 
 export type GetMeetById = { __typename?: 'query_root', meet_by_pk?: { __typename?: 'meet', id: any, type: string, gateway: string } | null };
 
-export type InsertMeetVariables = Exact<{
-  meet: meet_insert_input;
-}>;
-
-
-export type InsertMeet = { __typename?: 'mutation_root', insert_meet_one?: { __typename?: 'meet', id: any } | null };
-
 export type UpdateMeetVariables = Exact<{
   meetId: Scalars['uuid'];
   data?: InputMaybe<meet_set_input>;
@@ -161721,13 +161714,6 @@ export type DeleteMeetVariables = Exact<{
 
 export type DeleteMeet = { __typename?: 'mutation_root', update_meet_by_pk?: { __typename?: 'meet', id: any } | null };
 
-export type InsertMeetMemberVariables = Exact<{
-  meetMember: meet_member_insert_input;
-}>;
-
-
-export type InsertMeetMember = { __typename?: 'mutation_root', insert_meet_member_one?: { __typename?: 'meet_member', id: any } | null };
-
 export type DeleteMeetMemberVariables = Exact<{
   meetId: Scalars['uuid'];
   memberId: Scalars['String'];
@@ -161736,14 +161722,15 @@ export type DeleteMeetMemberVariables = Exact<{
 
 export type DeleteMeetMember = { __typename?: 'mutation_root', update_meet_member?: { __typename?: 'meet_member_mutation_response', affected_rows: number } | null };
 
-export type UpdateMeetMemberVariables = Exact<{
-  meetId: Scalars['uuid'];
+export type MoveMeetMemberVariables = Exact<{
+  meet: meet_insert_input;
+  previousMeetId: Scalars['uuid'];
+  newMeetId: Scalars['uuid'];
   memberId: Scalars['String'];
-  meetMemberData: meet_member_set_input;
 }>;
 
 
-export type UpdateMeetMember = { __typename?: 'mutation_root', update_meet_member?: { __typename?: 'meet_member_mutation_response', affected_rows: number } | null };
+export type MoveMeetMember = { __typename?: 'mutation_root', insert_meet_one?: { __typename?: 'meet', id: Scalars['uuid'] } | null, update_meet_member?: { __typename?: 'meet_member_mutation_response', affected_rows: number } | null, assert_meet_member_moved: Array<{ __typename?: 'meeting_transaction_result', ok: boolean }> };
 
 export type GET_MEMBERVariables = Exact<{
   memberId: Scalars['String'];
@@ -161958,20 +161945,21 @@ export type GetContractSourceDataVariables = Exact<{
 
 export type GetContractSourceData = { __typename?: 'query_root', member_contract_by_pk?: { __typename?: 'member_contract', contract_id: any, values?: any | null } | null };
 
-export type InsertMemberTaskVariables = Exact<{
+export type SaveMemberTaskVariables = Exact<{
+  retiredMeetIds: Array<Scalars['uuid']> | Scalars['uuid'];
+  retiredMemberIds: Array<Scalars['String']> | Scalars['String'];
+  meets: Array<meet_insert_input> | meet_insert_input;
+  meetMembers: Array<meet_member_insert_input> | meet_member_insert_input;
   data: member_task_insert_input;
-}>;
-
-
-export type InsertMemberTask = { __typename?: 'mutation_root', insert_member_task_one?: { __typename?: 'member_task', id: string } | null };
-
-export type UpdateMemberTaskVariables = Exact<{
+  expectedState: member_task_bool_exp;
   memberTaskId: Scalars['String'];
-  data?: InputMaybe<member_task_set_input>;
+  newMeetId?: InputMaybe<Scalars['uuid']>;
+  retiredMeetId?: InputMaybe<Scalars['uuid']>;
+  retiredMemberId?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type UpdateMemberTask = { __typename?: 'mutation_root', update_member_task_by_pk?: { __typename?: 'member_task', id: string } | null };
+export type SaveMemberTask = { __typename?: 'mutation_root', update_meet?: { __typename?: 'meet_mutation_response', affected_rows: number } | null, update_meet_member?: { __typename?: 'meet_member_mutation_response', affected_rows: number } | null, insert_meet?: { __typename?: 'meet_mutation_response', affected_rows: number } | null, insert_meet_member?: { __typename?: 'meet_member_mutation_response', affected_rows: number } | null, insert_member_task_one?: { __typename?: 'member_task', id: string } | null, assert_member_task_saved: Array<{ __typename?: 'meeting_transaction_result', ok: boolean }> };
 
 export type DeleteMemberTaskVariables = Exact<{
   memberTaskId: Scalars['String'];
@@ -163113,14 +163101,14 @@ export type GET_MEMBER_TASK_COLLECTIONVariables = Exact<{
 }>;
 
 
-export type GET_MEMBER_TASK_COLLECTION = { __typename?: 'query_root', executors: Array<{ __typename?: 'member_task', id: string, executor?: { __typename?: 'member', id: string, name: string, member_properties: Array<{ __typename?: 'member_property', value: string, property: { __typename?: 'property', name: string } }> } | null }>, authors: Array<{ __typename?: 'member_task', id: string, author?: { __typename?: 'member', id: string, name: string, member_properties: Array<{ __typename?: 'member_property', value: string, property: { __typename?: 'property', name: string } }> } | null }>, member_task_aggregate: { __typename?: 'member_task_aggregate', aggregate?: { __typename?: 'member_task_aggregate_fields', count: number } | null }, member_task: Array<{ __typename?: 'member_task', id: string, title: string, description?: string | null, priority: string, status: string, due_at?: any | null, created_at?: any | null, has_meeting: boolean, meeting_gateway?: string | null, meeting_hours: any, is_private: boolean, meet?: { __typename?: 'meet', id: any, started_at: any, ended_at: any, exp_at?: any | null, nbf_at?: any | null, options: any } | null, category?: { __typename?: 'category', id: string, name: string } | null, member: { __typename?: 'member', id: string, name: string, username: string }, executor?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null, author?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null }> };
+export type GET_MEMBER_TASK_COLLECTION = { __typename?: 'query_root', executors: Array<{ __typename?: 'member_task', id: string, executor?: { __typename?: 'member', id: string, name: string, member_properties: Array<{ __typename?: 'member_property', value: string, property: { __typename?: 'property', name: string } }> } | null }>, authors: Array<{ __typename?: 'member_task', id: string, author?: { __typename?: 'member', id: string, name: string, member_properties: Array<{ __typename?: 'member_property', value: string, property: { __typename?: 'property', name: string } }> } | null }>, member_task_aggregate: { __typename?: 'member_task_aggregate', aggregate?: { __typename?: 'member_task_aggregate_fields', count: number } | null }, member_task: Array<{ __typename?: 'member_task', id: string, title: string, description?: string | null, priority: string, status: string, due_at?: any | null, created_at?: any | null, has_meeting: boolean, meeting_gateway?: string | null, meeting_hours: any, is_private: boolean, meet_id?: Scalars['uuid'] | null, meet?: { __typename?: 'meet', id: any, started_at: any, ended_at: any, exp_at?: any | null, nbf_at?: any | null, options: any } | null, category?: { __typename?: 'category', id: string, name: string } | null, member: { __typename?: 'member', id: string, name: string, username: string }, executor?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null, author?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null }> };
 
 export type GetMemberTaskByIdVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type GetMemberTaskById = { __typename?: 'query_root', member_task_by_pk?: { __typename?: 'member_task', id: string, title: string, description?: string | null, priority: string, status: string, due_at?: any | null, created_at?: any | null, has_meeting: boolean, meeting_gateway?: string | null, meeting_hours: any, is_private: boolean, meet?: { __typename?: 'meet', id: any, started_at: any, ended_at: any, exp_at?: any | null, nbf_at?: any | null } | null, category?: { __typename?: 'category', id: string, name: string } | null, member: { __typename?: 'member', id: string, name: string, username: string }, executor?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null, author?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null } | null };
+export type GetMemberTaskById = { __typename?: 'query_root', member_task_by_pk?: { __typename?: 'member_task', id: string, title: string, description?: string | null, priority: string, status: string, due_at?: any | null, created_at?: any | null, has_meeting: boolean, meeting_gateway?: string | null, meeting_hours: any, is_private: boolean, meet_id?: Scalars['uuid'] | null, meet?: { __typename?: 'meet', id: any, started_at: any, ended_at: any, exp_at?: any | null, nbf_at?: any | null } | null, category?: { __typename?: 'category', id: string, name: string } | null, member: { __typename?: 'member', id: string, name: string, username: string }, executor?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null, author?: { __typename?: 'member', id: string, name: string, username: string, picture_url?: string | null } | null } | null };
 
 export type GET_AUTHORS_BY_GROUP_MEMBER_IDSVariables = Exact<{
   groupMemberIds: Array<Scalars['String']> | Scalars['String'];

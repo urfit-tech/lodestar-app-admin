@@ -4,9 +4,10 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { useMutateMeetMember } from '../../hooks/meet'
 import { Meet } from '../../types/meet'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { StyledModalTitle } from '../common'
@@ -51,26 +52,29 @@ const AppointmentConfigureMeetingRoomModal: React.VFC<
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const { formatMessage } = useIntl()
-  const { insertMeet } = useMutateMeet()
-  const { updateMeetMember } = useMutateMeetMember()
+  const { moveMeetMember } = useMutateMeetMember()
 
   const handleSubmit = async (onSuccess: () => void) => {
     try {
       await form.validateFields()
+      // the buyer can only be moved out of an existing room
+      if (!meet?.id) return handleError({ message: formatMessage(commonMessages.event.failedSave) })
       setLoading(true)
       const values = form.getFieldsValue()
-      const { data: insertMeetData } = await insertMeet({
+      const newMeetId = uuid()
+      const { data } = await moveMeetMember({
         variables: {
           meet: {
-            started_at: meet?.startedAt,
-            ended_at: meet?.endedAt,
-            nbf_at: meet?.nbfAt,
-            exp_at: meet?.expAt,
+            id: newMeetId,
+            started_at: meet.startedAt,
+            ended_at: meet.endedAt,
+            nbf_at: meet.nbfAt,
+            exp_at: meet.expAt,
             auto_recording: false,
             target: appointmentId,
             type: 'appointmentPlan',
             app_id: appId,
-            host_member_id: meet?.hostMemberId,
+            host_member_id: meet.hostMemberId,
             gateway: 'jitsi',
             service_id: null,
             options: {
@@ -78,18 +82,14 @@ const AppointmentConfigureMeetingRoomModal: React.VFC<
               joinUrl: values.joinUrl,
             },
           },
-        },
-      })
-
-      await updateMeetMember({
-        variables: {
-          meetId: meet?.id,
+          previousMeetId: meet.id,
+          newMeetId,
           memberId,
-          meetMemberData: {
-            meet_id: insertMeetData?.insert_meet_one?.id,
-          },
         },
       })
+      if (data?.assert_meet_member_moved.length !== 1 || data.assert_meet_member_moved[0].ok !== true) {
+        return handleError({ message: formatMessage(commonMessages.event.failedSave) })
+      }
 
       message.success(formatMessage(commonMessages.event.successfullySaved))
       onSuccess()
