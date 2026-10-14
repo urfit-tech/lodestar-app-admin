@@ -12,9 +12,10 @@ import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { handleError } from '../../helpers'
+import { v4 as uuid } from 'uuid'
+import { deleteZoomMeet, handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
-import { useDeleteMeet, useGetOverlapMeet, useMutateMeet, useMutateMeetMember } from '../../hooks/meet'
+import { useDeleteMeet, useGetOverlapMeet } from '../../hooks/meet'
 import { useMutateMemberTask } from '../../hooks/memberTask'
 import { useMeetingServiceCheck, useService } from '../../hooks/service'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
@@ -92,15 +93,13 @@ const MemberTaskAdminModal: React.FC<
     afterClose?: () => void
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, afterClose, ...props }) => {
-  const { currentMemberId, permissions } = useAuth()
+  const { currentMemberId, permissions, authToken } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const [form] = useForm<MemberTaskAdminModalFieldProps>()
-  const { insertMemberTask, updateMemberTask, deleteMemberTask } = useMutateMemberTask()
-  const { insertMeet } = useMutateMeet()
+  const { saveMemberTask, deleteMemberTask } = useMutateMemberTask()
   const { deleteMeet } = useDeleteMeet()
-  const { insertMeetMember } = useMutateMeetMember()
   const { getOverlapMeets } = useGetOverlapMeet()
   const { getAvailableGatewayServiceId, getValidGatewaysWithinTimeRange, invalidGateways, setInvalidGateways } =
     useMeetingServiceCheck()
@@ -131,7 +130,8 @@ const MemberTaskAdminModal: React.FC<
       if (!formMemberId) return handleError({ message: 'value memberId is necessary' })
 
       const memberTaskId = memberTask?.id
-      const memberTaskMeetId = memberTask?.meet?.id || null
+      // raw member_task.meet_id: CAS and retirement source even when the related meet is not visible
+      const memberTaskMeetId = memberTask?.meetId ?? null
       const memberTaskMeetingGateway = memberTask?.meetingGateway
       const memberTaskExecutorId = memberTask?.executor?.id
       const memberTaskMemberId = memberTask?.member?.id
@@ -145,21 +145,13 @@ const MemberTaskAdminModal: React.FC<
         memberTaskDueAtTime !== formDueAtTime ||
         memberTaskMeetingHours !== formMeetingHours
 
-      let toBeUsedServiceId: string | null = null
+      // a meeting task without a visible meet gets a replacement instead of being treated as intact
+      const needNewMeet = formHasMeeting && (changeMeetingCondition || !memberTask?.meet?.id)
+      const retiredMeetId = memberTaskMeetId && (!formHasMeeting || needNewMeet) ? memberTaskMeetId : null
+      // the previous buyer membership is retired, not the (possibly changed) form member's
+      const retiredMemberId = retiredMeetId ? memberTaskMemberId ?? null : null
 
-      if (memberTaskMemberId && memberTaskMeetingGateway && memberTaskMeetId) {
-        if (!formHasMeeting || (formHasMeeting && changeMeetingCondition)) {
-          try {
-            await deleteMeet({
-              memberTaskMeetId,
-              memberTaskMemberId,
-              memberTaskMeetingGateway,
-            })
-          } catch (err) {
-            handleError(err)
-          }
-        }
-      }
+      let toBeUsedServiceId: string | null = null
 
       if (formHasMeeting) {
         if (!formDueAt)
@@ -182,14 +174,17 @@ const MemberTaskAdminModal: React.FC<
 
         if (
           enabledModules.meet_service &&
-          changeMeetingCondition &&
+          needNewMeet &&
           (formMeetingGateway === 'zoom' || formMeetingGateway === 'google-meet')
         ) {
-          toBeUsedServiceId = await getAvailableGatewayServiceId({
+          const availableServiceId: unknown = await getAvailableGatewayServiceId({
             gateway: formMeetingGateway,
             startedAt: formDueAt.toDate(),
             endedAt: dayjs(formDueAt.toDate()).add(formMeetingHours, 'hour').toDate(),
           })
+          // without an available account the helper has already shown the error (and returns its message handle)
+          if (typeof availableServiceId !== 'string' || !availableServiceId) return
+          toBeUsedServiceId = availableServiceId
         }
 
         const { isAvailable } = checkMeetingMember({
@@ -205,12 +200,36 @@ const MemberTaskAdminModal: React.FC<
         }
       }
 
+      const savedMemberTaskId = memberTaskId ?? uuid()
+      const newMeetId = needNewMeet ? uuid() : null
       try {
         setLoading(true)
-        const { data: insertMemberTaskData } = await insertMemberTask({
+        const { data } = await saveMemberTask({
           variables: {
+            retiredMeetIds: retiredMeetId ? [retiredMeetId] : [],
+            retiredMemberIds: retiredMemberId ? [retiredMemberId] : [],
+            meets: newMeetId
+              ? [
+                  {
+                    id: newMeetId,
+                    started_at: toFormat(formDueAt),
+                    ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
+                    nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
+                    exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
+                    auto_recording: formMeetingGateway !== 'jitsi',
+                    target: savedMemberTaskId,
+                    type: 'memberTask',
+                    app_id: appId,
+                    host_member_id: formExecutorId,
+                    gateway: formMeetingGateway ?? 'jitsi',
+                    service_id: formMeetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
+                    options: {},
+                  },
+                ]
+              : [],
+            meetMembers: newMeetId ? [{ id: uuid(), meet_id: newMeetId, member_id: formMemberId }] : [],
             data: {
-              id: memberTaskId,
+              id: savedMemberTaskId,
               title: formTitle,
               category_id: formCategoryId,
               member_id: formMemberId,
@@ -221,57 +240,35 @@ const MemberTaskAdminModal: React.FC<
               due_at: toFormat(formDueAt),
               description: formDescription,
               has_meeting: formHasMeeting,
-              meet_id: formHasMeeting ? memberTask?.meet.id : null,
+              meet_id: formHasMeeting ? newMeetId ?? memberTaskMeetId : null,
               meeting_hours: formHasMeeting ? formMeetingHours : 0,
               meeting_gateway: formHasMeeting ? formMeetingGateway ?? 'jitsi' : null,
               created_at: toFormat(formCreatedAt),
               is_private: formIsPrivate,
             },
+            // meeting-linkage CAS against the raw meet_id this form was opened with
+            expectedState: {
+              id: { _eq: savedMemberTaskId },
+              meet_id: memberTaskMeetId ? { _eq: memberTaskMeetId } : { _is_null: true },
+            },
+            memberTaskId: savedMemberTaskId,
+            newMeetId,
+            retiredMeetId,
+            retiredMemberId,
           },
         })
-
-        if (formHasMeeting && changeMeetingCondition) {
-          const { data: insertMeetData } = await insertMeet({
-            variables: {
-              meet: {
-                started_at: toFormat(formDueAt),
-                ended_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                nbf_at: dayjs(toFormat(formDueAt)).subtract(10, 'minutes'),
-                exp_at: dayjs(toFormat(formDueAt)).add(formMeetingHours, 'hours'),
-                auto_recording: formMeetingGateway !== 'jitsi',
-                target: memberTaskId ?? insertMemberTaskData?.insert_member_task_one?.id,
-                type: 'memberTask',
-                app_id: appId,
-                host_member_id: formExecutorId,
-                gateway: formMeetingGateway ?? 'jitsi',
-                service_id: formMeetingGateway !== 'jitsi' ? toBeUsedServiceId : null,
-                options: {},
-              },
-            },
-          })
-
-          await insertMeetMember({
-            variables: {
-              meetMember: {
-                meet_id: insertMeetData?.insert_meet_one?.id,
-                member_id: formMemberId,
-              },
-            },
-          }).catch(error => handleError({ message: `insert meet member failed. error:${error}` }))
-
-          if (!insertMemberTaskData?.insert_member_task_one?.id)
-            return handleError({ message: 'can not get member task id' })
-
-          await updateMemberTask({
-            variables: {
-              memberTaskId: insertMemberTaskData?.insert_member_task_one?.id,
-              data: { meet_id: insertMeetData?.insert_meet_one?.id || memberTaskMeetId },
-            },
-          }).catch(error => handleError({ message: `update member task meetId failed. error:${error}` }))
+        if (data?.assert_member_task_saved.length !== 1 || data.assert_member_task_saved[0].ok !== true) {
+          return handleError({ message: formatMessage(commonMessages.event.failedSave) })
         }
       } catch (error) {
-        handleError({ message: 'error' })
+        return handleError(error)
+      } finally {
         setLoading(false)
+      }
+
+      // external meeting cleanup only after the transaction committed
+      if (retiredMeetId && memberTaskMeetingGateway === 'zoom') {
+        await deleteZoomMeet(retiredMeetId, authToken).catch(handleError)
       }
 
       onRefetch?.()
@@ -281,11 +278,15 @@ const MemberTaskAdminModal: React.FC<
         setInvalidGateways([])
         setHasMeeting(false)
       }
-      setLoading(false)
-    } catch (error: any) {
-      if (error?.errorFields) {
-        const errorMessages = error.errorFields.map((v: { errors: any[] }) => v.errors.toString()).join(' ,')
+    } catch (error: unknown) {
+      // form.validateFields() rejects with antd's ValidateErrorEntity; anything else (e.g. overlap/service lookup) is
+      // reported as is. No write has happened at this point.
+      const errorFields: unknown = error && typeof error === 'object' ? Reflect.get(error, 'errorFields') : undefined
+      if (Array.isArray(errorFields)) {
+        const errorMessages = errorFields.map((v: { errors?: unknown }) => String(v?.errors)).join(' ,')
         handleError({ message: errorMessages })
+      } else {
+        handleError(error)
       }
     }
   }
