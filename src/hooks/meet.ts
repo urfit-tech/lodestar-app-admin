@@ -55,15 +55,6 @@ export const useOverlapMeets = (startedAt: Date | null, endedAt: Date | null) =>
 }
 
 export const useMutateMeet = () => {
-  const [insertMeet] = useMutation<hasura.InsertMeet, hasura.InsertMeetVariables>(
-    gql`
-      mutation InsertMeet($meet: meet_insert_input!) {
-        insert_meet_one(object: $meet) {
-          id
-        }
-      }
-    `,
-  )
   const [updateMeet] = useMutation<hasura.UpdateMeet, hasura.UpdateMeetVariables>(gql`
     mutation UpdateMeet($meetId: uuid!, $data: meet_set_input) {
       update_meet_by_pk(pk_columns: { id: $meetId }, _set: $data) {
@@ -79,20 +70,12 @@ export const useMutateMeet = () => {
     }
   `)
   return {
-    insertMeet,
     updateMeet,
     deleteGeneralMeet,
   }
 }
 
 export const useMutateMeetMember = () => {
-  const [insertMeetMember] = useMutation<hasura.InsertMeetMember, hasura.InsertMeetMemberVariables>(gql`
-    mutation InsertMeetMember($meetMember: meet_member_insert_input!) {
-      insert_meet_member_one(object: $meetMember) {
-        id
-      }
-    }
-  `)
   const [deleteMeetMember] = useMutation<hasura.DeleteMeetMember, hasura.DeleteMeetMemberVariables>(gql`
     mutation DeleteMeetMember($meetId: uuid!, $memberId: String!) {
       update_meet_member(
@@ -104,17 +87,27 @@ export const useMutateMeetMember = () => {
     }
   `)
 
-  const [updateMeetMember] = useMutation<hasura.UpdateMeetMember, hasura.UpdateMeetMemberVariables>(gql`
-    mutation UpdateMeetMember($meetId: uuid!, $memberId: String!, $meetMemberData: meet_member_set_input!) {
-      update_meet_member(where: { meet_id: { _eq: $meetId }, member_id: { _eq: $memberId } }, _set: $meetMemberData) {
+  // One transaction: insert the new room, move only the live memberships of memberId still in the previous room and
+  // assert both as the last root field. A stale or zero-row move fails the assertion and rolls the new room back.
+  const [moveMeetMember] = useMutation<hasura.MoveMeetMember, hasura.MoveMeetMemberVariables>(gql`
+    mutation MoveMeetMember($meet: meet_insert_input!, $previousMeetId: uuid!, $newMeetId: uuid!, $memberId: String!) {
+      insert_meet_one(object: $meet) {
+        id
+      }
+      update_meet_member(
+        where: { meet_id: { _eq: $previousMeetId }, member_id: { _eq: $memberId }, deleted_at: { _is_null: true } }
+        _set: { meet_id: $newMeetId }
+      ) {
         affected_rows
+      }
+      assert_meet_member_moved(args: { new_meet_id: $newMeetId, member_id: $memberId }) {
+        ok
       }
     }
   `)
   return {
-    insertMeetMember,
     deleteMeetMember,
-    updateMeetMember,
+    moveMeetMember,
   }
 }
 

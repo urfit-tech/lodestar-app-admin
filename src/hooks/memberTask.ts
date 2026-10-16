@@ -2,8 +2,37 @@ import { gql, useMutation } from '@apollo/client'
 import hasura from '../hasura'
 
 export const useMutateMemberTask = () => {
-  const [insertMemberTask] = useMutation<hasura.InsertMemberTask, hasura.InsertMemberTaskVariables>(gql`
-    mutation InsertMemberTask($data: member_task_insert_input!) {
+  // One transaction: retire the previous meet and buyer membership, insert the new meet and buyer membership, upsert
+  // the task (on_conflict.where is a CAS on the task's raw meet_id) and assert the final state as the last root field.
+  // Empty arrays / `_in: []` make the meeting roots no-ops.
+  const [saveMemberTask] = useMutation<hasura.SaveMemberTask, hasura.SaveMemberTaskVariables>(gql`
+    mutation SaveMemberTask(
+      $retiredMeetIds: [uuid!]!
+      $retiredMemberIds: [String!]!
+      $meets: [meet_insert_input!]!
+      $meetMembers: [meet_member_insert_input!]!
+      $data: member_task_insert_input!
+      $expectedState: member_task_bool_exp!
+      $memberTaskId: String!
+      $newMeetId: uuid
+      $retiredMeetId: uuid
+      $retiredMemberId: String
+    ) {
+      update_meet(where: { id: { _in: $retiredMeetIds } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
+      update_meet_member(
+        where: { meet_id: { _in: $retiredMeetIds }, member_id: { _in: $retiredMemberIds } }
+        _set: { deleted_at: "now()" }
+      ) {
+        affected_rows
+      }
+      insert_meet(objects: $meets) {
+        affected_rows
+      }
+      insert_meet_member(objects: $meetMembers) {
+        affected_rows
+      }
       insert_member_task_one(
         object: $data
         on_conflict: {
@@ -22,16 +51,20 @@ export const useMutateMemberTask = () => {
             meeting_hours
             meeting_gateway
           ]
+          where: $expectedState
         }
       ) {
         id
       }
-    }
-  `)
-  const [updateMemberTask] = useMutation<hasura.UpdateMemberTask, hasura.UpdateMemberTaskVariables>(gql`
-    mutation UpdateMemberTask($memberTaskId: String!, $data: member_task_set_input) {
-      update_member_task_by_pk(pk_columns: { id: $memberTaskId }, _set: $data) {
-        id
+      assert_member_task_saved(
+        args: {
+          task_id: $memberTaskId
+          new_meet_id: $newMeetId
+          retired_meet_id: $retiredMeetId
+          retired_member_id: $retiredMemberId
+        }
+      ) {
+        ok
       }
     }
   `)
@@ -44,8 +77,7 @@ export const useMutateMemberTask = () => {
   `)
 
   return {
-    insertMemberTask,
-    updateMemberTask,
+    saveMemberTask,
     deleteMemberTask,
   }
 }

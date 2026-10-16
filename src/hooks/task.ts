@@ -185,6 +185,7 @@ export const useMemberTaskCollection = (options?: {
           meeting_gateway
           meeting_hours
           is_private
+          meet_id
           meet {
             id
             started_at
@@ -246,6 +247,7 @@ export const useMemberTaskCollection = (options?: {
     hasMeeting: v.has_meeting,
     meetingGateway: v.meeting_gateway as MeetingGateway,
     meetingHours: v.meeting_hours,
+    meetId: v.meet_id ?? null,
     meet: {
       id: v.meet?.id,
       startedAt: v.meet?.started_at,
@@ -325,6 +327,7 @@ export const useMemberTask = (taskId: string) => {
           meeting_gateway
           meeting_hours
           is_private
+          meet_id
           meet {
             id
             started_at
@@ -376,6 +379,7 @@ export const useMemberTask = (taskId: string) => {
         hasMeeting: data?.member_task_by_pk.has_meeting,
         meetingGateway: data?.member_task_by_pk.meeting_gateway as MeetingGateway,
         meetingHours: data?.member_task_by_pk.meeting_hours,
+        meetId: data?.member_task_by_pk.meet_id ?? null,
         meet: {
           id: data?.member_task_by_pk.meet?.id,
           startedAt: data?.member_task_by_pk.meet?.started_at,

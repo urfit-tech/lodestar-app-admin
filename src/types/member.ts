@@ -176,6 +176,8 @@ export type MemberTaskProps = {
   hasMeeting: boolean
   meetingGateway: MeetingGateway
   meetingHours: number
+  // raw member_task.meet_id; `meet.id` comes from the relationship and is empty when that meet is not visible
+  meetId: string | null
   meet: {
     id: string | any
     startedAt: Date
