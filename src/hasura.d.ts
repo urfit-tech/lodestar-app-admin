@@ -159320,7 +159320,7 @@ export type UpdateAppointmentPlanVariables = Exact<{
   appointmentPlanId: Scalars['uuid'];
   title: Scalars['String'];
   appointmentPlanCategories: Array<appointment_plan_category_insert_input> | appointment_plan_category_insert_input;
-  phone: Scalars['String'];
+  phone?: InputMaybe<Scalars['String']>;
   reservationAmount?: InputMaybe<Scalars['numeric']>;
   reservationType?: InputMaybe<Scalars['String']>;
   rescheduleAmount?: InputMaybe<Scalars['Int']>;
@@ -161154,6 +161154,7 @@ export type GetAppointmentPlanAdminVariables = Exact<{
   appointmentPlanId: Scalars['uuid'];
   now?: InputMaybe<Scalars['timestamptz']>;
   targetMemberId?: InputMaybe<Scalars['String']>;
+  withPhone: Scalars['Boolean'];
 }>;
 
 

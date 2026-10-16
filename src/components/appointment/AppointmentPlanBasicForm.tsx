@@ -4,11 +4,13 @@ import { Flex } from '@chakra-ui/react'
 import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Spin, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { canAccessAppointmentPlanPhone } from '../../hooks/appointment'
 import { useService } from '../../hooks/service'
 import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
@@ -30,7 +32,7 @@ const messages = defineMessages({
 type FieldProps = {
   title: string
   categoryIds: string[]
-  phone: string
+  phone?: string
   reservationAmount: number
   reservationType: ReservationType
   rescheduleAmount: number
@@ -45,7 +47,7 @@ const UpdateAppointmentPlan = gql`
     $appointmentPlanId: uuid!
     $title: String!
     $appointmentPlanCategories: [appointment_plan_category_insert_input!]!
-    $phone: String!
+    $phone: String
     $reservationAmount: numeric
     $reservationType: String
     $rescheduleAmount: Int
@@ -84,7 +86,9 @@ const AppointmentPlanBasicForm: React.FC<{
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { enabledModules } = useApp()
+  const { currentUserRole } = useAuth()
   const { formatMessage } = useIntl()
+  const canEditPhone = canAccessAppointmentPlanPhone(currentUserRole)
   const [form] = useForm<FieldProps>()
   const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
 
@@ -113,7 +117,8 @@ const AppointmentPlanBasicForm: React.FC<{
           category_id: categoryId,
           position: index,
         })),
-        phone: values.phone,
+        // general-member cannot read phone; leave it untouched instead of overwriting it
+        phone: canEditPhone ? values.phone : undefined,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
@@ -171,21 +176,22 @@ const AppointmentPlanBasicForm: React.FC<{
       <Form.Item label={formatMessage(appointmentMessages.label.category)} name="categoryIds">
         <CategorySelector classType="appointmentPlan" />
       </Form.Item>
-      <Form.Item
-        label={formatMessage(appointmentMessages.label.contactPhone)}
-        name="phone"
-        rules={[
-          {
-            required: true,
-            message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(appointmentMessages.label.contactPhone),
-            }),
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
+      {canEditPhone && (
+        <Form.Item
+          label={formatMessage(appointmentMessages.label.contactPhone)}
+          name="phone"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(appointmentMessages.label.contactPhone),
+              }),
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      )}
       <Form.Item
         className="mb-0"
         label={
