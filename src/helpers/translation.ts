@@ -543,6 +543,10 @@ export const errorMessages = {
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
+    orderForOthersForbidden: {
+      id: 'error.text.orderForOthersForbidden',
+      defaultMessage: '沒有代客下單的權限。請管理員在權限設定開啟「代會員建立訂單」',
+    },
     memberAlreadyExist: { id: 'error.text.memberAlreadyExist', defaultMessage: '會員已存在' },
     invalidUrl: { id: 'error.text.invalidURL', defaultMessage: '無效的網址' },
     uploadImageError: {

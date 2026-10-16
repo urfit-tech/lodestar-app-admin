@@ -3,11 +3,13 @@ import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
+import { canOrderForOthers } from '../../helpers/orderPermission'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
 import AppointmentPlanAppointmentModal from './AppointmentPlanAppointmentModal'
@@ -75,6 +77,9 @@ const AppointmentPlanCollectionTable: React.FC<{
 }> = ({ condition, withAppointmentButton }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
+  const { currentUserRole, permissions } = useAuth()
+  // 代客預約會呼叫 /order/create 帶他人 memberId；入口顯示條件與後端 guard 一致
+  const showAppointmentButton = Boolean(withAppointmentButton) && canOrderForOthers(currentUserRole, permissions)
   const { loadingAppointmentPlans, appointmentPlans, refetchAppointmentPlans } = useAppointmentPlansAdmin(condition)
 
   const [searchName, setSearchName] = useState<string | null>(null)
@@ -178,7 +183,7 @@ const AppointmentPlanCollectionTable: React.FC<{
             window.open(`${process.env.PUBLIC_URL}/appointment-plans/${record.id}`)
           },
         })}
-        columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
+        columns={showAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
         dataSource={data}
       />
       {selectedAppointment && (

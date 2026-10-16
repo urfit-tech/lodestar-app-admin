@@ -55,6 +55,7 @@ const formMessages = {
       id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_STATUS',
       defaultMessage: '調整會員訂單狀態功能',
     },
+    MEMBER_ORDER_CREATE: { id: 'form.PermissionGroup.MEMBER_ORDER_CREATE', defaultMessage: '代會員建立訂單' },
     MODIFY_MEMBER_PAYMENT_STATUS: {
       id: 'form.PermissionGroup.MODIFY_MEMBER_PAYMENT_STATUS',
       defaultMessage: '調整會員交易狀態功能',
