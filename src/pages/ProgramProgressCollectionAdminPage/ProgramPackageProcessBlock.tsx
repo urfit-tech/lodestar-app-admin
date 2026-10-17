@@ -548,7 +548,9 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
                 program_contents(order_by: { position: asc }) {
                   title
                   duration
-                  program_content_progress(where: { updated_at: { _lte: $endedAt, _gte: $startedAt } }) {
+                  program_content_progress(
+                    where: { updated_at: { _lte: $endedAt, _gte: $startedAt }, member: $memberCondition }
+                  ) {
                     member_id
                     progress
                   }
