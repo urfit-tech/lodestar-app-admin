@@ -177,7 +177,7 @@ const useProjectPreviewCollection = (
             expiredAt: v.expired_at,
             coverUrl: v.cover_url || null,
             previewUrl: v.preview_url || null,
-            totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
+            totalCount: sum(v.project_plans.map(w => w.project_plan_enrollment_count?.enrollment_count || 0)),
             coverType: v.cover_type,
           }
         })
@@ -321,10 +321,8 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       cover_type
       project_plans {
         id
-        project_plan_enrollments_aggregate {
-          aggregate {
-            count
-          }
+        project_plan_enrollment_count {
+          enrollment_count
         }
       }
       project_roles(where: { identity: { name: { _eq: "author" } } }) {
