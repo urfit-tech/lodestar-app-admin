@@ -195,10 +195,8 @@ export const useActivityAdmin = (activityId: string) => {
                 online_link
               }
             }
-            activity_ticket_enrollments_aggregate {
-              aggregate {
-                count
-              }
+            activity_ticket_enrollment_count {
+              enrollment_count
             }
           }
           activity_sessions(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
@@ -269,7 +267,7 @@ export const useActivityAdmin = (activityId: string) => {
                 location: v.activity_session.location || null,
                 onlineLink: v.activity_session.online_link || null,
               })),
-              enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
+              enrollmentsCount: v.activity_ticket_enrollment_count?.enrollment_count || 0,
             })) || [],
           sessions:
             data?.activity[0]?.activity_sessions?.map(v => ({

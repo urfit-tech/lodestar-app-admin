@@ -277,10 +277,8 @@ const useProjectAdmin = (projectId: string) => {
               product_id
               options
             }
-            project_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
+            project_plan_enrollment_count {
+              enrollment_count
             }
           }
           project_categories {
@@ -352,7 +350,7 @@ const useProjectAdmin = (projectId: string) => {
             isLimited: v.is_limited,
             publishedAt: v.published_at && new Date(v.published_at),
             autoRenewed: v.auto_renewed,
-            projectPlanEnrollment: v.project_plan_enrollments_aggregate.aggregate?.count || 0,
+            projectPlanEnrollment: v.project_plan_enrollment_count?.enrollment_count || 0,
             products: v.project_plan_products.map(u => ({ id: u.product_id, options: u.options })),
           })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),

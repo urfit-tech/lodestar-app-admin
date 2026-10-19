@@ -220,10 +220,8 @@ export const usePodcastPlanAdminCollection = (creatorId?: string) => {
           sale_price
           sold_at
           published_at
-          podcast_plan_enrollments_aggregate {
-            aggregate {
-              count
-            }
+          podcast_plan_enrollment_count {
+            enrollment_count
           }
           creator_id
           creator {
@@ -264,7 +262,7 @@ export const usePodcastPlanAdminCollection = (creatorId?: string) => {
             name: podcastPlan.creator?.name || podcastPlan.creator?.username || '',
             avatarUrl: podcastPlan.creator?.picture_url || null,
           },
-          salesCount: podcastPlan.podcast_plan_enrollments_aggregate.aggregate?.count || 0,
+          salesCount: podcastPlan.podcast_plan_enrollment_count?.enrollment_count || 0,
         }))
 
   return {

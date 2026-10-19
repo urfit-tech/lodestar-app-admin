@@ -236,9 +236,10 @@ const SalesCount: React.FC<{ id: string }> = ({ id }) => {
   const { data } = useQuery<hasura.GET_PODCAST_PROGRAM_AGGREGATE, hasura.GET_PODCAST_PROGRAM_AGGREGATEVariables>(
     gql`
       query GET_PODCAST_PROGRAM_AGGREGATE($id: uuid!) {
-        podcast_program_enrollment_aggregate(where: { podcast_program_id: { _eq: $id } }) {
-          aggregate {
-            count
+        podcast_program_by_pk(id: $id) {
+          id
+          podcast_program_enrollment_count {
+            enrollment_count
           }
         }
       }
@@ -248,9 +249,7 @@ const SalesCount: React.FC<{ id: string }> = ({ id }) => {
     },
   )
 
-  const salesCount = data?.podcast_program_enrollment_aggregate.aggregate
-    ? data.podcast_program_enrollment_aggregate.aggregate.count || 0
-    : 0
+  const salesCount = data?.podcast_program_by_pk?.podcast_program_enrollment_count?.enrollment_count || 0
 
   return <>{salesCount}</>
 }

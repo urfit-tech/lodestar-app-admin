@@ -75,9 +75,10 @@ export const useProgramPlanEnrollmentCount = (programPlanId: string) => {
   >(
     gql`
       query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {
-        program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
-          aggregate {
-            count
+        program_plan_by_pk(id: $programPlanId) {
+          id
+          program_plan_enrollment_count {
+            enrollment_count
           }
         }
       }
@@ -85,7 +86,7 @@ export const useProgramPlanEnrollmentCount = (programPlanId: string) => {
     { variables: { programPlanId } },
   )
 
-  const enrollmentCount: number = data?.program_plan_enrollment_aggregate.aggregate?.count || 0
+  const enrollmentCount: number = data?.program_plan_by_pk?.program_plan_enrollment_count?.enrollment_count || 0
 
   return {
     loadingEnrollmentCount: loading,
