@@ -1,16 +1,17 @@
 import { Button, Divider, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import dayjs from 'dayjs'
 import { groupBy, sum } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, handleError } from '../../helpers'
+import { isOrderFieldForbiddenError } from '../../helpers/orderPermission'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 import { useCheck } from '../../hooks/checkout'
@@ -273,7 +274,12 @@ const AppointmentPlanAppointmentModal: React.FC<
         }
       })
       .catch(error => {
-        handleError(error)
+        // 後端 order guard 403：沒有代客下單權限，給看得懂的訊息而不是通用錯誤
+        if (isOrderFieldForbiddenError(error)) {
+          message.error(formatMessage(errorMessages.text.orderForOthersForbidden))
+        } else {
+          handleError(error)
+        }
         setAppointmentStep('failed')
       })
       .finally(() => {

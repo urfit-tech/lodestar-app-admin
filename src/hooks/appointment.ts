@@ -1,32 +1,44 @@
-import { useMutation, useQuery } from '@apollo/client'
-import { gql } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { UserRole } from 'lodestar-app-element/src/types/data'
 import moment from 'moment'
 import { useMemo } from 'react'
 import hasura from '../hasura'
 import {
-  AppointmentPlanAdmin,
-  MeetGenerationMethod,
-  ReservationType,
   AppointmentPeriodCardProps,
   AppointmentPeriodPlanProps,
+  AppointmentPlanAdmin,
   MeetGateway,
+  MeetGenerationMethod,
+  ReservationType,
 } from '../types/appointment'
 import { PeriodType } from '../types/general'
 import { Meet } from '../types/meet'
 
+// Hasura only exposes appointment_plan.phone to app-owner and content-creator.
+// Selecting it as general-member makes Hasura reject the whole query.
+export const canAccessAppointmentPlanPhone = (role: UserRole) => role === 'app-owner' || role === 'content-creator'
+
 export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberId?: string) => {
+  const { currentUserRole } = useAuth()
+  const withPhone = canAccessAppointmentPlanPhone(currentUserRole)
   const { loading, error, data, refetch } = useQuery<
     hasura.GetAppointmentPlanAdmin,
     hasura.GetAppointmentPlanAdminVariables
   >(
     gql`
-      query GetAppointmentPlanAdmin($appointmentPlanId: uuid!, $now: timestamptz, $targetMemberId: String) {
+      query GetAppointmentPlanAdmin(
+        $appointmentPlanId: uuid!
+        $now: timestamptz
+        $targetMemberId: String
+        $withPhone: Boolean!
+      ) {
         appointment_plan_by_pk(id: $appointmentPlanId) {
           id
           title
-          phone
+          phone @include(if: $withPhone)
           description
           duration
           price
@@ -78,6 +90,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
         appointmentPlanId,
         targetMemberId,
         now: moment().startOf('minute').toDate(),
+        withPhone,
       },
     },
   )

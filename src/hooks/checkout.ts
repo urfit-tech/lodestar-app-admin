@@ -12,6 +12,9 @@ import axios from 'axios'
 import { prop, sum } from 'ramda'
 import { useEffect, useState } from 'react'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { useIntl } from 'react-intl'
+import { isOrderFieldForbiddenError } from '../helpers/orderPermission'
+import { errorMessages } from '../helpers/translation'
 import { InvoiceProps } from '../types/merchandise'
 import { ShippingProps } from '../types/merchandise'
 import { CheckProps, OrderDiscountProps, OrderProductProps, shippingOptionProps } from '../types/checkout'
@@ -570,6 +573,7 @@ export const useCheck = (
   shipping: ShippingProps | null,
   options: { [ProductId: string]: any },
 ) => {
+  const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [check, setCheck] = useState<CheckProps>({ orderProducts: [], orderDiscounts: [], shippingOption: null })
@@ -653,7 +657,13 @@ export const useCheck = (
       {
         headers: { authorization: `Bearer ${authToken}` },
       },
-    )
+    ).catch(error => {
+      setOrderPlacing(false)
+      // 後端 order guard 403：帶他人 memberId 需要代客下單權限
+      throw isOrderFieldForbiddenError(error)
+        ? new Error(formatMessage(errorMessages.text.orderForOthersForbidden))
+        : error
+    })
     if (code === 'SUCCESS') {
       setOrderPlacing(false)
       return result
