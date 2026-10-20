@@ -1,9 +1,10 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, jest, test } from '@jest/globals'
 import {
   assertMemberUpdated,
   canEditMemberIdentity,
   canWriteMemberPhone,
   checkMemberMutation,
+  checkMemberNoteMutation,
 } from './memberWritePermissions'
 
 const member = {
@@ -11,7 +12,6 @@ const member = {
   role: 'general-member',
   permissionIds: [],
   permissionGroups: [],
-  identityPermissionsVisible: true,
 }
 
 describe('post-incident member write permissions', () => {
@@ -37,11 +37,8 @@ describe('post-incident member write permissions', () => {
     expect(canWriteMemberPhone('app-owner', {})).toBe(true)
     expect(canWriteMemberPhone('anonymous', { MEMBER_ADMIN: true })).toBe(false)
   })
-  test('staff identity edits require a positively verified plain member', () => {
+  test('allow potentially legal staff edits while the trigger checks hidden extras', () => {
     expect(canEditMemberIdentity('general-member', 'staff', member)).toBe(true)
-    expect(canEditMemberIdentity('general-member', 'staff', { ...member, identityPermissionsVisible: false })).toBe(
-      false,
-    )
     expect(canEditMemberIdentity('general-member', 'staff', { ...member, permissionIds: ['BACKSTAGE_ENTER'] })).toBe(
       false,
     )
@@ -70,5 +67,29 @@ describe('post-incident member write permissions', () => {
     await expect(
       checkMemberMutation(async () => ({ data: { update_member: { affected_rows: 0 } } }))(),
     ).rejects.toThrow('會員資料未更新')
+  })
+})
+
+describe('member note compound mutation results', () => {
+  test('complete success retains the note result without warning', async () => {
+    const result = { data: { insert_member_note_one: { id: 'note' }, update_member: { affected_rows: 1 } } }
+    const warn = jest.fn()
+    await expect(checkMemberNoteMutation(async () => result, warn)()).resolves.toBe(result)
+    expect(warn).not.toHaveBeenCalled()
+  })
+  test.each([undefined, null])('missing note id rejects even if the timestamp update succeeded: %p', async note => {
+    const warn = jest.fn()
+    await expect(
+      checkMemberNoteMutation(
+        async () => ({
+          data: {
+            insert_member_note_one: note,
+            update_member: { affected_rows: 1 },
+          },
+        }),
+        warn,
+      )(),
+    ).rejects.toThrow('會員紀錄未建立')
+    expect(warn).not.toHaveBeenCalled()
   })
 })
