@@ -1,3 +1,4 @@
+import { CheckboxValueType } from 'antd/lib/checkbox/Group'
 import { gql, useMutation } from '@apollo/client'
 import {
   Button,
@@ -1990,7 +1991,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
     return formatMessage(scheduleMessages.Publish.title)
   }, [publishFlowStep, formatMessage])
 
-  const handlePublishModeChange = useCallback((values: Array<string | number>) => {
+  const handlePublishModeChange = useCallback((values: CheckboxValueType[]) => {
     setSelectedPublishModes(values as PublishMode[])
   }, [])
 
@@ -2092,7 +2093,7 @@ const ClassGroupScheduleEditorInner: React.FC<ClassGroupScheduleEditorProps> = (
             unpaidStudentsByEventId={unpaidStudentsByEventId}
             holidays={scheduleCondition.excludeHolidays ? holidays : []}
             excludedDates={scheduleCondition.excludedDates}
-            viewDate={scheduleFocus?.date || scheduleCondition.startDate}
+            viewDate={scheduleFocus?.date ? new Date(scheduleFocus.date) : scheduleCondition.startDate}
             focusTime={scheduleFocus?.startTime}
             onDateClick={handleDateClick}
             onEventClick={handleEventClick}

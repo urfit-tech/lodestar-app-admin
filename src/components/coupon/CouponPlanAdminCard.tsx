@@ -1,3 +1,4 @@
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { gql, useQuery } from '@apollo/client'
 import { Button, Divider, Modal } from 'antd'
 import React, { ReactElement, useEffect, useState } from 'react'

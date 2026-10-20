@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-      - name: Set Node.js 14.x
+      - name: Set Node.js 16.20.2
         uses: actions/setup-node@v3
         with:
-          node-version: 14.19.0
+          node-version: 16.20.2
       - name: Install Yarn
-        run: npm install -g yarn
+        run: npm install -g yarn@1.22.22
       - name: Install
-        run: yarn install
+        run: yarn install --frozen-lockfile --production=false --non-interactive
       - name: Output ts version
         run: yarn tsc --version
       - name: Output packages version

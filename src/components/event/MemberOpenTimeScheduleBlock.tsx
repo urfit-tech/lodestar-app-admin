@@ -35,6 +35,7 @@ import {
   getEventDisplayInfo,
   getOpenTimeEventDuration,
   timeStringToMinutes,
+  toOpenTimeCalendarEvent,
 } from './openTimeSchedule.utils'
 import OpenTimeSettingsModal from './OpenTimeSettingsModal'
 
@@ -246,8 +247,8 @@ const MemberOpenTimeScheduleBlock: React.FC<MemberOpenTimeScheduleBlockProps> = 
   }, [fetchedData])
 
   const calendarEvents: EventInput[] = useMemo(() => {
-    const events = openTimeEvents.map(event => ({
-      ...event,
+    const events = openTimeEvents.map((event): EventInput => ({
+      ...toOpenTimeCalendarEvent(event),
       id: event.extendedProps?.event_id || event.id,
       title: event.title || '開放時間',
       backgroundColor: OPEN_TIME_COLOR,

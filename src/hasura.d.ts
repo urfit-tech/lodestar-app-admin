@@ -162930,7 +162930,7 @@ export type GetMemberForScheduleVariables = Exact<{
 }>;
 
 
-export type GetMemberForSchedule = { __typename?: 'query_root', member_by_pk?: { __typename?: 'member', id: string, name: string, email: string, member_properties: Array<{ __typename?: 'member_property', id: any, value: string, property: { __typename?: 'property', id: any, name: string } }> } | null, order_log: Array<{ __typename?: 'order_log', id: string, status: string, member_id: string, created_at: any, updated_at?: any | null, order_products: Array<{ __typename?: 'order_product', id: any, name: string, price: any, options?: any | null, started_at?: any | null, ended_at?: any | null }> }> };
+export type GetMemberForSchedule = { __typename?: 'query_root', member_by_pk?: { __typename?: 'member', id: string, name: string, email: string, member_properties: Array<{ __typename?: 'member_property', id: any, value: string, property: { __typename?: 'property', id: any, name: string } }> } | null, order_log: Array<{ __typename?: 'order_log', id: string, status: string, member_id: string, options?: any | null, expired_at?: any | null, created_at: any, updated_at?: any | null, order_products: Array<{ __typename?: 'order_product', id: any, name: string, price: any, options?: any | null, started_at?: any | null, ended_at?: any | null }> }> };
 
 export type GetPermissionGroupsForScheduleVariables = Exact<{ [key: string]: never; }>;
 

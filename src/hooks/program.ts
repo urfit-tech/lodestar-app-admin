@@ -857,7 +857,7 @@ export const useProgramContent = (programContentId: string) => {
   )
 
   const programContent:
-    | (DeepPick<ProgramContent, '!videos'> &
+    | (Omit<ProgramContent, 'videos'> &
         DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>)
     | null = data?.program_content_by_pk
     ? {

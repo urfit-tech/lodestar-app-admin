@@ -77,7 +77,7 @@ const AddOrdersToClassModal: React.FC<AddOrdersToClassModalProps> = ({
     const targetCategory = scheduleType === 'semester' ? 'semester' : 'group'
 
     return orders
-      .map(order => {
+      .map((order): OrderForDisplay | null => {
         const matchedProduct = order.order_products?.find(product => {
           const rawOptions = (product.options as any) || {}
           const options = rawOptions.options || {}

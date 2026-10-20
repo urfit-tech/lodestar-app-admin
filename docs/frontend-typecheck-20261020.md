@@ -1,92 +1,47 @@
-# 前端型別檢查調查（2026-10-20）
+# 前端型別與 production build 修正（2026-10-20）
 
-## 結論與範圍
+## 結果與根因
 
-原基準分支就有 TypeScript 4.4.3 無法解析依賴宣告的問題。以相同的 TypeScript 4.9.5 與同一份既有依賴比較，auth PR 新增 4 個診斷，全部在測試檔；未發現 auth 產品程式新增型別錯誤。本次依約只修編譯器、測試型別及 auth 新增問題，保留並列出既有業務診斷。
+在原編譯器／測試型別修正後，使用者擴大範圍要求清除既有建置阻擋。本次完整型別診斷從 30 個降至 0；不更改 strict、不排除來源或測試、不略過 CRA 型別檢查。
 
-此分支接續 [auth PR #764](https://github.com/urfit-tech/lodestar-app-admin/pull/764) 的 HEAD；新 draft PR 的 base 仍為 `develop`。應先合併原 auth PR，再合併本 PR。原 PR 尚未合併時，GitHub diff 會包含其 auth 變更；本次新增修正以最後一個 `fix: restore compiler and test typings` commit 為準。原 auth PR 不因本次工作更新。
+原 TypeScript 4.4.3 無法解析 SWR 2.2.5 的 inline type export；app 另有 react-reader。根編譯器已升為 4.9.5，符合 CRA 4 的 ^3.2.1 || ^4 peer range，補 @types/jest 26.0.24 與 Promise mocks。剩餘業務錯誤可在基準以相同工具重現；auth 新增的錯誤只在測試型別，已修正。先前「只列既有業務錯誤」的範圍已由本次修正取代。
 
-## 比較證據
+- 原基準：`771d815c87d4b9187d13bc1df094b1421774edb6`。
+- 原 auth HEAD：`22371599ee179e73392eaa2a2a0ba3275012397d`（[#764](https://github.com/urfit-tech/lodestar-app-admin/pull/764)）。
+- 前輪 fresh subagent review 僅涵蓋編譯器／測試型別 commit；本輪新增業務修正經主 agent 複查，仍待同事 review。
 
-- 基準：`771d815c87d4b9187d13bc1df094b1421774edb6`（`origin/develop`）。
-- auth HEAD：`22371599ee179e73392eaa2a2a0ba3275012397d`。
-- 同 repo 的基準、auth、修正後均使用相同既有依賴；修正後僅替換根編譯器並新增 Jest 型別。
-- TS 4.4.3 在基準的語法診斷：42 個；原 auth 的 CLI 檢查同樣卡在依賴語法。
+## 本輪變更
 
-| 狀態（TypeScript 4.9.5） | 診斷數 |
-| --- | ---: |
-| 原基準，尚未補 Jest 型別 | 157 |
-| auth HEAD，尚未補 Jest 型別 | 161 |
-| 本次修正後 | 30 |
-
-比較鍵為「檔案路徑、TS code、完整訊息」並保留重複次數，忽略行號位移。剩餘 30 個診斷全部能在基準分支以同一編譯器重現；測試檔與 setupTests 的診斷為 0。這代表與 auth 變更無關，不表示原 TS 4.4 已能完成 semantic check。
-
-## 根因與修正
-
-1. 三個 repo 原本固定 TS 4.4.3，但 SWR 2.2.5 使用 `export { type ... }`。SWR 的 internal 與 mutation 宣告均使用此語法。這種 inline type modifier 自 [TypeScript 4.5](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#type-modifiers-on-import-names) 才支援；既有 `skipLibCheck` 無法跳過語法解析。根編譯器升為 4.9.5，符合本地 react-scripts 4.0.3 的 peer range `^3.2.1 || ^4`。
-2. 專案測試使用 `jest`、`expect`、`it` 等全域，但未宣告 `@types/jest`。補上 26.0.24，對齊既有 Jest 26。沒有改 tsconfig、排除測試、放寬 strict 或加入錯誤抑制。
-3. auth 測試的 Promise mock 原為無回傳型別的 `jest.fn()`，`mockResolvedValue` 參數被推斷為 `never`。改成 `jest.fn<Promise<unknown>, any[]>()`，不改 runtime 測試行為。
-4. 另外將既有空白 setupTests.ts 標記為 module，修正 isolatedModules 的 TS1208。
-5. 新增 `yarn typecheck`（`tsc --noEmit`）統一入口；剩餘錯誤仍使命令回傳非零。lockfile 只更新編譯器與 Jest 型別所需 selector，沒有升級業務依賴。
-
-### auth 新增診斷分布（修正前）
-
-| 檔案 | 新增診斷 |
-| --- | ---: |
-| `src/contexts/AuthContext.test.tsx` | 2 |
-| `src/pages/ForgotPasswordPage.test.tsx` | 2 |
+- 補 CouponPlanAdminCard 的 useApp import；ProgramContent 的日期以 Omit 保留 Date 型別。
+- 排程資源查詢改為明確回傳 Promise 的 curried function；邀請 payload 依實際 API 接受 resource ID／role，不要求未使用的顯示欄位。
+- 將 RRule 實例轉成 FullCalendar 支援的 recurrence／exclusion 輸入，保留日期、duration 與 metadata，補回歸測試。
+- 補訂單 GraphQL 回應型別（沿用本地 Hasura schema 的 Pick）、既有查詢 options／expired_at 宣告、排程 type literal、CheckboxValueType 與行事曆日期轉換。
+- 權限頁仍使用原本 SELECT_MEMBER_PERMISSION key，僅以 in 判斷縮窄型別；沒有改用其他權限、擴大授權或更動後端權限。
+- 用 patch-package 8.0.0／postinstall-postinstall 2.1.0 修補原 element v1.95.4 的五個來源檔，postinstall 設定 --error-on-fail。
+- 部署 workflow 固定 Node 16.20.2／Yarn 1.22.22，install 使用 --frozen-lockfile --production=false --non-interactive，避免 NODE_ENV=production 略過 patch 工具及 Jest 型別。
 
 ## 驗證
 
-- 全部測試：9 suites、77 tests 通過；使用 Node 18.20.8、Jest 26 與既有 react-scripts。
-- 完整型別檢查：仍有 30 個既有業務／套件來源診斷，預期 exit 2；不是全綠。
-- 已比對 lockfile：Yarn 4 使用 update-lockfile 驗證；Yarn 1 用官方 lockfile parser 比對既有 resolution，未漂移。
-- 使用隔離 worktree 與既有 node_modules 的隔離 overlay，另置 TS 4.9.5 與 Jest 型別。未執行從零完整安裝或 production build；測試結果不等同部署驗證。
+- Node 16.20.2／Yarn 1.22.22／TypeScript 4.9.5。
+- `tsc --noEmit --pretty false`：通過，0 diagnostics。
+- 全部 11 suites／83 tests 通過，包括原 auth 測試。
+- production build：通過。保留既有 ESLint／Browserslist 警告，沒有透過新增忽略設定消除錯誤；CI=false 是原 build script 行為。
+- 獨立完整安裝及 NODE_ENV=production 下的 --frozen-lockfile --production=false 安裝／postinstall patch 成功。以 Yarn lock parser 比對，既有 selector 的 resolution／integrity 未漂移；新增項目只來自 patch-package 及其依賴（32 個 selector，可能合併到既有版本）。
+- Node 16 符合專案 engines >=14.16 <17；部署 workflow 的 Node 14 改為這次實測版本。只更新 workflow，未執行部署。
+- 前輪以 CRA 4 的 webpack 4.44.2／fork-ts-checker 4.1.6 實測 TS 4.9.5：合法 fixture 通過、故意錯誤可被攔下、修復後恢復通過。@typescript-eslint 4.33 宣告支援範圍 <4.5，實測成功不代表所有 parser 行為受官方保證。
 
-```sh
-yarn typecheck
-CI=true NODE_OPTIONS=--openssl-legacy-provider yarn test --watch=false --watchman=false --runInBand
-```
+## 依賴與部署順序
 
-## 剩餘既有業務診斷
+本 PR [#766](https://github.com/urfit-tech/lodestar-app-admin/pull/766) 的 base 為 `develop`，包含原 auth PR 的 ancestry。原 auth PR 未合併前，GitHub diff 會包含 auth 變更。先合併原 auth PR，再處理本 PR；如果採 squash／rebase merge，以原 auth HEAD `22371599ee179e73392eaa2a2a0ba3275012397d` 為界，只把後續修正 rebase 到新 base，確認 diff 後重跑驗證，避免重複引入 auth commits。
 
-以下行號取自本次修正後。`node_modules/lodestar-app-element` 是消費端已安裝的套件來源，不是本次 element PR；學員端／後台沒有更換 element tag。完整訊息可用上述 typecheck 命令重現。
+此處是同事 review 後的計畫，這輪沒有 merge、部署或 tag：
 
-| 檔案:行 | Code | 訊息摘要 |
-| --- | --- | --- |
-| `src/components/coupon/CouponPlanAdminCard.tsx:129` | TS2304 | Cannot find name 'useApp'. |
-| `src/components/craft/inputs/ImageInput.tsx:90` | TS2741 | Property 'className' is missing in type '{ width: string; ratio: number; src: string; shape: "rounded"; }' but required in type 'CustomRatioImageProps'. |
-| `src/components/event/MemberOpenTimeScheduleBlock.tsx:217` | TS2345 | Argument of type '{ events: GeneralEventApi[]; invitedResource: { temporally_exclusive_resource_id: string; role: string; }[]; }' is not assignable to parameter of type 'unique symbol \| { events: GeneralEventAp… |
-| `src/components/event/MemberOpenTimeScheduleBlock.tsx:248` | TS2322 | Type '({ id: any; title: string; backgroundColor: string; borderColor: string; extendedProps: { originalEvent: GeneralEventApi; }; classNames: string[]; source?: EventSourceApi \| null \| undefined; ... 26 more .… |
-| `src/components/program/ExerciseAdminModalBlock.tsx:540` | TS2769 | No overload matches this call. |
-| `src/components/program/ExternalLinkAdminModalBlock.tsx:179` | TS2769 | No overload matches this call. |
-| `src/components/program/PracticeAdminModalBlock.tsx:154` | TS2769 | No overload matches this call. |
-| `src/components/program/ProgramContentAdminBlock.tsx:431` | TS2769 | No overload matches this call. |
-| `src/components/schedule/AddOrdersToClassModal.tsx:80` | TS7006 | Parameter 'order' implicitly has an 'any' type. |
-| `src/components/schedule/AddOrdersToClassModal.tsx:81` | TS7006 | Parameter 'product' implicitly has an 'any' type. |
-| `src/components/schedule/AddOrdersToClassModal.tsx:118` | TS7006 | Parameter 'order' implicitly has an 'any' type. |
-| `src/components/schedule/AddOrdersToClassModal.tsx:119` | TS7006 | Parameter 'order' implicitly has an 'any' type. |
-| `src/components/schedule/editor/ClassGroupScheduleEditor.tsx:1126` | TS18046 | 'teacherResources' is of type 'unknown'. |
-| `src/components/schedule/editor/ClassGroupScheduleEditor.tsx:1132` | TS18046 | 'classroomResources' is of type 'unknown'. |
-| `src/components/schedule/editor/ClassGroupScheduleEditor.tsx:2095` | TS2322 | Type 'string \| Date' is not assignable to type 'Date \| undefined'. |
-| `src/components/schedule/editor/ClassGroupScheduleEditor.tsx:2226` | TS2322 | Type '(values: Array<string \| number>) => void' is not assignable to type '(checkedValue: CheckboxValueType[]) => void'. |
-| `src/components/schedule/editor/PersonalScheduleEditor.tsx:1994` | TS2322 | Type '{ id: any; studentId: string; productName: string; language: any; type: string; totalMinutes: number; usedMinutes: number; availableMinutes: number; createdAt: Date; paymentExpiredAt: Date \| undefined; ex… |
-| `src/components/schedule/editor/PersonalScheduleEditor.tsx:2005` | TS2322 | Type '{ usedMinutes: number; availableMinutes: number; id: any; studentId: string; productName: string; language: any; type: string; totalMinutes: number; createdAt: Date; paymentExpiredAt: Date \| undefined; ex… |
-| `src/components/schedule/editor/PersonalScheduleEditor.tsx:2156` | TS2322 | Type '(values: Array<string \| number>) => void' is not assignable to type '(checkedValue: CheckboxValueType[]) => void'. |
-| `src/components/schedule/utils/orderOptionResolver.ts:46` | TS7006 | Parameter 'id' implicitly has an 'any' type. |
-| `src/hooks/schedule.ts:136` | TS2339 | Property 'options' does not exist on type '{ __typename?: "order_log" \| undefined; id: string; status: string; member_id: string; created_at: any; updated_at?: any; order_products: { __typename?: "order_product… |
-| `src/pages/MemberAdminPage/MemberAdminPage.tsx:140` | TS2339 | Property 'SELECT_MEMBER_PERMISSION' does not exist on type '{ ACTIVITY_NORMAL?: boolean \| undefined; ACTIVITY_CATEGORY_ADMIN?: boolean \| undefined; ACTIVITY_ADMIN?: boolean \| undefined; ACTIVITY_READ?: boolean … |
-| `node_modules/lodestar-app-element/src/components/cards/ActivityCard.tsx:54` | TS2741 | Property 'className' is missing in type '{ width: string; ratio: number; src: string; }' but required in type 'CustomRatioImageProps'. |
-| `node_modules/lodestar-app-element/src/components/cards/PostCard.tsx:137` | TS2741 | Property 'className' is missing in type '{ width: string; ratio: number; src: string; }' but required in type 'CustomRatioImageProps'. |
-| `node_modules/lodestar-app-element/src/components/cards/ProgramContentCard.tsx:119` | TS2741 | Property 'className' is missing in type '{ src: string; ratio: number; width: string; }' but required in type 'CustomRatioImageProps'. |
-| `node_modules/lodestar-app-element/src/components/collections/ActivityCollection.tsx:116` | TS2769 | No overload matches this call. |
-| `node_modules/lodestar-app-element/src/components/collections/ActivityCollection.tsx:117` | TS2769 | No overload matches this call. |
-| `node_modules/lodestar-app-element/src/components/collections/PostCollection.tsx:126` | TS2769 | No overload matches this call. |
-| `node_modules/lodestar-app-element/src/components/collections/ProjectCollection.tsx:127` | TS2769 | No overload matches this call. |
-| `node_modules/lodestar-app-element/src/components/common/Craftize.tsx:67` | TS2352 | Conversion of type 'StyledComponent<ElementComponent<P>, any, P & { className?: string \| undefined; children?: ReactNode; onClick?: (() => void) \| undefined; } & { responsive?: { mobile?: (P & { ...; }) \| undef… |
+1. app #749 → #750；admin #764 → #766，各自的 auth 與建置修正作為同一部署單位。先部署這兩個前端。
+2. 再部署 backend #426，沿用 doc §8、§10、§12 的契約。此輪不改 retryAfter、60 秒冷卻、每會員每小時 5 封或既有同 IP 15 分鐘 200 次登入限流。
+3. element #142 → #143 之後另外發 tag；目前 app／admin 的 patch 固定於舊版 element，不需要先更新套件。未來升級 tag 時，確認上游已包含相同修正，再移除本地 patch；auth 本地相容副本／replacement 也要另驗證後才能移除。
 
-## 相容性與後續
+新前端＋舊後端：仍處理既有成功／拒絕回應，缺少 retryAfter 時使用 60 秒 fallback。新前端＋新後端：顯示對應拒絕訊息及實際 retryAfter。舊前端＋新後端：仍可能忽略 retryAfter、顯示 Axios 原始錯誤或卡載入，因此維持前端先部署。此次型別／建置修正不改這些相容性規則。
 
-本次新增 commit 僅影響開發編譯器與測試宣告，沒有改後端回應契約、冷卻時間或 auth runtime，無需配套後端部署。原 auth PR 所述的部署順序與新舊前後端相容性仍適用。app 與 admin 的修正不依賴 element 新 tag；element 也不在本次發布 tag。
+## CI
 
-剩餘業務型別問題需獨立確認元件 props、GraphQL schema、泛型／Date 型別契約後處理，未以 any 或 suppressions 隱藏。CI 結果記錄於新 draft PR 描述；CodeQL 成功不代表 typecheck 通過。尚未 merge、部署或發布。
+推送後檢查新 HEAD 的 CodeQL；CodeQL 不取代本地 typecheck／production build。 最新 HEAD／結果記錄於 PR 描述。

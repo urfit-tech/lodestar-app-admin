@@ -16,7 +16,8 @@
     "trans:manage": "node manageTranslations.js",
     "trans:clean": "rm -rf ./src/extracted",
     "trans": "npm run trans:clean && npm run trans:compile && npm run trans:extract && npm run trans:manage && npm run trans:clean",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "patch-package --error-on-fail"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -194,6 +195,8 @@
     "@graphql-codegen/cli": "^3.3.0",
     "@graphql-codegen/client-preset": "^3.0.0",
     "@types/jest": "26.0.24",
-    "dotenv-flow": "^3.2.0"
+    "dotenv-flow": "^3.2.0",
+    "patch-package": "8.0.0",
+    "postinstall-postinstall": "2.1.0"
   }
 }

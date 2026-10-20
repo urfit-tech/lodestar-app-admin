@@ -1,3 +1,4 @@
+import { CheckboxValueType } from 'antd/lib/checkbox/Group'
 import { gql, useMutation } from '@apollo/client'
 import {
   Button,
@@ -1943,7 +1944,7 @@ const PersonalScheduleEditorInner: React.FC = () => {
     return formatMessage(scheduleMessages.Publish.title)
   }, [publishFlowStep, formatMessage])
 
-  const handlePublishModeChange = useCallback((values: Array<string | number>) => {
+  const handlePublishModeChange = useCallback((values: CheckboxValueType[]) => {
     setSelectedPublishModes(values as PublishMode[])
   }, [])
 
