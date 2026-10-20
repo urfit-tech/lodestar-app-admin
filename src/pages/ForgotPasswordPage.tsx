@@ -1,5 +1,5 @@
 import { MailOutlined } from '@ant-design/icons'
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -8,8 +8,10 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import DefaultLayout from '../components/layout/DefaultLayout'
-import { desktopViewMixin, handleError } from '../helpers'
-import { codeMessages, commonMessages, errorMessages } from '../helpers/translation'
+import { desktopViewMixin } from '../helpers'
+import { formatAuthError, readAuthResponse } from '../helpers/authResponse'
+import { commonMessages, errorMessages } from '../helpers/translation'
+import { authCooldownKey, saveAuthCooldown } from '../hooks/authCooldown'
 
 const messages = defineMessages({
   forgotPassword: { id: 'common.label.forgotPassword', defaultMessage: '忘記密碼' },
@@ -58,14 +60,18 @@ const ForgotPasswordPage: React.FC = () => {
         appId: app.id,
         account: values.email,
       })
-      .then(({ data: { code, message, result } }) => {
-        if (code === 'SUCCESS') {
-          history.push(`/check-email?email=${values.email}&type=forgot-password`)
+      .then(({ data }) => {
+        const { code } = data
+        if (code === 'SUCCESS' || code === 'E_NO_MEMBER') {
+          const seconds = readAuthResponse(data).retryAfter || 60
+          saveAuthCooldown(authCooldownKey(app.id, 'reset', values.email), seconds)
+          message.info(formatAuthError({ retryAfter: seconds }, formatMessage))
+          history.push(`/check-email?email=${encodeURIComponent(values.email)}&type=forgot-password`)
         } else {
-          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+          message.error(formatAuthError(data, formatMessage))
         }
       })
-      .catch(handleError)
+      .catch(error => message.error(formatAuthError(error, formatMessage)))
       .finally(() => setLoading(false))
   }
 

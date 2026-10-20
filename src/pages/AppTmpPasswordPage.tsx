@@ -14,6 +14,7 @@ import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import AdminLayout from '../components/layout/AdminLayout'
 import { copyToClipboard, isValidEmail } from '../helpers'
+import { formatAuthError } from '../helpers/authResponse'
 import { commonMessages, errorMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
@@ -77,14 +78,13 @@ const AppTmpPasswordPage: React.FC = () => {
             setErrorMessage(formatMessage(pageMessages.AppTmpPasswordPage.temPasswordFailed))
             return
           }
-          throw errorMessage
+          throw { code, message: errorMessage }
         }
         setPassHash(result.password)
         setExpiredAt(dayjs(result.expiredAt).format('YYYY-MM-DD HH:mm:ss'))
       })
       .catch(err => {
-        console.log(err)
-        setErrorMessage(JSON.stringify(err))
+        setErrorMessage(formatAuthError(err, formatMessage))
       })
       .finally(() => {
         setLoading(false)
