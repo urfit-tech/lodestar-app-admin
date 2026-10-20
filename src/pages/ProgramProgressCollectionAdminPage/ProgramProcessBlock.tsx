@@ -4,6 +4,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useState } from 'react'
@@ -15,6 +16,7 @@ import { OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import hasura from '../../hasura'
 import { downloadCSV, stableSort, toCSV } from '../../helpers'
 import pageMessages from '../translation'
+import { canReadExerciseReport } from './exerciseReportAccess'
 
 type MemberFilter =
   | { type: 'all' }
@@ -32,6 +34,7 @@ let currentTimeZone = dayjs.tz.guess()
 
 const ProgramProcessBlock: React.VFC = () => {
   const apolloClient = useApolloClient()
+  const { currentUserRole, currentMemberId, permissions } = useAuth()
   const { formatMessage } = useIntl()
   const [programProcessExporting, setProgramProcessExporting] = useState(false)
   const [materialAuditLogExporting, setMaterialAuditLogExporting] = useState(false)
@@ -104,11 +107,25 @@ const ProgramProcessBlock: React.VFC = () => {
               const programContentTitle = pc.title
               const programContentDuration = pc.duration
               const programContentType = pc.program_content_type?.type || ''
+              const isExercise = programContentType === 'exercise' || programContentType === 'exam'
               data.member.forEach(m => {
                 const memberName = m.name || ''
                 const memberEmail = m.email || ''
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
+
+                const canReadAnswers = canReadExerciseReport({
+                  role: currentUserRole,
+                  currentMemberId,
+                  memberId: m.id,
+                  exerciseAdmin: !!permissions.EXERCISE_ADMIN,
+                  programRoleMemberIds: p.program_roles.map(role => role.member_id),
+                })
+                const resultRestricted =
+                  isExercise &&
+                  (!canReadAnswers ||
+                    (programContentType === 'exam' && exercises.some(ex => ex.exam?.passing_score == null)))
+                const noPermission = formatMessage(pageMessages.ProgramProcessBlock.noPermission)
 
                 const firstWatchedAt = memberProgramContentProgress?.created_at || ''
                 const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
@@ -132,7 +149,7 @@ const ProgramProcessBlock: React.VFC = () => {
                   }))
                   .reduce(
                     (accu, curr) => {
-                      return curr.totalGainedPoints > accu.totalGainedPoints ? curr : accu
+                      return accu.updatedAt === null || curr.totalGainedPoints > accu.totalGainedPoints ? curr : accu
                     },
                     { totalGainedPoints: 0, updatedAt: null, passingScore: 0 },
                   )
@@ -190,14 +207,16 @@ const ProgramProcessBlock: React.VFC = () => {
                   memberName,
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
-                  Math.ceil(Number(watchedDuration) / 60).toString(),
-                  (watchedProgress * 100).toFixed(0) + '%',
+                  resultRestricted ? noPermission : Math.ceil(Number(watchedDuration) / 60).toString(),
+                  resultRestricted ? noPermission : (watchedProgress * 100).toFixed(0) + '%',
                   firstWatchedAt && dayjs(firstWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   lastWatchedAt && dayjs(lastWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   viewRate + '%',
-                  exerciseStatus,
-                  exercisePoint,
-                  exercisePassedAt && dayjs(exercisePassedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
+                  resultRestricted ? noPermission : exerciseStatus,
+                  isExercise && !canReadAnswers ? noPermission : exercisePoint,
+                  resultRestricted
+                    ? noPermission
+                    : exercisePassedAt && dayjs(exercisePassedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   pc.practices.filter(p => p.member_id === m.id).length,
                 ])
               })
@@ -480,6 +499,9 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
     }
     program(where: $programCondition) {
       title
+      program_roles {
+        member_id
+      }
       program_categories(order_by: { position: asc }) {
         category {
           name
