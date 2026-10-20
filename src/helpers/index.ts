@@ -233,6 +233,14 @@ export const snakeToCamel = (snakeValue: string) =>
   snakeValue.replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', ''))
 
 export const handleError = (error: any) => {
+  const graphQLErrors = error?.graphQLErrors || []
+  const errorDetails = [error?.message, ...graphQLErrors.map((item: any) => item.extensions?.internal?.error?.message)].join(' ')
+  if (/member_identity_update_guard|not allowed to change login identifiers|unparsable hasura.user for login identifier/.test(errorDetails)) {
+    return message.error('帳號或信箱未更新：只有具備對應編輯權限的人員可修改無額外權限的純會員；講師與後台人員請由本人或 app-owner 修改。')
+  }
+  if (graphQLErrors.some((item: any) => ['permission-error', 'permission-denied', 'access-denied'].includes(item.extensions?.code))) {
+    return message.error('儲存遭到權限規則拒絕。請重新整理並確認目前帳號具備此資料的編輯權限。')
+  }
   process.env.NODE_ENV === 'development' && console.error(error)
   if (error.response && error.response.data) {
     return message.error(error.response.data.message)

@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { v4 as uuidv4 } from 'uuid'
 import hasura from '../../hasura'
+import { handleError } from '../../helpers'
+import { canWriteMemberPhone } from '../../helpers/memberWritePermissions'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
@@ -33,39 +35,56 @@ const MemberCreationModal: React.FC<
   }
 > = ({ onRefetch, ...modalProps }) => {
   const { formatMessage } = useIntl()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { currentUserRole, currentMemberId, permissions } = useAuth()
   const { id: appId } = useApp()
-  const [insertMember] = useMutation<hasura.INSERT_MEMBER, hasura.INSERT_MEMBERVariables>(INSERT_MEMBER)
+  const [insertMember] = useMutation<
+    { insert_member: { affected_rows: number } | null },
+    Omit<hasura.INSERT_MEMBERVariables, 'phones'>
+  >(INSERT_MEMBER)
+  const canWritePhone = canWriteMemberPhone(currentUserRole, permissions)
+  const [insertPhone] = useMutation(gql`
+    mutation INSERT_CREATED_MEMBER_PHONE($memberId: String!, $phone: String!) {
+      insert_member_phone_one(object: { member_id: $memberId, phone: $phone, is_primary: true }) {
+        id
+      }
+    }
+  `)
   const [form] = useForm<FieldProps>()
   const [account, setAccount] = useState({ email: '', username: '' })
   const status = useMember(account)
   const [loading, setLoading] = useState(false)
 
   const handleCreate = async (callback?: { onSuccess?: () => void }) => {
-    form
-      .validateFields()
-      .then(({ email, username, role, phone }) => {
-        setLoading(true)
-        insertMember({
-          variables: {
-            appId,
-            id: uuidv4(),
-            email: email.toLowerCase().trim(),
-            username: username.trim(),
-            role: role || 'general-member',
-            managerId: currentUserRole === 'general-member' ? currentMemberId : null,
-            assignedAt: currentUserRole === 'general-member' ? new Date() : null,
-            phones: phone ? [{ phone, is_primary: true }] : [],
-          },
-        })
-          .then(() => {
-            callback?.onSuccess?.()
-          })
-          .catch(() => {
-            message.error(formatMessage(errorMessages.text.memberAlreadyExist))
-          })
+    try {
+      const { email, username, role, phone } = await form.validateFields()
+      setLoading(true)
+      const memberId = uuidv4()
+      const result = await insertMember({
+        variables: {
+          appId,
+          id: memberId,
+          email: email.toLowerCase().trim(),
+          username: username.trim(),
+          role: role || 'general-member',
+          managerId: currentUserRole === 'general-member' ? currentMemberId : null,
+          assignedAt: currentUserRole === 'general-member' ? new Date() : null,
+        },
       })
-      .finally(() => setLoading(false))
+      if (!result.data?.insert_member?.affected_rows) throw new Error('會員未建立，請確認建立會員權限後重試。')
+      if (phone && canWritePhone) {
+        try {
+          const phoneResult = await insertPhone({ variables: { memberId, phone } })
+          if (!phoneResult.data?.insert_member_phone_one) throw new Error('電話未新增')
+        } catch {
+          message.warning('會員已建立，但電話未儲存。請確認電話寫入權限後，到會員資料補填；不需重新建立會員。', 10)
+        }
+      }
+      callback?.onSuccess?.()
+    } catch (error) {
+      if (error instanceof Error) handleError(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -144,8 +163,12 @@ const MemberCreationModal: React.FC<
         >
           <Input onBlur={e => setAccount(props => ({ ...props, email: e.target.value }))} />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phone">
-          <Input />
+        <Form.Item
+          label={formatMessage(commonMessages.label.phone)}
+          name="phone"
+          extra={!canWritePhone ? '目前沒有電話寫入權限；可先建立會員，再請有權限的人員補填。' : undefined}
+        >
+          <Input disabled={!canWritePhone} />
         </Form.Item>
 
         {currentUserRole === 'app-owner' && (
@@ -173,7 +196,6 @@ const INSERT_MEMBER = gql`
     $email: String!
     $managerId: String
     $assignedAt: timestamptz
-    $phones: [member_phone_insert_input!]!
   ) {
     insert_member(
       objects: {
@@ -185,12 +207,9 @@ const INSERT_MEMBER = gql`
         email: $email
         manager_id: $managerId
         assigned_at: $assignedAt
-        member_phones: { data: $phones }
       }
     ) {
-      returning {
-        id
-      }
+      affected_rows
     }
   }
 `

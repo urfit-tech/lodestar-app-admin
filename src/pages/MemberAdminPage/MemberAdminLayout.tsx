@@ -215,6 +215,7 @@ const MemberAdminLayout: React.FC<{
               />
               <StyledImageHoverMask status={loading ? 'loading' : undefined}>
                 <StyledSingleUploader
+                  disabled={member.role === 'app-owner' && currentUserRole !== 'app-owner'}
                   accept="image/*"
                   listType="picture-card"
                   showUploadList={false}

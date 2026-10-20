@@ -102,6 +102,8 @@ export type MemberAdminProps = {
     countryCode: string
   }[]
   categories: Category[]
+  identityPermissionsVisible?: boolean
+  permissionGroups?: { id: string; name: string }[]
   permissionIds: string[]
   lastRejectedNote: {
     author: {

@@ -5,7 +5,7 @@ import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { keys, trim } from 'ramda'
+import { trim } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../components/admin'
@@ -15,6 +15,9 @@ import * as hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
+
+const restrictedSettingKeys = ['feature.membership_default_permission', 'auth.service.client_id']
+const normalizeSetting = (value: unknown) => (value == null ? '' : trim(String(value)))
 
 const AppSettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -53,7 +56,7 @@ const AppSettingAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.appSettingAdmin)}</span>
       </AdminPageTitle>
       {loading && <AdminCard loading className="mb-3" />}
-      {keys(settings)
+      {Object.keys(settings)
         .sort()
         .map(namespace => (
           <AppSettingCard
@@ -90,6 +93,10 @@ const AppSettingCard: React.FC<
 > = ({ appId, settings, appSettings, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { currentUserRole } = useAuth()
+  const [savedValues, setSavedValues] = useState(appSettings)
+  const isReadOnly = (key: string) =>
+    currentUserRole !== 'app-owner' || restrictedSettingKeys.includes(key) || settings[key].isProtected
   const [updateAppSettings] = useMutation<hasura.UPSERT_APP_SETTINGS, hasura.UPSERT_APP_SETTINGSVariables>(
     UPSERT_APP_SETTINGS,
   )
@@ -97,19 +104,28 @@ const AppSettingCard: React.FC<
 
   const handleSubmit = (values: FieldProps) => {
     form.validateFields().then(() => {
+      const changedSettings = Object.keys(values)
+        .filter(
+          key =>
+            !isReadOnly(key) &&
+            values[key] !== undefined &&
+            normalizeSetting(values[key]) !== normalizeSetting(savedValues[key]),
+        )
+        .map(key => ({ app_id: appId, key, value: normalizeSetting(values[key]) }))
+      if (!changedSettings.length) return
       setLoading(true)
       updateAppSettings({
         variables: {
-          appSettings: Object.keys(values)
-            .filter(key => values[key as keyof FieldProps] !== undefined)
-            .map(key => ({
-              app_id: appId,
-              key,
-              value: values[key as keyof FieldProps] ? trim(String(values[key as keyof FieldProps])) : '',
-            })),
+          appSettings: changedSettings,
         },
       })
-        .then(() => {
+        .then(({ data }) => {
+          if (data?.insert_app_setting?.affected_rows !== changedSettings.length)
+            throw new Error('設定未完整更新，請確認權限後重試。')
+          setSavedValues(previous => ({
+            ...previous,
+            ...Object.fromEntries(changedSettings.map(setting => [setting.key, setting.value])),
+          }))
           message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(handleError)
@@ -130,11 +146,16 @@ const AppSettingCard: React.FC<
         initialValues={appSettings}
         requiredMark
       >
-        {keys(settings)
+        {Object.keys(settings)
           .sort()
           .map(key => {
             const setting = settings[key]
             const label = formatMessage({ id: `setting.key.${key}`, defaultMessage: key.toString() })
+            const readOnlyReason = restrictedSettingKeys.includes(key)
+              ? '此設定受 Hasura 權限保護，後台不可修改，請聯絡系統管理員。'
+              : currentUserRole !== 'app-owner'
+              ? '只有 app-owner 可以修改設定。'
+              : undefined
             return (
               <>
                 {setting.type === 'string' && setting.options === null && (
@@ -142,9 +163,10 @@ const AppSettingCard: React.FC<
                     key={key}
                     label={label}
                     name={key}
-                    rules={[{ required: setting.isRequired, whitespace: true }]}
+                    extra={readOnlyReason}
+                    rules={isReadOnly(key) ? [] : [{ required: setting.isRequired, whitespace: true }]}
                   >
-                    <Input disabled={setting.isProtected} />
+                    <Input disabled={isReadOnly(key)} />
                   </Form.Item>
                 )}
                 {setting.type === 'string' && setting.options && (
@@ -152,9 +174,10 @@ const AppSettingCard: React.FC<
                     key={key}
                     label={label}
                     name={key}
-                    rules={[{ required: setting.isRequired, whitespace: true }]}
+                    extra={readOnlyReason}
+                    rules={isReadOnly(key) ? [] : [{ required: setting.isRequired, whitespace: true }]}
                   >
-                    <Select disabled={setting.isProtected}>
+                    <Select disabled={isReadOnly(key)}>
                       {(Array.isArray(setting.options)
                         ? setting.options
                         : typeof setting.options === 'string'
@@ -169,13 +192,13 @@ const AppSettingCard: React.FC<
                   </Form.Item>
                 )}
                 {setting.type === 'number' && (
-                  <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
-                    <InputNumber disabled={setting.isProtected} />
+                  <Form.Item key={key} label={label} name={key} extra={readOnlyReason} required={setting.isRequired}>
+                    <InputNumber disabled={isReadOnly(key)} />
                   </Form.Item>
                 )}
                 {setting.type === 'boolean' && (
-                  <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
-                    <Select disabled={setting.isProtected}>
+                  <Form.Item key={key} label={label} name={key} extra={readOnlyReason} required={setting.isRequired}>
+                    <Select disabled={isReadOnly(key)}>
                       <Select.Option value="1">True</Select.Option>
                       <Select.Option value="0">False</Select.Option>
                     </Select>
@@ -185,7 +208,7 @@ const AppSettingCard: React.FC<
             )
           })}
         <Form.Item wrapperCol={{ md: { offset: 6 } }}>
-          <Button className="mr-2" onClick={() => form.resetFields()}>
+          <Button className="mr-2" onClick={() => form.setFieldsValue(savedValues)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit" loading={loading}>

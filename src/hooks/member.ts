@@ -1,3 +1,4 @@
+import { checkMemberMutation } from '../helpers/memberWritePermissions'
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { isEmpty } from 'lodash'
@@ -94,6 +95,7 @@ export const useMember = (memberId: string) => {
 }
 
 export const useMemberAdmin = (memberId: string) => {
+  const { currentUserRole, currentMemberId } = useAuth()
   const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_ADMIN, hasura.GET_MEMBER_ADMINVariables>(
     gql`
       query GET_MEMBER_ADMIN($memberId: String!) {
@@ -254,6 +256,8 @@ export const useMemberAdmin = (memberId: string) => {
             }
           : null,
         noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
+        // Other members' extras are hidden by public_member_permission_extra.select_permissions.
+        identityPermissionsVisible: currentUserRole === 'app-owner' || currentMemberId === memberId,
         permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
         consumption: Math.max(
           sum(
@@ -508,11 +512,11 @@ export const useMutateMemberNote = () => {
   `)
 
   return {
-    insertMemberNote,
+    insertMemberNote: checkMemberMutation(insertMemberNote, '紀錄已新增，但會員的最後紀錄時間未更新：目前沒有此會員的編輯權限。請重新整理，不需重複新增紀錄。'),
     updateMemberNote,
     deleteMemberNote,
-    updateLastMemberNoteAnswered,
-    updateLastMemberNoteCalled,
+    updateLastMemberNoteAnswered: checkMemberMutation(updateLastMemberNoteAnswered),
+    updateLastMemberNoteCalled: checkMemberMutation(updateLastMemberNoteCalled),
   }
 }
 
@@ -1073,7 +1077,7 @@ export const useMutateMember = () => {
     }
   `)
   return {
-    updateMemberAvatar,
+    updateMemberAvatar: checkMemberMutation(updateMemberAvatar),
   }
 }
 
@@ -1223,7 +1227,7 @@ export const useTransferManagers = () => {
     loading,
     error,
     transferManagers,
-    transferLeads,
+    transferLeads: checkMemberMutation(transferLeads),
   }
 }
 

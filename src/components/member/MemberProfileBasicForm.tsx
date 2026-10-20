@@ -1,6 +1,6 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
-import { Button, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
+import { Alert, Button, Descriptions, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
 import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
 import countryCodes from 'country-codes-list'
@@ -14,6 +14,12 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import {
+  assertMemberUpdated,
+  canEditMemberIdentity,
+  identityReadOnlyMessage,
+  ownerReadOnlyMessage,
+} from '../../helpers/memberWritePermissions'
 import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
@@ -82,12 +88,15 @@ const MemberProfileBasicForm: React.FC<{
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, currentMemberId, permissions } = useAuth()
   const { enabledModules, settings } = useApp()
 
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC,
-    hasura.UPDATE_MEMBER_PROFILE_BASICVariables
+    Omit<
+      hasura.UPDATE_MEMBER_PROFILE_BASICVariables,
+      'name' | 'username' | 'email' | 'star' | 'managerId' | 'assignedAt'
+    > & { identity: hasura.member_set_input; updatePhones: boolean }
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
 
@@ -95,7 +104,17 @@ const MemberProfileBasicForm: React.FC<{
     return <Skeleton active />
   }
 
+  const readOnly = memberAdmin.role === 'app-owner' && currentUserRole !== 'app-owner'
+  const canEditIdentity = canEditMemberIdentity(currentUserRole, currentMemberId, memberAdmin)
+  const canEditEmail =
+    canEditIdentity &&
+    (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_EMAIL_EDIT)
+  const canEditUsername =
+    canEditIdentity &&
+    (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_USERNAME_EDIT)
+
   const handleSubmit = async () => {
+    if (readOnly) return message.error(ownerReadOnlyMessage)
     try {
       setLoading(true)
       const values = await form.validateFields()
@@ -106,14 +125,21 @@ const MemberProfileBasicForm: React.FC<{
       )
       const mergedTagNames = uniq([...normalizedTags, ...normalizedSpecialities])
       try {
-        await updateMemberProfileBasic({
+        const result = await updateMemberProfileBasic({
           variables: {
-            name: values?.name || memberAdmin.name,
-            username: permissions['MEMBER_USERNAME_EDIT']
-              ? values?.username || memberAdmin.username
-              : memberAdmin.username,
-            email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
-            star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
+            identity: {
+              name: values.name || memberAdmin.name,
+              star: permissions.MEMBER_STAR_ADMIN ? values.star ?? memberAdmin.star : memberAdmin.star,
+              manager_id:
+                enabledModules.member_assignment && permissions.MEMBER_MANAGER_ADMIN
+                  ? values.managerId || null
+                  : memberAdmin.manager?.id,
+              assigned_at: values.managerId ? new Date() : null,
+              ...(canEditUsername && values.username !== memberAdmin.username ? { username: values.username } : {}),
+              ...(canEditEmail && values.email !== memberAdmin.email ? { email: values.email } : {}),
+            },
+            updatePhones: !!permissions.MEMBER_PHONE_ADMIN,
+
             memberId: memberAdmin.id,
             phones: permissions['MEMBER_PHONE_ADMIN']
               ? phones.map((phone: string, index: number) => {
@@ -136,11 +162,7 @@ const MemberProfileBasicForm: React.FC<{
                     : null,
                   is_valid: Boolean(memberAdmin.phones[index].isValid),
                 })),
-            managerId:
-              enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
-                ? values.managerId || null
-                : memberAdmin.manager?.id,
-            assignedAt: values.managerId ? new Date() : null,
+
             tags: mergedTagNames.map(tag => ({
               name: tag,
               type: '',
@@ -161,6 +183,7 @@ const MemberProfileBasicForm: React.FC<{
           },
         })
 
+        assertMemberUpdated(result)
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       } catch (error) {
@@ -172,6 +195,28 @@ const MemberProfileBasicForm: React.FC<{
       setLoading(false)
     }
   }
+
+  if (readOnly)
+    return (
+      <>
+        <Alert type="info" message={ownerReadOnlyMessage} className="mb-3" />
+        <Descriptions column={1} bordered>
+          <Descriptions.Item label="姓名">{memberAdmin.name}</Descriptions.Item>
+          <Descriptions.Item label="帳號">{memberAdmin.username}</Descriptions.Item>
+          <Descriptions.Item label="信箱">{memberAdmin.email}</Descriptions.Item>
+          <Descriptions.Item label="電話">
+            {memberAdmin.phones.map(phone => phone.phoneNumber).join(', ')}
+          </Descriptions.Item>
+          <Descriptions.Item label="星等">{memberAdmin.star}</Descriptions.Item>
+          <Descriptions.Item label="負責人">{memberAdmin.manager?.name}</Descriptions.Item>
+          <Descriptions.Item label="專長">{memberAdmin.specialities.join(', ')}</Descriptions.Item>
+          <Descriptions.Item label="分類">
+            {memberAdmin.categories.map(category => category.name).join(', ')}
+          </Descriptions.Item>
+          <Descriptions.Item label="標籤">{memberAdmin.tags.join(', ')}</Descriptions.Item>
+        </Descriptions>
+      </>
+    )
 
   return (
     <Form
@@ -208,11 +253,19 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.name)} name="name">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.account)} name="username">
-        <Input disabled={!permissions['MEMBER_USERNAME_EDIT']} />
+      <Form.Item
+        label={formatMessage(commonMessages.label.account)}
+        name="username"
+        extra={!canEditIdentity ? identityReadOnlyMessage : undefined}
+      >
+        <Input disabled={!canEditUsername} />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.email)} name="email">
-        <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
+      <Form.Item
+        label={formatMessage(commonMessages.label.email)}
+        name="email"
+        extra={!canEditIdentity ? identityReadOnlyMessage : undefined}
+      >
+        <Input disabled={!canEditEmail} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
         <Form.Item
@@ -376,30 +429,16 @@ const CountryCodeSelect: React.FC<{
 
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
-    $name: String
-    $username: String
-    $email: String
+    $identity: member_set_input!
+    $updatePhones: Boolean!
     $memberId: String!
-    $managerId: String
-    $star: numeric
-    $assignedAt: timestamptz
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
     $memberCategories: [member_category_insert_input!]!
     $memberSpecialities: [member_speciality_insert_input!]!
   ) {
-    update_member(
-      where: { id: { _eq: $memberId } }
-      _set: {
-        name: $name
-        username: $username
-        email: $email
-        star: $star
-        manager_id: $managerId
-        assigned_at: $assignedAt
-      }
-    ) {
+    update_member(where: { id: { _eq: $memberId } }, _set: $identity) {
       affected_rows
     }
     # update tags
@@ -414,10 +453,10 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     }
 
     # update phones
-    delete_member_phone(where: { member_id: { _eq: $memberId } }) {
+    delete_member_phone(where: { member_id: { _eq: $memberId } }) @include(if: $updatePhones) {
       affected_rows
     }
-    insert_member_phone(objects: $phones) {
+    insert_member_phone(objects: $phones) @include(if: $updatePhones) {
       affected_rows
     }
 

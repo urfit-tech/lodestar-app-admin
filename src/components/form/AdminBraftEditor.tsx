@@ -108,28 +108,30 @@ const controls: {
 }
 
 const AdminBraftEditor: React.FC<{
+  readOnly?: boolean
   variant?: AdminBraftVariant
   value?: EditorState
   customControls?: ControlType[]
   onChange?: (editorState: EditorState) => void
   onBlur?: () => void
-}> = ({ variant, value, customControls, onChange, onBlur }) => {
+}> = ({ variant, value, customControls, onChange, onBlur, readOnly }) => {
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
   return (
     <StyledBraftEditor
+      readOnly={readOnly}
       value={value}
       onChange={onChange}
       onBlur={onBlur}
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
-      controls={customControls ?? controls[variant || 'default']}
+      controls={readOnly ? [] : customControls ?? controls[variant || 'default']}
       media={{
-                uploadFn: createUploadFn(appId, authToken),
-                accepts: { video: false, audio: false },
-                externals: { image: true, video: false, audio: false, embed: true },
-              }}
+        uploadFn: createUploadFn(appId, authToken),
+        accepts: { video: false, audio: false },
+        externals: { image: true, video: false, audio: false, embed: true },
+      }}
       imageControls={variant === 'question' ? ['remove'] : undefined}
       imageResizable={variant === 'question' ? false : undefined}
     />

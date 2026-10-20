@@ -2,11 +2,13 @@ import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import { assertMemberUpdated, ownerReadOnlyMessage } from '../../helpers/memberWritePermissions'
 import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
 
@@ -20,6 +22,8 @@ const MemberProfileAbstractForm: React.FC<{
   memberAdmin: MemberAdminProps | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
+  const { currentUserRole } = useAuth()
+  const readOnly = memberAdmin?.role === 'app-owner' && currentUserRole !== 'app-owner'
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateMemberBasic] = useMutation<hasura.UPDATE_MEMBER_ABSTRACT, hasura.UPDATE_MEMBER_ABSTRACTVariables>(
@@ -32,6 +36,7 @@ const MemberProfileAbstractForm: React.FC<{
   }
 
   const handleSubmit = (values: FieldProps) => {
+    if (readOnly) return message.error(ownerReadOnlyMessage)
     setLoading(true)
     updateMemberBasic({
       variables: {
@@ -41,7 +46,8 @@ const MemberProfileAbstractForm: React.FC<{
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
-      .then(() => {
+      .then(result => {
+        assertMemberUpdated(result)
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       })
@@ -65,23 +71,23 @@ const MemberProfileAbstractForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(commonMessages.label.creatorTitle)} name="title">
-        <Input />
+        <Input readOnly={readOnly} />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.introduction)} name="abstract">
-        <Input.TextArea rows={5} />
+        <Input.TextArea rows={5} readOnly={readOnly} />
       </Form.Item>
       <Form.Item
         label={formatMessage(commonMessages.label.shortDescription)}
         name="description"
         wrapperCol={{ md: { span: 20 } }}
       >
-        <AdminBraftEditor />
+        <AdminBraftEditor readOnly={readOnly} />
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button disabled={readOnly} type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
