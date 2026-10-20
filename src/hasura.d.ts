@@ -162436,7 +162436,7 @@ export type GET_PROGRAM_PROGRESSVariables = Exact<{
 }>;
 
 
-export type GET_PROGRAM_PROGRESS = { __typename?: 'query_root', member: Array<{ __typename?: 'member', id: string, username: string, name: string, email: string, picture_url?: string | null, program_content_enrollments: Array<{ __typename?: 'program_content_enrollment', program_id?: any | null, member_id?: string | null, program?: { __typename?: 'program', id: any, program_content_sections: Array<{ __typename?: 'program_content_section', program_contents_aggregate: { __typename?: 'program_content_aggregate', aggregate?: { __typename?: 'program_content_aggregate_fields', count: number, sum?: { __typename?: 'program_content_sum_fields', duration?: any | null } | null } | null } }> } | null }>, program_content_progresses: Array<{ __typename?: 'program_content_progress', id: any, member_id: string, progress: any }> }> };
+export type GET_PROGRAM_PROGRESS = { __typename?: 'query_root', member: Array<{ __typename?: 'member_public', id?: string | null, username?: string | null, name?: string | null, email?: string | null, picture_url?: string | null, program_content_enrollments: Array<{ __typename?: 'program_content_enrollment', program_id?: any | null, member_id?: string | null, program?: { __typename?: 'program', id: any, program_content_sections: Array<{ __typename?: 'program_content_section', program_contents_aggregate: { __typename?: 'program_content_aggregate', aggregate?: { __typename?: 'program_content_aggregate_fields', count: number, sum?: { __typename?: 'program_content_sum_fields', duration?: any | null } | null } | null } }> } | null }>, program_content_progresses: Array<{ __typename?: 'program_content_progress', id: any, member_id: string, progress: any }> }> };
 
 export type INSERT_PROGRAM_CONTENT_BODYVariables = Exact<{
   object: program_content_body_insert_input;
@@ -162602,7 +162602,7 @@ export type GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables = Exact<{
 }>;
 
 
-export type GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT = { __typename?: 'query_root', program_package_plan_enrollment: Array<{ __typename?: 'program_package_plan_enrollment', member?: { __typename?: 'member', id: string, picture_url?: string | null, name: string, username: string, email: string } | null }> };
+export type GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT = { __typename?: 'query_root', program_package_plan_enrollment: Array<{ __typename?: 'program_package_plan_enrollment', member?: { __typename?: 'member_public', id?: string | null, picture_url?: string | null, name?: string | null, username?: string | null, email?: string | null } | null }> };
 
 export type GET_PROGRAM_TEMPO_DELIVERYVariables = Exact<{
   programPackageIds?: InputMaybe<Array<Scalars['uuid']> | Scalars['uuid']>;
@@ -163358,7 +163358,7 @@ export type GET_EXERCISE_COLLECTIONVariables = Exact<{
 }>;
 
 
-export type GET_EXERCISE_COLLECTION = { __typename?: 'query_root', program_content_by_pk?: { __typename?: 'program_content', id: any, metadata?: any | null, program_content_body: { __typename?: 'program_content_body', id: any, data?: any | null }, enrollments_aggregate: { __typename?: 'program_content_enrollment_aggregate', aggregate?: { __typename?: 'program_content_enrollment_aggregate_fields', count: number } | null }, program_content_section: { __typename?: 'program_content_section', id: any, program_id: any } } | null, member: Array<{ __typename?: 'exercise', member: { __typename?: 'member', id: string, name: string, username: string, email: string } }>, exercise: Array<{ __typename?: 'exercise', id: any, member_id: string, answer?: any | null, created_at: any }> };
+export type GET_EXERCISE_COLLECTION = { __typename?: 'query_root', program_content_by_pk?: { __typename?: 'program_content', id: any, metadata?: any | null, program_content_body?: { __typename?: 'program_content_body', id: any, data?: any | null } | null, enrollments_aggregate: { __typename?: 'program_content_enrollment_aggregate', aggregate?: { __typename?: 'program_content_enrollment_aggregate_fields', count: number } | null }, program_content_section?: { __typename?: 'program_content_section', id: any, program_id: any } | null } | null, member: Array<{ __typename?: 'exercise', member?: { __typename?: 'member_public', id?: string | null, name?: string | null, username?: string | null, email?: string | null } | null }>, exercise: Array<{ __typename?: 'exercise', id: any, member_id: string, answer?: any | null, created_at: any }> };
 
 export type GET_GIFT_PLAN_COLLECTIONVariables = Exact<{
   condition: gift_plan_bool_exp;
@@ -163842,17 +163842,17 @@ export type GET_EDITORSVariables = Exact<{
 }>;
 
 
-export type GET_EDITORS = { __typename?: 'query_root', member: Array<{ __typename?: 'member', id: string, name: string }> };
+export type GET_EDITORS = { __typename?: 'query_root', member: Array<{ __typename?: 'member_public', id?: string | null, name?: string | null }> };
 
 export type GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESSVariables = Exact<{
   programPackageCondition?: InputMaybe<program_package_bool_exp>;
-  memberCondition?: InputMaybe<member_bool_exp>;
+  memberCondition?: InputMaybe<member_public_bool_exp>;
   startedAt?: InputMaybe<Scalars['timestamptz']>;
   endedAt?: InputMaybe<Scalars['timestamptz']>;
 }>;
 
 
-export type GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = { __typename?: 'query_root', property: Array<{ __typename?: 'property', id: any, name: string }>, program_package_plan_enrollment: Array<{ __typename?: 'program_package_plan_enrollment', member?: { __typename?: 'member', id: string, name: string, email: string, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> } | null, program_package_plan?: { __typename?: 'program_package_plan', program_package: { __typename?: 'program_package', title: string, program_package_categories: Array<{ __typename?: 'program_package_category', category: { __typename?: 'category', name: string } }>, program_package_programs: Array<{ __typename?: 'program_package_program', program: { __typename?: 'program', title: string, editors: Array<{ __typename?: 'program_editor', member_id?: string | null }>, program_content_sections: Array<{ __typename?: 'program_content_section', title: string, program_contents: Array<{ __typename?: 'program_content', title: string, duration?: any | null, program_content_progress: Array<{ __typename?: 'program_content_progress', member_id: string, progress: any }> }> }> } }> } } | null }> };
+export type GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = { __typename?: 'query_root', property: Array<{ __typename?: 'property', id: any, name: string }>, program_package_plan_enrollment: Array<{ __typename?: 'program_package_plan_enrollment', member?: { __typename?: 'member_public', id?: string | null, name?: string | null, email?: string | null, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> } | null, program_package_plan?: { __typename?: 'program_package_plan', program_package?: { __typename?: 'program_package', title: string, program_package_categories: Array<{ __typename?: 'program_package_category', category?: { __typename?: 'category', name: string } | null }>, program_package_programs: Array<{ __typename?: 'program_package_program', program?: { __typename?: 'program', title: string, editors: Array<{ __typename?: 'program_editor', member_id?: string | null }>, program_content_sections: Array<{ __typename?: 'program_content_section', title: string, program_contents: Array<{ __typename?: 'program_content', title: string, duration?: any | null, program_content_progress: Array<{ __typename?: 'program_content_progress', member_id: string, progress: any }> }> }> } | null }> } | null } | null }> };
 
 export type GetProcessProgramPackageVariables = Exact<{
   programPackageCondition?: InputMaybe<program_package_bool_exp>;
@@ -163862,13 +163862,13 @@ export type GetProcessProgramPackageVariables = Exact<{
 export type GetProcessProgramPackage = { __typename?: 'query_root', program_package: Array<{ __typename?: 'program_package', id: any, title: string, program_package_programs: Array<{ __typename?: 'program_package_program', id: any, program: { __typename?: 'program', id: any, title: string, program_content_sections: Array<{ __typename?: 'program_content_section', id: any, title: string, program_contents: Array<{ __typename?: 'program_content', id: any }> }> } }> }> };
 
 export type GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables = Exact<{
-  memberCondition?: InputMaybe<member_bool_exp>;
+  memberCondition?: InputMaybe<member_public_bool_exp>;
   programCondition?: InputMaybe<program_bool_exp>;
   lastUpdatedAt?: InputMaybe<Scalars['timestamptz']>;
 }>;
 
 
-export type GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = { __typename?: 'query_root', property: Array<{ __typename?: 'property', id: any, name: string }>, member: Array<{ __typename?: 'member', id: string, name: string, email: string, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> }>, program: Array<{ __typename?: 'program', title: string, program_categories: Array<{ __typename?: 'program_category', category: { __typename?: 'category', name: string } }>, program_content_sections: Array<{ __typename?: 'program_content_section', title: string, program_contents: Array<{ __typename?: 'program_content', title: string, duration?: any | null, metadata?: any | null, practices: Array<{ __typename?: 'practice', member_id: string }>, exercises: Array<{ __typename?: 'exercise', id: any, member_id: string, answer?: any | null, updated_at: any, exam?: { __typename?: 'exam', passing_score: any } | null }>, program_content_progress: Array<{ __typename?: 'program_content_progress', member_id: string, progress: any, created_at?: any | null, updated_at?: any | null }>, program_content_body: { __typename?: 'program_content_body', type?: string | null } }> }> }> };
+export type GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = { __typename?: 'query_root', property: Array<{ __typename?: 'property', id: any, name: string }>, member: Array<{ __typename?: 'member_public', id?: string | null, name?: string | null, email?: string | null, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> }>, program: Array<{ __typename?: 'program', title: string, program_categories: Array<{ __typename?: 'program_category', category?: { __typename?: 'category', name: string } | null }>, program_content_sections: Array<{ __typename?: 'program_content_section', title: string, program_contents: Array<{ __typename?: 'program_content', title: string, duration?: any | null, metadata?: any | null, practices: Array<{ __typename?: 'practice', member_id: string }>, exercises: Array<{ __typename?: 'exercise', id: any, member_id: string, answer?: any | null, updated_at: any, exam?: { __typename?: 'exam', passing_score: any } | null }>, program_content_progress: Array<{ __typename?: 'program_content_progress', member_id: string, progress: any, created_at?: any | null, updated_at?: any | null }>, program_content_type?: { __typename?: 'program_content_type', type?: string | null } | null }> }> }> };
 
 export type GetMaterialAuditLogVariables = Exact<{
   memberCondition?: InputMaybe<member_bool_exp>;
@@ -163884,7 +163884,7 @@ export type GetMaterialLogMembersVariables = Exact<{
 }>;
 
 
-export type GetMaterialLogMembers = { __typename?: 'query_root', member: Array<{ __typename?: 'member', id: string, name: string, email: string, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> }>, property: Array<{ __typename?: 'property', id: any, name: string }> };
+export type GetMaterialLogMembers = { __typename?: 'query_root', member: Array<{ __typename?: 'member_public', id?: string | null, name?: string | null, email?: string | null, member_properties: Array<{ __typename?: 'member_property', property_id: any, value: string }> }>, property: Array<{ __typename?: 'property', id: any, name: string }> };
 
 export type GetProgramContentByProgramConditionVariables = Exact<{
   programCondition?: InputMaybe<program_bool_exp>;

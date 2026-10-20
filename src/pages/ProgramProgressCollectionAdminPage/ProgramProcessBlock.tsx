@@ -96,17 +96,17 @@ const ProgramProcessBlock: React.VFC = () => {
           ],
         ]
         data.program.forEach(p => {
-          const categories = p.program_categories.map(pc => pc.category.name).join(',')
+          const categories = p.program_categories.map(pc => pc.category?.name || '').join(',')
           const programTitle = p.title
           p.program_content_sections.forEach(pcs => {
             const programContentSectionTitle = pcs.title
             pcs.program_contents.forEach(pc => {
               const programContentTitle = pc.title
               const programContentDuration = pc.duration
-              const programContentType = pc.program_content_body.type
+              const programContentType = pc.program_content_type?.type || ''
               data.member.forEach(m => {
-                const memberName = m.name
-                const memberEmail = m.email
+                const memberName = m.name || ''
+                const memberEmail = m.email || ''
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
 
@@ -461,7 +461,7 @@ const ProgramProcessBlock: React.VFC = () => {
 }
 const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
   query GET_ADVANCED_PROGRAM_CONTENT_PROGRESS(
-    $memberCondition: member_bool_exp
+    $memberCondition: member_public_bool_exp
     $programCondition: program_bool_exp
     $lastUpdatedAt: timestamptz
   ) {
@@ -469,7 +469,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
       id
       name
     }
-    member(where: $memberCondition) {
+    member: member_public(where: $memberCondition) {
       id
       name
       email
@@ -509,7 +509,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
             created_at
             updated_at
           }
-          program_content_body {
+          program_content_type {
             type
           }
         }
@@ -559,7 +559,7 @@ export const GetMaterialAuditLog = gql`
 
 export const GetMaterialLogMembers = gql`
   query GetMaterialLogMembers($memberIds: [String!]) {
-    member(where: { id: { _in: $memberIds } }) {
+    member: member_public(where: { id: { _in: $memberIds } }) {
       id
       name
       email
