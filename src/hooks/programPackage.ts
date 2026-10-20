@@ -193,7 +193,7 @@ export const useProgramPackagePlanEnrollment = (programPackagePlanId: string | n
           distinct_on: member_id
           order_by: { member_id: asc }
         ) {
-          member {
+          member: member_public {
             id
             picture_url
             name

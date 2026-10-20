@@ -132,7 +132,7 @@ const useExerciseCollection = (programContentId: string) => {
           }
         }
         member: exercise(where: { program_content_id: { _eq: $programContentId } }, distinct_on: [member_id]) {
-          member {
+          member: member_public {
             id
             name
             username
@@ -160,22 +160,25 @@ const useExerciseCollection = (programContentId: string) => {
     ? {
         id: data.program_content_by_pk.id,
         passingScore: data.program_content_by_pk.metadata?.passingScore || 0,
-        questions: data.program_content_by_pk.program_content_body.data?.questions || [],
+        questions: data.program_content_by_pk.program_content_body?.data?.questions || [],
         enrollments: data.program_content_by_pk.enrollments_aggregate.aggregate?.count || 0,
-        programId: data.program_content_by_pk.program_content_section.program_id,
+        programId: data.program_content_by_pk.program_content_section?.program_id || '',
       }
     : null
 
   const membersMap = Object.fromEntries(
-    data?.member.map(
-      ({ member }) =>
-        [
-          member.id,
-          {
-            name: member.name || member.username,
-            email: member.email,
-          },
-        ] as const,
+    data?.member.flatMap(({ member }) =>
+      member?.id
+        ? [
+            [
+              member.id,
+              {
+                name: member.name || member.username,
+                email: member.email,
+              },
+            ] as const,
+          ]
+        : [],
     ) || [],
   )
 

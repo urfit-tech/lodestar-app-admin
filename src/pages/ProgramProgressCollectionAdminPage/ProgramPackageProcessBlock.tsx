@@ -102,8 +102,8 @@ const ProgramPackageProcessBlock: React.VFC = () => {
           flatten(
             data.program_package_plan_enrollment.map(
               v =>
-                v.program_package_plan?.program_package.program_package_programs.map(w =>
-                  w.program.editors.map(x => x?.member_id || ''),
+                v.program_package_plan?.program_package?.program_package_programs.map(
+                  w => w.program?.editors.map(x => x?.member_id || '') || [],
                 ) || [],
             ),
           ),
@@ -115,18 +115,19 @@ const ProgramPackageProcessBlock: React.VFC = () => {
             variables: { memberIds: editors },
           })
           .then(({ data }) => {
-            editorNames = data.member.reduce((accumulator, value) => {
-              return { ...accumulator, [value.id]: value.name }
+            editorNames = data.member.reduce<Record<string, string>>((accumulator, value) => {
+              return value.id ? { ...accumulator, [value.id]: value.name || '' } : accumulator
             }, {})
           })
           .catch(error => message.error(error))
         data.program_package_plan_enrollment.forEach(pe => {
-          const programPackageTitle = pe.program_package_plan?.program_package.title || ''
+          const programPackageTitle = pe.program_package_plan?.program_package?.title || ''
           const categories =
-            pe.program_package_plan?.program_package.program_package_categories
-              .map(ppc => ppc.category.name)
+            pe.program_package_plan?.program_package?.program_package_categories
+              .map(ppc => ppc.category?.name || '')
               .join(',') || ''
-          pe.program_package_plan?.program_package.program_package_programs.forEach(ppp => {
+          pe.program_package_plan?.program_package?.program_package_programs.forEach(ppp => {
+            if (!ppp.program) return
             const programTitle = ppp.program.title
             const editors = uniq(ppp.program.editors)
               .map(e => editorNames[e?.member_id || ''])
@@ -500,7 +501,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
 
 const GET_EDITORS = gql`
   query GET_EDITORS($memberIds: [String!]) {
-    member(where: { id: { _in: $memberIds } }) {
+    member: member_public(where: { id: { _in: $memberIds } }) {
       id
       name
     }
@@ -509,7 +510,7 @@ const GET_EDITORS = gql`
 const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
   query GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS(
     $programPackageCondition: program_package_bool_exp
-    $memberCondition: member_bool_exp
+    $memberCondition: member_public_bool_exp
     $startedAt: timestamptz
     $endedAt: timestamptz
   ) {
@@ -518,9 +519,9 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
       name
     }
     program_package_plan_enrollment(
-      where: { program_package_plan: { program_package: $programPackageCondition }, member: $memberCondition }
+      where: { program_package_plan: { program_package: $programPackageCondition }, member_public: $memberCondition }
     ) {
-      member {
+      member: member_public {
         id
         name
         email

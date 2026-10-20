@@ -127,6 +127,7 @@ const pageMessages = {
     programProgress: { id: 'page.ProgramProgressCollectionAdminPage.programProgress', defaultMessage: 'Learning progress' },
   }),
   ProgramProcessBlock: defineMessages({
+    noPermission: { id: 'page.ProgramProcessBlock.noPermission', defaultMessage: '無權限' },
     chooseProgramCategory: {
       id: 'page.ProgramProcessBlock.chooseProgramCategory',
       defaultMessage: 'Choose program category',

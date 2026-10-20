@@ -548,7 +548,7 @@ export const useProgramProgressCollection = (programId?: string | null) => {
     }[]
   }[] =
     data?.member.map(member => ({
-      memberId: member.id,
+      memberId: member.id || '',
       name: member.name || member.username || '',
       email: member.email || '',
       pictureUrl: member.picture_url || '',
@@ -606,7 +606,7 @@ export const useProgramProgressCollection = (programId?: string | null) => {
 
 const GET_PROGRAM_PROGRESS = gql`
   query GET_PROGRAM_PROGRESS($programId: uuid, $offset: Int) {
-    member(where: { program_content_enrollments: { program_id: { _eq: $programId } } }, limit: 10, offset: $offset) {
+    member: member_public(where: { program_content_enrollments: { program_id: { _eq: $programId } } }, limit: 10, offset: $offset) {
       id
       username
       name

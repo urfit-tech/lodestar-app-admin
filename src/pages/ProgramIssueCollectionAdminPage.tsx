@@ -1,7 +1,6 @@
 import { BookFilled } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Select, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -14,6 +13,7 @@ import hasura from '../hasura'
 import { commonMessages, errorMessages, programMessages } from '../helpers/translation'
 import { IssueProps } from '../types/general'
 import ForbiddenPage from './ForbiddenPage'
+import { buildProgramIssueWhere } from './programIssueQuery'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
@@ -125,10 +125,7 @@ const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: s
     hasura.GET_CREATOR_PROGRAM_ISSUESVariables
   >(GET_CREATOR_PROGRAM_ISSUES, {
     variables: {
-      appId,
-      threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
-      unsolved,
-      memberId,
+      where: buildProgramIssueWhere(appId, memberId, selectedProgramId, unsolved),
     },
     fetchPolicy: 'no-cache',
   })
@@ -158,16 +155,8 @@ const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: s
 }
 
 const GET_CREATOR_PROGRAM_ISSUES = gql`
-  query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean, $memberId: String) {
-    issue(
-      where: {
-        app_id: { _eq: $appId }
-        thread_id: { _like: $threadIdLike }
-        solved_at: { _is_null: $unsolved }
-        issue_enrollment: { program_roles: { member_id: { _eq: $memberId } } }
-      }
-      order_by: { created_at: desc }
-    ) {
+  query GET_CREATOR_PROGRAM_ISSUES($where: issue_bool_exp!) {
+    issue(where: $where, order_by: { created_at: desc }) {
       id
       title
       description
