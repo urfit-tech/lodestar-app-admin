@@ -103,7 +103,7 @@ type VideoPipeline = 'attachment' | 'externalLink'
 const ProgramContentAdminBlock: React.FC<{
   form: FormInstance<FieldProps>
   programContent:
-    | (DeepPick<ProgramContent, '!videos'> &
+    | (Omit<ProgramContent, 'videos'> &
         DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>)
     | null
   programContentId: string

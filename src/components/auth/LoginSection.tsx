@@ -1,6 +1,5 @@
 import { Button, Icon, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { message } from 'antd'
-import { AxiosError } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useContext, useState } from 'react'
@@ -11,7 +10,7 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { handleError } from '../../helpers'
-import { codeMessages } from '../../helpers/translation'
+import { formatAuthError } from '../../helpers/authResponse'
 import { AuthState } from '../../types/general'
 import { AuthModalContext, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton, LineLoginButton, ParentingLoginButton } from './SocialLoginButton'
@@ -69,13 +68,8 @@ const LoginSection: React.VFC<{
           reset()
           back && history.push(back)
         })
-        .catch((error: AxiosError) => {
-          if (error.isAxiosError && error.response) {
-            const code = error.response.data.code as keyof typeof codeMessages
-            message.error(formatMessage(codeMessages[code]))
-          } else {
-            message.error(error.message)
-          }
+        .catch(error => {
+          message.error(formatAuthError(error, formatMessage))
         })
         .catch(handleError)
         .finally(() => setLoading(false))

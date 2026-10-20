@@ -210,7 +210,6 @@ export const useMemberForSchedule = (
             const options = getProductOptions(product)
             const totalSessions = options?.total_sessions?.max || 0
             const totalMinutes = totalSessions * 50
-            const orderLogAny = orderLog as any
             const campusFromOptions = resolveCampusId(product)
 
             return {
@@ -218,12 +217,12 @@ export const useMemberForSchedule = (
               studentId: orderLog.member_id,
               productName: product.name,
               language: getLanguage(product),
-              type: 'personal',
+              type: 'personal' as const,
               totalMinutes,
               usedMinutes: 0, // Will be calculated from scheduled events
               availableMinutes: totalMinutes, // Will be calculated as totalMinutes - usedMinutes
               createdAt: new Date(orderLog.created_at),
-              paymentExpiredAt: orderLogAny.expired_at ? new Date(orderLogAny.expired_at) : undefined,
+              paymentExpiredAt: orderLog.expired_at ? new Date(orderLog.expired_at) : undefined,
               expiresAt: undefined, // 開課日 + 有效月數，預排/發布後才有值
               status: orderLog.status,
               materials,

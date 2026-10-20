@@ -58,7 +58,7 @@ type FieldProps = {
 
 const PracticeForm: React.FC<{
   programId: string
-  programContent: DeepPick<ProgramContent, '!videos'> &
+  programContent: Omit<ProgramContent, 'videos'> &
     DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   programContentBody: ProgramContentBody
   displayMode: DisplayMode
@@ -333,7 +333,7 @@ const UPDATE_PRACTICE = gql`
 `
 const PracticeAdminModalBlock: React.FC<{
   programId: string
-  programContent: DeepPick<ProgramContent, '!videos'> &
+  programContent: Omit<ProgramContent, 'videos'> &
     DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   displayMode: DisplayMode
   onDisplayModeChange: (displayMode: DisplayMode) => void

@@ -4,10 +4,10 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
+import { NumberParam, StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../components/layout/DefaultLayout'
-import { handleError } from '../helpers'
-import { codeMessages } from '../helpers/translation'
+import { formatAuthError, readAuthResponse } from '../helpers/authResponse'
+import { authCooldownKey, useAuthCooldown } from '../hooks/authCooldown'
 import { ReactComponent as CheckEmailIcon } from '../images/default/check-email.svg'
 
 const StyledContainer = styled.div`
@@ -39,31 +39,37 @@ const CheckEmailPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
-  const app = useApp()
+  const [retryAfter] = useQueryParam('retryAfter', NumberParam)
+  const [requestedAt] = useQueryParam('requestedAt', NumberParam)
+  const [openedAt] = useState(Date.now)
+  const { id: appId } = useApp()
   const [loading, setLoading] = useState(false)
 
-  const handleResendEmail = () => {
+  const { remaining, start } = useAuthCooldown(
+    authCooldownKey(appId, 'reset', email || ''),
+    type === 'reset-password' ? readAuthResponse({ retryAfter }).retryAfter || 60 : 0,
+    type === 'reset-password' && requestedAt && requestedAt > 0 && requestedAt <= openedAt ? requestedAt : 0,
+  )
+
+  const handleResendEmail = async () => {
+    if (!email || loading || remaining) return
     setLoading(true)
-    if (!email) {
-      setTimeout(() => {
-        setLoading(false)
-      }, 3000)
-      return
-    }
-    axios
-      .post(`${process.env.REACT_APP_API_BASE_ROOT}/auth/forgot-password`, {
-        appId: app.id,
+    try {
+      const { data } = await axios.post(`${process.env.REACT_APP_API_BASE_ROOT}/auth/forgot-password`, {
+        appId,
         account: email,
       })
-      .then(({ data: { code } }) => {
-        if (code === 'SUCCESS') {
-          message.success(formatMessage(messages.sentResetPasswordMail))
-        } else {
-          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-        }
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+      if (data.code !== 'SUCCESS' && data.code !== 'E_NO_MEMBER') throw data
+      const seconds = readAuthResponse(data).retryAfter || 60
+      start(seconds)
+      message.info(formatAuthError({ retryAfter: seconds }, formatMessage))
+    } catch (error) {
+      const seconds = readAuthResponse(error).retryAfter
+      if (seconds) start(seconds)
+      message.error(formatAuthError(error, formatMessage))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -83,8 +89,10 @@ const CheckEmailPage: React.FC = () => {
 
         <StyledAction>
           <span>{formatMessage(messages.emailNotReceived)}</span>
-          <Button type="link" size="small" onClick={handleResendEmail} loading={loading}>
-            {formatMessage(messages.sendEmailAgain)}
+          <Button type="link" size="small" onClick={handleResendEmail} loading={loading} disabled={remaining > 0}>
+            {remaining > 0
+              ? formatAuthError({ retryAfter: remaining }, formatMessage)
+              : formatMessage(messages.sendEmailAgain)}
           </Button>
         </StyledAction>
       </StyledContainer>

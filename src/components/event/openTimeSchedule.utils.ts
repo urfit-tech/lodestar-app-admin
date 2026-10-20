@@ -1,3 +1,4 @@
+import { EventInput } from '@fullcalendar/core'
 import { RRule, rrulestr, Weekday } from 'rrule'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
@@ -130,7 +131,7 @@ export const getAvailableStartTimeOptions = (existingSlots: TimeSlot[], currentS
 export const getAvailableEndTimeOptions = (
   startTime: string,
   existingSlots: TimeSlot[],
-  currentSlotId?: string
+  currentSlotId?: string,
 ): string[] => {
   const startMinutes = timeStringToMinutes(startTime)
 
@@ -201,7 +202,7 @@ export const copyDayScheduleToAll = (sourceDayIndex: number, schedule: WeeklySch
 export const weeklyScheduleToEvents = (
   schedule: WeeklySchedule,
   repeatConfig: { isWeeklyRepeat: boolean; repeatUntil: Date | null },
-  baseDate: Date = new Date()
+  baseDate: Date = new Date(),
 ): GeneralEventApi[] => {
   const events: GeneralEventApi[] = []
 
@@ -311,7 +312,7 @@ export const groupEventsByDayOfWeek = (events: GeneralEventApi[]): Map<number, G
 
 // 將事件列表轉換為 WeeklySchedule（用於編輯模式）
 export const eventsToWeeklySchedule = (
-  events: GeneralEventApi[]
+  events: GeneralEventApi[],
 ): { schedule: WeeklySchedule; repeatConfig: RepeatConfig } => {
   const schedule = createEmptyWeeklySchedule()
   let repeatConfig: RepeatConfig = {
@@ -363,3 +364,13 @@ export const eventsToWeeklySchedule = (
 
   return { schedule, repeatConfig }
 }
+
+// FullCalendar accepts recurrence input, not live RRule instances.
+export const toOpenTimeCalendarEvent = (event: GeneralEventApi): EventInput => ({
+  ...event,
+  rrule: 'rrule' in event ? String(event.rrule) : undefined,
+  exrule:
+    'exrule' in event && event.exrule
+      ? (typeof event.exrule === 'string' ? rrulestr(event.exrule) : event.exrule).origOptions
+      : undefined,
+})

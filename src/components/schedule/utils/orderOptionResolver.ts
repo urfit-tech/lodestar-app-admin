@@ -43,7 +43,7 @@ export const resolveMemberCampusIds = (member?: any): string[] => {
       groups
         .flatMap((group: any) => [group?.permission_group_id, group?.permission_group?.id])
         .filter((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim()))
-        .map(id => id.trim()),
+        .map((id: string) => id.trim()),
     ),
   )
 }

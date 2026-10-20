@@ -1,5 +1,5 @@
 import { MailOutlined } from '@ant-design/icons'
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -8,8 +8,10 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import DefaultLayout from '../components/layout/DefaultLayout'
-import { desktopViewMixin, handleError } from '../helpers'
-import { codeMessages, commonMessages, errorMessages } from '../helpers/translation'
+import { desktopViewMixin } from '../helpers'
+import { formatAuthError, readAuthResponse } from '../helpers/authResponse'
+import { commonMessages, errorMessages } from '../helpers/translation'
+import { authCooldownKey, useAuthCooldown } from '../hooks/authCooldown'
 
 const messages = defineMessages({
   forgotPassword: { id: 'common.label.forgotPassword', defaultMessage: '忘記密碼' },
@@ -50,22 +52,33 @@ const ForgotPasswordPage: React.FC = () => {
   const [form] = useForm<FieldProps>()
   const app = useApp()
   const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('')
+  const { remaining, start } = useAuthCooldown(authCooldownKey(app.id, 'reset', email))
 
   const handleSubmit = (values: FieldProps) => {
+    if (loading || remaining) return
     setLoading(true)
     axios
       .post(`${process.env.REACT_APP_API_BASE_ROOT}/auth/forgot-password`, {
         appId: app.id,
-        account: values.email,
+        account: values.email.trim(),
       })
-      .then(({ data: { code, message, result } }) => {
-        if (code === 'SUCCESS') {
-          history.push(`/check-email?email=${values.email}&type=forgot-password`)
+      .then(({ data }) => {
+        const { code } = data
+        if (code === 'SUCCESS' || code === 'E_NO_MEMBER') {
+          const seconds = readAuthResponse(data).retryAfter || 60
+          start(seconds)
+          message.info(formatAuthError({ retryAfter: seconds }, formatMessage))
+          history.push(`/check-email?email=${encodeURIComponent(values.email)}&type=forgot-password`)
         } else {
-          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+          throw data
         }
       })
-      .catch(handleError)
+      .catch(error => {
+        const seconds = readAuthResponse(error).retryAfter
+        if (seconds) start(seconds)
+        message.error(formatAuthError(error, formatMessage))
+      })
       .finally(() => setLoading(false))
   }
 
@@ -87,12 +100,18 @@ const ForgotPasswordPage: React.FC = () => {
               { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
             ]}
           >
-            <Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<MailOutlined />} />
+            <Input
+              onChange={event => setEmail(event.target.value)}
+              placeholder={formatMessage(messages.enterRegisteredEmail)}
+              suffix={<MailOutlined />}
+            />
           </Form.Item>
 
           <Form.Item className="m-0">
-            <Button type="primary" htmlType="submit" block loading={loading}>
-              {formatMessage(commonMessages.ui.confirm)}
+            <Button type="primary" htmlType="submit" block loading={loading} disabled={remaining > 0}>
+              {remaining > 0
+                ? formatAuthError({ retryAfter: remaining }, formatMessage)
+                : formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>
         </Form>

@@ -47,7 +47,7 @@ const transformParameters = (parameters: { [key: string]: [] }, linkMap: { [key:
 }
 
 const ExternalLinkAdminModalBlock: React.FC<{
-  programContent: DeepPick<ProgramContent, '!videos'> &
+  programContent: Omit<ProgramContent, 'videos'> &
     DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   displayMode: DisplayMode
   programContentId: string

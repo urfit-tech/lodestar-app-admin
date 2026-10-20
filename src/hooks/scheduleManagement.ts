@@ -414,6 +414,17 @@ export const GET_ORDERS_BY_IDS = gql`
 
 // GraphQL query to get available tuition orders for class group (not yet assigned)
 // Fetches all orders with 學費 products, frontend classifies into semester/group
+type AvailableTuitionOrders = {
+  order_log: (Pick<hasura.order_log, 'id' | 'member_id' | 'options' | 'expired_at' | 'created_at' | 'status'> & {
+    member: Pick<hasura.member, 'id' | 'name' | 'email' | 'picture_url'> & {
+      member_permission_groups: (Pick<hasura.member_permission_group, 'permission_group_id'> & {
+        permission_group: Pick<hasura.permission_group, 'id' | 'name'>
+      })[]
+    }
+    order_products: Pick<hasura.order_product, 'id' | 'name' | 'options'>[]
+  })[]
+}
+
 export const GET_AVAILABLE_TUITION_ORDERS = gql`
   query GetAvailableTuitionOrders(
     $appId: String!
@@ -692,7 +703,7 @@ export const useAvailableOrdersForClass = (
   )
 
   // Single query: fetch all tuition orders, classify on frontend
-  const { data, loading, error, refetch } = useQuery(GET_AVAILABLE_TUITION_ORDERS, {
+  const { data, loading, error, refetch } = useQuery<AvailableTuitionOrders>(GET_AVAILABLE_TUITION_ORDERS, {
     variables: {
       appId,
       excludeOrderIds: safeExcludedIds,

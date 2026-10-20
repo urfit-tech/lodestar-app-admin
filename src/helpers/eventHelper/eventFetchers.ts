@@ -24,22 +24,15 @@ export const createResourceFetcher = curry(
     }
 )
 
-export const getResourceByTypeTargetFetcher = curry<
-    (
-        authToken: string,
-        typeTargets: { type: ResourceType, targets: Array<string> }
-    ) =>
-        Promise<Array<FetchedResource>>
->(
-    async (authToken, typeTargets) => {
+export const getResourceByTypeTargetFetcher = (authToken: string) =>
+    async (typeTargets: { type: ResourceType, targets: Array<string> }): Promise<FetchedResource[]> => {
         const { type, targets } = typeTargets
-        return (await axios.post(
+        return (await axios.post<FetchedResource[]>(
             `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/temporally-exclusive-resource/batch/get/${type}`,
             targets,
             authedConfig(authToken)({})
         )).data
     }
-)
 
 export const getEventsByResourceFetcher = curry(
     async (authToken: string, startUntil: { startedAt: Date, until: Date }, resourceIds: Array<string>) => {
@@ -191,7 +184,7 @@ export const createEventFetcher = curry(
 export const createInvitationFetcher = curry(
     async (
         authToken: string,
-        eventResources: Array<FetchedResource> | undefined,
+        eventResources: Array<Pick<FetchedResource, 'temporally_exclusive_resource_id'> & { role?: string }> | undefined,
         eventIds: Array<string | { id: string }> | undefined
     ) => {
         const normalizedEventIds = (eventIds || [])
@@ -230,7 +223,7 @@ export const createEventAndInviteResourceFetcher = curry(
         app_id: string,
         payload: {
             events: Array<GeneralEventApi>,
-            invitedResource: Array<FetchedResource>
+            invitedResource: Array<Pick<FetchedResource, 'temporally_exclusive_resource_id'> & { role?: string }>
         }
     ) => {
         if (authToken && payload.invitedResource.length > 0) {

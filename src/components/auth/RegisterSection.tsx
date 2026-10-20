@@ -1,10 +1,10 @@
 import { EyeInvisibleOutlined, EyeOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { handleError } from '../../helpers'
+import { formatAuthError } from '../../helpers/authResponse'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { AuthState } from '../../types/general'
 import { AuthModalContext, StyledAction, StyledTitle } from './AuthModal'
@@ -39,7 +39,7 @@ const RegisterSection: React.FC<{
         setVisible && setVisible(false)
         form.resetFields()
       })
-      .catch(handleError)
+      .catch(error => message.error(formatAuthError(error, formatMessage)))
       .finally(() => setLoading(false))
   }
 

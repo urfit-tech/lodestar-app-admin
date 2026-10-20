@@ -244,7 +244,7 @@ const UPDATE_EXAM_PROGRAM_CONTENT = gql`
 
 const ExerciseAdminModalBlock: React.FC<{
   programId: string
-  programContent: DeepPick<ProgramContent, '!videos'> &
+  programContent: Omit<ProgramContent, 'videos'> &
     DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].duration' | 'videos.[].options'>
   displayMode: DisplayMode
   onDisplayModeChange: (displayMode: DisplayMode) => void
