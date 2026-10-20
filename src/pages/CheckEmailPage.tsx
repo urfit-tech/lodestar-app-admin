@@ -4,7 +4,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
+import { NumberParam, StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../components/layout/DefaultLayout'
 import { formatAuthError, readAuthResponse } from '../helpers/authResponse'
 import { authCooldownKey, useAuthCooldown } from '../hooks/authCooldown'
@@ -39,10 +39,17 @@ const CheckEmailPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
+  const [retryAfter] = useQueryParam('retryAfter', NumberParam)
+  const [requestedAt] = useQueryParam('requestedAt', NumberParam)
+  const [openedAt] = useState(Date.now)
   const { id: appId } = useApp()
   const [loading, setLoading] = useState(false)
 
-  const { remaining, start } = useAuthCooldown(authCooldownKey(appId, 'reset', email || ''))
+  const { remaining, start } = useAuthCooldown(
+    authCooldownKey(appId, 'reset', email || ''),
+    type === 'reset-password' ? readAuthResponse({ retryAfter }).retryAfter || 60 : 0,
+    type === 'reset-password' && requestedAt && requestedAt > 0 && requestedAt <= openedAt ? requestedAt : 0,
+  )
 
   const handleResendEmail = async () => {
     if (!email || loading || remaining) return
