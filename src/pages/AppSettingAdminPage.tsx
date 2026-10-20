@@ -208,7 +208,13 @@ const AppSettingCard: React.FC<
             )
           })}
         <Form.Item wrapperCol={{ md: { offset: 6 } }}>
-          <Button className="mr-2" onClick={() => form.setFieldsValue(savedValues)}>
+          <Button
+            className="mr-2"
+            onClick={() => {
+              form.resetFields()
+              form.setFieldsValue(savedValues)
+            }}
+          >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit" loading={loading}>
