@@ -154,29 +154,19 @@ const ProgramProcessBlock: React.VFC = () => {
                     { totalGainedPoints: 0, updatedAt: null, passingScore: 0 },
                   )
 
-                // TODO: remove exercise
-                let exerciseStatus = ''
-                if (programContentType === 'exercise' && hightestScore.updatedAt !== null) {
-                  exerciseStatus =
-                    hightestScore.totalGainedPoints >= pc.metadata?.passingScore
-                      ? formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
-                      : formatMessage(pageMessages.ProgramProcessBlock.exerciseFailed)
-                } else if (programContentType === 'exam' && hightestScore.updatedAt !== null) {
-                  exerciseStatus =
-                    hightestScore.totalGainedPoints >= hightestScore.passingScore
-                      ? formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
-                      : formatMessage(pageMessages.ProgramProcessBlock.exerciseFailed)
-                }
-
-                const exercisePassedAt =
-                  exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
-                    ? hightestScore.updatedAt
-                    : ''
-                const examProgressPercentage =
-                  exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed) &&
-                  hightestScore.totalGainedPoints >= hightestScore.passingScore
-                    ? 1
-                    : 0
+                const hasExerciseResult = isExercise && hightestScore.updatedAt !== null
+                const passingScore =
+                  programContentType === 'exercise' ? pc.metadata?.passingScore : hightestScore.passingScore
+                const exercisePassed = hasExerciseResult && hightestScore.totalGainedPoints >= passingScore
+                const exerciseStatus = hasExerciseResult
+                  ? formatMessage(
+                      exercisePassed
+                        ? pageMessages.ProgramProcessBlock.exercisePassed
+                        : pageMessages.ProgramProcessBlock.exerciseFailed,
+                    )
+                  : ''
+                const exercisePassedAt = exercisePassed ? hightestScore.updatedAt : ''
+                const examProgressPercentage = exercisePassed ? 1 : 0
                 const watchedProgress =
                   programContentType === 'exam' || programContentType === 'exercise'
                     ? examProgressPercentage

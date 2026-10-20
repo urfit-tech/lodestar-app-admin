@@ -152,4 +152,35 @@ describe('exercise report permission presentation', () => {
     expect(row[8]).toBe('1')
     expect(row[13]).toBe('')
   })
+  test.each([80, 60, 59, 0])('legacy exercise without exam uses its content threshold: %i points', points => {
+    const row = exportRow({ type: 'exercise', admin: true, answers: [{ points, passingScore: null }] })
+    const passed = points >= 60
+    expect(row[9]).toBe(passed ? '100%' : '0%')
+    expect(row[13]).toBe(
+      passed
+        ? pageMessages.ProgramProcessBlock.exercisePassed.defaultMessage
+        : pageMessages.ProgramProcessBlock.exerciseFailed.defaultMessage,
+    )
+    expect(row[15]).toBe(passed ? 'date' : '')
+  })
+  test('legacy exercise does not use a different exam threshold', () => {
+    const row = exportRow({ type: 'exercise', admin: true, answers: [{ points: 80, passingScore: 99 }] })
+    expect(row[9]).toBe('100%')
+    expect(row[13]).toBe(pageMessages.ProgramProcessBlock.exercisePassed.defaultMessage)
+  })
+  test.each([{ actor: 'student' }, { role: 'content-creator', owner: true }])(
+    'self/teacher legacy passing results are not restricted: %j',
+    options => {
+      const row = exportRow({ ...options, type: 'exercise', answers: [{ points: 80, passingScore: null }] })
+      expect(row[9]).toBe('100%')
+      expect(row[13]).toBe(pageMessages.ProgramProcessBlock.exercisePassed.defaultMessage)
+    },
+  )
+  test('legacy passing data does not override a missing exercise permission', () => {
+    const row = exportRow({ type: 'exercise', answers: [{ points: 80, passingScore: null }] })
+    expect(row[9]).toBe('無權限')
+    expect(row[13]).toBe('無權限')
+    expect(row[14]).toBe('無權限')
+    expect(row[15]).toBe('無權限')
+  })
 })
