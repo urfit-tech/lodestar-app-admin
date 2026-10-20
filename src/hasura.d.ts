@@ -163791,10 +163791,7 @@ export type UPDATE_PROGRAM_POSITION_COLLECTIONVariables = Exact<{
 export type UPDATE_PROGRAM_POSITION_COLLECTION = { __typename?: 'mutation_root', insert_program?: { __typename?: 'program_mutation_response', affected_rows: number } | null };
 
 export type GET_CREATOR_PROGRAM_ISSUESVariables = Exact<{
-  appId: Scalars['String'];
-  threadIdLike?: InputMaybe<Scalars['String']>;
-  unsolved?: InputMaybe<Scalars['Boolean']>;
-  memberId?: InputMaybe<Scalars['String']>;
+  where: issue_bool_exp;
 }>;
 
 
