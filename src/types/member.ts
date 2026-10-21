@@ -97,6 +97,7 @@ export type MemberAdminProps = {
   tags: string[]
   specialities: string[]
   phones: {
+    id: string
     isValid: boolean
     phoneNumber: string
     countryCode: string

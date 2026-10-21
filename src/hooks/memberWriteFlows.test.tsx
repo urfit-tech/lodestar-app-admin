@@ -1,6 +1,7 @@
 import { useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import { message } from 'antd'
+import { print } from 'graphql'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
@@ -137,7 +138,16 @@ beforeEach(() => {
   }
   refetchMember = jest.fn()
   refetchNotes = jest.fn()
-  mutate = jest.fn().mockImplementation(() => Promise.resolve({ data: { update_member: { affected_rows: 1 } } }))
+  mutate = jest.fn().mockImplementation(({ variables }: any) =>
+    Promise.resolve({
+      data: {
+        update_member: { affected_rows: 1 },
+        delete_member_phone: { affected_rows: variables?.deletedPhoneIds?.length ?? 0 },
+        insert_member_phone: { affected_rows: variables?.phones?.length ?? 0 },
+        update_member_phone_many: variables?.phoneUpdates?.map(() => ({ affected_rows: 1 })) ?? [],
+      },
+    }),
+  )
   upload = jest.fn().mockImplementation(() => Promise.resolve())
   mockUseAuth.mockImplementation(() => ({ currentUserRole: 'general-member', currentMemberId: 'staff', permissions }))
   mockUseQuery.mockImplementation((document: any) => {
@@ -440,7 +450,8 @@ test('editing a phone still validates and writes its ISO country and E.164 numbe
   await saveProfile()
   expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({
     updatePhones: true,
-    phones: [{ phone: '2025550174', country_code: 'US', international_phone: '+12025550174' }],
+    phones: [],
+    phoneUpdates: [{ _set: { phone: '2025550174', country_code: 'US', international_phone: '+12025550174' } }],
   })
 })
 
@@ -482,9 +493,13 @@ describe('multiple phone metadata preservation', () => {
     expect(mutate).toHaveBeenCalledTimes(1)
     expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({
       updatePhones: true,
-      phones: [
-        { phone, country_code: country, international_phone: international, is_valid: false, is_primary: true },
-        { phone: '0912345679', country_code: 'TW', international_phone: '+886912345679', is_valid: true },
+      deletedPhoneIds: [],
+      phones: [],
+      phoneUpdates: [
+        {
+          where: { id: { _eq: 'second' }, member_id: { _eq: 'target' } },
+          _set: { phone: '0912345679', country_code: 'TW', international_phone: '+886912345679', is_valid: true },
+        },
       ],
     })
   })
@@ -501,7 +516,7 @@ describe('multiple phone metadata preservation', () => {
       Simulate.change(input, { target: { value: '2025550174' } } as any)
     })
     await saveProfile()
-    expect((mutate.mock.calls[0][0] as any).variables.phones).toEqual([
+    expect((mutate.mock.calls[0][0] as any).variables.phoneUpdates.map((row: any) => row._set)).toEqual([
       expect.objectContaining({ phone: '2025550174', country_code: 'US', international_phone: '+12025550174' }),
     ])
   })
@@ -520,7 +535,7 @@ test('editing a geographic phone to a non-geographic number clears ISO and retai
     Simulate.change(input, { target: { value: '+80012345678' } } as any)
   })
   await saveProfile()
-  expect((mutate.mock.calls[0][0] as any).variables.phones).toEqual([
+  expect((mutate.mock.calls[0][0] as any).variables.phoneUpdates.map((row: any) => row._set)).toEqual([
     expect.objectContaining({ phone: '+80012345678', country_code: null, international_phone: '+80012345678' }),
   ])
 })
@@ -548,4 +563,200 @@ test('clearing a required existing phone does not silently delete it', async () 
   })
   await saveProfile()
   expect(mutate).not.toHaveBeenCalled()
+})
+
+describe('phone row identity and opaque metadata', () => {
+  const trackedPhone = () => ({
+    id: 'tracked',
+    phone: '2025550173',
+    country_code: 'US',
+    international_phone: '+12025550173',
+    is_valid: false,
+    is_primary: true,
+    extension_number: '123',
+    manager_id: 'sales',
+    created_at: '2020-01-01',
+    updated_at: '2021-01-01',
+    last_manager_assigned_at: '2022-01-01',
+    followed_at: '2023-01-01',
+    closed_at: '2023-02-01',
+    completed_at: '2023-03-01',
+    recycled_at: '2023-04-01',
+    excluded_at: '2023-05-01',
+  })
+  test('editing a primary phone updates its original row without overwriting business metadata', async () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [trackedPhone()]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    act(() => {
+      Simulate.change(container.querySelector('input[value="2025550173"]')!, { target: { value: '2025550174' } } as any)
+    })
+    await saveProfile()
+    const variables = (mutate.mock.calls[0][0] as any).variables
+    expect(variables.deletedPhoneIds).toEqual([])
+    expect(variables.phones).toEqual([])
+    expect(variables.phoneUpdates).toEqual([
+      {
+        where: { id: { _eq: 'tracked' }, member_id: { _eq: 'target' } },
+        _set: { phone: '2025550174', country_code: 'US', international_phone: '+12025550174', is_valid: true },
+      },
+    ])
+    // SQL _set leaves all unmentioned fields on the existing row, including fields this role cannot select.
+    const saved = { ...trackedPhone(), ...variables.phoneUpdates[0]._set }
+    expect(saved).toEqual({
+      ...trackedPhone(),
+      phone: '2025550174',
+      international_phone: '+12025550174',
+      is_valid: true,
+    })
+    const document = mockUseMutation.mock.calls.find(
+      ([doc]: any) => operationName(doc) === 'UPDATE_MEMBER_PROFILE_BASIC',
+    )![0]
+    const query = print(document as any)
+    expect(query.replace(/\s/g, '')).toContain(
+      'delete_member_phone(where:{member_id:{_eq:$memberId},id:{_in:$deletedPhoneIds}})',
+    )
+    expect(query).toContain('update_member_phone_many(updates: $phoneUpdates)')
+  })
+  test('removing a row and editing the remaining row retains its ID despite the shifted index', async () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [
+      trackedPhone(),
+      { id: 'removed', phone: '0912345678', country_code: 'TW', is_valid: true },
+      { id: 'remaining', phone: '0912345679', country_code: 'TW', is_valid: true },
+    ]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    act(() => {
+      Simulate.click(
+        container
+          .querySelector('input[value="0912345678"]')!
+          .closest('.position-relative')!
+          .querySelector('.anticon-close')!,
+      )
+    })
+    act(() => {
+      Simulate.change(container.querySelector('input[value="0912345679"]')!, { target: { value: '0912345680' } } as any)
+    })
+    await saveProfile()
+    const variables = (mutate.mock.calls[0][0] as any).variables
+    expect(variables.deletedPhoneIds).toEqual(['removed'])
+    expect(variables.phones).toEqual([])
+    expect(variables.phoneUpdates).toHaveLength(1)
+    expect(variables.phoneUpdates[0].where).toEqual({ id: { _eq: 'remaining' }, member_id: { _eq: 'target' } })
+  })
+  test('adding a phone does not delete or update existing rows', async () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [trackedPhone()]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    act(() => {
+      Simulate.click(container.querySelector('.anticon-plus')!.closest('button')!)
+    })
+    const inputs = container.querySelectorAll('.position-relative input')
+    act(() => {
+      Simulate.change(inputs[inputs.length - 1], { target: { value: '0912345678' } } as any)
+    })
+    await saveProfile()
+    const variables = (mutate.mock.calls[0][0] as any).variables
+    expect(variables.deletedPhoneIds).toEqual([])
+    expect(variables.phoneUpdates).toEqual([])
+    expect(variables.phones).toEqual([
+      {
+        id: expect.any(String),
+        member_id: 'target',
+        phone: '0912345678',
+        country_code: 'TW',
+        international_phone: '+886912345678',
+        is_valid: true,
+      },
+    ])
+    act(() => {
+      Simulate.change(container.querySelector('input[id="name"]')!, { target: { value: 'After adding phone' } } as any)
+    })
+    await saveProfile()
+    expect((mutate.mock.calls[1][0] as any).variables).toMatchObject({
+      updatePhones: false,
+      phones: [],
+      phoneUpdates: [],
+      deletedPhoneIds: [],
+    })
+    act(() => {
+      Simulate.change(container.querySelector('input[value="0912345678"]')!, { target: { value: '0912345679' } } as any)
+    })
+    await saveProfile()
+    const edited = (mutate.mock.calls[2][0] as any).variables
+    expect(edited.phones).toEqual([])
+    expect(edited.phoneUpdates[0].where.id).toEqual({ _eq: variables.phones[0].id })
+    act(() => {
+      Simulate.click(
+        container
+          .querySelector('input[value="0912345679"]')!
+          .closest('.position-relative')!
+          .querySelector('.anticon-close')!,
+      )
+    })
+    await saveProfile()
+    expect((mutate.mock.calls[3][0] as any).variables).toMatchObject({
+      deletedPhoneIds: [variables.phones[0].id],
+      phones: [],
+      phoneUpdates: [],
+    })
+  })
+  test.each([null, [], [{ affected_rows: 0 }], [null]])(
+    'missing or zero phone update response is not reported as success: %j',
+    async response => {
+      permissions.MEMBER_PHONE_ADMIN = true
+      member.member_phones = [trackedPhone()]
+      mutate.mockImplementation(() =>
+        Promise.resolve({
+          data: {
+            update_member: { affected_rows: 1 },
+            delete_member_phone: { affected_rows: 0 },
+            insert_member_phone: { affected_rows: 0 },
+            update_member_phone_many: response,
+          },
+        }),
+      )
+      act(() => {
+        render(<MemberForm />, container)
+      })
+      act(() => {
+        Simulate.change(container.querySelector('input[value="2025550173"]')!, {
+          target: { value: '2025550174' },
+        } as any)
+      })
+      await saveProfile()
+      expect(message.success).not.toHaveBeenCalled()
+      expect(handleError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: expect.stringContaining('電話未完整更新') }),
+      )
+    },
+  )
+})
+
+test('cancel restores phone row IDs as well as values before the next edit', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [{ id: 'original-id', phone: '2025550173', country_code: 'US', is_valid: true }]
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  act(() => {
+    Simulate.change(container.querySelector('input[value="2025550173"]')!, { target: { value: '2025550174' } } as any)
+  })
+  act(() => {
+    Simulate.click(
+      Array.from(container.querySelectorAll('button')).find(button => button.textContent?.includes('cancel'))!,
+    )
+  })
+  expect(container.querySelector('input[value="2025550173"]')).not.toBeNull()
+  act(() => {
+    Simulate.change(container.querySelector('input[value="2025550173"]')!, { target: { value: '2025550175' } } as any)
+  })
+  await saveProfile()
+  expect((mutate.mock.calls[0][0] as any).variables.phoneUpdates[0].where.id).toEqual({ _eq: 'original-id' })
 })

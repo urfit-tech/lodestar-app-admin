@@ -10,6 +10,7 @@ import { includes, uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { normalizeMemberPhone } from '../../helpers/memberPhone'
@@ -36,24 +37,29 @@ const StyledCloseIcon = styled.div`
   height: 100%;
 `
 
+type PhoneField = { id?: string; value: string }
+
 type FieldProps = {
   name: string
   username: string
   email: string
   star: number
-  phones: string[]
+  phones: PhoneField[]
   countryCodes: string[]
   categoryIds: string[]
   specialities: string[]
   tags?: string[]
   managerId?: string
 }
-const splitPhoneData = (phoneData: string[] = [], separator: string): { phones: string[]; countryCodes: string[] } => {
+const splitPhoneData = (
+  phoneData: PhoneField[] = [],
+  separator: string,
+): { phones: string[]; countryCodes: string[] } => {
   const countryCodes: string[] = []
   const phones: string[] = []
 
-  phoneData.forEach(data => {
-    if (!data) data = `${separator}`
+  phoneData.forEach(entry => {
+    const data = entry.value || separator
     // Only the first separator encodes the country; keep legacy phone content intact.
     const [countryCode, ...phoneParts] = data.split(separator)
     const phone = phoneParts.join(separator)
@@ -77,13 +83,21 @@ const MemberProfileBasicForm: React.FC<{
   const { enabledModules, settings } = useApp()
 
   const [updateMemberProfileBasic] = useMutation<
-    hasura.UPDATE_MEMBER_PROFILE_BASIC,
+    hasura.UPDATE_MEMBER_PROFILE_BASIC & {
+      update_member_phone_many?: ({ affected_rows: number } | null)[] | null
+    },
     Omit<
       hasura.UPDATE_MEMBER_PROFILE_BASICVariables,
       'name' | 'username' | 'email' | 'star' | 'managerId' | 'assignedAt'
-    > & { identity: hasura.member_set_input; updatePhones: boolean }
+    > & {
+      identity: hasura.member_set_input
+      updatePhones: boolean
+      phoneUpdates: hasura.member_phone_updates[]
+      deletedPhoneIds: string[]
+    }
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
+  const [savedPhones, setSavedPhones] = useState<{ memberId: string; phones: PhoneField[] } | null>(null)
 
   if (!memberAdmin) {
     return <Skeleton active />
@@ -98,38 +112,29 @@ const MemberProfileBasicForm: React.FC<{
     canEditIdentity &&
     (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_USERNAME_EDIT)
 
-  const initialPhones = memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
-  const nonEmptyPhones = (values: string[] = []) => values.filter(value => splitPhoneData([value], ',').phones[0])
-  const phonesChanged = (values: string[] = []) =>
+  const initialPhones: PhoneField[] =
+    savedPhones?.memberId === memberAdmin.id
+      ? savedPhones.phones
+      : memberAdmin.phones.map(phone => ({ id: phone.id, value: `${phone.countryCode},${phone.phoneNumber}` }))
+  const nonEmptyPhones = (values: PhoneField[] = []) => values.filter(value => splitPhoneData([value], ',').phones[0])
+  const phonesChanged = (values: PhoneField[] = []) =>
     JSON.stringify(nonEmptyPhones(values)) !== JSON.stringify(initialPhones)
 
-  const phoneInput = (value: string) => {
+  const phoneUnchanged = (value: PhoneField) =>
+    initialPhones.some(original => original.id === value.id && original.value === value.value)
+
+  const phoneInput = (value: PhoneField) => {
     const { phones, countryCodes } = splitPhoneData([value], ',')
-    const original = memberAdmin.phones.find(
-      phone => phone.phoneNumber === phones[0] && phone.countryCode === countryCodes[0],
-    )
-    // Preserve the existing opt-out for applications that intentionally accept unvalidated phone text.
-    let normalized
-    if (!original) {
-      try {
-        normalized = normalizeMemberPhone(phones[0], (countryCodes[0] || undefined) as CountryCode | undefined)
-      } catch (error) {
-        if (settings['member_profile_phone.check.ignore.enable'] !== '1') throw error
-        normalized = { phone: phones[0], country_code: countryCodes[0] || null, international_phone: null }
+    // Preserve the existing opt-out for applications that accept unvalidated phone text.
+    try {
+      return {
+        ...normalizeMemberPhone(phones[0], (countryCodes[0] || undefined) as CountryCode | undefined),
+        is_valid: true,
       }
+    } catch (error) {
+      if (settings['member_profile_phone.check.ignore.enable'] !== '1') throw error
+      return { phone: phones[0], country_code: countryCodes[0] || null, international_phone: null, is_valid: true }
     }
-    return original
-      ? {
-          phone: original.phoneNumber,
-          country_code: original.countryCode || null,
-          international_phone: original.internationalPhone ?? null,
-          is_valid: original.isValid,
-          is_primary: original.isPrimary ?? false,
-        }
-      : {
-          ...normalized,
-          is_valid: true,
-        }
   }
 
   const handleSubmit = async () => {
@@ -142,6 +147,27 @@ const MemberProfileBasicForm: React.FC<{
         (values.specialities || []).map(speciality => speciality.trim()).filter(Boolean),
       )
       const mergedTagNames = uniq([...normalizedTags, ...normalizedSpecialities])
+      const updatePhones = !!permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones)
+      const submittedPhones = nonEmptyPhones(values.phones)
+      const deletedPhoneIds = updatePhones
+        ? initialPhones.filter(phone => !submittedPhones.some(value => value.id === phone.id)).map(phone => phone.id!)
+        : []
+      const phoneUpdates: hasura.member_phone_updates[] = updatePhones
+        ? submittedPhones
+            .filter(
+              value =>
+                value.id && initialPhones.some(original => original.id === value.id && original.value !== value.value),
+            )
+            .map(value => ({
+              where: { id: { _eq: value.id }, member_id: { _eq: memberAdmin.id } },
+              _set: phoneInput(value),
+            }))
+        : []
+      const newPhones = updatePhones
+        ? submittedPhones
+            .filter(value => !value.id)
+            .map(value => ({ id: uuid(), member_id: memberAdmin.id, ...phoneInput(value) }))
+        : []
       try {
         const result = await updateMemberProfileBasic({
           variables: {
@@ -156,13 +182,11 @@ const MemberProfileBasicForm: React.FC<{
               ...(canEditUsername && values.username !== memberAdmin.username ? { username: values.username } : {}),
               ...(canEditEmail && values.email !== memberAdmin.email ? { email: values.email } : {}),
             },
-            updatePhones: !!permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones),
-
+            updatePhones,
             memberId: memberAdmin.id,
-            phones:
-              permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones)
-                ? nonEmptyPhones(values.phones).map(value => ({ member_id: memberAdmin.id, ...phoneInput(value) }))
-                : [],
+            deletedPhoneIds,
+            phoneUpdates,
+            phones: newPhones,
 
             tags: mergedTagNames.map(tag => ({
               name: tag,
@@ -185,6 +209,28 @@ const MemberProfileBasicForm: React.FC<{
         })
 
         assertMemberUpdated(result)
+        if (
+          updatePhones &&
+          (result.data?.delete_member_phone?.affected_rows !== deletedPhoneIds.length ||
+            result.data?.insert_member_phone?.affected_rows !== newPhones.length ||
+            result.data?.update_member_phone_many?.length !== phoneUpdates.length ||
+            result.data.update_member_phone_many.some(row => row?.affected_rows !== 1))
+        ) {
+          throw new Error('電話未完整更新，其他基本資料可能已儲存。請重新整理並確認電話仍存在及編輯權限，再重試。')
+        }
+        if (updatePhones) {
+          let newIndex = 0
+          const saved = submittedPhones.map(value => {
+            if (!value.id) {
+              const created = newPhones[newIndex++]
+              return { id: created.id, value: `${created.country_code || ''},${created.phone}` }
+            }
+            const updated = phoneUpdates.find(update => update.where.id?._eq === value.id)?._set
+            return updated ? { id: value.id, value: `${updated.country_code || ''},${updated.phone}` } : value
+          })
+          setSavedPhones({ memberId: memberAdmin.id, phones: saved })
+          form.setFieldsValue({ phones: saved })
+        }
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       } catch (error) {
@@ -233,7 +279,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length ? initialPhones : ['TW,'],
+        phones: memberAdmin.phones.length ? initialPhones : [{ value: 'TW,' }],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -273,7 +319,7 @@ const MemberProfileBasicForm: React.FC<{
           extra="本地電話請選擇國家／地區；國際或非地域電話請輸入完整 +國碼。未修改的舊電話會保留原資料。"
           rules={[
             {
-              validator: async (_: unknown, values: string[]) => {
+              validator: async (_: unknown, values: PhoneField[]) => {
                 if (!phonesChanged(values)) return
                 if (
                   settings['member_profile_phone.check.ignore.enable'] !== '1' &&
@@ -281,7 +327,9 @@ const MemberProfileBasicForm: React.FC<{
                 ) {
                   throw new Error('電話不可為空，請填寫電話或使用移除按鈕。')
                 }
-                nonEmptyPhones(values).forEach(phoneInput)
+                nonEmptyPhones(values)
+                  .filter(value => !phoneUnchanged(value))
+                  .forEach(phoneInput)
               },
             },
           ]}
@@ -319,8 +367,8 @@ const MemberProfileBasicForm: React.FC<{
 }
 
 const PhoneCollectionInput: React.FC<{
-  value?: string[]
-  onChange?: (value: string[]) => void
+  value?: PhoneField[]
+  onChange?: (value: PhoneField[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
@@ -336,7 +384,7 @@ const PhoneCollectionInput: React.FC<{
             value={phones[index]}
             onChange={e => {
               const newValue = [...value]
-              newValue.splice(index, 1, `${countryCodes[index]},${e.target.value.trim()}`)
+              newValue.splice(index, 1, { ...value[index], value: `${countryCodes[index]},${e.target.value.trim()}` })
               onChange && onChange(newValue)
             }}
             addonBefore={<CountryCodeSelect value={value} index={index} onChange={onChange} />}
@@ -360,7 +408,7 @@ const PhoneCollectionInput: React.FC<{
         onClick={() => {
           if (value) {
             const newValue = [...value]
-            newValue.splice(newValue.length, 0, 'TW,')
+            newValue.splice(newValue.length, 0, { value: 'TW,' })
             onChange && onChange(newValue)
           }
         }}
@@ -380,9 +428,9 @@ const StyledSelect = styled.div`
 `
 
 const CountryCodeSelect: React.FC<{
-  value: string[]
+  value: PhoneField[]
   index: number
-  onChange?: (value: string[]) => void
+  onChange?: (value: PhoneField[]) => void
 }> = ({ value, index, onChange }) => {
   const { phones, countryCodes } = splitPhoneData(value, ',')
   const allCountryCodeData = getCountries().map(countryCode => ({
@@ -400,7 +448,7 @@ const CountryCodeSelect: React.FC<{
         value={countryCodes[index]}
         onChange={e => {
           const newValue = [...value]
-          newValue.splice(index, 1, `${e},${phones[index]}`)
+          newValue.splice(index, 1, { ...value[index], value: `${e},${phones[index]}` })
           onChange?.(newValue)
         }}
         filterOption={(input, option) => option?.children.toLowerCase().includes(input.toLowerCase())}
@@ -424,6 +472,8 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
+    $deletedPhoneIds: [uuid!]!
+    $phoneUpdates: [member_phone_updates!]!
     $memberCategories: [member_category_insert_input!]!
     $memberSpecialities: [member_speciality_insert_input!]!
   ) {
@@ -442,7 +492,11 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     }
 
     # update phones
-    delete_member_phone(where: { member_id: { _eq: $memberId } }) @include(if: $updatePhones) {
+    delete_member_phone(where: { member_id: { _eq: $memberId }, id: { _in: $deletedPhoneIds } })
+      @include(if: $updatePhones) {
+      affected_rows
+    }
+    update_member_phone_many(updates: $phoneUpdates) @include(if: $updatePhones) {
       affected_rows
     }
     insert_member_phone(objects: $phones) @include(if: $updatePhones) {

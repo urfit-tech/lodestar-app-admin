@@ -244,6 +244,7 @@ export const useMemberAdmin = (memberId: string) => {
         tags: data.member_by_pk.member_tags.map(v => v.tag_name),
         specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
         phones: data.member_by_pk.member_phones.map(v => ({
+          id: v.id,
           isValid: v.is_valid,
           phoneNumber: v.phone,
           countryCode: v?.country_code || '',
