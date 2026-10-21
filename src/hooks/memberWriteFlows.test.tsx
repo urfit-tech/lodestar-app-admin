@@ -309,7 +309,7 @@ describe('member creation phone round trip', () => {
     fill('email', 'qa.pr763@example.invalid')
   }
 
-  test.each<[string, string | null, string, string]>([
+  test.each([
     ['+12025550173', 'US', '2025550173', '+12025550173'],
     ['0912345678', 'TW', '0912345678', '+886912345678'],
     ['+886 912-345-678', 'TW', '0912345678', '+886912345678'],
