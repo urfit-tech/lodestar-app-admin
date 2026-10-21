@@ -1,3 +1,5 @@
+import { checkMemberMutation, checkMemberNoteMutation, memberNotePartialSuccessMessage } from '../helpers/memberWritePermissions'
+import { message } from 'antd'
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { isEmpty } from 'lodash'
@@ -132,6 +134,8 @@ export const useMemberAdmin = (memberId: string) => {
             phone
             is_valid
             country_code
+            international_phone
+            is_primary
           }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
@@ -240,9 +244,12 @@ export const useMemberAdmin = (memberId: string) => {
         tags: data.member_by_pk.member_tags.map(v => v.tag_name),
         specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
         phones: data.member_by_pk.member_phones.map(v => ({
+          id: v.id,
           isValid: v.is_valid,
           phoneNumber: v.phone,
           countryCode: v?.country_code || '',
+          internationalPhone: v.international_phone,
+          isPrimary: v.is_primary,
         })),
         lastRejectedNote: data.member_by_pk.member_notes[0]
           ? {
@@ -508,11 +515,13 @@ export const useMutateMemberNote = () => {
   `)
 
   return {
-    insertMemberNote,
+    insertMemberNote: checkMemberNoteMutation(insertMemberNote, () => {
+      message.warning(memberNotePartialSuccessMessage, 10)
+    }),
     updateMemberNote,
     deleteMemberNote,
-    updateLastMemberNoteAnswered,
-    updateLastMemberNoteCalled,
+    updateLastMemberNoteAnswered: checkMemberMutation(updateLastMemberNoteAnswered),
+    updateLastMemberNoteCalled: checkMemberMutation(updateLastMemberNoteCalled),
   }
 }
 
@@ -1073,7 +1082,7 @@ export const useMutateMember = () => {
     }
   `)
   return {
-    updateMemberAvatar,
+    updateMemberAvatar: checkMemberMutation(updateMemberAvatar),
   }
 }
 
@@ -1223,7 +1232,7 @@ export const useTransferManagers = () => {
     loading,
     error,
     transferManagers,
-    transferLeads,
+    transferLeads: checkMemberMutation(transferLeads),
   }
 }
 

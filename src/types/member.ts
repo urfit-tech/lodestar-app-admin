@@ -97,11 +97,15 @@ export type MemberAdminProps = {
   tags: string[]
   specialities: string[]
   phones: {
+    id: string
     isValid: boolean
     phoneNumber: string
     countryCode: string
+    internationalPhone?: string | null
+    isPrimary?: boolean
   }[]
   categories: Category[]
+  permissionGroups?: { id: string; name: string }[]
   permissionIds: string[]
   lastRejectedNote: {
     author: {
