@@ -4,7 +4,7 @@ import { Alert, Button, Descriptions, Form, Input, InputNumber, message, Select,
 import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
 import countryCodes from 'country-codes-list'
-import { CountryCode } from 'libphonenumber-js'
+import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -113,6 +113,10 @@ const MemberProfileBasicForm: React.FC<{
     canEditIdentity &&
     (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_USERNAME_EDIT)
 
+  const initialPhones = memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
+  const phonesChanged = (values: string[] = []) =>
+    JSON.stringify(values.filter(Boolean)) !== JSON.stringify(initialPhones)
+
   const handleSubmit = async () => {
     if (readOnly) return message.error(ownerReadOnlyMessage)
     try {
@@ -138,30 +142,24 @@ const MemberProfileBasicForm: React.FC<{
               ...(canEditUsername && values.username !== memberAdmin.username ? { username: values.username } : {}),
               ...(canEditEmail && values.email !== memberAdmin.email ? { email: values.email } : {}),
             },
-            updatePhones: !!permissions.MEMBER_PHONE_ADMIN,
+            updatePhones: !!permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones),
 
             memberId: memberAdmin.id,
-            phones: permissions['MEMBER_PHONE_ADMIN']
-              ? phones.map((phone: string, index: number) => {
-                  const originalPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
+            phones:
+              permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones)
+                ? phones.map((phone: string, index: number) => {
+                    const originalPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
 
-                  return {
-                    member_id: memberAdmin.id,
-                    phone,
-                    country_code: countryCodes[index],
-                    international_phone: `+${countryCodes[index]}${phone}`,
-                    is_valid: originalPhone !== undefined ? originalPhone.isValid : true,
-                  }
-                })
-              : phones.map((phone: string, index: number) => ({
-                  member_id: memberAdmin.id,
-                  phone,
-                  country_code: memberAdmin.phones[index].countryCode,
-                  international_phone: /^[0-9]*$/.test(memberAdmin.phones[index].phoneNumber)
-                    ? `+${memberAdmin.phones[index].countryCode}${memberAdmin.phones[index].phoneNumber}`
-                    : null,
-                  is_valid: Boolean(memberAdmin.phones[index].isValid),
-                })),
+                    return {
+                      member_id: memberAdmin.id,
+                      phone,
+                      country_code: countryCodes[index],
+                      international_phone:
+                        parsePhoneNumberFromString(phone, countryCodes[index] as CountryCode)?.number || null,
+                      is_valid: originalPhone !== undefined ? originalPhone.isValid : true,
+                    }
+                  })
+                : [],
 
             tags: mergedTagNames.map(tag => ({
               name: tag,
@@ -279,6 +277,7 @@ const MemberProfileBasicForm: React.FC<{
                   {
                     message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
                     validator: (_: RuleObject, values: string[]) => {
+                      if (!phonesChanged(values)) return Promise.resolve()
                       const { phones } = splitPhoneData(values, ',')
                       return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
                     },
@@ -286,6 +285,7 @@ const MemberProfileBasicForm: React.FC<{
                   {
                     message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
                     validator: (_: RuleObject, values: string[]) => {
+                      if (!phonesChanged(values)) return Promise.resolve()
                       const { phones } = splitPhoneData(values, ',')
                       const regex = /^[0-9]*$/
                       return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
@@ -294,6 +294,7 @@ const MemberProfileBasicForm: React.FC<{
                   {
                     message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
                     validator: (_: RuleObject, values: string[]) => {
+                      if (!phonesChanged(values)) return Promise.resolve()
                       const { countryCodes } = splitPhoneData(values, ',')
                       return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
                     },

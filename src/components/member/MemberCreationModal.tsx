@@ -2,6 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
@@ -9,6 +10,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { v4 as uuidv4 } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import { normalizeMemberPhone } from '../../helpers/memberPhone'
 import { canWriteMemberPhone } from '../../helpers/memberWritePermissions'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -26,6 +28,7 @@ type FieldProps = {
   username: string
   email: string
   phone?: string
+  countryCode: CountryCode
   role?: string
 }
 
@@ -43,8 +46,8 @@ const MemberCreationModal: React.FC<
   >(INSERT_MEMBER)
   const canWritePhone = canWriteMemberPhone(currentUserRole, permissions)
   const [insertPhone] = useMutation(gql`
-    mutation INSERT_CREATED_MEMBER_PHONE($memberId: String!, $phone: String!) {
-      insert_member_phone_one(object: { member_id: $memberId, phone: $phone, is_primary: true }) {
+    mutation INSERT_CREATED_MEMBER_PHONE($phone: member_phone_insert_input!) {
+      insert_member_phone_one(object: $phone) {
         id
       }
     }
@@ -56,7 +59,8 @@ const MemberCreationModal: React.FC<
 
   const handleCreate = async (callback?: { onSuccess?: () => void }) => {
     try {
-      const { email, username, role, phone } = await form.validateFields()
+      const { email, username, role, phone, countryCode } = await form.validateFields()
+      const normalizedPhone = canWritePhone && phone?.trim() ? normalizeMemberPhone(phone, countryCode) : null
       setLoading(true)
       const memberId = uuidv4()
       const result = await insertMember({
@@ -71,9 +75,11 @@ const MemberCreationModal: React.FC<
         },
       })
       if (!result.data?.insert_member?.affected_rows) throw new Error('會員未建立，請確認建立會員權限後重試。')
-      if (phone && canWritePhone) {
+      if (normalizedPhone) {
         try {
-          const phoneResult = await insertPhone({ variables: { memberId, phone } })
+          const phoneResult = await insertPhone({
+            variables: { phone: { member_id: memberId, ...normalizedPhone, is_primary: true } },
+          })
           if (!phoneResult.data?.insert_member_phone_one) throw new Error('電話未新增')
         } catch {
           message.warning('會員已建立，但電話未儲存。請確認電話寫入權限後，到會員資料補填；不需重新建立會員。', 10)
@@ -133,6 +139,7 @@ const MemberCreationModal: React.FC<
         colon={false}
         initialValues={{
           role: 'general-member',
+          countryCode: 'TW',
         }}
       >
         <Form.Item
@@ -163,10 +170,33 @@ const MemberCreationModal: React.FC<
         >
           <Input onBlur={e => setAccount(props => ({ ...props, email: e.target.value }))} />
         </Form.Item>
+        <Form.Item label="電話國家／地區" name="countryCode">
+          <Select
+            disabled={!canWritePhone}
+            showSearch
+            optionFilterProp="label"
+            options={getCountries().map(country => ({
+              value: country,
+              label: `${country} (+${getCountryCallingCode(country)})`,
+            }))}
+          />
+        </Form.Item>
         <Form.Item
           label={formatMessage(commonMessages.label.phone)}
           name="phone"
-          extra={!canWritePhone ? '目前沒有電話寫入權限；可先建立會員，再請有權限的人員補填。' : undefined}
+          dependencies={['countryCode']}
+          rules={[
+            {
+              validator: async (_, value?: string) => {
+                if (canWritePhone && value?.trim()) normalizeMemberPhone(value, form.getFieldValue('countryCode'))
+              },
+            },
+          ]}
+          extra={
+            !canWritePhone
+              ? '目前沒有電話寫入權限；可先建立會員，再請有權限的人員補填。'
+              : '本地電話依所選國家儲存；國際電話（如 +12025550173）會自動判定國家。'
+          }
         >
           <Input disabled={!canWritePhone} />
         </Form.Item>

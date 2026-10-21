@@ -1,10 +1,11 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import { message } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
 import { act, Simulate } from 'react-dom/test-utils'
+import MemberCreationModal from '../components/member/MemberCreationModal'
 import MemberProfileBasicForm from '../components/member/MemberProfileBasicForm'
 import MemberNoteAdminBlock from '../components/note/MemberNoteAdminBlock'
 import { handleError } from '../helpers'
@@ -13,6 +14,7 @@ import { useMemberAdmin } from './member'
 
 jest.mock('@apollo/client', () => ({
   ...require('@jest/globals').jest.requireActual('@apollo/client'),
+  useApolloClient: require('@jest/globals').jest.fn(),
   useQuery: require('@jest/globals').jest.fn(),
   useMutation: require('@jest/globals').jest.fn(),
 }))
@@ -50,6 +52,15 @@ jest.mock('../components/form/MemberSelector', () => ({
 }))
 jest.mock('../components/member/MemberNoteAdminItem', () => () => null)
 jest.mock('../components/admin', () => ({ AdminBlock: ({ children }: any) => children }))
+jest.mock('../components/admin/AdminModal', () => {
+  const React = require('react')
+  return ({ children, renderFooter }: any) => (
+    <>
+      {children}
+      {renderFooter({ setVisible: () => undefined })}
+    </>
+  )
+})
 jest.mock('../components/admin/AdminBlock', () => ({ EmptyAdminBlock: ({ children }: any) => children }))
 jest.mock('../components/member/MemberNoteAdminModal', () => {
   const React = require('react')
@@ -64,7 +75,7 @@ jest.mock('../components/member/MemberNoteAdminModal', () => {
               type: 'inbound',
               status: 'answered',
               description: 'test note',
-              attachments: [new File(['attachment'], 'note.txt')],
+              attachments: [new globalThis.File(['attachment'], 'note.txt')],
             })
           }
         >
@@ -96,6 +107,7 @@ const operationName = (document: any) => document.definitions[0].name.value
 
 beforeEach(() => {
   jest.clearAllMocks()
+  ;(useApolloClient as ReturnType<typeof jest.fn>).mockReturnValue({ query: jest.fn() })
   window.matchMedia = jest.fn().mockImplementation(() => ({
     matches: false,
     addListener: jest.fn(),
@@ -270,5 +282,161 @@ describe('member write flows with actual hooks and components', () => {
     expect(refetchNotes).not.toHaveBeenCalled()
     expect(message.warning).not.toHaveBeenCalled()
     expect(handleError).toHaveBeenCalledWith(rejection)
+  })
+})
+
+describe('member creation phone round trip', () => {
+  const fill = (field: string, value: string) => {
+    act(() => {
+      Simulate.change(container.querySelector(`input[id="${field}"]`) as HTMLInputElement, { target: { value } } as any)
+    })
+  }
+  const openCreation = () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    mutate.mockImplementation(({ variables }: any) =>
+      Promise.resolve({
+        data: variables.phone
+          ? { insert_member_phone_one: { id: 'created-phone' } }
+          : variables.identity
+          ? { update_member: { affected_rows: 1 } }
+          : { insert_member: { affected_rows: 1 } },
+      }),
+    )
+    act(() => {
+      render(<MemberCreationModal />, container)
+    })
+    fill('username', 'QA_PR763')
+    fill('email', 'qa.pr763@example.invalid')
+  }
+
+  test.each([
+    ['+12025550173', 'US', '2025550173', '+12025550173'],
+    ['0912345678', 'TW', '0912345678', '+886912345678'],
+    ['+886 912-345-678', 'TW', '0912345678', '+886912345678'],
+  ])(
+    'creates %s with country metadata, then saves a name without rewriting the phone',
+    async (input, country, national, international) => {
+      openCreation()
+      fill('phone', input)
+      await saveProfile()
+      expect(mutate).toHaveBeenCalledTimes(2)
+      const memberVariables = (mutate.mock.calls[0][0] as any).variables
+      const phone = (mutate.mock.calls[1][0] as any).variables.phone
+      expect(phone).toEqual({
+        member_id: memberVariables.id,
+        phone: national,
+        country_code: country,
+        international_phone: international,
+        is_primary: true,
+      })
+      member.member_phones = [{ id: 'created-phone', ...phone, is_valid: true }]
+      act(() => {
+        render(<MemberForm />, container)
+      })
+      fill('name', 'QA name updated')
+      mutate.mockClear()
+      await saveProfile()
+      expect(mutate).toHaveBeenCalledTimes(1)
+      const saved = (mutate.mock.calls[0][0] as any).variables
+      expect(saved.identity.name).toBe('QA name updated')
+      expect(saved.updatePhones).toBe(false)
+      expect(saved.phones).toEqual([])
+      expect(handleError).not.toHaveBeenCalled()
+    },
+  )
+
+  test('unchanged legacy phone without a country does not block name edits', async () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [{ id: 'legacy', phone: '+12025550173', country_code: null, is_valid: true }]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    fill('name', 'Legacy name updated')
+    await saveProfile()
+    expect(mutate).toHaveBeenCalledTimes(1)
+    expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({
+      identity: { name: 'Legacy name updated' },
+      updatePhones: false,
+      phones: [],
+    })
+  })
+
+  test('rejects invalid phone before creating the member', async () => {
+    openCreation()
+    fill('phone', 'not-a-phone')
+    await saveProfile()
+    expect(mutate).not.toHaveBeenCalled()
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    })
+    expect(container.textContent).toContain('請輸入有效電話')
+  })
+
+  test('phone denial preserves the successful member creation and reports partial success', async () => {
+    openCreation()
+    mutate.mockImplementation(({ variables }: any) =>
+      variables.phone
+        ? Promise.reject(new Error('permission denied'))
+        : Promise.resolve({ data: { insert_member: { affected_rows: 1 } } }),
+    )
+    fill('phone', '+12025550173')
+    await saveProfile()
+    expect(mutate).toHaveBeenCalledTimes(2)
+    expect(message.warning).toHaveBeenCalledWith(expect.stringContaining('會員已建立，但電話未儲存'), 10)
+    expect(message.success).toHaveBeenCalled()
+    expect(handleError).not.toHaveBeenCalled()
+  })
+
+  test('creating without a phone does not insert an empty phone row', async () => {
+    openCreation()
+    await saveProfile()
+    expect(mutate).toHaveBeenCalledTimes(1)
+    expect(message.success).toHaveBeenCalled()
+  })
+})
+
+test('phone fields are read-only without phone permission; member creation still works', async () => {
+  permissions = { MEMBER_CREATE: true }
+  mutate.mockImplementation(() => Promise.resolve({ data: { insert_member: { affected_rows: 1 } } }))
+  act(() => {
+    render(<MemberCreationModal />, container)
+  })
+  expect((container.querySelector('input[id="phone"]') as HTMLInputElement).disabled).toBe(true)
+  expect((container.querySelector('input[id="countryCode"]') as HTMLInputElement).disabled).toBe(true)
+  act(() => {
+    Simulate.change(
+      container.querySelector('input[id="username"]') as HTMLInputElement,
+      { target: { value: 'QA' } } as any,
+    )
+    Simulate.change(
+      container.querySelector('input[id="email"]') as HTMLInputElement,
+      { target: { value: 'qa@example.invalid' } } as any,
+    )
+  })
+  await saveProfile()
+  expect(mutate).toHaveBeenCalledTimes(1)
+})
+
+test('editing a phone still validates and writes its ISO country and E.164 number', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [{ id: 'phone', phone: '2025550173', country_code: 'US', is_valid: true }]
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  const input = Array.from(container.querySelectorAll('input')).find(
+    input => input.value === '2025550173',
+  ) as HTMLInputElement
+  act(() => {
+    Simulate.change(input, { target: { value: 'invalid' } } as any)
+  })
+  await saveProfile()
+  expect(mutate).not.toHaveBeenCalled()
+  act(() => {
+    Simulate.change(input, { target: { value: '2025550174' } } as any)
+  })
+  await saveProfile()
+  expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({
+    updatePhones: true,
+    phones: [{ phone: '2025550174', country_code: 'US', international_phone: '+12025550174' }],
   })
 })
