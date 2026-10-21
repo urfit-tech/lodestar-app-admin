@@ -134,6 +134,8 @@ export const useMemberAdmin = (memberId: string) => {
             phone
             is_valid
             country_code
+            international_phone
+            is_primary
           }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
@@ -245,6 +247,8 @@ export const useMemberAdmin = (memberId: string) => {
           isValid: v.is_valid,
           phoneNumber: v.phone,
           countryCode: v?.country_code || '',
+          internationalPhone: v.international_phone,
+          isPrimary: v.is_primary,
         })),
         lastRejectedNote: data.member_by_pk.member_notes[0]
           ? {

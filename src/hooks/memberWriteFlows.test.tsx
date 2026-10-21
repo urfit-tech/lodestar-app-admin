@@ -309,10 +309,13 @@ describe('member creation phone round trip', () => {
     fill('email', 'qa.pr763@example.invalid')
   }
 
-  test.each([
+  test.each<[string, string | null, string, string]>([
     ['+12025550173', 'US', '2025550173', '+12025550173'],
     ['0912345678', 'TW', '0912345678', '+886912345678'],
     ['+886 912-345-678', 'TW', '0912345678', '+886912345678'],
+    ['+80012345678', null, '+80012345678', '+80012345678'],
+    ['+870773111632', null, '+870773111632', '+870773111632'],
+    ['+881612345678', null, '+881612345678', '+881612345678'],
   ])(
     'creates %s with country metadata, then saves a name without rewriting the phone',
     async (input, country, national, international) => {
@@ -439,4 +442,94 @@ test('editing a phone still validates and writes its ISO country and E.164 numbe
     updatePhones: true,
     phones: [{ phone: '2025550174', country_code: 'US', international_phone: '+12025550174' }],
   })
+})
+
+describe('multiple phone metadata preservation', () => {
+  test.each([
+    ['2025550173', 'US', '+12025550173'],
+    ['+80012345678', null, '+80012345678'],
+    ['+12025550173', null, null],
+  ])('editing a second phone preserves untouched %s metadata', async (phone, country, international) => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [
+      {
+        id: 'first',
+        phone,
+        country_code: country,
+        international_phone: international,
+        is_valid: false,
+        is_primary: true,
+      },
+      {
+        id: 'second',
+        phone: '0912345678',
+        country_code: 'TW',
+        international_phone: '+886912345678',
+        is_valid: true,
+        is_primary: false,
+      },
+    ]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    const input = Array.from(container.querySelectorAll('input')).find(input => input.value === '0912345678')!
+    act(() => {
+      Simulate.change(input, { target: { value: '0912345679' } } as any)
+    })
+    await saveProfile()
+    expect(mutate).toHaveBeenCalledTimes(1)
+    expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({
+      updatePhones: true,
+      phones: [
+        { phone, country_code: country, international_phone: international, is_valid: false, is_primary: true },
+        { phone: '0912345679', country_code: 'TW', international_phone: '+886912345679', is_valid: true },
+      ],
+    })
+  })
+  test('editing an existing US national phone retains its selected country', async () => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [
+      { id: 'us', phone: '2025550173', country_code: 'US', international_phone: '+12025550173', is_valid: true },
+    ]
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    const input = Array.from(container.querySelectorAll('input')).find(input => input.value === '2025550173')!
+    act(() => {
+      Simulate.change(input, { target: { value: '2025550174' } } as any)
+    })
+    await saveProfile()
+    expect((mutate.mock.calls[0][0] as any).variables.phones).toEqual([
+      expect.objectContaining({ phone: '2025550174', country_code: 'US', international_phone: '+12025550174' }),
+    ])
+  })
+})
+
+test('editing a geographic phone to a non-geographic number clears ISO and retains E.164', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [
+    { id: 'phone', phone: '2025550173', country_code: 'US', international_phone: '+12025550173', is_valid: true },
+  ]
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  const input = Array.from(container.querySelectorAll('input')).find(input => input.value === '2025550173')!
+  act(() => {
+    Simulate.change(input, { target: { value: '+80012345678' } } as any)
+  })
+  await saveProfile()
+  expect((mutate.mock.calls[0][0] as any).variables.phones).toEqual([
+    expect.objectContaining({ phone: '+80012345678', country_code: null, international_phone: '+80012345678' }),
+  ])
+})
+test('a member with no phone can save a name without inserting the empty TW placeholder', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  act(() => {
+    Simulate.change(container.querySelector('input[id="name"]')!, { target: { value: 'Updated name' } } as any)
+  })
+  await saveProfile()
+  expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({ updatePhones: false, phones: [] })
 })

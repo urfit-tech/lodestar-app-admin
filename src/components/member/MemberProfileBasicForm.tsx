@@ -1,10 +1,8 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Alert, Button, Descriptions, Form, Input, InputNumber, message, Select, Skeleton } from 'antd'
-import { RuleObject } from 'antd/lib/form'
 import { useForm } from 'antd/lib/form/Form'
-import countryCodes from 'country-codes-list'
-import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber-js'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -14,6 +12,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import { normalizeMemberPhone } from '../../helpers/memberPhone'
 import {
   assertMemberUpdated,
   canEditMemberIdentity,
@@ -25,7 +24,6 @@ import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
-import memberMessages from './translations'
 
 const StyledCloseIcon = styled.div`
   position: absolute;
@@ -50,21 +48,6 @@ type FieldProps = {
   tags?: string[]
   managerId?: string
 }
-interface CountryCodeData {
-  countryCode: CountryCode
-  countryCallingCode: string
-}
-
-const getAllCountryCodeData = () => {
-  const countryCodesObject = countryCodes.customList(
-    'countryCode' as any,
-    `{"countryCode":"{countryCode}", "countryCallingCode":"+{countryCallingCode}"}`,
-  )
-  const result: CountryCodeData[] = []
-  Object.values(countryCodesObject).forEach(value => result.push(JSON.parse(value)))
-  return result
-}
-
 const splitPhoneData = (phoneData: string[] = [], separator: string): { phones: string[]; countryCodes: string[] } => {
   const countryCodes: string[] = []
   const phones: string[] = []
@@ -114,15 +97,44 @@ const MemberProfileBasicForm: React.FC<{
     (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_USERNAME_EDIT)
 
   const initialPhones = memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
+  const nonEmptyPhones = (values: string[] = []) => values.filter(value => splitPhoneData([value], ',').phones[0])
   const phonesChanged = (values: string[] = []) =>
-    JSON.stringify(values.filter(Boolean)) !== JSON.stringify(initialPhones)
+    JSON.stringify(nonEmptyPhones(values)) !== JSON.stringify(initialPhones)
+
+  const phoneInput = (value: string) => {
+    const { phones, countryCodes } = splitPhoneData([value], ',')
+    const original = memberAdmin.phones.find(
+      phone => phone.phoneNumber === phones[0] && phone.countryCode === countryCodes[0],
+    )
+    // Preserve the existing opt-out for applications that intentionally accept unvalidated phone text.
+    let normalized
+    if (!original) {
+      try {
+        normalized = normalizeMemberPhone(phones[0], (countryCodes[0] || undefined) as CountryCode | undefined)
+      } catch (error) {
+        if (settings['member_profile_phone.check.ignore.enable'] !== '1') throw error
+        normalized = { phone: phones[0], country_code: countryCodes[0] || null, international_phone: null }
+      }
+    }
+    return original
+      ? {
+          phone: original.phoneNumber,
+          country_code: original.countryCode || null,
+          international_phone: original.internationalPhone ?? null,
+          is_valid: original.isValid,
+          is_primary: original.isPrimary ?? false,
+        }
+      : {
+          ...normalized,
+          is_valid: true,
+        }
+  }
 
   const handleSubmit = async () => {
     if (readOnly) return message.error(ownerReadOnlyMessage)
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const { phones, countryCodes } = splitPhoneData(values.phones, ',')
       const normalizedTags = uniq((values.tags || memberAdmin.tags).map(tag => tag.trim()).filter(Boolean))
       const normalizedSpecialities = uniq(
         (values.specialities || []).map(speciality => speciality.trim()).filter(Boolean),
@@ -147,18 +159,7 @@ const MemberProfileBasicForm: React.FC<{
             memberId: memberAdmin.id,
             phones:
               permissions.MEMBER_PHONE_ADMIN && phonesChanged(values.phones)
-                ? phones.map((phone: string, index: number) => {
-                    const originalPhone = memberAdmin.phones.find(memberPhone => memberPhone.phoneNumber === phone)
-
-                    return {
-                      member_id: memberAdmin.id,
-                      phone,
-                      country_code: countryCodes[index],
-                      international_phone:
-                        parsePhoneNumberFromString(phone, countryCodes[index] as CountryCode)?.number || null,
-                      is_valid: originalPhone !== undefined ? originalPhone.isValid : true,
-                    }
-                  })
+                ? nonEmptyPhones(values.phones).map(value => ({ member_id: memberAdmin.id, ...phoneInput(value) }))
                 : [],
 
             tags: mergedTagNames.map(tag => ({
@@ -230,9 +231,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         star: memberAdmin.star,
-        phones: memberAdmin.phones.length
-          ? memberAdmin.phones.map(phone => `${phone.countryCode},${phone.phoneNumber}`)
-          : [],
+        phones: memberAdmin.phones.length ? initialPhones : ['TW,'],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
@@ -267,40 +266,17 @@ const MemberProfileBasicForm: React.FC<{
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
         <Form.Item
-          className="mb-4"
           label={formatMessage(commonMessages.label.phone)}
           name="phones"
-          rules={
-            settings['member_profile_phone.check.ignore.enable'] === '1'
-              ? undefined
-              : [
-                  {
-                    message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberCannotBeEmpty),
-                    validator: (_: RuleObject, values: string[]) => {
-                      if (!phonesChanged(values)) return Promise.resolve()
-                      const { phones } = splitPhoneData(values, ',')
-                      return phones.some(phone => phone.trim().length === 0) ? Promise.reject() : Promise.resolve()
-                    },
-                  },
-                  {
-                    message: formatMessage(memberMessages.MemberProfileBasicForm.phoneNumberInvalid),
-                    validator: (_: RuleObject, values: string[]) => {
-                      if (!phonesChanged(values)) return Promise.resolve()
-                      const { phones } = splitPhoneData(values, ',')
-                      const regex = /^[0-9]*$/
-                      return phones.some(phone => !regex.test(phone)) ? Promise.reject() : Promise.resolve()
-                    },
-                  },
-                  {
-                    message: formatMessage(memberMessages.MemberProfileBasicForm.countryCodeCannotBeEmpty),
-                    validator: (_: RuleObject, values: string[]) => {
-                      if (!phonesChanged(values)) return Promise.resolve()
-                      const { countryCodes } = splitPhoneData(values, ',')
-                      return countryCodes.some(countryCode => countryCode === '') ? Promise.reject() : Promise.resolve()
-                    },
-                  },
-                ]
-          }
+          extra="本地電話請選擇國家／地區；國際或非地域電話請輸入完整 +國碼。未修改的舊電話會保留原資料。"
+          rules={[
+            {
+              validator: async (_: unknown, values: string[]) => {
+                if (!phonesChanged(values)) return
+                nonEmptyPhones(values).forEach(phoneInput)
+              },
+            },
+          ]}
         >
           <PhoneCollectionInput />
         </Form.Item>
@@ -376,7 +352,7 @@ const PhoneCollectionInput: React.FC<{
         onClick={() => {
           if (value) {
             const newValue = [...value]
-            newValue.splice(newValue.length, 0, '')
+            newValue.splice(newValue.length, 0, 'TW,')
             onChange && onChange(newValue)
           }
         }}
@@ -387,26 +363,30 @@ const PhoneCollectionInput: React.FC<{
   )
 }
 
+const StyledSelect = styled.div`
+  .ant-select-selection-search,
+  .ant-select-selection-search-input,
+  .ant-select-selection-item {
+    color: #4a4a4a !important;
+  }
+`
+
 const CountryCodeSelect: React.FC<{
   value: string[]
   index: number
   onChange?: (value: string[]) => void
 }> = ({ value, index, onChange }) => {
   const { phones, countryCodes } = splitPhoneData(value, ',')
-  const allCountryCodeData: CountryCodeData[] = getAllCountryCodeData()
-
-  const StyledSelect = styled.div`
-    .ant-select-selection-search,
-    .ant-select-selection-search-input,
-    .ant-select-selection-item {
-      color: #4a4a4a !important;
-    }
-  `
+  const allCountryCodeData = getCountries().map(countryCode => ({
+    countryCode,
+    countryCallingCode: `+${getCountryCallingCode(countryCode)}`,
+  }))
 
   return (
     <StyledSelect>
       <Select
         showSearch
+        placeholder="國家／地區"
         style={{ minWidth: '120px' }}
         key={`${index}${countryCodes[index]}`}
         value={countryCodes[index]}

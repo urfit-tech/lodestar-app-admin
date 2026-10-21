@@ -100,6 +100,8 @@ export type MemberAdminProps = {
     isValid: boolean
     phoneNumber: string
     countryCode: string
+    internationalPhone?: string | null
+    isPrimary?: boolean
   }[]
   categories: Category[]
   permissionGroups?: { id: string; name: string }[]

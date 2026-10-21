@@ -16,10 +16,21 @@ describe('member phone country normalization', () => {
       international_phone: '+12025550173',
     })
   })
-  test.each(['123', '電話 +12025550173', '+12025550173 ext 123'])(
+  test.each(['123', '電話 +12025550173', '+12025550173 ext 123', '+800123', '+870000000000'])(
     'rejects incomplete or unsupported input %s',
     value => {
       expect(() => normalizeMemberPhone(value, 'TW')).toThrow('請輸入有效電話')
     },
   )
 })
+
+test.each(['+80012345678', '+870773111632', '+881612345678'])(
+  'preserves non-geographic E.164 %s without inventing an ISO country',
+  value => {
+    expect(normalizeMemberPhone(value, 'TW')).toEqual({
+      phone: value,
+      country_code: null,
+      international_phone: value,
+    })
+  },
+)
