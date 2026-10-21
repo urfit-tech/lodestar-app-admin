@@ -54,7 +54,9 @@ const splitPhoneData = (phoneData: string[] = [], separator: string): { phones: 
 
   phoneData.forEach(data => {
     if (!data) data = `${separator}`
-    const [countryCode, phone] = data.split(separator)
+    // Only the first separator encodes the country; keep legacy phone content intact.
+    const [countryCode, ...phoneParts] = data.split(separator)
+    const phone = phoneParts.join(separator)
     countryCodes.push(countryCode ?? '')
     phones.push(phone ?? '')
   })

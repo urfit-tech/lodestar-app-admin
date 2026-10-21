@@ -449,6 +449,8 @@ describe('multiple phone metadata preservation', () => {
     ['2025550173', 'US', '+12025550173'],
     ['+80012345678', null, '+80012345678'],
     ['+12025550173', null, null],
+    ['+12025550173,123', null, null],
+    ['2025550173,123,456', 'US', null],
   ])('editing a second phone preserves untouched %s metadata', async (phone, country, international) => {
     permissions.MEMBER_PHONE_ADMIN = true
     member.member_phones = [
