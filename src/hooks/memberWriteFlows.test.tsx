@@ -144,6 +144,7 @@ beforeEach(() => {
         update_member: { affected_rows: 1 },
         delete_member_phone: { affected_rows: variables?.deletedPhoneIds?.length ?? 0 },
         insert_member_phone: { affected_rows: variables?.phones?.length ?? 0 },
+        stage_phone_updates: variables?.stagedPhoneUpdates?.map(() => ({ affected_rows: 1 })) ?? [],
         update_member_phone_many: variables?.phoneUpdates?.map(() => ({ affected_rows: 1 })) ?? [],
       },
     }),
@@ -760,3 +761,112 @@ test('cancel restores phone row IDs as well as values before the next edit', asy
   await saveProfile()
   expect((mutate.mock.calls[0][0] as any).variables.phoneUpdates[0].where.id).toEqual({ _eq: 'original-id' })
 })
+
+test.each(['swap', 'chain'])('phone %s uses collision-free staging and retains row metadata', async mode => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [
+    { id: 'first', phone: '2025550173', country_code: 'US', is_valid: true, is_primary: true, extension_number: '123' },
+    { id: 'second', phone: '2025550174', country_code: 'US', is_valid: true, manager_id: 'sales' },
+  ]
+  const rows = member.member_phones.map((row: any) => ({ ...row }))
+  mutate.mockImplementation(({ variables }: any) => {
+    const apply = (updates: any[]) =>
+      updates.map(update => {
+        const row = rows.find((row: any) => row.id === update.where.id._eq)!
+        if (rows.some((other: any) => other.id !== row.id && other.phone === update._set.phone))
+          throw new Error('duplicate key violates member_phone_member_id_phone_key')
+        Object.assign(row, update._set)
+        return { affected_rows: 1 }
+      })
+    const staged = apply(variables.stagedPhoneUpdates)
+    const final = apply(variables.phoneUpdates)
+    return Promise.resolve({
+      data: {
+        update_member: { affected_rows: 1 },
+        stage_phone_updates: staged,
+        update_member_phone_many: final,
+        delete_member_phone: { affected_rows: 0 },
+        insert_member_phone: { affected_rows: 0 },
+      },
+    })
+  })
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  const first = container.querySelector('input[value="2025550173"]')!
+  const second = container.querySelector('input[value="2025550174"]')!
+  act(() => {
+    Simulate.change(first, { target: { value: '2025550174' } } as any)
+  })
+  act(() => {
+    Simulate.change(second, { target: { value: mode === 'swap' ? '2025550173' : '2025550175' } } as any)
+  })
+  await saveProfile()
+  expect(handleError).not.toHaveBeenCalled()
+  expect(message.success).toHaveBeenCalled()
+  expect(rows[0]).toMatchObject({ id: 'first', phone: '2025550174', is_primary: true, extension_number: '123' })
+  expect(rows[1]).toMatchObject({
+    id: 'second',
+    phone: mode === 'swap' ? '2025550173' : '2025550175',
+    manager_id: 'sales',
+  })
+  const document = print(mockUseMutation.mock.calls[0][0] as any)
+  expect(document.indexOf('stage_phone_updates:')).toBeLessThan(
+    document.indexOf('update_member_phone_many(updates: $phoneUpdates)'),
+  )
+})
+
+test('after save and server refetch cancel restores latest phone value and ID', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [{ id: 'original', phone: '2025550173', country_code: 'US', is_valid: true }]
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  act(() => {
+    Simulate.change(container.querySelector('input[value="2025550173"]')!, { target: { value: '2025550174' } } as any)
+  })
+  await saveProfile()
+  member = { ...member, member_phones: [{ id: 'server-row', phone: '2025550175', country_code: 'US', is_valid: true }] }
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  act(() => {
+    Simulate.click(
+      Array.from(container.querySelectorAll('button')).find(button => button.textContent?.includes('cancel'))!,
+    )
+  })
+  expect(container.querySelector('input[value="2025550175"]')).not.toBeNull()
+  act(() => {
+    Simulate.change(container.querySelector('input[value="2025550175"]')!, { target: { value: '2025550176' } } as any)
+  })
+  await saveProfile()
+  expect((mutate.mock.calls[1][0] as any).variables.phoneUpdates[0].where.id).toEqual({ _eq: 'server-row' })
+})
+
+test.each([null, [], [{ affected_rows: 0 }]])(
+  'failed staging response %j is not reported as success',
+  async response => {
+    permissions.MEMBER_PHONE_ADMIN = true
+    member.member_phones = [{ id: 'original', phone: '2025550173', country_code: 'US', is_valid: true }]
+    mutate.mockImplementation(() =>
+      Promise.resolve({
+        data: {
+          update_member: { affected_rows: 1 },
+          stage_phone_updates: response,
+          update_member_phone_many: [{ affected_rows: 1 }],
+          delete_member_phone: { affected_rows: 0 },
+          insert_member_phone: { affected_rows: 0 },
+        },
+      }),
+    )
+    act(() => {
+      render(<MemberForm />, container)
+    })
+    act(() => {
+      Simulate.change(container.querySelector('input[value="2025550173"]')!, { target: { value: '2025550174' } } as any)
+    })
+    await saveProfile()
+    expect(message.success).not.toHaveBeenCalled()
+    expect(handleError).toHaveBeenCalled()
+  },
+)

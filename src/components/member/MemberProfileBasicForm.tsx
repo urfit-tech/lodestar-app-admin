@@ -7,7 +7,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { includes, uniq } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
@@ -84,6 +84,7 @@ const MemberProfileBasicForm: React.FC<{
 
   const [updateMemberProfileBasic] = useMutation<
     hasura.UPDATE_MEMBER_PROFILE_BASIC & {
+      stage_phone_updates?: ({ affected_rows: number } | null)[] | null
       update_member_phone_many?: ({ affected_rows: number } | null)[] | null
     },
     Omit<
@@ -93,11 +94,23 @@ const MemberProfileBasicForm: React.FC<{
       identity: hasura.member_set_input
       updatePhones: boolean
       phoneUpdates: hasura.member_phone_updates[]
+      stagedPhoneUpdates: hasura.member_phone_updates[]
       deletedPhoneIds: string[]
     }
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
-  const [savedPhones, setSavedPhones] = useState<{ memberId: string; phones: PhoneField[] } | null>(null)
+  const [savedPhones, setSavedPhones] = useState<{
+    memberId: string
+    serverSnapshot: string
+    phones: PhoneField[]
+  } | null>(null)
+
+  const serverSnapshot = JSON.stringify(memberAdmin?.phones)
+  useEffect(() => {
+    if (savedPhones && (savedPhones.memberId !== memberAdmin?.id || savedPhones.serverSnapshot !== serverSnapshot)) {
+      setSavedPhones(null)
+    }
+  }, [memberAdmin?.id, savedPhones, serverSnapshot])
 
   if (!memberAdmin) {
     return <Skeleton active />
@@ -113,7 +126,7 @@ const MemberProfileBasicForm: React.FC<{
     (currentUserRole === 'app-owner' || currentMemberId === memberAdmin.id || permissions.MEMBER_USERNAME_EDIT)
 
   const initialPhones: PhoneField[] =
-    savedPhones?.memberId === memberAdmin.id
+    savedPhones?.memberId === memberAdmin.id && savedPhones.serverSnapshot === JSON.stringify(memberAdmin.phones)
       ? savedPhones.phones
       : memberAdmin.phones.map(phone => ({ id: phone.id, value: `${phone.countryCode},${phone.phoneNumber}` }))
   const nonEmptyPhones = (values: PhoneField[] = []) => values.filter(value => splitPhoneData([value], ',').phones[0])
@@ -168,6 +181,19 @@ const MemberProfileBasicForm: React.FC<{
             .filter(value => !value.id)
             .map(value => ({ id: uuid(), member_id: memberAdmin.id, ...phoneInput(value) }))
         : []
+      // All roots run in one Hasura transaction. Free changed numbers before assigning
+      // final values so swaps/chains cannot violate the immediate unique constraint.
+      const reservedPhones = new Set([
+        ...memberAdmin.phones.map(phone => phone.phoneNumber),
+        ...phoneUpdates.map(update => update._set?.phone),
+        ...newPhones.map(phone => phone.phone),
+      ])
+      const stagedPhoneUpdates = phoneUpdates.map(update => {
+        let temporaryPhone = `__phone_update_${uuid()}`
+        while (reservedPhones.has(temporaryPhone)) temporaryPhone += '_'
+        reservedPhones.add(temporaryPhone)
+        return { where: update.where, _set: { phone: temporaryPhone } }
+      })
       try {
         const result = await updateMemberProfileBasic({
           variables: {
@@ -186,6 +212,7 @@ const MemberProfileBasicForm: React.FC<{
             memberId: memberAdmin.id,
             deletedPhoneIds,
             phoneUpdates,
+            stagedPhoneUpdates,
             phones: newPhones,
 
             tags: mergedTagNames.map(tag => ({
@@ -211,7 +238,9 @@ const MemberProfileBasicForm: React.FC<{
         assertMemberUpdated(result)
         if (
           updatePhones &&
-          (result.data?.delete_member_phone?.affected_rows !== deletedPhoneIds.length ||
+          (result.data?.stage_phone_updates?.length !== stagedPhoneUpdates.length ||
+            result.data.stage_phone_updates.some(row => row?.affected_rows !== 1) ||
+            result.data?.delete_member_phone?.affected_rows !== deletedPhoneIds.length ||
             result.data?.insert_member_phone?.affected_rows !== newPhones.length ||
             result.data?.update_member_phone_many?.length !== phoneUpdates.length ||
             result.data.update_member_phone_many.some(row => row?.affected_rows !== 1))
@@ -228,7 +257,11 @@ const MemberProfileBasicForm: React.FC<{
             const updated = phoneUpdates.find(update => update.where.id?._eq === value.id)?._set
             return updated ? { id: value.id, value: `${updated.country_code || ''},${updated.phone}` } : value
           })
-          setSavedPhones({ memberId: memberAdmin.id, phones: saved })
+          setSavedPhones({
+            memberId: memberAdmin.id,
+            serverSnapshot: JSON.stringify(memberAdmin.phones),
+            phones: saved,
+          })
           form.setFieldsValue({ phones: saved })
         }
         message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -355,7 +388,13 @@ const MemberProfileBasicForm: React.FC<{
       )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button className="mr-2" onClick={() => form.resetFields()}>
+        <Button
+          className="mr-2"
+          onClick={() => {
+            form.resetFields()
+            form.setFieldsValue({ phones: initialPhones })
+          }}
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
@@ -474,6 +513,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $phones: [member_phone_insert_input!]!
     $deletedPhoneIds: [uuid!]!
     $phoneUpdates: [member_phone_updates!]!
+    $stagedPhoneUpdates: [member_phone_updates!]!
     $memberCategories: [member_category_insert_input!]!
     $memberSpecialities: [member_speciality_insert_input!]!
   ) {
@@ -494,6 +534,9 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     # update phones
     delete_member_phone(where: { member_id: { _eq: $memberId }, id: { _in: $deletedPhoneIds } })
       @include(if: $updatePhones) {
+      affected_rows
+    }
+    stage_phone_updates: update_member_phone_many(updates: $stagedPhoneUpdates) @include(if: $updatePhones) {
       affected_rows
     }
     update_member_phone_many(updates: $phoneUpdates) @include(if: $updatePhones) {
