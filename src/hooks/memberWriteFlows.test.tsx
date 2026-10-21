@@ -533,3 +533,17 @@ test('a member with no phone can save a name without inserting the empty TW plac
   await saveProfile()
   expect((mutate.mock.calls[0][0] as any).variables).toMatchObject({ updatePhones: false, phones: [] })
 })
+
+test('clearing a required existing phone does not silently delete it', async () => {
+  permissions.MEMBER_PHONE_ADMIN = true
+  member.member_phones = [{ id: 'phone', phone: '2025550173', country_code: 'US', is_valid: true }]
+  act(() => {
+    render(<MemberForm />, container)
+  })
+  const input = Array.from(container.querySelectorAll('input')).find(input => input.value === '2025550173')!
+  act(() => {
+    Simulate.change(input, { target: { value: '' } } as any)
+  })
+  await saveProfile()
+  expect(mutate).not.toHaveBeenCalled()
+})

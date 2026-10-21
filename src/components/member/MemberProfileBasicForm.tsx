@@ -273,6 +273,12 @@ const MemberProfileBasicForm: React.FC<{
             {
               validator: async (_: unknown, values: string[]) => {
                 if (!phonesChanged(values)) return
+                if (
+                  settings['member_profile_phone.check.ignore.enable'] !== '1' &&
+                  splitPhoneData(values, ',').phones.some(phone => !phone.trim())
+                ) {
+                  throw new Error('電話不可為空，請填寫電話或使用移除按鈕。')
+                }
                 nonEmptyPhones(values).forEach(phoneInput)
               },
             },
