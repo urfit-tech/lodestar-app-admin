@@ -17,7 +17,10 @@ export const useProgramPackageCollection = () => {
           cover_url
           published_at
           is_private
-          program_package_plans(where: { published_at: { _lte: "now()" } }, order_by: [{ position: asc }, { created_at: asc }]) {
+          program_package_plans(
+            where: { published_at: { _lte: "now()" } }
+            order_by: [{ position: asc }, { created_at: asc }]
+          ) {
             id
             list_price
             sale_price
@@ -37,10 +40,8 @@ export const useProgramPackageCollection = () => {
         program_package {
           id
           program_package_plans {
-            program_package_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
+            program_package_plan_enrollment_count {
+              enrollment_count
             }
           }
         }
@@ -86,7 +87,7 @@ export const useProgramPackageCollection = () => {
         enrollmentData.program_package
           .filter(w => w.id === v.id)
           .map(x =>
-            sum(x.program_package_plans.map(y => y.program_package_plan_enrollments_aggregate.aggregate?.count || 0)),
+            sum(x.program_package_plans.map(y => y.program_package_plan_enrollment_count?.enrollment_count || 0)),
           )[0] || 0
       v.programPackageEnrollment = enrollmentAmount
     })
@@ -370,10 +371,8 @@ export const useProgramPackage = (id: string) => {
             position
             remind_period_amount
             remind_period_type
-            program_package_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
+            program_package_plan_enrollment_count {
+              enrollment_count
             }
           }
           program_package_categories(order_by: { position: asc }) {
@@ -438,7 +437,7 @@ export const useProgramPackage = (id: string) => {
               isParticipantsVisible: plan.is_participants_visible,
               isCountdownTimerVisible: plan.is_countdown_timer_visible,
               position: plan.position,
-              soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
+              soldQuantity: plan.program_package_plan_enrollment_count?.enrollment_count ?? 0,
               remindPeriodAmount: plan.remind_period_amount !== undefined ? plan.remind_period_amount : null,
               remindPeriodType: plan.remind_period_type !== undefined ? plan.remind_period_type : null,
             })) ?? [],
