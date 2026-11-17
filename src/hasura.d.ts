@@ -159866,19 +159866,19 @@ export type GET_GIFT_PLANSVariables = Exact<{
 
 export type GET_GIFT_PLANS = { __typename?: 'query_root', gift_plan: Array<{ __typename?: 'gift_plan', id: any, title: string }> };
 
-export type GET_SINGLE_MEMBER_PUBLICVariables = Exact<{
+export type GET_SINGLE_MEMBER_BY_SEARCHVariables = Exact<{
   search: Scalars['String'];
 }>;
 
 
-export type GET_SINGLE_MEMBER_PUBLIC = { __typename?: 'query_root', member_public: Array<{ __typename?: 'member_public', id?: string | null }> };
+export type GET_SINGLE_MEMBER_BY_SEARCH = { __typename?: 'query_root', member: Array<{ __typename?: 'member', id: string }> };
 
-export type GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables = Exact<{
-  condition: member_public_bool_exp;
+export type GET_ALL_MEMBER_COLLECTIONVariables = Exact<{
+  condition: member_bool_exp;
 }>;
 
 
-export type GET_ALL_MEMBER_PUBLIC_COLLECTION = { __typename?: 'query_root', member_public: Array<{ __typename?: 'member_public', id?: string | null, picture_url?: string | null, name?: string | null, username?: string | null, email?: string | null, status?: string | null }> };
+export type GET_ALL_MEMBER_COLLECTION = { __typename?: 'query_root', member: Array<{ __typename?: 'member', id: string, picture_url?: string | null, name: string, username: string, email: string, status: string }> };
 
 export type GET_PERMISSIONVariables = Exact<{ [key: string]: never; }>;
 
@@ -160041,7 +160041,7 @@ export type SEARCH_MEMBERSVariables = Exact<{
 }>;
 
 
-export type SEARCH_MEMBERS = { __typename?: 'query_root', member_public_aggregate: { __typename?: 'member_public_aggregate', aggregate?: { __typename?: 'member_public_aggregate_fields', count: number } | null } };
+export type SEARCH_MEMBERS = { __typename?: 'query_root', member_aggregate: { __typename?: 'member_aggregate', aggregate?: { __typename?: 'member_aggregate_fields', count: number } | null } };
 
 export type GET_MEMBER_EXPORT_COLLECTIONVariables = Exact<{
   condition: member_export_bool_exp;
@@ -162882,7 +162882,7 @@ export type GET_PROJECT_PARTICIPANTVariables = Exact<{
 }>;
 
 
-export type GET_PROJECT_PARTICIPANT = { __typename?: 'query_root', project_role: Array<{ __typename?: 'project_role', id: any, created_at: any, agreed_at?: any | null, member?: { __typename?: 'member_public', id?: string | null, name?: string | null, picture_url?: string | null, created_at?: any | null, status?: string | null } | null, identity: { __typename?: 'identity', id: any, name: string } }> };
+export type GET_PROJECT_PARTICIPANT = { __typename?: 'query_root', project_role: Array<{ __typename?: 'project_role', id: any, created_at: any, agreed_at?: any | null, member?: { __typename?: 'member_public', id?: string | null, name?: string | null, picture_url?: string | null, created_at?: any | null } | null, identity: { __typename?: 'identity', id: any, name: string } }>, project_member: Array<{ __typename?: 'member', id: string, status: string }> };
 
 export type GetReportVariables = Exact<{
   id: Scalars['uuid'];
@@ -164254,7 +164254,7 @@ export type GET_MEMBER_CONTRACT_LISTVariables = Exact<{
 }>;
 
 
-export type GET_MEMBER_CONTRACT_LIST = { __typename?: 'query_root', member_property: Array<{ __typename?: 'member_property', telephoneExtension: string, member?: { __typename?: 'member_public', id?: string | null, name?: string | null, email?: string | null, app_id?: string | null, groupNames: Array<{ __typename?: 'member_property', value: string }>, departments: Array<{ __typename?: 'member_property', value: string }> } | null }>, member_contract: Array<{ __typename?: 'member_contract', id: any, agreed_at?: any | null, revoked_at?: any | null, options?: any | null, values?: any | null, member: { __typename?: 'member', id: string, name: string }, author?: { __typename?: 'member', id: string, name: string } | null }> };
+export type GET_MEMBER_CONTRACT_LIST = { __typename?: 'query_root', member_property: Array<{ __typename?: 'member_property', telephoneExtension: string, member?: { __typename?: 'member_public', id?: string | null, name?: string | null, app_id?: string | null, groupNames: Array<{ __typename?: 'member_property', value: string }>, departments: Array<{ __typename?: 'member_property', value: string }> } | null }>, manager_email: Array<{ __typename?: 'member', id: string, email: string }>, member_contract: Array<{ __typename?: 'member_contract', id: any, agreed_at?: any | null, revoked_at?: any | null, options?: any | null, values?: any | null, member: { __typename?: 'member', id: string, name: string }, author?: { __typename?: 'member', id: string, name: string } | null }> };
 
 export type GET_CURRENT_MEMBER_DEPARTMENTVariables = Exact<{
   memberId: Scalars['String'];

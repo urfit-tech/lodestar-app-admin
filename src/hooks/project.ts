@@ -138,12 +138,15 @@ export const useProject = () => {
           name
           picture_url
           created_at
-          status
         }
         identity {
           id
           name
         }
+      }
+      project_member: member(where: { project_roles: { project_id: { _eq: $projectId } } }) {
+        id
+        status
       }
     }
   `)
@@ -154,13 +157,18 @@ export const useProject = () => {
         loadProjectParticipant({ variables: { projectId: projectId } })
       }
 
+      const memberStatusById: { [memberId: string]: string } = {}
+      getProjectParticipantData?.project_member.forEach(member => {
+        memberStatusById[member.id] = member.status
+      })
+
       const participantList = getProjectParticipantData?.project_role.map(projectRole => ({
         projectRoleId: projectRole.id,
         member: {
           id: projectRole.member?.id || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
-          status: projectRole.member?.status || 'invited',
+          status: memberStatusById[projectRole.member?.id || ''] || 'invited',
         },
         identity: { id: projectRole.identity.id, name: projectRole.identity.name },
         agreedAt: projectRole.agreed_at,

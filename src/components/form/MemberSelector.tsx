@@ -78,7 +78,7 @@ export const InhibitInputMemberSelector: React.FC<
 > = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
-  const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
+  const condition: hasura.GET_ALL_MEMBER_COLLECTIONVariables['condition'] = allowedPermissions
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
@@ -167,7 +167,7 @@ export const AllMemberSelector: React.FC<
 > = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, onMemberStatus, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
-  const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
+  const condition: hasura.GET_ALL_MEMBER_COLLECTIONVariables['condition'] = allowedPermissions
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
@@ -187,10 +187,13 @@ export const AllMemberSelector: React.FC<
       }
   const { loading, members } = useAllMemberCollection(condition)
 
-  const { data: existingMembers } = useQuery<hasura.GET_SINGLE_MEMBER_PUBLIC, hasura.GET_SINGLE_MEMBER_PUBLICVariables>(
+  const { data: existingMembers } = useQuery<
+    hasura.GET_SINGLE_MEMBER_BY_SEARCH,
+    hasura.GET_SINGLE_MEMBER_BY_SEARCHVariables
+  >(
     gql`
-      query GET_SINGLE_MEMBER_PUBLIC($search: String!) {
-        member_public(
+      query GET_SINGLE_MEMBER_BY_SEARCH($search: String!) {
+        member(
           where: {
             _or: [
               { id: { _ilike: $search } }
@@ -244,10 +247,7 @@ export const AllMemberSelector: React.FC<
         onMemberStatus?.(null)
       }}
     >
-      {isAllowAddUnregistered &&
-      search !== '' &&
-      members.length === 0 &&
-      existingMembers?.member_public.length === 0 ? (
+      {isAllowAddUnregistered && search !== '' && members.length === 0 && existingMembers?.member.length === 0 ? (
         <Select.Option
           key="unknown"
           value={Array.isArray(search) ? search[0] : search}
@@ -290,14 +290,14 @@ export const AllMemberSelector: React.FC<
   )
 }
 
-const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition']) => {
+const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_COLLECTIONVariables['condition']) => {
   const { data, loading, error } = useQuery<
-    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTION,
-    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables
+    hasura.GET_ALL_MEMBER_COLLECTION,
+    hasura.GET_ALL_MEMBER_COLLECTIONVariables
   >(
     gql`
-      query GET_ALL_MEMBER_PUBLIC_COLLECTION($condition: member_public_bool_exp!) {
-        member_public(where: $condition, limit: 10) {
+      query GET_ALL_MEMBER_COLLECTION($condition: member_bool_exp!) {
+        member(where: $condition, limit: 10) {
           id
           picture_url
           name
@@ -312,7 +312,7 @@ const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTI
 
   const members = useMemo<MemberOptionProps[]>(() => {
     return (
-      data?.member_public.map(member => ({
+      data?.member.map(member => ({
         id: member.id || '',
         avatarUrl: member.picture_url || null,
         name: member.name || member.username || '',
@@ -321,7 +321,7 @@ const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTI
         status: member.status,
       })) || []
     )
-  }, [data?.member_public])
+  }, [data?.member])
 
   return {
     loading,
