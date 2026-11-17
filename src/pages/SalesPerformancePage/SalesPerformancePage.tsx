@@ -398,7 +398,6 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
           member {
             id
             name
-            email
             app_id
             groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
               value
@@ -407,6 +406,10 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
               value
             }
           }
+        }
+        manager_email: member(where: { member_properties: { property_id: { _eq: $telephoneExtensionPropertyId } } }) {
+          id
+          email
         }
         member_contract(
           where: {
@@ -441,20 +444,24 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
       },
     },
   )
-  const managers = useMemo(
-    () =>
+  const managers = useMemo(() => {
+    const emailById: { [memberId: string]: string } = {}
+    data?.manager_email.forEach(member => {
+      emailById[member.id] = member.email
+    })
+    return (
       data?.member_property?.filter(notEmpty).map(v => {
         return {
           id: v?.member?.id || v4(),
           name: v?.member?.name || 'unknown',
-          email: v?.member?.email || 'unknown',
+          email: emailById[v?.member?.id || ''] || 'unknown',
           groupName: v?.member?.groupNames[0]?.value || 'unknown',
           department: v?.member?.departments[0]?.value || 'unknown',
           telephoneExtension: v?.telephoneExtension || 'unknown',
         }
-      }) || [],
-    [data?.member_property],
-  )
+      }) || []
+    )
+  }, [data?.member_property, data?.manager_email])
 
   const memberContracts: MemberContract[] = useMemo(
     () =>

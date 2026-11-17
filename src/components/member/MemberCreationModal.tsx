@@ -210,7 +210,7 @@ const useMember = (account: { email: string; username: string }): MemberStatusTy
         .query<hasura.SEARCH_MEMBERS, hasura.SEARCH_MEMBERSVariables>({
           query: gql`
             query SEARCH_MEMBERS($appId: String!, $email: String, $username: String) {
-              member_public_aggregate(
+              member_aggregate(
                 where: { _or: [{ email: { _eq: $email } }, { username: { _eq: $username } }], app_id: { _eq: $appId } }
               ) {
                 aggregate {
@@ -227,7 +227,7 @@ const useMember = (account: { email: string; username: string }): MemberStatusTy
           fetchPolicy: 'no-cache',
         })
         .then(({ data }) => {
-          const count = data?.member_public_aggregate.aggregate?.count || 0
+          const count = data?.member_aggregate.aggregate?.count || 0
           if (count) {
             setStatus('unavailable')
             return
